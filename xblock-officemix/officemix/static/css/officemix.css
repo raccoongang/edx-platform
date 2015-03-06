@@ -1,0 +1,27 @@
+/* The below will maximize the height of the iframe based on the aspect
+ * ratio of the mix. */
+
+.max-aspect-ratio-frame {
+    width: 100%;
+    position: relative;
+    height: 0;
+    padding-bottom: {aspect_ratio}%;
+}
+
+.max-aspect-ratio-frame iframe {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+/* Match EdX's border around a video */
+.mix-border {
+    background: #f3f3f3;
+    display: block;
+    margin: 0 -12px;
+    padding: 12px;
+    border-radius: 5px;
+    outline: none;
+}
