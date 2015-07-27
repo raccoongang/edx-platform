@@ -13,6 +13,7 @@ import textwrap
 from celery.states import SUCCESS, FAILURE
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.test.utils import override_settings
 
 from openedx.core.djangoapps.util.testing import TestConditionalContent
 from capa.tests.response_xml_factory import (CodeResponseXMLFactory,
@@ -465,6 +466,7 @@ class TestDeleteProblemTask(TestIntegrationTask):
         self.assertEqual(instructor_task.task_state, SUCCESS)
 
 
+@override_settings(GRADING_TYPE='sequential')
 class TestGradeReportConditionalContent(TestReportMixin, TestConditionalContent, TestIntegrationTask):
     """
     Test grade report in cases where there are problems contained within split tests.

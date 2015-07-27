@@ -1081,6 +1081,7 @@ def _progress(request, course_key, student_id):
         'passed': is_course_passed(course, grade_summary),
         'show_generate_cert_btn': show_generate_cert_btn,
         'credit_course_requirements': _credit_course_requirements(course_key, student),
+        'progress_summary_template': course.grading.PROGRESS_SUMMARY_TEMPLATE,
     }
 
     if show_generate_cert_btn:

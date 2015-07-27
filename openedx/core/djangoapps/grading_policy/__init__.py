@@ -1,0 +1,1 @@
+from openedx.core.djangoapps.grading_policy.sequential import SequentialGrading

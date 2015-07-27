@@ -454,6 +454,7 @@ def patched_get_children(self, usage_key_filter=None):
 @attr('shard_1')
 @override_settings(FIELD_OVERRIDE_PROVIDERS=(
     'ccx.overrides.CustomCoursesForEdxOverrideProvider',))
+@override_settings(GRADING_TYPE='sequential')
 @patch('xmodule.x_module.XModuleMixin.get_children', patched_get_children, spec=True)
 class TestCCXGrades(ModuleStoreTestCase, LoginEnrollmentTestCase):
     """

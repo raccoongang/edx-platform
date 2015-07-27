@@ -14,6 +14,7 @@ setup(
     packages=[
         "openedx.core.djangoapps.course_groups",
         "openedx.core.djangoapps.user_api",
+        "openedx.core.djangoapps.grading_policy",
         "lms",
         "cms",
     ],
@@ -46,5 +47,8 @@ setup(
             "random = openedx.core.djangoapps.user_api.partition_schemes:RandomUserPartitionScheme",
             "cohort = openedx.core.djangoapps.course_groups.partition_scheme:CohortPartitionScheme",
         ],
+        "openedx.grading_policy": [
+            "sequential = openedx.core.djangoapps.grading_policy:SequentialGrading",
+        ]
     }
 )

@@ -3,6 +3,7 @@
 from datetime import datetime
 from pytz import UTC
 
+from django.test.utils import override_settings
 from openedx.core.djangoapps.course_groups.models import CourseUserGroupPartitionGroup
 from openedx.core.djangoapps.course_groups.tests.helpers import CohortFactory
 from openedx.core.djangoapps.user_api.tests.factories import UserCourseTagFactory
@@ -100,6 +101,7 @@ class ContentGroupTestCase(ModuleStoreTestCase):
         self.course = self.store.get_item(self.course.location)
 
 
+@override_settings(GRADING_TYPE='sequential')
 class TestConditionalContent(ModuleStoreTestCase):
     """
     Construct a course with graded problems that exist within a split test.

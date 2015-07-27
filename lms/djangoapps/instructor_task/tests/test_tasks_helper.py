@@ -470,6 +470,7 @@ class TestInstructorDetailedEnrollmentReport(TestReportMixin, InstructorTaskCour
 
 
 @ddt.ddt
+@override_settings(GRADING_TYPE='sequential')
 class TestProblemGradeReport(TestReportMixin, InstructorTaskModuleTestCase):
     """
     Test that the problem CSV generation works.
@@ -565,6 +566,7 @@ class TestProblemGradeReport(TestReportMixin, InstructorTaskModuleTestCase):
         ])
 
 
+@override_settings(GRADING_TYPE='sequential')
 class TestProblemReportSplitTestContent(TestReportMixin, TestConditionalContent, InstructorTaskModuleTestCase):
     """
     Test the problem report on a course that has split tests.
@@ -629,6 +631,7 @@ class TestProblemReportSplitTestContent(TestReportMixin, TestConditionalContent,
         ])
 
 
+@override_settings(GRADING_TYPE='sequential')
 class TestProblemReportCohortedContent(TestReportMixin, ContentGroupTestCase, InstructorTaskModuleTestCase):
     """
     Test the problem report on a course that has cohorted content.

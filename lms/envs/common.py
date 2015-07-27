@@ -501,7 +501,8 @@ MAKO_TEMPLATES = {}
 MAKO_TEMPLATES['main'] = [PROJECT_ROOT / 'templates',
                           COMMON_ROOT / 'templates',
                           COMMON_ROOT / 'lib' / 'capa' / 'capa' / 'templates',
-                          COMMON_ROOT / 'djangoapps' / 'pipeline_mako' / 'templates']
+                          COMMON_ROOT / 'djangoapps' / 'pipeline_mako' / 'templates',
+                          REPO_ROOT / 'openedx' / 'core' / 'djangoapps']
 
 # This is where Django Template lookup is defined. There are a few of these
 # still left lying around.
@@ -1805,6 +1806,7 @@ INSTALLED_APPS = (
     'psychometrics',
     'licenses',
     'openedx.core.djangoapps.course_groups',
+    'openedx.core.djangoapps.grading_policy',
     'bulk_email',
     'branding',
 
@@ -2569,3 +2571,7 @@ LTI_USER_EMAIL_DOMAIN = 'lti.example.com'
 # Number of seconds before JWT tokens expire
 JWT_EXPIRATION = 30
 JWT_ISSUER = None
+
+#################### Settings for Grading Policy app ###########################
+
+GRADING_TYPE = 'sequential'

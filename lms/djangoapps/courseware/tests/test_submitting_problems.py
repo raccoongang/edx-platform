@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
+from django.test.utils import override_settings
 from mock import patch
 from nose.plugins.attrib import attr
 
@@ -33,6 +34,7 @@ from openedx.core.djangoapps.credit.models import CreditCourse, CreditProvider
 from openedx.core.djangoapps.user_api.tests.factories import UserCourseTagFactory
 
 
+@override_settings(GRADING_TYPE='sequential')
 class TestSubmittingProblems(ModuleStoreTestCase, LoginEnrollmentTestCase):
     """
     Check that a course gets graded properly.
