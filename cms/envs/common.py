@@ -54,7 +54,8 @@ from lms.envs.common import (
     # The following PROFILE_IMAGE_* settings are included as they are
     # indirectly accessed through the email opt-in API, which is
     # technically accessible through the CMS via legacy URLs.
-    PROFILE_IMAGE_BACKEND, PROFILE_IMAGE_DEFAULT_FILENAME, PROFILE_IMAGE_DEFAULT_FILE_EXTENSION,
+    PROFILE_IMAGE_BACKEND, PROFILE_IMAGE_DEFAULT_FILENAME,
+    PROFILE_IMAGE_DEFAULT_FILE_EXTENSION,
     PROFILE_IMAGE_SECRET_KEY, PROFILE_IMAGE_MIN_BYTES, PROFILE_IMAGE_MAX_BYTES,
     # The following setting is included as it is used to check whether to
     # display credit eligibility table on the CMS or not.
@@ -164,6 +165,11 @@ FEATURES = {
     # Turn off Video Upload Pipeline through Studio, by default
     'ENABLE_VIDEO_UPLOAD_PIPELINE': False,
 
+    # Is this an edX-owned domain? (edx.org)
+    # for consistency in user-experience, keep the value of this feature flag
+    # in sync with the one in lms/envs/common.py
+    'IS_EDX_DOMAIN': False,
+
     # let students save and manage their annotations
     # for consistency in user-experience, keep the value of this feature flag
     # in sync with the one in lms/envs/common.py
@@ -233,7 +239,8 @@ SOCIAL_SHARING_SETTINGS = {
 }
 
 ############################# SET PATH INFORMATION #############################
-PROJECT_ROOT = path(__file__).abspath().dirname().dirname()  # /edx-platform/cms
+PROJECT_ROOT = path(
+    __file__).abspath().dirname().dirname()  # /edx-platform/cms
 REPO_ROOT = PROJECT_ROOT.dirname()
 COMMON_ROOT = REPO_ROOT / "common"
 OPENEDX_ROOT = REPO_ROOT / "openedx"
@@ -255,6 +262,7 @@ GEOIPV6_PATH = REPO_ROOT / "common/static/data/geoip/GeoIPv6.dat"
 # Mako templating
 # TODO: Move the Mako templating into a different engine in TEMPLATES below.
 import tempfile
+
 MAKO_MODULE_DIR = os.path.join(tempfile.gettempdir(), 'mako_cms')
 MAKO_TEMPLATES = {}
 MAKO_TEMPLATES['main'] = [
@@ -307,6 +315,18 @@ EDX_ROOT_URL = ''
 
 LOGIN_REDIRECT_URL = EDX_ROOT_URL + '/signin'
 LOGIN_URL = EDX_ROOT_URL + '/signin'
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
+    'django.core.context_processors.static',
+    'django.contrib.messages.context_processors.messages',
+    'django.core.context_processors.i18n',
+    'django.contrib.auth.context_processors.auth',
+    # this is required for admin
+    'django.core.context_processors.csrf',
+    'dealer.contrib.django.staff.context_processor',  # access git revision
+    'contentstore.context_processors.doc_url',
+)
 
 # use the ratelimit backend to prevent brute force attacks
 AUTHENTICATION_BACKENDS = (
@@ -652,7 +672,8 @@ PIPELINE_CSS = {
 PIPELINE_JS = {
     'module-js': {
         'source_filenames': (
-            rooted_glob(COMMON_ROOT / 'static/', 'xmodule/descriptors/js/*.js') +
+            rooted_glob(COMMON_ROOT / 'static/',
+                        'xmodule/descriptors/js/*.js') +
             rooted_glob(COMMON_ROOT / 'static/', 'xmodule/modules/js/*.js') +
             rooted_glob(COMMON_ROOT / 'static/', 'common/js/discussion/*.js')
         ),
@@ -794,7 +815,8 @@ YOUTUBE = {
         },
     },
 
-    'IMAGE_API': 'http://img.youtube.com/vi/{youtube_id}/0.jpg',  # /maxresdefault.jpg for 1920*1080
+    'IMAGE_API': 'http://img.youtube.com/vi/{youtube_id}/0.jpg',
+# /maxresdefault.jpg for 1920*1080
 }
 
 ############################# VIDEO UPLOAD PIPELINE #############################
@@ -892,7 +914,7 @@ INSTALLED_APPS = (
     'course_action_state',
 
     # Additional problem types
-    'edx_jsme',    # Molecular Structure
+    'edx_jsme',  # Molecular Structure
 
     'openedx.core.djangoapps.content.course_overviews',
     'openedx.core.djangoapps.content.course_structures.apps.CourseStructuresConfig',
@@ -1017,7 +1039,8 @@ EVENT_TRACKING_BACKENDS = {
         'ENGINE': 'eventtracking.backends.routing.RoutingBackend',
         'OPTIONS': {
             'backends': {
-                'segment': {'ENGINE': 'eventtracking.backends.segment.SegmentBackend'}
+                'segment': {
+                'ENGINE': 'eventtracking.backends.segment.SegmentBackend'}
             },
             'processors': [
                 {
@@ -1069,7 +1092,6 @@ OPTIONAL_APPS = (
     # Organizations App (http://github.com/edx/edx-organizations)
     'organizations',
 )
-
 
 for app_name in OPTIONAL_APPS:
     # First attempt to only find the module rather than actually importing it,
@@ -1129,7 +1151,8 @@ ADVANCED_PROBLEM_TYPES = [
 # Files and Uploads type filter values
 
 FILES_AND_UPLOAD_TYPE_FILTERS = {
-    "Images": ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/tiff', 'image/tif', 'image/x-icon'],
+    "Images": ['image/png', 'image/jpeg', 'image/jpg', 'image/gif',
+               'image/tiff', 'image/tif', 'image/x-icon'],
     "Documents": [
         'application/pdf',
         'text/plain',
@@ -1196,6 +1219,14 @@ MICROSITE_DATABASE_TEMPLATE_CACHE_TTL = 5 * 60
 PROCTORING_BACKEND_PROVIDER = {
     'class': 'edx_proctoring.backends.null.NullBackendProvider',
     'options': {},
+
+#### PROCTORING CONFIGURATION DEFAULTS
+
+PROCTORING_BACKEND_PROVIDERS = {
+    'default': {
+        'class': 'edx_proctoring.backends.null.NullBackendProvider',
+        'options': {},
+    }
 }
 PROCTORING_SETTINGS = {}
 
