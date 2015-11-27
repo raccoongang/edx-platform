@@ -35,16 +35,6 @@ CATALOG_VISIBILITY_ABOUT = "about"
 CATALOG_VISIBILITY_NONE = "none"
 
 
-def get_proctoring_list():
-    result = []
-    proctoring_providers = settings.PROCTORING_BACKEND_PROVIDERS
-    for proctoring_key, proctoring_settings in proctoring_providers.items():
-        result.append(
-            {"display_name": proctoring_key,
-             "value": proctoring_key}
-        )
-
-
 class StringOrDate(Date):
     def from_json(self, value):
         """
@@ -819,7 +809,6 @@ class CourseFields(object):
         ),
         # default=,
         scope=Scope.settings,
-        values=get_proctoring_list()
     )
 
     minimum_grade_credit = Float(
