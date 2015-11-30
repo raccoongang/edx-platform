@@ -91,7 +91,7 @@ git+https://github.com/edx/xblock-utils.git@v1.0.3#egg=xblock-utils==1.0.3
 git+https://github.com/edx/edx-user-state-client.git@1.0.1#egg=edx-user-state-client==1.0.1
 git+https://github.com/edx/xblock-lti-consumer.git@v1.1.1#egg=lti_consumer-xblock==1.1.1
 # git+https://github.com/edx/edx-proctoring.git@0.17.0#egg=edx-proctoring==0.17.0
-git+https://github.com/xahgmah/edx-proctoring.git
+git+https://github.com/raccoongang/edx-proctoring.git
 
 # Base RG modules
 git+https://github.com/raccoongang/edx-search.git@0.1.2-rg#egg=edx-search==0.1.2.1

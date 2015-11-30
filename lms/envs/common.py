@@ -1322,6 +1322,11 @@ proctoring_js = (
     ] +
     [
         'proctoring/js/proctored_app.js'
+    ] +
+    [
+        'proctoring/js/models/proctoring_services_model.js',
+        'proctoring/js/collections/proctoring_services_collection.js',
+        'proctoring/js/views/proctoring_services_view.js'
     ]
 )
 
@@ -2175,6 +2180,7 @@ INSTALLED_APPS = (
 
     'xblock_django',
 
+<<<<<<< HEAD
     # Bookmarks
     'openedx.core.djangoapps.bookmarks',
 
@@ -2227,6 +2233,7 @@ INSTALLED_APPS = (
 
     # Unusual migrations
     'database_fixups',
+    'open_edx_api_extension',
 )
 
 ######################### CSRF #########################################

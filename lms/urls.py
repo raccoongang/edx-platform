@@ -84,6 +84,7 @@ urlpatterns = (
     url(r'^api/val/v0/', include('edxval.urls')),
 
     url(r'^api/commerce/', include('commerce.api.urls', namespace='commerce_api')),
+<<<<<<< HEAD
     url(r'^api/credit/', include('openedx.core.djangoapps.credit.urls', app_name="credit", namespace='credit')),
     url(r'^rss_proxy/', include('rss_proxy.urls', namespace='rss_proxy')),
     url(r'^api/organizations/', include('organizations.urls', namespace='organizations')),
@@ -112,6 +113,9 @@ urlpatterns += (
     url(r'^xseries/', include('program_marketing.urls', namespace='xseries')),
 
     url(r'^(?P<key>.+)/openassessment-filesystem-storage', views_filesystem.filesystem_storage, name='openassessment-filesystem-storage'),
+
+    url(r'^api/extended/', include('open_edx_api_extension.urls', namespace='api_extension')),
+
 )
 
 # TODO: This needs to move to a separate urls.py once the student_account and

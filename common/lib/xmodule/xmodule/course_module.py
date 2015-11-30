@@ -34,6 +34,10 @@ CATALOG_VISIBILITY_CATALOG_AND_ABOUT = "both"
 CATALOG_VISIBILITY_ABOUT = "about"
 CATALOG_VISIBILITY_NONE = "none"
 
+def get_proctoring_list():
+    proctoring_providers = settings.PROCTORING_BACKEND_PROVIDERS
+    return ",".join(proctoring_providers.keys())
+
 
 class StringOrDate(Date):
     def from_json(self, value):
@@ -802,10 +806,18 @@ class CourseFields(object):
         scope=Scope.settings
     )
 
+    available_proctoring_services = String(
+        display_name=_("Available Proctoring services"),
+        help=_("Comaseparited of services wich available for this course. "
+               "For example: \"{}\"".format(get_proctoring_list())),
+        scope=Scope.settings,
+    )
+
     proctoring_service = String(
         display_name=_("Proctoring service"),
         help=_(
-            "Defines the proctoring Service for this Course"
+            "Defines the proctoring Service for this Course. Choose on of this"
+            " services {}".format(get_proctoring_list())
         ),
         # default=,
         scope=Scope.settings,
