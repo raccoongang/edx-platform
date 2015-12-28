@@ -1,10 +1,10 @@
 # #-#-#-#-#  djangojs-partial.po (edx-platform)  #-#-#-#-#
-# edX translation file.
+# edX community translations have been downloaded from Albanian (http://www.transifex.com/projects/p/edx-platform/language/sq/).
 # Copyright (C) 2015 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # 
 # Translators:
-# Faton Nuha <faton11@live.com>, 2014-2015
+# Faton Nuha <faton11@live.com>, 2014
 # redi12345678 <redimuharremi@hotmail.com>, 2014
 # #-#-#-#-#  djangojs-studio.po (edx-platform)  #-#-#-#-#
 # edX translation file.
@@ -31,9 +31,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: edx-platform\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2015-04-21 13:42+0000\n"
-"PO-Revision-Date: 2015-04-21 13:46+0000\n"
-"Last-Translator: Sarina Canelake <sarina@edx.org>\n"
+"POT-Creation-Date: 2015-02-17 22:14+0000\n"
+"PO-Revision-Date: 2015-02-17 21:50+0000\n"
+"Last-Translator: Faton Nuha <faton11@live.com>\n"
 "Language-Team: Albanian (http://www.transifex.com/projects/p/edx-platform/language/sq/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -42,40 +42,38 @@ msgstr ""
 "Language: sq\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: cms/static/coffee/src/views/tabs.js
-#: cms/static/coffee/src/xblock/cms.runtime.v1.js
-#: cms/static/js/models/section.js cms/static/js/utils/drag_and_drop.js
-#: cms/static/js/views/asset.js cms/static/js/views/container.js
-#: cms/static/js/views/course_info_handout.js
-#: cms/static/js/views/course_info_update.js
-#: cms/static/js/views/edit_textbook.js
-#: cms/static/js/views/list_item_editor.js cms/static/js/views/overview.js
-#: cms/static/js/views/overview_assignment_grader.js
-#: cms/static/js/views/modals/edit_xblock.js
-#: cms/static/js/views/utils/xblock_utils.js lms/static/js/ccx/schedule.js
-#: lms/static/js/views/fields.js
-msgid "Saving"
-msgstr ""
-
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
-#: cms/static/coffee/src/views/tabs.js
+#: cms/static/coffee/src/views/tabs.js cms/static/js/factories/manage_users.js
+#: cms/static/js/factories/manage_users.js
+#: cms/static/js/factories/manage_users_lib.js
 #: cms/static/js/views/course_info_update.js
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 #: common/static/coffee/src/discussion/utils.js
 msgid "OK"
 msgstr "Në rregull"
 
+#. #-#-#-#-#  djangojs-partial.po (edx-platform)  #-#-#-#-#
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
 #: cms/static/coffee/src/views/tabs.js cms/static/js/factories/export.js
-#: cms/static/js/views/asset.js cms/static/js/views/course_info_update.js
-#: cms/static/js/views/manage_users_and_roles.js
+#: cms/static/js/factories/manage_users.js
+#: cms/static/js/factories/manage_users_lib.js cms/static/js/views/asset.js
+#: cms/static/js/views/course_info_update.js
 #: cms/static/js/views/show_textbook.js cms/static/js/views/validation.js
 #: cms/static/js/views/modals/base_modal.js
 #: cms/static/js/views/modals/course_outline_modals.js
 #: cms/static/js/views/utils/view_utils.js
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
+#: cms/templates/js/add-xblock-component-menu-problem.underscore
+#: cms/templates/js/add-xblock-component-menu.underscore
+#: cms/templates/js/content-group-editor.underscore
+#: cms/templates/js/course_info_handouts.underscore
+#: cms/templates/js/edit-textbook.underscore
+#: cms/templates/js/group-configuration-editor.underscore
+#: cms/templates/js/section-name-edit.underscore
+#: cms/templates/js/xblock-string-field-editor.underscore
+#: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
 msgid "Cancel"
 msgstr "Anulo"
 
@@ -84,23 +82,28 @@ msgstr "Anulo"
 msgid "This link will open in a new browser window/tab"
 msgstr "Ky link do të e hap nje dritare të re të shfletuesit/tab i ri"
 
-#. Translators: This is the status of an active video upload
-#: cms/static/js/models/active_video_upload.js cms/static/js/views/assets.js
-#: lms/static/js/views/fields.js
-msgid "Uploading"
-msgstr ""
+#: cms/static/js/factories/manage_users.js
+#: cms/static/js/factories/manage_users_lib.js
+#: lms/static/coffee/src/instructor_dashboard/util.js
+#: lms/static/coffee/src/instructor_dashboard/util.js
+#: lms/static/coffee/src/instructor_dashboard/util.js
+msgid "Unknown"
+msgstr "I panjohur"
 
-#: cms/static/js/views/asset.js cms/static/js/views/list_item.js
-#: cms/static/js/views/manage_users_and_roles.js
-#: cms/static/js/views/show_textbook.js
+#: cms/static/js/factories/manage_users.js
+#: cms/static/js/factories/manage_users_lib.js cms/static/js/views/asset.js
+#: cms/static/js/views/list_item.js cms/static/js/views/show_textbook.js
 #: common/static/js/vendor/ova/catch/js/catch.js
-#: cms/templates/js/content-group-details.underscore
-#: cms/templates/js/content-group-editor.underscore
+#: common/static/js/vendor/ova/catch/js/catch.js
+#: cms/templates/js/course-outline.underscore
 #: cms/templates/js/course-outline.underscore
 #: cms/templates/js/course_grade_policy.underscore
 #: cms/templates/js/group-configuration-details.underscore
+#: cms/templates/js/group-configuration-details.underscore
+#: cms/templates/js/group-configuration-editor.underscore
 #: cms/templates/js/group-configuration-editor.underscore
 #: cms/templates/js/show-textbook.underscore
+#: cms/templates/js/xblock-outline.underscore
 #: cms/templates/js/xblock-outline.underscore
 msgid "Delete"
 msgstr "Fshije"
@@ -115,28 +118,9 @@ msgstr "Fshije"
 msgid "Name"
 msgstr "Emri"
 
-#. Translators: this is a message from the raw HTML editor displayed in the
-#. browser when a user needs to edit HTML
-#: cms/static/js/views/manage_users_and_roles.js
-#: common/lib/xmodule/xmodule/js/src/html/edit.js
-msgid "Ok"
-msgstr "Në rregull"
-
-#: cms/static/js/views/manage_users_and_roles.js
-#: lms/static/coffee/src/instructor_dashboard/util.js
-msgid "Unknown"
-msgstr "I panjohur"
-
 #: cms/static/js/views/metadata.js lms/static/js/views/file_uploader.js
 msgid "Upload File"
-msgstr ""
-
-#: cms/static/js/views/validation.js
-#: lms/static/js/groups/views/cohort_discussions_course_wide.js
-#: lms/static/js/groups/views/cohort_discussions_inline.js
-#: lms/static/js/views/fields.js
-msgid "Your changes have been saved."
-msgstr ""
+msgstr "Ngarko dokumentin"
 
 #. Translators: This message will be added to the front of messages of type
 #. error,
@@ -144,14 +128,21 @@ msgstr ""
 #: cms/static/js/views/xblock_validation.js
 #: lms/static/js/verify_student/views/payment_confirmation_step_view.js
 #: lms/static/js/verify_student/views/step_view.js
-#: lms/static/js/views/fields.js
 msgid "Error"
-msgstr ""
+msgstr "Problem"
 
+#. #-#-#-#-#  djangojs-partial.po (edx-platform)  #-#-#-#-#
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
 #: cms/static/js/views/modals/base_modal.js
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
+#: cms/templates/js/content-group-editor.underscore
+#: cms/templates/js/course_info_handouts.underscore
+#: cms/templates/js/edit-textbook.underscore
+#: cms/templates/js/group-configuration-editor.underscore
+#: cms/templates/js/section-name-edit.underscore
+#: cms/templates/js/xblock-string-field-editor.underscore
+#: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
 msgid "Save"
 msgstr "Ruaj"
 
@@ -170,23 +161,23 @@ msgstr ""
 
 #: common/lib/xmodule/xmodule/js/src/annotatable/display.js
 msgid "Hide Annotations"
-msgstr ""
+msgstr "Fshehi Shenimet"
 
 #: common/lib/xmodule/xmodule/js/src/annotatable/display.js
 msgid "Expand Instructions"
-msgstr ""
+msgstr "Zgjero instruksionet"
 
 #: common/lib/xmodule/xmodule/js/src/annotatable/display.js
 msgid "Collapse Instructions"
-msgstr ""
+msgstr "fshehi instruksionet"
 
 #: common/lib/xmodule/xmodule/js/src/annotatable/display.js
 msgid "Commentary"
-msgstr ""
+msgstr "Komentet"
 
 #: common/lib/xmodule/xmodule/js/src/annotatable/display.js
 msgid "Reply to Annotation"
-msgstr ""
+msgstr "Pergjigju shenimeve"
 
 #. Translators: %(earned)s is the number of points earned. %(total)s is the
 #. total number of points (examples: 0/1, 1/1, 2/3, 5/10). The total number of
@@ -207,11 +198,13 @@ msgstr[0] "(%(num_points)s pikët e mundshme)"
 msgstr[1] "(%(num_points)s pikët e mundshme)"
 
 #: common/lib/xmodule/xmodule/js/src/capa/display.js
+#: common/lib/xmodule/xmodule/js/src/capa/display.js
 msgid "Answer:"
 msgstr "Përgjigjja:"
 
 #. Translators: the word Answer here refers to the answer to a problem the
 #. student must solve.;
+#: common/lib/xmodule/xmodule/js/src/capa/display.js
 #: common/lib/xmodule/xmodule/js/src/capa/display.js
 msgid "Hide Answer"
 msgstr "Fsheh përgjigjjen"
@@ -223,12 +216,23 @@ msgid "Show Answer"
 msgstr "Shfaq përgjigjjen"
 
 #: common/lib/xmodule/xmodule/js/src/capa/display.js
+msgid "Reveal Answer"
+msgstr "Shiko pergjigjen"
+
+#: common/lib/xmodule/xmodule/js/src/capa/display.js
 msgid "Answer hidden"
 msgstr "Përgjigjja u fsheh"
 
+#. Translators: the word unanswered here is about answering a problem the
+#. student must solve.;
+#: common/lib/xmodule/xmodule/js/src/capa/display.js
+#: common/lib/xmodule/xmodule/js/src/capa/display.js
+msgid "unanswered"
+msgstr "e pa përgjigjur"
+
 #: common/lib/xmodule/xmodule/js/src/capa/display.js
 msgid "Status: unsubmitted"
-msgstr ""
+msgstr "statusi:e padeklaruar"
 
 #. Translators: A "rating" is a score a student gives to indicate how well
 #. they feel they were graded on this problem
@@ -241,8 +245,9 @@ msgstr "Ju duhet të zgjedhni një vlerësim para se ju të mund të e paraqisni
 #. types (i.e. self assesment to peer assessment). Sometimes, if a student
 #. did not perform well at one step, they cannot move on to the next one.
 #: common/lib/xmodule/xmodule/js/src/combinedopenended/display.js
+#: common/lib/xmodule/xmodule/js/src/combinedopenended/display.js
 msgid "Your score did not meet the criteria to move to the next step."
-msgstr ""
+msgstr "piket tuaja nuk ariijne kriterin per te vazhduar "
 
 #: common/lib/xmodule/xmodule/js/src/combinedopenended/display.js
 #: lms/static/coffee/src/staff_grading/staff_grading.js
@@ -260,6 +265,7 @@ msgstr ""
 msgid ""
 "Your response has been submitted. Please check back later for your grade."
 msgstr ""
+"Përgjigjja juaj është paraqitur.Ju lutem ejani më vonë për vlerësimin tuaj. "
 
 #. Translators: this button is clicked to submit a student's rating of
 #. an evaluator's assessment
@@ -292,6 +298,8 @@ msgstr ""
 msgid ""
 "Are you sure you want to remove your previous response to this question?"
 msgstr ""
+"A jeni të sigurtë që dëshironi të e fshini përgjigjjen e më parshme nga kjo "
+"pyetje?"
 
 #: common/lib/xmodule/xmodule/js/src/combinedopenended/display.js
 msgid "Moved to next step."
@@ -309,15 +317,18 @@ msgstr ""
 #. question's
 #. content that had been hidden
 #: common/lib/xmodule/xmodule/js/src/combinedopenended/display.js
+#: common/lib/xmodule/xmodule/js/src/combinedopenended/display.js
 msgid "Show Question"
 msgstr "Shfaq përgjigjjen"
 
+#: common/lib/xmodule/xmodule/js/src/combinedopenended/display.js
 #: common/lib/xmodule/xmodule/js/src/combinedopenended/display.js
 msgid "Hide Question"
 msgstr "Fsheh përgjigjjen"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
+#: common/lib/xmodule/xmodule/js/src/html/edit.js
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Paragraph"
 msgstr "Paragraf"
@@ -329,17 +340,20 @@ msgstr ""
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
+#: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Heading 1"
-msgstr ""
+msgstr "header 1"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
+#: common/lib/xmodule/xmodule/js/src/html/edit.js
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Heading 2"
 msgstr ""
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
+#: common/lib/xmodule/xmodule/js/src/html/edit.js
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Heading 3"
 msgstr ""
@@ -459,13 +473,13 @@ msgstr ""
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Bullet list"
-msgstr ""
+msgstr "Listë e numëruar"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Caption"
-msgstr ""
+msgstr "Titra"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -543,7 +557,7 @@ msgstr ""
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Column group"
-msgstr ""
+msgstr "Grupi i kolonave"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -579,7 +593,7 @@ msgstr ""
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Custom color"
-msgstr ""
+msgstr "Ngjyrë"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -597,7 +611,7 @@ msgstr ""
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Cut"
-msgstr ""
+msgstr "Prej"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -609,7 +623,7 @@ msgstr ""
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Default"
-msgstr ""
+msgstr "P"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -629,9 +643,12 @@ msgstr "Fshije rreshtin"
 msgid "Delete table"
 msgstr "Fshije tabelën"
 
+#. #-#-#-#-#  djangojs-partial.po (edx-platform)  #-#-#-#-#
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
+#: cms/templates/js/group-configuration-editor.underscore
+#: lms/templates/verify_student/payment_confirmation_step.underscore
 msgid "Description"
 msgstr "Përshkrimi"
 
@@ -688,7 +705,7 @@ msgstr ""
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Emoticons"
-msgstr ""
+msgstr "Emocikonat"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -718,7 +735,7 @@ msgstr "Gjeje tjetrën"
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Find previous"
-msgstr ""
+msgstr "Gjeje "
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -748,7 +765,7 @@ msgstr "Madhësia e shkronjave"
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Footer"
-msgstr ""
+msgstr "Foteri"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -760,7 +777,7 @@ msgstr "Format"
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Formats"
-msgstr ""
+msgstr "Formatet"
 
 #. #-#-#-#-#  djangojs-partial.po (edx-platform)  #-#-#-#-#
 #. Translators: this is a message from the raw HTML editor displayed in the
@@ -768,7 +785,7 @@ msgstr ""
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 #: common/templates/js/image-modal.underscore
 msgid "Fullscreen"
-msgstr ""
+msgstr "Zmadho sa gjithë ekrani"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -786,37 +803,37 @@ msgstr ""
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Header 1"
-msgstr ""
+msgstr "Header 1"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Header 2"
-msgstr ""
+msgstr "Header 2"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Header 3"
-msgstr ""
+msgstr "Header 3"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Header 4"
-msgstr ""
+msgstr "Header 4"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Header 5"
-msgstr ""
+msgstr "Header 5"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Header 6"
-msgstr ""
+msgstr "Header 6"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -883,7 +900,7 @@ msgstr "Hapësira horizontale"
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "HTML source code"
-msgstr ""
+msgstr "burimi i kodit HTML"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -1003,13 +1020,13 @@ msgstr "Shto/edito video"
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Italic"
-msgstr ""
+msgstr "Italic"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Justify"
-msgstr ""
+msgstr "Justifiko"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -1021,7 +1038,7 @@ msgstr ""
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Left to right"
-msgstr ""
+msgstr "Nga e majta në të djathtë"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -1063,7 +1080,7 @@ msgstr ""
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Middle"
-msgstr ""
+msgstr "9-vjeçare"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -1102,13 +1119,19 @@ msgstr ""
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "None"
-msgstr ""
+msgstr "Asgjë"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Numbered list"
 msgstr "List e numëruar"
+
+#. Translators: this is a message from the raw HTML editor displayed in the
+#. browser when a user needs to edit HTML
+#: common/lib/xmodule/xmodule/js/src/html/edit.js
+msgid "Ok"
+msgstr "Në rregull"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -1170,7 +1193,7 @@ msgstr ""
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Prev"
-msgstr ""
+msgstr "Prapa"
 
 #. #-#-#-#-#  djangojs-partial.po (edx-platform)  #-#-#-#-#
 #. Translators: this is a message from the raw HTML editor displayed in the
@@ -1179,7 +1202,7 @@ msgstr ""
 #: lms/static/coffee/src/customwmd.js
 #: cms/templates/js/asset-library.underscore
 msgid "Preview"
-msgstr ""
+msgstr "Parashiko"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -1202,6 +1225,7 @@ msgstr "Fshije link-un"
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
+#: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Replace all"
 msgstr "Zëvendësoj të gjitha"
 
@@ -1214,6 +1238,7 @@ msgstr "Zëvendësoje me"
 #. #-#-#-#-#  djangojs-partial.po (edx-platform)  #-#-#-#-#
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
+#: common/lib/xmodule/xmodule/js/src/html/edit.js
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 #: cms/templates/js/metadata-file-uploader-item.underscore
 #: cms/templates/js/video/metadata-translations-item.underscore
@@ -1238,7 +1263,7 @@ msgstr ""
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Right to left"
-msgstr ""
+msgstr "Nga e djathta në të majtë"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -1250,13 +1275,13 @@ msgstr "Djathtë"
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Robots"
-msgstr ""
+msgstr "Robot"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Row group"
-msgstr ""
+msgstr "Grupi i rreshtit"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -1310,7 +1335,7 @@ msgstr ""
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Source code"
-msgstr ""
+msgstr "Burimi i kodit"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -1394,7 +1419,7 @@ msgstr "Targeti"
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Templates"
-msgstr ""
+msgstr "Templet "
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -1452,7 +1477,7 @@ msgstr "Nënvijëzim"
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 msgid "Undo"
-msgstr ""
+msgstr "Rikthe"
 
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
@@ -1484,9 +1509,11 @@ msgstr ""
 msgid "Vertical space"
 msgstr "Hapësirë vertikale"
 
+#. #-#-#-#-#  djangojs-partial.po (edx-platform)  #-#-#-#-#
 #. Translators: this is a message from the raw HTML editor displayed in the
 #. browser when a user needs to edit HTML
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
+#: lms/templates/courseware_search/search_item.underscore
 msgid "View"
 msgstr "Shiko"
 
@@ -1550,13 +1577,17 @@ msgid ""
 msgstr ""
 
 #: common/lib/xmodule/xmodule/js/src/problem/edit.js
+#: common/lib/xmodule/xmodule/js/src/problem/edit.js
 msgid "incorrect"
-msgstr ""
+msgstr "e pasaktë"
 
 #: common/lib/xmodule/xmodule/js/src/problem/edit.js
+#: common/lib/xmodule/xmodule/js/src/problem/edit.js
+#: common/lib/xmodule/xmodule/js/src/problem/edit.js
 msgid "correct"
-msgstr ""
+msgstr "e saktë"
 
+#: common/lib/xmodule/xmodule/js/src/problem/edit.js
 #: common/lib/xmodule/xmodule/js/src/problem/edit.js
 msgid "answer"
 msgstr ""
@@ -1608,11 +1639,11 @@ msgstr ""
 
 #: common/lib/xmodule/xmodule/js/src/video/00_i18n.js
 msgid "Speed"
-msgstr ""
+msgstr "Shpejtësia"
 
 #: common/lib/xmodule/xmodule/js/src/video/00_i18n.js
 msgid "Volume"
-msgstr ""
+msgstr "Zëri"
 
 #. Translators: Volume level equals 0%.
 #: common/lib/xmodule/xmodule/js/src/video/00_i18n.js
@@ -1664,7 +1695,7 @@ msgstr "Provo të përdorësh shfletues të tjerë siç është Google Chrome."
 
 #: common/lib/xmodule/xmodule/js/src/video/04_video_control.js
 msgid "Video slider"
-msgstr ""
+msgstr "Video slider"
 
 #: common/lib/xmodule/xmodule/js/src/video/05_video_quality_control.js
 msgid "HD on"
@@ -1675,8 +1706,9 @@ msgid "HD off"
 msgstr "HD jo aktive"
 
 #: common/lib/xmodule/xmodule/js/src/video/06_video_progress_slider.js
+#: common/lib/xmodule/xmodule/js/src/video/06_video_progress_slider.js
 msgid "Video position"
-msgstr ""
+msgstr "Video pozicioni"
 
 #: common/lib/xmodule/xmodule/js/src/video/06_video_progress_slider.js
 msgid "Video ended"
@@ -1702,15 +1734,15 @@ msgstr[1] "%(value)s sekonda"
 
 #: common/lib/xmodule/xmodule/js/src/video/09_video_caption.js
 msgid "Caption will be displayed when "
-msgstr ""
+msgstr "Titrat do të shfaqen kur"
 
 #: common/lib/xmodule/xmodule/js/src/video/09_video_caption.js
 msgid "Turn on captions"
-msgstr ""
+msgstr "Aktivizo titrat"
 
 #: common/lib/xmodule/xmodule/js/src/video/09_video_caption.js
 msgid "Turn off captions"
-msgstr ""
+msgstr "Ç'aktivizo titrat"
 
 #: common/lib/xmodule/xmodule/public/js/library_content_edit.js
 msgid "Updating with latest library content"
@@ -1721,6 +1753,7 @@ msgid "Creating missing groups"
 msgstr ""
 
 #: common/static/coffee/src/discussion/discussion_module_view.js
+#: common/static/coffee/src/discussion/discussion_module_view.js
 msgid "Hide Discussion"
 msgstr "Fsheh disktimin"
 
@@ -1729,8 +1762,12 @@ msgid "Show Discussion"
 msgstr "Shfaq Diskutimin"
 
 #: common/static/coffee/src/discussion/discussion_module_view.js
+#: common/static/coffee/src/discussion/discussion_module_view.js
+#: common/static/coffee/src/discussion/utils.js
 #: common/static/coffee/src/discussion/utils.js
 #: common/static/coffee/src/discussion/views/discussion_thread_list_view.js
+#: common/static/coffee/src/discussion/views/discussion_thread_view.js
+#: common/static/coffee/src/discussion/views/discussion_thread_view.js
 #: common/static/coffee/src/discussion/views/discussion_thread_view.js
 #: common/static/coffee/src/discussion/views/discussion_user_profile_view.js
 #: common/static/coffee/src/discussion/views/response_comment_view.js
@@ -1759,8 +1796,12 @@ msgstr ""
 #: common/static/coffee/src/discussion/utils.js
 msgid "We had some trouble processing your request. Please try again."
 msgstr ""
+"Ne kemi disa probleme me përpunimin e kërkesës suaj. Ju lutem provojeni "
+"përsëri."
 
 #: common/static/coffee/src/discussion/utils.js
+#: common/static/coffee/src/discussion/utils.js
+#: common/static/coffee/src/discussion/views/discussion_thread_list_view.js
 #: common/static/coffee/src/discussion/views/discussion_thread_list_view.js
 #: common/static/coffee/src/discussion/views/discussion_topic_menu_view.js
 msgid "…"
@@ -1808,6 +1849,7 @@ msgstr ""
 #: common/static/coffee/src/discussion/views/discussion_content_view.js
 msgid "We had some trouble saving your vote.  Please try again."
 msgstr ""
+"Ne kemi disa probleme që ta ruajm votën tënde. Ju lutem provoni përsëri."
 
 #: common/static/coffee/src/discussion/views/discussion_content_view.js
 msgid "We had some trouble pinning this thread. Please try again."
@@ -1825,6 +1867,8 @@ msgstr ""
 #: common/static/coffee/src/discussion/views/discussion_content_view.js
 msgid "We had some trouble reporting this post.  Please try again."
 msgstr ""
+"Ne kemi disa probleme me raportimin e këtij postimi. Ju lutem provoni "
+"përsëri."
 
 #: common/static/coffee/src/discussion/views/discussion_content_view.js
 msgid "We had some trouble closing this thread.  Please try again."
@@ -1858,6 +1902,7 @@ msgstr ""
 
 #: common/static/coffee/src/discussion/views/discussion_thread_list_view.js
 #: lms/static/js/edxnotes/views/tabs/search_results.js
+#: lms/templates/courseware_search/search_list.underscore
 msgid "Search Results"
 msgstr "Rezultatet e kërkimit"
 
@@ -1889,6 +1934,8 @@ msgstr ""
 #: common/static/coffee/src/discussion/views/discussion_thread_view.js
 msgid "We had some trouble loading responses. Please reload the page."
 msgstr ""
+"Ne kemi disa probleme me ngarkimin e përgjigjjeve. Ju lutem rifreskojeni "
+"faqen."
 
 #: common/static/coffee/src/discussion/views/discussion_thread_view.js
 msgid "We had some trouble loading more responses. Please try again."
@@ -1897,8 +1944,8 @@ msgstr ""
 #: common/static/coffee/src/discussion/views/discussion_thread_view.js
 msgid "%(numResponses)s other response"
 msgid_plural "%(numResponses)s other responses"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(numResponses)s përgjigjje tjera"
+msgstr[1] "%(numResponses)s përgjigjje tjera"
 
 #: common/static/coffee/src/discussion/views/discussion_thread_view.js
 msgid "%(numResponses)s response"
@@ -1922,7 +1969,7 @@ msgstr "Ngarko të gjitha përgjigjjet"
 
 #: common/static/coffee/src/discussion/views/discussion_thread_view.js
 msgid "Load next %(numResponses)s responses"
-msgstr ""
+msgstr "Ngarko %(numResponses)s përgjigjjet e ardhshme"
 
 #: common/static/coffee/src/discussion/views/discussion_thread_view.js
 msgid "Are you sure you want to delete this post?"
@@ -1938,7 +1985,7 @@ msgstr ""
 
 #: common/static/coffee/src/discussion/views/response_comment_show_view.js
 msgid "anonymous"
-msgstr ""
+msgstr "anonim"
 
 #: common/static/coffee/src/discussion/views/response_comment_view.js
 msgid "Are you sure you want to delete this comment?"
@@ -1958,11 +2005,11 @@ msgstr ""
 
 #: common/static/js/capa/drag_and_drop/draggable_events.js
 msgid "dragging out of slider"
-msgstr ""
+msgstr "zvarrite jashtë sllajderit"
 
 #: common/static/js/capa/drag_and_drop/draggable_events.js
 msgid "dragging"
-msgstr ""
+msgstr "zvarritje"
 
 #: common/static/js/capa/drag_and_drop/draggable_events.js
 msgid "dropped in slider"
@@ -1984,11 +2031,11 @@ msgstr "%s nga tani"
 
 #: common/static/js/src/jquery.timeago.locale.js
 msgid "less than a minute"
-msgstr ""
+msgstr "më pak se një minutë"
 
 #: common/static/js/src/jquery.timeago.locale.js
 msgid "about a minute"
-msgstr ""
+msgstr "rreth një minuti"
 
 #: common/static/js/src/jquery.timeago.locale.js
 msgid "%d minute"
@@ -2028,7 +2075,7 @@ msgstr[1] "%d muaj"
 
 #: common/static/js/src/jquery.timeago.locale.js
 msgid "about a year"
-msgstr ""
+msgstr "rreth një vjet"
 
 #: common/static/js/src/jquery.timeago.locale.js
 msgid "%d year"
@@ -2040,7 +2087,7 @@ msgstr[1] "%d vite"
 #. report
 #: common/static/js/vendor/ova/flagging-annotator.js
 msgid "Check the box to remove all flags."
-msgstr ""
+msgstr "Shtype butonin për të fshirë të gjithë."
 
 #. Translators: 'totalFlags' is the number of flags solely for that annotation
 #: common/static/js/vendor/ova/flagging-annotator.js
@@ -2062,9 +2109,11 @@ msgid "All flags have been removed. To undo, uncheck the box."
 msgstr ""
 
 #: common/static/js/vendor/ova/flagging-annotator.js
+#: common/static/js/vendor/ova/flagging-annotator.js
 msgid "You have already reported this annotation."
-msgstr ""
+msgstr "Ju tashmë e keni raportuar këtë shënim."
 
+#: common/static/js/vendor/ova/flagging-annotator.js
 #: common/static/js/vendor/ova/flagging-annotator.js
 msgid "Report annotation as inappropriate or offensive."
 msgstr ""
@@ -2082,7 +2131,7 @@ msgstr "Përdorues"
 
 #: common/static/js/vendor/ova/catch/js/catch.js
 msgid "Annotation"
-msgstr ""
+msgstr "Shënim"
 
 #: common/static/js/vendor/ova/catch/js/catch.js
 msgid "Start"
@@ -2090,20 +2139,22 @@ msgstr "Fillo"
 
 #: common/static/js/vendor/ova/catch/js/catch.js
 msgid "End"
-msgstr ""
+msgstr "Mbaro"
 
 #: common/static/js/vendor/ova/catch/js/catch.js
 msgid "#Replies"
-msgstr ""
+msgstr "#Përgjigjje"
 
 #: common/static/js/vendor/ova/catch/js/catch.js
 msgid "Date posted"
 msgstr "Data e postimit"
 
 #: common/static/js/vendor/ova/catch/js/catch.js
+#: lms/templates/edxnotes/note-item.underscore
 msgid "More"
 msgstr "Më shumë"
 
+#: common/static/js/vendor/ova/catch/js/catch.js
 #: common/static/js/vendor/ova/catch/js/catch.js
 msgid "My Notes"
 msgstr "Shënimet e mia"
@@ -2113,25 +2164,31 @@ msgid "Instructor"
 msgstr "Instruktori"
 
 #: common/static/js/vendor/ova/catch/js/catch.js
+#: common/static/js/vendor/ova/catch/js/catch.js
 msgid "Public"
 msgstr "Publik"
 
+#: common/static/js/vendor/ova/catch/js/catch.js
 #: common/static/js/vendor/ova/catch/js/catch.js
 msgid "Search"
 msgstr "Kërko"
 
 #: common/static/js/vendor/ova/catch/js/catch.js
+#: common/static/js/vendor/ova/catch/js/catch.js
 msgid "Users"
 msgstr "Përdoruesit"
 
 #: common/static/js/vendor/ova/catch/js/catch.js
+#: common/static/js/vendor/ova/catch/js/catch.js
 msgid "Tags"
-msgstr ""
+msgstr "Etiketat"
 
+#: common/static/js/vendor/ova/catch/js/catch.js
 #: common/static/js/vendor/ova/catch/js/catch.js
 msgid "Annotation Text"
 msgstr ""
 
+#: common/static/js/vendor/ova/catch/js/catch.js
 #: common/static/js/vendor/ova/catch/js/catch.js
 #: cms/templates/js/metadata-dict-entry.underscore
 #: cms/templates/js/metadata-file-uploader-entry.underscore
@@ -2139,6 +2196,8 @@ msgstr ""
 #: cms/templates/js/metadata-number-entry.underscore
 #: cms/templates/js/metadata-option-entry.underscore
 #: cms/templates/js/metadata-string-entry.underscore
+#: cms/templates/js/mock/mock-xmodule-editor.underscore
+#: cms/templates/js/mock/mock-xmodule-settings-only-editor.underscore
 #: cms/templates/js/video/metadata-translations-entry.underscore
 msgid "Clear"
 msgstr "Fshije"
@@ -2181,9 +2240,8 @@ msgstr ""
 
 #: lms/static/coffee/src/instructor_dashboard/data_download.js
 #: lms/templates/courseware_search/search_loading.underscore
-#: lms/templates/student_account/account_settings.underscore
 msgid "Loading"
-msgstr ""
+msgstr "Duke u ngarkuar"
 
 #: lms/static/coffee/src/instructor_dashboard/data_download.js
 msgid "Error getting student list."
@@ -2224,26 +2282,27 @@ msgid "<%= num_students %> students scored."
 msgstr ""
 
 #: lms/static/coffee/src/instructor_dashboard/membership.js
-#: lms/static/js/student_account/views/account_settings_factory.js
 msgid "Username"
 msgstr "Emri i përdoruesit"
 
 #: lms/static/coffee/src/instructor_dashboard/membership.js
 msgid "Email"
-msgstr ""
+msgstr "Posta elektronike"
 
+#: lms/static/coffee/src/instructor_dashboard/membership.js
 #: lms/static/coffee/src/instructor_dashboard/membership.js
 msgid "Revoke access"
 msgstr ""
 
 #: lms/static/coffee/src/instructor_dashboard/membership.js
 msgid "Enter username or email"
-msgstr ""
+msgstr "Shkruaj pseudonimin ose email adresën"
 
 #: lms/static/coffee/src/instructor_dashboard/membership.js
 msgid "Please enter a username or email."
-msgstr ""
+msgstr "Ju lutem shkruani pseudonimin ose email adresën."
 
+#: lms/static/coffee/src/instructor_dashboard/membership.js
 #: lms/static/coffee/src/instructor_dashboard/membership.js
 msgid "Error changing user's permissions."
 msgstr ""
@@ -2280,17 +2339,16 @@ msgid "The following warnings were generated:"
 msgstr ""
 
 #: lms/static/coffee/src/instructor_dashboard/membership.js
-#: lms/static/js/views/fields.js
 msgid "Success"
-msgstr ""
+msgstr "Sukses"
 
 #: lms/static/coffee/src/instructor_dashboard/membership.js
 msgid "All accounts were created successfully."
-msgstr ""
+msgstr "Të gjitha llogaritë janë krijuar sukseshëm."
 
 #: lms/static/coffee/src/instructor_dashboard/membership.js
 msgid "Error adding/removing users as beta testers."
-msgstr ""
+msgstr "Problem me shtimin/fshirjen e përdoruesve si testues beta."
 
 #. Translators: A list of users appears after this sentence;
 #: lms/static/coffee/src/instructor_dashboard/membership.js
@@ -2305,12 +2363,12 @@ msgstr "Këta përdorues sukseshëm u larguan si beta testues:"
 #. Translators: A list of users appears after this sentence;
 #: lms/static/coffee/src/instructor_dashboard/membership.js
 msgid "These users were not added as beta testers:"
-msgstr ""
+msgstr "Këta përdorues nuk janë shtuar si beta testues:"
 
 #. Translators: A list of users appears after this sentence;
 #: lms/static/coffee/src/instructor_dashboard/membership.js
 msgid "These users were not removed as beta testers:"
-msgstr ""
+msgstr "Këta përdorues nuk janë fshirë si beta testues:"
 
 #: lms/static/coffee/src/instructor_dashboard/membership.js
 msgid ""
@@ -2326,15 +2384,16 @@ msgstr ""
 
 #: lms/static/coffee/src/instructor_dashboard/membership.js
 msgid "Error enrolling/unenrolling users."
-msgstr ""
+msgstr "Problem regjistrimi/çregjistrimi i përdoruesve."
 
 #: lms/static/coffee/src/instructor_dashboard/membership.js
 msgid "The following email addresses and/or usernames are invalid:"
-msgstr ""
+msgstr "Posta elektronike dhe/ose pseudonimi janë jo valide:"
 
 #: lms/static/coffee/src/instructor_dashboard/membership.js
 msgid "Successfully enrolled and sent email to the following users:"
 msgstr ""
+"Regjistrimi u krye sukseshë dhe nga një mesazh u dërgua te këta persona:"
 
 #. Translators: A list of users appears after this sentence;
 #: lms/static/coffee/src/instructor_dashboard/membership.js
@@ -2391,7 +2450,7 @@ msgstr "Mesazhi juaj duhet të ketë një temë."
 
 #: lms/static/coffee/src/instructor_dashboard/send_email.js
 msgid "Your message cannot be blank."
-msgstr ""
+msgstr "Measazhi nuk mund të jetë i zbrazët."
 
 #: lms/static/coffee/src/instructor_dashboard/send_email.js
 msgid ""
@@ -2408,18 +2467,26 @@ msgid ""
 "You are about to send an email titled '<%= subject %>' to yourself. Is this "
 "OK?"
 msgstr ""
+"Ju jeni duke dërguar një mesazh elektronikë me titullin '<%= subject %>' te "
+"vetvetja. A është kjo në rregull?"
 
 #: lms/static/coffee/src/instructor_dashboard/send_email.js
 msgid ""
 "You are about to send an email titled '<%= subject %>' to everyone who is "
 "staff or instructor on this course. Is this OK?"
 msgstr ""
+"Ju jeni duke dërguar një mesazh elektronikë me titullin  '<%= subject %>' te"
+" të gjithë që janë pjesë e stafit ose që janë instruktor në këtë kurs. A "
+"është kjo në rregull?"
 
 #: lms/static/coffee/src/instructor_dashboard/send_email.js
 msgid ""
 "You are about to send an email titled '<%= subject %>' to ALL (everyone who "
 "is enrolled in this course as student, staff, or instructor). Is this OK?"
 msgstr ""
+"Ju jeni jeni duke dërguar mesazh elektronikë me titullin '<%= subject %>' te"
+" të gjithë (të gjithë që janë të regjistruar në këtë kurs si student, staf, "
+"ose instruktor). A është kjo në rregull?"
 
 #: lms/static/coffee/src/instructor_dashboard/send_email.js
 msgid ""
@@ -2433,6 +2500,7 @@ msgid "Error sending email."
 msgstr ""
 
 #: lms/static/coffee/src/instructor_dashboard/send_email.js
+#: lms/static/coffee/src/instructor_dashboard/send_email.js
 msgid "There is no email history for this course."
 msgstr ""
 
@@ -2445,7 +2513,10 @@ msgid "There was an error obtaining email content history for this course."
 msgstr ""
 
 #: lms/static/coffee/src/instructor_dashboard/student_admin.js
-#: lms/static/js/spec/instructor_dashboard/student_admin_spec.js
+#: lms/static/coffee/src/instructor_dashboard/student_admin.js
+#: lms/static/coffee/src/instructor_dashboard/student_admin.js
+#: lms/static/coffee/src/instructor_dashboard/student_admin.js
+#: lms/static/coffee/src/instructor_dashboard/student_admin.js
 msgid "Please enter a student email address or username."
 msgstr "Ju lutem shtypni email adresën ose pseudonimin e studentit."
 
@@ -2455,6 +2526,12 @@ msgid ""
 "the student identifier is spelled correctly."
 msgstr ""
 
+#: lms/static/coffee/src/instructor_dashboard/student_admin.js
+#: lms/static/coffee/src/instructor_dashboard/student_admin.js
+#: lms/static/coffee/src/instructor_dashboard/student_admin.js
+#: lms/static/coffee/src/instructor_dashboard/student_admin.js
+#: lms/static/coffee/src/instructor_dashboard/student_admin.js
+#: lms/static/coffee/src/instructor_dashboard/student_admin.js
 #: lms/static/coffee/src/instructor_dashboard/student_admin.js
 msgid "Please enter a problem location."
 msgstr ""
@@ -2507,66 +2584,6 @@ msgid ""
 "Error getting task history for problem '<%= problem_id %>' and student '<%= "
 "student_id %>'. Make sure that the problem and student identifiers are "
 "complete and correct."
-msgstr ""
-
-#: lms/static/coffee/src/instructor_dashboard/student_admin.js
-#: lms/static/js/spec/instructor_dashboard/student_admin_spec.js
-msgid "Entrance exam attempts is being reset for student '{student_id}'."
-msgstr ""
-
-#: lms/static/coffee/src/instructor_dashboard/student_admin.js
-#: lms/static/js/spec/instructor_dashboard/student_admin_spec.js
-msgid ""
-"Error resetting entrance exam attempts for student '{student_id}'. Make sure"
-" student identifier is correct."
-msgstr ""
-
-#: lms/static/coffee/src/instructor_dashboard/student_admin.js
-msgid ""
-"Started entrance exam rescore task for student '{student_id}'. Click the "
-"'Show Background Task History for Student' button to see the status of the "
-"task."
-msgstr ""
-
-#: lms/static/coffee/src/instructor_dashboard/student_admin.js
-msgid ""
-"Error starting a task to rescore entrance exam for student '{student_id}'. "
-"Make sure that entrance exam has problems in it and student identifier is "
-"correct."
-msgstr ""
-
-#: lms/static/coffee/src/instructor_dashboard/student_admin.js
-#: lms/static/js/spec/instructor_dashboard/student_admin_spec.js
-msgid "Enter a student's username or email address."
-msgstr ""
-
-#: lms/static/coffee/src/instructor_dashboard/student_admin.js
-msgid ""
-"Do you want to allow this student ('{student_id}') to skip the entrance "
-"exam?"
-msgstr ""
-
-#: lms/static/coffee/src/instructor_dashboard/student_admin.js
-msgid ""
-"An error occurred. Make sure that the student's username or email address is"
-" correct and try again."
-msgstr ""
-
-#: lms/static/coffee/src/instructor_dashboard/student_admin.js
-#: lms/static/js/spec/instructor_dashboard/student_admin_spec.js
-msgid "Entrance exam state is being deleted for student '{student_id}'."
-msgstr ""
-
-#: lms/static/coffee/src/instructor_dashboard/student_admin.js
-msgid ""
-"Error deleting entrance exam state for student '{student_id}'. Make sure "
-"student identifier is correct."
-msgstr ""
-
-#: lms/static/coffee/src/instructor_dashboard/student_admin.js
-msgid ""
-"Error getting entrance exam task history for student '{student_id}'. Make "
-"sure student identifier is correct."
 msgstr ""
 
 #: lms/static/coffee/src/instructor_dashboard/student_admin.js
@@ -2678,7 +2695,7 @@ msgstr "Dërguar nga"
 
 #: lms/static/coffee/src/instructor_dashboard/util.js
 msgid "Time Sent"
-msgstr ""
+msgstr "Koha e dërgimit"
 
 #: lms/static/coffee/src/instructor_dashboard/util.js
 msgid "Number Sent"
@@ -2702,7 +2719,7 @@ msgstr ""
 
 #: lms/static/coffee/src/instructor_dashboard/util.js
 msgid "Sent To:"
-msgstr ""
+msgstr "Dërguar te:"
 
 #: lms/static/coffee/src/instructor_dashboard/util.js
 msgid "Message:"
@@ -2730,11 +2747,11 @@ msgstr ""
 
 #: lms/static/coffee/src/staff_grading/staff_grading.js
 msgid "Required"
-msgstr ""
+msgstr "E detyrueshme"
 
 #: lms/static/coffee/src/staff_grading/staff_grading.js
 msgid "Progress"
-msgstr ""
+msgstr "Progresi"
 
 #: lms/static/coffee/src/staff_grading/staff_grading.js
 msgid "Back to problem list"
@@ -2754,7 +2771,7 @@ msgstr ""
 
 #: lms/static/coffee/src/staff_grading/staff_grading.js
 msgid "<%= num %> more needed to start ML"
-msgstr ""
+msgstr "<%= num %> më shumë nevojiten që të fillosh ML"
 
 #: lms/static/coffee/src/staff_grading/staff_grading.js
 msgid "Re-check for submissions"
@@ -2768,6 +2785,7 @@ msgstr ""
 msgid "System got into invalid state for submission: "
 msgstr ""
 
+#: lms/static/coffee/src/staff_grading/staff_grading.js
 #: lms/static/coffee/src/staff_grading/staff_grading.js
 msgid "(Hide)"
 msgstr "(Fshihe)"
@@ -2787,7 +2805,7 @@ msgstr ""
 
 #: lms/static/js/Markdown.Editor.js
 msgid "Insert Image (upload file or type url)"
-msgstr ""
+msgstr "Shto imazh (ngarko dokument ose shkruaj url)"
 
 #: lms/static/js/Markdown.Editor.js
 msgid "Markdown Editing Help"
@@ -2795,7 +2813,7 @@ msgstr ""
 
 #: lms/static/js/Markdown.Editor.js
 msgid "Bold (Ctrl+B)"
-msgstr ""
+msgstr "Bold (Ctrl+B)"
 
 #: lms/static/js/Markdown.Editor.js
 msgid "Italic (Ctrl+I)"
@@ -2815,11 +2833,11 @@ msgstr ""
 
 #: lms/static/js/Markdown.Editor.js
 msgid "Image (Ctrl+G)"
-msgstr ""
+msgstr "Imazh (Ctr+G)"
 
 #: lms/static/js/Markdown.Editor.js
 msgid "Numbered List (Ctrl+O)"
-msgstr ""
+msgstr "Listë e numëruar (Ctrl+O)"
 
 #: lms/static/js/Markdown.Editor.js
 msgid "Bulleted List (Ctrl+U)"
@@ -2835,7 +2853,7 @@ msgstr ""
 
 #: lms/static/js/Markdown.Editor.js
 msgid "Undo (Ctrl+Z)"
-msgstr ""
+msgstr "Prapa (Ctrl+Z)"
 
 #: lms/static/js/Markdown.Editor.js
 msgid "Redo (Ctrl+Y)"
@@ -2861,7 +2879,7 @@ msgstr "shkruaj përshkrimin e imazhit këtu"
 msgid "enter link description here"
 msgstr "shkruaj përshkrimin e link-ut këtu"
 
-#: lms/static/js/Markdown.Editor.js
+#: lms/static/js/Markdown.Editor.js lms/static/js/Markdown.Editor.js
 msgid "enter code here"
 msgstr "shtyp kodin këtu"
 
@@ -2875,7 +2893,7 @@ msgstr ""
 
 #: lms/static/js/ajax-error.js
 msgid "You have been logged out of your edX account. "
-msgstr ""
+msgstr "Ju jeni sh'kyçur nga llogaria juaj edX."
 
 #: lms/static/js/course_survey.js
 msgid "There has been an error processing your survey."
@@ -2909,38 +2927,9 @@ msgstr ""
 msgid "Failed to rescore problem."
 msgstr ""
 
-#: lms/static/js/ccx/schedule.js lms/static/js/student_account/account.js
-#: lms/static/js/student_profile/profile.js
-msgid "The data could not be saved."
-msgstr ""
-
-#: lms/static/js/ccx/schedule.js
-msgid "All subsections"
-msgstr ""
-
-#: lms/static/js/ccx/schedule.js
-msgid "All units"
-msgstr ""
-
-#: lms/static/js/ccx/schedule.js
-msgid "Select a chapter"
-msgstr ""
-
-#: lms/static/js/ccx/schedule.js lms/static/js/ccx/schedule.js.c
-msgid "Save changes"
-msgstr ""
-
-#: lms/static/js/ccx/schedule.js
-msgid "Enter Due Date"
-msgstr ""
-
-#: lms/static/js/ccx/schedule.js
-msgid "Enter Start Date"
-msgstr ""
-
 #: lms/static/js/dashboard/donation.js
 msgid "Please enter a valid donation amount."
-msgstr ""
+msgstr "Ju lutem shtypni një donacion me vlerë valide."
 
 #: lms/static/js/dashboard/donation.js
 msgid "Your donation could not be submitted."
@@ -2948,11 +2937,19 @@ msgstr ""
 
 #: lms/static/js/dashboard/legacy.js
 msgid "An error occurred. Please try again later."
-msgstr ""
+msgstr "Një problem është paraqitur. Ju lutem provojeni përsëri më vonë."
 
-#: lms/static/js/edxnotes/plugins/accessibility.js
-msgid "Focus grabber"
+#: lms/static/js/dashboard/legacy.js
+msgid "Please verify your new email address"
+msgstr "Ju lutem verifikojeni postën tuaj të re elektronike"
+
+#: lms/static/js/dashboard/legacy.js
+msgid ""
+"You'll receive a confirmation in your inbox. Please follow the link in the "
+"email to confirm your email address change."
 msgstr ""
+"Ju do të e pranoni një konfirmim në inbox-in tuaj. Ju lutem ndjekne linkun "
+"në postën elektronike që të e konfirmoni ndryshimin e postës elektronike."
 
 #: lms/static/js/edxnotes/views/search_box.js
 #: lms/static/js/edxnotes/views/toggle_notes_factory.js
@@ -2975,7 +2972,7 @@ msgid "Hide notes"
 msgstr ""
 
 #: lms/static/js/edxnotes/views/toggle_notes_factory.js
-msgid "Notes visible"
+msgid "Showing notes"
 msgstr ""
 
 #: lms/static/js/edxnotes/views/toggle_notes_factory.js
@@ -2983,7 +2980,7 @@ msgid "Show notes"
 msgstr ""
 
 #: lms/static/js/edxnotes/views/toggle_notes_factory.js
-msgid "Notes hidden"
+msgid "Hiding notes"
 msgstr ""
 
 #: lms/static/js/edxnotes/views/tabs/course_structure.js
@@ -2996,14 +2993,6 @@ msgstr ""
 
 #: lms/static/js/edxnotes/views/tabs/search_results.js
 msgid "No results found for \"%(query_string)s\". Please try searching again."
-msgstr ""
-
-#: lms/static/js/groups/views/cohort_discussions.js
-#: lms/static/js/groups/views/cohort_discussions_course_wide.js
-#: lms/static/js/groups/views/cohort_discussions_inline.js
-#: lms/static/js/groups/views/cohort_form.js
-#: lms/static/js/groups/views/cohorts.js
-msgid "We've encountered an error. Refresh your browser and then try again."
 msgstr ""
 
 #: lms/static/js/groups/views/cohort_editor.js
@@ -3053,7 +3042,7 @@ msgstr[1] ""
 
 #: lms/static/js/groups/views/cohort_editor.js
 msgid "View all errors"
-msgstr ""
+msgstr "Shiko të gjitha problemet"
 
 #: lms/static/js/groups/views/cohort_form.js
 msgid "You must specify a name for the cohort"
@@ -3073,6 +3062,10 @@ msgstr ""
 
 #: lms/static/js/groups/views/cohort_form.js
 msgid "The cohort cannot be added"
+msgstr ""
+
+#: lms/static/js/groups/views/cohort_form.js
+msgid "We've encountered an error. Refresh your browser and then try again."
 msgstr ""
 
 #: lms/static/js/groups/views/cohorts.js
@@ -3111,58 +3104,32 @@ msgid ""
 "Your file '{file}' has been uploaded. Allow a few minutes for processing."
 msgstr ""
 
-#: lms/static/js/groups/views/course_cohort_settings_notification.js
-msgid "Cohorts Enabled"
-msgstr ""
-
-#: lms/static/js/groups/views/course_cohort_settings_notification.js
-msgid "Cohorts Disabled"
-msgstr ""
-
-#: lms/static/js/instructor_dashboard/certificates.js
-msgid "Allow students to generate certificates for this course?"
-msgstr ""
-
-#: lms/static/js/instructor_dashboard/certificates.js
-msgid "Prevent students from generating certificates in this course?"
-msgstr ""
-
 #: lms/static/js/search/views/search_list_view.js
 msgid "%s result"
 msgid_plural "%s results"
 msgstr[0] ""
 msgstr[1] ""
 
-#: lms/static/js/spec/instructor_dashboard/student_admin_spec.js
-msgid "Started entrance exam rescore task for student '{student_id}'."
-msgstr ""
-
-#: lms/static/js/spec/instructor_dashboard/student_admin_spec.js
-msgid ""
-"Error starting a task to rescore entrance exam for student '{student_id}'."
-msgstr ""
-
-#: lms/static/js/spec/instructor_dashboard/student_admin_spec.js
-msgid "Error deleting entrance exam state for student '{student_id}'. "
-msgstr ""
-
-#: lms/static/js/spec/instructor_dashboard/student_admin_spec.js
-msgid "Error getting entrance exam task history for student '{student_id}'. "
+#: lms/static/js/student_account/account.js
+#: lms/static/js/student_profile/profile.js
+msgid "The data could not be saved."
 msgstr ""
 
 #: lms/static/js/student_account/account.js
 msgid "Please enter a valid email address"
-msgstr ""
+msgstr "Ju lutem shkruani një postë elektronike valide"
 
 #: lms/static/js/student_account/account.js
 msgid "Please enter a valid password"
-msgstr ""
+msgstr "Ju lutem shkruani një fjalëkalim valid"
 
 #: lms/static/js/student_account/account.js
 msgid ""
 "Password reset email sent. Follow the link in the email to change your "
 "password."
 msgstr ""
+"Resetimi i fjalëkalimi u dërgua me mesazh. Ndiqni linkun në mesazh që të e "
+"ndërroni fjalëkalimin."
 
 #: lms/static/js/student_account/account.js
 msgid "We weren't able to send you a password reset email."
@@ -3172,140 +3139,13 @@ msgstr ""
 msgid "Please check your email to confirm the change"
 msgstr ""
 
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid "Basic Account Information (required)"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid ""
-"The name that identifies you on the edX site. You cannot change your "
-"username."
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-#: lms/templates/student_profile/profile.underscore
-msgid "Full Name"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid ""
-"The name that appears on your edX certificates. Other learners never see "
-"your full name."
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid "Email Address"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid ""
-"The email address you use to sign in to edX. Communications from edX and "
-"your courses are sent to this address."
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-#: lms/templates/student_account/account.underscore
-msgid "Password"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid "Reset your Password"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-#: lms/templates/student_account/account.underscore
-msgid "Reset Password"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid ""
-"When you click \"Reset Password\", a message will be sent to your email "
-"address. Click the link in the message to reset your password."
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid "Language"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid ""
-"The language used for the edX site. The site is currently available in a "
-"limited number of languages."
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid "Country or Region"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid "Additional Information (optional)"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid "Education Completed"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid "Gender"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid "Year of Birth"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-#: lms/static/js/student_profile/views/learner_profile_factory.js
-#: lms/templates/student_profile/profile.underscore
-msgid "Preferred Language"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid "Connected Accounts"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid "Connect your {accountName} account"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_fields.js
-msgid "We've sent a confirmation message to {new_email_address}. "
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_fields.js
-msgid "You must sign out of edX and sign back in before your language "
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_fields.js
-msgid "We've sent a message to {email_address}. "
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_fields.js
-msgid "Unlink"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_fields.js
-msgid "Link"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_fields.js
-msgid "Unlinking"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_fields.js
-msgid "Linking"
-msgstr ""
-
-#: lms/static/js/student_account/views/account_settings_fields.js
-msgid "Successfully unlinked."
-msgstr ""
-
 #: lms/static/js/student_profile/profile.js
 msgid "Full name cannot be blank"
-msgstr ""
+msgstr "Emri i plotë nuk mund të jetë i zbrazët"
 
 #: lms/static/js/student_profile/profile.js
 msgid "Language cannot be blank"
-msgstr ""
+msgstr "Gjuha nuk mund të jetë e zbrazët"
 
 #: lms/static/js/student_profile/profile.js
 msgid "We couldn't populate the list of language choices."
@@ -3313,75 +3153,7 @@ msgstr ""
 
 #: lms/static/js/student_profile/profile.js
 msgid "Saved"
-msgstr ""
-
-#: lms/static/js/student_profile/views/learner_profile_factory.js
-msgid "edX learners can see my:"
-msgstr ""
-
-#: lms/static/js/student_profile/views/learner_profile_factory.js
-msgid "Limited Profile"
-msgstr ""
-
-#: lms/static/js/student_profile/views/learner_profile_factory.js
-msgid "Full Profile"
-msgstr ""
-
-#: lms/static/js/student_profile/views/learner_profile_factory.js
-msgid "Location"
-msgstr ""
-
-#: lms/static/js/student_profile/views/learner_profile_factory.js
-msgid "Add language"
-msgstr ""
-
-#: lms/static/js/student_profile/views/learner_profile_factory.js
-msgid "About me"
-msgstr ""
-
-#: lms/static/js/student_profile/views/learner_profile_factory.js
-msgid ""
-"Tell other edX learners a little about yourself: where you live, what your "
-"interests are, why you're taking courses on edX, or what you hope to learn."
-msgstr ""
-
-#: lms/static/js/student_profile/views/learner_profile_fields.js
-msgid "Account Settings page."
-msgstr ""
-
-#: lms/static/js/student_profile/views/learner_profile_fields.js
-msgid ""
-"You must specify your birth year before you can share your full profile. To "
-"specify your birth year, go to the {account_settings_page_link}"
-msgstr ""
-
-#: lms/static/js/student_profile/views/learner_profile_fields.js
-msgid ""
-"You must be over 13 to share a full profile. If you are over 13, make sure "
-"that you have specified a birth year on the {account_settings_page_link}"
-msgstr ""
-
-#: lms/static/js/student_profile/views/learner_profile_fields.js
-msgid "Profile image for {username}"
-msgstr ""
-
-#: lms/static/js/verify_student/views/image_input_view.js
-msgid "Image Upload Error"
-msgstr ""
-
-#: lms/static/js/verify_student/views/image_input_view.js
-msgid "Please verify that you have uploaded a valid image (PNG and JPEG)."
-msgstr ""
-
-#: lms/static/js/verify_student/views/incourse_reverify_view.js
-#: lms/static/js/verify_student/views/review_photos_step_view.js
-msgid "An error has occurred. Please try again later."
-msgstr ""
-
-#: lms/static/js/verify_student/views/incourse_reverify_view.js
-#: lms/static/js/verify_student/views/review_photos_step_view.js
-msgid "Could not submit photos"
-msgstr ""
+msgstr "E ruajtur"
 
 #: lms/static/js/verify_student/views/make_payment_step_view.js
 msgid "An error has occurred. Please try again."
@@ -3393,6 +3165,14 @@ msgstr ""
 
 #: lms/static/js/verify_student/views/payment_confirmation_step_view.js
 msgid "Could not retrieve payment information"
+msgstr ""
+
+#: lms/static/js/verify_student/views/review_photos_step_view.js
+msgid "An error has occurred. Please try again later."
+msgstr ""
+
+#: lms/static/js/verify_student/views/review_photos_step_view.js
+msgid "Could not submit photos"
 msgstr ""
 
 #: lms/static/js/verify_student/views/step_view.js
@@ -3411,7 +3191,7 @@ msgstr ""
 
 #: lms/static/js/verify_student/views/webcam_photo_view.js
 msgid "No Webcam Detected"
-msgstr ""
+msgstr "Asnjë Webkam nuk u gjet"
 
 #: lms/static/js/verify_student/views/webcam_photo_view.js
 msgid "You don't seem to have a webcam connected."
@@ -3422,85 +3202,15 @@ msgid "Double-check that your webcam is connected and working to continue."
 msgstr ""
 
 #: lms/static/js/verify_student/views/webcam_photo_view.js
-msgid "No Flash Detected"
+msgid "Flash Not Detected"
 msgstr ""
 
 #: lms/static/js/verify_student/views/webcam_photo_view.js
-msgid ""
-"You don't seem to have Flash installed. Get Flash to continue your "
-"verification."
+msgid "You don't seem to have Flash installed."
 msgstr ""
 
-#: lms/static/js/views/fields.js
-msgid "Editable"
-msgstr ""
-
-#: lms/static/js/views/fields.js
-msgid "Validation Error"
-msgstr ""
-
-#: lms/static/js/views/fields.js
-msgid "In Progress"
-msgstr ""
-
-#: lms/static/js/views/fields.js
-msgid "Placeholder"
-msgstr ""
-
-#: lms/static/js/views/fields.js
-msgid "An error occurred. Please try again."
-msgstr ""
-
-#: lms/static/js/views/fields.js
-msgid "Upload an image"
-msgstr ""
-
-#: lms/static/js/views/fields.js
-msgid "Change image"
-msgstr ""
-
-#: cms/templates/js/video/metadata-translations-item.underscore
-msgid "Remove"
-msgstr "Fshije"
-
-#: lms/static/js/views/fields.js
-msgid "Removing"
-msgstr ""
-
-#: lms/static/js/views/fields.js
-msgid "An error has occurred. Refresh the page, and then try again."
-msgstr ""
-
-#: lms/static/js/views/fields.js
-msgid "The file must be at least {size} in size."
-msgstr ""
-
-#: lms/static/js/views/fields.js
-msgid "The file must be smaller than {size} in size."
-msgstr ""
-
-#: lms/static/js/views/fields.js
-msgid ""
-"Upload is in progress. To avoid errors, stay on this page until the process "
-"is complete."
-msgstr ""
-
-#: lms/static/js/views/fields.js
-msgid ""
-"Removal is in progress. To avoid errors, stay on this page until the process"
-" is complete."
-msgstr ""
-
-#: lms/static/js/views/fields.js
-msgid "bytes"
-msgstr ""
-
-#: lms/static/js/views/fields.js
-msgid "KB"
-msgstr ""
-
-#: lms/static/js/views/fields.js
-msgid "MB"
+#: lms/static/js/verify_student/views/webcam_photo_view.js
+msgid "%(a_start)s Get Flash %(a_end)s to continue your enrollment."
 msgstr ""
 
 #: lms/static/js/views/file_uploader.js
@@ -3511,6 +3221,7 @@ msgstr ""
 msgid "Your upload of '{file}' failed."
 msgstr ""
 
+#: lms/templates/class_dashboard/all_section_metrics.js
 #: lms/templates/class_dashboard/all_section_metrics.js
 msgid "Unable to retrieve data, please try again later."
 msgstr ""
@@ -3545,7 +3256,22 @@ msgstr ""
 
 #: cms/static/coffee/src/main.js
 msgid "Studio's having trouble saving your work"
-msgstr ""
+msgstr "Studio ka probleme që të e ruaj punimin tuaj"
+
+#: cms/static/coffee/src/views/tabs.js cms/static/coffee/src/views/tabs.js
+#: cms/static/coffee/src/xblock/cms.runtime.v1.js
+#: cms/static/js/models/section.js cms/static/js/utils/drag_and_drop.js
+#: cms/static/js/views/asset.js cms/static/js/views/container.js
+#: cms/static/js/views/course_info_handout.js
+#: cms/static/js/views/course_info_update.js
+#: cms/static/js/views/edit_textbook.js
+#: cms/static/js/views/list_item_editor.js cms/static/js/views/overview.js
+#: cms/static/js/views/overview_assignment_grader.js
+#: cms/static/js/views/modals/edit_xblock.js
+#: cms/static/js/views/utils/xblock_utils.js
+#: cms/static/js/views/utils/xblock_utils.js
+msgid "Saving"
+msgstr "Ruajtur"
 
 #: cms/static/coffee/src/views/tabs.js
 msgid "Delete Page Confirmation"
@@ -3571,11 +3297,11 @@ msgstr ""
 
 #: cms/static/js/base.js
 msgid "This link will open in a modal window"
-msgstr ""
+msgstr "Ky link do të hapet në një dritare të re"
 
 #: cms/static/js/collections/group.js
 msgid "Group %s"
-msgstr ""
+msgstr "Grupi %s"
 
 #. Translators: Dictionary used for creation ids that are used in
 #. default group names. For example: A, B, AA in Group A,
@@ -3606,24 +3332,10 @@ msgstr ""
 
 #: cms/static/js/factories/export.js
 msgid ""
-"Your library could not be exported to XML. There is not enough information "
-"to identify the failed component. Inspect your library to identify any "
-"problematic components and try again."
-msgstr ""
-
-#: cms/static/js/factories/export.js
-msgid "Take me to the main library page"
-msgstr ""
-
-#: cms/static/js/factories/export.js
-msgid ""
-"Your course could not be exported to XML. There is not enough information to"
-" identify the failed component. Inspect your course to identify any "
-"problematic components and try again."
-msgstr ""
-
-#: cms/static/js/factories/export.js
-msgid "Take me to the main course page"
+"There has been a failure to export your course to XML. Unfortunately, we do "
+"not have specific enough information to assist you in identifying the failed"
+" component. It is recommended that you inspect your courseware to identify "
+"any components in error and try again."
 msgstr ""
 
 #: cms/static/js/factories/export.js
@@ -3632,19 +3344,15 @@ msgstr ""
 
 #: cms/static/js/factories/export.js
 msgid "There has been an error with your export."
-msgstr ""
+msgstr "Këtu është njëproblem me ekportimin."
 
-#: cms/static/js/factories/import.js
-msgid "There was an error while importing the new library to our database."
-msgstr ""
-
-#: cms/static/js/factories/import.js
-msgid "There was an error while importing the new course to our database."
-msgstr ""
+#: cms/static/js/factories/export.js
+msgid "Yes, take me to the main course page"
+msgstr "Po, më dërgo mua te faqja e kryesore e kursit"
 
 #: cms/static/js/factories/import.js
 msgid "There was an error during the upload process."
-msgstr ""
+msgstr "Këtu u paraqit një problem gjatë procesit të ngarkimit."
 
 #: cms/static/js/factories/import.js
 msgid "There was an error while unpacking the file."
@@ -3655,32 +3363,83 @@ msgid "There was an error while verifying the file you submitted."
 msgstr ""
 
 #: cms/static/js/factories/import.js
+msgid "There was an error while importing the new course to our database."
+msgstr ""
+"Këtu u paraqit një problem kur po importohej kursi i ri në bazën tonë të të "
+"dhënave."
+
+#: cms/static/js/factories/import.js
 msgid "Your import has failed."
+msgstr "Importimi ka dështuar."
+
+#: cms/static/js/factories/import.js cms/static/js/factories/import.js
+#: cms/static/js/views/import.js cms/static/js/views/import.js.c
+msgid "Choose new file"
+msgstr "Zgjedh një dokument të ri"
+
+#: cms/static/js/factories/manage_users.js
+#: cms/static/js/factories/manage_users_lib.js
+msgid "A valid email address is required"
+msgstr "Posta elektronike valide është e detyrueshme"
+
+#: cms/static/js/factories/manage_users.js
+msgid "You must enter a valid email address in order to add a new team member"
 msgstr ""
 
-#: cms/static/js/factories/import.js cms/static/js/views/import.js
-#: cms/static/js/views/import.js.c
-msgid "Choose new file"
-msgstr ""
+#: cms/static/js/factories/manage_users.js
+#: cms/static/js/factories/manage_users_lib.js
+msgid "Return and add email address"
+msgstr "Kthehu dhe shto posta elektronike"
 
 #: cms/static/js/factories/manage_users.js
 msgid "Already a course team member"
+msgstr "Tashmë anëtar i ekipit të kursit"
+
+#: cms/static/js/factories/manage_users.js
+#: cms/static/js/factories/manage_users_lib.js
+msgid ""
+"{email} is already on the {course} team. Recheck the email address if you "
+"want to add a new member."
 msgstr ""
+
+#: cms/static/js/factories/manage_users.js
+#: cms/static/js/factories/manage_users_lib.js
+msgid "Return to team listing"
+msgstr ""
+
+#: cms/static/js/factories/manage_users.js
+#: cms/static/js/factories/manage_users_lib.js
+msgid "Error adding user"
+msgstr "Problem me shtimin e përdoruesve"
+
+#: cms/static/js/factories/manage_users.js
+#: cms/static/js/factories/manage_users_lib.js
+msgid "Are you sure?"
+msgstr "A jeni i sigurt?"
 
 #: cms/static/js/factories/manage_users.js
 msgid ""
-"Are you sure you want to delete {email} from the course team for "
-"“{container}”?"
+"Are you sure you want to delete {email} from the course team for “{course}”?"
 msgstr ""
+"A jeni i sigurt që dëshironi të e largoni {email} nga ekipi i kursit "
+"{course}?"
 
 #: cms/static/js/factories/manage_users.js
 #: cms/static/js/factories/manage_users_lib.js
-msgid "Staff"
-msgstr ""
+msgid "Error removing user"
+msgstr "Problem me fshirjen e përdoruesve"
 
 #: cms/static/js/factories/manage_users.js
 #: cms/static/js/factories/manage_users_lib.js
-msgid "Admin"
+msgid "There was an error changing the user's role"
+msgstr ""
+
+#: cms/static/js/factories/manage_users.js
+msgid "Try Again"
+msgstr "Provo përsëri"
+
+#: cms/static/js/factories/manage_users_lib.js
+msgid "You must enter a valid email address in order to add an instructor"
 msgstr ""
 
 #: cms/static/js/factories/manage_users_lib.js
@@ -3688,12 +3447,7 @@ msgid "Already a library team member"
 msgstr ""
 
 #: cms/static/js/factories/manage_users_lib.js
-msgid ""
-"Are you sure you want to delete {email} from the library “{container}”?"
-msgstr ""
-
-#: cms/static/js/factories/manage_users_lib.js
-msgid "Library User"
+msgid "Are you sure you want to delete {email} from the library “{library}”?"
 msgstr ""
 
 #: cms/static/js/factories/settings_advanced.js
@@ -3717,11 +3471,16 @@ msgstr ""
 msgid "Queued"
 msgstr ""
 
+#. Translators: This is the status of an active video upload
+#: cms/static/js/models/active_video_upload.js cms/static/js/views/assets.js
+msgid "Uploading"
+msgstr "Ngarkimi"
+
 #. Translators: This is the status of a video upload that has
 #. completed successfully
 #: cms/static/js/models/active_video_upload.js
 msgid "Upload completed"
-msgstr ""
+msgstr "Ngarkimi u kompletua"
 
 #. Translators: This is the status of a video upload that has failed
 #: cms/static/js/models/active_video_upload.js
@@ -3730,7 +3489,7 @@ msgstr ""
 
 #: cms/static/js/models/course.js cms/static/js/models/section.js
 msgid "You must specify a name"
-msgstr ""
+msgstr "Ju duhet të përzgjedhni një emër"
 
 #: cms/static/js/models/group.js
 msgid "Group name is required"
@@ -3809,7 +3568,7 @@ msgid "Key should only contain letters, numbers, _, or -"
 msgstr ""
 
 #: cms/static/js/models/settings/course_details.js
-msgid "Please enter an integer between %(min)s and %(max)s."
+msgid "Please enter an integer between "
 msgstr ""
 
 #: cms/static/js/models/settings/course_grader.js
@@ -3837,6 +3596,7 @@ msgid "Grace period must be specified in HH:MM format."
 msgstr ""
 
 #: cms/static/js/spec/views/assets_spec.js
+#: cms/static/js/spec/views/paging_spec.js
 #: cms/static/js/spec/views/paging_spec.js cms/static/js/views/assets.js
 #: cms/templates/js/asset-library.underscore
 msgid "Type"
@@ -3844,7 +3604,7 @@ msgstr ""
 
 #: cms/static/js/views/asset.js
 msgid "Delete File Confirmation"
-msgstr ""
+msgstr "Konfirmimi i fshirjes së dokumentit"
 
 #: cms/static/js/views/asset.js
 msgid ""
@@ -3860,7 +3620,7 @@ msgstr "Dokumenti juaj është fshirë."
 #: cms/static/js/views/assets.js cms/templates/js/asset-library.underscore
 #: cms/templates/js/previous-video-upload-list.underscore
 msgid "Date Added"
-msgstr ""
+msgstr "Data u shtua"
 
 #: cms/static/js/views/assets.js
 msgid "File {filename} exceeds maximum size of {maxFileSizeInMBs} MB"
@@ -3888,42 +3648,14 @@ msgstr "Zgjidh dokumentin"
 #: cms/static/js/views/assets.js cms/static/js/views/assets.js.c
 #: cms/templates/js/asset-upload-modal.underscore
 msgid "Upload New File"
-msgstr ""
+msgstr "Shto dokument të ri"
 
 #: cms/static/js/views/assets.js cms/static/js/views/assets.js.c
 msgid "Load Another File"
-msgstr ""
-
-#: cms/static/js/views/content_group_details.js
-#: cms/static/js/views/group_configuration_details.js
-msgid "Not in Use"
-msgstr "Nuk është në përdorim"
-
-#. Translators: 'count' is number of units that the group
-#. configuration is used in.
-#: cms/static/js/views/content_group_details.js
-#: cms/static/js/views/group_configuration_details.js
-msgid "Used in %(count)s unit"
-msgid_plural "Used in %(count)s units"
-msgstr[0] ""
-msgstr[1] ""
-
-#. Translators: 'outlineAnchor' is an anchor pointing to
-#. the course outline page.
-#: cms/static/js/views/content_group_details.js
-msgid ""
-"This content group is not in use. Add a content group to any unit from the "
-"%(outlineAnchor)s."
-msgstr ""
-
-#: cms/static/js/views/content_group_details.js
-#: cms/static/js/views/group_configuration_details.js
-msgid "Course Outline"
-msgstr ""
+msgstr "Ngarko tjetër dokument"
 
 #. Translators: This refers to a content group that can be linked to a student
 #. cohort.
-#: cms/static/js/views/content_group_item.js
 #: cms/static/js/views/content_group_list.js
 msgid "content group"
 msgstr ""
@@ -3934,7 +3666,7 @@ msgstr ""
 
 #: cms/static/js/views/course_info_update.js
 msgid "Are you sure you want to delete this update?"
-msgstr ""
+msgstr "A jeni i sigurt që deshironi të e fshini këtë freskim?"
 
 #: cms/static/js/views/course_info_update.js
 msgid "This action cannot be undone."
@@ -3954,7 +3686,7 @@ msgstr "Ngarkoni një PDF të ri  tek “<%= name %>”"
 
 #: cms/static/js/views/edit_chapter.js
 msgid "Please select a PDF file to upload."
-msgstr ""
+msgstr "Ju lutem selektojeni një dokument PDF për të e ngarkuar."
 
 #. Translators: 'count' is number of groups that the group
 #. configuration contains.
@@ -3964,12 +3696,29 @@ msgid_plural "Contains %(count)s groups"
 msgstr[0] ""
 msgstr[1] ""
 
+#: cms/static/js/views/group_configuration_details.js
+msgid "Not in Use"
+msgstr "Nuk është në përdorim"
+
+#. Translators: 'count' is number of units that the group
+#. configuration is used in.
+#: cms/static/js/views/group_configuration_details.js
+msgid "Used in %(count)s unit"
+msgid_plural "Used in %(count)s units"
+msgstr[0] ""
+msgstr[1] ""
+
 #. Translators: 'outlineAnchor' is an anchor pointing to
 #. the course outline page.
 #: cms/static/js/views/group_configuration_details.js
 msgid ""
 "This Group Configuration is not in use. Start by adding a content experiment"
 " to any Unit via the %(outlineAnchor)s."
+msgstr ""
+
+#: cms/static/js/views/group_configuration_details.js
+#: cms/templates/js/mock/mock-settings-page.underscore
+msgid "Course Outline"
 msgstr ""
 
 #. Translators: this refers to a collection of groups.
@@ -4006,52 +3755,6 @@ msgstr ""
 msgid "Deleting this %(item_display_name)s is permanent and cannot be undone."
 msgstr ""
 
-#: cms/static/js/views/manage_users_and_roles.js
-msgid "There was an error changing the user's role"
-msgstr ""
-
-#: cms/static/js/views/manage_users_and_roles.js
-msgid "Error adding user"
-msgstr ""
-
-#: cms/static/js/views/manage_users_and_roles.js
-msgid "Error removing user"
-msgstr ""
-
-#: cms/static/js/views/manage_users_and_roles.js
-msgid "A valid email address is required"
-msgstr ""
-
-#: cms/static/js/views/manage_users_and_roles.js
-msgid "You must enter a valid email address in order to add a new team member"
-msgstr ""
-
-#: cms/static/js/views/manage_users_and_roles.js
-msgid "Return and add email address"
-msgstr ""
-
-#: cms/static/js/views/manage_users_and_roles.js
-msgid "Already a member"
-msgstr ""
-
-#: cms/static/js/views/manage_users_and_roles.js
-msgid ""
-"{email} is already on the {container} team. Recheck the email address if you"
-" want to add a new member."
-msgstr ""
-
-#: cms/static/js/views/manage_users_and_roles.js
-msgid "Return to team listing"
-msgstr ""
-
-#: cms/static/js/views/manage_users_and_roles.js
-msgid "Are you sure?"
-msgstr ""
-
-#: cms/static/js/views/manage_users_and_roles.js
-msgid "Are you sure you want to restrict {email} access to “{container}”?"
-msgstr ""
-
 #: cms/static/js/views/overview.js
 msgid "Collapse All Sections"
 msgstr "Mbylli të gjitha seksionet"
@@ -4066,12 +3769,13 @@ msgstr ""
 
 #: cms/static/js/views/overview.js
 msgid "{month}/{day}/{year} at {hour}:{minute} UTC"
-msgstr ""
+msgstr "{month}/{day}/{year} në {hour}:{minute} UTC"
 
 #: cms/static/js/views/overview.js
 msgid "Edit section release date"
 msgstr ""
 
+#: cms/static/js/views/overview_assignment_grader.js
 #: cms/templates/js/course-outline.underscore
 #: cms/templates/js/grading-editor.underscore
 msgid "Not Graded"
@@ -4084,42 +3788,23 @@ msgstr ""
 #. Translators: sample result:
 #. "Showing 0-9 out of 25 total, filtered by Images, sorted by Date Added
 #. ascending"
-#: cms/static/js/views/paging_header.js
-msgid ""
-"Showing %(current_item_range)s out of %(total_items_count)s, filtered by "
-"%(asset_type)s, sorted by %(sort_name)s ascending"
-msgstr ""
-
 #. Translators: sample result:
 #. "Showing 0-9 out of 25 total, filtered by Images, sorted by Date Added
 #. descending"
-#: cms/static/js/views/paging_header.js
-msgid ""
-"Showing %(current_item_range)s out of %(total_items_count)s, filtered by "
-"%(asset_type)s, sorted by %(sort_name)s descending"
-msgstr ""
-
 #. Translators: sample result:
 #. "Showing 0-9 out of 25 total, sorted by Date Added ascending"
-#: cms/static/js/views/paging_header.js
-msgid ""
-"Showing %(current_item_range)s out of %(total_items_count)s, sorted by "
-"%(sort_name)s ascending"
-msgstr ""
-
 #. Translators: sample result:
 #. "Showing 0-9 out of 25 total, sorted by Date Added descending"
-#: cms/static/js/views/paging_header.js
-msgid ""
-"Showing %(current_item_range)s out of %(total_items_count)s, sorted by "
-"%(sort_name)s descending"
+#: cms/static/js/views/paging_header.js cms/static/js/views/paging_header.js
+#: cms/static/js/views/paging_header.js cms/static/js/views/paging_header.js
+msgid "Showing %(current_item_range)s out of %(total_items_count)s, "
 msgstr ""
 
 #. Translators: turns into "25 total" to be used in other sentences, e.g.
 #. "Showing 0-9 out of 25 total".
 #: cms/static/js/views/paging_header.js
 msgid "%(total_items)s total"
-msgstr ""
+msgstr "%(total_items)s gjithsej"
 
 #. Translators: This is listed as the duration for a video
 #. that has not yet reached the point in its processing by
@@ -4130,7 +3815,7 @@ msgstr ""
 
 #: cms/static/js/views/show_textbook.js
 msgid "Delete “<%= name %>”?"
-msgstr ""
+msgstr "Fshije “<%= name %>”?"
 
 #: cms/static/js/views/show_textbook.js
 msgid ""
@@ -4142,7 +3827,7 @@ msgstr ""
 #: cms/templates/js/metadata-file-uploader-item.underscore
 #: cms/templates/js/video/metadata-translations-item.underscore
 msgid "Upload"
-msgstr ""
+msgstr "Ngarko"
 
 #: cms/static/js/views/uploads.js
 msgid "We're sorry, there was an error"
@@ -4155,6 +3840,8 @@ msgstr "Ju keni bërë disa ndryshime"
 #: cms/static/js/views/validation.js
 msgid "Your changes will not take effect until you save your progress."
 msgstr ""
+"Ndryshimet e juaja nuk do të kenë efekt para se ju të e ruani progresin "
+"tuaj."
 
 #: cms/static/js/views/validation.js
 msgid "You've made some changes, but there are some errors"
@@ -4164,30 +3851,36 @@ msgstr "Ju keni bërë disa ndryshime por këtu janë disa probleme"
 msgid ""
 "Please address the errors on this page first, and then save your progress."
 msgstr ""
+"Ju lutem adresoni problemet në këtë faqe së pari, dhe pastaj ruajeni "
+"progresin tuaj."
 
 #: cms/static/js/views/validation.js
 msgid "Save Changes"
 msgstr "Ruaj ndryshimet"
 
+#: cms/static/js/views/validation.js
+msgid "Your changes have been saved."
+msgstr "Ndryshimet që keni bërë janë ruajtur"
+
 #: cms/static/js/views/xblock_editor.js
 msgid "Editor"
-msgstr ""
+msgstr "Editor"
 
 #: cms/static/js/views/xblock_editor.js
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 msgid "Settings"
-msgstr ""
+msgstr "Konfigurimet"
 
 #: cms/static/js/views/xblock_outline.js
 msgid "New %(component_type)s"
-msgstr ""
+msgstr "I ri %(component_type)s"
 
 #. Translators: This message will be added to the front of messages of type
 #. warning,
 #. e.g. "Warning: this component has not been configured yet".
 #: cms/static/js/views/xblock_validation.js
 msgid "Warning"
-msgstr ""
+msgstr "Paralajmërim"
 
 #: cms/static/js/views/components/add_xblock.js
 #: cms/static/js/views/utils/xblock_utils.js
@@ -4196,7 +3889,7 @@ msgstr ""
 
 #: cms/static/js/views/modals/course_outline_modals.js
 msgid "%(display_name)s Settings"
-msgstr ""
+msgstr "%(display_name)s Konfigurimet"
 
 #: cms/static/js/views/modals/course_outline_modals.js
 msgid "Change the settings for %(display_name)s"
@@ -4211,17 +3904,20 @@ msgid "Publish all unpublished changes for this %(item)s?"
 msgstr "Publiko të gjjitha ndryshimet e pa publikuara për këtë %(item)s?"
 
 #: cms/static/js/views/modals/course_outline_modals.js
+#: cms/templates/js/course-outline.underscore
+#: cms/templates/js/course-outline.underscore
+#: cms/templates/js/publish-xblock.underscore
 msgid "Publish"
 msgstr "Publiko"
 
 #. Translators: "title" is the name of the current component being edited.
 #: cms/static/js/views/modals/edit_xblock.js
 msgid "Editing: %(title)s"
-msgstr ""
+msgstr "Rregullo: %(title)s"
 
 #: cms/static/js/views/modals/edit_xblock.js
 msgid "Component"
-msgstr ""
+msgstr "Komponent"
 
 #: cms/static/js/views/modals/validation_error_modal.js
 msgid "Validation Error While Saving"
@@ -4229,11 +3925,11 @@ msgstr ""
 
 #: cms/static/js/views/modals/validation_error_modal.js
 msgid "Undo Changes"
-msgstr ""
+msgstr "Para ndryshimeve"
 
 #: cms/static/js/views/modals/validation_error_modal.js
 msgid "Change Manually"
-msgstr ""
+msgstr "Ndryshoje manualisht"
 
 #. Translators: "title" is the name of the current component being edited.
 #: cms/static/js/views/pages/container.js
@@ -4249,9 +3945,10 @@ msgid "Publishing"
 msgstr ""
 
 #: cms/static/js/views/pages/container_subviews.js
+#: cms/static/js/views/pages/container_subviews.js
 #: cms/templates/js/publish-xblock.underscore
 msgid "Discard Changes"
-msgstr ""
+msgstr "Mos i ruaj ndryshimet"
 
 #: cms/static/js/views/pages/container_subviews.js
 msgid ""
@@ -4276,6 +3973,7 @@ msgid "Inheriting Student Visibility"
 msgstr ""
 
 #: cms/static/js/views/pages/container_subviews.js
+#: cms/static/js/views/pages/container_subviews.js
 msgid "Make Visible to Students"
 msgstr "Bëre të dukshme tek Studentët"
 
@@ -4295,15 +3993,7 @@ msgid "Course Index"
 msgstr ""
 
 #: cms/static/js/views/pages/course_outline.js
-msgid "There were errors reindexing course."
-msgstr ""
-
-#: cms/static/js/views/pages/paged_container.js
-msgid "Hide Previews"
-msgstr ""
-
-#: cms/static/js/views/pages/paged_container.js
-msgid "Show Previews"
+msgid "Course has been successfully reindexed."
 msgstr ""
 
 #: cms/static/js/views/settings/advanced.js
@@ -4329,7 +4019,7 @@ msgstr ""
 
 #: cms/static/js/views/settings/main.js
 msgid "Upload your course image."
-msgstr ""
+msgstr "Ngarko imazhin e kursit tuaj."
 
 #: cms/static/js/views/settings/main.js
 msgid "Files must be in JPEG or PNG format."
@@ -4362,7 +4052,7 @@ msgstr ""
 
 #: cms/static/js/views/utils/xblock_utils.js
 msgid "component"
-msgstr ""
+msgstr "komponent"
 
 #: cms/static/js/views/utils/xblock_utils.js
 msgid "Delete this %(xblock_type)s?"
@@ -4371,6 +4061,7 @@ msgstr "Fshije këtë %(xblock_type)s?"
 #: cms/static/js/views/utils/xblock_utils.js
 msgid "Deleting this %(xblock_type)s is permanent and cannot be undone."
 msgstr ""
+"Fshirja e %(xblock_type)s është e përhershme dhe nuk mund të rikthehet."
 
 #: cms/static/js/views/utils/xblock_utils.js
 msgid "Yes, delete this %(xblock_type)s"
@@ -4386,7 +4077,7 @@ msgstr ""
 
 #: cms/static/js/views/utils/xblock_utils.js
 msgid "unit"
-msgstr ""
+msgstr "pjesë"
 
 #: cms/static/js/views/video/translations_editor.js
 msgid ""
@@ -4398,54 +4089,26 @@ msgstr ""
 msgid "Upload translation"
 msgstr "Ngarko përkthimin"
 
-#: cms/static/js/views/video/transcripts/file_uploader.js
-msgid "Please select a file in .srt format."
-msgstr ""
-
-#: cms/static/js/views/video/transcripts/file_uploader.js
-msgid "Error: Uploading failed."
-msgstr ""
-
-#: cms/static/js/views/video/transcripts/message_manager.js
-msgid "Error: Import failed."
-msgstr ""
-
-#: cms/static/js/views/video/transcripts/message_manager.js
-msgid "Error: Replacing failed."
-msgstr ""
-
-#: cms/static/js/views/video/transcripts/message_manager.js
-msgid "Error: Choosing failed."
-msgstr ""
-
-#: cms/static/js/views/video/transcripts/metadata_videolist.js
-msgid "Error: Connection with server failed."
-msgstr ""
-
-#: cms/static/js/views/video/transcripts/metadata_videolist.js
-msgid "No sources"
-msgstr ""
-
-#: cms/static/js/views/video/transcripts/metadata_videolist.js
-msgid "Link types should be unique."
-msgstr ""
-
-#: cms/static/js/views/video/transcripts/metadata_videolist.js
-msgid "Links should be unique."
-msgstr ""
-
-#: cms/static/js/views/video/transcripts/metadata_videolist.js
-msgid "Incorrect url format."
-msgstr ""
+#: cms/templates/js/course-outline.underscore
+#: cms/templates/js/course-outline.underscore
+#: cms/templates/js/course-outline.underscore cms/templates/js/list.underscore
+#: cms/templates/js/list.underscore cms/templates/js/publish-xblock.underscore
+#: cms/templates/js/publish-xblock.underscore
+#: cms/templates/js/xblock-outline.underscore
+#: cms/templates/js/xblock-outline.underscore
+#: cms/templates/js/xblock-outline.underscore
+#: lms/templates/courseware_search/search_list.underscore
+msgid "gettext("
+msgstr "gettext("
 
 #: cms/templates/js/previous-video-upload-list.underscore
 #: lms/templates/verify_student/enrollment_confirmation_step.underscore
 msgid "Status"
-msgstr ""
+msgstr "Statusi"
 
 #: common/templates/js/image-modal.underscore
 msgid "Large"
-msgstr ""
+msgstr "I madh"
 
 #: common/templates/js/image-modal.underscore
 msgid "Zoom In"
@@ -4453,7 +4116,7 @@ msgstr "Zmadhoje"
 
 #: common/templates/js/image-modal.underscore
 msgid "Zoom Out"
-msgstr ""
+msgstr "Zvogëlo"
 
 #: common/templates/js/discussion/thread-show.underscore
 msgid "This post is visible only to %(group_name)s."
@@ -4461,11 +4124,11 @@ msgstr "Ky postim shihet vetëm nga %(group_name)s."
 
 #: common/templates/js/discussion/thread-show.underscore
 msgid "This post is visible to everyone."
-msgstr ""
+msgstr "Ky postim është i dukshëm për të gjithë."
 
 #: common/templates/js/discussion/thread-show.underscore
 msgid "%(post_type)s posted %(time_ago)s by %(author)s"
-msgstr ""
+msgstr "%(post_type)s postuar  %(time_ago)s nga %(author)s"
 
 #: common/templates/js/discussion/thread-show.underscore
 msgid "Pinned"
@@ -4473,53 +4136,27 @@ msgstr ""
 
 #: common/templates/js/discussion/thread-show.underscore
 msgid "Reported"
-msgstr ""
+msgstr "Raportuar"
 
 #: common/templates/js/discussion/thread-show.underscore
 msgid "Closed"
-msgstr ""
+msgstr "Mbyllur"
 
 #: common/templates/js/discussion/thread-show.underscore
-msgid "Related to: %(courseware_title_linked)s"
-msgstr ""
-
-#: lms/templates/ccx/schedule.underscore
-msgid "Unit"
-msgstr ""
-
-#: lms/templates/ccx/schedule.underscore
-msgid "Start Date"
-msgstr ""
-
-#: lms/templates/ccx/schedule.underscore
-msgid "Due Date"
-msgstr ""
-
-#: lms/templates/ccx/schedule.underscore
-msgid "remove all"
-msgstr ""
-
-#: lms/templates/ccx/schedule.underscore
-msgid "remove"
-msgstr ""
+msgid "(this post is about %(courseware_title_linked)s)"
+msgstr "(ky postim është rreth %(courseware_title_linked)s)"
 
 #: lms/templates/courseware_search/search_error.underscore
 msgid "There was an error, try searching again."
 msgstr ""
 
 #: lms/templates/courseware_search/search_list.underscore
-msgid "Load next %(num_items)s result"
-msgid_plural "Load next %(num_items)s results"
-msgstr[0] ""
-msgstr[1] ""
-
-#: lms/templates/courseware_search/search_list.underscore
 msgid "Sorry, no results were found."
-msgstr ""
+msgstr "Na vjen keq, asnjë rezultat nuk u gjet."
 
 #: lms/templates/dashboard/donation.underscore
 msgid "Donate"
-msgstr ""
+msgstr "Dhuro"
 
 #: lms/templates/edxnotes/note-item.underscore
 msgid "Highlighted text"
@@ -4547,64 +4184,40 @@ msgstr ""
 
 #: lms/templates/edxnotes/note-item.underscore
 msgid "Last Edited:"
-msgstr ""
+msgstr "Editimi i fundit:"
 
 #: lms/templates/edxnotes/tab-item.underscore
 msgid "name"
-msgstr ""
+msgstr "emri"
 
 #: lms/templates/edxnotes/tab-item.underscore
 msgid "Clear search results"
-msgstr ""
+msgstr "Fshi rezultatet e kërkimeve"
 
-#: lms/templates/fields/field_dropdown.underscore
-#: lms/templates/fields/field_textarea.underscore
-msgid "Click to edit"
-msgstr ""
+#: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
+msgid "(contains %(student_count)s student)"
+msgid_plural "(contains %(student_count)s students)"
+msgstr[0] ""
+msgstr[1] ""
 
-#: lms/templates/fields/field_readonly.underscore
-#: lms/templates/fields/field_text.underscore
-msgid "title"
-msgstr ""
-
-#: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-course-wide.underscore
-#: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
-msgid "Specify whether discussion topics are divided by cohort"
-msgstr ""
-
-#: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-course-wide.underscore
-msgid "Course-Wide Discussion Topics"
-msgstr ""
-
-#: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-course-wide.underscore
+#: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 msgid ""
-"Select the course-wide discussion topics that you want to divide by cohort."
+"Students are added to this cohort only when you provide their email "
+"addresses or usernames on this page."
 msgstr ""
 
-#: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-inline.underscore
-msgid "Content-Specific Discussion Topics"
+#: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
+#: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
+msgid "What does this mean?"
+msgstr "Çka do të thotë kjo?"
+
+#: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
+msgid "Students are added to this cohort automatically."
 msgstr ""
 
-#: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-inline.underscore
-msgid ""
-"Specify whether content-specific discussion topics are divided by cohort."
-msgstr ""
-
-#: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-inline.underscore
-msgid "Always cohort content-specific discussion topics"
-msgstr ""
-
-#: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-inline.underscore
-msgid "Cohort selected content-specific discussion topics"
-msgstr ""
-
-#: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-inline.underscore
-msgid "No content-specific discussion topics exist."
-msgstr ""
-
-#: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-subcategory.underscore
-msgid "Cohorted"
-msgstr ""
+#: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
+msgid "Edit settings in Studio"
+msgstr "Ndrysho konfigurimet në Studio"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 msgid "Manage Students"
@@ -4629,11 +4242,11 @@ msgstr ""
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 #: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
 msgid "(Required Field)"
-msgstr ""
+msgstr "(Hapësirat e detyrueshme)"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 msgid "e.g. johndoe@example.com, JaneDoe, joeydoe@example.com"
-msgstr ""
+msgstr "p.sh. johndoe@example.com, JaneDoe, joeydoe@example.com"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 msgid ""
@@ -4643,14 +4256,10 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 msgid "Add Students"
-msgstr ""
+msgstr "Shto student"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
 msgid "Add a New Cohort"
-msgstr ""
-
-#: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
-msgid "Enter the name of the cohort"
 msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
@@ -4658,20 +4267,7 @@ msgid "Cohort Name"
 msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
-msgid "Cohort Assignment Method"
-msgstr ""
-
-#: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
-msgid "Automatic"
-msgstr ""
-
-#: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
-msgid "Manual"
-msgstr ""
-
-#: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
-msgid ""
-"There must be one cohort to which students can automatically be assigned."
+msgid "Enter the name of the cohort"
 msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
@@ -4702,26 +4298,6 @@ msgstr ""
 msgid "Create a content group"
 msgstr ""
 
-#: lms/templates/instructor/instructor_dashboard_2/cohort-group-header.underscore
-msgid "(contains %(student_count)s student)"
-msgid_plural "(contains %(student_count)s students)"
-msgstr[0] ""
-msgstr[1] ""
-
-#: lms/templates/instructor/instructor_dashboard_2/cohort-group-header.underscore
-msgid ""
-"Students are added to this cohort only when you provide their email "
-"addresses or usernames on this page."
-msgstr ""
-
-#: lms/templates/instructor/instructor_dashboard_2/cohort-group-header.underscore
-msgid "What does this mean?"
-msgstr ""
-
-#: lms/templates/instructor/instructor_dashboard_2/cohort-group-header.underscore
-msgid "Students are added to this cohort automatically."
-msgstr ""
-
 #: lms/templates/instructor/instructor_dashboard_2/cohort-selector.underscore
 msgid "Select a cohort"
 msgstr ""
@@ -4731,11 +4307,15 @@ msgid "%(cohort_name)s (%(user_count)s)"
 msgstr "%(cohort_name)s (%(user_count)s)"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
-msgid "Enable Cohorts"
+msgid "Cohort Management"
 msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
-msgid "Select a cohort to manage"
+msgid "Assign students to cohorts manually"
+msgstr ""
+
+#: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
+msgid "Select a cohort group to manage"
 msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
@@ -4755,46 +4335,34 @@ msgstr ""
 
 #: lms/templates/student_account/account.underscore
 msgid "New Address"
-msgstr ""
+msgstr "Adresa e re"
+
+#: lms/templates/student_account/account.underscore
+msgid "Password"
+msgstr "Fjalëkalimi"
 
 #: lms/templates/student_account/account.underscore
 msgid "Change My Email Address"
-msgstr ""
+msgstr "Ndrysho postën elektronike"
 
-#: lms/templates/student_account/account_settings.underscore
-msgid "Account Settings"
-msgstr ""
-
-#: lms/templates/student_account/account_settings.underscore
-msgid ""
-"These settings include basic information about your account. You can also "
-"specify additional information and see your linked social accounts on this "
-"page."
-msgstr ""
-
-#: lms/templates/student_account/account_settings.underscore
-msgid "section.title"
-msgstr ""
-
-#: lms/templates/student_account/account_settings.underscore
-#: lms/templates/student_profile/learner_profile.underscore
-msgid "An error occurred. Please reload the page."
-msgstr ""
+#: lms/templates/student_account/account.underscore
+msgid "Reset Password"
+msgstr "Reseto fjalëkalimin"
 
 #: lms/templates/student_account/form_field.underscore
 msgid "Forgot password?"
-msgstr ""
+msgstr "Harruat fjalëkalimin?"
 
 #: lms/templates/student_account/login.underscore
 msgid ""
 "You've successfully signed into %(currentProvider)s, but your "
 "%(currentProvider)s account isn't linked with an %(platformName)s account. "
-"To link your accounts, go to your %(platformName)s account settings."
+"To link your accounts, go to your %(platformName)s dashboard."
 msgstr ""
 
 #: lms/templates/student_account/login.underscore
 msgid "Password Reset Email Sent"
-msgstr ""
+msgstr "Fjalëkalimi u resetua "
 
 #: lms/templates/student_account/login.underscore
 msgid ""
@@ -4806,6 +4374,7 @@ msgstr ""
 msgid "We couldn't sign you in."
 msgstr ""
 
+#: lms/templates/student_account/login.underscore
 #: lms/templates/student_account/login.underscore
 #: lms/templates/student_account/register.underscore
 msgid "Sign in"
@@ -4864,32 +4433,28 @@ msgid "or create a new one here"
 msgstr ""
 
 #: lms/templates/student_account/register.underscore
-msgid "Create a new account"
-msgstr ""
-
-#: lms/templates/student_account/register.underscore
 msgid "Create your account"
 msgstr ""
 
 #: lms/templates/student_account/register.underscore
 msgid "Required field"
-msgstr ""
+msgstr "Hapësirë e detyrueshme"
 
 #: lms/templates/student_account/register.underscore
 msgid "Already have an account?"
-msgstr ""
+msgstr "Tashmë kam një llogari?"
 
-#: lms/templates/student_profile/learner_profile.underscore
-msgid "You are currently sharing a limited profile."
-msgstr ""
+#: lms/templates/student_profile/profile.underscore
+msgid "Full Name"
+msgstr "Emri i plotë"
 
-#: lms/templates/student_profile/learner_profile.underscore
-msgid "This edX learner is currently sharing a limited profile."
-msgstr ""
+#: lms/templates/student_profile/profile.underscore
+msgid "Preferred Language"
+msgstr "Gjuha e preferuar"
 
 #: lms/templates/student_profile/profile.underscore
 msgid "Update Profile"
-msgstr ""
+msgstr "Fresko Profilin"
 
 #: lms/templates/verify_student/enrollment_confirmation_step.underscore
 msgid "Congratulations! You are now verified on %(platformName)s!"
@@ -4905,7 +4470,7 @@ msgstr ""
 
 #: lms/templates/verify_student/enrollment_confirmation_step.underscore
 msgid "Course"
-msgstr ""
+msgstr "Kursi"
 
 #: lms/templates/verify_student/enrollment_confirmation_step.underscore
 msgid "Starts: %(start)s"
@@ -4933,15 +4498,13 @@ msgstr ""
 
 #: lms/templates/verify_student/error.underscore
 msgid "Error:"
-msgstr ""
+msgstr "Problem:"
 
 #: lms/templates/verify_student/face_photo_step.underscore
-#: lms/templates/verify_student/incourse_reverify.underscore
 msgid "Take Your Photo"
 msgstr ""
 
 #: lms/templates/verify_student/face_photo_step.underscore
-#: lms/templates/verify_student/incourse_reverify.underscore
 msgid ""
 "Use your webcam to take a photo of your face. We will match this photo with "
 "the photo on your ID."
@@ -4949,51 +4512,42 @@ msgstr ""
 
 #: lms/templates/verify_student/face_photo_step.underscore
 #: lms/templates/verify_student/id_photo_step.underscore
-#: lms/templates/verify_student/incourse_reverify.underscore
 msgid "Tips on taking a successful photo"
 msgstr ""
 
 #: lms/templates/verify_student/face_photo_step.underscore
-#: lms/templates/verify_student/incourse_reverify.underscore
 msgid "Make sure your face is well-lit"
 msgstr ""
 
 #: lms/templates/verify_student/face_photo_step.underscore
-#: lms/templates/verify_student/incourse_reverify.underscore
 msgid "Be sure your entire face is inside the frame"
 msgstr ""
 
 #: lms/templates/verify_student/face_photo_step.underscore
-#: lms/templates/verify_student/incourse_reverify.underscore
 msgid "Once in position, use the camera button %(icon)s to capture your photo"
 msgstr ""
 
 #: lms/templates/verify_student/face_photo_step.underscore
-#: lms/templates/verify_student/incourse_reverify.underscore
 msgid "Can we match the photo you took with the one on your ID?"
 msgstr ""
 
 #: lms/templates/verify_student/face_photo_step.underscore
 #: lms/templates/verify_student/id_photo_step.underscore
-#: lms/templates/verify_student/incourse_reverify.underscore
 msgid "Use the retake photo button if you are not pleased with your photo"
 msgstr ""
 
 #: lms/templates/verify_student/face_photo_step.underscore
 #: lms/templates/verify_student/id_photo_step.underscore
-#: lms/templates/verify_student/incourse_reverify.underscore
 msgid "Frequently Asked Questions"
 msgstr ""
 
 #: lms/templates/verify_student/face_photo_step.underscore
 #: lms/templates/verify_student/id_photo_step.underscore
-#: lms/templates/verify_student/incourse_reverify.underscore
 msgid "Why does %(platformName)s need my photo?"
 msgstr ""
 
 #: lms/templates/verify_student/face_photo_step.underscore
 #: lms/templates/verify_student/id_photo_step.underscore
-#: lms/templates/verify_student/incourse_reverify.underscore
 msgid ""
 "As part of the verification process, you take a photo of both your face and "
 "a government-issued photo ID. Our authorization service confirms your "
@@ -5002,13 +4556,11 @@ msgstr ""
 
 #: lms/templates/verify_student/face_photo_step.underscore
 #: lms/templates/verify_student/id_photo_step.underscore
-#: lms/templates/verify_student/incourse_reverify.underscore
 msgid "What does %(platformName)s do with this photo?"
 msgstr ""
 
 #: lms/templates/verify_student/face_photo_step.underscore
 #: lms/templates/verify_student/id_photo_step.underscore
-#: lms/templates/verify_student/incourse_reverify.underscore
 msgid ""
 "We use the highest levels of security available to encrypt your photo and "
 "send it to our authorization service for review. Your photo and information "
@@ -5051,22 +4603,6 @@ msgstr ""
 msgid "Once in position, use the camera button %(icon)s to capture your ID"
 msgstr ""
 
-#: lms/templates/verify_student/image_input.underscore
-msgid "Preview of uploaded image"
-msgstr ""
-
-#: lms/templates/verify_student/image_input.underscore
-msgid "Upload an image or capture one with your web or phone camera."
-msgstr ""
-
-#: lms/templates/verify_student/incourse_reverify.underscore
-msgid "Course key:"
-msgstr ""
-
-#: lms/templates/verify_student/incourse_reverify.underscore
-msgid "Checkpoint name:"
-msgstr ""
-
 #: lms/templates/verify_student/intro_step.underscore
 msgid "Thanks for returning to verify your ID in: %(courseName)s"
 msgstr ""
@@ -5083,7 +4619,7 @@ msgstr ""
 #: lms/templates/verify_student/make_payment_step.underscore
 #: lms/templates/verify_student/payment_confirmation_step.underscore
 msgid "Activate Your Account"
-msgstr ""
+msgstr "Aktivizo llogarin tuaj"
 
 #: lms/templates/verify_student/intro_step.underscore
 #: lms/templates/verify_student/make_payment_step.underscore
@@ -5105,7 +4641,7 @@ msgstr ""
 #: lms/templates/verify_student/make_payment_step.underscore
 #: lms/templates/verify_student/payment_confirmation_step.underscore
 msgid "Webcam"
-msgstr ""
+msgstr "Webkam"
 
 #: lms/templates/verify_student/make_payment_step.underscore
 msgid "You are enrolling in: %(courseName)s"
@@ -5118,6 +4654,28 @@ msgstr ""
 #: lms/templates/verify_student/make_payment_step.underscore
 msgid ""
 "You can now enter your payment information and complete your enrollment."
+msgstr ""
+
+#: lms/templates/verify_student/make_payment_step.underscore
+msgid "Choose your contribution for your Verified Track upgrade"
+msgstr ""
+
+#: lms/templates/verify_student/make_payment_step.underscore
+msgid "Enter Your Contribution Level"
+msgstr ""
+
+#: lms/templates/verify_student/make_payment_step.underscore
+msgid ""
+"Please confirm your contribution for this course (min. %(minPrice)s "
+"%(currency)s)"
+msgstr ""
+
+#: lms/templates/verify_student/make_payment_step.underscore
+msgid "Your Total Contribution"
+msgstr ""
+
+#: lms/templates/verify_student/make_payment_step.underscore
+msgid "To complete your enrollment, you will need to pay:"
 msgstr ""
 
 #: lms/templates/verify_student/make_payment_step.underscore
@@ -5138,31 +4696,16 @@ msgid "Government-Issued Photo ID"
 msgstr ""
 
 #: lms/templates/verify_student/make_payment_step.underscore
-msgid ""
-"ID-Verification is not required for this Professional Education course."
-msgstr ""
-
-#: lms/templates/verify_student/make_payment_step.underscore
-msgid ""
-"All professional education courses are fee-based, and require payment to "
-"complete the enrollment process."
-msgstr ""
-
-#: lms/templates/verify_student/make_payment_step.underscore
-msgid "You have already verified your ID!"
-msgstr ""
-
-#: lms/templates/verify_student/make_payment_step.underscore
-msgid "Your verification status is good until %(verificationGoodUntil)s."
+msgid "Next: Make payment"
 msgstr ""
 
 #: lms/templates/verify_student/make_payment_step.underscore
 msgid "Continue to payment"
-msgstr "Vazhdo te pagesa"
+msgstr ""
 
 #: lms/templates/verify_student/payment_confirmation_step.underscore
 msgid "Thank you! We have received your payment for %(courseName)s."
-msgstr "Ju faleminderit! Ne e kemi pranuar pagesën tuaj për %(courseName)s."
+msgstr ""
 
 #: lms/templates/verify_student/payment_confirmation_step.underscore
 msgid ""
@@ -5176,15 +4719,15 @@ msgstr ""
 
 #: lms/templates/verify_student/payment_confirmation_step.underscore
 msgid "Date"
-msgstr ""
+msgstr "Data"
 
 #: lms/templates/verify_student/payment_confirmation_step.underscore
 msgid "Amount"
-msgstr "Vlera"
+msgstr ""
 
 #: lms/templates/verify_student/payment_confirmation_step.underscore
 msgid "Total"
-msgstr ""
+msgstr "Gjithsej"
 
 #: lms/templates/verify_student/payment_confirmation_step.underscore
 msgid "Please Note"
@@ -5204,7 +4747,7 @@ msgstr ""
 
 #: lms/templates/verify_student/payment_confirmation_step.underscore
 msgid "Next Step: Confirm your identity"
-msgstr "Hapi tjetër: Konfirmoni identitetin tuaj"
+msgstr ""
 
 #: lms/templates/verify_student/payment_confirmation_step.underscore
 msgid "Check your email"
@@ -5231,7 +4774,7 @@ msgstr ""
 
 #: lms/templates/verify_student/payment_confirmation_step.underscore
 msgid "Want to confirm your identity later?"
-msgstr "Dëshironi të e konfirmoni identitetin tuaj më vonë?"
+msgstr ""
 
 #: lms/templates/verify_student/review_photos_step.underscore
 msgid "Review Your Photos"
@@ -5273,7 +4816,7 @@ msgstr ""
 
 #: lms/templates/verify_student/review_photos_step.underscore
 msgid "Edit Your Name"
-msgstr ""
+msgstr "Rregullo Emrin tuaj"
 
 #: lms/templates/verify_student/review_photos_step.underscore
 msgid ""
@@ -5294,13 +4837,15 @@ msgstr ""
 
 #: lms/templates/verify_student/review_photos_step.underscore
 msgid "Confirm"
-msgstr ""
+msgstr "Konfirmo"
 
 #: lms/templates/verify_student/webcam_photo.underscore
 msgid ""
 "Don't see your picture? Make sure to allow your browser to use your camera "
 "when it asks for permission."
 msgstr ""
+"Nuk e shihni fotografinë tuaj? Sigurohuni që e keni lejuar shfletuesin tuaj "
+"të e përdor kamerën kur pyet për leje."
 
 #: lms/templates/verify_student/webcam_photo.underscore
 msgid "Live view of webcam"
@@ -5316,7 +4861,7 @@ msgstr ""
 
 #: cms/templates/js/active-video-upload-list.underscore
 msgid "Drag and drop or click here to upload video files."
-msgstr ""
+msgstr "Zvarrite dhe lëshoje ose kliko këtu që të ngarkosh video dokumente."
 
 #: cms/templates/js/active-video-upload.underscore
 msgid "status"
@@ -5339,12 +4884,13 @@ msgid "List of uploaded files and assets in this course"
 msgstr "Lista e dokumenteve dhe aseteve të ngarkuara në këtë kurs"
 
 #: cms/templates/js/asset-library.underscore
+#: cms/templates/js/asset-library.underscore
 msgid "- Sortable"
 msgstr ""
 
 #: cms/templates/js/asset-library.underscore
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: cms/templates/js/asset-library.underscore
 #: cms/templates/js/basic-modal.underscore
@@ -5373,7 +4919,7 @@ msgstr "Hape/shkarko këtë dokument"
 
 #: cms/templates/js/asset.underscore
 msgid "Studio:"
-msgstr ""
+msgstr "Studio:"
 
 #: cms/templates/js/asset.underscore
 msgid "Web:"
@@ -5389,15 +4935,11 @@ msgstr "Mbyll këtë aset"
 
 #: cms/templates/js/asset.underscore
 msgid "Lock/unlock file"
-msgstr ""
+msgstr "Mbyll/hap dokumentin"
 
 #: cms/templates/js/checklist.underscore
-msgid "{number}{pct_sign} of checklists completed"
+msgid "{number}% of checklists completed"
 msgstr ""
-
-#: cms/templates/js/checklist.underscore
-msgid "%"
-msgstr "%"
 
 #: cms/templates/js/checklist.underscore
 msgid "Tasks Completed:"
@@ -5409,32 +4951,14 @@ msgid ""
 "changes you will change the student experience."
 msgstr ""
 
-#: cms/templates/js/content-group-details.underscore
-#: cms/templates/js/group-configuration-details.underscore
-msgid "ID"
-msgstr ""
-
-#: cms/templates/js/content-group-details.underscore
-#: cms/templates/js/content-group-editor.underscore
-msgid "Cannot delete when in use by a unit"
-msgstr ""
-
-#: cms/templates/js/content-group-details.underscore
-msgid "This content group is used in:"
-msgstr ""
-
 #: cms/templates/js/content-group-editor.underscore
 #: cms/templates/js/edit-textbook.underscore
 #: cms/templates/js/group-configuration-editor.underscore
 msgid "error.message"
-msgstr ""
+msgstr "problem.mesazh"
 
 #: cms/templates/js/content-group-editor.underscore
 msgid "Content Group Name"
-msgstr ""
-
-#: cms/templates/js/content-group-editor.underscore
-msgid "Content Group ID"
 msgstr ""
 
 #: cms/templates/js/content-group-editor.underscore
@@ -5442,13 +4966,9 @@ msgid "This is the name of the group"
 msgstr ""
 
 #: cms/templates/js/content-group-editor.underscore
-msgid "This content group is used in one or more units."
-msgstr ""
-
-#: cms/templates/js/content-group-editor.underscore
 #: cms/templates/js/group-configuration-editor.underscore
 msgid "Create"
-msgstr ""
+msgstr "Krijo"
 
 #: cms/templates/js/course-outline.underscore
 msgid "Contains staff only content"
@@ -5456,7 +4976,7 @@ msgstr ""
 
 #: cms/templates/js/course-outline.underscore
 msgid "Unpublished changes to live content"
-msgstr ""
+msgstr "Ndryshimet e papublikuara në përmbajtjen e drejtëpërdrejt"
 
 #: cms/templates/js/course-outline.underscore
 msgid "Unpublished units will not be released"
@@ -5467,18 +4987,15 @@ msgid "Unpublished changes to content that will release in the future"
 msgstr ""
 
 #: cms/templates/js/course-outline.underscore
-#: cms/templates/js/xblock-outline.underscore
-msgid "Collapse/Expand this %(xblock_type)s"
-msgstr ""
+msgid "Display Name"
+msgstr "Emri i përdorimit"
 
 #: cms/templates/js/course-outline.underscore
-msgid "Display Name"
-msgstr ""
-
 #: cms/templates/js/course-outline.underscore
 msgid "Configure"
 msgstr "Konfiguro"
 
+#: cms/templates/js/course-outline.underscore
 #: cms/templates/js/course-outline.underscore
 msgid "Drag to reorder"
 msgstr ""
@@ -5505,7 +5022,7 @@ msgstr ""
 
 #: cms/templates/js/course-outline.underscore
 msgid "Graded as:"
-msgstr ""
+msgstr "Vlerësuar sipas:"
 
 #: cms/templates/js/course-outline.underscore
 msgid "Due:"
@@ -5514,12 +5031,7 @@ msgstr ""
 #: cms/templates/js/course-outline.underscore
 #: cms/templates/js/xblock-outline.underscore
 msgid "You haven't added any content to this course yet."
-msgstr ""
-
-#: cms/templates/js/course-outline.underscore
-#: cms/templates/js/xblock-outline.underscore
-msgid "Click to add a new %(xblock_type)s"
-msgstr ""
+msgstr "Ju nuk keni shtuar ende ndonjë material te ky kurs."
 
 #: cms/templates/js/course_grade_policy.underscore
 msgid "Assignment Type Name"
@@ -5527,7 +5039,7 @@ msgstr ""
 
 #: cms/templates/js/course_grade_policy.underscore
 msgid "e.g. Homework, Midterm Exams"
-msgstr ""
+msgstr "p.sh. Homework,Midterm Exams"
 
 #: cms/templates/js/course_grade_policy.underscore
 msgid "Abbreviation"
@@ -5543,7 +5055,7 @@ msgstr ""
 
 #: cms/templates/js/course_grade_policy.underscore
 msgid "as a percent, e.g. 40"
-msgstr ""
+msgstr "si përqindje, p.sh. 40"
 
 #: cms/templates/js/course_grade_policy.underscore
 msgid "Total Number"
@@ -5575,18 +5087,6 @@ msgid ""
 " HTML."
 msgstr ""
 
-#: cms/templates/js/course_info_update.underscore
-msgid "Send push notification to mobile apps"
-msgstr ""
-
-#: cms/templates/js/course_info_update.underscore
-msgid "Send notification to mobile apps"
-msgstr ""
-
-#: cms/templates/js/course_info_update.underscore
-msgid "Post"
-msgstr ""
-
 #: cms/templates/js/due-date-editor.underscore
 msgid "Due Date:"
 msgstr ""
@@ -5595,6 +5095,7 @@ msgstr ""
 msgid "Due Time in UTC:"
 msgstr ""
 
+#: cms/templates/js/due-date-editor.underscore
 #: cms/templates/js/due-date-editor.underscore
 msgid "Clear Grading Due Date"
 msgstr ""
@@ -5617,7 +5118,7 @@ msgstr ""
 
 #: cms/templates/js/edit-chapter.underscore
 msgid "path/to/introductionToCookieBaking-CH%d.pdf"
-msgstr ""
+msgstr "path/to/introductionToCookieBaking-CH%d.pdf"
 
 #: cms/templates/js/edit-chapter.underscore
 msgid "upload a PDF file or provide the path to a Studio asset file"
@@ -5651,7 +5152,7 @@ msgstr ""
 
 #: cms/templates/js/edit-textbook.underscore
 msgid "Chapter information"
-msgstr ""
+msgstr "Informatat e kapitullit"
 
 #: cms/templates/js/edit-textbook.underscore
 msgid "Add a Chapter"
@@ -5666,13 +5167,17 @@ msgid "Grade as:"
 msgstr ""
 
 #: cms/templates/js/group-configuration-details.underscore
+msgid "ID"
+msgstr "ID"
+
+#: cms/templates/js/group-configuration-details.underscore
 #: cms/templates/js/group-configuration-editor.underscore
 msgid "Cannot delete when in use by an experiment"
-msgstr ""
+msgstr "Nuk mund të fshihet kur është në përdorim nga një eksperiment"
 
 #: cms/templates/js/group-configuration-details.underscore
 msgid "This Group Configuration is used in:"
-msgstr ""
+msgstr "Ky Grup konfigurimesh është përdorur në:"
 
 #: cms/templates/js/group-configuration-editor.underscore
 msgid "Group Configuration information"
@@ -5680,11 +5185,11 @@ msgstr "Konfigurimi i grupit informacione"
 
 #: cms/templates/js/group-configuration-editor.underscore
 msgid "Group Configuration Name"
-msgstr ""
+msgstr "Emri i grupit të konfigurimeve"
 
 #: cms/templates/js/group-configuration-editor.underscore
 msgid "Group Configuration ID"
-msgstr ""
+msgstr "Konfigurimi i grupit ID"
 
 #: cms/templates/js/group-configuration-editor.underscore
 msgid "This is the Name of the Group Configuration"
@@ -5692,7 +5197,7 @@ msgstr ""
 
 #: cms/templates/js/group-configuration-editor.underscore
 msgid "Name or short description of the configuration"
-msgstr ""
+msgstr "Emri ose përshkrim të shkurt të konfigurimeve"
 
 #: cms/templates/js/group-configuration-editor.underscore
 msgid "This is the Description of the Group Configuration"
@@ -5704,11 +5209,11 @@ msgstr "Përshkrim i gjatë opcional"
 
 #: cms/templates/js/group-configuration-editor.underscore
 msgid "Group information"
-msgstr ""
+msgstr "Informacionet e Grupit"
 
 #: cms/templates/js/group-configuration-editor.underscore
 msgid "Groups"
-msgstr ""
+msgstr "Grupet"
 
 #: cms/templates/js/group-configuration-editor.underscore
 msgid ""
@@ -5718,7 +5223,7 @@ msgstr ""
 
 #: cms/templates/js/group-configuration-editor.underscore
 msgid "Add another group"
-msgstr ""
+msgstr "Shto një grup tjetër"
 
 #: cms/templates/js/group-configuration-editor.underscore
 msgid ""
@@ -5728,15 +5233,7 @@ msgstr ""
 
 #: cms/templates/js/group-edit.underscore
 msgid "delete group"
-msgstr ""
-
-#: cms/templates/js/list.underscore
-msgid "Add your first %(item_type)s"
-msgstr ""
-
-#: cms/templates/js/list.underscore
-msgid "New %(item_type)s"
-msgstr ""
+msgstr "fshije grupin"
 
 #: cms/templates/js/metadata-dict-entry.underscore
 #: cms/templates/js/metadata-list-entry.underscore
@@ -5750,6 +5247,8 @@ msgstr "Shto"
 #: cms/templates/js/metadata-number-entry.underscore
 #: cms/templates/js/metadata-option-entry.underscore
 #: cms/templates/js/metadata-string-entry.underscore
+#: cms/templates/js/mock/mock-xmodule-editor.underscore
+#: cms/templates/js/mock/mock-xmodule-settings-only-editor.underscore
 #: cms/templates/js/video/metadata-translations-entry.underscore
 msgid "Clear Value"
 msgstr ""
@@ -5794,7 +5293,7 @@ msgstr ""
 
 #: cms/templates/js/publish-history.underscore
 msgid "Never published"
-msgstr ""
+msgstr "Kurr nuk është publikuar"
 
 #: cms/templates/js/publish-history.underscore
 #: cms/templates/js/publish-xblock.underscore
@@ -5803,6 +5302,7 @@ msgstr "Publikimi i fundit %(last_published_date)s nga %(publish_username)s"
 
 #: cms/templates/js/publish-history.underscore
 #: cms/templates/js/publish-xblock.underscore
+#: cms/templates/js/publish-xblock.underscore
 #: cms/templates/js/staff-lock-editor.underscore
 msgid "message"
 msgstr "mesazhi"
@@ -5810,11 +5310,11 @@ msgstr "mesazhi"
 #: cms/templates/js/publish-history.underscore
 #: cms/templates/js/publish-xblock.underscore
 msgid "Previously published"
-msgstr ""
+msgstr "Publikimi paraprak"
 
 #: cms/templates/js/publish-xblock.underscore
 msgid "Draft (Never published)"
-msgstr ""
+msgstr "Draft (E pa publikuar kurrë)"
 
 #: cms/templates/js/publish-xblock.underscore
 msgid "Visible to Staff Only"
@@ -5822,11 +5322,11 @@ msgstr "Bëre të dukshëm vetëm për stafin"
 
 #: cms/templates/js/publish-xblock.underscore
 msgid "Published and Live"
-msgstr ""
+msgstr "Publikuar dhe Drejtëpërdrejt"
 
 #: cms/templates/js/publish-xblock.underscore
 msgid "Published (not yet released)"
-msgstr ""
+msgstr "Publikuar(ende nuk është lëshuar)"
 
 #: cms/templates/js/publish-xblock.underscore
 msgid "Draft (Unpublished changes)"
@@ -5838,19 +5338,15 @@ msgstr ""
 
 #: cms/templates/js/publish-xblock.underscore
 msgid "Publishing Status"
-msgstr ""
+msgstr "Statusi i publikimeve"
 
 #: cms/templates/js/publish-xblock.underscore
 msgid "Draft saved on %(last_saved_date)s by %(edit_username)s"
 msgstr "Drafti u ruajt në %(last_saved_date)s nga  %(edit_username)s"
 
 #: cms/templates/js/publish-xblock.underscore
-msgid "with %(release_date_from)s"
-msgstr ""
-
-#: cms/templates/js/publish-xblock.underscore
 msgid "Is Visible To:"
-msgstr ""
+msgstr "Është e dukshme për:"
 
 #: cms/templates/js/publish-xblock.underscore
 msgid "Will Be Visible To:"
@@ -5859,10 +5355,6 @@ msgstr ""
 #: cms/templates/js/publish-xblock.underscore
 msgid "Staff Only"
 msgstr "Vetëm Stafi"
-
-#: cms/templates/js/publish-xblock.underscore
-msgid "with %(section_or_subsection)s"
-msgstr ""
 
 #: cms/templates/js/publish-xblock.underscore
 msgid "Staff and Students"
@@ -5890,6 +5382,7 @@ msgid "Release Time in UTC:"
 msgstr ""
 
 #: cms/templates/js/release-date-editor.underscore
+#: cms/templates/js/release-date-editor.underscore
 msgid "Clear Release Date/Time"
 msgstr ""
 
@@ -5911,7 +5404,7 @@ msgstr ""
 msgid ""
 "If you make this %(xblockType)s visible to students, students will be able "
 "to see its content after the release date has passed and you have published "
-"the unit."
+"the unit(s)."
 msgstr ""
 
 #: cms/templates/js/staff-lock-editor.underscore
@@ -5926,36 +5419,14 @@ msgid ""
 "you clear this option for the subsection."
 msgstr ""
 
-#: cms/templates/js/team-member.underscore
-msgid "Current Role:"
-msgstr ""
-
-#: cms/templates/js/team-member.underscore
-msgid "You!"
-msgstr ""
-
-#: cms/templates/js/team-member.underscore
-msgid "send an email message to {email}"
-msgstr ""
-
-#: cms/templates/js/team-member.underscore
-msgid "Promote another member to Admin to remove your admin rights"
-msgstr ""
-
-#: cms/templates/js/team-member.underscore
-msgid "Add {role} Access"
-msgstr ""
-
-#: cms/templates/js/team-member.underscore
-msgid "Remove {role} Access"
-msgstr ""
-
-#: cms/templates/js/team-member.underscore
-msgid "Delete the user, {username}"
-msgstr ""
-
 #: cms/templates/js/upload-dialog.underscore
 msgid "File upload succeeded"
+msgstr "Ngarkimi i fajllit u bë sukseshëm"
+
+#: cms/templates/js/validation-error-modal.underscore
+msgid ""
+"There were {strong_start}{num_errors} validation error(s){strong_end} while "
+"trying to save the course setting(s) in the database."
 msgstr ""
 
 #: cms/templates/js/validation-error-modal.underscore
@@ -5964,6 +5435,7 @@ msgid ""
 "course settings:"
 msgstr ""
 
+#: cms/templates/js/xblock-string-field-editor.underscore
 #: cms/templates/js/xblock-string-field-editor.underscore
 msgid "Edit the name"
 msgstr "Ndrysho emrin"
@@ -5976,6 +5448,56 @@ msgstr "Ndrysho %(display_name)s (e detyrueshme)"
 msgid "formLabel"
 msgstr ""
 
+#: cms/templates/js/mock/mock-container-page.underscore
+msgid "Unit Location"
+msgstr ""
+
+#: cms/templates/js/mock/mock-container-page.underscore
+msgid ""
+"Use this ID when you create links to this unit from other course content. "
+"You enter the ID in the URL field."
+msgstr ""
+
+#: cms/templates/js/mock/mock-index-page.underscore
+msgid "Courses"
+msgstr "Kurset"
+
+#: cms/templates/js/mock/mock-index-page.underscore
+msgid "Libraries"
+msgstr ""
+
+#: cms/templates/js/mock/mock-settings-page.underscore
+msgid "Entrance Exam"
+msgstr ""
+
+#: cms/templates/js/mock/mock-settings-page.underscore
+msgid "Require students to pass an exam before beginning the course."
+msgstr ""
+
+#: cms/templates/js/mock/mock-settings-page.underscore
+msgid "To create your course entrance exam, go to the"
+msgstr ""
+
+#: cms/templates/js/mock/mock-settings-page.underscore
+msgid ". An Entrance Exam section will be created automatically."
+msgstr ""
+
+#: cms/templates/js/mock/mock-settings-page.underscore
+msgid "Minimum Passing Score"
+msgstr ""
+
+#: cms/templates/js/mock/mock-settings-page.underscore
+msgid "%"
+msgstr ""
+
+#: cms/templates/js/mock/mock-settings-page.underscore
+msgid "The minimum score a student must receive to pass the entrance exam."
+msgstr ""
+
+#: cms/templates/js/video/metadata-translations-item.underscore
+msgid "Remove"
+msgstr "Fshije"
+
 #: cms/templates/js/video/transcripts/metadata-videolist-entry.underscore
 msgid "Add URLs for additional versions"
 msgstr ""
@@ -5985,7 +5507,7 @@ msgid ""
 "To be sure all students can access the video, we recommend providing both an"
 " .mp4 and a .webm version of your video. Click below to add a URL for "
 "another version. These URLs cannot be YouTube URLs. The first listed video "
-"that's compatible with the student's computer will play."
+"that\\'s compatible with the student\\'s computer will play."
 msgstr ""
 
 #: cms/templates/js/video/transcripts/metadata-videolist-entry.underscore
@@ -6015,10 +5537,10 @@ msgstr ""
 #: cms/templates/js/video/transcripts/messages/transcripts-uploaded.underscore
 #: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 msgid "Error."
-msgstr ""
+msgstr "Problem."
 
 #: cms/templates/js/video/transcripts/messages/transcripts-choose.underscore
-msgid "Timed Transcript from %(filename)s"
+msgid "Timed Transcript from"
 msgstr ""
 
 #: cms/templates/js/video/transcripts/messages/transcripts-found.underscore
@@ -6033,9 +5555,15 @@ msgid ""
 msgstr ""
 
 #: cms/templates/js/video/transcripts/messages/transcripts-found.underscore
+#: cms/templates/js/video/transcripts/messages/transcripts-found.underscore
+#: cms/templates/js/video/transcripts/messages/transcripts-import.underscore
 #: cms/templates/js/video/transcripts/messages/transcripts-import.underscore
 #: cms/templates/js/video/transcripts/messages/transcripts-not-found.underscore
+#: cms/templates/js/video/transcripts/messages/transcripts-not-found.underscore
 #: cms/templates/js/video/transcripts/messages/transcripts-uploaded.underscore
+#: cms/templates/js/video/transcripts/messages/transcripts-uploaded.underscore
+#: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
+#: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 #: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 msgid "Upload New Transcript"
 msgstr "Ngarko transkript të re"
@@ -6043,10 +5571,13 @@ msgstr "Ngarko transkript të re"
 #: cms/templates/js/video/transcripts/messages/transcripts-found.underscore
 #: cms/templates/js/video/transcripts/messages/transcripts-import.underscore
 msgid "Upload New .srt Transcript"
-msgstr ""
+msgstr "Ngarko transkript të re .srt"
 
 #: cms/templates/js/video/transcripts/messages/transcripts-found.underscore
+#: cms/templates/js/video/transcripts/messages/transcripts-found.underscore
 #: cms/templates/js/video/transcripts/messages/transcripts-not-found.underscore
+#: cms/templates/js/video/transcripts/messages/transcripts-not-found.underscore
+#: cms/templates/js/video/transcripts/messages/transcripts-uploaded.underscore
 #: cms/templates/js/video/transcripts/messages/transcripts-uploaded.underscore
 msgid "Download Transcript for Editing"
 msgstr "Shkarkoje transkriptën për editim"
@@ -6057,14 +5588,15 @@ msgstr ""
 
 #: cms/templates/js/video/transcripts/messages/transcripts-import.underscore
 msgid ""
-"EdX doesn't have a timed transcript for this video in Studio, but we found a"
-" transcript on YouTube. You can import the YouTube transcript or upload your"
-" own .srt transcript file."
+"EdX doesn\\'t have a timed transcript for this video in Studio, but we found"
+" a transcript on YouTube. You can import the YouTube transcript or upload "
+"your own .srt transcript file."
 msgstr ""
 
 #: cms/templates/js/video/transcripts/messages/transcripts-import.underscore
+#: cms/templates/js/video/transcripts/messages/transcripts-import.underscore
 msgid "Import YouTube Transcript"
-msgstr ""
+msgstr "Importo Transkriptën YouTube"
 
 #: cms/templates/js/video/transcripts/messages/transcripts-not-found.underscore
 msgid "No Timed Transcript"
@@ -6087,8 +5619,10 @@ msgid "Do you want to replace the edX transcript with the YouTube transcript?"
 msgstr "Dëshironi të e zëvendësoni transkriptën edx me transkriptën YouTube?"
 
 #: cms/templates/js/video/transcripts/messages/transcripts-replace.underscore
+#: cms/templates/js/video/transcripts/messages/transcripts-replace.underscore
+#: cms/templates/js/video/transcripts/messages/transcripts-replace.underscore
 msgid "Yes, replace the edX transcript with the YouTube transcript"
-msgstr ""
+msgstr "Po, rizëvendëso edX transkriptën me YouTube transkriptën"
 
 #: cms/templates/js/video/transcripts/messages/transcripts-uploaded.underscore
 msgid "Timed Transcript Uploaded Successfully"
@@ -6112,6 +5646,8 @@ msgid ""
 " file?"
 msgstr ""
 
+#: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
+#: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 #: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 msgid "Use Current Transcript"
 msgstr ""
