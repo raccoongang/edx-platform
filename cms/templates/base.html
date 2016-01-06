@@ -33,6 +33,10 @@ import json
     <%include file="widgets/segment-io.html" />
 
     <%block name="header_extras"></%block>
+    <script type="text/javascript" src="${static.url("js/jquery-1.11.3.js")}"></script>
+    <script type="text/javascript" src="${static.url("js/d3.min.js")}"></script>
+    <script type="text/javascript" src="${static.url("js/jquery.flightindicators.js")}"></script>
+    <link rel="stylesheet" type="text/css" href="${static.url("css/flightindicators.css")}" />
   </head>
 
   <body class="${static.dir_rtl()} <%block name='bodyclass'></%block> lang_${LANGUAGE_CODE}">
