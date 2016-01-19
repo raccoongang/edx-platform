@@ -85,6 +85,7 @@ from util.views import ensure_valid_course_key
 from eventtracking import tracker
 import analytics
 from courseware.url_helpers import get_redirect_url
+from openedx.core.djangoapps.credit.utils import get_visible_courses
 
 log = logging.getLogger("edx.courseware")
 
@@ -126,12 +127,14 @@ def courses(request):
     course_discovery_meanings = getattr(settings, 'COURSE_DISCOVERY_MEANINGS', {})
     if not settings.FEATURES.get('ENABLE_COURSE_DISCOVERY'):
         courses_list = get_courses(request.user, request.META.get('HTTP_HOST'))
-
         if microsite.get_value("ENABLE_COURSE_SORTING_BY_START_DATE",
                                settings.FEATURES["ENABLE_COURSE_SORTING_BY_START_DATE"]):
             courses_list = sort_by_start_date(courses_list)
         else:
             courses_list = sort_by_announcement(courses_list)
+
+    # Added filter
+    courses_list = get_visible_courses(request, courses_list)
 
     return render_to_response(
         "courseware/courses.html",

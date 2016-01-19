@@ -36,3 +36,12 @@ def _is_in_course_tree(block):
         ancestor = ancestor.get_parent()
 
     return ancestor is not None
+
+
+def get_visible_courses(request, courses):
+    """
+    Check course that it is public, user is staff or author this course
+    """
+    user = request.user
+    can_see = lambda course: course.ispublic or (course.edited_by == user.id) or user.is_staff
+    return [course for course in courses if can_see(course)]
