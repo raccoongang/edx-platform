@@ -43,7 +43,7 @@ def _is_in_course_tree(block):
 
 def get_visible_courses(request, courses):
     """
-    Check course that it is public, user is staff or author this course
+    Check course that user can see depending on roles
     """
 
     COURSE_ACCESS_ROLE_LIST = [
