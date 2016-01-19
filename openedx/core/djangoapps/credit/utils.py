@@ -3,6 +3,9 @@ Utilities for the credit app.
 """
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.django import modulestore
+from student.roles import (GlobalStaff, CourseStaffRole, CourseInstructorRole,
+                           CourseCreatorRole, OrgRole)
+from student.models import CourseAccessRole
 
 
 def get_course_blocks(course_key, category):
@@ -42,6 +45,20 @@ def get_visible_courses(request, courses):
     """
     Check course that it is public, user is staff or author this course
     """
+
+    COURSE_ACCESS_ROLE_LIST = [
+        'staff',
+        'instructor',
+        CourseInstructorRole.ROLE,
+        CourseStaffRole.ROLE,
+        CourseCreatorRole.ROLE
+    ]
     user = request.user
-    can_see = lambda course: course.ispublic or (course.edited_by == user.id) or user.is_staff
-    return [course for course in courses if can_see(course)]
+    course_ids = CourseAccessRole.objects.filter(
+                user_id=user.id, role__in=COURSE_ACCESS_ROLE_LIST).values_list('course_id', flat=True).distinct()
+    orgs = CourseAccessRole.objects.filter(
+            user_id=user.id, role__in=COURSE_ACCESS_ROLE_LIST, course_id=None).values_list('org', flat=True).distinct()
+
+    res = lambda course: course.ispublic or course.id.to_deprecated_string() in course_ids or course.org in orgs
+
+    return filter(res, courses)
