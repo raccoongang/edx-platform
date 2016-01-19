@@ -104,7 +104,7 @@ class XQueueCertInterface(object):
         )
         self.whitelist = CertificateWhitelist.objects.all()
         self.restricted = UserProfile.objects.filter(allow_certificate=False)
-        self.use_https = True
+        self.use_https = False
 
     def regen_cert(self, student, course_id, course=None, forced_grade=None, template_file=None, generate_pdf=True):
         """(Re-)Make certificate for a particular student in a particular course
@@ -268,11 +268,11 @@ class XQueueCertInterface(object):
             if mode_is_verified and user_is_verified:
                 template_pdf = "certificate-template-{id.org}-{id.course}-verified.pdf".format(id=course_id)
             elif mode_is_verified and not user_is_verified:
-                template_pdf = "certificate-template-{id.org}-{id.course}.pdf".format(id=course_id)
+                template_pdf = 'blank-portrait.pdf' #"certificate-template-{id.org}-{id.course}.pdf".format(id=course_id)
                 cert_mode = GeneratedCertificate.MODES.honor
             else:
                 # honor code and audit students
-                template_pdf = "certificate-template-{id.org}-{id.course}.pdf".format(id=course_id)
+                template_pdf = 'blank-portrait.pdf' #"certificate-template-{id.org}-{id.course}.pdf".format(id=course_id)
             if forced_grade:
                 grade['grade'] = forced_grade
 
@@ -482,7 +482,7 @@ class XQueueCertInterface(object):
 
         """
         callback_url = u'{protocol}://{base_url}{path}'.format(
-            protocol=("https" if self.use_https else "http"),
+            protocol= ("https" if self.use_https else "http"),
             base_url=settings.SITE_NAME,
             path=callback_url_path
         )
