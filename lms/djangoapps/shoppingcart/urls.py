@@ -28,6 +28,9 @@ urlpatterns = [
     url(r'^billing_details/$', views.billing_details, name='billing_details'),
     url(r'^verify_cart/$', views.verify_cart, name='shoppingcart.views.verify_cart'),
     url(r'^add/program/(?P<uuid>[0-9a-f-]+)/', views.add_program_to_cart, name='add_program_to_cart'),
+    url(r'^paypal_create/$', views.paypal_create, name='shoppingcart.views.paypal_create'),
+    url(r'^paypal_cancel/$', views.paypal_cancel, name='shoppingcart.views.paypal_cancel'),
+
 ]
 
 if settings.FEATURES.get('ENABLE_PAYMENT_FAKE'):
