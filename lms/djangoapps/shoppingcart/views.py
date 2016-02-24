@@ -1,6 +1,7 @@
 import logging
 import datetime
 import decimal
+import paypalrestsdk
 import pytz
 from ipware.ip import get_ip
 from django.db.models import Q
@@ -650,7 +651,6 @@ def _get_verify_flow_redirect(order):
 
 
 @csrf_exempt
-@require_POST
 def postpay_callback(request):
     """
     Receives the POST-back from processor.
@@ -661,7 +661,13 @@ def postpay_callback(request):
     If unsuccessful the order will be left untouched and HTML messages giving more detailed error info will be
     returned.
     """
-    params = request.POST.dict()
+    if request.method == 'POST' and settings.CC_PROCESSOR_NAME in ['CyberSource2', 'CyberSource']:
+        params = request.POST.dict()
+    elif request.method == 'GET' and settings.CC_PROCESSOR_NAME == 'PayPal':
+        params = request.GET.dict()
+    else:
+        return HttpResponseNotFound()
+
     result = process_postpay_callback(params)
 
     if result['success']:
@@ -1008,3 +1014,109 @@ def csv_report(request):
 
     else:
         return HttpResponseBadRequest("HTTP Method Not Supported")
+
+
+@csrf_exempt
+@login_required
+@enforce_shopping_cart_enabled
+def paypal_create(request):
+    cart = Order.get_cart_for_user(request.user)
+    shoppingcart_items = verify_for_closed_enrollment(cart.user, cart)[-1]
+
+    if shoppingcart_items:
+        data = {
+            'intent': 'sale',
+            'redirect_urls': {
+                'return_url': request.build_absolute_uri(reverse("shoppingcart.views.postpay_callback")),
+                'cancel_url': request.build_absolute_uri(reverse("shoppingcart.views.paypal_cancel")),
+            },
+            'payer': {
+                'payment_method': 'paypal',
+            },
+            'transactions': [{
+                'amount': {
+                    'total': unicode(cart.total_cost),
+                    'currency': cart.currency.upper(),
+                },
+                'item_list': {
+                    'items': [
+                        {
+                            'quantity': item.qty,
+                            # PayPal requires that item names be at most 127 characters long.
+                            'name': course.display_name[:127],
+                            'price': unicode(item.unit_cost),
+                            'currency': item.currency.upper(),
+                        }
+                        for item, course in shoppingcart_items
+                    ],
+                },
+                'invoice_number': cart.id,
+            }],
+        }
+        payment = paypalrestsdk.Payment(data)
+        payment.create()
+
+        if not payment.success():
+            payment_error = payment.error
+            log.info(
+                u"Order {} processed (but not completed) with params: {}".format(cart.id, json.dumps(payment_error))
+            )
+
+            cart.processor_reply_dump = json.dumps(payment_error)
+            cart.save()
+
+            request.session['attempting_upgrade'] = False
+            payment_support_email = microsite.get_value('payment_support_email', settings.PAYMENT_SUPPORT_EMAIL)
+            error_msg = _(
+                u"Sorry! Our payment processor sent us back a payment confirmation that had inconsistent data! "
+                u"We apologize that we cannot verify whether the charge went through and take further action on your order. "
+                u"The specific error message is: {msg} "
+                u"Your credit card may possibly have been charged. Contact us with payment-specific questions at {email}."
+            ).format(
+                msg=u'<span class="exception_msg">{msg}</span>'.format(msg=payment_error['message']),
+                email=payment_support_email
+            )
+
+            return render_error_html(error_msg, order=cart)
+
+        log.info(u"Successfully created PayPal payment {} for basket {}.".format(payment.id, cart.id))
+        approval_url = None
+
+        for link in payment.links:
+            if link.rel == 'approval_url':
+                approval_url = link.href
+                break
+        else:
+            log.error(
+                u"Approval URL missing from PayPal payment {}.".format(payment.id)
+            )
+
+        if approval_url:
+            cart.start_purchase()
+            return HttpResponseRedirect(approval_url)
+
+        log.error(
+            u"Order {} processed (but not completed) with params: {}".format(cart.id, json.dumps(payment.links))
+        )
+    raise Http404
+
+
+def paypal_cancel(request):
+
+    request.session['attempting_upgrade'] = False
+    payment_support_email = microsite.get_value('payment_support_email', settings.PAYMENT_SUPPORT_EMAIL)
+    error_msg = _(
+        u"Sorry! Our payment processor sent us back a message saying that you have cancelled this transaction. "
+        u"The items in your shopping cart will exist for future purchase. "
+        u"If you feel that this is in error, please contact us with payment-specific questions at {email}."
+    ).format(
+        email=payment_support_email
+    )
+
+    return render_error_html(error_msg)
+
+
+def render_error_html(msg, order=None):
+    error_html = u'<p class="error_msg">{msg}</p>'.format(msg=msg)
+    return render_to_response('shoppingcart/error.html', {'order': order,
+                                                          'error_html': error_html})
