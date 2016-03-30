@@ -58,6 +58,8 @@ class ConditionalSteps(object):
             display_name="Test Conditional",
             metadata=metadata,
             sources_list=[world.scenario_dict['CONDITION_SOURCE'].location],
+            condional_attr=condition,
+            conditional_value=cond_value,
         )
 
         world.ItemFactory(
