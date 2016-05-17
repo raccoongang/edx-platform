@@ -1002,3 +1002,9 @@ if settings.FEATURES.get('ENABLE_FINANCIAL_ASSISTANCE_FORM'):
             name='submit_financial_assistance_request'
         )
     )
+
+## Custom additional
+
+urlpatterns += (
+    url(r'^tinymce/', include('tinymce.urls')),
+)

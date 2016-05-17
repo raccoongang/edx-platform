@@ -2683,3 +2683,18 @@ DEPRECATED_ADVANCED_COMPONENT_TYPES = []
 # Cutoff date for granting audit certificates
 
 AUDIT_CERT_CUTOFF_DATE = None
+
+###Custom additional
+
+INSTALLED_APPS += (
+    'tinymce',
+    'info_pages',
+    'hvad',
+)
+
+TINYMCE_DEFAULT_CONFIG = {
+    'plugins': "table,spellchecker,paste,searchreplace",
+    'theme': "advanced",
+    'cleanup_on_startup': True,
+    'custom_undo_redo_levels': 10,
+}
