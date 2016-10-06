@@ -2503,10 +2503,15 @@ def _get_course_programs(user, user_enrolled_courses):  # pylint: disable=invali
                         'course_count': len(program['course_codes']),
                         'display_name': program['name'],
                         'program_id': program['id'],
-                        'program_marketing_url': urljoin(
-                            settings.MKTG_URLS.get('ROOT'),
-                            'xseries' + '/{}'
-                        ).format(program['marketing_slug'])
+                        # TODO uncomment when understand
+                        # 'program_marketing_url': urljoin(
+                        #     settings.MKTG_URLS.get('ROOT'),
+                        #     'xseries' + '/{}'
+                        # ).format(program['marketing_slug'])
+                        'program_marketing_url': reverse(
+                            'program_details_view',
+                            kwargs={'program_id': program['id']}
+                        )
                     })
                     programs_for_course['category'] = program.get('category')
                     programs_for_course['display_category'] = get_display_category(program)

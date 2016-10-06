@@ -2088,6 +2088,7 @@ INSTALLED_APPS = (
 
     # Email marketing integration
     'email_marketing',
+    'program_marketing',
 )
 
 # Migrations which are not in the standard module "migrations"

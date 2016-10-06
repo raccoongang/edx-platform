@@ -1207,4 +1207,3 @@ AFFILIATE_COOKIE_NAME = 'affiliate_id'
 #####RACCOONGANG########
 DOC_LINK_BASE_URL = ''
 #####RACCOONGANG########
-

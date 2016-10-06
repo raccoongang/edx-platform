@@ -1,0 +1,133 @@
+<section class="promo-box">
+    <div class="promo-box_wrapper">
+        <img class="promo-box_img" src="https://www.edx.org/sites/default/files/product/banner/microsoft-logo_rgb_c-wht_copy_447_0.png" alt="">
+        <div class="promo-box_holder">
+            <h1 class="promo-box_heading">Microsoft Professional Program Certificate in Data Science</h1>
+            <p class="promo-box_text">Gain the skills you need to get the data science job you want.</p>
+            <a class="promo-box_button" href="#">See Courses</a>
+        </div>
+    </div>
+</section>
+<section class="details">
+    <aside class="details_aside">
+        <div class="details_box">
+            <h2 class="details_heading">Program Details</h2>
+            <ul class="info-list">
+                <li class="info-list_item">
+                    <strong class="info-list_heading">Effort</strong>
+                    <span class="info-list_text">9 courses (16-32 hours each)</span>
+                </li>
+                <li class="info-list_item">
+                    <strong class="info-list_heading">Final Project:</strong>
+                    <span class="info-list_text">Apply the knowledge and skills acquired (6-10 hours)</span>
+                </li>
+                <li class="info-list_item">
+                    <strong class="info-list_heading">Institution</strong>
+                    <span class="info-list_text">  <a class="info-list_link" href="#">Microsoft</a>, <a class="info-list_link" href="#">ColumbiaX</a></span>
+                </li>
+                <li class="info-list_item">
+                    <strong class="info-list_heading">Price</strong>
+                    <span class="info-list_text">$49-$99 per course</span>
+                </li>
+            </ul>
+            <hr class="details_divider">
+            <h2 class="details_heading">How To Complete The Program</h2>
+            <ul class="sidebar-list">
+                <li class="sidebar-list_item">Successfully earn a Verified Certificate for a course in all nine skill areas</li>
+                <li class="sidebar-list_item">Pass the final Capstone Project</li>
+            </ul>
+        </div>
+        <h2 class="details_heading">Hear From Data Scientists</h2>
+        <iframe width="380" height="240" src="https://www.youtube.com/embed/etAIpkdhU9Q" frameborder="0" allowfullscreen></iframe>
+    </aside>
+    <div class="details_content">
+        <div class="details_text-holder">
+            <p class="details_text">Accelerate your career in one of the hottest fields – data science. Learn data science fundamentals, key data science tools, and widely-used programming languages from industry and academic experts in this unique program created by Microsoft.</p>
+            <p class="details_text">Built in collaboration with leading universities and employers, the Microsoft Professional Program Certificate in Data Science will develop the analytical and programming skills you need to take advantage of the 1.5 million career opportunities available now in data science.
+            </p>
+        </div>
+        <h3 class="details_sub-heading">You'll Learn To</h3>
+        <ul class="details_list">
+            <li class="details_list-item">Use Microsoft Excel to explore data</li>
+            <li class="details_list-item">Use Transact-SQL to query a relational database</li>
+            <li class="details_list-item">Create data models and visualize data using Excel or Power BI</li>
+            <li class="details_list-item">Apply statistical methods to data</li>
+            <li class="details_list-item">Use R or Python to explore and transform data</li>
+            <li class="details_list-item">Follow a data science methodology</li>
+            <li class="details_list-item">Create and validate machine learning models with Azure Machine Learning</li>
+            <li class="details_list-item">Write R or Python code to build machine learning models</li>
+            <li class="details_list-item">Apply data science techniques to common scenarios</li>
+            <li class="details_list-item">Implement a machine learning solution for a given data problem</li>
+        </ul>
+        <p class="details_text">Register for the Microsoft Professional Program Certificate in Data Science by enrolling in one of the courses below. Learn more about the Microsoft Professional Program Certificate in Data Science.</p>
+        <h2 class="details_header">How It Works</h2>
+        <p class="details_text">Made up of three units and a final project, the Microsoft Professional Program Certificate in Data Science provides a comprehensive program of study in data science. Learners can choose from different courses within each unit of study. </p>
+    </div>
+</section>
+<section class="unit-section">
+    <h1 class="unit-section_heading">Data Science Professional Program - Unit Overview</h1>
+    <article class="unit-section_box">
+        <img class="unit-section_img" width="279" height="157"  src="https://www.edx.org/sites/default/files/product/images/unit_1-_data_science_fundamentals.jpg" alt="course img">
+        <div class="unit-section_content">
+            <h1 class="unit-section_heading">Unit 1 - Fundamentals</h1>
+            <p class="unit-section_text">Learn data science basics. Explore topics like data queries, data analysis, data visualization and how statistics informs data science practices. Please choose from Course 3a or Course 3b to complete the unit. </p>
+            <ul class="unit-section_list">
+                <li class="unit-section_list-item">
+                    <div class="unit-section_list-cell">
+                        <span class="unit-section_list-span">Course 1:</span> <a class="unit-section_list-link" href="#">Data Science Orientation</a>
+                    </div>
+                </li>
+                <li class="unit-section_list-item">
+                    <div class="unit-section_list-cell">
+                        <span class="unit-section_list-span">Course 2:</span> <a class="unit-section_list-link" href="#">Querying Data with Transact-SQL</a>
+                    </div>
+                </li>
+                <li class="unit-section_list-item">
+                    <div class="unit-section_list-cell">
+                        <span class="unit-section_list-span">Course 3a:</span> <a class="unit-section_list-link" href="#">Analyzing and Visualizing Data with Excel</a>
+                    </div>
+                    <div class="unit-section_list-cell">
+                        <span class="unit-section_list-span">Course 3b:</span> <a class="unit-section_list-link" href="#">Analyzing and Visualizing Data with Power BI</a>
+                    </div>
+                </li>
+                <li class="unit-section_list-item">
+                    <div class="unit-section_list-cell">
+                        <span class="unit-section_list-span">Course 4:</span> <a class="unit-section_list-link" href="#">Statistical Thinking for Data Science and Analytics</a> from Columbia University
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </article>
+    <article class="unit-section_box">
+        <img class="unit-section_img" width="279" height="157"  src="https://www.edx.org/sites/default/files/product/images/unit_1-_data_science_fundamentals.jpg" alt="course img">
+        <div class="unit-section_content">
+            <h1 class="unit-section_heading">Unit 1 - Fundamentals</h1>
+            <p class="unit-section_text">Learn data science basics. Explore topics like data queries, data analysis, data visualization and how statistics informs data science practices. Please choose from Course 3a or Course 3b to complete the unit. </p>
+            <ul class="unit-section_list">
+                <li class="unit-section_list-item">
+                    <div class="unit-section_list-cell">
+                        <span class="unit-section_list-span">Course 1:</span> <a class="unit-section_list-link" href="#">Data Science Orientation</a>
+                    </div>
+                </li>
+                <li class="unit-section_list-item">
+                    <div class="unit-section_list-cell">
+                        <span class="unit-section_list-span">Course 2:</span> <a class="unit-section_list-link" href="#">Querying Data with Transact-SQL</a>
+                    </div>
+                </li>
+                <li class="unit-section_list-item">
+                    <div class="unit-section_list-cell">
+                        <span class="unit-section_list-span">Course 3a:</span> <a class="unit-section_list-link" href="#">Analyzing and Visualizing Data with Excel</a>
+                    </div>
+                    <div class="unit-section_list-cell">
+                        <span class="unit-section_list-span">Course 3b:</span> <a class="unit-section_list-link" href="#">Analyzing and Visualizing Data with Power BI</a>
+                    </div>
+                </li>
+                <li class="unit-section_list-item">
+                    <div class="unit-section_list-cell">
+                        <span class="unit-section_list-span">Course 4:</span> <a class="unit-section_list-link" href="#">Statistical Thinking for Data Science and Analytics</a> from Columbia University
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </article>
+</section>
