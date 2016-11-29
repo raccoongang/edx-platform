@@ -682,6 +682,8 @@ class XModuleMixin(XModuleFields, XBlock):
 
             metadata_fields[field.name] = self._create_metadata_editor_info(field)
 
+        self.add_field_location(metadata_fields)
+
         return metadata_fields
 
     def _create_metadata_editor_info(self, field):
@@ -743,6 +745,20 @@ class XModuleMixin(XModuleFields, XBlock):
         metadata_field_editor_info['options'] = [] if values is None else values
 
         return metadata_field_editor_info
+
+    def add_field_location(self, metadata_fields):
+        if self.system.modulestore.get_course(self.location.course_key).display_block_location:
+            metadata_fields['location'] = {
+                'default_value': '',
+                'explicitly_set': False,
+                'display_name': self.runtime.service(self, "i18n").ugettext(u'Location'),
+                'help': u'',
+                'type': 'Generic',
+                'value': self.location,
+                'field_name': 'location',
+                'options': [],
+                'non_editable': True
+            }
 
 
 class ProxyAttribute(object):

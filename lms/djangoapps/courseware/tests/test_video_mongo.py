@@ -1176,7 +1176,8 @@ class VideoDescriptorTest(TestCase, VideoDescriptorTestBase):
         super(VideoDescriptorTest, self).setUp()
         self.descriptor.runtime.handler_url = MagicMock()
 
-    def test_get_context(self):
+    @patch('xmodule.x_module.XModuleMixin.add_field_location')
+    def test_get_context(self, add_field_location_mock):
         """"
         Test get_context.
 

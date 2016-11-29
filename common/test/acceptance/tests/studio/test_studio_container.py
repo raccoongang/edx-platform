@@ -311,6 +311,26 @@ class EditContainerTest(NestedVerticalTest):
         #note we're expecting the <p> tags to have been removed
         self.assertEqual(component.student_content, "modified content")
 
+    def test_presence_field_location_in_settings_xblock(self):
+        self.course_fixture.add_advanced_settings({u'display_block_location': {'value': False}})
+        self.course_fixture.configure_course_advanced_settings()
+        unit = self.go_to_unit_page()
+        component = unit.xblocks[1]
+        component.edit()
+        component_editor = ComponentEditorView(self.browser, component.locator)
+        location = component_editor.get_setting_element('Location')
+        self.assertIsNone(location)
+        component_editor.cancel()
+
+        self.course_fixture.add_advanced_settings({u'display_block_location': {'value': True}})
+        self.course_fixture.configure_course_advanced_settings()
+        component.edit()
+        component_editor = ComponentEditorView(self.browser, component.locator)
+        location = component_editor.get_setting_element('Location')
+        self.assertIsNotNone(location)
+        self.assertIsNotNone(location.get_attribute('readonly'))
+        self.assertEqual(location.get_attribute('value'), component_editor.locator)
+
 
 @attr(shard=3)
 class EditVisibilityModalTest(ContainerBase):

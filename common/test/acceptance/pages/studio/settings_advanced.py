@@ -212,6 +212,7 @@ class AdvancedSettingsPage(CoursePage):
             'annotation_token_secret',
             'showanswer',
             'show_calculator',
+            'display_block_location',
             'show_reset_button',
             'static_asset_path',
             'teams_configuration',

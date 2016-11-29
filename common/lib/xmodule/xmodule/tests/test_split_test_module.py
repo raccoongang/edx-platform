@@ -222,7 +222,8 @@ class SplitTestModuleStudioTest(SplitTestModuleTest):
         expected_url = '/group_configurations/edX/xml_test_course/101#0'
         self.assertEqual(expected_url, self.split_test_module.group_configuration_url)
 
-    def test_editable_settings(self):
+    @patch('xmodule.x_module.XModuleMixin.add_field_location')
+    def test_editable_settings(self, add_field_location_mock):
         """
         Test the setting information passed back from editable_metadata_fields.
         """
@@ -244,7 +245,8 @@ class SplitTestModuleStudioTest(SplitTestModuleTest):
         self.assertIn(SplitTestDescriptor.user_partitions, non_editable_metadata_fields)
         self.assertNotIn(SplitTestDescriptor.display_name, non_editable_metadata_fields)
 
-    def test_available_partitions(self):
+    @patch('xmodule.x_module.XModuleMixin.add_field_location')
+    def test_available_partitions(self, add_field_location_mock):
         """
         Tests that the available partitions are populated correctly when editable_metadata_fields are called
         """

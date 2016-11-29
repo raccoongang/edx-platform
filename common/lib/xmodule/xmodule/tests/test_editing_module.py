@@ -3,7 +3,7 @@ import unittest
 import os
 import logging
 
-from mock import Mock
+from mock import Mock, patch
 from pkg_resources import resource_string
 from opaque_keys.edx.locations import Location
 from xmodule.editing_module import TabsEditingDescriptor
@@ -69,7 +69,8 @@ class TabsEditingDescriptorTestCase(unittest.TestCase):
         self.assertEqual(css['scss'].pop(), added_css)
         self.assertEqual(css['css'].pop(), added_css)
 
-    def test_get_context(self):
+    @patch('xmodule.x_module.XModuleMixin.add_field_location')
+    def test_get_context(self, add_field_location_mock):
         """"test get_context"""
         rendered_context = self.descriptor.get_context()
         self.assertListEqual(rendered_context['tabs'], self.tabs)

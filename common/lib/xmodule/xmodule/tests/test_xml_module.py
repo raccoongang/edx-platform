@@ -3,7 +3,7 @@
 
 import unittest
 
-from mock import Mock
+from mock import Mock, patch
 from nose.tools import assert_equals, assert_not_equals, assert_true, assert_false, assert_in, assert_not_in  # pylint: disable=no-name-in-module
 
 from xblock.field_data import DictFieldData
@@ -134,7 +134,9 @@ class InheritingFieldDataTest(unittest.TestCase):
 
 
 class EditableMetadataFieldsTest(unittest.TestCase):
-    def test_display_name_field(self):
+
+    @patch('xmodule.x_module.XModuleMixin.add_field_location')
+    def test_display_name_field(self, add_field_location_mock):
         editable_fields = self.get_xml_editable_fields(DictFieldData({}))
         # Tests that the xblock fields (currently tags and name) get filtered out.
         # Also tests that xml_attributes is filtered out of XmlDescriptor.
@@ -144,7 +146,8 @@ class EditableMetadataFieldsTest(unittest.TestCase):
             explicitly_set=False, value=None, default_value=None
         )
 
-    def test_override_default(self):
+    @patch('xmodule.x_module.XModuleMixin.add_field_location')
+    def test_override_default(self, add_field_location_mock):
         # Tests that explicitly_set is correct when a value overrides the default (not inheritable).
         editable_fields = self.get_xml_editable_fields(DictFieldData({'display_name': 'foo'}))
         self.assert_field_values(
@@ -152,7 +155,8 @@ class EditableMetadataFieldsTest(unittest.TestCase):
             explicitly_set=True, value='foo', default_value=None
         )
 
-    def test_integer_field(self):
+    @patch('xmodule.x_module.XModuleMixin.add_field_location')
+    def test_integer_field(self, add_field_location):
         descriptor = self.get_descriptor(DictFieldData({'max_attempts': '7'}))
         editable_fields = descriptor.editable_metadata_fields
         self.assertEqual(8, len(editable_fields))
@@ -173,7 +177,8 @@ class EditableMetadataFieldsTest(unittest.TestCase):
             options=TestFields.max_attempts.values
         )
 
-    def test_inherited_field(self):
+    @patch('xmodule.x_module.XModuleMixin.add_field_location')
+    def test_inherited_field(self, add_field_location_mock):
         kvs = InheritanceKeyValueStore(initial_values={}, inherited_settings={'showanswer': 'inherited'})
         model_data = KvsFieldData(kvs)
         descriptor = self.get_descriptor(model_data)
@@ -196,7 +201,8 @@ class EditableMetadataFieldsTest(unittest.TestCase):
             explicitly_set=True, value='explicit', default_value='inheritable value'
         )
 
-    def test_type_and_options(self):
+    @patch('xmodule.x_module.XModuleMixin.add_field_location')
+    def test_type_and_options(self, add_field_location_mock):
         # test_display_name_field verifies that a String field is of type "Generic".
         # test_integer_field verifies that a Integer field is of type "Integer".
 
