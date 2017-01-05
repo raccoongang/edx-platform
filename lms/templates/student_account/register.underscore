@@ -26,10 +26,11 @@
                     <span class="text"><%- gettext("Create an account using") %></span>
                 </h2>
             </div>
+            <div class="social-icons">
             <%
             _.each( context.providers, function( provider) {
                 if ( provider.registerUrl ) { %>
-                    <button type="button" class="button button-primary button-<%- provider.id %> login-provider register-<%- provider.id %>" data-provider-url="<%- provider.registerUrl %>">
+<!--                     <button type="button" class="button button-primary button-<%- provider.id %> login-provider register-<%- provider.id %>" data-provider-url="<%- provider.registerUrl %>">
                         <div class="icon <% if ( provider.iconClass ) { %>fa <%- provider.iconClass %><% } %>" aria-hidden="true">
                             <% if ( provider.iconImage ) { %>
                                 <img class="icon-image" src="<%- provider.iconImage %>" alt="<%- provider.name %> icon" />
@@ -37,10 +38,13 @@
                         </div>
                         <span aria-hidden="true"><%- provider.name %></span>
                         <span class="sr"><%- _.sprintf( gettext("Create account using %(providerName)s."), {providerName: provider.name} ) %></span>
-                    </button>
+                    </button> -->
+                    <div id="<%- provider.name %>" class="icon-holder">
+                        <a href="<%- provider.registerUrl %>"><img id="<%- provider.id %>" src="<%- provider.iconImage %>"></a>
+                    </div>
             <%  }
             }); %>
-
+            </div>
             <% if ( context.hasSecondaryProviders ) { %>
                 <button type="button" class="button-secondary-login form-toggle" data-type="institution_login">
                     <%- gettext("Use my institution/campus credentials") %>
