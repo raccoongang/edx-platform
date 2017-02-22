@@ -2229,6 +2229,11 @@ INSTALLED_APPS = (
 
     # Email marketing integration
     'email_marketing',
+    'program_marketing',
+
+    # Gamification
+    'gamification_metric',
+    'referrals',
 
     # additional release utilities to ease automation
     'release_util',
@@ -2255,6 +2260,11 @@ INSTALLED_APPS = (
     'experiments',
     'edeos',
 )
+
+# Migrations which are not in the standard module "migrations"
+MIGRATION_MODULES = {
+    'social.apps.django_app.default': 'social.apps.django_app.default.south_migrations'
+}
 
 ######################### CSRF #########################################
 
