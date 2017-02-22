@@ -48,6 +48,20 @@ from openedx.core.djangolib.markup import HTML, Text
         CourseInfoEvents();
 </%static:require_module_async>
 
+<%block name="js_extra">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function () {
+        var domain_address = document.location.origin;
+        $.post(domain_address + "/api/get_referral_hash_key/", {'course_id': '${str(course_id)}'},
+            function (data) {
+                $(".referral-btn").attr('data-clipboard-text', (domain_address + data.hashkey));
+        });
+        new ClipboardJS('.referral-btn');
+    });
+</script>
+</%block>
+
 <%block name="bodyclass">view-in-course view-course-info ${course.css_class or ''}</%block>
 
 <main id="main" aria-label="Content" tabindex="-1">
@@ -74,6 +88,11 @@ from openedx.core.djangolib.markup import HTML, Text
               <a href="${resume_course_url}" class="last-accessed-link">${_("Resume Course")}</a>
           </div>
         % endif
+        <div class="page-header-secondary">
+          <a class="referral-btn last-accessed-link" data-clipboard-action="copy" data-clipboard-text="Just because you can doesn't mean you should — clipboard.js">
+            Copy referral link
+        </a>
+        </div>
       </div>
       <div class="info-wrapper">
       % if user.is_authenticated:

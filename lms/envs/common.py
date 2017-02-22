@@ -394,6 +394,15 @@ FEATURES = {
 
     # Whether to display the account deletion section the account settings page
     'ENABLE_ACCOUNT_DELETION': True,
+
+    # Gamification application configs
+    'ENABLE_GAMMA': False,
+    'GAMMA_PROPERTIES': {
+        'PUBLIC_URL': '',  # for unauthorized GET requests from user browser
+        'API_URL': '',  # for authorized requests from LMS to Gamma API
+        'APP_KEY': '',  # for requests to API_URL
+        'APP_SECRET': '',  # for requests to API_URL
+    },
 }
 
 # Settings for the course reviews tool template and identification key, set either to None to disable course reviews
@@ -2238,6 +2247,10 @@ INSTALLED_APPS = [
 
     # Email marketing integration
     'email_marketing.apps.EmailMarketingConfig',
+
+    # Gamification
+    'gamification_metric.apps.GamificationMetricConfig',
+    'referrals.apps.ReferralsConfig',
 
     # additional release utilities to ease automation
     'release_util',

@@ -4,6 +4,7 @@
 
 <%!
 from django.urls import reverse
+from django.conf import settings
 from django.utils.translation import ugettext as _
 
 from openedx.core.djangoapps.user_api.accounts.image_helpers import get_profile_image_urls_for_user
@@ -54,6 +55,9 @@ profile_image_url = get_profile_image_urls_for_user(self.real_user)['medium']
             <ul class="dropdown-menu list-divided is-hidden" id="${_("Usermenu")}" tabindex="-1">
                 <%block name="navigation_dropdown_menu_links" >
                     <li class="dropdown-item item has-block-link"><a href="${reverse('dashboard')}" role="menuitem" class="action dropdown-menuitem">${_("Dashboard")}</a></li>
+                    % if settings.FEATURES.get('ENABLE_GAMMA', False):
+                    <li class="dropdown-item item has-block-link"><a href="${reverse('gamification')}" role="menuitem" class="action dropdown-menuitem">${_("Performance")}</a></li>
+                    % endif
                     <li class="dropdown-item item has-block-link"><a href="${reverse('account_settings')}" role="menuitem" class="action dropdown-menuitem">${_("Account")}</a></li>
                 </%block>
                 <li class="dropdown-item item has-block-link"><a href="${reverse('logout')}" role="menuitem" class="action dropdown-menuitem">${_("Sign Out")}</a></li>

@@ -41,6 +41,13 @@ FEATURES.update({
     'SHOW_HEADER_LANGUAGE_SELECTOR': True,
     'ENABLE_ENTERPRISE_INTEGRATION': False,
     'ENABLE_COMBINED_LOGIN_REGISTRATION': True,
+    'ENABLE_GAMMA': True,
+    'GAMMA_PROPERTIES': {
+        'PUBLIC_URL': 'http://localhost:9000/api/v0/',
+        'API_URL': 'http://gamma:9000/api/v0/',
+        'APP_KEY': '',
+        'APP_SECRET': '',
+    },
 })
 
 ENABLE_MKTG_SITE = os.environ.get('ENABLE_MARKETING_SITE', False)
