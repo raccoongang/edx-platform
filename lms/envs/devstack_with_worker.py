@@ -18,6 +18,12 @@ from lms.envs.devstack import *
 
 # Require a separate celery worker
 CELERY_ALWAYS_EAGER = False
+CELERYBEAT_SCHEDULE = {
+    'student_counter': {
+    'task': 'openedx.core.djangoapps.user_statistics.tasks.count_students',
+    'schedule': 30,
+    }
+}
 
 # Disable transaction management because we are using a worker. Views
 # that request a task and wait for the result will deadlock otherwise.
