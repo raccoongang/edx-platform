@@ -2,8 +2,6 @@
 This file contains periodic tasks for global_statistics, which will collect data about Open eDX users
 and send this data to appropriate service for further processing.
 """
-# import json
-
 import requests
 from celery.task import task
 
