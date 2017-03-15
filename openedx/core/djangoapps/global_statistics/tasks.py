@@ -9,7 +9,7 @@ from student.models import UserProfile
 from lms.envs.devstack_with_worker import PERIODIC_TASK_POST_URL
 
 
-@task(ignore_result=True)
+@task
 def count_students():
     """
     Function that gathers information about the students amount and
