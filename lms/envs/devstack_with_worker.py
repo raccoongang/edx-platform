@@ -27,12 +27,12 @@ CELERY_ALWAYS_EAGER = False
 CELERYBEAT_SCHEDULE = {
     'student_counter': {
     'task': 'openedx.core.djangoapps.global_statistics.tasks.count_students',
-    'schedule': 30,
+    'schedule': 20,
     }
 }
 
 # URL to send data within periodic task processing.
-PERIODIC_TASK_POST_URL = 'http://requestb.in/ptejf9pt'
+PERIODIC_TASK_POST_URL = 'http://192.168.1.139:7000/receive/'
 
 # Disable transaction management because we are using a worker. Views
 # that request a task and wait for the result will deadlock otherwise.
