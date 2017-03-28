@@ -26,13 +26,23 @@ CELERY_ALWAYS_EAGER = False
 # we can define them in settings.py in such way.
 CELERYBEAT_SCHEDULE = {
     'student_counter': {
-    'task': 'openedx.core.djangoapps.global_statistics.tasks.count_students',
+    'task': 'openedx.core.djangoapps.global_statistics.tasks.count_data',
     'schedule': 20,
     }
 }
 
 # URL to send data within periodic task processing.
 PERIODIC_TASK_POST_URL = 'http://192.168.1.139:7000/receive/'
+
+# Geographical coordinates of the eDX platform server location in decimal degrees up to the city.
+# Please use these settings if your eDX server's location differ from its physical location.
+# For example, you use cloud services like Amazon(AWS), Microsoft(Azure), etc.
+# Otherwise, leave these settings as is.
+
+# Example of usage: 'Europe/Kiev' PLATFORM_LATITUDE = '50.4546600', PLATFORM_LONGITUDE = '30.5238000'
+
+PLATFORM_LATITUDE = '50.4546600'
+PLATFORM_LONGITUDE = '30.5238000'
 
 # Disable transaction management because we are using a worker. Views
 # that request a task and wait for the result will deadlock otherwise.
