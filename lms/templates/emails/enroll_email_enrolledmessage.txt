@@ -1,20 +1,96 @@
 <%! from django.utils.translation import ugettext as _ %>
 
-${_("Dear {full_name}").format(full_name=full_name)}
-
-${_("You have been enrolled in {course_name} at {site_name} by a member "
-	"of the course staff. The course should now appear on your {site_name} "
-	"dashboard.").format(
-		course_name=display_name or course.display_name_with_default_escaped,
-		site_name=site_name
-	)}
-
-${_("To start accessing course materials, please visit {course_url}").format(
-		course_url=course_url
-	)}
-
-----
-${_("This email was automatically sent from {site_name} to "
-	"{full_name}").format(
-		site_name=site_name, full_name=full_name
-	)}
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+      <title></title>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+   </head>
+   <body style="margin:0;padding:0;color: #000000;" bgcolor="#ffffff" link="#002acf">
+      <table align="center" cellspacing="0" cellpadding="0" border="0" style="width:100%; max-width:600px; border:0;">
+         <tr>
+            <td style="height: 15px"></td>
+         </tr>
+         <tr>
+            <td style="padding-bottom:0;">
+               <img src="https://edx-stage-deskua.raccoongang.com//static/edx-theme/images/bulk_email/desk-banner.jpg" width="600" height="221" alt="desk" style="display:block;width:600px;height:auto;">
+            </td>
+         </tr>
+         <tr>
+            <td style="height: 20px"></td>
+         </tr>
+         <tr>
+            <td style="font-size: 15px;line-height:15px;color:#000000">${_("Dear {full_name}").format(full_name=full_name)}</td>
+         </tr>
+         <tr>
+            <td style="height: 15px"></td>
+         </tr>
+         <tr>
+            <td style="font-size: 15px;line-height:15px;color:#000000">
+               ${_("You have been enrolled in {course_name} at {site_name} by a member "
+               "of the course staff. The course should now appear on your {site_name} "
+               "dashboard.").format(
+               course_name=display_name or course.display_name_with_default_escaped,
+               site_name=site_name
+               )}
+            </td>
+         </tr>
+         <tr>
+            <td style="height: 10px"></td>
+         </tr>
+         <tr>
+            <td style="font-size: 15px;line-height:15px;color:#000000">
+               ${_("To start accessing course materials, please visit {course_url}").format(
+               course_url=course_url
+               )}
+               ----
+            </td>
+         </tr>
+         <tr>
+            <td style="height: 10px"></td>
+         </tr>
+         <tr>
+            <td>${_("This email was automatically sent from {site_name} to "
+               "{full_name}").format(
+               site_name=site_name, full_name=full_name
+               )}
+            </td>
+         </tr>
+         <tr>
+            <td style="height: 15px"></td>
+         </tr>
+         <tr>
+            <td><a href="mailto=mailto%hello@mail.ru" target="_blank" title="" style="color: #000000;text-decoration: none;" rel="noopener">some email</a></td>
+         </tr>
+         <tr>
+            <td style="height: 5px"></td>
+         </tr>
+         <tr>
+            <td><a href="tel%555-555-1212" target="_blank" title="" style="color: #000000;text-decoration: none;" rel="noopener">555-555-1212</a></td>
+         </tr>
+         <tr>
+            <td style="height: 15px"></td>
+         </tr>
+         <tr>
+            <td>
+               <table align="center" cellspacing="0" cellpadding="0" border="0" style="width:100%;border:0;">
+                  <tr>
+                     <td style="text-align: center;">
+                        <a href="https://www.facebook.com/deskeducation" target="_blank" style="display: inline-block; vertical-align: middle;padding-left: 5px;padding-right: 5px;">
+                        <img src="https://edx-stage-deskua.raccoongang.com//static/edx-theme/images/bulk_email/icon-facebook.jpg" alt="facebook" height="30" width="30">
+                        </a>
+                        <a href="#" target="_blank" style="display: inline-block; vertical-align: middle;padding-left: 5px;padding-right: 5px;">
+                        <img src="https://edx-stage-deskua.raccoongang.com//static/edx-theme/images/bulk_email/icon-vk.jpg" alt="vk" height="30" width="30">
+                        </a>
+                        <a href="https://www.youtube.com/channel/UCwqvKZUOvQCkAwTDn8klp0g" target="_blank" style="display: inline-block; vertical-align: middle;padding-left: 5px;padding-right: 5px;">
+                        <img src="https://edx-stage-deskua.raccoongang.com//static/edx-theme/images/bulk_email/icon-youtube.jpg" alt="you-tube" height="30" width="30">
+                        </a>         
+                     </td>
+                     </td>
+                  </tr>
+               </table>
+            </td>
+         </tr>
+      </table>
+   </body>
+</html>

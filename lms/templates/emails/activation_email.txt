@@ -1,17 +1,50 @@
 <%! from django.utils.translation import ugettext as _ %>
 <%! from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers %>
-${_("Thank you for creating an account with {platform_name}!").format(
-    platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
-)}
 
-${_("There's just one more step before you can enroll in a course: "
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body style="margin:0;padding:0;color: #000000;" bgcolor="#ffffff" link="#002acf">
+    <table align="center" cellspacing="0" cellpadding="0" border="0" style="width:100%; max-width:600px; border:0;">
+        <tr>
+            <td style="height: 15px"></td>
+        </tr>
+        <tr> 
+            <td style="padding-bottom:0;">
+                <img src="https://edx-stage-deskua.raccoongang.com//static/edx-theme/images/bulk_email/desk-banner.jpg" width="600" height="221" alt="desk" style="display:block;width:600px;height:auto;">
+            </td>
+        </tr>
+        <tr>
+            <td style="height: 20px"></td>
+        </tr>
+        <tr>
+          <td style="font-size: 15px;line-height:15px;color:#000000">${_("Thank you for creating an account with {platform_name}!").format(
+    platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
+)}</td>
+        </tr>
+         <tr>
+            <td style="height: 15px"></td>
+        </tr>
+        <tr>
+            <td style="font-size: 15px;line-height:15px;color:#000000">
+                ${_("There's just one more step before you can enroll in a course: "
     "you need to activate your {platform_name} account. To activate "
     "your account, click the following link. If that doesn't work, "
     "copy and paste the link into your browser's address bar.").format(
         platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
     )}
-
-% if is_secure:
+            </td>
+        </tr>
+               <tr>
+            <td style="height: 10px"></td>
+        </tr>
+        <tr>
+            <td style="font-size: 15px;line-height:15px;color:#000000">
+            % if is_secure:
   https://${ site }/activate/${ key }
 % else:
   http://${ site }/activate/${ key }
@@ -20,3 +53,44 @@ ${_("If you didn't create an account, you don't need to do anything; you "
       "won't receive any more email from us. If you need assistance, please "
       "do not reply to this email message. Check the help section of the "
       "{platform_name} website.").format(platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME))}
+            </td>
+        </tr>
+        <tr>
+            <td style="height: 15px"></td>
+        </tr>
+        <tr>
+          <td><a href="mailto=mailto%hello@mail.ru" target="_blank" title="" style="color: #000000;text-decoration: none;" rel="noopener">there is an email</a></td>
+        </tr>
+         <tr>
+            <td style="height: 5px"></td>
+        </tr>
+         <tr>
+          <td><a href="tel%555-555-1212" target="_blank" title="" style="color: #000000;text-decoration: none;" rel="noopener">555-555-1212</a></td>
+        </tr>
+         <tr>
+            <td style="height: 15px"></td>
+        </tr>
+      <tr>
+        <td>
+          <table align="center" cellspacing="0" cellpadding="0" border="0" style="width:100%;border:0;">
+            <tr>
+              <td style="text-align: center;">
+               <a href="https://www.facebook.com/deskeducation" target="_blank" style="display: inline-block; vertical-align: middle;padding-left: 5px;padding-right: 5px;">
+                <img src="https://edx-stage-deskua.raccoongang.com//static/edx-theme/images/bulk_email/icon-facebook.jpg" alt="facebook" height="30" width="30">
+              </a>
+              <a href="#" target="_blank" style="display: inline-block; vertical-align: middle;padding-left: 5px;padding-right: 5px;">
+                <img src="https://edx-stage-deskua.raccoongang.com//static/edx-theme/images/bulk_email/icon-vk.jpg" alt="vk" height="30" width="30">
+              </a>
+              <a href="https://www.youtube.com/channel/UCwqvKZUOvQCkAwTDn8klp0g" target="_blank" style="display: inline-block; vertical-align: middle;padding-left: 5px;padding-right: 5px;">
+                <img src="https://edx-stage-deskua.raccoongang.com//static/edx-theme/images/bulk_email/icon-youtube.jpg" alt="you-tube" height="30" width="30">
+              </a>         
+              </td>
+            </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+</table>
+
+</body>
+</html>
