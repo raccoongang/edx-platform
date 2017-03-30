@@ -41,8 +41,8 @@ PERIODIC_TASK_POST_URL = 'http://192.168.1.139:7000/receive/'
 
 # Example of usage: 'Europe/Kiev' PLATFORM_LATITUDE = '50.4546600', PLATFORM_LONGITUDE = '30.5238000'
 
-PLATFORM_LATITUDE = '50.4546600'
-PLATFORM_LONGITUDE = '30.5238000'
+PLATFORM_LATITUDE = ''
+PLATFORM_LONGITUDE = ''
 
 # Disable transaction management because we are using a worker. Views
 # that request a task and wait for the result will deadlock otherwise.

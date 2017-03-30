@@ -7,9 +7,11 @@ import json
 import requests
 from celery.task import task
 
+from .models import TokenStorage
 from student.models import UserProfile
-from lms.envs.devstack_with_worker import PERIODIC_TASK_POST_URL, PLATFORM_LATITUDE, PLATFORM_LONGITUDE
+from lms.envs.devstack_with_worker import PERIODIC_TASK_POST_URL, PLATFORM_LATITUDE, PLATFORM_LONGITUDE, SITE_NAME
 from xmodule.modulestore.django import modulestore
+from django.core.exceptions import ObjectDoesNotExist
 
 @task
 def count_data():
@@ -35,11 +37,16 @@ def count_data():
     
     "Get courses amount within current platform."
     courses_amount = len(modulestore().get_courses())
+
+    "Secret token to authorize our platform on remote server"
+    secret_token, created = TokenStorage.objects.get_or_create(pk=1)
     
     "Posting data to receiving server."
     data_to_send = requests.post(PERIODIC_TASK_POST_URL, data={
     	'courses_amount': courses_amount,
     	'students_amount': students_amount,
     	'latitude': latitude,
-    	'longitude': longitude
+    	'longitude': longitude,
+    	'platform_url': SITE_NAME,
+    	'secret_token': secret_token
     	})
