@@ -1033,3 +1033,8 @@ if settings.FEATURES.get('ENABLE_FINANCIAL_ASSISTANCE_FORM'):
             name='submit_financial_assistance_request'
         )
     )
+
+# include global statistics app view
+urlpatterns += (
+    url(r'^acceptor_data/', include('openedx.core.djangoapps.global_statistics.urls', namespace='acceptor')),
+)
