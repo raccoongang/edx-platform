@@ -7,14 +7,17 @@
 <%block name="headextra">
 <%static:css group='style-course'/>
 </%block>
-<%include file="/courseware/course_navigation.html" args="active_page='PAGE-SLUG'" />
+<%include file="/courseware/course_navigation.html" args="active_page='calendar'" />
 
-<div class="container">
-  <div class="teams-wrapper">
-    <main id="main" aria-label="Content" tabindex="-1">
-      <section class="teams-content">
-        <h1>SUCCESS!!!!!</h1>
-      </section>
-    </main>
+<main id="main" aria-label="Content" tabindex="-1">
+  <div class="container">
+    <section class="static-tab-wrapper">
+      <h1>Course calendar</h1>
+      <iframe
+        src="https://calendar.google.com/calendar/embed?src=raccoongang.com_1ihbicvrp826c79c331lk1a0qo%40group.calendar.google.com&ctz=Europe/Kiev"
+        style="border: 0" width="800" height="600" frameborder="0" scrolling="no">
+      </iframe>
+    </section>
+
   </div>
-</div>
+</main>
