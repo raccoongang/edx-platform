@@ -46,10 +46,11 @@
 
     {% render_block "js" %}
 
+  <!-- Jivosite widget -->
+  {% if settings.FEATURES.ENABLE_JIVOSITE) %}
   <script type='text/javascript'>
-    // jivosite
     (function () {
-      var widget_id = 'lLvd9S7fRb';
+      var widget_id = "{{ settings.JIVOSITE_WIDGET_ID }}";
       var d = document;
       var w = window;
 
@@ -73,6 +74,7 @@
       }
     })();
   </script>
+  {% endif %}
 </body>
 </html>
 
