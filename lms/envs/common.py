@@ -2967,4 +2967,7 @@ REDIRECT_CACHE_TIMEOUT = None  # The length of time we cache Redirect model data
 REDIRECT_CACHE_KEY_PREFIX = 'redirects'
 #####RACCOONGANG########
 DOC_LINK_BASE_URL = ''
+
+# JIVOSITE widget settings:
+JIVOSITE_WIDGET_ID = os.environ.get('JIVOSITE_WIDGET_ID')
 #####RACCOONGANG########
