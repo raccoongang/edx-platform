@@ -6,68 +6,18 @@
 <%block name="pagetitle">${_("PAGE NAME")}</%block>
 <%block name="headextra">
 <%static:css group='style-course'/>
-<%static:css group='style-calendar-tab'/>
-<%static:js group='js-calendar-tab'/>
 </%block>
 <%include file="/courseware/course_navigation.html" args="active_page='calendar'" />
-<script>
 
-  $(document).ready(function () {
-    console.log('cal!');
-
-    $('#calendar').fullCalendar({
-
-      header: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'month,listYear'
-      },
-
-      displayEventTime: false, // don't show the time column in list view
-
-      // THIS KEY WON'T WORK IN PRODUCTION!!!
-      // To make your own Google API key, follow the directions here:
-      // http://fullcalendar.io/docs/google_calendar/
-      googleCalendarApiKey: 'AIzaSyDcnW6WejpTOCffshGDDb4neIrXVUA1EAE',
-
-      // US Holidays
-//      events: 'en.usa#holiday@group.v.calendar.google.com',
-      events: 'raccoongang.com_1ihbicvrp826c79c331lk1a0qo@group.calendar.google.com',
-
-      eventClick: function (event) {
-        // opens events in a popup window
-        window.open(event.url, 'gcalevent', 'width=700,height=600');
-        return false;
-      },
-
-      loading: function (bool) {
-        $('#loading').toggle(bool);
-      },
-
-      dayClick: function() {
-        alert('a day has been clicked!');
-      }
-
-    });
-
-  });
-</script>
 
 <main id="main" aria-label="Content" tabindex="-1">
   <div class="container">
     <section class="static-tab-wrapper" style="margin-bottom: 30px;">
-      <h1>Course calendar</h1>
+      <h1>${_("Course calendar")}</h1>
       <iframe
-      src="https://calendar.google.com/calendar/embed?src=raccoongang.com_1ihbicvrp826c79c331lk1a0qo%40group.calendar.google.com&ctz=Europe/Kiev"
-      style="border: 0" width="800" height="600" frameborder="0" scrolling="no">
+        src="https://calendar.google.com/calendar/embed?src=raccoongang.com_1ihbicvrp826c79c331lk1a0qo%40group.calendar.google.com&ctz=Europe/Kiev"
+        style="border: 0" width="800" height="600" frameborder="0" scrolling="no">
       </iframe>
-      <div id='loading'>
-        loading...
-      </div>
-
-      <div id='calendar' class="fc fc-unthemed fc-ltr">
-      </div>
     </section>
-
   </div>
 </main>
