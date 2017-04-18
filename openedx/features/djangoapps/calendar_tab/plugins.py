@@ -17,5 +17,5 @@ class CalendarTab(CourseTab):
 
     @classmethod
     def is_enabled(cls, course, user=None):
-        # return settings.FEATURES.get('CALENDAR_ENABLED', False)
+        # return settings.FEATURES.get('ENABLE_CALENDAR', False)
         return True
