@@ -18,7 +18,7 @@
         <div class="col col-12">
           <form action="" method="post">
             ${form}
-            <input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }" />
+            <input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }"/>
             <input type="submit" value="Submit"/>
           </form>
         </div>
@@ -26,10 +26,15 @@
       <br/>
 
       <iframe
-        src="https://calendar.google.com/calendar/embed?src=raccoongang.com_1ihbicvrp826c79c331lk1a0qo%40group.calendar.google.com&ctz=Europe/Kiev"
+        src="https://calendar.google.com/calendar/embed?src=o5i5gqd2s4sa3ngtt8td3qbqsg%40group.calendar.google.com&ctz=Europe/Kiev"
         style="border: 0" width="800" height="600" frameborder="0" scrolling="no">
       </iframe>
     </section>
+
+    % if is_staff:
+      <hr class="divider">
+
+    % endif
   </div>
 </main>
 
