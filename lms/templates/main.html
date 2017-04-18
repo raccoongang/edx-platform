@@ -157,7 +157,7 @@ from pipeline_mako import render_require_js_path_overrides
   % if settings.FEATURES.get('ENABLE_JIVOSITE', False):
   <script type='text/javascript'>
     (function () {
-      var widget_id = ${settings.JIVOSITE_WIDGET_ID};
+      var widget_id = ${settings.FEATURES.get('JIVOSITE_WIDGET_ID', 'WIDGET_ID_MUST_BE_PROVIDED!')};
       var d = document;
       var w = window;
 
