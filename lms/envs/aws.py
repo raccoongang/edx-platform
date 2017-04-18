@@ -883,3 +883,6 @@ class ExtHostElasticsearch(Elasticsearch):
 
 ELASTIC_SEARCH_IMPL = ExtHostElasticsearch
 
+# JIVOSITE widget settings:
+if FEATURES.get('ENABLE_JIVOSITE', False):
+    JIVOSITE_WIDGET_ID = FEATURES.get('JIVOSITE_WIDGET_ID', 'jivosite_widget_id_given_to_jivosite_widget')
