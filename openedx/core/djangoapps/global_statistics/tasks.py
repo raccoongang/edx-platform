@@ -2,6 +2,7 @@
 This file contains periodic tasks for global_statistics, which will collect data about Open eDX users
 and send this data to appropriate service for further processing.
 """
+
 import json
 import requests
 
@@ -47,14 +48,26 @@ def count_data():
     # Secret token to authorize our platform on remote server.
     secret_token, created = TokenStorage.objects.get_or_create(pk=1)
 
-    # Posting data to receiving server.
-    post_url = oegs_settings.get('OEGS_PERIODIC_TASK_POST_URL')
-    platform_url = "https://" + settings.SITE_NAME   
-    data_to_send = requests.post(post_url, data={
-        'courses_amount': courses_amount,
-        'students_amount': students_amount,
-        'latitude': latitude,
-        'longitude': longitude,
-        'platform_url': platform_url,
-        'secret_token': secret_token.secret_token
-        })
+    # Current edx-platform URL
+    platform_url = "https://" + settings.SITE_NAME
+
+    # Predefined in the server settings url to send collected data to.
+    # For production or local development.
+    if oegs_settings.get('OEGS_PERIODIC_TASK_POST_URL'):
+        post_url = oegs_settings.get('OEGS_PERIODIC_TASK_POST_URL')
+    else:
+        post_url = oegs_settings.get('OEGS_PERIODIC_TASK_POST_URL_LOCAL')
+
+    # Posts desired data volume to receiving server.
+    # Data volume depends on server settings.
+    statistics_level = oegs_settings.get("STATISTICS_LEVEL")
+    
+    if statistics_level == 1:
+        data_to_send = requests.post(post_url, data={
+            'courses_amount': courses_amount,
+            'students_amount': students_amount,
+            'latitude': latitude,
+            'longitude': longitude,
+            'platform_url': platform_url,
+            'secret_token': secret_token.secret_token
+            })
