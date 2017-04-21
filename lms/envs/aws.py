@@ -893,3 +893,8 @@ DOC_LINK_BASE_URL = ENV_TOKENS.get('DOC_LINK_BASE_URL', DOC_LINK_BASE_URL)
 ############## Settings for the Enterprise App ######################
 
 ENTERPRISE_ENROLLMENT_API_URL = ENV_TOKENS.get('ENTERPRISE_ENROLLMENT_API_URL', ENTERPRISE_ENROLLMENT_API_URL)
+
+##################### Raccoongang changes #####################
+# JIVOSITE widget settings:
+if FEATURES.get('ENABLE_JIVOSITE', False):
+    JIVOSITE_WIDGET_ID = FEATURES.get('JIVOSITE_WIDGET_ID', 'jivosite_widget_id_given_to_jivosite_widget')

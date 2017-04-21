@@ -153,6 +153,37 @@ from pipeline_mako import render_require_js_path_overrides
   <%include file="widgets/segment-io-footer.html" />
   <script type="text/javascript" src="${static.url('js/vendor/noreferrer.js')}" charset="utf-8"></script>
   <script type="text/javascript" src="${static.url('js/utils/navigation.js')}" charset="utf-8"></script>
+
+% if settings.FEATURES.get('ENABLE_JIVOSITE', False):
+<!-- Jivosite widget -->
+  <script type='text/javascript'>
+    (function () {
+      var widget_id = "${settings.FEATURES.get('JIVOSITE_WIDGET_ID', 'WIDGET_ID_MUST_BE_PROVIDED!')}";
+      var d = document;
+      var w = window;
+
+      function l() {
+        var s = document.createElement('script');
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = '//code.jivosite.com/script/widget/' + widget_id;
+        var ss = document.getElementsByTagName('script')[0];
+        ss.parentNode.insertBefore(s, ss);
+      }
+
+      if (d.readyState == 'complete') {
+        l();
+      } else {
+        if (w.attachEvent) {
+          w.attachEvent('onload', l);
+        } else {
+          w.addEventListener('load', l, false);
+        }
+      }
+    })();
+  </script>
+% endif
+
   <%static:optional_include_mako file="body-extra.html" is_theming_enabled="True" />
 </body>
 </html>
