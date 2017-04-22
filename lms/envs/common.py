@@ -1661,9 +1661,14 @@ PIPELINE_JS = {
     'credit_wv': {
         'source_filenames': credit_web_view_js,
         'output_filename': 'js/credit/web_view.js'
-    }
+    },
+    'calendar-tab': {
+        'source_filenames': [
+            'js/calendar-tab.js',
+        ],
+        'output_filename': 'js/calendar-tab.js',
+    },
 }
-
 
 STATICFILES_IGNORE_PATTERNS = (
     "*.py",

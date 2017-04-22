@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 
-from oauth2client.service_account import ServiceAccountCredentials
-from apiclient.discovery import build
+from .utils import gcal_service
 
 
 class EventForm(forms.Form):
@@ -13,19 +12,8 @@ class EventForm(forms.Form):
     start = forms.DateTimeField()
     end = forms.DateTimeField()
 
-    def create_event(self):
+    def create_event(self, calendar_id):
         """Performs Google Calendar API event.insert request"""
-
-        scopes = ['https://www.googleapis.com/auth/calendar']
-        # TODO: make credentials file configurable
-        credentials = ServiceAccountCredentials.from_json_keyfile_name(
-            '/edx/app/edxapp/edx-platform/openedx/features/djangoapps/calendar_tab/openedx-google-calendar-private-key.json',
-            scopes)
-
-        gcal_service = build('calendar', 'v3', credentials=credentials)
-
-        # TODO: make calendar "dynamic"
-        calendar_id = "o5i5gqd2s4sa3ngtt8td3qbqsg@group.calendar.google.com"
         event = {
             'summary': self.cleaned_data.get('title'),
             'location': self.cleaned_data.get('location') or '',
@@ -37,5 +25,4 @@ class EventForm(forms.Form):
                 'dateTime': self.cleaned_data.get('end').isoformat(),
             },
         }
-
         gcal_service.events().insert(calendarId=calendar_id, body=event).execute()

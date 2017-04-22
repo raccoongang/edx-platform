@@ -1,20 +1,42 @@
 ## mako
-<%! from django.utils.translation import ugettext as _ %>
+<%!
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+%>
 <%namespace name='static' file='/static_content.html'/>
 <%inherit file="/main.html" />
 <%block name="bodyclass">view-calendar is-in-course course</%block>
 <%block name="pagetitle">${_("PAGE NAME")}</%block>
 <%block name="headextra">
 <%static:css group='style-course'/>
+<%static:js group='calendar-tab'/>
 </%block>
 <%include file="/courseware/course_navigation.html" args="active_page='calendar'" />
 
+<script>
+  const courseId = "${course.id}";
+  const initCalendarUrl = "${reverse('calendar_init', kwargs={'course_id': course.id})}";
+</script>
 
 <main id="main" aria-label="Content" tabindex="-1">
   <div class="container">
     <section class="static-tab-wrapper" style="margin-bottom: 30px;">
+
       <h1>${_("Course calendar")}</h1>
-      <div class="row">
+
+    % if calendar_id:
+
+      <iframe
+        src="${calendar_url}"
+        style="border: 0" width="800" height="600" frameborder="0" scrolling="no">
+      </iframe>
+
+      <br/>
+      <br/>
+      <button id="event-btn" type="button" class="btn btn-info btn-lg">${_("Create Event")}</button>
+      <br/>
+
+      <div id="event-form" class="row hidden">
         <div class="col col-12">
           <form action="" method="post">
             ${form}
@@ -23,18 +45,21 @@
           </form>
         </div>
       </div>
-      <br/>
 
-      <iframe
-        src="https://calendar.google.com/calendar/embed?src=o5i5gqd2s4sa3ngtt8td3qbqsg%40group.calendar.google.com&ctz=Europe/Kiev"
-        style="border: 0" width="800" height="600" frameborder="0" scrolling="no">
-      </iframe>
-    </section>
+    % else:
 
-    % if is_staff:
+      <p>${_("There is no any active calendar yet.")}</p>
+
+      % if is_staff:
       <hr class="divider">
+      <button id="calendar-init" type="button" class="btn btn-info btn-lg">${_("Initiate course google calendar")}
+      </button>
+      <span id="loading" style="display: none;color:green;"><b>${_("Course google calendar is being initialized...")}</b></span>
+      % endif
 
     % endif
+
+    </section>
   </div>
 </main>
 
