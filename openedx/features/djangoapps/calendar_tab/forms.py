@@ -11,8 +11,11 @@ class EventForm(forms.Form):
     location = forms.CharField(widget=forms.Textarea, required=False)
     start = forms.DateTimeField()
     end = forms.DateTimeField()
+    event_id = forms.CharField(widget=forms.HiddenInput, required=False)
+    kill_event = forms.BooleanField(widget=forms.HiddenInput, required=False, initial=False)
+    calendar_id = forms.CharField(widget=forms.HiddenInput, required=False)
 
-    def create_event(self, calendar_id):
+    def create_event(self):
         """Performs Google Calendar API event.insert request"""
         event = {
             'summary': self.cleaned_data.get('title'),
@@ -25,4 +28,18 @@ class EventForm(forms.Form):
                 'dateTime': self.cleaned_data.get('end').isoformat(),
             },
         }
-        gcal_service.events().insert(calendarId=calendar_id, body=event).execute()
+        try:
+            response = gcal_service.events().insert(calendarId=self.cleaned_data['calendar_id'], body=event).execute()
+
+        except Exception as e:
+            # TODO: handle errors
+            print(e)
+
+    def delete_event(self):
+        """Performs Google Calendar API event.insert request"""
+        try:
+            gcal_service.events().delete(calendarId=self.cleaned_data['calendar_id'],
+                                         eventId=self.cleaned_data['event_id']).execute()
+        except Exception as e:
+            # TODO: handle errors
+            print(e)

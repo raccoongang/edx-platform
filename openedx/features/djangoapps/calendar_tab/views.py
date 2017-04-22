@@ -3,6 +3,7 @@ from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponse
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.utils import timezone
 from django.views.generic import View
 from django.views.generic.edit import FormView
@@ -22,10 +23,18 @@ class CalendarView(FormView):
     template_name = 'calendar_tab/calendar_tab_page.html'
     form_class = EventForm
 
-    def form_valid(self, form):
+    def get_initial(self):
+        initial = super(CalendarView, self).get_initial()
         # TODO: can we get 'calendar_id' without getting the context?
         context = self.get_context_data()
-        form.create_event(context['calendar_id'])
+        initial['calendar_id'] = context['calendar_id']
+        return initial
+
+    def form_valid(self, form):
+        if form.cleaned_data['kill_event']:
+            form.delete_event()
+        else:
+            form.create_event()
         return super(CalendarView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -79,6 +88,29 @@ class InitCalendarView(View):
             return JsonResponse({"calendarId": created_calendar['id']}, status=201)
 
 
+# def EventDeleteView(View):
+#     """Deletes event by ID from course google calendar"""
+#     def post(self, request, *args, **kwargs):
+#         event_id = request.POST.get('eventId')
+#         if event_id is None:
+#             return HttpResponse("Provide eventID", status=400)
+#         try:
+#             gcal_service.events().delete(calendarId=calendar_id, eventId=event_id).execute()
+#         except Exception as e:
+#             # TODO: handle errors
+#             print(e)
+#             return JsonResponse({"errors": []}, status=400)
+    # else:
+    # if request.method=='POST':
+    #     book.delete()
+    #     return redirect('books_fbv:book_list')
+
+
+
+
+
+
 def share_course_calendar(request):
+    # TODO: feature - staff can share course calendar with provided google account
     pass
 
