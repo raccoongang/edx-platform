@@ -15,8 +15,7 @@ class EventForm(forms.Form):
     kill_event = forms.BooleanField(widget=forms.HiddenInput, required=False, initial=False)
     calendar_id = forms.CharField(widget=forms.HiddenInput, required=False)
 
-    def create_event(self):
-        """Performs Google Calendar API event.insert request"""
+    def get_event_data(self):
         event = {
             'summary': self.cleaned_data.get('title'),
             'location': self.cleaned_data.get('location') or '',
@@ -28,18 +27,34 @@ class EventForm(forms.Form):
                 'dateTime': self.cleaned_data.get('end').isoformat(),
             },
         }
-        try:
-            response = gcal_service.events().insert(calendarId=self.cleaned_data['calendar_id'], body=event).execute()
+        return event
 
+    def create_event(self):
+        """Performs Google Calendar API event.insert request"""
+        event = self.get_event_data()
+        try:
+            response = gcal_service.events().insert(calendarId=self.cleaned_data['calendar_id'],
+                                                    body=event).execute()
+        except Exception as e:
+            # TODO: handle errors
+            print(e)
+
+    def update_event(self):
+        """Performs Google Calendar API event.update request"""
+        event = self.get_event_data()
+        try:
+            response = gcal_service.events().update(calendarId=self.cleaned_data['calendar_id'],
+                                                    eventId=self.cleaned_data['event_id'],
+                                                    body=event).execute()
         except Exception as e:
             # TODO: handle errors
             print(e)
 
     def delete_event(self):
-        """Performs Google Calendar API event.insert request"""
+        """Performs Google Calendar API event.delete request"""
         try:
-            gcal_service.events().delete(calendarId=self.cleaned_data['calendar_id'],
-                                         eventId=self.cleaned_data['event_id']).execute()
+            response = gcal_service.events().delete(calendarId=self.cleaned_data['calendar_id'],
+                                                    eventId=self.cleaned_data['event_id']).execute()
         except Exception as e:
             # TODO: handle errors
             print(e)

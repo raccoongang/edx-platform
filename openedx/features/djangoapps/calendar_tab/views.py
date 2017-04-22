@@ -33,6 +33,8 @@ class CalendarView(FormView):
     def form_valid(self, form):
         if form.cleaned_data['kill_event']:
             form.delete_event()
+        elif form.cleaned_data['event_id']:
+            form.update_event()
         else:
             form.create_event()
         return super(CalendarView, self).form_valid(form)
