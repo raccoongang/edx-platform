@@ -9,6 +9,8 @@ of tasks onto the appropriate workers.
 In two separate processes on devstack:
     paver devstack lms --settings=devstack_with_worker
     ./manage.py lms celery worker --settings=devstack_with_worker
+For periodic task to start add -B key:
+    ./manage.py lms celery worker -B --settings=devstack_with_worker
 """
 
 # We intentionally define lots of variables that aren't used, and

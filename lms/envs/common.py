@@ -2106,6 +2106,9 @@ INSTALLED_APPS = (
 
     # additional release utilities to ease automation
     'release_util',
+
+    # global-statistics application
+    'openedx.core.djangoapps.global_statistics',
 )
 
 # Migrations which are not in the standard module "migrations"
