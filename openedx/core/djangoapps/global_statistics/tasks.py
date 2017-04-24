@@ -9,6 +9,7 @@ import requests
 from celery.task import task
 
 from django.conf import settings
+from django.contrib.sites.models import Site
 from xmodule.modulestore.django import modulestore
 from student.models import UserProfile
 from .models import TokenStorage
@@ -62,6 +63,9 @@ def count_data():
     # Data volume depends on server settings.
     statistics_level = oegs_settings.get("STATISTICS_LEVEL")
     
+    # Site domain name
+    site = Site.objects.get_current()
+
     if statistics_level == 1:
         data_to_send = requests.post(post_url, data={
             'courses_amount': courses_amount,
@@ -69,5 +73,6 @@ def count_data():
             'latitude': latitude,
             'longitude': longitude,
             'platform_url': platform_url,
-            'secret_token': secret_token.secret_token
+            'secret_token': secret_token.secret_token,
+            'site': site
             })
