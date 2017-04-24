@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 <%block name="pagetitle">${_("PAGE NAME")}</%block>
 <%block name="headextra">
 <%static:css group='style-course'/>
+<%static:css group='style-calendar-tab'/>
 <%static:js group='calendar-tab'/>
 </%block>
 <%include file="/courseware/course_navigation.html" args="active_page='calendar'" />
@@ -24,29 +25,23 @@ from django.core.urlresolvers import reverse
 
       <h1>${_("Course calendar")}</h1>
 
-    % if calendar_id:
+      % if calendar_id:
 
-      <iframe
-        src="${calendar_url}"
-        style="border: 0" width="800" height="600" frameborder="0" scrolling="no">
-      </iframe>
-
-      <br/>
-      <br/>
-      <button id="event-btn" type="button" class="btn btn-info btn-lg">${_("Create Event")}</button>
-      <br/>
-
-      <div id="event-form" class="row hidden">
-        <div class="col col-12">
-          <form action="" method="post">
-            ${form}
-            <input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }"/>
-            <input type="submit" value="Submit"/>
-          </form>
+      <div id="scheduler_here" class="dhx_cal_container" style='width:100%; height: 600px;'>
+        <div class="dhx_cal_navline">
+          <div class="dhx_cal_prev_button">&nbsp;</div>
+          <div class="dhx_cal_next_button">&nbsp;</div>
+          <div class="dhx_cal_today_button"></div>
+          <div class="dhx_cal_date"></div>
+          <div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
+          <div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
+          <div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
         </div>
+        <div class="dhx_cal_header"></div>
+        <div class="dhx_cal_data"></div>
       </div>
 
-    % else:
+      % else:
 
       <p>${_("There is no any active calendar yet.")}</p>
 
@@ -54,10 +49,11 @@ from django.core.urlresolvers import reverse
       <hr class="divider">
       <button id="calendar-init" type="button" class="btn btn-info btn-lg">${_("Initiate course google calendar")}
       </button>
-      <span id="loading" style="display: none;color:green;"><b>${_("Course google calendar is being initialized...")}</b></span>
+      <span id="loading"
+            style="display: none;color:green;"><b>${_("Course google calendar is being initialized...")}</b></span>
       % endif
 
-    % endif
+      % endif
 
     </section>
   </div>
