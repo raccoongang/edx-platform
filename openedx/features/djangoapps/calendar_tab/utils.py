@@ -18,13 +18,13 @@ except (IOError, KeyError) as e:
 gcal_service = build('calendar', 'v3', credentials=credentials)
 
 
-def publish_calendar(calendar_id):
-    """Makes google calendar public by its ID"""
-    rule = {
-        'scope': {
-            'type': 'default',
-        },
-        'role': 'reader'
-    }
-    created_rule = gcal_service.acl().insert(calendarId=calendar_id, body=rule).execute()
-    return created_rule
+# def publish_calendar(calendar_id):
+#     """Makes google calendar public by its ID"""
+#     rule = {
+#         'scope': {
+#             'type': 'default',
+#         },
+#         'role': 'reader'
+#     }
+#     created_rule = gcal_service.acl().insert(calendarId=calendar_id, body=rule).execute()
+#     return created_rule

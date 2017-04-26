@@ -1,5 +1,7 @@
 Google Calendar LMS tab
 -----------------------
+IMPORTANT NOTE: this is a draft README for not fully implemented yet feature.
+
 
 Django application that allows course staff enable new "Calendar" tab from CMS (studio).
 From LMS side appears new "Calendar" tab with google calendar associated with current course.

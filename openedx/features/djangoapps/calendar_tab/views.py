@@ -11,21 +11,21 @@ from openedx.core.djangoapps.content.course_overviews.models import CourseOvervi
 from courseware.courses import get_course_with_access
 from courseware.access import has_access
 
-from .utils import gcal_service, publish_calendar
+from .utils import gcal_service
 
 
-def from_google_datetime(g_datatime):
+def from_google_datetime(g_datetime):
     """Formats google calendar API datetime string to dhxscheduler datetime string.
     Example: "2017-04-25T16:00:00-04:00" >> "04/25/2017 16:00"
     """
-    return datetime.strptime(g_datatime[:-6], "%Y-%m-%dT%H:%M:%S").strftime("%m/%d/%Y %H:%M")
+    return datetime.strptime(g_datetime[:-6], "%Y-%m-%dT%H:%M:%S").strftime("%m/%d/%Y %H:%M")
 
 
-def to_google_datetime(dhx_datatime):
+def to_google_datetime(dhx_datetime):
     """Formats google dhxscheduler datetime string to calendar API datetime string.
     Example: "04/25/2017 16:00" >> "2017-04-25T16:00:00-04:00"
     """
-    dt_unaware = datetime.strptime(dhx_datatime, "%m/%d/%Y %H:%M")
+    dt_unaware = datetime.strptime(dhx_datetime, "%m/%d/%Y %H:%M")
     dt_aware = timezone.make_aware(dt_unaware, timezone.get_current_timezone())
     return dt_aware.isoformat()
 
@@ -56,7 +56,7 @@ class InitCalendarView(View):
 
         try:
             created_calendar = gcal_service.calendars().insert(body=calendar_data).execute()
-            publish_calendar(created_calendar['id'])
+            # publish_calendar(created_calendar['id'])
         except Exception as e:
             # TODO: handle errors
             print(e)
