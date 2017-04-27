@@ -6,26 +6,36 @@ Does not include any access control, be sure to check access before calling.
 
 import json
 import logging
+
+from datetime import datetime
 from django.contrib.auth.models import User
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.core.mail import send_mail
+from django.core.urlresolvers import reverse
 from django.utils.translation import override as override_language
+from eventtracking import tracker
+import pytz
 
 from course_modes.models import CourseMode
-from student.models import CourseEnrollment, CourseEnrollmentAllowed
 from courseware.models import StudentModule
 from edxmako.shortcuts import render_to_string
-from lang_pref import LANGUAGE_KEY
-
-from submissions import api as sub_api  # installed from the edx-submissions repository
-from student.models import anonymous_id_for_user
+from lms.djangoapps.grades.signals.signals import PROBLEM_RAW_SCORE_CHANGED
+from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.user_api.models import UserPreference
-
+from submissions import api as sub_api  # installed from the edx-submissions repository
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError
-from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 
+from course_modes.models import CourseMode
+from courseware.models import StudentModule
+from edxmako.shortcuts import render_to_string
+from student.models import CourseEnrollment, CourseEnrollmentAllowed, anonymous_id_for_user
+from track.event_transaction_utils import (
+    create_new_event_transaction_id,
+    set_event_transaction_type,
+    get_event_transaction_id
+)
 
 log = logging.getLogger(__name__)
 
@@ -245,6 +255,7 @@ def reset_student_attempts(course_id, student, module_state_key, requesting_user
                 )
                 submission_cleared = True
     except ItemNotFoundError:
+        block = None
         log.warning("Could not find %s in modulestore when attempting to reset attempts.", module_state_key)
 
     # Reset the student's score in the submissions API, if xblock.clear_student_state has not done so already.
@@ -267,6 +278,26 @@ def reset_student_attempts(course_id, student, module_state_key, requesting_user
 
     if delete_module:
         module_to_reset.delete()
+        create_new_event_transaction_id()
+        grade_update_root_type = 'edx.grades.problem.state_deleted'
+        set_event_transaction_type(grade_update_root_type)
+        tracker.emit(
+            unicode(grade_update_root_type),
+            {
+                'user_id': unicode(student.id),
+                'course_id': unicode(course_id),
+                'problem_id': unicode(module_state_key),
+                'instructor_id': unicode(requesting_user.id),
+                'event_transaction_id': unicode(get_event_transaction_id()),
+                'event_transaction_type': unicode(grade_update_root_type),
+            }
+        )
+        _fire_score_changed_for_block(
+            course_id,
+            student,
+            block,
+            module_state_key,
+        )
     else:
         _reset_module_attempts(module_to_reset)
 
@@ -285,6 +316,32 @@ def _reset_module_attempts(studentmodule):
     # save
     studentmodule.state = json.dumps(problem_state)
     studentmodule.save()
+
+
+def _fire_score_changed_for_block(
+        course_id,
+        student,
+        block,
+        module_state_key,
+):
+    """
+    Fires a PROBLEM_RAW_SCORE_CHANGED event for the given module.
+    The earned points are always zero. We must retrieve the possible points
+    from the XModule, as noted below. The effective time is now().
+    """
+    if block and block.has_score and block.max_score() is not None:
+        PROBLEM_RAW_SCORE_CHANGED.send(
+            sender=None,
+            raw_earned=0,
+            raw_possible=block.max_score(),
+            weight=getattr(block, 'weight', None),
+            user_id=student.id,
+            course_id=unicode(course_id),
+            usage_id=unicode(module_state_key),
+            score_deleted=True,
+            only_if_higher=False,
+            modified=datetime.now().replace(tzinfo=pytz.UTC),
+        )
 
 
 def get_email_params(course, auto_enroll, secure=True, course_key=None, display_name=None):
@@ -386,39 +443,52 @@ def send_mail_to_student(student, param_dict, language=None):
     email_template_dict = {
         'allowed_enroll': (
             'emails/enroll_email_allowedsubject.txt',
-            'emails/enroll_email_allowedmessage.txt'
+            'emails/enroll_email_allowedmessage.txt',
+            'emails/enroll_email_allowedmessage.html'
         ),
         'enrolled_enroll': (
             'emails/enroll_email_enrolledsubject.txt',
-            'emails/enroll_email_enrolledmessage.txt'
+            'emails/enroll_email_enrolledmessage.txt',
+            'emails/enroll_email_enrolledmessage.html'
         ),
         'allowed_unenroll': (
             'emails/unenroll_email_subject.txt',
-            'emails/unenroll_email_allowedmessage.txt'
+            'emails/unenroll_email_allowedmessage.txt',
+            'emails/unenroll_email_allowedmessage.html'
         ),
         'enrolled_unenroll': (
             'emails/unenroll_email_subject.txt',
-            'emails/unenroll_email_enrolledmessage.txt'
+            'emails/unenroll_email_enrolledmessage.txt',
+            'emails/unenroll_email_enrolledmessage.html'
         ),
         'add_beta_tester': (
             'emails/add_beta_tester_email_subject.txt',
-            'emails/add_beta_tester_email_message.txt'
+            'emails/add_beta_tester_email_message.txt',
+            'emails/add_beta_tester_email_message.html'
         ),
         'remove_beta_tester': (
             'emails/remove_beta_tester_email_subject.txt',
-            'emails/remove_beta_tester_email_message.txt'
+            'emails/remove_beta_tester_email_message.txt',
+            'emails/remove_beta_tester_email_message.html'
         ),
         'account_creation_and_enrollment': (
             'emails/enroll_email_enrolledsubject.txt',
-            'emails/account_creation_and_enroll_emailMessage.txt'
+            'emails/account_creation_and_enroll_emailMessage.txt',
+            'emails/account_creation_and_enroll_emailMessage.html'
         ),
     }
 
-    subject_template, message_template = email_template_dict.get(message_type, (None, None))
+    subject_template, message_template, html_message_template = email_template_dict.get(message_type, (None, None, None))
     if subject_template is not None and message_template is not None:
         subject, message = render_message_to_string(
             subject_template, message_template, param_dict, language=language
         )
+
+    try:
+        subject, html_message = render_message_to_string(subject_template,
+                                html_message_template, param_dict, language=language)
+    except:
+        html_message = None
 
     if subject and message:
         # Remove leading and trailing whitespace from body
@@ -431,7 +501,7 @@ def send_mail_to_student(student, param_dict, language=None):
             settings.DEFAULT_FROM_EMAIL
         )
 
-        send_mail(subject, message, from_address, [student], fail_silently=False)
+        send_mail(subject, message, from_address, [student], fail_silently=False, html_message=html_message)
 
 
 def render_message_to_string(subject_template, message_template, param_dict, language=None):

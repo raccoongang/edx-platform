@@ -31,6 +31,7 @@ from student.cookies import set_logged_in_cookies
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.lib.api.authentication import SessionAuthenticationAllowInactiveUser
 from util.json_request import JsonResponse
+from util.enterprise_helpers import insert_enterprise_fields
 from .preferences.api import get_country_time_zones, update_email_opt_in
 from .helpers import FormDescription, shim_student_view, require_post_params
 from .models import UserPreference, UserProfile
@@ -278,6 +279,9 @@ class RegistrationView(APIView):
                     form_desc,
                     required=self._is_field_required(field_name)
                 )
+
+        # Add any Enterprise fields if the app is enabled
+        insert_enterprise_fields(request, form_desc)
 
         return HttpResponse(form_desc.to_json(), content_type="application/json")
 
@@ -755,31 +759,30 @@ class RegistrationView(APIView):
         """
         # Separate terms of service and honor code checkboxes
         if self._is_field_visible("terms_of_service"):
-            terms_text = _(u"Honor Code")
+            terms_label = _(u"Honor Code")
+            terms_link = marketing_link("HONOR")
+            terms_text = _(u"Review the Honor Code")
 
         # Combine terms of service and honor code checkboxes
         else:
             # Translators: This is a legal document users must agree to
             # in order to register a new account.
-            terms_text = _(u"Terms of Service and Honor Code")
+            terms_label = _(u"Terms of Service and Honor Code")
+            terms_link = marketing_link("HONOR")
+            terms_text = _(u"Review the Terms of Service and Honor Code")
 
-        terms_link = u"<a href=\"{url}\">{terms_text}</a>".format(
-            url=marketing_link("HONOR"),
-            terms_text=terms_text
+        # Translators: "Terms of Service" is a legal document users must agree to
+        # in order to register a new account.
+        label = _(u"I agree to the {platform_name} {terms_of_service}").format(
+            platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
+            terms_of_service=terms_label
         )
 
         # Translators: "Terms of Service" is a legal document users must agree to
         # in order to register a new account.
-        label = _(u"I agree to the {platform_name} {terms_of_service}.").format(
+        error_msg = _(u"You must agree to the {platform_name} {terms_of_service}").format(
             platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
-            terms_of_service=terms_link
-        )
-
-        # Translators: "Terms of Service" is a legal document users must agree to
-        # in order to register a new account.
-        error_msg = _(u"You must agree to the {platform_name} {terms_of_service}.").format(
-            platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
-            terms_of_service=terms_link
+            terms_of_service=terms_label
         )
 
         form_desc.add_field(
@@ -790,7 +793,9 @@ class RegistrationView(APIView):
             required=required,
             error_messages={
                 "required": error_msg
-            }
+            },
+            supplementalLink=terms_link,
+            supplementalText=terms_text
         )
 
     def _add_terms_of_service_field(self, form_desc, required=True):
@@ -805,24 +810,22 @@ class RegistrationView(APIView):
         """
         # Translators: This is a legal document users must agree to
         # in order to register a new account.
-        terms_text = _(u"Terms of Service")
-        terms_link = u"<a href=\"{url}\">{terms_text}</a>".format(
-            url=marketing_link("TOS"),
-            terms_text=terms_text
+        terms_label = _(u"Terms of Service")
+        terms_link = marketing_link("TOS")
+        terms_text = _(u"Review the Terms of Service")
+
+        # Translators: "Terms of service" is a legal document users must agree to
+        # in order to register a new account.
+        label = _(u"I agree to the {platform_name} {terms_of_service}").format(
+            platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
+            terms_of_service=terms_label
         )
 
         # Translators: "Terms of service" is a legal document users must agree to
         # in order to register a new account.
-        label = _(u"I agree to the {platform_name} {terms_of_service}.").format(
+        error_msg = _(u"You must agree to the {platform_name} {terms_of_service}").format(
             platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
-            terms_of_service=terms_link
-        )
-
-        # Translators: "Terms of service" is a legal document users must agree to
-        # in order to register a new account.
-        error_msg = _(u"You must agree to the {platform_name} {terms_of_service}.").format(
-            platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
-            terms_of_service=terms_link
+            terms_of_service=terms_label
         )
 
         form_desc.add_field(
@@ -833,7 +836,9 @@ class RegistrationView(APIView):
             required=required,
             error_messages={
                 "required": error_msg
-            }
+            },
+            supplementalLink=terms_link,
+            supplementalText=terms_text
         )
 
     def _apply_third_party_auth_overrides(self, request, form_desc):

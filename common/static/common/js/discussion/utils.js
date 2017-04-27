@@ -184,10 +184,8 @@
             if (!params.error) {
                 params.error = function() {
                     self.discussionAlert(
-                        gettext('Sorry'),
-                        gettext(
-                            'We had some trouble processing your request. Please ensure you have copied any ' +
-                            'unsaved work and then reload the page.')
+                        gettext('Error'),
+                        gettext('Your request could not be processed. Refresh the page and try again.')
                     );
                 };
             }
@@ -223,7 +221,7 @@
                 self = this;
             if (errorMsg) {
                 safeAjaxParams.error = function() {
-                    return self.discussionAlert(gettext('Sorry'), errorMsg);
+                    return self.discussionAlert(gettext('Error'), errorMsg);
                 };
             }
             undo = _.pick(model.attributes, _.keys(updates));
@@ -252,33 +250,36 @@
         };
 
         DiscussionUtil.formErrorHandler = function(errorsField) {
-            return function(xhr, textStatus, error) {
-                var makeErrorElem, response, _i, _len, _ref, _results, $errorItem;
-                makeErrorElem = function(message) {
-                    return edx.HtmlUtils.setHtml(
-                        $('<li>').addClass('post-error'),
-                        message
+            return function(xhr) {
+                var makeErrorElem, response, i, $errorItem;
+                makeErrorElem = function(message, alertId) {
+                    return edx.HtmlUtils.joinHtml(
+                        edx.HtmlUtils.HTML('<li>'),
+                        edx.HtmlUtils.template(
+                            $('#new-post-alert-template').html()
+                        )({
+                            message: message,
+                            alertId: alertId
+                        }),
+                        edx.HtmlUtils.HTML('</li>')
                     );
                 };
                 errorsField.empty().show();
                 if (xhr.status === 400) {
                     response = JSON.parse(xhr.responseText);
                     if (response.errors) {
-                        _ref = response.errors;
-                        _results = [];
-                        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                            error = _ref[_i];
-                            $errorItem = makeErrorElem(error);
-                            _results.push(errorsField.append($errorItem));
+                        for (i = 0; i < response.errors.length; i++) {
+                            $errorItem = makeErrorElem(response.errors[i], i);
+                            edx.HtmlUtils.append(errorsField, $errorItem);
                         }
-                        return _results;
                     }
                 } else {
-                    $errorItem = makeErrorElem(
-                        gettext('We had some trouble processing your request. Please try again.')
-                    );
-                    return errorsField.append($errorItem);
+                    $errorItem = makeErrorElem('Your request could not be processed. Refresh the page and try again.', 0); // eslint-disable-line max-len
+                    edx.HtmlUtils.append(errorsField, $errorItem);
                 }
+
+                // Set focus on the first error displayed
+                $('div[role="alert"]', errorsField).first().focus();
             };
         };
 
@@ -381,10 +382,9 @@
                 } else if (RE_DISPLAYMATH.test(htmlString)) {
                     htmlString = htmlString.replace(RE_DISPLAYMATH, function($0, $1, $2, $3) {
                         /*
-                         bug fix, ordering is off
+                         corrected mathjax rendering in preview
                          */
-                        processedHtmlString = processor('$$' + $2 + '$$', 'display') + processedHtmlString;
-                        processedHtmlString = $1 + processedHtmlString;
+                        processedHtmlString += $1 + processor('$$' + $2 + '$$', 'display');
                         return $3;
                     });
                 } else {

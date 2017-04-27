@@ -33,7 +33,7 @@ from xmodule.x_module import XModule
 from xmodule.split_test_module import get_split_user_partitions
 from xmodule.partitions.partitions import NoSuchUserPartitionError, NoSuchUserPartitionGroupError
 
-from external_auth.models import ExternalAuthMap
+from openedx.core.djangoapps.external_auth.models import ExternalAuthMap
 from courseware.masquerade import get_masquerade_role, is_masquerading_as_student
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from student import auth
@@ -155,9 +155,6 @@ def has_access(user, action, obj, course_key=None):
     # NOTE: any descriptor access checkers need to go above this
     if isinstance(obj, XBlock):
         return _has_access_descriptor(user, action, obj, course_key)
-
-    if isinstance(obj, CCXLocator):
-        return _has_access_ccx_key(user, action, obj)
 
     if isinstance(obj, CourseKey):
         return _has_access_course_key(user, action, obj)
@@ -619,16 +616,6 @@ def _has_access_course_key(user, action, course_key):
     }
 
     return _dispatch(checkers, action, user, course_key)
-
-
-def _has_access_ccx_key(user, action, ccx_key):
-    """Check if user has access to the course for this ccx_key
-
-    Delegates checking to _has_access_course_key
-    Valid actions: same as for that function
-    """
-    course_key = ccx_key.to_course_locator()
-    return _has_access_course_key(user, action, course_key)
 
 
 def _has_access_string(user, action, perm):

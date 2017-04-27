@@ -21,7 +21,7 @@ SUBSECTION_NAME = 'Test Subsection'
 UNIT_NAME = 'Test Unit'
 
 
-@attr(shard=7)
+@attr(shard=10)
 class LibraryContentTestBase(UniqueCourseTest):
     """ Base class for library content block tests """
     USERNAME = "STUDENT_TESTER"
@@ -68,7 +68,6 @@ class LibraryContentTestBase(UniqueCourseTest):
             'source_library_id': unicode(self.library_key),
             'mode': 'random',
             'max_count': 1,
-            'has_score': False
         }
 
         self.lib_block = XBlockFixtureDesc('library_content', "Library Content", metadata=library_content_metadata)
@@ -144,7 +143,7 @@ class LibraryContentTestBase(UniqueCourseTest):
 
 
 @ddt.ddt
-@attr(shard=7)
+@attr(shard=10)
 class LibraryContentTest(LibraryContentTestBase):
     """
     Test courseware.
@@ -197,7 +196,7 @@ class LibraryContentTest(LibraryContentTestBase):
 
 
 @ddt.ddt
-@attr(shard=7)
+@attr(shard=10)
 class StudioLibraryContainerCapaFilterTest(LibraryContentTestBase, TestWithSearchIndexMixin):
     """
     Test Library Content block in LMS

@@ -8,7 +8,6 @@ import ddt
 from gating import api as lms_gating_api
 from lms.djangoapps.course_blocks.transformers.tests.helpers import CourseStructureTestCase
 from milestones.tests.utils import MilestonesTestCaseMixin
-from opaque_keys.edx.keys import UsageKey
 from openedx.core.lib.gating import api as gating_api
 from student.tests.factories import CourseEnrollmentFactory
 
@@ -172,8 +171,9 @@ class MilestonesTransformerTestCase(CourseStructureTestCase, MilestonesTestCaseM
             # block passed in, so we pass in a child of the gating block
             lms_gating_api.evaluate_prerequisite(
                 self.course,
-                UsageKey.from_string(unicode(self.blocks[gating_block_child].location)),
-                self.user.id)
+                self.blocks[gating_block_child],
+                self.user.id,
+            )
         with self.assertNumQueries(2):
             self.get_blocks_and_check_against_expected(self.user, self.ALL_BLOCKS_EXCEPT_SPECIAL)
 

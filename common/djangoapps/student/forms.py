@@ -50,7 +50,8 @@ class PasswordResetFormNoActive(PasswordResetForm):
             self,
             domain_override=None,
             subject_template_name='registration/password_reset_subject.txt',
-            email_template_name='registration/password_reset_email.html',
+            email_template_name='registration/password_reset_email.txt',
+            html_email_template_name='registration/password_reset_email.html',
             use_https=False,
             token_generator=default_token_generator,
             from_email=configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL),
@@ -84,7 +85,12 @@ class PasswordResetFormNoActive(PasswordResetForm):
             # Email subject *must not* contain newlines
             subject = subject.replace('\n', '')
             email = loader.render_to_string(email_template_name, context)
-            send_mail(subject, email, from_email, [user.email])
+
+            try:
+                html_email = loader.render_to_string(html_email_template_name, context)
+            except:
+                html_email = None
+            send_mail(subject, email, from_email, [user.email], html_message=html_email)
 
 
 class TrueCheckbox(widgets.CheckboxInput):
@@ -120,7 +126,8 @@ class AccountCreationForm(forms.Form):
         max_length=30,
         error_messages={
             "required": _USERNAME_TOO_SHORT_MSG,
-            "invalid": _("Usernames must contain only letters, numbers, underscores (_), and hyphens (-)."),
+            "invalid": _("Usernames can only contain Roman letters, western numerals (0-9), underscores (_), and "
+                         "hyphens (-)."),
             "min_length": _USERNAME_TOO_SHORT_MSG,
             "max_length": _("Username cannot be more than %(limit_value)s characters long"),
         }
@@ -186,6 +193,19 @@ class AccountCreationForm(forms.Form):
                             error_messages={
                                 "required": _("To enroll, you must follow the honor code.")
                             }
+                        )
+                elif field_name == 'data_sharing_consent':
+                    if field_value == "required":
+                        self.fields[field_name] = TrueField(
+                            error_messages={
+                                "required": _(
+                                    "You must consent to data sharing to register."
+                                )
+                            }
+                        )
+                    elif field_value == 'optional':
+                        self.fields[field_name] = forms.BooleanField(
+                            required=False
                         )
                 else:
                     required = field_value == "required"

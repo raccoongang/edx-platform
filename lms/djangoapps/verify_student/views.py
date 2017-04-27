@@ -30,18 +30,19 @@ from eventtracking import tracker
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
 
-from commerce.utils import audit_log, EcommerceService
+from commerce.utils import EcommerceService
 from course_modes.models import CourseMode
 from courseware.url_helpers import get_redirect_url
 from edx_rest_api_client.exceptions import SlumberBaseException
 from edxmako.shortcuts import render_to_response, render_to_string
-from embargo import api as embargo_api
+from openedx.core.djangoapps.embargo import api as embargo_api
 from openedx.core.djangoapps.commerce.utils import ecommerce_api_client
 from openedx.core.djangoapps.user_api.accounts import NAME_MIN_LENGTH
 from openedx.core.djangoapps.user_api.accounts.api import update_account_settings
 from openedx.core.djangoapps.user_api.errors import UserNotFound, AccountValidationError
 from openedx.core.djangoapps.credit.api import set_credit_requirement_status
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.core.lib.log_utils import audit_log
 from student.models import CourseEnrollment
 from shoppingcart.models import Order, CertificateItem
 from shoppingcart.processors import (
@@ -423,10 +424,7 @@ class PayAndVerifyView(View):
             'processors': processors,
             'requirements': requirements,
             'user_full_name': full_name,
-            'verification_deadline': (
-                get_default_time_display(verification_deadline)
-                if verification_deadline else ""
-            ),
+            'verification_deadline': verification_deadline or "",
             'already_verified': already_verified,
             'verification_good_until': verification_good_until,
             'capture_sound': staticfiles_storage.url("audio/camera_capture.wav"),
@@ -696,10 +694,7 @@ class PayAndVerifyView(View):
             context = {
                 'course': course,
                 'deadline_name': deadline_name,
-                'deadline': (
-                    get_default_time_display(deadline_datetime)
-                    if deadline_datetime else ""
-                )
+                'deadline': deadline_datetime
             }
             return render_to_response("verify_student/missed_deadline.html", context)
 
@@ -1105,11 +1100,16 @@ class SubmitPhotosView(View):
 
         subject = _("Verification photos received")
         message = render_to_string('emails/photo_submission_confirmation.txt', context)
-        from_address = configuration_helpers.get_value('default_from_email', settings.DEFAULT_FROM_EMAIL)
+        from_address = configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
         to_address = user.email
 
         try:
-            send_mail(subject, message, from_address, [to_address], fail_silently=False)
+            html_message = render_to_string('emails/photo_submission_confirmation.html', context)
+        except:
+            html_message = None
+
+        try:
+            send_mail(subject, message, from_address, [to_address], fail_silently=False, html_message=html_message)
         except:  # pylint: disable=bare-except
             # We catch all exceptions and log them.
             # It would be much, much worse to roll back the transaction due to an uncaught
@@ -1201,19 +1201,24 @@ def _compose_message_reverification_email(
         context["reverify_link"] = request.build_absolute_uri(re_verification_link)
 
         message = render_to_string('emails/reverification_processed.txt', context)
+        try:
+            html_message = render_to_string('emails/reverification_processed.html', context)
+        except:
+            html_message = None
+
         log.info(
             "Sending email to User_Id=%s. Attempts left for this user are %s. "
             "Allowed attempts %s. "
             "Due Date %s",
             str(user_id), left_attempts, allowed_attempts, str(reverification_block.due)
         )
-        return subject, message
+        return subject, message, html_message
     # Catch all exception to avoid raising back to view
     except:  # pylint: disable=bare-except
         log.exception("The email for re-verification sending failed for user_id %s", user_id)
 
 
-def _send_email(user_id, subject, message):
+def _send_email(user_id, subject, message, html_message=None):
     """ Send email to given user
 
     Args:
@@ -1229,7 +1234,7 @@ def _send_email(user_id, subject, message):
         settings.DEFAULT_FROM_EMAIL
     )
     user = User.objects.get(id=user_id)
-    user.email_user(subject, message, from_address)
+    user.email_user(subject, message, from_address, html_message=html_message)
 
 
 def _set_user_requirement_status(attempt, namespace, status, reason=None):
@@ -1345,11 +1350,11 @@ def results_callback(request):
         course_key = checkpoints[0].course_id
         related_assessment_location = checkpoints[0].checkpoint_location
 
-        subject, message = _compose_message_reverification_email(
+        subject, message, html_message = _compose_message_reverification_email(
             course_key, user_id, related_assessment_location, status, request
         )
 
-        _send_email(user_id, subject, message)
+        _send_email(user_id, subject, message, html_message=html_message)
 
     return HttpResponse("OK!")
 
@@ -1376,12 +1381,22 @@ class ReverifyView(View):
         """
         status, _ = SoftwareSecurePhotoVerification.user_status(request.user)
 
+        expiration_datetime = SoftwareSecurePhotoVerification.get_expiration_datetime(request.user)
+        can_reverify = False
+        if expiration_datetime:
+            if SoftwareSecurePhotoVerification.is_verification_expiring_soon(expiration_datetime):
+                # The user has an active verification, but the verification
+                # is set to expire within "EXPIRING_SOON_WINDOW" days (default is 4 weeks).
+                # In this case user can resubmit photos for reverification.
+                can_reverify = True
+
         # If the user has no initial verification or if the verification
         # process is still ongoing 'pending' or expired then allow the user to
         # submit the photo verification.
         # A photo verification is marked as 'pending' if its status is either
         # 'submitted' or 'must_retry'.
-        if status in ["none", "must_reverify", "expired", "pending"]:
+
+        if status in ["none", "must_reverify", "expired", "pending"] or can_reverify:
             context = {
                 "user_full_name": request.user.profile.name,
                 "platform_name": configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
