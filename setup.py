@@ -20,7 +20,6 @@ setup(
     ],
     entry_points={
         "openedx.course_tab": [
-            "calendar = openedx.features.djangoapps.calendar_tab.plugins:CalendarTab",
             "ccx = lms.djangoapps.ccx.plugins:CcxCourseTab",
             "courseware = lms.djangoapps.courseware.tabs:CoursewareTab",
             "course_info = lms.djangoapps.courseware.tabs:CourseInfoTab",
