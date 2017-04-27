@@ -73,8 +73,8 @@ class CourseOverview(TimeStampedModel):
     certificates_show_before_end = BooleanField(default=False)
     cert_html_view_enabled = BooleanField(default=False)
     has_any_active_web_certificate = BooleanField(default=False)
-    cert_name_short = TextField(blank=True)
-    cert_name_long = TextField(blank=True)
+    cert_name_short = TextField()
+    cert_name_long = TextField()
 
     # Grading
     lowest_passing_grade = DecimalField(max_digits=5, decimal_places=2, null=True)
