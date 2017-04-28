@@ -1,3 +1,7 @@
+"""
+URLs for the edX global analytics application.
+"""
+
 from django.conf.urls import url
 from . import views
 
