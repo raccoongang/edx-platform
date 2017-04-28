@@ -44,8 +44,8 @@ def count_data():
     # Built-in edX`s accounts have None in `last_login` field.
     # 30th day <= Current last login date <= Today
     activity_border = (datetime.datetime.now() - datetime.timedelta(days=olga_settings.get("ACTIVITY_PERIOD")))
-    active_students_amount = len(UserProfile.objects.all().exclude(
-        user__last_login=None).filter(user__last_login__gt=activity_border))
+    active_students_amount = UserProfile.objects.all().exclude(
+        user__last_login=None).filter(user__last_login__gt=activity_border).count()
 
     # Get courses amount within current platform.
     courses_amount = len(modulestore().get_courses())
