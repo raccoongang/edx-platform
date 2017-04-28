@@ -51,6 +51,7 @@ def count_data():
     courses_amount = len(modulestore().get_courses())
 
     # Secret token to authorize our platform on remote server.
+    # TODO: make better logic for getting only one token
     try:
         token_object = TokenStorage.objects.get(pk=1)
         secret_token = token_object.secret_token
