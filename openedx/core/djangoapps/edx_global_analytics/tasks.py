@@ -3,9 +3,10 @@ This file contains periodic tasks for global_statistics, which will collect data
 and send this data to appropriate service for further processing.
 """
 
+import datetime
 import json
-import requests
 
+import requests
 from celery.task import task
 
 from django.conf import settings
@@ -30,15 +31,21 @@ def count_data():
     # Get IP address of the platform and convert it to latitude, longitude.
     ip_data = requests.get('http://freegeoip.net/json')
     ip_data_json = json.loads(ip_data.text)
-    platform_latitude, platform_longitude = olga_settings.get("PLATFORM_LATITUDE"), olga_settings.get("PLATFORM_LONGITUDE")
+
+    platform_latitude = olga_settings.get("PLATFORM_LATITUDE")
+    platform_longitude = olga_settings.get("PLATFORM_LONGITUDE")
    
     if platform_latitude and platform_longitude:
         latitude, longitude = platform_latitude, platform_longitude
     else:
         latitude, longitude = ip_data_json['latitude'], ip_data_json['longitude']
 
-    # Get students amount within current platform.
-    students_amount = UserProfile.objects.count()
+    # Get count of active students (if logged in during last 30 days)
+    # 30th day <= Current last login date <= Today
+    active_border = (datetime.datetime.now() - datetime.timedelta(days=30))
+    active_students_amount = sum(1 for student in UserProfile.objects.all()
+                                 if student.user.last_login is not None and
+                                 active_border < student.user.last_login.replace(tzinfo=None))
 
     # Get courses amount within current platform.
     courses_amount = len(modulestore().get_courses())
@@ -72,9 +79,9 @@ def count_data():
         platform_name = Site.objects.get_current()
  
     if statistics_level == 1:
-        data_to_send = requests.post(post_url, data={
+        requests.post(post_url, data={
             'courses_amount': courses_amount,
-            'students_amount': students_amount,
+            'active_students_amount': active_students_amount,
             'latitude': latitude,
             'longitude': longitude,
             'platform_name': platform_name,
