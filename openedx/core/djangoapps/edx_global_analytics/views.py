@@ -1,3 +1,7 @@
+"""
+Views for the edX global analytics application for working with analytics-server and other inside features.
+"""
+
 from django.http import Http404, HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
