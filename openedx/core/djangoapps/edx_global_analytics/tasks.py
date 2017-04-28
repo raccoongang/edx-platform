@@ -40,12 +40,12 @@ def count_data():
     else:
         latitude, longitude = ip_data_json['latitude'], ip_data_json['longitude']
 
-    # Get count of active students (if logged in during last 30 days)
+    # Get count of active students (if logged in during last 30 days).
+    # Built-in edX`s accounts have None in `last_login` field.
     # 30th day <= Current last login date <= Today
-    active_border = (datetime.datetime.now() - datetime.timedelta(days=30))
-    active_students_amount = sum(1 for student in UserProfile.objects.all()
-                                 if student.user.last_login is not None and
-                                 active_border < student.user.last_login.replace(tzinfo=None))
+    activity_border = (datetime.datetime.now() - datetime.timedelta(days=olga_settings.get("ACTIVITY_PERIOD")))
+    active_students_amount = len(UserProfile.objects.all().exclude(
+        user__last_login=None).filter(user__last_login__gt=activity_border))
 
     # Get courses amount within current platform.
     courses_amount = len(modulestore().get_courses())
