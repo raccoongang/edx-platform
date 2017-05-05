@@ -48,7 +48,7 @@ def count_data():
     # 30th day <= Current last login date <= Today
     activity_border = (datetime.datetime.now() - datetime.timedelta(days=olga_settings.get("ACTIVITY_PERIOD")))
     active_students_amount = UserProfile.objects.all().exclude(
-        user__last_login=None).filter(user__last_login__gt=activity_border).count()
+        Q(user__last_login=None) | Q(user__is_active=False)).filter(user__last_login__gt=activity_border).count()
 
     # Aggregated students per country
     students_per_country = UserProfile.objects.exclude(Q(user__last_login=None) | Q(user__is_active=False)).filter(
