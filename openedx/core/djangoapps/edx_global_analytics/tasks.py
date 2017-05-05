@@ -11,10 +11,13 @@ from celery.task import task
 
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.core.exceptions import ObjectDoesNotExist
 from xmodule.modulestore.django import modulestore
+
 from student.models import UserProfile
 from .models import TokenStorage
+
+from django.db.models import Count
+from django.db.models import Q
 
 
 @task
@@ -47,15 +50,18 @@ def count_data():
     active_students_amount = UserProfile.objects.all().exclude(
         user__last_login=None).filter(user__last_login__gt=activity_border).count()
 
+    # Aggregated students per country
+    students_per_country = UserProfile.objects.exclude(Q(user__last_login=None) | Q(user__is_active=False)).filter(
+        user__last_login__gt=activity_border).values('country').annotate(count=Count('country'))
+
     # Get courses amount within current platform.
     courses_amount = len(modulestore().get_courses())
 
     # Secret token to authorize our platform on remote server.
-    # TODO: make better logic for getting only one token
     try:
-        token_object = TokenStorage.objects.get(pk=1)
+        token_object = TokenStorage.objects.first()
         secret_token = token_object.secret_token
-    except ObjectDoesNotExist:
+    except AttributeError:
         secret_token = ""
 
     # Current edx-platform URL
@@ -78,14 +84,27 @@ def count_data():
         platform_name = settings.PLATFORM_NAME
     else:
         platform_name = Site.objects.get_current()
- 
+
+    enthusiast = {
+        'active_students_amount': active_students_amount,
+        'courses_amount': courses_amount,
+        'latitude': latitude,
+        'level': 'enthusiast',
+        'longitude': longitude,
+        'platform_name': platform_name,
+        'platform_url': platform_url,
+        'secret_token': secret_token,
+        'students_per_country': json.dumps(list(students_per_country))
+        }
+
+    paranoid = {
+        'active_students_amount': active_students_amount,
+        'courses_amount': courses_amount,
+        'level': 'paranoid',
+        'secret_token': secret_token
+        }
+
     if statistics_level == 1:
-        requests.post(post_url, data={
-            'courses_amount': courses_amount,
-            'active_students_amount': active_students_amount,
-            'latitude': latitude,
-            'longitude': longitude,
-            'platform_name': platform_name,
-            'platform_url': platform_url,
-            'secret_token': secret_token
-            })
+        requests.post(post_url, enthusiast)
+    elif statistics_level == 2:
+        requests.post(post_url, paranoid)
