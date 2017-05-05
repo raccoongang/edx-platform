@@ -11,13 +11,12 @@ from celery.task import task
 
 from django.conf import settings
 from django.contrib.sites.models import Site
-from xmodule.modulestore.django import modulestore
-
-from student.models import UserProfile
-from .models import TokenStorage
-
 from django.db.models import Count
 from django.db.models import Q
+
+from xmodule.modulestore.django import modulestore
+from student.models import UserProfile
+from .models import TokenStorage
 
 
 @task
@@ -48,11 +47,14 @@ def count_data():
     # 30th day <= Current last login date <= Today
     activity_border = (datetime.datetime.now() - datetime.timedelta(days=olga_settings.get("ACTIVITY_PERIOD")))
     active_students_amount = UserProfile.objects.exclude(
-        Q(user__last_login=None) | Q(user__is_active=False)).filter(user__last_login__gt=activity_border).count()
+        Q(user__last_login=None) | Q(user__is_active=False)
+    ).filter(user__last_login__gt=activity_border).count()
 
     # Aggregated students per country
-    students_per_country = UserProfile.objects.exclude(Q(user__last_login=None) | Q(user__is_active=False)).filter(
-        user__last_login__gt=activity_border).values('country').annotate(count=Count('country'))
+    students_per_country = UserProfile.objects.exclude(
+        Q(user__last_login=None) | Q(user__is_active=False)
+    ).filter(user__last_login__gt=activity_border).values('country'
+    ).annotate(count=Count('country'))
 
     # Get courses amount within current platform.
     courses_amount = len(modulestore().get_courses())
@@ -86,17 +88,20 @@ def count_data():
         platform_name = Site.objects.get_current()
 
     # Sending instance data
-    paranoid = {
+    data = {
         'active_students_amount': active_students_amount,
         'courses_amount': courses_amount,
         'statistics_level': 'paranoid',
         'secret_token': secret_token
         }
 
+    # Paranoid level
+    if statistics_level == 2:
+        requests.post(post_url, data)
+
     # Enthusiast level
-    if statistics_level == 1:
-        enthusiast = paranoid.copy()
-        enthusiast.update({
+    elif statistics_level == 1:
+        data.update({
             'latitude': latitude,
             'longitude': longitude,
             'platform_name': platform_name,
@@ -104,8 +109,4 @@ def count_data():
             'statistics_level': 'enthusiast',
             'students_per_country': json.dumps(list(students_per_country))
         })
-        requests.post(post_url, enthusiast)
-
-    # Paranoid level
-    elif statistics_level == 2:
-        requests.post(post_url, paranoid)
+        requests.post(post_url, data)
