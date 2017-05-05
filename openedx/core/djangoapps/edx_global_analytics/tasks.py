@@ -47,7 +47,7 @@ def count_data():
     # Built-in edX`s accounts have None in `last_login` field.
     # 30th day <= Current last login date <= Today
     activity_border = (datetime.datetime.now() - datetime.timedelta(days=olga_settings.get("ACTIVITY_PERIOD")))
-    active_students_amount = UserProfile.objects.all().exclude(
+    active_students_amount = UserProfile.objects.exclude(
         Q(user__last_login=None) | Q(user__is_active=False)).filter(user__last_login__gt=activity_border).count()
 
     # Aggregated students per country
@@ -85,26 +85,27 @@ def count_data():
     else:
         platform_name = Site.objects.get_current()
 
-    enthusiast = {
-        'active_students_amount': active_students_amount,
-        'courses_amount': courses_amount,
-        'latitude': latitude,
-        'level': 'enthusiast',
-        'longitude': longitude,
-        'platform_name': platform_name,
-        'platform_url': platform_url,
-        'secret_token': secret_token,
-        'students_per_country': json.dumps(list(students_per_country))
-        }
-
+    # Sending instance data
     paranoid = {
         'active_students_amount': active_students_amount,
         'courses_amount': courses_amount,
-        'level': 'paranoid',
+        'statistics_level': 'paranoid',
         'secret_token': secret_token
         }
 
+    # Enthusiast level
     if statistics_level == 1:
+        enthusiast = paranoid.copy()
+        enthusiast.update({
+            'latitude': latitude,
+            'longitude': longitude,
+            'platform_name': platform_name,
+            'platform_url': platform_url,
+            'statistics_level': 'enthusiast',
+            'students_per_country': json.dumps(list(students_per_country))
+        })
         requests.post(post_url, enthusiast)
+
+    # Paranoid level
     elif statistics_level == 2:
         requests.post(post_url, paranoid)
