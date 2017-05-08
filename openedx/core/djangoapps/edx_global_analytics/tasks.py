@@ -88,6 +88,7 @@ def count_data():
         platform_name = Site.objects.get_current()
 
     # Sending instance data
+    # Paranoid level basic data
     data = {
         'active_students_amount': active_students_amount,
         'courses_amount': courses_amount,
@@ -95,12 +96,8 @@ def count_data():
         'secret_token': secret_token
     }
 
-    # Paranoid level
-    if statistics_level == 2:
-        requests.post(post_url, data)
-
     # Enthusiast level
-    elif statistics_level == 1:
+    if statistics_level == 1:
         data.update({
             'latitude': latitude,
             'longitude': longitude,
@@ -109,4 +106,5 @@ def count_data():
             'statistics_level': 'enthusiast',
             'students_per_country': json.dumps(list(students_per_country))
         })
-        requests.post(post_url, data)
+
+    requests.post(post_url, data)
