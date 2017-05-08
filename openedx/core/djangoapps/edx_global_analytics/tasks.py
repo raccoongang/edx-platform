@@ -93,7 +93,7 @@ def count_data():
         'courses_amount': courses_amount,
         'statistics_level': 'paranoid',
         'secret_token': secret_token
-        }
+    }
 
     # Paranoid level
     if statistics_level == 2:
