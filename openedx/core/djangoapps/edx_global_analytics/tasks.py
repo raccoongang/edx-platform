@@ -25,19 +25,33 @@ from .models import TokenStorage
 UTC = pytz.UTC
 
 
-def calculate_instance_amount(query_name, activity_period):
+def calculate_active_students_amount(query_name, activity_period):
+    """
+    Calculates instance active students amount for particular period as like as previous calendar day,
+    week and month after cached.
+    """
+
     period_start, period_end = activity_period
 
     active_students_amount = UserProfile.objects.exclude(
         Q(user__last_login=None) | Q(user__is_active=False)
     ).filter(user__last_login__gt=period_start, user__last_login__lt=period_end).count()
 
-    active_students_amount_after_cached = chaching_instance_data(query_name, active_students_amount)
+    active_students_amount_after_cached = caching_instance_data(query_name, active_students_amount)
 
     return active_students_amount_after_cached
 
 
 def calculate_students_per_country(query_name, activity_period):
+    """
+    Calculates instance students per country amount for particular period as like as previous calendar day,
+    week and month after cached.
+
+    Returns:
+        students_per_country_after_cached (dict): Country-count accordance as pair of key-value.
+                                                  Example: {u'FR': 3434, u'UA': 1124, None: 2345}
+    """
+
     period_start, period_end = activity_period
 
     students_per_country = dict(UserProfile.objects.exclude(
@@ -45,27 +59,41 @@ def calculate_students_per_country(query_name, activity_period):
     ).filter(user__last_login__gt=period_start, user__last_login__lt=period_end
     ).values('country').annotate(count=Count('country')).values_list('country', 'count'))
 
-    students_per_country_after_cached = chaching_instance_data(query_name, students_per_country)
+    students_per_country_after_cached = caching_instance_data(query_name, students_per_country)
 
     return students_per_country_after_cached
 
 
 def get_previous_day_start_and_end_dates():
-    current_datetime = datetime.datetime.today() - datetime.timedelta(days=1)
-    start_of_day = current_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
-    end_of_day = current_datetime.replace(hour=23, minute=59, second=59, microsecond=59)
+    """
+    Get accurate date and time of previous calendar day`s start and end.
+
+    Returns:
+        start_of_day (datetime): Previous day`s start. Example for 2017-05-15 is 2017-05-14 00:00:00.
+        end_of_day (datetime): Previous day`s end. Example for 2017-05-15 is 2017-05-14 23:59:59.
+    """
+
+    previous_day = datetime.datetime.today() - datetime.timedelta(days=1)
+    start_of_day = previous_day.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_of_day = previous_day.replace(hour=23, minute=59, second=59, microsecond=59)
 
     return start_of_day, end_of_day
 
 
 def get_previous_week_start_and_end_dates():
-    days_after_week_started = datetime.timedelta(
-        days=datetime.datetime.now().weekday()
-    )
+    """
+    Get accurate first and last days (with time) of calendar week.
 
-    start_of_week = (datetime.datetime.now() - days_after_week_started).replace(
-        hour=0, minute=0, second=0, microsecond=0
-    )
+    Returns:
+        start_of_week (datetime): Previous week`s first day start. Example for 2017-05-15 is 2017-05-08 00:00:00.
+        end_of_week (datetime): Previous week`s last day end. Example for 2017-05-15 is 2017-05-14 23:59:59.
+    """
+
+    days_after_week_started = datetime.datetime.today().weekday() + 7
+
+    start_of_week = (datetime.datetime.today() - datetime.timedelta(
+        days=days_after_week_started
+    )).replace(hour=0, minute=0, second=0, microsecond=0)
 
     end_of_week = start_of_week + datetime.timedelta(days=7, seconds=-1)
 
@@ -73,6 +101,14 @@ def get_previous_week_start_and_end_dates():
 
 
 def get_previous_month_start_and_end_dates():
+    """
+    Get accurate first and last days (with time) of calendar month.
+
+    Returns:
+        start_of_month (datetime): Previous month`s first day start. Example for may is 2017-04-01 00:00:00.
+        end_of_month (datetime): Previous month`s last day end. Example for may is 2017-04-30 23:59:59.
+    """
+
     last_day_of_previous_month = (datetime.datetime.now().replace(day=1) - datetime.timedelta(days=1)).replace(
         tzinfo=UTC
     )
@@ -90,7 +126,18 @@ def get_previous_month_start_and_end_dates():
     return start_of_month, end_of_month
 
 
-def chaching_instance_data(query_name, query):
+def caching_instance_data(query_name, query):
+    """
+    Caches queries, that calculate particular instance data,
+    including long time unchangeable as like as monthly statistics.
+
+    Arguments:
+        query_name (str): Name of query.
+        query (query result): Django-query.
+
+    Returns cached query result.
+    """
+
     cached_query = cache.get(query_name)
 
     if cached_query is not None:
@@ -130,15 +177,15 @@ def count_data():
     )
 
     # Get count of active students per previous day, previous calendar week and month
-    active_students_amount_day = calculate_instance_amount(
+    active_students_amount_day = calculate_active_students_amount(
         'active_students_amount_day', get_previous_day_start_and_end_dates()
     )
 
-    active_students_amount_week = calculate_instance_amount(
+    active_students_amount_week = calculate_active_students_amount(
         'active_students_amount_week', get_previous_week_start_and_end_dates()
     )
 
-    active_students_amount_month = calculate_instance_amount(
+    active_students_amount_month = calculate_active_students_amount(
         'active_students_amount_month', get_previous_month_start_and_end_dates()
     )
 
