@@ -91,7 +91,6 @@ class TestGetXBlockParent(GatingTestCase):
 
     def test_get_parent_with_category(self):
         """ Test test_get_parent_of_category """
-
         result = _get_xblock_parent(self.vert1, 'sequential')
         self.assertEqual(result.location, self.seq1.location)
         result = _get_xblock_parent(self.vert1, 'chapter')
@@ -134,7 +133,7 @@ class TestEvaluatePrerequisite(GatingTestCase, MilestonesTestCaseMixin):
         self._setup_gating_milestone(50)
 
         mock_module_score.return_value = module_score
-        evaluate_prerequisite(self.course, self.prob1.location, self.user.id)
+        evaluate_prerequisite(self.course, self.prob1, self.user.id)
         self.assertEqual(milestones_api.user_has_milestone(self.user_dict, self.prereq_milestone), result)
 
     @patch('gating.api.log.warning')
@@ -147,7 +146,7 @@ class TestEvaluatePrerequisite(GatingTestCase, MilestonesTestCaseMixin):
         self._setup_gating_milestone(None)
 
         mock_module_score.return_value = module_score
-        evaluate_prerequisite(self.course, self.prob1.location, self.user.id)
+        evaluate_prerequisite(self.course, self.prob1, self.user.id)
         self.assertEqual(milestones_api.user_has_milestone(self.user_dict, self.prereq_milestone), result)
         self.assertTrue(mock_log.called)
 
@@ -155,14 +154,14 @@ class TestEvaluatePrerequisite(GatingTestCase, MilestonesTestCaseMixin):
     def test_orphaned_xblock(self, mock_module_score):
         """ Test test_orphaned_xblock """
 
-        evaluate_prerequisite(self.course, self.prob2.location, self.user.id)
+        evaluate_prerequisite(self.course, self.prob2, self.user.id)
         self.assertFalse(mock_module_score.called)
 
     @patch('gating.api.get_module_score')
     def test_no_prerequisites(self, mock_module_score):
         """ Test test_no_prerequisites """
 
-        evaluate_prerequisite(self.course, self.prob1.location, self.user.id)
+        evaluate_prerequisite(self.course, self.prob1, self.user.id)
         self.assertFalse(mock_module_score.called)
 
     @patch('gating.api.get_module_score')
@@ -172,5 +171,5 @@ class TestEvaluatePrerequisite(GatingTestCase, MilestonesTestCaseMixin):
         # Setup gating milestones data
         gating_api.add_prerequisite(self.course.id, self.seq1.location)
 
-        evaluate_prerequisite(self.course, self.prob1.location, self.user.id)
+        evaluate_prerequisite(self.course, self.prob1, self.user.id)
         self.assertFalse(mock_module_score.called)

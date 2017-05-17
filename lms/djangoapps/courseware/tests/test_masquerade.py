@@ -8,7 +8,7 @@ from nose.plugins.attrib import attr
 from datetime import datetime
 
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.utils.timezone import UTC
 
 from capa.tests.response_xml_factory import OptionResponseXMLFactory
@@ -20,7 +20,7 @@ from courseware.masquerade import (
     get_masquerading_group_info
 )
 from courseware.tests.factories import StaffFactory
-from courseware.tests.helpers import LoginEnrollmentTestCase, get_request_for_user
+from courseware.tests.helpers import LoginEnrollmentTestCase
 from courseware.tests.test_submitting_problems import ProblemSubmissionTestMixin
 from student.tests.factories import UserFactory
 from xblock.runtime import DictKeyValueStore
@@ -107,14 +107,13 @@ class MasqueradeTestCase(SharedModuleStoreTestCase, LoginEnrollmentTestCase):
         )
         return self.client.get(url)
 
-    def _create_mock_json_request(self, user, body, method='POST', session=None):
+    def _create_mock_json_request(self, user, data, method='POST', session=None):
         """
         Returns a mock JSON request for the specified user
         """
-        request = get_request_for_user(user)
-        request.method = method
-        request.META = {'CONTENT_TYPE': ['application/json']}
-        request.body = body
+        factory = RequestFactory()
+        request = factory.generic(method, '/', content_type='application/json', data=json.dumps(data))
+        request.user = user
         request.session = session or {}
         return request
 
@@ -148,6 +147,20 @@ class MasqueradeTestCase(SharedModuleStoreTestCase, LoginEnrollmentTestCase):
         problem_html = json.loads(self.get_problem().content)['html']
         self.assertIn(self.problem_display_name, problem_html)
         self.assertEqual(show_answer_expected, "Show Answer" in problem_html)
+
+    def verify_real_user_profile_link(self):
+        """
+        Verifies that the 'Profile' link in the navigation dropdown is pointing
+        to the real user.
+        """
+        content = self.get_courseware_page().content
+        self.assertIn(
+            '<a href="/u/{}" role="menuitem" class="action dropdown-menuitem">Profile</a>'.format(
+                self.test_user.username
+            ),
+            content,
+            "Profile link should point to real user",
+        )
 
 
 @attr(shard=1)
@@ -279,7 +292,9 @@ class TestStaffMasqueradeAsSpecificStudent(StaffMasqueradeTestCase, ProblemSubmi
 
         The return value is a string like u'1/2'.
         """
-        return json.loads(self.look_at_question(self.problem_display_name).content)['progress_detail']
+        json_data = json.loads(self.look_at_question(self.problem_display_name).content)
+        progress = '%s/%s' % (str(json_data['current_score']), str(json_data['total_possible']))
+        return progress
 
     @patch.dict('django.conf.settings.FEATURES', {'DISABLE_START_DATES': False})
     def test_masquerade_as_specific_user_on_self_paced(self):
@@ -325,6 +340,9 @@ class TestStaffMasqueradeAsSpecificStudent(StaffMasqueradeTestCase, ProblemSubmi
         # Masquerade as the student, and check we can see the student state.
         self.update_masquerade(role='student', user_name=self.student_user.username)
         self.assertEqual(self.get_progress_detail(), u'2/2')
+
+        # Verify that the user dropdown links have not changed
+        self.verify_real_user_profile_link()
 
         # Temporarily override the student state.
         self.submit_answer('Correct', 'Incorrect')
@@ -389,10 +407,11 @@ class TestGetMasqueradingGroupId(StaffMasqueradeTestCase):
         # Install a masquerading group
         request = self._create_mock_json_request(
             self.test_user,
-            body='{"role": "student", "user_partition_id": 0, "group_id": 1}'
+            data={"role": "student", "user_partition_id": 0, "group_id": 1}
         )
-        handle_ajax(request, unicode(self.course.id))
-        setup_masquerade(request, self.test_user, True)
+        response = handle_ajax(request, unicode(self.course.id))
+        self.assertEquals(response.status_code, 200)
+        setup_masquerade(request, self.course.id, True)
 
         # Verify that the masquerading group is returned
         group_id, user_partition_id = get_masquerading_group_info(self.test_user, self.course.id)

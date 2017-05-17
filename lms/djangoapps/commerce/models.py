@@ -1,15 +1,10 @@
 """
 Commerce-related models.
 """
-from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from config_models.models import ConfigurationModel
-from openedx.core.djangoapps.site_configuration.models import SiteConfiguration
-
-from logging import getLogger
-logger = getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class CommerceConfiguration(ConfigurationModel):
@@ -20,6 +15,7 @@ class CommerceConfiguration(ConfigurationModel):
 
     API_NAME = 'commerce'
     CACHE_KEY = 'commerce.api.data'
+    DEFAULT_RECEIPT_PAGE_URL = '/commerce/checkout/receipt/?orderNum='
 
     checkout_on_ecommerce_service = models.BooleanField(
         default=False,
@@ -38,40 +34,14 @@ class CommerceConfiguration(ConfigurationModel):
             'Specified in seconds. Enable caching by setting this to a value greater than 0.'
         )
     )
-    site = models.ForeignKey(
-        Site,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True
+    receipt_page = models.CharField(
+        max_length=255,
+        default=DEFAULT_RECEIPT_PAGE_URL,
+        help_text=_('Path to order receipt page.')
     )
 
     def __unicode__(self):
         return "Commerce configuration"
-
-    def get_receipt_page_url(self, order_number):
-        """
-        Return absolute receipt page URL.
-
-        Arguments:
-            order_number (str): Order number
-
-        Returns:
-            Absolute receipt page URL, consisting of site domain and site receipt page.
-        """
-        site = self.site
-        if site:
-            try:
-                return '{site_domain}{receipt_page_url}{order_number}'.format(
-                    site_domain=site.domain,
-                    receipt_page_url=site.configuration.receipt_page_url,  # pylint: disable=no-member
-                    order_number=order_number
-                )
-            except AttributeError:
-                logger.info("Site Configuration is not enabled for site (%s).", site)
-        return '{default_receipt_page_url}{order_number}'.format(
-            default_receipt_page_url=SiteConfiguration.DEFAULT_RECEIPT_PAGE_URL,
-            order_number=order_number
-        )
 
     @property
     def is_cache_enabled(self):

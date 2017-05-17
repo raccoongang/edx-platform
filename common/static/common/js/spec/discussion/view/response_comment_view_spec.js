@@ -5,7 +5,7 @@
 
     describe('ResponseCommentView', function() {
         beforeEach(function() {
-            DiscussionSpecHelper.setUpGlobals();
+            DiscussionSpecHelper.setUpGlobals({});
             this.comment = new Comment({
                 id: '01234567',
                 user_id: user.id,
@@ -195,7 +195,7 @@
                     expect($.ajax.calls.mostRecent().args[0].data.body).toEqual(this.updatedBody);
                     expect(this.view.model.get('body')).toEqual(originalBody);
                     expect(this.view.cancelEdit).not.toHaveBeenCalled();
-                    return expect(this.view.$('.edit-comment-form-errors *').length).toEqual(1);
+                    return expect(this.view.$('.edit-comment-form-errors > *').length).toEqual(1);
                 });
             });
         });

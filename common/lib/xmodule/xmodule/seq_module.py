@@ -117,6 +117,12 @@ class ProctoringFields(object):
         scope=Scope.settings,
     )
 
+    def _get_course(self):
+        """
+        Return course by course id.
+        """
+        return self.descriptor.runtime.modulestore.get_course(self.course_id)  # pylint: disable=no-member
+
     @property
     def is_timed_exam(self):
         """
@@ -130,6 +136,14 @@ class ProctoringFields(object):
         """ Alias the is_proctored_enabled field to the more legible is_proctored_exam """
         return self.is_proctored_enabled
 
+    @property
+    def allow_proctoring_opt_out(self):
+        """
+        Returns true if the learner should be given the option to choose between
+        taking a proctored exam, or opting out to take the exam without proctoring.
+        """
+        return self._get_course().allow_proctoring_opt_out
+
     @is_proctored_exam.setter
     def is_proctored_exam(self, value):
         """ Alias the is_proctored_enabled field to the more legible is_proctored_exam """
@@ -137,17 +151,17 @@ class ProctoringFields(object):
 
 
 @XBlock.wants('proctoring')
+@XBlock.wants('verification')
 @XBlock.wants('milestones')
 @XBlock.wants('credit')
-@XBlock.needs("user")
-@XBlock.needs("bookmarks")
+@XBlock.needs('user')
+@XBlock.needs('bookmarks')
 class SequenceModule(SequenceFields, ProctoringFields, XModule):
     """
     Layout module which lays out content in a temporal sequence
     """
     js = {
-        'coffee': [resource_string(__name__, 'js/src/sequence/display.coffee')],
-        'js': [resource_string(__name__, 'js/src/sequence/display/jquery.sequence.js')],
+        'js': [resource_string(__name__, 'js/src/sequence/display.js')],
     }
     css = {
         'scss': [resource_string(__name__, 'css/sequence/display.scss')],
@@ -336,15 +350,12 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
             is_bookmarked = bookmarks_service.is_bookmarked(usage_key=item.scope_ids.usage_id)
             context["bookmarked"] = is_bookmarked
 
-            progress = item.get_progress()
             rendered_item = item.render(STUDENT_VIEW, context)
             fragment.add_frag_resources(rendered_item)
 
             iteminfo = {
                 'content': rendered_item.content,
                 'page_title': getattr(item, 'tooltip_title', ''),
-                'progress_status': Progress.to_js_status_str(progress),
-                'progress_detail': Progress.to_js_detail_str(progress),
                 'type': item.get_icon_class(),
                 'id': item.scope_ids.usage_id.to_deprecated_string(),
                 'bookmarked': is_bookmarked,
@@ -433,6 +444,7 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
 
         proctoring_service = self.runtime.service(self, 'proctoring')
         credit_service = self.runtime.service(self, 'credit')
+        verification_service = self.runtime.service(self, 'verification')
 
         # Is this sequence designated as a Timed Examination, which includes
         # Proctored Exams
@@ -454,6 +466,7 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
                     self.default_time_limit_minutes else 0
                 ),
                 'is_practice_exam': self.is_practice_exam,
+                'allow_proctoring_opt_out': self.allow_proctoring_opt_out,
                 'due_date': self.due
             }
 
@@ -464,6 +477,14 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
                     context.update({
                         'credit_state': credit_state
                     })
+
+            # inject verification status
+            if verification_service:
+                verification_status, __ = verification_service.get_status(user_id)
+                context.update({
+                    'verification_status': verification_status,
+                    'reverify_url': verification_service.reverify_url(),
+                })
 
             # See if the edx-proctoring subsystem wants to present
             # a special view to the student rather

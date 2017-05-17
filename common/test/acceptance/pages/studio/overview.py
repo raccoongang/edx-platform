@@ -5,18 +5,21 @@ import datetime
 
 from bok_choy.page_object import PageObject
 from bok_choy.promise import EmptyPromise
+from bok_choy.javascript import js_defined, wait_for_js
 
 from selenium.webdriver import ActionChains
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
 
 from common.test.acceptance.pages.common.utils import click_css, confirm_prompt
+from common.test.acceptance.tests.helpers import disable_animations, enable_animations
 
 from common.test.acceptance.pages.studio.course_page import CoursePage
 from common.test.acceptance.pages.studio.container import ContainerPage
 from common.test.acceptance.pages.studio.utils import set_input_value_and_save, set_input_value
 
 
+@js_defined('jQuery')
 class CourseOutlineItem(object):
     """
     A mixin class for any :class:`PageObject` shown in a course outline.
@@ -173,6 +176,7 @@ class CourseOutlineItem(object):
         element = self.q(css=self._bounded_selector(".status-grading-value"))  # pylint: disable=no-member
         return element.first.text[0] if element.present else None
 
+    @wait_for_js
     def publish(self):
         """
         Publish the unit.
@@ -251,8 +255,7 @@ class CourseOutlineContainer(CourseOutlineItem):
         """
         Toggle the expansion of this subsection.
         """
-        # pylint: disable=no-member
-        self.browser.execute_script("jQuery.fx.off = true;")
+        disable_animations(self)
 
         def subsection_expanded():
             """
@@ -268,7 +271,7 @@ class CourseOutlineContainer(CourseOutlineItem):
 
         # Need to click slightly off-center in order for the click to be recognized.
         ele = self.browser.find_element_by_css_selector(self._bounded_selector('.ui-toggle-expansion .fa'))
-        ActionChains(self.browser).move_to_element_with_offset(ele, 4, 4).click().perform()
+        ActionChains(self.browser).move_to_element_with_offset(ele, 8, 8).click().perform()  # pylint: disable=no-member
         self.wait_for_element_presence(self._bounded_selector(self.ADD_BUTTON_SELECTOR), 'Subsection is expanded')
 
         EmptyPromise(
@@ -276,7 +279,7 @@ class CourseOutlineContainer(CourseOutlineItem):
             "Check that the container {} has been toggled".format(self.locator)
         ).fulfill()
 
-        self.browser.execute_script("jQuery.fx.off = false;")
+        enable_animations(self)
 
         return self
 

@@ -274,6 +274,7 @@ class EdxNotesDefaultInteractionsTest(EdxNotesTestMixin):
         components = self.note_unit_page.components
         self.assert_notes_are_removed(components)
 
+    @flaky  # TODO: fix this, see TNL-6494
     def test_can_create_note_with_tags(self):
         """
         Scenario: a user of notes can define one with tags
@@ -842,7 +843,6 @@ class EdxNotesPageTest(EventsTestMixin, EdxNotesTestMixin):
 
         self.assert_viewed_event('Tags')
 
-    @flaky  # TNL-4590
     def test_easy_access_from_notes_page(self):
         """
         Scenario: Ensure that the link to the Unit works correctly.
@@ -874,27 +874,22 @@ class EdxNotesPageTest(EventsTestMixin, EdxNotesTestMixin):
 
         self._add_default_notes()
         self.notes_page.visit()
-        # visiting the page results in an ajax request to fetch the notes
-        self.notes_page.wait_for_ajax()
         note = self.notes_page.notes[0]
         assert_page(note, self.raw_note_list[4]['usage_id'], "Recent Activity")
 
-        self.notes_page.visit().switch_to_tab("structure")
-        # visiting the page results in an ajax request to fetch the notes
-        self.notes_page.wait_for_ajax()
+        self.notes_page.visit()
+        self.notes_page.switch_to_tab("structure")
         note = self.notes_page.notes[1]
         assert_page(note, self.raw_note_list[2]['usage_id'], "Location in Course")
 
-        self.notes_page.visit().switch_to_tab("tags")
-        # visiting the page results in an ajax request to fetch the notes
-        self.notes_page.wait_for_ajax()
+        self.notes_page.visit()
+        self.notes_page.switch_to_tab("tags")
         note = self.notes_page.notes[0]
         assert_page(note, self.raw_note_list[2]['usage_id'], "Tags")
 
-        self.notes_page.visit().search("Fifth")
-        # visiting the page results in an ajax request to fetch the notes
+        self.notes_page.visit()
+        self.notes_page.search("Fifth")
         self.notes_page.wait_for_ajax()
-
         note = self.notes_page.notes[0]
         assert_page(note, self.raw_note_list[4]['usage_id'], "Search Results")
 
@@ -1067,6 +1062,7 @@ class EdxNotesPageTest(EventsTestMixin, EdxNotesTestMixin):
         self.assertNotIn(u"Search Results", self.notes_page.tabs)
         self.assertEqual(len(self.notes_page.notes), 5)
 
+    @flaky  # TODO: fix this, see TNL-6493
     def test_open_note_when_accessed_from_notes_page(self):
         """
         Scenario: Ensure that the link to the Unit opens a note only once.
@@ -1121,6 +1117,7 @@ class EdxNotesPageTest(EventsTestMixin, EdxNotesTestMixin):
         note = self.note_unit_page.notes[0]
         self.assertFalse(note.is_visible)
         self.courseware_page.go_to_sequential_position(1)
+        self.courseware_page.wait_for_ajax()
         note = self.note_unit_page.notes[0]
         self.assertFalse(note.is_visible)
 

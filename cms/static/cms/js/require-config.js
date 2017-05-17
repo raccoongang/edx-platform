@@ -1,3 +1,6 @@
+/* globals _, requirejs */
+/* eslint-disable quote-props */
+
 (function(require, define) {
     'use strict';
 
@@ -49,8 +52,8 @@
             'jquery.immediateDescendents': 'coffee/src/jquery.immediateDescendents',
             'datepair': 'js/vendor/timepicker/datepair',
             'date': 'js/vendor/date',
-            'moment': 'js/vendor/moment.min',
-            'moment-with-locales': 'js/vendor/moment-with-locales.min',
+            moment: 'common/js/vendor/moment-with-locales',
+            'moment-timezone': 'common/js/vendor/moment-timezone-with-data',
             'text': 'js/vendor/requirejs/text',
             'underscore': 'common/js/vendor/underscore',
             'underscore.string': 'common/js/vendor/underscore.string',
@@ -94,7 +97,7 @@
             // end of Annotation tool files
 
             // externally hosted files
-            mathjax: '//cdn.mathjax.org/mathjax/2.6-latest/MathJax.js?config=TeX-MML-AM_SVG&delayStartupUntil=configured',  // eslint-disable-line max-len
+            mathjax: '//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_SVG&delayStartupUntil=configured',  // eslint-disable-line max-len
             'youtube': [
                 // youtube URL does not end in '.js'. We add '?noext' to the path so
                 // that require.js adds the '.js' to the query component of the URL,
