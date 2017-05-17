@@ -12,44 +12,82 @@ from django.db.models import Q
 from student.models import UserProfile
 
 
-def calculate_active_students_amount(query_name, activity_period):
+def fetch_instance_information(name_to_cache, query_type, activity_period, cache_timeout=None):
     """
-    Calculates instance active students amount for particular period as like as previous calendar day,
-    week and month after cached.
-    """
-    period_start, period_end = activity_period
-
-    active_students_amount = UserProfile.objects.exclude(
-        Q(user__last_login=None) | Q(user__is_active=False)
-    ).filter(user__last_login__gt=period_start, user__last_login__lt=period_end).count()
-
-    if query_name is not 'active_students_amount_day':
-        clear_cache_date = period_end
-        return caching_instance_data(query_name, active_students_amount, clear_cache_date)
-
-    return active_students_amount
-
-
-def calculate_students_per_country(query_name, activity_period):
-    """
-    Calculates instance students per country amount for particular period as like as previous calendar day,
-    week and month after cached.
-
-    Returns:
-        students_per_country_after_cached (dict): Country-count accordance as pair of key-value.
-                                                  Example: {u'FR': 3434, u'UA': 1124}
+    Calculates instance information corresponding for particular period as like as previous calendar day and
+    statistics type as like as students per country after cached if needed.
     """
     period_start, period_end = activity_period
 
-    students_per_country = dict(UserProfile.objects.exclude(
-        Q(user__last_login=None) | Q(user__is_active=False)
-    ).filter(user__last_login__gt=period_start, user__last_login__lt=period_end
-    ).values('country').annotate(count=Count('country')).values_list('country', 'count'))
+    statistics_queries = {
+        'active_students_amount': UserProfile.objects.exclude(
+            Q(user__last_login=None) | Q(user__is_active=False)
+        ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end).count(),
 
-    clear_cache_date = period_end
-    students_per_country_after_cached = caching_instance_data(query_name, students_per_country, clear_cache_date)
+        'students_per_country': dict(UserProfile.objects.exclude(
+            Q(user__last_login=None) | Q(user__is_active=False)
+        ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end
+        ).values('country').annotate(count=Count('country')).values_list('country', 'count'))
+    }
 
-    return students_per_country_after_cached
+    if cache_timeout is not None:
+        return cache_instance_data(name_to_cache, statistics_queries[query_type], cache_timeout)
+
+    return statistics_queries[query_type]
+
+
+def cache_instance_data(name_to_cache, query_type, cache_timeout):
+    """
+     Caches queries, that calculate particular instance data,
+     including long time unchangeable as like as monthly statistics.
+
+     Arguments:
+         name_to_cache (str): Name of query.
+         query_type (query): Django-query.
+         cache_timeout (int): Caching for particular seconds amount.
+
+     Returns cached query result.
+     """
+    cached_query_result = cache.get(name_to_cache)
+
+    if cached_query_result is not None:
+        return cached_query_result
+
+    cache.set(name_to_cache, query_type, cache_timeout)
+
+    return query_type
+
+
+def cache_timeout_week():
+    """
+    Calculates how much time cache need to save data for weekly statistics.
+    """
+    current_datetime = datetime.datetime.now()
+
+    days_after_week_started = datetime.date.today().weekday()
+
+    last_datetime_of_current_week = (current_datetime + datetime.timedelta(
+        6 - days_after_week_started)
+    ).replace(hour=23, minute=59, second=59)
+
+    cache_timeout_week_in_seconds = (last_datetime_of_current_week - current_datetime).total_seconds()
+
+    return cache_timeout_week_in_seconds
+
+
+def cache_timeout_month():
+    """
+    Calculates how much time cache need to save data for monthly statistics.
+    """
+    current_datetime = datetime.datetime.now()
+
+    last_datetime_of_current_month = current_datetime.replace(
+        day=calendar.monthrange(current_datetime.year, current_datetime.month)[1]
+    ).replace(hour=23, minute=59, second=59)
+
+    cache_timeout_month_in_seconds = (last_datetime_of_current_month - current_datetime).total_seconds()
+
+    return cache_timeout_month_in_seconds
 
 
 def get_previous_day_start_and_end_dates():
@@ -101,28 +139,3 @@ def get_previous_month_start_and_end_dates():
     ) + datetime.timedelta(days=1)
 
     return start_of_month, end_of_month
-
-
-def caching_instance_data(query_name, query, clear_cache_date):
-    """
-    Caches queries, that calculate particular instance data,
-    including long time unchangeable as like as monthly statistics.
-
-    Arguments:
-        query_name (str): Name of query.
-        query (query result): Django-query.
-        clear_cache_date (date): Last date of saving cache data.
-
-    Returns cached query result.
-    """
-    if datetime.date.today() == clear_cache_date:
-        cache.delete(query_name)
-
-    cached_query = cache.get(query_name)
-
-    if cached_query is not None:
-        return cached_query
-
-    cache.set(query_name, query)
-
-    return query
