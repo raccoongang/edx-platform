@@ -36,15 +36,15 @@ def fetch_instance_information(name_to_cache, query_type, activity_period, cache
     return statistics_queries[query_type]
 
 
-def cache_instance_data(name_to_cache, query_type, cache_timeout):
+def cache_instance_data(name_to_cache, query_result, cache_timeout):
     """
      Caches queries, that calculate particular instance data,
      including long time unchangeable as like as monthly statistics.
 
      Arguments:
          name_to_cache (str): Name of query.
-         query_type (query): Django-query.
-         cache_timeout (int): Caching for particular seconds amount.
+         query_result (query result): Django-query result.
+         cache_timeout (int/None): Caching for particular seconds amount.
 
      Returns cached query result.
      """
@@ -53,9 +53,9 @@ def cache_instance_data(name_to_cache, query_type, cache_timeout):
     if cached_query_result is not None:
         return cached_query_result
 
-    cache.set(name_to_cache, query_type, cache_timeout)
+    cache.set(name_to_cache, query_result, cache_timeout)
 
-    return query_type
+    return query_result
 
 
 def cache_timeout_week():
