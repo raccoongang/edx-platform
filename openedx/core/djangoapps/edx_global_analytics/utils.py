@@ -26,8 +26,9 @@ def fetch_instance_information(name_to_cache, query_type, activity_period, cache
 
         'students_per_country': dict(UserProfile.objects.exclude(
             Q(user__last_login=None) | Q(user__is_active=False)
-        ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end
-        ).values('country').annotate(count=Count('country')).values_list('country', 'count'))
+        ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end).values(
+            'country'
+        ).annotate(count=Count('country')).values_list('country', 'count'))
     }
 
     if cache_timeout is not None:

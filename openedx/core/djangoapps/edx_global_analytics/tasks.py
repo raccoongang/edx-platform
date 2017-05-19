@@ -30,18 +30,18 @@ logger.setLevel(logging.INFO)
 
 def paranoid_level_statistics_bunch():
     active_students_amount_day = fetch_instance_information(
-            'active_students_amount_day', 'active_students_amount',
-            get_previous_day_start_and_end_dates(), cache_timeout=None
+        'active_students_amount_day', 'active_students_amount',
+        get_previous_day_start_and_end_dates(), cache_timeout=None
     )
 
     active_students_amount_week = fetch_instance_information(
-            'active_students_amount_week', 'active_students_amount',
-            get_previous_week_start_and_end_dates(), cache_timeout_week()
+        'active_students_amount_week', 'active_students_amount',
+        get_previous_week_start_and_end_dates(), cache_timeout_week()
     )
 
     active_students_amount_month = fetch_instance_information(
-            'active_students_amount_month', 'active_students_amount',
-            get_previous_month_start_and_end_dates(), cache_timeout_month()
+        'active_students_amount_month', 'active_students_amount',
+        get_previous_month_start_and_end_dates(), cache_timeout_month()
     )
 
     return active_students_amount_day, active_students_amount_week, active_students_amount_month
@@ -49,8 +49,8 @@ def paranoid_level_statistics_bunch():
 
 def enthusiast_level_statistics_bunch():
     students_per_country = fetch_instance_information(
-            'students_per_country', 'students_per_country',
-            get_previous_day_start_and_end_dates(), cache_timeout=None
+        'students_per_country', 'students_per_country',
+        get_previous_day_start_and_end_dates(), cache_timeout=None
     )
 
     return students_per_country
