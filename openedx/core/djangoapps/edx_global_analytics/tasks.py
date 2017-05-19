@@ -4,6 +4,7 @@ and send this data to appropriate service for further processing.
 """
 
 import json
+import logging
 
 import requests
 from celery.task import task
@@ -22,6 +23,9 @@ from .utils import (
     cache_timeout_week,
     cache_timeout_month
 )
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 def paranoid_level_statistics_bunch():
@@ -135,4 +139,9 @@ def count_data():
             'students_per_country': json.dumps(students_per_country)
         })
 
-    requests.post(post_url, data)
+    try:
+        request = requests.post(post_url, data)
+        logger.info('Connected without error to {0}'.format(request.url))
+        logger.info('Data was successfully sent. Status code is {0}.'.format(request.status_code))
+    except requests.ConnectionError as error:
+        logger.info(error.message)
