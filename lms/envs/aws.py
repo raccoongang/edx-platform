@@ -111,13 +111,13 @@ if os.environ.get('QUEUE') == 'high_mem':
 # For scheduling tasks, entries can be added to this dict.
 CELERYBEAT_SCHEDULE = {
     """
-    'count_data' is the celery periodic task that gathers information about the 
+    'collect_stats' is the celery periodic task that gathers information about the
     students amount, geographical coordinates of the platform, courses amount and
     makes a POST request with the data to the appropriate service.
     """
 
-    'count_data': {
-    'task': 'openedx.core.djangoapps.edx_global_analytics.tasks.count_data',
+    'collect_stats': {
+    'task': 'openedx.core.djangoapps.edx_global_analytics.tasks.collect_stats',
     'schedule': 30, # number in seconds.
     }
 }

@@ -35,4 +35,4 @@ class ReceiveTokenView(View):
                 pk=1, defaults={"secret_token": secret_token})
             return HttpResponse(status=201)
         except ValueError:
-            return HttpResponse(status=400)
+            raise Http404()

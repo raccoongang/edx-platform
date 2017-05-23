@@ -1,3 +1,7 @@
+"""
+Django admin page for edX global analytics application.
+"""
+
 from django.contrib import admin
 from .models import TokenStorage
 

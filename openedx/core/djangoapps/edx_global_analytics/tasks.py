@@ -29,6 +29,10 @@ logger.setLevel(logging.INFO)
 
 
 def paranoid_level_statistics_bunch():
+    """
+    Gathers particular bunch of instance data called `Paranoid`, that contains active students amount
+    for day, week and month.
+    """
     active_students_amount_day = fetch_instance_information(
         'active_students_amount_day', 'active_students_amount',
         get_previous_day_start_and_end_dates(), cache_timeout=None
@@ -48,6 +52,9 @@ def paranoid_level_statistics_bunch():
 
 
 def enthusiast_level_statistics_bunch():
+    """
+    Gathers particular bunch of instance data called `Enthusiast`, that contains students per country amount.
+    """
     students_per_country = fetch_instance_information(
         'students_per_country', 'students_per_country',
         get_previous_day_start_and_end_dates(), cache_timeout=None
@@ -57,7 +64,7 @@ def enthusiast_level_statistics_bunch():
 
 
 @task
-def count_data():
+def collect_stats():
     """
     Periodic task function that gathers instance information as like as platform name,
     active students amount, courses amount etc., then makes a POST request with the data to the appropriate service.
@@ -66,6 +73,9 @@ def count_data():
     """
 
     # OLGA settings
+    if 'OPENEDX_LEARNERS_GLOBAL_ANALYTICS' not in settings.ENV_TOKENS:
+        return logger.info('No OpenEdX Learners Global Analytics settings in file `lms.env.json`.')
+
     olga_settings = settings.ENV_TOKENS.get('OPENEDX_LEARNERS_GLOBAL_ANALYTICS')
 
     # Secret token to authorize our platform on remote server.
@@ -106,7 +116,7 @@ def count_data():
         'secret_token': secret_token
     }
 
-    # Enthusiast level (extend Paranoid level)
+    # Enthusiast level (extends Paranoid level)
     if statistics_level == 1:
         # Get IP address of the platform and convert it to latitude, longitude.
         ip_data = requests.get('http://freegeoip.net/json')
@@ -121,10 +131,7 @@ def count_data():
             latitude, longitude = ip_data_json['latitude'], ip_data_json['longitude']
 
         # Platform name.
-        if settings.PLATFORM_NAME:
-            platform_name = settings.PLATFORM_NAME
-        else:
-            platform_name = Site.objects.get_current()
+        platform_name = settings.PLATFORM_NAME or Site.objects.get_current()
 
         # Get students per country.
         students_per_country = enthusiast_level_statistics_bunch()
@@ -142,6 +149,13 @@ def count_data():
     try:
         request = requests.post(post_url, data)
         logger.info('Connected without error to {0}'.format(request.url))
-        logger.info('Data was successfully sent. Status code is {0}.'.format(request.status_code))
-    except requests.ConnectionError as error:
-        logger.info(error.message)
+
+        if request.status_code == 201:
+            logger.info('Data were successfully transferred to Olga acceptor. Status code is 201.')
+        else:
+            logger.info('Data were not successfully transferred to Olga acceptor. Status code is {0}.'.format(
+                request.status_code
+            ))
+
+    except requests.RequestException as error:
+        logger.exception(error.message)

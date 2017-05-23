@@ -2,8 +2,9 @@
 Helpers for the edX global analytics application.
 """
 
-import datetime
 import calendar
+import datetime
+
 
 from django.core.cache import cache
 
@@ -25,10 +26,11 @@ def fetch_instance_information(name_to_cache, query_type, activity_period, cache
         ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end).count(),
 
         'students_per_country': dict(UserProfile.objects.exclude(
-            Q(user__last_login=None) | Q(user__is_active=False)
-        ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end).values(
-            'country'
-        ).annotate(count=Count('country')).values_list('country', 'count'))
+                Q(user__last_login=None) | Q(user__is_active=False)
+            ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end).values(
+                'country'
+            ).annotate(count=Count('country')).values_list('country', 'count')
+        )
     }
 
     if cache_timeout is not None:
@@ -40,7 +42,7 @@ def fetch_instance_information(name_to_cache, query_type, activity_period, cache
 def cache_instance_data(name_to_cache, query_result, cache_timeout):
     """
      Caches queries, that calculate particular instance data,
-     including long time unchangeable as like as monthly statistics.
+     including long time unchangeable weekly and monthly statistics.
 
      Arguments:
          name_to_cache (str): Name of query.
