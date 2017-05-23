@@ -21,25 +21,20 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
     Tests cover all methods, that have a deal with statistics calculation.
     """
     @staticmethod
-    def active_students_amount_default_data():
+    def create_active_students_amount_default_database_data():
         """
-        Default integration and particular data for active students amount functionality.
+        Default integration database data for active students amount functionality.
         """
         users_last_login = [
             timezone.make_aware(datetime.datetime(2017, 5, 14, 23, 59, 59), timezone.get_default_timezone()),
-            timezone.make_aware(datetime.datetime(2017, 5, 15, 00, 00, 00), timezone.get_default_timezone()),
+            timezone.make_aware(datetime.datetime(2017, 5, 15, 0, 0, 0), timezone.get_default_timezone()),
             timezone.make_aware(datetime.datetime(2017, 5, 15, 23, 59, 59), timezone.get_default_timezone()),
-            timezone.make_aware(datetime.datetime(2017, 5, 16, 00, 00, 00), timezone.get_default_timezone()),
-            timezone.make_aware(datetime.datetime(2017, 5, 16, 00, 00, 01), timezone.get_default_timezone())
+            timezone.make_aware(datetime.datetime(2017, 5, 16, 0, 0, 0), timezone.get_default_timezone()),
+            timezone.make_aware(datetime.datetime(2017, 5, 16, 0, 0, 1), timezone.get_default_timezone())
         ]
 
         for user_last_login in users_last_login:
             UserFactory(last_login=user_last_login)
-
-        activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
-        cache_timeout = None
-
-        return activity_period, cache_timeout
 
     def test_expected_result_fetch_instance_information_for_active_students_amount(self):
         """
@@ -47,7 +42,10 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
         We have no reason to test week and month periods for active students amount,
         all queries are the same, we just go test only day period.
         """
-        activity_period, cache_timeout = self.active_students_amount_default_data()
+        self.create_active_students_amount_default_database_data()
+
+        activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
+        cache_timeout = None
 
         result = fetch_instance_information(
             'active_students_amount_day', 'active_students_amount', activity_period, cache_timeout
@@ -86,10 +84,10 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
         countries = [u'US', u'CA']
 
         for country in countries:
-            self.user = UserFactory.create(last_login=last_login)
-            self.profile = self.user.profile
-            self.profile.country = Country(country)
-            self.profile.save()
+            user = UserFactory.create(last_login=last_login)
+            profile = user.profile
+            profile.country = Country(country)
+            profile.save()
 
         activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
         cache_timeout = None
@@ -105,8 +103,7 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
         """
         last_login = timezone.make_aware(datetime.datetime(2017, 5, 15, 14, 23, 23), timezone.get_default_timezone())
 
-        for country in range(2):
-            self.user = UserFactory.create(last_login=last_login)
+        UserFactory.create(last_login=last_login)
 
         activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
         cache_timeout = None
@@ -122,29 +119,27 @@ class TestCacheInstanceData(TestCase):
     Tests cover cache-functionality for queries results.
     """
     @staticmethod
-    def cache_instance_data_default_data():
+    def create_cache_instance_data_default_database_data():
         """
-        Default integration and particular data for cache instance information tests.
+        Default integration database data for cache instance information tests.
         """
         users_last_login = [
-            timezone.make_aware(datetime.datetime(2017, 5, 8, 00, 00, 00), timezone.get_default_timezone()),
+            timezone.make_aware(datetime.datetime(2017, 5, 8, 0, 0, 0), timezone.get_default_timezone()),
             timezone.make_aware(datetime.datetime(2017, 5, 14, 23, 59, 59), timezone.get_default_timezone()),
-            timezone.make_aware(datetime.datetime(2017, 5, 15, 00, 00, 00), timezone.get_default_timezone()),
-            timezone.make_aware(datetime.datetime(2017, 5, 15, 00, 00, 01), timezone.get_default_timezone())
+            timezone.make_aware(datetime.datetime(2017, 5, 15, 0, 0, 0), timezone.get_default_timezone()),
+            timezone.make_aware(datetime.datetime(2017, 5, 15, 0, 0, 1), timezone.get_default_timezone())
         ]
 
         for user_last_login in users_last_login:
             UserFactory(last_login=user_last_login)
 
-        period_start, period_end = datetime.date(2017, 5, 8), datetime.date(2017, 5, 15)
-
-        return period_start, period_end
-
     def test_cache_instance_data(self):
         """
-        Verifies that cache_instance_dat returns data as expected after caching it.
+        Verifies that cache_instance_data returns data as expected after caching it.
         """
-        period_start, period_end = self.cache_instance_data_default_data()
+        self.create_cache_instance_data_default_database_data()
+
+        period_start, period_end = datetime.date(2017, 5, 8), datetime.date(2017, 5, 15)
 
         active_students_amount_week = UserProfile.objects.exclude(
             Q(user__last_login=None) | Q(user__is_active=False)
