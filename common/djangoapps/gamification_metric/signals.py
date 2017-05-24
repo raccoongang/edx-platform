@@ -79,7 +79,7 @@ def send_enroll_achievement(sender, instance, created, **kwargs):
 @receiver(post_save, sender='certificates.GeneratedCertificate')
 def send_certificate_generation(sender, instance, created, **kwargs):
     # Remove check for GAMMA_ALLOWED_USERS after release
-    if instance.status == CertificateStatuses.generating:
+    if instance.status in CertificateStatuses.PASSED_STATUSES:
         org = instance.course_id.org
         course_id = unicode(instance.course_id)
         data = {
@@ -89,4 +89,6 @@ def send_certificate_generation(sender, instance, created, **kwargs):
             'event_type': 'course',
             'uid': '{}_{}'.format(instance.user.pk, course_id),
         }
+        
         send_api_request.delay(data)
+
