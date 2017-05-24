@@ -61,6 +61,7 @@ DISCUSSION_SETTINGS = {
 }
 
 LMS_ROOT_URL = "http://localhost:8000"
+ENTERPRISE_API_URL = LMS_ROOT_URL + '/enterprise/api/v1/'
 
 # Features
 FEATURES = {
@@ -368,6 +369,20 @@ FEATURES = {
 
     # Set this to False to facilitate cleaning up invalid xml from your modulestore.
     'ENABLE_XBLOCK_XML_VALIDATION': True,
+
+    # Allow public account creation
+    'ALLOW_PUBLIC_ACCOUNT_CREATION': True,
+
+    # Enable footer banner for cookie consent.
+    # See https://cookieconsent.insites.com/ for more.
+    'ENABLE_COOKIE_CONSENT': False,
+
+    # Whether or not the dynamic EnrollmentTrackUserPartition should be registered.
+    'ENABLE_ENROLLMENT_TRACK_USER_PARTITION': False,
+
+    # Enable one click program purchase
+    # See LEARNER-493
+    'ENABLE_ONE_CLICK_PROGRAM_PURCHASE': False,
 }
 
 # Ignore static asset files on import which match this pattern
@@ -544,6 +559,9 @@ TEMPLATES = [
     }
 ]
 DEFAULT_TEMPLATE_ENGINE = TEMPLATES[0]
+
+# The template used to render a web fragment as a standalone page
+STANDALONE_FRAGMENT_VIEW_TEMPLATE = 'fragment-view-chromeless.html'
 
 ###############################################################################################
 
@@ -1003,6 +1021,7 @@ FEEDBACK_SUBMISSION_EMAIL = None
 ZENDESK_URL = None
 ZENDESK_USER = None
 ZENDESK_API_KEY = None
+ZENDESK_CUSTOM_FIELDS = {}
 
 ##### EMBARGO #####
 EMBARGO_SITE_REDIRECT_URL = None
@@ -1109,7 +1128,7 @@ MIDDLEWARE_CLASSES = (
     'crum.CurrentRequestUserMiddleware',
 
     'request_cache.middleware.RequestCache',
-    'newrelic_custom_metrics.middleware.NewRelicCustomMetrics',
+    'openedx.core.djangoapps.monitoring_utils.middleware.MonitoringCustomMetrics',
 
     'mobile_api.middleware.AppVersionUpgrade',
     'openedx.core.djangoapps.header_control.middleware.HeaderControlMiddleware',
@@ -1180,11 +1199,13 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # to redirected unenrolled students to the course info page
-    'courseware.middleware.RedirectUnenrolledMiddleware',
+    'courseware.middleware.RedirectMiddleware',
 
     'course_wiki.middleware.WikiAccessMiddleware',
 
     'openedx.core.djangoapps.theming.middleware.CurrentSiteThemeMiddleware',
+
+    'waffle.middleware.WaffleMiddleware',
 
     # This must be last
     'openedx.core.djangoapps.site_configuration.middleware.SessionCookieDomainOverrideMiddleware',
@@ -1737,7 +1758,7 @@ REQUIRE_ENVIRONMENT = "node"
 # but you don't want to include those dependencies in the JS bundle for the page,
 # then you need to add the js urls in this list.
 REQUIRE_JS_PATH_OVERRIDES = {
-    'js/bookmarks/views/bookmark_button': 'js/bookmarks/views/bookmark_button.js',
+    'course_bookmarks/js/views/bookmark_button': 'course_bookmarks/js/views/bookmark_button.js',
     'js/views/message_banner': 'js/views/message_banner.js',
     'moment': 'common/js/vendor/moment-with-locales.js',
     'moment-timezone': 'common/js/vendor/moment-timezone-with-data.js',
@@ -1825,13 +1846,18 @@ BLOCK_STRUCTURES_SETTINGS = dict(
     # for a better chance at getting the latest changes when there
     # are secondary reads in sharded mongoDB clusters. See TNL-5041
     # for more info.
-    BLOCK_STRUCTURES_COURSE_PUBLISH_TASK_DELAY=30,
+    COURSE_PUBLISH_TASK_DELAY=30,
 
     # Delay, in seconds, between retry attempts if a task fails.
-    BLOCK_STRUCTURES_TASK_DEFAULT_RETRY_DELAY=30,
+    TASK_DEFAULT_RETRY_DELAY=30,
 
     # Maximum number of retries per task.
-    BLOCK_STRUCTURES_TASK_MAX_RETRIES=5,
+    TASK_MAX_RETRIES=5,
+
+    # Backend storage
+    # STORAGE_CLASS='storages.backends.s3boto.S3BotoStorage',
+    # STORAGE_KWARGS=dict(bucket='nim-beryl-test'),
+    # DIRECTORY_PREFIX='/modeltest/',
 )
 
 ################################ Bulk Email ###################################
@@ -1934,6 +1960,7 @@ INSTALLED_APPS = (
 
     # Database-backed configuration
     'config_models',
+    'waffle',
 
     # Monitor the status of services
     'openedx.core.djangoapps.service_status',
@@ -1945,6 +1972,10 @@ INSTALLED_APPS = (
     'edxmako',
     'pipeline',
     'static_replace',
+
+    # For user interface plugins
+    'web_fragments',
+    'openedx.core.djangoapps.plugin_api',
 
     # For content serving
     'openedx.core.djangoapps.contentserver',
@@ -2149,8 +2180,8 @@ INSTALLED_APPS = (
     # API access administration
     'openedx.core.djangoapps.api_admin',
 
-    # Verified Track Content Cohorting
-    'verified_track_content',
+    # Verified Track Content Cohorting (Beta feature that will hopefully be removed)
+    'openedx.core.djangoapps.verified_track_content',
 
     # Learner's dashboard
     'learner_dashboard',
@@ -2167,21 +2198,28 @@ INSTALLED_APPS = (
     # additional release utilities to ease automation
     'release_util',
 
-    # Unusual migrations
-    'database_fixups',
-
     # Gamification
     'gamification_metric',
     'referrals',
 
     # Features
     'openedx.features.djangoapps.calendar_tab',
-)
 
-# Migrations which are not in the standard module "migrations"
-MIGRATION_MODULES = {
-    'social.apps.django_app.default': 'social.apps.django_app.default.south_migrations'
-}
+    # Customized celery tasks, including persisting failed tasks so they can
+    # be retried
+    'celery_utils',
+
+    # Ability to detect and special-case crawler behavior
+    'openedx.core.djangoapps.crawlers',
+
+    # Unusual migrations
+    'database_fixups',
+
+    # Features
+    'openedx.features.course_bookmarks',
+    'openedx.features.course_experience',
+    'openedx.features.enterprise_support',
+)
 
 ######################### CSRF #########################################
 
@@ -2195,8 +2233,15 @@ CSRF_COOKIE_SECURE = False
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'openedx.core.lib.api.paginators.DefaultPagination',
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
     'PAGE_SIZE': 10,
     'URL_FORMAT_OVERRIDE': None,
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '60/minute',
+        'service_user': '120/minute',
+    },
 }
 
 
@@ -2691,8 +2736,10 @@ OPTIONAL_APPS = (
     # Organizations App (http://github.com/edx/edx-organizations)
     'organizations',
 
-    # Enterprise App (http://github.com/edx/edx-enterprise)
+    # Enterprise Apps (http://github.com/edx/edx-enterprise)
     'enterprise',
+    'integrated_channels.integrated_channel',
+    'integrated_channels.sap_success_factors',
     # Required by the Enterprise App
     'django_object_actions',  # https://github.com/crccheck/django-object-actions
 )
@@ -2837,9 +2884,9 @@ ACCOUNT_VISIBILITY_CONFIGURATION = {
 # E-Commerce API Configuration
 ECOMMERCE_PUBLIC_URL_ROOT = None
 ECOMMERCE_API_URL = None
-ECOMMERCE_API_SIGNING_KEY = None
 ECOMMERCE_API_TIMEOUT = 5
 ECOMMERCE_SERVICE_WORKER_USERNAME = 'ecommerce_worker'
+ENTERPRISE_SERVICE_WORKER_USERNAME = 'enterprise_worker'
 
 COURSE_CATALOG_API_URL = None
 
@@ -3061,3 +3108,19 @@ DOC_LINK_BASE_URL = None
 ############## Settings for the Enterprise App ######################
 
 ENTERPRISE_ENROLLMENT_API_URL = LMS_ROOT_URL + "/api/enrollment/v1/"
+ENTERPRISE_PUBLIC_ENROLLMENT_API_URL = ENTERPRISE_ENROLLMENT_API_URL
+ENTERPRISE_API_CACHE_TIMEOUT = 3600  # Value is in seconds
+
+############## Settings for Course Enrollment Modes ######################
+COURSE_ENROLLMENT_MODES = {
+    "audit": 1,
+    "verified": 2,
+    "professional": 3,
+    "no-id-professional": 4,
+    "credit": 5,
+    "honor": 6,
+}
+
+############## Settings for the Discovery App ######################
+
+COURSES_API_CACHE_TIMEOUT = 3600  # Value is in seconds

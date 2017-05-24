@@ -15,7 +15,6 @@ import json
 from lazy import lazy
 import logging
 
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.timezone import now
 from eventtracking import tracker
@@ -36,6 +35,38 @@ BLOCK_RECORD_LIST_VERSION = 1
 # Used to serialize information about a block at the time it was used in
 # grade calculation.
 BlockRecord = namedtuple('BlockRecord', ['locator', 'weight', 'raw_possible', 'graded'])
+
+
+class DeleteGradesMixin(object):
+    """
+    A Mixin class that provides functionality to delete grades.
+    """
+
+    @classmethod
+    def query_grades(cls, course_ids=None, modified_start=None, modified_end=None):
+        """
+        Queries all the grades in the table, filtered by the provided arguments.
+        """
+        kwargs = {}
+
+        if course_ids:
+            kwargs['course_id__in'] = [course_id for course_id in course_ids]
+
+        if modified_start:
+            if modified_end:
+                kwargs['modified__range'] = (modified_start, modified_end)
+            else:
+                kwargs['modified__gt'] = modified_start
+
+        return cls.objects.filter(**kwargs)
+
+    @classmethod
+    def delete_grades(cls, *args, **kwargs):
+        """
+        Deletes all the grades in the table, filtered by the provided arguments.
+        """
+        query = cls.query_grades(*args, **kwargs)
+        query.delete()
 
 
 class BlockRecordList(tuple):
@@ -208,7 +239,7 @@ class VisibleBlocks(models.Model):
         cls.bulk_create(non_existent_brls)
 
 
-class PersistentSubsectionGrade(TimeStampedModel):
+class PersistentSubsectionGrade(DeleteGradesMixin, TimeStampedModel):
     """
     A django model tracking persistent grades at the subsection level.
     """
@@ -220,6 +251,17 @@ class PersistentSubsectionGrade(TimeStampedModel):
             # * Progress page can pull all grades for a given (course_id, user_id)
             # * Course staff can see all grades for a course using (course_id,)
             ('course_id', 'user_id', 'usage_key'),
+        ]
+        # Allows querying in the following ways:
+        # (modified): find all the grades updated within a certain timespan
+        # (modified, course_id): find all the grades updated within a timespan for a certain course
+        # (modified, course_id, usage_key): find all the grades updated within a timespan for a subsection
+        #   in a course
+        # (first_attempted, course_id, user_id): find all attempted subsections in a course for a user
+        # (first_attempted, course_id): find all attempted subsections in a course for all users
+        index_together = [
+            ('modified', 'course_id', 'usage_key'),
+            ('first_attempted', 'course_id', 'user_id')
         ]
 
     # primary key will need to be large for this table
@@ -234,8 +276,8 @@ class PersistentSubsectionGrade(TimeStampedModel):
     usage_key = UsageKeyField(blank=False, max_length=255)
 
     # Information relating to the state of content when grade was calculated
-    subtree_edited_timestamp = models.DateTimeField('last content edit timestamp', blank=False)
-    course_version = models.CharField('guid of latest course version', blank=True, max_length=255)
+    subtree_edited_timestamp = models.DateTimeField(u'Last content edit timestamp', blank=True, null=True)
+    course_version = models.CharField(u'Guid of latest course version', blank=True, max_length=255)
 
     # earned/possible refers to the number of points achieved and available to achieve.
     # graded refers to the subset of all problems that are marked as being graded.
@@ -251,21 +293,6 @@ class PersistentSubsectionGrade(TimeStampedModel):
 
     # track which blocks were visible at the time of grade calculation
     visible_blocks = models.ForeignKey(VisibleBlocks, db_column='visible_blocks_hash', to_field='hashed')
-
-    def _is_unattempted_with_score(self):
-        """
-        Return True if the object has a non-zero score, but has not been
-        attempted.  This is an inconsistent state, and needs to be cleaned up.
-        """
-        return self.first_attempted is None and any(field != 0.0 for field in (self.earned_all, self.earned_graded))
-
-    def clean(self):
-        """
-        If an grade has not been attempted, but was given a non-zero score,
-        raise a ValidationError.
-        """
-        if self._is_unattempted_with_score():
-            raise ValidationError("Unattempted problems cannot have a non-zero score.")
 
     @property
     def full_usage_key(self):
@@ -348,7 +375,6 @@ class PersistentSubsectionGrade(TimeStampedModel):
         if attempted and not grade.first_attempted:
             grade.first_attempted = now()
             grade.save()
-        grade.full_clean()
         cls._emit_grade_calculated_event(grade)
         return grade
 
@@ -359,9 +385,7 @@ class PersistentSubsectionGrade(TimeStampedModel):
         """
         cls._prepare_params_and_visible_blocks(params)
         cls._prepare_attempted_for_create(params, now())
-        grade = cls(**params)
-        grade.full_clean()
-        grade.save()
+        grade = cls.objects.create(**params)
         cls._emit_grade_calculated_event(grade)
         return grade
 
@@ -380,8 +404,6 @@ class PersistentSubsectionGrade(TimeStampedModel):
         for params in grade_params_iter:
             cls._prepare_attempted_for_create(params, first_attempt_timestamp)
         grades = [PersistentSubsectionGrade(**params) for params in grade_params_iter]
-        for grade in grades:
-            grade.full_clean()
         grades = cls.objects.bulk_create(grades)
         for grade in grades:
             cls._emit_grade_calculated_event(grade)
@@ -458,7 +480,7 @@ class PersistentSubsectionGrade(TimeStampedModel):
             )
 
 
-class PersistentCourseGrade(TimeStampedModel):
+class PersistentCourseGrade(DeleteGradesMixin, TimeStampedModel):
     """
     A django model tracking persistent course grades.
     """
@@ -470,11 +492,14 @@ class PersistentCourseGrade(TimeStampedModel):
         # (course_id) for instructors to see all course grades, implicitly created via the unique_together constraint
         # (user_id) for course dashboard; explicitly declared as an index below
         # (passed_timestamp, course_id) for tracking when users first earned a passing grade.
+        # (modified): find all the grades updated within a certain timespan
+        # (modified, course_id): find all the grades updated within a certain timespan for a course
         unique_together = [
             ('course_id', 'user_id'),
         ]
         index_together = [
             ('passed_timestamp', 'course_id'),
+            ('modified', 'course_id')
         ]
 
     # primary key will need to be large for this table
@@ -483,7 +508,7 @@ class PersistentCourseGrade(TimeStampedModel):
     course_id = CourseKeyField(blank=False, max_length=255)
 
     # Information relating to the state of content when grade was calculated
-    course_edited_timestamp = models.DateTimeField(u'Last content edit timestamp', blank=False)
+    course_edited_timestamp = models.DateTimeField(u'Last content edit timestamp', blank=True, null=True)
     course_version = models.CharField(u'Course content version identifier', blank=True, max_length=255)
     grading_policy_hash = models.CharField(u'Hash of grading policy', blank=False, max_length=255)
 

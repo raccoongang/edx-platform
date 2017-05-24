@@ -8,20 +8,21 @@ from util.db import generate_int_id, MYSQL_MAX_INT
 
 from django.utils.translation import ugettext as _
 from contentstore.utils import reverse_usage_url
-from xmodule.partitions.partitions import UserPartition
+from xmodule.partitions.partitions import UserPartition, MINIMUM_STATIC_PARTITION_ID
+from xmodule.partitions.partitions_service import get_all_partitions_for_course
 from xmodule.split_test_module import get_split_user_partitions
 from openedx.core.djangoapps.course_groups.partition_scheme import get_cohorted_user_partition
 
-MINIMUM_GROUP_ID = 100
+MINIMUM_GROUP_ID = MINIMUM_STATIC_PARTITION_ID
 
 RANDOM_SCHEME = "random"
 COHORT_SCHEME = "cohort"
 
-# Note: the following content group configuration strings are not
-# translated since they are not visible to users.
-CONTENT_GROUP_CONFIGURATION_DESCRIPTION = 'The groups in this configuration can be mapped to cohort groups in the LMS.'
+CONTENT_GROUP_CONFIGURATION_DESCRIPTION = _(
+    'The groups in this configuration can be mapped to cohorts in the Instructor Dashboard.'
+)
 
-CONTENT_GROUP_CONFIGURATION_NAME = 'Content Group Configuration'
+CONTENT_GROUP_CONFIGURATION_NAME = _('Content Groups')
 
 log = logging.getLogger(__name__)
 
@@ -84,7 +85,7 @@ class GroupConfiguration(object):
         """
         Assign ids for the group_configuration's groups.
         """
-        used_ids = [g.id for p in self.course.user_partitions for g in p.groups]
+        used_ids = [g.id for p in get_all_partitions_for_course(self.course) for g in p.groups]
         # Assign ids to every group in configuration.
         for group in self.configuration.get('groups', []):
             if group.get('id') is None:
@@ -96,7 +97,7 @@ class GroupConfiguration(object):
         """
         Return a list of IDs that already in use.
         """
-        return set([p.id for p in course.user_partitions])
+        return set([p.id for p in get_all_partitions_for_course(course)])
 
     def get_user_partition(self):
         """

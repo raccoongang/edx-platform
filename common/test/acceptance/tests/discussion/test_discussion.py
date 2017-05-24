@@ -270,12 +270,13 @@ class DiscussionNavigationTest(BaseDiscussionTestCase):
             css=".forum-nav-browse-menu-item[data-discussion-id='{}']".format(self.discussion_id)
         )
         self.assertTrue(topic_button.visible)
+
         topic_button.click()
 
         # Verify the thread's topic has been pushed to breadcrumbs
         breadcrumbs = self.thread_page.q(css=".breadcrumbs .nav-item")
-        self.assertEqual(len(breadcrumbs), 2)
-        self.assertEqual(breadcrumbs[1].text, "Test Discussion Topic")
+        self.assertEqual(len(breadcrumbs), 3)
+        self.assertEqual(breadcrumbs[2].text, "Topic-Level Student-Visible Label")
 
     def test_breadcrumbs_back_to_all_topics(self):
         topic_button = self.thread_page.q(
@@ -295,6 +296,22 @@ class DiscussionNavigationTest(BaseDiscussionTestCase):
         # Verify that clicking the first breadcrumb clears your search
         self.thread_page.q(css=".breadcrumbs .nav-item")[0].click()
         self.assertEqual(self.thread_page.q(css=".search-input").text[0], "")
+
+    def test_navigation_and_sorting(self):
+        """
+        Test that after adding the post, user sorting preference is changing properly
+        and recently added post is shown.
+        """
+        topic_button = self.thread_page.q(
+            css=".forum-nav-browse-menu-item[data-discussion-id='{}']".format(self.discussion_id)
+        )
+        self.assertTrue(topic_button.visible)
+        topic_button.click()
+        sort_page = DiscussionSortPreferencePage(self.browser, self.course_id)
+        for sort_type in ["votes", "comments", "activity"]:
+            sort_page.change_sort_preference(sort_type)
+            # Verify that recently added post titled "dummy thread title" is shown in each sorting preference
+            self.assertEqual(self.thread_page.q(css=".forum-nav-thread-title").text[0], 'dummy thread title')
 
 
 @attr(shard=2)
@@ -1054,6 +1071,15 @@ class InlineDiscussionTest(UniqueCourseTest, DiscussionResponsePaginationTestMix
         # Add a Post link is present
         self.assertTrue(self.discussion_page.q(css='.new-post-btn').present)
 
+    def test_add_post_not_present_if_discussion_blackout_period_started(self):
+        """
+        If discussion blackout period has started Add a post button should not appear.
+        """
+        self.start_discussion_blackout_period()
+        self.browser.refresh()
+        self.discussion_page.expand_discussion()
+        self.assertFalse(self.discussion_page.is_new_post_button_visible())
+
     def test_initial_render(self):
         self.assertFalse(self.discussion_page.is_discussion_expanded())
 
@@ -1077,20 +1103,7 @@ class InlineDiscussionTest(UniqueCourseTest, DiscussionResponsePaginationTestMix
         self.check_anonymous_to_peers(False)
 
     def test_discussion_blackout_period(self):
-        now = datetime.datetime.now(UTC)
-        self.course_fix.add_advanced_settings(
-            {
-                u"discussion_blackouts": {
-                    "value": [
-                        [
-                            (now - datetime.timedelta(days=14)).isoformat(),
-                            (now + datetime.timedelta(days=2)).isoformat()
-                        ]
-                    ]
-                }
-            }
-        )
-        self.course_fix._add_advanced_settings()
+        self.start_discussion_blackout_period()
         self.browser.refresh()
         thread = Thread(id=uuid4().hex, commentable_id=self.discussion_id)
         thread_fixture = SingleThreadViewFixture(thread)
@@ -1158,6 +1171,25 @@ class InlineDiscussionTest(UniqueCourseTest, DiscussionResponsePaginationTestMix
         # Verify that neither discussion's forms are shwon
         self.assertIsNone(self.discussion_page.new_post_form)
         self.assertIsNone(self.additional_discussion_page.new_post_form)
+
+    def start_discussion_blackout_period(self):
+        """
+        Start discussion blackout period, starting 14 days before now to 2 days ago.
+        """
+        now = datetime.datetime.now(UTC)
+        self.course_fix.add_advanced_settings(
+            {
+                u"discussion_blackouts": {
+                    "value": [
+                        [
+                            (now - datetime.timedelta(days=14)).isoformat(),
+                            (now + datetime.timedelta(days=2)).isoformat()
+                        ]
+                    ]
+                }
+            }
+        )
+        self.course_fix._add_advanced_settings()  # pylint: disable=protected-access
 
 
 @attr(shard=2)

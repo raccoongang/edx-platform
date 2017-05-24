@@ -3,7 +3,6 @@ from django.conf.urls import patterns, include, url
 # There is a course creators admin table.
 from ratelimitbackend import admin
 
-from cms.djangoapps.contentstore.views.program import ProgramAuthoringView, ProgramsIdTokenView
 from cms.djangoapps.contentstore.views.organization import OrganizationListView
 
 admin.autodiscover()
@@ -97,6 +96,8 @@ urlpatterns += patterns(
     url(r'^import/{}$'.format(COURSELIKE_KEY_PATTERN), 'import_handler'),
     url(r'^import_status/{}/(?P<filename>.+)$'.format(COURSELIKE_KEY_PATTERN), 'import_status_handler'),
     url(r'^export/{}$'.format(COURSELIKE_KEY_PATTERN), 'export_handler'),
+    url(r'^export_output/{}$'.format(COURSELIKE_KEY_PATTERN), 'export_output_handler'),
+    url(r'^export_status/{}$'.format(COURSELIKE_KEY_PATTERN), 'export_status_handler'),
     url(r'^xblock/outline/{}$'.format(settings.USAGE_KEY_PATTERN), 'xblock_outline_handler'),
     url(r'^xblock/container/{}$'.format(settings.USAGE_KEY_PATTERN), 'xblock_container_handler'),
     url(r'^xblock/{}/(?P<view_name>[^/]+)$'.format(settings.USAGE_KEY_PATTERN), 'xblock_view_handler'),
@@ -176,14 +177,6 @@ if settings.FEATURES.get('CERTIFICATES_HTML_VIEW'):
 urlpatterns += patterns(
     '',
     url(r'^maintenance/', include('maintenance.urls', namespace='maintenance')),
-)
-
-urlpatterns += (
-    # These views use a configuration model to determine whether or not to
-    # display the Programs authoring app. If disabled, a 404 is returned.
-    url(r'^programs/id_token/$', ProgramsIdTokenView.as_view(), name='programs_id_token'),
-    # Drops into the Programs authoring app, which handles its own routing.
-    url(r'^program/', ProgramAuthoringView.as_view(), name='programs'),
 )
 
 if settings.DEBUG:

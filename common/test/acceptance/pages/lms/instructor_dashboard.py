@@ -92,6 +92,15 @@ class InstructorDashboardPage(CoursePage):
         email_section.wait_for_page()
         return email_section
 
+    def select_ecommerce_tab(self):
+        """
+        Selects the E-commerce tab and returns an EcommercePage.
+        """
+        self.q(css='[data-section="e-commerce"]').first.click()
+        ecommerce_section = EcommercePage(self.browser)
+        ecommerce_section.wait_for_page()
+        return ecommerce_section
+
     @staticmethod
     def get_asset_path(file_name):
         """
@@ -677,15 +686,15 @@ class CohortManagementSection(PageObject):
 
     def always_inline_discussion_selected(self):
         """
-        Returns the checked always_cohort_inline_discussions radio button.
+        Returns true if always_cohort_inline_discussions radio button is selected.
         """
-        return self.q(css=self._bounded_selector(".check-all-inline-discussions:checked"))
+        return len(self.q(css=self._bounded_selector(".check-all-inline-discussions:checked"))) > 0
 
     def cohort_some_inline_discussion_selected(self):
         """
-        Returns the checked some_cohort_inline_discussions radio button.
+        Returns true if some_cohort_inline_discussions radio button is selected.
         """
-        return self.q(css=self._bounded_selector(".check-cohort-inline-discussions:checked"))
+        return len(self.q(css=self._bounded_selector(".check-cohort-inline-discussions:checked"))) > 0
 
     def select_cohort_some_inline_discussion(self):
         """
@@ -1416,3 +1425,19 @@ class CertificatesPage(PageObject):
         Returns the message (error/success) in "Certificate Invalidation" section.
         """
         return self.get_selector('.certificate-invalidation-container div.message')
+
+
+class EcommercePage(PageObject):
+    """
+    E-commerce section of the Instructor dashboard.
+    """
+    url = None
+
+    def is_browser_on_page(self):
+        return self.q(css='[data-section="e-commerce"].active-section').present
+
+    def get_sections_header_values(self):
+        """
+        Returns a list of the headings text under div.
+        """
+        return self.q(css="div.wrap h3").text

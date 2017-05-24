@@ -3,12 +3,15 @@
 <%namespace name='static' file='/static_content.html'/>
 <%def name="online_help_token()"><% return "courseware" %></%def>
 <%!
-from django.utils.translation import ugettext as _
+import waffle
+
 from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 
 from edxnotes.helpers import is_feature_enabled as is_edxnotes_enabled
-from openedx.core.djangolib.markup import HTML
 from openedx.core.djangolib.js_utils import js_escaped_string
+from openedx.core.djangolib.markup import HTML
 %>
 <%
   include_special_exams = settings.FEATURES.get('ENABLE_SPECIAL_EXAMS', False) and (course.enable_proctored_exams or course.enable_timed_exams)
@@ -19,17 +22,15 @@ from openedx.core.djangolib.js_utils import js_escaped_string
 
 <%block name="bodyclass">view-in-course view-courseware courseware ${course.css_class or ''}</%block>
 
-<%block name="title"><title>
-    % if section_title:
-${static.get_page_title_breadcrumbs(section_title, course_name())}
-    % else:
-${static.get_page_title_breadcrumbs(course_name())}
-    %endif
-</title></%block>
+<%block name="title">
+<title data-base-title="${static.get_page_title_breadcrumbs(section_title, course_name())}">
+  ${static.get_page_title_breadcrumbs(sequence_title, section_title, course_name())}
+</title>
+</%block>
 
 <%block name="header_extras">
 
-% for template_name in ["image-modal"]:
+% for template_name in ["image-modal", "sequence-breadcrumbs"]:
 <script type="text/template" id="${template_name}-tpl">
     <%static:include path="common/templates/${template_name}.underscore" />
 </script>
@@ -117,10 +118,10 @@ ${HTML(fragment.foot_html())}
 
       <div class="wrapper-course-modes">
 
-          <div class="courseware-bookmarks-button" data-bookmarks-api-url="${bookmarks_api_url}">
-              <button type="button" class="bookmarks-list-button is-inactive" aria-pressed="false">
+          <div class="courseware-bookmarks-button">
+              <a class="bookmarks-list-button" href="${reverse('openedx.course_bookmarks.home', args=[course.id])}">
                   ${_('Bookmarks')}
-              </button>
+              </a>
           </div>
 
           % if settings.FEATURES.get('ENABLE_COURSEWARE_SEARCH'):
@@ -153,39 +154,42 @@ ${HTML(fragment.foot_html())}
     </div>
 % endif
     <section class="course-content" id="course-content">
-        <div class="path"></div>
-        <main id="main" aria-label="Content" tabindex="-1">
-        % if getattr(course, 'entrance_exam_enabled') and \
-           getattr(course, 'entrance_exam_minimum_score_pct') and \
-           entrance_exam_current_score is not UNDEFINED:
-            % if not entrance_exam_passed:
-            <p class="sequential-status-message">
-                ${_('To access course materials, you must score {required_score}% or higher on this \
-                exam. Your current score is {current_score}%.').format(
-                    required_score=int(round(course.entrance_exam_minimum_score_pct * 100)),
-                    current_score=int(round(entrance_exam_current_score * 100))
-                )}
-            </p>
-            <script type="text/javascript">
-            $(document).ajaxSuccess(function(event, xhr, settings) {
-                if (settings.url.indexOf("xmodule_handler/problem_check") > -1) {
-                    var data = JSON.parse(xhr.responseText);
-                    if (data.entrance_exam_passed){
-                        location.reload();
+        <main id="main" tabindex="-1" aria-label="Content">
+            <div
+              class="path"
+              data-unified-course-view="${'true' if waffle.flag_is_active(request, 'unified_course_view') else 'false'}"
+            ></div>
+            % if getattr(course, 'entrance_exam_enabled') and \
+               getattr(course, 'entrance_exam_minimum_score_pct') and \
+               entrance_exam_current_score is not UNDEFINED:
+                % if not entrance_exam_passed:
+                <p class="sequential-status-message">
+                    ${_('To access course materials, you must score {required_score}% or higher on this \
+                    exam. Your current score is {current_score}%.').format(
+                        required_score=int(round(course.entrance_exam_minimum_score_pct * 100)),
+                        current_score=int(round(entrance_exam_current_score * 100))
+                    )}
+                </p>
+                <script type="text/javascript">
+                $(document).ajaxSuccess(function(event, xhr, settings) {
+                    if (settings.url.indexOf("xmodule_handler/problem_check") > -1) {
+                        var data = JSON.parse(xhr.responseText);
+                        if (data.entrance_exam_passed){
+                            location.reload();
+                        }
                     }
-                }
-            });
-            </script>
-            % else:
-              <p class="sequential-status-message">
-                ${_('Your score is {current_score}%. You have passed the entrance exam.').format(
-                    current_score=int(round(entrance_exam_current_score * 100))
-                )}
-            </p>
+                });
+                </script>
+                % else:
+                  <p class="sequential-status-message">
+                    ${_('Your score is {current_score}%. You have passed the entrance exam.').format(
+                        current_score=int(round(entrance_exam_current_score * 100))
+                    )}
+                </p>
+                % endif
             % endif
-        % endif
 
-          ${HTML(fragment.body_html())}
+              ${HTML(fragment.body_html())}
         </main>
     </section>
 
@@ -209,17 +213,17 @@ ${HTML(fragment.foot_html())}
     </div>
   % endif
 </div>
+% if course.show_calculator or is_edxnotes_enabled(course):
+    <nav class="nav-utilities ${"has-utility-calculator" if course.show_calculator else ""}" aria-label="${_('Course Utilities')}">
+      ## Utility: Notes
+      % if is_edxnotes_enabled(course):
+        <%include file="/edxnotes/toggle_notes.html" args="course=course"/>
+      % endif
 
-<nav class="nav-utilities ${"has-utility-calculator" if course.show_calculator else ""}" aria-label="${_('Course Utilities')}">
-  ## Utility: Notes
-  % if is_edxnotes_enabled(course):
-    <%include file="/edxnotes/toggle_notes.html" args="course=course"/>
-  % endif
-
-  ## Utility: Calc
-  % if course.show_calculator:
-    <%include file="/calculator/toggle_calculator.html" />
-  % endif
-</nav>
-
+      ## Utility: Calc
+      % if course.show_calculator:
+        <%include file="/calculator/toggle_calculator.html" />
+      % endif
+    </nav>
+% endif
 <%include file="../modal/accessible_confirm.html" />

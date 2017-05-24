@@ -1,6 +1,7 @@
 """Tests of email marketing signal handlers."""
 import ddt
 import logging
+import datetime
 
 from django.test import TestCase
 from django.contrib.auth.models import AnonymousUser
@@ -45,6 +46,7 @@ def update_email_marketing_config(enabled=True, key='badkey', secret='badsecret'
         sailthru_get_tags_from_sailthru=False,
         sailthru_enroll_cost=enroll_cost,
         sailthru_max_retries=0,
+        welcome_email_send_delay=600
     )
 
 
@@ -85,13 +87,13 @@ class EmailMarketingTests(TestCase):
             "success": True,
             "redirect_url": 'test.com/test',
         })
-        self.request.COOKIES['sailthru_content'] = 'cookie_content'
+        self.request.COOKIES['anonymous_interest'] = 'cookie_content'
         mock_get_current_request.return_value = self.request
         mock_sailthru.return_value = SailthruResponse(JsonResponse({'keys': {'cookie': 'test_cookie'}}))
         add_email_marketing_cookies(None, response=response, user=self.user)
         mock_sailthru.assert_called_with('user',
                                          {'fields': {'keys': 1},
-                                          'cookies': {'sailthru_content': 'cookie_content'},
+                                          'cookies': {'anonymous_interest': 'cookie_content'},
                                           'id': TEST_EMAIL,
                                           'vars': {'last_login_date': ANY}})
         self.assertTrue('sailthru_hid' in response.cookies)
@@ -168,12 +170,14 @@ class EmailMarketingTests(TestCase):
         """
         mock_sailthru_post.return_value = SailthruResponse(JsonResponse({'ok': True}))
         mock_sailthru_get.return_value = SailthruResponse(JsonResponse({'lists': [{'name': 'new list'}], 'ok': True}))
+        expected_schedule = datetime.datetime.utcnow() + datetime.timedelta(seconds=600)
         update_user.delay({}, self.user.email, new_user=True, activation=True)
         # look for call args for 2nd call
         self.assertEquals(mock_sailthru_post.call_args[0][0], "send")
         userparms = mock_sailthru_post.call_args[0][1]
         self.assertEquals(userparms['email'], TEST_EMAIL)
         self.assertEquals(userparms['template'], "Activation")
+        self.assertEquals(userparms['schedule_time'], expected_schedule.strftime('%Y-%m-%dT%H:%M:%SZ'))
 
     @patch('email_marketing.tasks.log.error')
     @patch('email_marketing.tasks.SailthruClient.api_post')

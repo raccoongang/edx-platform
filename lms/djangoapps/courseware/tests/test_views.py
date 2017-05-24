@@ -8,6 +8,7 @@ import ddt
 import json
 import itertools
 import unittest
+from uuid import uuid4
 from datetime import datetime, timedelta
 from HTMLParser import HTMLParser
 from nose.plugins.attrib import attr
@@ -40,16 +41,24 @@ from commerce.models import CommerceConfiguration
 from course_modes.models import CourseMode
 from course_modes.tests.factories import CourseModeFactory
 from courseware.model_data import set_score
-from courseware.module_render import toc_for_course
 from courseware.testutils import RenderXBlockTestMixin
 from courseware.tests.factories import StudentModuleFactory, GlobalStaffFactory
 from courseware.url_helpers import get_redirect_url
 from courseware.user_state_client import DjangoXBlockUserStateClient
-from courseware.views.index import render_accordion
 from lms.djangoapps.commerce.utils import EcommerceService  # pylint: disable=import-error
+from lms.djangoapps.grades.config.waffle import waffle as grades_waffle, ASSUME_ZERO_GRADE_IF_ABSENT
 from milestones.tests.utils import MilestonesTestCaseMixin
+from openedx.core.djangoapps.catalog.tests.factories import CourseFactory as CatalogCourseFactory
+from openedx.core.djangoapps.catalog.tests.factories import ProgramFactory, CourseRunFactory
+from openedx.core.djangoapps.catalog.tests.mixins import CatalogIntegrationMixin
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.djangoapps.crawlers.models import CrawlersConfig
+from openedx.core.djangoapps.credit.api import set_credit_requirements
+from openedx.core.djangoapps.credit.models import CreditCourse, CreditProvider
+from openedx.core.djangoapps.programs.tests.mixins import ProgramsApiConfigMixin
 from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.lib.gating import api as gating_api
+from openedx.features.enterprise_support.tests.mixins.enterprise import EnterpriseTestConsentRequired
 from student.models import CourseEnrollment
 from student.tests.factories import AdminFactory, UserFactory, CourseEnrollmentFactory
 from util.tests.test_date_utils import fake_ugettext, fake_pgettext
@@ -58,10 +67,8 @@ from util.views import ensure_valid_course_key
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.tests.django_utils import TEST_DATA_MIXED_MODULESTORE
-from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
+from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase, SharedModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory, check_mongo_calls
-from openedx.core.djangoapps.credit.api import set_credit_requirements
-from openedx.core.djangoapps.credit.models import CreditCourse, CreditProvider
 
 
 @attr(shard=1)
@@ -199,11 +206,11 @@ class IndexQueryTestCase(ModuleStoreTestCase):
     NUM_PROBLEMS = 20
 
     @ddt.data(
-        (ModuleStoreEnum.Type.mongo, 8),
-        (ModuleStoreEnum.Type.split, 4),
+        (ModuleStoreEnum.Type.mongo, 10, 147),
+        (ModuleStoreEnum.Type.split, 4, 147),
     )
     @ddt.unpack
-    def test_index_query_counts(self, store_type, expected_query_count):
+    def test_index_query_counts(self, store_type, expected_mongo_query_count, expected_mysql_query_count):
         with self.store.default_store(store_type):
             course = CourseFactory.create()
             with self.store.bulk_operations(course.id):
@@ -218,17 +225,18 @@ class IndexQueryTestCase(ModuleStoreTestCase):
         self.client.login(username=self.user.username, password=password)
         CourseEnrollment.enroll(self.user, course.id)
 
-        with check_mongo_calls(expected_query_count):
-            url = reverse(
-                'courseware_section',
-                kwargs={
-                    'course_id': unicode(course.id),
-                    'chapter': unicode(chapter.location.name),
-                    'section': unicode(section.location.name),
-                }
-            )
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, 200)
+        with self.assertNumQueries(expected_mysql_query_count):
+            with check_mongo_calls(expected_mongo_query_count):
+                url = reverse(
+                    'courseware_section',
+                    kwargs={
+                        'course_id': unicode(course.id),
+                        'chapter': unicode(chapter.location.name),
+                        'section': unicode(section.location.name),
+                    }
+                )
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200)
 
 
 @attr(shard=2)
@@ -241,44 +249,45 @@ class ViewsTestCase(ModuleStoreTestCase):
     def setUp(self):
         super(ViewsTestCase, self).setUp()
         self.course = CourseFactory.create(display_name=u'teꜱᴛ course', run="Testing_course")
-        self.chapter = ItemFactory.create(
-            category='chapter',
-            parent_location=self.course.location,
-            display_name="Chapter 1",
-        )
-        self.section = ItemFactory.create(
-            category='sequential',
-            parent_location=self.chapter.location,
-            due=datetime(2013, 9, 18, 11, 30, 00),
-            display_name='Sequential 1',
-            format='Homework'
-        )
-        self.vertical = ItemFactory.create(
-            category='vertical',
-            parent_location=self.section.location,
-            display_name='Vertical 1',
-        )
-        self.problem = ItemFactory.create(
-            category='problem',
-            parent_location=self.vertical.location,
-            display_name='Problem 1',
-        )
+        with self.store.bulk_operations(self.course.id):
+            self.chapter = ItemFactory.create(
+                category='chapter',
+                parent_location=self.course.location,
+                display_name="Chapter 1",
+            )
+            self.section = ItemFactory.create(
+                category='sequential',
+                parent_location=self.chapter.location,
+                due=datetime(2013, 9, 18, 11, 30, 00),
+                display_name='Sequential 1',
+                format='Homework'
+            )
+            self.vertical = ItemFactory.create(
+                category='vertical',
+                parent_location=self.section.location,
+                display_name='Vertical 1',
+            )
+            self.problem = ItemFactory.create(
+                category='problem',
+                parent_location=self.vertical.location,
+                display_name='Problem 1',
+            )
 
-        self.section2 = ItemFactory.create(
-            category='sequential',
-            parent_location=self.chapter.location,
-            display_name='Sequential 2',
-        )
-        self.vertical2 = ItemFactory.create(
-            category='vertical',
-            parent_location=self.section2.location,
-            display_name='Vertical 2',
-        )
-        self.problem2 = ItemFactory.create(
-            category='problem',
-            parent_location=self.vertical2.location,
-            display_name='Problem 2',
-        )
+            self.section2 = ItemFactory.create(
+                category='sequential',
+                parent_location=self.chapter.location,
+                display_name='Sequential 2',
+            )
+            self.vertical2 = ItemFactory.create(
+                category='vertical',
+                parent_location=self.section2.location,
+                display_name='Vertical 2',
+            )
+            self.problem2 = ItemFactory.create(
+                category='problem',
+                parent_location=self.vertical2.location,
+                display_name='Problem 2',
+            )
 
         self.course_key = self.course.id
         self.password = '123456'
@@ -423,46 +432,6 @@ class ViewsTestCase(ModuleStoreTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, '/courses/{}/about'.format(unicode(self.course_key)))
 
-    def test_courseware_redirection(self):
-        """
-        Tests that a global staff member is redirected to the staff enrollment page.
-
-        Un-enrolled Staff user should be redirected to the staff enrollment page accessing courseware,
-        user chooses to enroll in the course. User is enrolled and redirected to the requested url.
-
-        Scenario:
-            1. Un-enrolled staff tries to access any course vertical (courseware url).
-            2. User is redirected to the staff enrollment page.
-            3. User chooses to enroll in the course.
-            4. User is enrolled in the course and redirected to the requested courseware url.
-        """
-        self._create_global_staff_user()
-        courseware_url, enroll_url = self._create_url_for_enroll_staff()
-
-        # Accessing the courseware url in which not enrolled & redirected to staff enrollment page
-        response = self.client.get(courseware_url, follow=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(302, response.redirect_chain[0])
-        self.assertEqual(len(response.redirect_chain), 1)
-        self.assertRedirects(response, enroll_url)
-
-        # Accessing the enroll staff url and verify the correct url
-        response = self.client.get(enroll_url)
-        self.assertEqual(response.status_code, 200)
-        response_content = response.content
-        self.assertIn('Enroll', response_content)
-        self.assertIn("dont_enroll", response_content)
-
-        # Post the valid data to enroll the staff in the course
-        response = self.client.post(enroll_url, data={'enroll': "Enroll"}, follow=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(302, response.redirect_chain[0])
-        self.assertEqual(len(response.redirect_chain), 1)
-        self.assertRedirects(response, courseware_url)
-
-        # Verify staff has been enrolled to the given course
-        self.assertTrue(CourseEnrollment.is_enrolled(self.global_staff, self.course.id))
-
     @unittest.skipUnless(settings.FEATURES.get('ENABLE_SHOPPING_CART'), "Shopping Cart not enabled in settings")
     @patch.dict(settings.FEATURES, {'ENABLE_PAID_COURSE_REGISTRATION': True})
     def test_course_about_in_cart(self):
@@ -547,23 +516,6 @@ class ViewsTestCase(ModuleStoreTestCase):
         mock_user = MagicMock()
         mock_user.is_authenticated.return_value = False
         self.assertEqual(views.user_groups(mock_user), [])
-
-    def test_get_current_child(self):
-        mock_xmodule = MagicMock()
-        self.assertIsNone(views.get_current_child(mock_xmodule))
-
-        mock_xmodule.position = -1
-        mock_xmodule.get_display_items.return_value = ['one', 'two', 'three']
-        self.assertEqual(views.get_current_child(mock_xmodule), 'one')
-
-        mock_xmodule.position = 2
-        self.assertEqual(views.get_current_child(mock_xmodule), 'two')
-        self.assertEqual(views.get_current_child(mock_xmodule, requested_child='first'), 'one')
-        self.assertEqual(views.get_current_child(mock_xmodule, requested_child='last'), 'three')
-
-        mock_xmodule.position = 3
-        mock_xmodule.get_display_items.return_value = []
-        self.assertIsNone(views.get_current_child(mock_xmodule))
 
     def test_get_redirect_url(self):
         self.assertIn(
@@ -800,44 +752,64 @@ class ViewsTestCase(ModuleStoreTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('Financial Assistance Application', response.content)
 
-    def test_financial_assistance_form(self):
-        non_verified_course = CourseFactory.create().id
-        verified_course_verified_track = CourseFactory.create().id
-        verified_course_audit_track = CourseFactory.create().id
-        verified_course_deadline_passed = CourseFactory.create().id
-        unenrolled_course = CourseFactory.create().id
+    @ddt.data(([CourseMode.AUDIT, CourseMode.VERIFIED], CourseMode.AUDIT, True, datetime.now(UTC) - timedelta(days=1)),
+              ([CourseMode.AUDIT, CourseMode.VERIFIED], CourseMode.VERIFIED, True, None),
+              ([CourseMode.AUDIT, CourseMode.VERIFIED], CourseMode.AUDIT, False, None),
+              ([CourseMode.AUDIT], CourseMode.AUDIT, False, None))
+    @ddt.unpack
+    def test_financial_assistance_form_course_exclusion(
+            self, course_modes, enrollment_mode, eligible_for_aid, expiration):
+        """Verify that learner cannot get the financial aid for the courses having one of the
+        following attributes:
+        1. User is enrolled in the verified mode.
+        2. Course is expired.
+        3. Course does not provide financial assistance.
+        4. Course does not have verified mode.
+        """
+        # Create course
+        course = CourseFactory.create()
 
-        enrollments = (
-            (non_verified_course, CourseMode.AUDIT, None),
-            (verified_course_verified_track, CourseMode.VERIFIED, None),
-            (verified_course_audit_track, CourseMode.AUDIT, None),
-            (verified_course_deadline_passed, CourseMode.AUDIT, datetime.now(UTC) - timedelta(days=1))
-        )
-        for course, mode, expiration in enrollments:
-            CourseModeFactory.create(mode_slug=CourseMode.AUDIT, course_id=course)
-            if course != non_verified_course:
-                CourseModeFactory.create(
-                    mode_slug=CourseMode.VERIFIED,
-                    course_id=course,
-                    expiration_datetime=expiration
-                )
-            CourseEnrollmentFactory(course_id=course, user=self.user, mode=mode)
+        # Create Course Modes
+        for mode in course_modes:
+            CourseModeFactory.create(mode_slug=mode, course_id=course.id, expiration_datetime=expiration)
+
+        # Enroll user in the course
+        CourseEnrollmentFactory(course_id=course.id, user=self.user, mode=enrollment_mode)
+        # load course into course overview
+        CourseOverview.get_from_id(course.id)
+
+        # add whether course is eligible for financial aid or not
+        course_overview = CourseOverview.objects.get(id=course.id)
+        course_overview.eligible_for_financial_aid = eligible_for_aid
+        course_overview.save()
 
         url = reverse('financial_assistance_form')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        # Ensure that the user can only apply for assistance in
-        # courses which have a verified mode which hasn't expired yet,
-        # where the user is not already enrolled in verified mode
-        self.assertIn(str(verified_course_audit_track), response.content)
-        for course in (
-                non_verified_course,
-                verified_course_verified_track,
-                verified_course_deadline_passed,
-                unenrolled_course
-        ):
-            self.assertNotIn(str(course), response.content)
+        self.assertNotIn(str(course.id), response.content)
+
+    def test_financial_assistance_form(self):
+        """Verify that learner can get the financial aid for the course in which
+        he/she is enrolled in audit mode whereas the course provide verified mode.
+        """
+        # Create course
+        course = CourseFactory.create().id
+
+        # Create Course Modes
+        CourseModeFactory.create(mode_slug=CourseMode.AUDIT, course_id=course)
+        CourseModeFactory.create(mode_slug=CourseMode.VERIFIED, course_id=course)
+
+        # Enroll user in the course
+        CourseEnrollmentFactory(course_id=course, user=self.user, mode=CourseMode.AUDIT)
+        # load course into course overview
+        CourseOverview.get_from_id(course)
+
+        url = reverse('financial_assistance_form')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertIn(str(course), response.content)
 
     def _submit_financial_assistance_form(self, data):
         """Submit a financial assistance request."""
@@ -949,6 +921,7 @@ class ViewsTestCase(ModuleStoreTestCase):
         response = self.client.get(reverse('info', args=[course_id]), HTTP_REFERER='foo')
         self.assertEqual(response.status_code, 200)
 
+    # TODO: TNL-6387: Remove test
     def test_accordion(self):
         """
         This needs a response_context, which is not included in the render_accordion's main method
@@ -966,6 +939,47 @@ class ViewsTestCase(ModuleStoreTestCase):
         ]
         for test in test_responses:
             self.assertContains(response, test)
+
+
+@attr(shard=2)
+@patch('openedx.core.djangoapps.catalog.utils.get_edx_api_data')
+class TestProgramMarketingView(ProgramsApiConfigMixin, CatalogIntegrationMixin, SharedModuleStoreTestCase):
+    """Unit tests for the program marketing page."""
+    program_uuid = str(uuid4())
+    url = reverse('program_marketing_view', kwargs={'program_uuid': program_uuid})
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestProgramMarketingView, cls).setUpClass()
+
+        modulestore_course = CourseFactory()
+        course_run = CourseRunFactory(key=unicode(modulestore_course.id))  # pylint: disable=no-member
+        course = CatalogCourseFactory(course_runs=[course_run])
+
+        cls.data = ProgramFactory(uuid=cls.program_uuid, courses=[course])
+
+    def test_404_if_no_data(self, _mock_get_edx_api_data):
+        """
+        Verify that the page 404s if no program data is found.
+        """
+        self.create_programs_config()
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_200(self, mock_get_edx_api_data):
+        """
+        Verify the view returns a 200.
+        """
+        self.create_programs_config()
+
+        catalog_integration = self.create_catalog_integration()
+        UserFactory(username=catalog_integration.service_username)
+
+        mock_get_edx_api_data.return_value = self.data
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
 
 
 @attr(shard=1)
@@ -988,15 +1002,16 @@ class BaseDueDateTests(ModuleStoreTestCase):
         :param course_kwargs: All kwargs are passed to through to the :class:`CourseFactory`
         """
         course = CourseFactory.create(**course_kwargs)
-        chapter = ItemFactory.create(category='chapter', parent_location=course.location)
-        section = ItemFactory.create(
-            category='sequential',
-            parent_location=chapter.location,
-            due=datetime(2013, 9, 18, 11, 30, 00),
-            format='homework'
-        )
-        vertical = ItemFactory.create(category='vertical', parent_location=section.location)
-        ItemFactory.create(category='problem', parent_location=vertical.location)
+        with self.store.bulk_operations(course.id):
+            chapter = ItemFactory.create(category='chapter', parent_location=course.location)
+            section = ItemFactory.create(
+                category='sequential',
+                parent_location=chapter.location,
+                due=datetime(2013, 9, 18, 11, 30, 00),
+                format='homework'
+            )
+            vertical = ItemFactory.create(category='vertical', parent_location=section.location)
+            ItemFactory.create(category='problem', parent_location=vertical.location)
 
         course = modulestore().get_course(course.id)
         self.assertIsNotNone(course.get_children()[0].get_children()[0].due)
@@ -1129,6 +1144,7 @@ class StartDateTests(ModuleStoreTestCase):
 
 # pylint: disable=protected-access, no-member
 @attr(shard=1)
+@override_settings(ENABLE_ENTERPRISE_INTEGRATION=False)
 @ddt.ddt
 class ProgressPageTests(ModuleStoreTestCase):
     """
@@ -1136,6 +1152,7 @@ class ProgressPageTests(ModuleStoreTestCase):
     """
 
     ENABLED_CACHES = ['default', 'mongo_modulestore_inheritance', 'loc_cache']
+    ENABLED_SIGNALS = ['course_published']
 
     def setUp(self):
         super(ProgressPageTests, self).setUp()
@@ -1146,18 +1163,17 @@ class ProgressPageTests(ModuleStoreTestCase):
 
     def setup_course(self, **options):
         """Create the test course."""
-        course = CourseFactory.create(
+        self.course = CourseFactory.create(
             start=datetime(2013, 9, 16, 7, 17, 28),
             grade_cutoffs={u'çü†øƒƒ': 0.75, 'Pass': 0.5},
             **options
         )
+        with self.store.bulk_operations(self.course.id):
+            self.chapter = ItemFactory.create(category='chapter', parent_location=self.course.location)
+            self.section = ItemFactory.create(category='sequential', parent_location=self.chapter.location)
+            self.vertical = ItemFactory.create(category='vertical', parent_location=self.section.location)
 
-        self.course = modulestore().get_course(course.id)
         CourseEnrollmentFactory(user=self.user, course_id=self.course.id, mode=CourseMode.HONOR)
-
-        self.chapter = ItemFactory.create(category='chapter', parent_location=self.course.location)
-        self.section = ItemFactory.create(category='sequential', parent_location=self.chapter.location)
-        self.vertical = ItemFactory.create(category='vertical', parent_location=self.section.location)
 
     def _get_progress_page(self, expected_status_code=200):
         """
@@ -1368,18 +1384,24 @@ class ProgressPageTests(ModuleStoreTestCase):
         """Test that query counts remain the same for self-paced and instructor-paced courses."""
         SelfPacedConfiguration(enabled=self_paced_enabled).save()
         self.setup_course(self_paced=self_paced)
-        with self.assertNumQueries(38), check_mongo_calls(4):
+        with self.assertNumQueries(42), check_mongo_calls(1):
             self._get_progress_page()
 
-    def test_progress_queries(self):
+    @ddt.data(
+        (False, 42, 28),
+        (True, 35, 24)
+    )
+    @ddt.unpack
+    def test_progress_queries(self, enable_waffle, initial, subsequent):
         self.setup_course()
-        with self.assertNumQueries(38), check_mongo_calls(4):
-            self._get_progress_page()
-
-        # subsequent accesses to the progress page require fewer queries.
-        for _ in range(2):
-            with self.assertNumQueries(24), check_mongo_calls(4):
+        with grades_waffle().override(ASSUME_ZERO_GRADE_IF_ABSENT, active=enable_waffle):
+            with self.assertNumQueries(initial), check_mongo_calls(1):
                 self._get_progress_page()
+
+            # subsequent accesses to the progress page require fewer queries.
+            for _ in range(2):
+                with self.assertNumQueries(subsequent), check_mongo_calls(1):
+                    self._get_progress_page()
 
     @patch(
         'lms.djangoapps.grades.new.course_grade.CourseGrade.summary',
@@ -1824,6 +1846,7 @@ class ViewCheckerBlock(XBlock):
     """
     has_children = True
     state = String(scope=Scope.user_state)
+    position = 0
 
     def student_view(self, context):  # pylint: disable=unused-argument
         """
@@ -1894,10 +1917,11 @@ class TestIndexView(ModuleStoreTestCase):
         user = UserFactory()
 
         course = CourseFactory.create()
-        chapter = ItemFactory.create(parent=course, category='chapter')
-        section = ItemFactory.create(parent=chapter, category='sequential', display_name="Sequence")
-        vertical = ItemFactory.create(parent=section, category='vertical', display_name="Vertical")
-        ItemFactory.create(parent=vertical, category='id_checker', display_name="ID Checker")
+        with self.store.bulk_operations(course.id):
+            chapter = ItemFactory.create(parent=course, category='chapter')
+            section = ItemFactory.create(parent=chapter, category='sequential', display_name="Sequence")
+            vertical = ItemFactory.create(parent=section, category='vertical', display_name="Vertical")
+            ItemFactory.create(parent=vertical, category='id_checker', display_name="ID Checker")
 
         CourseEnrollmentFactory(user=user, course_id=course.id)
 
@@ -1932,11 +1956,12 @@ class TestIndexViewWithVerticalPositions(ModuleStoreTestCase):
 
         # create course with 3 positions
         self.course = CourseFactory.create()
-        self.chapter = ItemFactory.create(parent=self.course, category='chapter')
-        self.section = ItemFactory.create(parent=self.chapter, category='sequential', display_name="Sequence")
-        ItemFactory.create(parent=self.section, category='vertical', display_name="Vertical1")
-        ItemFactory.create(parent=self.section, category='vertical', display_name="Vertical2")
-        ItemFactory.create(parent=self.section, category='vertical', display_name="Vertical3")
+        with self.store.bulk_operations(self.course.id):
+            self.chapter = ItemFactory.create(parent=self.course, category='chapter')
+            self.section = ItemFactory.create(parent=self.chapter, category='sequential', display_name="Sequence")
+            ItemFactory.create(parent=self.section, category='vertical', display_name="Vertical1")
+            ItemFactory.create(parent=self.section, category='vertical', display_name="Vertical2")
+            ItemFactory.create(parent=self.section, category='vertical', display_name="Vertical3")
 
         self.client.login(username=self.user, password='test')
         CourseEnrollmentFactory(user=self.user, course_id=self.course.id)
@@ -1991,14 +2016,20 @@ class TestIndexViewWithGating(ModuleStoreTestCase, MilestonesTestCaseMixin):
 
         self.user = UserFactory()
         self.course = CourseFactory.create()
-        self.course.enable_subsection_gating = True
-        self.course.save()
-        self.store.update_item(self.course, 0)
-        self.chapter = ItemFactory.create(parent=self.course, category="chapter", display_name="Chapter")
-        self.open_seq = ItemFactory.create(parent=self.chapter, category='sequential', display_name="Open Sequential")
-        ItemFactory.create(parent=self.open_seq, category='problem', display_name="Problem 1")
-        self.gated_seq = ItemFactory.create(parent=self.chapter, category='sequential', display_name="Gated Sequential")
-        ItemFactory.create(parent=self.gated_seq, category='problem', display_name="Problem 2")
+        with self.store.bulk_operations(self.course.id):
+            self.course.enable_subsection_gating = True
+            self.course.save()
+            self.store.update_item(self.course, 0)
+            self.chapter = ItemFactory.create(parent=self.course, category="chapter", display_name="Chapter")
+            self.open_seq = ItemFactory.create(
+                parent=self.chapter, category='sequential', display_name="Open Sequential"
+            )
+            ItemFactory.create(parent=self.open_seq, category='problem', display_name="Problem 1")
+            self.gated_seq = ItemFactory.create(
+                parent=self.chapter, category='sequential', display_name="Gated Sequential"
+            )
+            ItemFactory.create(parent=self.gated_seq, category='problem', display_name="Problem 2")
+
         gating_api.add_prerequisite(self.course.id, self.open_seq.location)
         gating_api.set_required_content(self.course.id, self.gated_seq.location, self.open_seq.location, 100)
 
@@ -2029,7 +2060,6 @@ class TestRenderXBlock(RenderXBlockTestMixin, ModuleStoreTestCase):
     This class overrides the get_response method, which is used by
     the tests defined in RenderXBlockTestMixin.
     """
-
     def setUp(self):
         reload_django_url_config()
         super(TestRenderXBlock, self).setUp()
@@ -2057,10 +2087,114 @@ class TestRenderXBlockSelfPaced(TestRenderXBlock):
     Test rendering XBlocks for a self-paced course. Relies on the query
     count assertions in the tests defined by RenderXBlockMixin.
     """
-
     def setUp(self):
         super(TestRenderXBlockSelfPaced, self).setUp()
         SelfPacedConfiguration(enabled=True).save()
 
     def course_options(self):
         return {'self_paced': True}
+
+
+class TestIndexViewCrawlerStudentStateWrites(SharedModuleStoreTestCase):
+    """
+    Ensure that courseware index requests do not trigger student state writes.
+
+    This is to prevent locking issues that have caused latency spikes in the
+    courseware_studentmodule table when concurrent requests each try to update
+    the same rows for sequence, section, and course positions.
+    """
+    @classmethod
+    def setUpClass(cls):
+        """Set up the simplest course possible."""
+        # setUpClassAndTestData() already calls setUpClass on SharedModuleStoreTestCase
+        # pylint: disable=super-method-not-called
+        with super(TestIndexViewCrawlerStudentStateWrites, cls).setUpClassAndTestData():
+            cls.course = CourseFactory.create()
+            with cls.store.bulk_operations(cls.course.id):
+                cls.chapter = ItemFactory.create(category='chapter', parent_location=cls.course.location)
+                cls.section = ItemFactory.create(category='sequential', parent_location=cls.chapter.location)
+                cls.vertical = ItemFactory.create(category='vertical', parent_location=cls.section.location)
+
+    @classmethod
+    def setUpTestData(cls):
+        """Set up and enroll our fake user in the course."""
+        cls.password = 'test'
+        cls.user = UserFactory(password=cls.password)
+        CourseEnrollment.enroll(cls.user, cls.course.id)
+
+    def setUp(self):
+        """Do the client login."""
+        super(TestIndexViewCrawlerStudentStateWrites, self).setUp()
+        self.client.login(username=self.user.username, password=self.password)
+
+    def test_write_by_default(self):
+        """By default, always write student state, regardless of user agent."""
+        with patch('courseware.model_data.UserStateCache.set_many') as patched_state_client_set_many:
+            # Simulate someone using Chrome
+            self._load_courseware('Mozilla/5.0 AppleWebKit/537.36')
+            self.assertTrue(patched_state_client_set_many.called)
+            patched_state_client_set_many.reset_mock()
+
+            # Common crawler user agent
+            self._load_courseware('edX-downloader/0.1')
+            self.assertTrue(patched_state_client_set_many.called)
+
+    def test_writes_with_config(self):
+        """Test state writes (or lack thereof) based on config values."""
+        CrawlersConfig.objects.create(known_user_agents='edX-downloader,crawler_foo', enabled=True)
+        with patch('courseware.model_data.UserStateCache.set_many') as patched_state_client_set_many:
+            # Exact matching of crawler user agent
+            self._load_courseware('crawler_foo')
+            self.assertFalse(patched_state_client_set_many.called)
+
+            # Partial matching of crawler user agent
+            self._load_courseware('edX-downloader/0.1')
+            self.assertFalse(patched_state_client_set_many.called)
+
+            # Simulate an actual browser hitting it (we should write)
+            self._load_courseware('Mozilla/5.0 AppleWebKit/537.36')
+            self.assertTrue(patched_state_client_set_many.called)
+
+        # Disabling the crawlers config should revert us to default behavior
+        CrawlersConfig.objects.create(enabled=False)
+        self.test_write_by_default()
+
+    def _load_courseware(self, user_agent):
+        """Helper to load the actual courseware page."""
+        url = reverse(
+            'courseware_section',
+            kwargs={
+                'course_id': unicode(self.course.id),
+                'chapter': unicode(self.chapter.location.name),
+                'section': unicode(self.section.location.name),
+            }
+        )
+        response = self.client.get(url, HTTP_USER_AGENT=user_agent)
+        # Make sure we get back an actual 200, and aren't redirected because we
+        # messed up the setup somehow (e.g. didn't enroll properly)
+        self.assertEqual(response.status_code, 200)
+
+
+@attr(shard=1)
+class EnterpriseConsentTestCase(EnterpriseTestConsentRequired, ModuleStoreTestCase):
+    """
+    Ensure that the Enterprise Data Consent redirects are in place only when consent is required.
+    """
+    def setUp(self):
+        super(EnterpriseConsentTestCase, self).setUp()
+        self.user = UserFactory.create()
+        self.assertTrue(self.client.login(username=self.user.username, password='test'))
+        self.course = CourseFactory.create()
+        CourseEnrollmentFactory(user=self.user, course_id=self.course.id)
+
+    def test_consent_required(self):
+        """
+        Test that enterprise data sharing consent is required when enabled for the various courseware views.
+        """
+        course_id = unicode(self.course.id)
+        for url in (
+                reverse("courseware", kwargs=dict(course_id=course_id)),
+                reverse("progress", kwargs=dict(course_id=course_id)),
+                reverse("student_progress", kwargs=dict(course_id=course_id, student_id=str(self.user.id))),
+        ):
+            self.verify_consent_required(self.client, url)

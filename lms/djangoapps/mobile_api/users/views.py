@@ -13,10 +13,10 @@ from opaque_keys.edx.keys import UsageKey
 from opaque_keys import InvalidKeyError
 
 from courseware.access import is_mobile_available_for_user
+from courseware.courses import get_current_child
 from courseware.model_data import FieldDataCache
 from courseware.module_render import get_module_for_descriptor
 from courseware.views.index import save_positions_recursively_up
-from courseware.views.views import get_current_child
 from student.models import CourseEnrollment, User
 
 from xblock.fields import Scope
@@ -26,7 +26,7 @@ from xmodule.modulestore.exceptions import ItemNotFoundError
 
 from .serializers import CourseEnrollmentSerializer, UserSerializer
 from .. import errors
-from ..utils import mobile_view, mobile_course_access
+from ..decorators import mobile_course_access, mobile_view
 
 
 @mobile_view(is_user=True)
@@ -60,8 +60,7 @@ class UserDetail(generics.RetrieveAPIView):
         * username: The username of the currently signed in user.
     """
     queryset = (
-        User.objects.all()
-        .select_related('profile')
+        User.objects.all().select_related('profile')
     )
     serializer_class = UserSerializer
     lookup_field = 'username'

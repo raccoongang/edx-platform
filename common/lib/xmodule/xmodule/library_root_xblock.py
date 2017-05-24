@@ -25,7 +25,7 @@ class LibraryRoot(XBlock):
     resources_dir = None
 
     display_name = String(
-        help=_("Enter the name of the library as it should appear in Studio."),
+        help=_("The display name for this component."),
         default="Library",
         display_name=_("Library Display Name"),
         scope=Scope.settings
@@ -80,6 +80,7 @@ class LibraryRoot(XBlock):
         children_to_show = self.children[item_start:item_end]  # pylint: disable=no-member
 
         force_render = context.get('force_render', None)
+        context['can_move'] = False
 
         for child_key in children_to_show:
             # Children must have a separate context from the library itself. Make a copy.

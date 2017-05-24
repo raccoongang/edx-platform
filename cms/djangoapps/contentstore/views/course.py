@@ -26,7 +26,7 @@ from .component import (
     ADVANCED_COMPONENT_TYPES,
 )
 from .item import create_xblock_info
-from .library import LIBRARIES_ENABLED
+from .library import LIBRARIES_ENABLED, get_library_creator_status
 from ccx_keys.locator import CCXLocator
 from contentstore.course_group_config import (
     COHORT_SCHEME,
@@ -64,8 +64,6 @@ from openedx.core.djangoapps.content.course_structures.api.v0 import api, errors
 from openedx.core.djangoapps.credit.api import is_credit_course, get_credit_requirements
 from openedx.core.djangoapps.credit.tasks import update_credit_course_requirements
 from openedx.core.djangoapps.models.course_details import CourseDetails
-from openedx.core.djangoapps.programs.models import ProgramsApiConfig
-from openedx.core.djangoapps.programs.utils import get_programs
 from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.lib.course_tabs import CourseTabPluginManager
@@ -76,7 +74,7 @@ from student.auth import has_course_author_access, has_studio_write_access, has_
 from student.roles import (
     CourseInstructorRole, CourseStaffRole, CourseCreatorRole, GlobalStaff, UserBasedRole
 )
-from util.course import get_lms_link_for_about_page
+from util.course import get_link_for_about_page
 from util.date_utils import get_default_time_display
 from util.json_request import JsonResponse, JsonResponseBadRequest, expect_json
 from util.milestones_helpers import (
@@ -338,11 +336,16 @@ def _course_outline_json(request, course_module):
     """
     Returns a JSON representation of the course module and recursively all of its children.
     """
+    is_concise = request.GET.get('format') == 'concise'
+    include_children_predicate = lambda xblock: not xblock.category == 'vertical'
+    if is_concise:
+        include_children_predicate = lambda xblock: xblock.has_children
     return create_xblock_info(
         course_module,
         include_child_info=True,
-        course_outline=True,
-        include_children_predicate=lambda xblock: not xblock.category == 'vertical',
+        course_outline=False if is_concise else True,
+        include_children_predicate=include_children_predicate,
+        is_concise=is_concise,
         user=request.user
     )
 
@@ -467,14 +470,8 @@ def course_listing(request):
     List all courses available to the logged in user
     """
     courses, in_process_course_actions = get_courses_accessible_to_user(request)
+    user = request.user
     libraries = _accessible_libraries_list(request.user) if LIBRARIES_ENABLED else []
-
-    programs_config = ProgramsApiConfig.current()
-    raw_programs = get_programs(request.user) if programs_config.is_studio_tab_enabled else []
-
-    # Sort programs alphabetically by name.
-    # TODO: Support ordering in the Programs API itself.
-    programs = sorted(raw_programs, key=lambda p: p['name'].lower())
 
     def format_in_process_course_view(uca):
         """
@@ -518,16 +515,13 @@ def course_listing(request):
         'in_process_course_actions': in_process_course_actions,
         'libraries_enabled': LIBRARIES_ENABLED,
         'libraries': [format_library_for_view(lib) for lib in libraries],
-        'show_new_library_button': LIBRARIES_ENABLED and request.user.is_active,
-        'user': request.user,
+        'show_new_library_button': get_library_creator_status(user),
+        'user': user,
         'request_course_creator_url': reverse('contentstore.views.request_course_creator'),
-        'course_creator_status': _get_course_creator_status(request.user),
-        'rerun_creator_status': GlobalStaff().has_user(request.user),
+        'course_creator_status': _get_course_creator_status(user),
+        'rerun_creator_status': GlobalStaff().has_user(user),
         'allow_unicode_course_id': settings.FEATURES.get('ALLOW_UNICODE_COURSE_ID', False),
         'allow_course_reruns': settings.FEATURES.get('ALLOW_COURSE_RERUNS', True),
-        'is_programs_enabled': programs_config.is_studio_tab_enabled and request.user.is_staff,
-        'programs': programs,
-        'program_authoring_url': reverse('programs'),
     })
 
 
@@ -546,16 +540,14 @@ def _deprecated_blocks_info(course_module, deprecated_block_types):
 
     Returns:
         Dict with following keys:
-        block_types (list): list containing types of all deprecated blocks
-        block_types_enabled (bool): True if any or all `deprecated_blocks` present in Advanced Module List else False
-        blocks (list): List of `deprecated_block_types` component names and their parent's url
+        deprecated_enabled_block_types (list): list containing all deprecated blocks types enabled on this course
+        blocks (list): List of `deprecated_enabled_block_types` instances and their parent's url
         advance_settings_url (str): URL to advance settings page
     """
     data = {
-        'block_types': deprecated_block_types,
-        'block_types_enabled': any(
-            block_type in course_module.advanced_modules for block_type in deprecated_block_types
-        ),
+        'deprecated_enabled_block_types': [
+            block_type for block_type in course_module.advanced_modules if block_type in deprecated_block_types
+        ],
         'blocks': [],
         'advance_settings_url': reverse_course_url('advanced_settings_handler', course_module.id)
     }
@@ -1000,7 +992,7 @@ def settings_handler(request, course_key_string):
             settings_context = {
                 'context_course': course_module,
                 'course_locator': course_key,
-                'lms_link_for_about_page': get_lms_link_for_about_page(course_key),
+                'lms_link_for_about_page': get_link_for_about_page(course_module),
                 'course_image_url': course_image_url(course_module, 'course_image'),
                 'banner_image_url': course_image_url(course_module, 'banner_image'),
                 'video_thumbnail_image_url': course_image_url(course_module, 'video_thumbnail_image'),
@@ -1631,6 +1623,7 @@ def _get_course_creator_status(user):
     If the user passed in has not previously visited the index page, it will be
     added with status 'unrequested' if the course creator group is in use.
     """
+
     if user.is_staff:
         course_creator_status = 'granted'
     elif settings.FEATURES.get('DISABLE_COURSE_CREATION', False):

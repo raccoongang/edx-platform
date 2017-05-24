@@ -27,7 +27,7 @@ from courseware.tests.factories import (
     StaffFactory,
     UserFactory,
 )
-from courseware.tests.helpers import LoginEnrollmentTestCase
+from courseware.tests.helpers import LoginEnrollmentTestCase, masquerade_as_group_member
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from student.models import CourseEnrollment
 from student.roles import CourseCcxCoachRole, CourseStaffRole
@@ -44,6 +44,9 @@ from xmodule.course_module import (
     CATALOG_VISIBILITY_NONE,
 )
 from xmodule.error_module import ErrorDescriptor
+from xmodule.partitions.partitions import Group, UserPartition, MINIMUM_STATIC_PARTITION_ID
+from xmodule.modulestore import ModuleStoreEnum
+from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 from xmodule.modulestore.tests.django_utils import (
     ModuleStoreTestCase,
@@ -293,6 +296,58 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase, MilestonesTes
                 bool(access.has_access(self.student, 'staff', self.course, course_key=self.course.id))
             )
 
+    @patch('courseware.access.in_preview_mode', Mock(return_value=True))
+    def test_has_access_in_preview_mode_with_group(self):
+        """
+        Test that a user masquerading as a member of a group sees appropriate content in preview mode.
+        """
+        # Note about UserPartition and UserPartition Group IDs: these must not conflict with IDs used
+        # by dynamic user partitions.
+        partition_id = MINIMUM_STATIC_PARTITION_ID
+        group_0_id = MINIMUM_STATIC_PARTITION_ID + 1
+        group_1_id = MINIMUM_STATIC_PARTITION_ID + 2
+        user_partition = UserPartition(
+            partition_id, 'Test User Partition', '',
+            [Group(group_0_id, 'Group 1'), Group(group_1_id, 'Group 2')],
+            scheme_id='cohort'
+        )
+        self.course.user_partitions.append(user_partition)
+        self.course.cohort_config = {'cohorted': True}
+
+        chapter = ItemFactory.create(category="chapter", parent_location=self.course.location)
+        chapter.group_access = {partition_id: [group_0_id]}
+
+        modulestore().update_item(self.course, ModuleStoreEnum.UserID.test)
+
+        # User should not be able to preview when masquerading as student (and not in the group above).
+        with patch('courseware.access.get_user_role') as mock_user_role:
+            mock_user_role.return_value = 'student'
+            self.assertFalse(
+                bool(access.has_access(self.global_staff, 'load', chapter, course_key=self.course.id))
+            )
+
+        # Should be able to preview when in staff or instructor role.
+        for mocked_role in ['staff', 'instructor']:
+            with patch('courseware.access.get_user_role') as mock_user_role:
+                mock_user_role.return_value = mocked_role
+                self.assertTrue(
+                    bool(access.has_access(self.global_staff, 'load', chapter, course_key=self.course.id))
+                )
+
+        # Now install masquerade group and set staff as a member of that.
+        self.assertEqual(200, masquerade_as_group_member(self.global_staff, self.course, partition_id, group_0_id))
+        # Can load the chapter since user is in the group.
+        self.assertTrue(
+            bool(access.has_access(self.global_staff, 'load', chapter, course_key=self.course.id))
+        )
+
+        # Move the user to be a part of the second group.
+        self.assertEqual(200, masquerade_as_group_member(self.global_staff, self.course, partition_id, group_1_id))
+        # Cannot load the chapter since user is in a different group.
+        self.assertFalse(
+            bool(access.has_access(self.global_staff, 'load', chapter, course_key=self.course.id))
+        )
+
     def test_has_access_to_course(self):
         self.assertFalse(access._has_access_to_course(
             None, 'staff', self.course.id
@@ -377,6 +432,7 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase, MilestonesTes
         user = Mock()
         descriptor = Mock(user_partitions=[])
         descriptor._class_tags = {}
+        descriptor.merged_group_access = {}
 
         # Always returns true because DISABLE_START_DATES is set in test.py
         self.assertTrue(access._has_access_descriptor(user, 'load', descriptor))
@@ -403,6 +459,8 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase, MilestonesTes
         mock_unit._class_tags = {}  # Needed for detached check in _has_access_descriptor
         mock_unit.visible_to_staff_only = visible_to_staff_only
         mock_unit.start = start
+        mock_unit.merged_group_access = {}
+
         self.verify_access(mock_unit, expected_access, expected_error_type)
 
     def test__has_access_descriptor_beta_user(self):
@@ -411,6 +469,7 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase, MilestonesTes
         mock_unit.days_early_for_beta = 2
         mock_unit.start = self.TOMORROW
         mock_unit.visible_to_staff_only = False
+        mock_unit.merged_group_access = {}
 
         self.assertTrue(bool(access._has_access_descriptor(
             self.beta_user, 'load', mock_unit, course_key=self.course.id)))
@@ -426,6 +485,8 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase, MilestonesTes
         mock_unit._class_tags = {}  # Needed for detached check in _has_access_descriptor
         mock_unit.visible_to_staff_only = False
         mock_unit.start = start
+        mock_unit.merged_group_access = {}
+
         self.verify_access(mock_unit, True)
 
     @ddt.data(
@@ -445,6 +506,8 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase, MilestonesTes
         mock_unit._class_tags = {}  # Needed for detached check in _has_access_descriptor
         mock_unit.visible_to_staff_only = False
         mock_unit.start = start
+        mock_unit.merged_group_access = {}
+
         self.verify_access(mock_unit, expected_access, expected_error_type)
 
     def test__has_access_course_can_enroll(self):

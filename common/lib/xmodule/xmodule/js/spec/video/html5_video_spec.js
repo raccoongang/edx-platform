@@ -47,12 +47,11 @@
                             }).always(done);
                         });
 
-                        // Flaky. Checking the parameters of calls to onStateChange() will likely be more reliable.
-                        xit('callback was not called', function(done) {
+                        it('callback was called', function(done) {
                             jasmine.waitUntil(function() {
                                 return state.videoPlayer.player.getPlayerState() !== STATUS.PAUSED;
                             }).then(function() {
-                                expect(state.videoPlayer.player.callStateChangeCallback).not.toHaveBeenCalled();
+                                expect(state.videoPlayer.player.callStateChangeCallback).toHaveBeenCalled();
                             }).always(done);
                         });
                     });
@@ -104,8 +103,9 @@
                         jasmine.waitUntil(function() {
                             return state.videoPlayer.player.getPlayerState() !== STATUS.PAUSED;
                         }).then(function() {
-                            expect(state.videoPlayer.player.getPlayerState())
-                                .toBe(STATUS.BUFFERING);
+                            expect([STATUS.BUFFERING, STATUS.PLAYING]).toContain(
+                                state.videoPlayer.player.getPlayerState()
+                            );
                         }).always(done);
                     });
 
