@@ -18,7 +18,7 @@ class CalendarTab(TabFragmentViewMixin, EnrolledTab):
     is_default = True
 
     # view_name = "calendar_tab.views.calendar_view"
-    fragment_view_name = 'openedx.features.djangoapps.calendar_tab.views.CalendarTabFragmentView'
+    fragment_view_name = 'openedx.features.calendar_tab.views.CalendarTabFragmentView'
 
     @classmethod
     def is_enabled(cls, course, user=None):

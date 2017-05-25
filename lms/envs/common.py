@@ -2221,7 +2221,7 @@ INSTALLED_APPS = (
     'openedx.features.course_bookmarks',
     'openedx.features.course_experience',
     'openedx.features.enterprise_support',
-    'openedx.features.djangoapps.calendar_tab',
+    'openedx.features.calendar_tab',
 )
 
 ######################### CSRF #########################################
