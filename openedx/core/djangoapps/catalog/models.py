@@ -27,11 +27,19 @@ class CatalogIntegration(ConfigurationModel):
 
     service_username = models.CharField(
         max_length=100,
-        default="lms_catalog_service_user",
+        default='lms_catalog_service_user',
         null=False,
         blank=False,
         help_text=_(
             'Username created for Course Catalog Integration, e.g. lms_catalog_service_user.'
+        )
+    )
+
+    page_size = models.PositiveIntegerField(
+        verbose_name=_('Page Size'),
+        default=100,
+        help_text=_(
+            'Maximum number of records in paginated response of a single request to catalog service.'
         )
     )
 

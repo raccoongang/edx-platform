@@ -6,7 +6,8 @@ import logging
 from urlparse import urlparse, urlunparse
 
 from django.db import models, transaction
-from django.db.models.fields import BooleanField, DateTimeField, DecimalField, TextField, FloatField, IntegerField
+from django.db.models.fields import (BooleanField, DateTimeField, DecimalField, TextField, FloatField, IntegerField,
+                                     CharField)
 from django.db.utils import IntegrityError
 from django.template import defaultfilters
 
@@ -97,6 +98,11 @@ class CourseOverview(TimeStampedModel):
     course_video_url = TextField(null=True)
     effort = TextField(null=True)
     self_paced = BooleanField(default=False)
+    marketing_url = TextField(null=True)
+    eligible_for_financial_aid = BooleanField(default=True)
+
+    # Course related extra features data
+    calendar_id = CharField(max_length=128, blank=True, null=True)
 
     @classmethod
     def _create_from_course(cls, course):
@@ -274,6 +280,27 @@ class CourseOverview(TimeStampedModel):
 
         return course_overview or cls.load_from_module_store(course_id)
 
+    @classmethod
+    def get_from_ids_if_exists(cls, course_ids):
+        """
+        Return a dict mapping course_ids to CourseOverviews, if they exist.
+
+        This method will *not* generate new CourseOverviews or delete outdated
+        ones. It exists only as a small optimization used when CourseOverviews
+        are known to exist, for common situations like the student dashboard.
+
+        Callers should assume that this list is incomplete and fall back to
+        get_from_id if they need to guarantee CourseOverview generation.
+        """
+        return {
+            overview.id: overview
+            for overview
+            in cls.objects.select_related('image_set').filter(
+                id__in=course_ids,
+                version__gte=cls.VERSION
+            )
+        }
+
     def clean_id(self, padding_char='='):
         """
         Returns a unique deterministic base32-encoded ID for the course.
@@ -337,6 +364,13 @@ class CourseOverview(TimeStampedModel):
         longer escaped.
         """
         return block_metadata_utils.display_name_with_default_escaped(self)
+
+    @property
+    def dashboard_start_display(self):
+        """
+         Return start date to diplay on learner's dashboard, preferably `Course Advertised Start`
+        """
+        return self.advertised_start or self.start
 
     def has_started(self):
         """
@@ -446,12 +480,12 @@ class CourseOverview(TimeStampedModel):
         return course_overviews
 
     @classmethod
-    def get_all_courses(cls, org=None, filter_=None):
+    def get_all_courses(cls, orgs=None, filter_=None):
         """
         Returns all CourseOverview objects in the database.
 
         Arguments:
-            org (string): Optional parameter that allows case-insensitive
+            orgs (list[string]): Optional parameter that allows case-insensitive
                 filtering by organization.
             filter_ (dict): Optional parameter that allows custom filtering.
         """
@@ -460,11 +494,11 @@ class CourseOverview(TimeStampedModel):
         # created. For tests using CourseFactory, use emit_signals=True.
         course_overviews = CourseOverview.objects.all()
 
-        if org:
+        if orgs:
             # In rare cases, courses belonging to the same org may be accidentally assigned
             # an org code with a different casing (e.g., Harvardx as opposed to HarvardX).
-            # Case-insensitive exact matching allows us to deal with this kind of dirty data.
-            course_overviews = course_overviews.filter(org__iexact=org)
+            # Case-insensitive matching allows us to deal with this kind of dirty data.
+            course_overviews = course_overviews.filter(org__iregex=r'(' + '|'.join(orgs) + ')')
 
         if filter_:
             course_overviews = course_overviews.filter(**filter_)

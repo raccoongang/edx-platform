@@ -169,7 +169,7 @@ class TestInstructorDashboard(ModuleStoreTestCase, LoginEnrollmentTestCase, XssT
         response = self.client.get(self.url)
 
         # enrollment information visible
-        self.assertIn('<h3 class="hd hd-3">Enrollment Information</h3>', response.content)
+        self.assertIn('<h4 class="hd hd-4">Enrollment Information</h4>', response.content)
         self.assertIn('<th scope="row">Verified</th>', response.content)
         self.assertIn('<th scope="row">Audit</th>', response.content)
         self.assertIn('<th scope="row">Honor</th>', response.content)
@@ -321,6 +321,43 @@ class TestInstructorDashboard(ModuleStoreTestCase, LoginEnrollmentTestCase, XssT
         # Max number of student per page is one.  Patched setting MAX_STUDENTS_PER_PAGE_GRADE_BOOK = 1
         self.assertEqual(len(response.mako_context['students']), 1)  # pylint: disable=no-member
 
+    def test_open_response_assessment_page(self):
+        """
+        Test that Open Responses is available only if course contains at least one ORA block
+        """
+        ora_section = (
+            '<li class="nav-item">'
+            '<button type="button" class="btn-link" data-section="open_response_assessment">'
+            'Open Responses'
+            '</button>'
+            '</li>'
+        )
+
+        response = self.client.get(self.url)
+        self.assertNotIn(ora_section, response.content)
+
+        ItemFactory.create(parent_location=self.course.location, category="openassessment")
+        response = self.client.get(self.url)
+        self.assertIn(ora_section, response.content)
+
+    def test_open_response_assessment_page_orphan(self):
+        """
+        Tests that the open responses tab loads if the course contains an
+        orphaned openassessment block
+        """
+        # create non-orphaned openassessment block
+        ItemFactory.create(
+            parent_location=self.course.location,
+            category="openassessment",
+        )
+        # create orphan
+        self.store.create_item(
+            self.user.id, self.course.id, 'openassessment', "orphan"
+        )
+        response = self.client.get(self.url)
+        # assert we don't get a 500 error
+        self.assertEqual(200, response.status_code)
+
 
 @ddt.ddt
 class TestInstructorDashboardPerformance(ModuleStoreTestCase, LoginEnrollmentTestCase, XssTestMixin):
@@ -412,6 +449,6 @@ class TestInstructorDashboardPerformance(ModuleStoreTestCase, LoginEnrollmentTes
 
         # check MongoDB calls count
         url = reverse('spoc_gradebook', kwargs={'course_id': self.course.id})
-        with check_mongo_calls(7):
+        with check_mongo_calls(9):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)

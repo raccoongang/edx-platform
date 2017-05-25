@@ -3,24 +3,24 @@ Unit tests for LMS instructor-initiated background tasks.
 
 Runs tasks on answers to course problems to validate that code
 paths actually work.
-
 """
+
+from functools import partial
 import json
 from uuid import uuid4
 
+from celery.states import SUCCESS, FAILURE
+import ddt
+from django.utils.translation import ugettext_noop
 from mock import Mock, MagicMock, patch
 from nose.plugins.attrib import attr
 
-from celery.states import SUCCESS, FAILURE
-from django.utils.translation import ugettext_noop
-from functools import partial
-
-from xmodule.modulestore.exceptions import ItemNotFoundError
 from opaque_keys.edx.locations import i4xEncoder
 
 from courseware.models import StudentModule
 from courseware.tests.factories import StudentModuleFactory
 from student.tests.factories import UserFactory, CourseEnrollmentFactory
+from xmodule.modulestore.exceptions import ItemNotFoundError
 
 from lms.djangoapps.instructor_task.models import InstructorTask
 from lms.djangoapps.instructor_task.tests.test_base import InstructorTaskModuleTestCase
@@ -41,10 +41,16 @@ PROBLEM_URL_NAME = "test_urlname"
 
 
 class TestTaskFailure(Exception):
+    """
+    An example exception to indicate failure of a mocked task.
+    """
     pass
 
 
 class TestInstructorTasks(InstructorTaskModuleTestCase):
+    """
+    Ensure tasks behave as expected.
+    """
 
     def setUp(self):
         super(TestInstructorTasks, self).setUp()
@@ -219,6 +225,7 @@ class TestInstructorTasks(InstructorTaskModuleTestCase):
 
 
 @attr(shard=3)
+@ddt.ddt
 class TestRescoreInstructorTask(TestInstructorTasks):
     """Tests problem-rescoring instructor task."""
 
@@ -267,6 +274,7 @@ class TestRescoreInstructorTask(TestInstructorTasks):
         task_entry = self._create_input_entry()
         mock_instance = MagicMock()
         del mock_instance.rescore_problem
+        del mock_instance.rescore
         with patch('lms.djangoapps.instructor_task.tasks_helper.get_module_for_descriptor_internal') as mock_get_module:
             mock_get_module.return_value = mock_instance
             with self.assertRaises(UpdateProblemModuleStateError):
@@ -300,22 +308,29 @@ class TestRescoreInstructorTask(TestInstructorTasks):
             action_name='rescored'
         )
 
-    def test_rescoring_success(self):
+    @ddt.data(
+        ('rescore', None),
+        ('rescore_problem', {'success': 'correct', 'new_raw_earned': 1, 'new_raw_possible': 1})
+    )
+    @ddt.unpack
+    def test_rescoring_success(self, rescore_method, rescore_result):
         """
         Tests rescores a problem in a course, for all students succeeds.
         """
-        input_state = json.dumps({'done': True})
+        mock_instance = MagicMock()
+        other_method = ({'rescore', 'rescore_problem'} - {rescore_method}).pop()
+        getattr(mock_instance, rescore_method).return_value = rescore_result
+        delattr(mock_instance, other_method)
+
+        if rescore_method == 'rescore':
+            del mock_instance.done
+            mock_instance.has_submitted_answer.return_value = True
+        else:
+            mock_instance.done = True
+
         num_students = 10
-        self._create_students_with_state(num_students, input_state)
+        self._create_students_with_state(num_students)
         task_entry = self._create_input_entry()
-        mock_instance = Mock()
-        mock_instance.rescore_problem = Mock(
-            return_value={
-                'success': 'correct',
-                'new_raw_earned': 1,
-                'new_raw_possible': 1,
-            }
-        )
         with patch('lms.djangoapps.instructor_task.tasks_helper.get_module_for_descriptor_internal') as mock_get_module:
             mock_get_module.return_value = mock_instance
             self._run_task_with_mock_celery(rescore_problem, task_entry.id, task_entry.task_id)
@@ -340,6 +355,7 @@ class TestRescoreInstructorTask(TestInstructorTasks):
         task_entry = self._create_input_entry()
         mock_instance = Mock()
         mock_instance.rescore_problem = Mock(return_value={'success': 'bogus'})
+        del mock_instance.rescore
         with patch('lms.djangoapps.instructor_task.tasks_helper.get_module_for_descriptor_internal') as mock_get_module:
             mock_get_module.return_value = mock_instance
             self._run_task_with_mock_celery(rescore_problem, task_entry.id, task_entry.task_id)
@@ -364,6 +380,7 @@ class TestRescoreInstructorTask(TestInstructorTasks):
         task_entry = self._create_input_entry()
         mock_instance = Mock()
         mock_instance.rescore_problem = Mock(return_value={'bogus': 'value'})
+        del mock_instance.rescore
         with patch('lms.djangoapps.instructor_task.tasks_helper.get_module_for_descriptor_internal') as mock_get_module:
             mock_get_module.return_value = mock_instance
             self._run_task_with_mock_celery(rescore_problem, task_entry.id, task_entry.task_id)

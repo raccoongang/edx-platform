@@ -64,6 +64,7 @@
             'xblock/lms.runtime.v1': 'lms/js/xblock/lms.runtime.v1',
             'xblock': 'common/js/xblock',
             'capa/display': 'xmodule_js/src/capa/display',
+            'sequence/display': 'xmodule_js/src/sequence/display',
             'string_utils': 'xmodule_js/common_static/js/src/string_utils',
             'logger': 'xmodule_js/common_static/js/src/logger',
             'Markdown.Converter': 'js/Markdown.Converter',
@@ -91,12 +92,6 @@
             'js/student_profile/views/learner_profile_factory': 'js/student_profile/views/learner_profile_factory',
             'js/student_profile/views/learner_profile_view': 'js/student_profile/views/learner_profile_view',
             'js/ccx/schedule': 'js/ccx/schedule',
-
-            'js/bookmarks/collections/bookmarks': 'js/bookmarks/collections/bookmarks',
-            'js/bookmarks/models/bookmark': 'js/bookmarks/models/bookmark',
-            'js/bookmarks/views/bookmarks_list_button': 'js/bookmarks/views/bookmarks_list_button',
-            'js/bookmarks/views/bookmarks_list': 'js/bookmarks/views/bookmarks_list',
-            'js/bookmarks/views/bookmark_button': 'js/bookmarks/views/bookmark_button',
             'js/views/message_banner': 'js/views/message_banner',
 
             // edxnotes
@@ -678,18 +673,21 @@
     });
 
     testFiles = [
+        'course_bookmarks/js/spec/bookmark_button_view_spec.js',
+        'course_bookmarks/js/spec/bookmarks_list_view_spec.js',
+        'course_bookmarks/js/spec/course_bookmarks_factory_spec.js',
+        'course_experience/js/spec/course_outline_factory_spec.js',
         'discussion/js/spec/discussion_board_factory_spec.js',
         'discussion/js/spec/discussion_profile_page_factory_spec.js',
         'discussion/js/spec/discussion_board_view_spec.js',
         'discussion/js/spec/views/discussion_user_profile_view_spec.js',
         'lms/js/spec/preview/preview_factory_spec.js',
         'js/spec/api_admin/catalog_preview_spec.js',
-        'js/spec/courseware/bookmark_button_view_spec.js',
-        'js/spec/courseware/bookmarks_list_view_spec.js',
         'js/spec/ccx/schedule_spec.js',
         'js/spec/commerce/receipt_view_spec.js',
         'js/spec/components/card/card_spec.js',
         'js/spec/components/header/header_spec.js',
+        'js/spec/course_sharing/course_sharing_events_spec.js',
         'js/spec/courseware/course_home_events_spec.js',
         'js/spec/courseware/link_clicked_events_spec.js',
         'js/spec/courseware/updates_visibility_spec.js',
@@ -747,6 +745,7 @@
         'js/spec/learner_dashboard/program_details_header_spec.js',
         'js/spec/learner_dashboard/course_card_view_spec.js',
         'js/spec/learner_dashboard/course_enroll_view_spec.js',
+        'js/spec/learner_dashboard/course_enroll_view_spec_2017.js',
         'js/spec/markdown_editor_spec.js',
         'js/spec/dateutil_factory_spec.js',
         'js/spec/navigation_spec.js',

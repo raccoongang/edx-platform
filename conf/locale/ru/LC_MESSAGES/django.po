@@ -1,6 +1,6 @@
 # #-#-#-#-#  django-partial.po (edx-platform)  #-#-#-#-#
-# edX translation file.
-# Copyright (C) 2016 EdX
+# edX community translations have been downloaded from Russian (http://www.transifex.com/open-edx/edx-platform/language/ru/).
+# Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # 
 # Translators:
@@ -32,7 +32,7 @@
 # Ничик Дмитрий Валерьевич <dmi.nichik@gmail.com>, 2013
 # Nikita V. Ignatchenko <n.v.ignatchenko@urfu.ru>, 2014
 # Nikolay K Medvedev <elsin16@gmail.com>, 2014-2015
-# Pavel Zhilkin, 2015
+# Павел Жилкин, 2015
 # Peter Markushin, 2014
 # Romanov Aleksei, 2015
 # Katerina <rosemaily@gmail.com>, 2014
@@ -52,10 +52,10 @@
 # tonybond <zippo2021@gmail.com>, 2014
 # Андрей Сандлер <inactive+asandler@transifex.com>, 2013
 # Оксана Ли <okcanochka.lee@list.ru>, 2016
-# Яна Ловягина <yana.lovyagina@raccoongang.com>, 2016
+# Yana Lovyagina <yana.lovyagina@raccoongang.com>, 2016
 # #-#-#-#-#  django-studio.po (edx-platform)  #-#-#-#-#
 # edX translation file.
-# Copyright (C) 2016 EdX
+# Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # 
 # Translators:
@@ -76,8 +76,8 @@
 # Yermek Alimzhanov <aermek81@gmail.com>, 2015
 # Pavel Zamyshliaev, 2014
 # #-#-#-#-#  mako.po (edx-platform)  #-#-#-#-#
-# edX translation file
-# Copyright (C) 2016 edX
+# edX community translations have been downloaded from Russian (http://www.transifex.com/open-edx/edx-platform/language/ru/)
+# Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # 
 # Translators:
@@ -96,7 +96,7 @@
 # Евгений Козлов <eudjin@gmail.com>, 2014
 # Gubin Pavel <pashkun73@gmail.com>, 2013
 # Gubin Pavel <pashkun73@gmail.com>, 2013
-# Ihor Polyakov <ihor.polyakov@gmail.com>, 2014
+# Игорь Поляков (ihoru) <ihor.polyakov@gmail.com>, 2014
 # Katerina <rosemaily@gmail.com>, 2014
 # Liubov Fomicheva <liubov.nelapa@gmail.com>, 2015-2016
 # KhJulia <lnujulia@ukr.net>, 2014
@@ -110,7 +110,7 @@
 # Michael Savin <m.savin.ru@gmail.com>, 2015-2016
 # Natalia Berdnikov <nberdnikov@edx.org>, 2016
 # Natalia Vavilina <nfgenius@gmail.com>, 2015
-# Natalie Murashkina <murnatty@gmail.com>, 2015
+# Natasha Murashkina <murnatty@gmail.com>, 2015
 # Ned Batchelder <ned@edx.org>, 2015
 # Ничик Дмитрий Валерьевич <dmi.nichik@gmail.com>, 2013
 # Nikolay K Medvedev <elsin16@gmail.com>, 2014-2015
@@ -139,10 +139,10 @@
 # Андрей Сандлер <inactive+asandler@transifex.com>, 2013
 # Ничик Дмитрий Валерьевич <dmi.nichik@gmail.com>, 2013
 # Оксана Ли <okcanochka.lee@list.ru>, 2016
-# Яна Ловягина <yana.lovyagina@raccoongang.com>, 2016
+# Yana Lovyagina <yana.lovyagina@raccoongang.com>, 2016
 # #-#-#-#-#  mako-studio.po (edx-platform)  #-#-#-#-#
 # edX translation file
-# Copyright (C) 2016 edX
+# Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # 
 # Translators:
@@ -179,7 +179,7 @@
 # Оксана Ли <okcanochka.lee@list.ru>, 2016
 # #-#-#-#-#  wiki.po (edx-platform)  #-#-#-#-#
 # edX translation file
-# Copyright (C) 2016 edX
+# Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # 
 # Translators:
@@ -195,9 +195,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: edx-platform\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2016-12-08 18:46+0000\n"
-"PO-Revision-Date: 2016-05-09 11:27+0000\n"
-"Last-Translator: Liubov Fomicheva <liubov.nelapa@gmail.com>\n"
+"POT-Creation-Date: 2017-04-11 14:24+0000\n"
+"PO-Revision-Date: 2017-03-16 12:39+0000\n"
+"Last-Translator: Ned Batchelder <ned@edx.org>\n"
 "Language-Team: Russian (http://www.transifex.com/open-edx/edx-platform/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -246,8 +246,7 @@ msgid "Subsection"
 msgstr "Подраздел"
 
 #: cms/djangoapps/contentstore/views/helpers.py
-#: lms/djangoapps/instructor/views/tools.py lms/templates/seq_module.html
-#: lms/templates/ccx/schedule.html
+#: lms/djangoapps/instructor/views/tools.py lms/templates/ccx/schedule.html
 msgid "Unit"
 msgstr "Блок"
 
@@ -350,7 +349,7 @@ msgstr "Профессиональная подготовка"
 #: common/djangoapps/course_modes/models.py common/lib/xmodule/xmodule/tabs.py
 #: lms/djangoapps/courseware/tabs.py lms/djangoapps/courseware/views/views.py
 #: lms/djangoapps/shoppingcart/reports.py cms/templates/widgets/header.html
-#: lms/templates/courseware/courseware.html
+#: lms/templates/help_modal.html lms/templates/courseware/courseware.html
 msgid "Course"
 msgstr "Курс"
 
@@ -366,6 +365,7 @@ msgstr "Курс"
 #: common/lib/xmodule/xmodule/textannotation_module.py
 #: common/lib/xmodule/xmodule/videoannotation_module.py
 #: common/lib/xmodule/xmodule/word_cloud_module.py
+#: common/lib/xmodule/xmodule/x_module.py
 #: openedx/core/lib/xblock_builtin/xblock_discussion/xblock_discussion.py
 #: cms/templates/container.html cms/templates/library.html
 msgid "Display Name"
@@ -437,6 +437,17 @@ msgstr ""
 "истекает"
 
 #: common/djangoapps/course_modes/views.py
+msgid "Congratulations!  You are now enrolled in {course_name}"
+msgstr ""
+
+#: common/djangoapps/course_modes/views.py
+msgid ""
+"Welcome, {username}! You are about to enroll in {course_name}, from "
+"{partner_names}, sponsored by {enterprise_name}. Please select your "
+"enrollment information below."
+msgstr ""
+
+#: common/djangoapps/course_modes/views.py
 msgid "Enrollment is closed"
 msgstr "Регистрация закрыта"
 
@@ -466,7 +477,6 @@ msgstr "Староста сообщества"
 
 #: common/djangoapps/django_comment_common/models.py
 #: lms/djangoapps/instructor/paidcourse_enrollment_report.py
-#: lms/templates/courseware/course_navigation.html
 msgid "Student"
 msgstr "Обучающийся"
 
@@ -948,6 +958,10 @@ msgid "An account with the Email '{email}' already exists."
 msgstr "Учётная запись с электронным адресом '{email}' уже существует."
 
 #: common/djangoapps/student/views.py
+msgid "Registration using {provider} has timed out."
+msgstr ""
+
+#: common/djangoapps/student/views.py
 msgid "An access_token is required when passing value ({}) for provider."
 msgstr "Access_token необходим для передачи значения ({}) провайдеру."
 
@@ -958,6 +972,12 @@ msgstr "Указанный access_token уже связан с другим по
 #: common/djangoapps/student/views.py
 msgid "The provided access_token is not valid."
 msgstr "Указанный access_token не действителен."
+
+#: common/djangoapps/student/views.py
+#: openedx/core/djangoapps/user_api/accounts/api.py
+#: openedx/core/djangoapps/user_api/views.py
+msgid "Account creation not allowed."
+msgstr ""
 
 #: common/djangoapps/student/views.py
 msgid "Unknown error. Please e-mail us to let us know how it happened."
@@ -1985,25 +2005,25 @@ msgid "XML data for the annotation"
 msgstr "Содержание пояснения в формате XML"
 
 #: common/lib/xmodule/xmodule/annotatable_module.py
+#: common/lib/xmodule/xmodule/capa_base.py
+#: common/lib/xmodule/xmodule/conditional_module.py
 #: common/lib/xmodule/xmodule/html_module.py
 #: common/lib/xmodule/xmodule/imageannotation_module.py
 #: common/lib/xmodule/xmodule/library_content_module.py
+#: common/lib/xmodule/xmodule/library_root_xblock.py
+#: common/lib/xmodule/xmodule/poll_module.py
 #: common/lib/xmodule/xmodule/textannotation_module.py
+#: common/lib/xmodule/xmodule/video_module/video_xfields.py
 #: common/lib/xmodule/xmodule/videoannotation_module.py
-msgid "Display name for this module"
-msgstr "Отображаемое название модуля"
+#: common/lib/xmodule/xmodule/word_cloud_module.py
+#: common/lib/xmodule/xmodule/x_module.py
+#: openedx/core/lib/xblock_builtin/xblock_discussion/xblock_discussion.py
+msgid "The display name for this component."
+msgstr ""
 
 #: common/lib/xmodule/xmodule/annotatable_module.py
 msgid "Annotation"
 msgstr "Пояснение"
-
-#: common/lib/xmodule/xmodule/capa_base.py
-#: common/lib/xmodule/xmodule/conditional_module.py
-#: common/lib/xmodule/xmodule/html_module.py
-msgid "This name appears in the horizontal navigation at the top of the page."
-msgstr ""
-"Это название отображается в горизонтальной навигационной панели в верхней "
-"части страницы."
 
 #: common/lib/xmodule/xmodule/capa_base.py
 msgid "Blank Advanced Problem"
@@ -2463,13 +2483,6 @@ msgstr ""
 msgid "Configure list of sources"
 msgstr ""
 
-#. Translators: TBD stands for 'To Be Determined' and is used when a course
-#. does not yet have an announced start date.
-#: common/lib/xmodule/xmodule/course_metadata_utils.py
-#: lms/djangoapps/instructor/paidcourse_enrollment_report.py
-msgid "TBD"
-msgstr "Неопределенная дата"
-
 #: common/lib/xmodule/xmodule/course_module.py
 msgid "LTI Passports"
 msgstr "Регистрационные данные LTI"
@@ -2524,18 +2537,15 @@ msgstr ""
 "вместо этой."
 
 #: common/lib/xmodule/xmodule/course_module.py
-msgid "Course Advertised Start Date"
-msgstr "Заявленная дата начала курса"
+msgid "Course Advertised Start"
+msgstr ""
 
 #: common/lib/xmodule/xmodule/course_module.py
 msgid ""
-"Enter the date you want to advertise as the course start date, if this date "
-"is different from the set start date. To advertise the set start date, enter"
-" null."
+"Enter the text that you want to use as the advertised starting time frame "
+"for the course, such as \"Winter 2018\". If you enter null for this value, "
+"the start date that you have set for this course is used."
 msgstr ""
-"Введите дату, которую вы хотите заявить в качестве даты начала курса, если "
-"эта дата отличается от установленной даты начала.  Для отображения "
-"установленной даты начала введите \"null\"."
 
 #: common/lib/xmodule/xmodule/course_module.py
 msgid "Pre-Requisite Courses"
@@ -3685,10 +3695,6 @@ msgid "No Library Selected"
 msgstr "Библиотека не выбрана"
 
 #: common/lib/xmodule/xmodule/library_root_xblock.py
-msgid "Enter the name of the library as it should appear in Studio."
-msgstr "Введите название библиотеки для edX Studio."
-
-#: common/lib/xmodule/xmodule/library_root_xblock.py
 msgid "Library Display Name"
 msgstr "Библиотека имен"
 
@@ -3700,11 +3706,9 @@ msgstr ""
 
 #: common/lib/xmodule/xmodule/lti_module.py
 msgid ""
-"Enter the name that students see for this component.  Analytics reports may "
-"also use the display name to identify this component."
+"The display name for this component. Analytics reports may also use the "
+"display name to identify this component."
 msgstr ""
-"Введите название элемента, отображаемое для слушателей.  Это название "
-"элемента также будет использоваться в отчётах."
 
 #: common/lib/xmodule/xmodule/lti_module.py
 msgid "LTI ID"
@@ -4153,6 +4157,34 @@ msgstr ""
 "модулям заданий будут учитываться в оценочном/отборочном алгоритме "
 "вступительного испытания."
 
+#: common/lib/xmodule/xmodule/partitions/partitions_service.py
+msgid "Enrollment Tracks"
+msgstr ""
+
+#: common/lib/xmodule/xmodule/partitions/partitions_service.py
+msgid "Partition for segmenting users by enrollment track"
+msgstr ""
+
+#: common/lib/xmodule/xmodule/poll_module.py
+msgid "Whether this student has voted on the poll"
+msgstr ""
+
+#: common/lib/xmodule/xmodule/poll_module.py
+msgid "Student answer"
+msgstr ""
+
+#: common/lib/xmodule/xmodule/poll_module.py
+msgid "Poll answers from all students"
+msgstr ""
+
+#: common/lib/xmodule/xmodule/poll_module.py
+msgid "Poll answers from xml"
+msgstr ""
+
+#: common/lib/xmodule/xmodule/poll_module.py
+msgid "Poll question"
+msgstr ""
+
 #: common/lib/xmodule/xmodule/seq_module.py
 msgid "Enter the date by which problems are due."
 msgstr "Введите дату, к которой необходимо сдать задания."
@@ -4246,16 +4278,14 @@ msgid "This exam is hidden from the learner."
 msgstr "Этот экзамен скрыт от слушателя."
 
 #: common/lib/xmodule/xmodule/seq_module.py
-msgid "subsection"
-msgstr "подраздел"
+msgid ""
+"Because the course has ended, this assignment is hidden from the learner."
+msgstr ""
 
 #: common/lib/xmodule/xmodule/seq_module.py
 msgid ""
-"Because the due date has passed, this {subsection_format} is hidden from the"
-" learner."
+"Because the due date has passed, this assignment is hidden from the learner."
 msgstr ""
-"Этот {subsection_format} скрыт от слушателя в связи с истечением срока "
-"сдачи."
 
 #: common/lib/xmodule/xmodule/seq_module.py
 msgid ""
@@ -4274,12 +4304,8 @@ msgid "Not Selected"
 msgstr "Не выбрано"
 
 #: common/lib/xmodule/xmodule/split_test_module.py
-msgid ""
-"This name is used for organizing your course content, but is not shown to "
-"students."
+msgid "The display name for this component. (Not shown to learners)"
 msgstr ""
-"Это название используется для организации содержимого курса, но не "
-"отображается для слушателей."
 
 #: common/lib/xmodule/xmodule/split_test_module.py
 msgid "Content Experiment"
@@ -4461,14 +4487,6 @@ msgstr ""
 #: common/lib/xmodule/xmodule/video_module/video_module.py
 msgid "Default Video URL"
 msgstr "URL видео по умолчанию"
-
-#: common/lib/xmodule/xmodule/video_module/video_xfields.py
-msgid ""
-"The name students see. This name appears in the course ribbon and as a "
-"header for the video."
-msgstr ""
-"Название, которое увидят обучающиеся.  Это название отображается в ленте "
-"курса и используется в качестве заголовка для видео."
 
 #: common/lib/xmodule/xmodule/video_module/video_xfields.py
 msgid "Component Display Name"
@@ -4767,10 +4785,6 @@ msgstr "URL изображения, загруженного автором"
 msgid "Poster URL"
 msgstr "URL автора"
 
-#: common/lib/xmodule/xmodule/word_cloud_module.py
-msgid "The label for this word cloud on the course page."
-msgstr ""
-
 #: lms/templates/annotatable.html lms/templates/imageannotation.html
 #: lms/templates/textannotation.html lms/templates/videoannotation.html
 #: lms/templates/peer_grading/peer_grading.html
@@ -4939,6 +4953,10 @@ msgstr ""
 msgid "Powered by Open edX"
 msgstr "На основе Open edX"
 
+#: lms/djangoapps/branding/api.py
+msgid "{platform_name} for Business"
+msgstr ""
+
 #: lms/djangoapps/branding/api.py lms/templates/static_templates/blog.html
 msgid "Blog"
 msgstr "Блог"
@@ -4968,10 +4986,6 @@ msgstr "Вакансии"
 msgid "Donate"
 msgstr "Пожертвовать"
 
-#: lms/templates/static_templates/media-kit.html
-msgid "Media Kit"
-msgstr "Пакет медиафайлов"
-
 #: lms/djangoapps/branding/api.py
 msgid "Terms of Service & Honor Code"
 msgstr "Условия предоставления услуг и Кодекс чести"
@@ -4995,6 +5009,10 @@ msgstr "Политика по доступности материалов"
 #: lms/djangoapps/branding/api.py
 msgid "Sitemap"
 msgstr "Карта сайта"
+
+#: lms/templates/static_templates/media-kit.html
+msgid "Media Kit"
+msgstr "Пакет медиафайлов"
 
 #. #-#-#-#-#  django-partial.po (edx-platform)  #-#-#-#-#
 #. Translators: This is a legal document users must agree to
@@ -5497,14 +5515,12 @@ msgstr "Ссылка на страницу E-Commerce для оплаты все
 #: lms/djangoapps/commerce/models.py openedx/core/djangoapps/catalog/models.py
 #: openedx/core/djangoapps/credentials/models.py
 #: openedx/core/djangoapps/credit/models.py
-#: openedx/core/djangoapps/programs/models.py
 msgid "Cache Time To Live"
 msgstr "Период обновления кэша"
 
 #: lms/djangoapps/commerce/models.py
 #: openedx/core/djangoapps/credentials/models.py
 #: openedx/core/djangoapps/credit/models.py
-#: openedx/core/djangoapps/programs/models.py
 msgid ""
 "Specified in seconds. Enable caching by setting this to a value greater than"
 " 0."
@@ -5514,6 +5530,10 @@ msgstr ""
 #: lms/djangoapps/commerce/models.py
 msgid "Path to order receipt page."
 msgstr "Путь к квитанции заказа."
+
+#: lms/djangoapps/commerce/models.py
+msgid "Automatically approve valid refund requests, without manual processing"
+msgstr ""
 
 #: lms/djangoapps/commerce/signals.py
 msgid ""
@@ -5677,7 +5697,6 @@ msgid "Upgrade to Verified Certificate"
 msgstr "Повысить до уровня «Подтверждённый сертификат»"
 
 #: lms/djangoapps/courseware/date_summary.py
-#: cms/templates/group_configurations.html
 msgid "Learn More"
 msgstr "Узнать больше"
 
@@ -6265,6 +6284,12 @@ msgid ""
 "e.g. https://courses.edx.org."
 msgstr ""
 
+#: lms/djangoapps/email_marketing/models.py
+msgid ""
+"Number of seconds to delay the sending of User Welcome email after user has "
+"been activated"
+msgstr ""
+
 #: lms/djangoapps/instructor/paidcourse_enrollment_report.py
 msgid "{platform_name} Staff"
 msgstr "Администраторы {platform_name}"
@@ -6274,7 +6299,7 @@ msgid "Course Staff"
 msgstr "Сотрудники курса"
 
 #: lms/djangoapps/instructor/paidcourse_enrollment_report.py
-#: lms/templates/courseware/course_navigation.html
+#: lms/templates/preview_menu.html
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
 msgid "Staff"
 msgstr "Сотрудник"
@@ -6298,6 +6323,10 @@ msgstr "Записан вручную"
 #: lms/djangoapps/instructor/paidcourse_enrollment_report.py
 msgid "Data Integrity Error"
 msgstr "Ошибка целостности данных"
+
+#: lms/djangoapps/instructor/paidcourse_enrollment_report.py
+msgid "TBD"
+msgstr "Неопределенная дата"
 
 #: lms/djangoapps/instructor/services.py
 msgid "Proctored Exam Review: {review_status}"
@@ -6487,6 +6516,14 @@ msgstr "Почтовый адрес"
 #: lms/djangoapps/instructor_task/tasks_helper.py
 msgid "Goals"
 msgstr "Цели"
+
+#: lms/djangoapps/instructor/views/api.py
+msgid "Enrollment Mode"
+msgstr ""
+
+#: lms/djangoapps/instructor/views/api.py
+msgid "Verification Status"
+msgstr ""
 
 #: lms/djangoapps/instructor/views/api.py
 msgid "Cohort"
@@ -7071,6 +7108,10 @@ msgstr "Аналитика"
 msgid "Metrics"
 msgstr "Показатели"
 
+#: lms/djangoapps/instructor/views/instructor_dashboard.py
+msgid "Open Responses"
+msgstr ""
+
 #. Translators: number sent refers to the number of emails sent
 #: lms/djangoapps/instructor/views/instructor_task_helpers.py
 msgid "0 sent"
@@ -7446,6 +7487,17 @@ msgid " (out of {total})"
 msgstr " (из {total})"
 
 #: lms/djangoapps/lms_xblock/mixin.py
+msgid ""
+"This component's visibility settings refer to deleted or invalid group "
+"configurations."
+msgstr ""
+
+#: lms/djangoapps/lms_xblock/mixin.py
+msgid ""
+"This component's visibility settings refer to deleted or invalid groups."
+msgstr ""
+
+#: lms/djangoapps/lms_xblock/mixin.py
 msgid "Whether to display this module in the table of contents"
 msgstr "Показывать ли этот модуль в оглавлении"
 
@@ -7512,19 +7564,6 @@ msgstr ""
 "список идентификаторов групп пуст, то блок считается видимым для всех. "
 "Обратите внимание, что это поле игнорируется, если блок имеет свойство "
 "visible_to_staff_only."
-
-#: lms/djangoapps/lms_xblock/mixin.py
-msgid ""
-"This component refers to deleted or invalid content group configurations."
-msgstr ""
-"Этот компонент ссылается на удалённые или некорректные настройки групп по "
-"изучаемым материалам."
-
-#: lms/djangoapps/lms_xblock/mixin.py
-msgid "This component refers to deleted or invalid content groups."
-msgstr ""
-"Этот компонент ссылается на удалённые или некорректные группы по изучаемому "
-"материалу."
 
 #: lms/djangoapps/notes/views.py lms/templates/notes.html
 msgid "My Notes"
@@ -8800,15 +8839,6 @@ msgstr ""
 "Пользователь {username} не зарегистрирован на курс, связанный с этой "
 "командой."
 
-#: lms/djangoapps/verified_track_content/forms.py
-#: openedx/core/djangoapps/embargo/forms.py
-msgid "COURSE NOT FOUND.  Please check that the course ID is valid."
-msgstr "КУРС НЕ НАЙДЕН. Убедитесь, что идентификатор курса указан правильно."
-
-#: lms/djangoapps/verified_track_content/models.py
-msgid "The course key for the course we would like to be auto-cohorted."
-msgstr ""
-
 #: lms/djangoapps/verify_student/models.py
 msgid "Your {platform_name} verification has expired."
 msgstr "Срок действия вашей верификации {platform_name} истёк."
@@ -9666,6 +9696,22 @@ msgid ""
 "value greater than 0."
 msgstr ""
 
+#: openedx/core/djangoapps/catalog/models.py
+msgid ""
+"Username created for Course Catalog Integration, e.g. "
+"lms_catalog_service_user."
+msgstr ""
+
+#: openedx/core/djangoapps/catalog/models.py
+msgid "Page Size"
+msgstr ""
+
+#: openedx/core/djangoapps/catalog/models.py
+msgid ""
+"Maximum number of records in paginated response of a single request to "
+"catalog service."
+msgstr ""
+
 #: openedx/core/djangoapps/cors_csrf/models.py
 msgid ""
 "List of domains that are allowed to make cross-domain requests to this site."
@@ -9704,12 +9750,10 @@ msgstr ""
 "http://edx.org, ключом платформы будет «edx»."
 
 #: openedx/core/djangoapps/credentials/models.py
-#: openedx/core/djangoapps/programs/models.py
 msgid "Internal Service URL"
 msgstr "Внутренний URL-адрес сервиса"
 
 #: openedx/core/djangoapps/credentials/models.py
-#: openedx/core/djangoapps/programs/models.py
 msgid "Public Service URL"
 msgstr "Публичный URL-адрес сервиса"
 
@@ -9875,6 +9919,11 @@ msgstr "Возврат к языковым настройкам по умолч�
 msgid "Language reset to user's preference: {preview_language_code}"
 msgstr "Смена языка по предпочтению пользователя: {preview_language_code}"
 
+#: openedx/core/djangoapps/embargo/forms.py
+#: openedx/core/djangoapps/verified_track_content/forms.py
+msgid "COURSE NOT FOUND.  Please check that the course ID is valid."
+msgstr "КУРС НЕ НАЙДЕН. Убедитесь, что идентификатор курса указан правильно."
+
 #: openedx/core/djangoapps/embargo/models.py
 msgid "The course key for the restricted course."
 msgstr "Ключ для доступа к ограниченному курсу."
@@ -9988,63 +10037,8 @@ msgid "No file provided for profile image"
 msgstr "Отсутствует файл с фотографией"
 
 #: openedx/core/djangoapps/programs/models.py
-msgid "API Version"
-msgstr "Версия API"
-
-#: openedx/core/djangoapps/programs/models.py
 msgid "Path used to construct URLs to programs marketing pages (e.g., \"/foo\")."
 msgstr ""
-
-#: openedx/core/djangoapps/programs/models.py
-msgid "Path to authoring app's JS"
-msgstr "Путь к JS-коду приложения авторизации"
-
-#: openedx/core/djangoapps/programs/models.py
-msgid ""
-"This value is required in order to enable the Studio authoring interface."
-msgstr ""
-"Требуется заполнить это значение для включения интерфейса авторизации "
-"Studio."
-
-#: openedx/core/djangoapps/programs/models.py
-msgid "Path to authoring app's CSS"
-msgstr "Путь к CSS-коду приложения авторизации"
-
-#: openedx/core/djangoapps/programs/models.py
-msgid "Enable Student Dashboard Displays"
-msgstr "Разрешить панель управления обучающегося"
-
-#: openedx/core/djangoapps/programs/models.py
-msgid "Enable Studio Authoring Interface"
-msgstr "Разрешить интерфейс авторизации Studio"
-
-#: openedx/core/djangoapps/programs/models.py
-msgid "Enable Program Certificate Generation"
-msgstr "Разрешить выпуск сертификатов"
-
-#: openedx/core/djangoapps/programs/models.py
-msgid "Maximum Certification Retries"
-msgstr "Максимальное количество попыток получения сертификата"
-
-#: openedx/core/djangoapps/programs/models.py
-msgid ""
-"When making requests to award certificates, make at most this many attempts "
-"to retry a failing request."
-msgstr ""
-"Это максимальное количество попыток повторной обработки запроса о получении "
-"сертификата при неуспешном завершении предыдущего запроса."
-
-#: openedx/core/djangoapps/programs/models.py
-msgid "Do we want to show xseries program advertising"
-msgstr "Отображать ли объявление о цикле курсов xseries"
-
-#: openedx/core/djangoapps/programs/models.py
-msgid "Do we want to show program listing page"
-msgstr "Отображать ли страницу со списком направлений обучения"
-
-#: openedx/core/djangoapps/programs/models.py
-msgid "Do we want to show program details pages"
-msgstr "Отображать ли страницы с описаниями направлений обучения"
 
 #: openedx/core/djangoapps/self_paced/models.py
 msgid "Enable course home page improvements."
@@ -10273,6 +10267,10 @@ msgstr "Вы должны принять {terms_of_service} {platform_name}"
 msgid "Review the Terms of Service"
 msgstr ""
 
+#: openedx/core/djangoapps/verified_track_content/models.py
+msgid "The course key for the course we would like to be auto-cohorted."
+msgstr ""
+
 #: openedx/core/lib/api/view_utils.py
 msgid "This value is invalid."
 msgstr "Это недопустимое значение."
@@ -10289,10 +10287,6 @@ msgstr "%(min_score)s неверное значение в процентах"
 #: openedx/core/lib/gating/api.py
 msgid "Gating milestone for {usage_key}"
 msgstr "Этап открытия шлюза для {usage_key}"
-
-#: openedx/core/lib/xblock_builtin/xblock_discussion/xblock_discussion.py
-msgid "Display name for this component"
-msgstr "Отображаемое наименование компонента"
 
 #: openedx/core/lib/xblock_builtin/xblock_discussion/xblock_discussion.py
 msgid "Category"
@@ -10321,6 +10315,16 @@ msgid ""
 msgstr ""
 "Название подтемы обсуждения.  Это название отображается в левой "
 "навигационной панели форума курса."
+
+#: cms/djangoapps/contentstore/course_group_config.py
+msgid ""
+"The groups in this configuration can be mapped to cohorts in the Instructor "
+"Dashboard."
+msgstr ""
+
+#: cms/templates/group_configurations.html
+msgid "Content Groups"
+msgstr "Группы по изучаемому материалу"
 
 #: cms/djangoapps/contentstore/course_group_config.py
 #: cms/djangoapps/contentstore/views/certificates.py
@@ -10428,9 +10432,41 @@ msgstr ""
 "Взять указанный учебный курс и попытаться експортировать его в хранилище git\n"
 ". Каталог с учебным курсом должен уже существовать в хранилище git. Использование:  git_export <course_loc> <git_url>"
 
+#: cms/djangoapps/contentstore/tasks.py
+msgid "Unknown User ID: {0}"
+msgstr ""
+
+#: cms/djangoapps/contentstore/tasks.py
+msgid "Permission denied"
+msgstr ""
+
+#: cms/djangoapps/contentstore/tasks.py
+#: cms/djangoapps/contentstore/views/import_export.py
+msgid "We only support uploading a .tar.gz file."
+msgstr "Мы поддерживаем загрузку только файлов .tar.gz."
+
+#: cms/djangoapps/contentstore/tasks.py
+msgid "Tar file not found"
+msgstr ""
+
+#: cms/djangoapps/contentstore/tasks.py
+msgid "Unsafe tar file. Aborting import."
+msgstr ""
+
+#: cms/djangoapps/contentstore/tasks.py
+msgid "Could not find the {0} file in the package."
+msgstr "Не найден {0} в файле пакета."
+
+#: cms/djangoapps/contentstore/utils.py cms/templates/visibility_editor.html
+msgid "Deleted Group"
+msgstr ""
+
+#. Translators: This is building up a list of groups. It is marked for
+#. translation because of the
+#. comma, which is used as a separator between each group.
 #: cms/djangoapps/contentstore/utils.py
-msgid "Deleted group"
-msgstr "Группа удалена"
+msgid "{previous_groups}, {current_group}"
+msgstr ""
 
 #: cms/djangoapps/contentstore/views/assets.py
 msgid ""
@@ -10567,16 +10603,8 @@ msgid "Empty"
 msgstr "Пусто"
 
 #: cms/djangoapps/contentstore/views/import_export.py
-msgid "We only support uploading a .tar.gz file."
-msgstr "Мы поддерживаем загрузку только файлов .tar.gz."
-
-#: cms/djangoapps/contentstore/views/import_export.py
 msgid "File upload corrupted. Please try again"
 msgstr "Загруженный файл повреждён.  Пожалуйста, попробуйте ещё раз."
-
-#: cms/djangoapps/contentstore/views/import_export.py
-msgid "Could not find the {0} file in the package."
-msgstr "Не найден {0} в файле пакета."
 
 #: cms/djangoapps/contentstore/views/item.py
 msgid "Invalid data"
@@ -10585,6 +10613,39 @@ msgstr "Неверные данные"
 #: cms/djangoapps/contentstore/views/item.py
 msgid "Invalid data ({details})"
 msgstr "Неверные данные ({details})"
+
+#: cms/djangoapps/contentstore/views/item.py
+msgid "You can not move {source_type} into {target_parent_type}."
+msgstr ""
+
+#: cms/djangoapps/contentstore/views/item.py
+msgid "Item is already present in target location."
+msgstr ""
+
+#: cms/djangoapps/contentstore/views/item.py
+msgid "You can not move an item into itself."
+msgstr ""
+
+#: cms/djangoapps/contentstore/views/item.py
+msgid "You can not move an item into it's child."
+msgstr ""
+
+#: cms/djangoapps/contentstore/views/item.py
+msgid "You can not move an item directly into content experiment."
+msgstr ""
+
+#: cms/djangoapps/contentstore/views/item.py
+msgid "{source_usage_key} not found in {parent_usage_key}."
+msgstr ""
+
+#: cms/djangoapps/contentstore/views/item.py
+msgid ""
+"You can not move {source_usage_key} at an invalid index ({target_index})."
+msgstr ""
+
+#: cms/djangoapps/contentstore/views/item.py
+msgid "You must provide target_index ({target_index}) as an integer."
+msgstr ""
 
 #: cms/djangoapps/contentstore/views/item.py
 msgid "Duplicate of {0}"
@@ -10660,14 +10721,14 @@ msgid "Could not find user by email address '{email}'."
 msgstr "Не удалось найти пользователя по адресу электронной почты '{email}'."
 
 #: cms/djangoapps/contentstore/views/user.py
+msgid "No `role` specified."
+msgstr "`Роль` не обозначена."
+
+#: cms/djangoapps/contentstore/views/user.py
 msgid "User {email} has registered but has not yet activated his/her account."
 msgstr ""
 "Пользователь {email} уже зарегистрировал, но еще не активировал свою учётную"
 " запись."
-
-#: cms/djangoapps/contentstore/views/user.py
-msgid "No `role` specified."
-msgstr "`Роль` не обозначена."
 
 #: cms/djangoapps/contentstore/views/user.py
 msgid "Invalid `role` specified."
@@ -10697,17 +10758,34 @@ msgstr "Выполняется"
 msgid "Ready"
 msgstr "Готово"
 
+#. Translators: This is the status for a video that is uploaded completely
+#: cms/djangoapps/contentstore/views/videos.py
+msgid "Uploaded"
+msgstr ""
+
 #. Translators: This is the status for a video that the servers have failed to
 #. process
 #: cms/djangoapps/contentstore/views/videos.py
 msgid "Failed"
 msgstr "Неудачно"
 
+#. Translators: This is the status for a video that is cancelled during upload
+#. by user
+#: cms/djangoapps/contentstore/views/videos.py
+msgid "Cancelled"
+msgstr ""
+
 #. Translators: This is the status for a video which has failed
 #. due to being flagged as a duplicate by an external or internal CMS
 #: cms/djangoapps/contentstore/views/videos.py
 msgid "Failed Duplicate"
 msgstr "Нефункциональная копия"
+
+#. Translators: This is the status for a video which has duplicate token for
+#. youtube
+#: cms/djangoapps/contentstore/views/videos.py
+msgid "YouTube Duplicate"
+msgstr ""
 
 #. Translators: This is the status for a video for which an invalid
 #. processing token was provided in the course settings
@@ -10892,13 +10970,6 @@ msgstr "Номер курса:"
 #: themes/red-theme/lms/templates/header.html
 msgid "Courses"
 msgstr "Курсы"
-
-#: cms/templates/index.html cms/templates/widgets/header.html
-#: lms/templates/navigation.html lms/templates/learner_dashboard/programs.html
-#: themes/edx.org/lms/templates/header.html
-#: themes/red-theme/lms/templates/header.html
-msgid "Programs"
-msgstr "Программы"
 
 #: cms/templates/login.html cms/templates/widgets/header.html
 #: themes/red-theme/cms/templates/login.html
@@ -11167,37 +11238,51 @@ msgstr ""
 msgid "Feedback from user"
 msgstr ""
 
-#: lms/djangoapps/discussion/templates/discussion/discussion_board.html
-#: lms/djangoapps/discussion/templates/discussion/discussion_profile_page.html
-msgid "Discussion - {course_number}"
-msgstr "Обсуждение - {course_number}"
-
-#: lms/djangoapps/discussion/templates/discussion/discussion_board.html
+#: lms/djangoapps/discussion/templates/discussion/discussion_board_fragment.html
 msgid "Discussions"
 msgstr ""
 
-#: lms/djangoapps/discussion/templates/discussion/discussion_board.html
+#: lms/djangoapps/discussion/templates/discussion/discussion_board_fragment.html
 msgid "Add a Post"
 msgstr "Добавить тему"
 
-#: lms/djangoapps/discussion/templates/discussion/discussion_board.html
-#: lms/djangoapps/discussion/templates/discussion/discussion_profile_page.html
+#: lms/djangoapps/discussion/templates/discussion/discussion_board_fragment.html
 msgid "Discussion thread list"
 msgstr "Список тем обсуждения"
 
-#: lms/djangoapps/discussion/templates/discussion/discussion_board.html
+#: lms/djangoapps/discussion/templates/discussion/discussion_board_fragment.html
 msgid "New topic form"
 msgstr "Форма для новой темы"
 
 #: lms/djangoapps/discussion/templates/discussion/discussion_profile_page.html
-msgid "User Profile"
-msgstr "Личные данные пользователя"
+msgid "Discussion - {course_number}"
+msgstr "Обсуждение - {course_number}"
 
-#: lms/djangoapps/discussion/templates/discussion/maintenance.html
+#: lms/djangoapps/discussion/templates/discussion/discussion_profile_page.html
+#: lms/templates/discussion/_user_profile.html
+#, python-format
+msgid "%s discussion started"
+msgid_plural "%s discussions started"
+msgstr[0] "%s открытая тема обсуждений"
+msgstr[1] "%s открытые темы обсуждений"
+msgstr[2] "%s открытых тем обсуждений"
+msgstr[3] "%s открытых тем обсуждений"
+
+#: lms/djangoapps/discussion/templates/discussion/discussion_profile_page.html
+#: lms/templates/discussion/_user_profile.html
+#, python-format
+msgid "%s comment"
+msgid_plural "%s comments"
+msgstr[0] "%s комментарий"
+msgstr[1] "%s комментария"
+msgstr[2] "%s комментариев"
+msgstr[3] "%s комментариев"
+
+#: lms/djangoapps/discussion/templates/discussion/maintenance_fragment.html
 msgid "Discussion unavailable"
 msgstr "Обсуждение недоступно"
 
-#: lms/djangoapps/discussion/templates/discussion/maintenance.html
+#: lms/djangoapps/discussion/templates/discussion/maintenance_fragment.html
 msgid ""
 "The discussions are currently undergoing maintenance. We'll have them back "
 "up shortly!"
@@ -11217,14 +11302,6 @@ msgstr "Управляемые обсуждения"
 #: lms/templates/annotatable.html
 msgid "Hide Annotations"
 msgstr "Скрыть пояснения"
-
-#: lms/templates/bookmark_button.html
-msgid "Click to remove"
-msgstr "Нажмите, чтобы удалить"
-
-#: lms/templates/bookmark_button.html
-msgid "Click to add"
-msgstr "Нажмите, чтобы добавить"
 
 #: lms/templates/bookmark_button.html lms/templates/seq_module.html
 msgid "Bookmarked"
@@ -11258,10 +11335,6 @@ msgstr "Посмотреть все курсы"
 #: themes/edx.org/lms/templates/dashboard.html
 msgid "Dashboard"
 msgstr "Панель управления"
-
-#: lms/templates/dashboard.html themes/edx.org/lms/templates/dashboard.html
-msgid "My Courses"
-msgstr "Мои курсы"
 
 #: lms/templates/dashboard.html themes/edx.org/lms/templates/dashboard.html
 msgid "You are not enrolled in any courses yet."
@@ -11523,6 +11596,10 @@ msgid ""
 msgstr ""
 
 #: lms/templates/help_modal.html
+msgid "- Select -"
+msgstr ""
+
+#: lms/templates/help_modal.html
 msgid "problem"
 msgstr "проблема"
 
@@ -11575,18 +11652,26 @@ msgid "Please try again later."
 msgstr "Повторите попытку позже."
 
 #: lms/templates/hidden_content.html
-msgid "The due date for this {subsection_format} has passed."
-msgstr "Срок сдачи этого {subsection_format} истек."
+msgid "The course has ended."
+msgstr ""
+
+#: lms/templates/hidden_content.html
+msgid "The due date for this assignment has passed."
+msgstr ""
 
 #: lms/templates/hidden_content.html
 msgid ""
-"Because the due date has passed, this {subsection_format} is no longer "
-"available.{line_break}If you have completed this {subsection_format}, your "
-"grade is available on the {link_start}progress page{link_end}."
+"Because the course has ended, this assignment is no longer "
+"available.{line_break}If you have completed this assignment, your grade is "
+"available on the {link_start}progress page{link_end}."
 msgstr ""
-"Этот {subsection_format} недоступен: срок его сдачи истек.{line_break}Если "
-"Вы прошли этот {subsection_format}, Вы сможете увидеть свою оценку в разделе"
-" {link_start}прогресс{link_end}."
+
+#: lms/templates/hidden_content.html
+msgid ""
+"Because the due date has passed, this assignment is no longer "
+"available.{line_break}If you have completed this assignment, your grade is "
+"available on the {link_start}progress page{link_end}."
+msgstr ""
 
 #: lms/templates/imageannotation.html
 msgid "Note: only instructors may annotate."
@@ -11882,6 +11967,12 @@ msgstr "Глобально"
 msgid "{platform_name} Home Page"
 msgstr "{platform_name} Главная страница"
 
+#: lms/templates/navigation.html lms/templates/learner_dashboard/programs.html
+#: themes/edx.org/lms/templates/header.html
+#: themes/red-theme/lms/templates/header.html
+msgid "Programs"
+msgstr "Программы"
+
 #. Translators: This is short for "System administration".
 #: lms/templates/navigation.html themes/red-theme/lms/templates/header.html
 msgid "Sysadmin"
@@ -11931,6 +12022,52 @@ msgstr ""
 msgid "You do not have any notes."
 msgstr "У вас нет заметок."
 
+#: lms/templates/preview_menu.html
+msgid "Course View"
+msgstr "Обзор курса"
+
+#: lms/templates/preview_menu.html
+msgid "View this course as:"
+msgstr "Просмотр курса в качестве:"
+
+#: lms/templates/preview_menu.html
+msgid "Learner"
+msgstr ""
+
+#: lms/templates/preview_menu.html
+msgid "Specific learner"
+msgstr ""
+
+#: lms/templates/preview_menu.html
+msgid "Learner in {content_group}"
+msgstr ""
+
+#: lms/templates/preview_menu.html
+msgid "Username or email:"
+msgstr "Имя пользователя или адрес электронной почты"
+
+#: lms/templates/preview_menu.html
+msgid "Set preview mode"
+msgstr "Настроить режим предварительного просмотра"
+
+#: lms/templates/preview_menu.html
+msgid "You are now viewing the course as {i_start}{user_name}{i_end}."
+msgstr "Вы просматриваете курс под именем {i_start}{user_name}{i_end}."
+
+#: lms/templates/problem.html
+msgid "You have used {num_used} of {num_total} attempt"
+msgid_plural "You have used {num_used} of {num_total} attempts"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+
+#: lms/templates/problem.html
+msgid ""
+"Some problems have options such as save, reset, hints, or show answer. These"
+" options follow the Submit button."
+msgstr ""
+
 #: lms/templates/problem.html
 msgid "Hint"
 msgstr "Подсказка"
@@ -11946,18 +12083,6 @@ msgstr ""
 #: lms/templates/problem.html
 msgid "Reset your answer"
 msgstr ""
-
-#: lms/templates/problem.html
-msgid "Submit your answer"
-msgstr ""
-
-#: lms/templates/problem.html
-msgid "You have used {num_used} of {num_total} attempt"
-msgid_plural "You have used {num_used} of {num_total} attempts"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
 
 #: lms/templates/problem_notifications.html
 msgid "Next Hint"
@@ -12241,6 +12366,10 @@ msgstr ""
 #: lms/templates/seq_module.html
 msgid "Previous"
 msgstr "Предыдущее"
+
+#: lms/templates/seq_module.html
+msgid "Sequence"
+msgstr ""
 
 #: lms/templates/seq_module.html
 msgid "Next"
@@ -12591,12 +12720,8 @@ msgid "Profile"
 msgstr "Профиль"
 
 #: lms/templates/user_dropdown.html
-msgid "Profile image for {username}"
-msgstr "Фото {username}"
-
-#: lms/templates/user_dropdown.html themes/red-theme/lms/templates/header.html
-msgid "More options dropdown"
-msgstr "Меню с дополнительными опциями"
+msgid "More options"
+msgstr ""
 
 #: lms/templates/using.html
 msgid "Using the system"
@@ -13947,11 +14072,6 @@ msgstr "При зачислении на курс произошла ошибк�
 
 #: lms/templates/course_modes/choose.html
 #: themes/edx.org/lms/templates/course_modes/choose.html
-msgid "Congratulations!  You are now enrolled in {course_name}"
-msgstr "Поздравляем! Вы зачислены на курс «{course_name}»"
-
-#: lms/templates/course_modes/choose.html
-#: themes/edx.org/lms/templates/course_modes/choose.html
 msgid "Pursue Academic Credit with a Verified Certificate"
 msgstr "Получайте зачётные баллы с помощью подтверждённых сертификатов"
 
@@ -14219,34 +14339,6 @@ msgid "Email someone to say you've enrolled in this course"
 msgstr "Сообщить по электронной почте, что вы записались на курс. "
 
 #: lms/templates/courseware/course_navigation.html
-msgid "Course View"
-msgstr "Обзор курса"
-
-#: lms/templates/courseware/course_navigation.html
-msgid "View this course as:"
-msgstr "Просмотр курса в качестве:"
-
-#: lms/templates/courseware/course_navigation.html
-msgid "Specific student"
-msgstr "Определённый участник"
-
-#: lms/templates/courseware/course_navigation.html
-msgid "Student in {content_group}"
-msgstr "слушателя в группе «{content_group}»"
-
-#: lms/templates/courseware/course_navigation.html
-msgid "Username or email:"
-msgstr "Имя пользователя или адрес электронной почты"
-
-#: lms/templates/courseware/course_navigation.html
-msgid "Set preview mode"
-msgstr "Настроить режим предварительного просмотра"
-
-#: lms/templates/courseware/course_navigation.html
-msgid "You are now viewing the course as {i_start}{user_name}{i_end}."
-msgstr "Вы просматриваете курс под именем {i_start}{user_name}{i_end}."
-
-#: lms/templates/courseware/course_navigation.html
 msgid "Course Material"
 msgstr "Материалы курса"
 
@@ -14300,10 +14392,8 @@ msgstr "Содержимое курса ещё не добавлено"
 #, python-format
 msgid ""
 "To access course materials, you must score {required_score}% or higher on "
-"this                 exam. Your current score is {current_score}%."
+"this                     exam. Your current score is {current_score}%."
 msgstr ""
-"Для доступа к материалам курса вам необходимо получить {required_score}% или"
-" более. Ваша текущая оценка: {current_score}%."
 
 #: lms/templates/courseware/courseware.html
 msgid "Your score is {current_score}%. You have passed the entrance exam."
@@ -14355,6 +14445,18 @@ msgstr "Вернуться к курсу"
 #: lms/templates/courseware/info.html
 msgid "View Updates in Studio"
 msgstr "Просмотреть Обновления в Studio"
+
+#: lms/templates/courseware/info.html
+msgid "Give yourself an additional incentive to complete"
+msgstr ""
+
+#: lms/templates/courseware/info.html
+msgid "Earn a verified certificate."
+msgstr ""
+
+#: lms/templates/courseware/info.html
+msgid "Upgrade Now"
+msgstr ""
 
 #: lms/templates/courseware/info.html
 msgid "Course Updates and News"
@@ -14559,6 +14661,7 @@ msgstr ""
 
 #: lms/templates/credit_notifications/credit_eligibility_email.html
 #: lms/templates/emails/order_confirmation_email.txt
+#: themes/edx.org/lms/templates/emails/activation_email.txt
 msgid "The {platform_name} Team"
 msgstr "Команда {platform_name} "
 
@@ -15078,19 +15181,19 @@ msgstr "Фильтр:"
 
 #. Translators: This is a menu option for showing all forum threads unfiltered
 #: lms/templates/discussion/_thread_list_template.html
-msgid "Show all"
-msgstr "Показать всё"
+msgid "Show all posts"
+msgstr ""
 
 #. Translators: This is a menu option for showing only unread forum threads
 #: lms/templates/discussion/_thread_list_template.html
-msgid "Unread"
-msgstr "Непрочитанные"
+msgid "Unread posts"
+msgstr ""
 
 #. Translators: This is a menu option for showing only unanswered forum
 #. question threads
 #: lms/templates/discussion/_thread_list_template.html
-msgid "Unanswered"
-msgstr "Без ответа"
+msgid "Unanswered posts"
+msgstr ""
 
 #. Translators: This is a menu option for showing only forum threads flagged
 #. for abuse
@@ -15126,24 +15229,6 @@ msgstr "по количеству ответов"
 #: lms/templates/discussion/_thread_list_template.html
 msgid "by most votes"
 msgstr "по количеству голосов"
-
-#: lms/templates/discussion/_user_profile.html
-#, python-format
-msgid "%s discussion started"
-msgid_plural "%s discussions started"
-msgstr[0] "%s открытая тема обсуждений"
-msgstr[1] "%s открытые темы обсуждений"
-msgstr[2] "%s открытых тем обсуждений"
-msgstr[3] "%s открытых тем обсуждений"
-
-#: lms/templates/discussion/_user_profile.html
-#, python-format
-msgid "%s comment"
-msgid_plural "%s comments"
-msgstr[0] "%s комментарий"
-msgstr[1] "%s комментария"
-msgstr[2] "%s комментариев"
-msgstr[3] "%s комментариев"
 
 #: lms/templates/edxnotes/edxnotes.html
 msgid "Student Notes"
@@ -15235,6 +15320,7 @@ msgid "Sincerely yours,The {course_name} Team"
 msgstr "С уважением, команда курса {course_name}"
 
 #: lms/templates/emails/activation_email.txt
+#: themes/edx.org/lms/templates/emails/activation_email.txt
 msgid "Thank you for creating an account with {platform_name}!"
 msgstr "Благодарим Вас за создание учётной записи на {platform_name}!"
 
@@ -15499,6 +15585,7 @@ msgstr ""
 "запроса, пожалуйста, свяжитесь с нами по адресу:"
 
 #: lms/templates/emails/confirm_email_change.txt
+#: themes/stanford-style/lms/templates/emails/confirm_email_change.txt
 msgid ""
 "We keep a log of old e-mails, so if this request was unintentional, we can "
 "investigate."
@@ -15507,6 +15594,7 @@ msgstr ""
 " был сделан непреднамеренно, мы можем рассмотреть эту проблему."
 
 #: lms/templates/emails/email_change.txt
+#: themes/stanford-style/lms/templates/emails/email_change.txt
 msgid ""
 "We received a request to change the e-mail associated with your "
 "{platform_name} account from {old_email} to {new_email}. If this is correct,"
@@ -17463,6 +17551,10 @@ msgid "(Learners not explicitly assigned to a cohort)"
 msgstr "(Слушатели, не присоединенные ни к какой определенной группе)"
 
 #: lms/templates/instructor/instructor_dashboard_2/send_email.html
+msgid "Learners in the {track_name} Track"
+msgstr ""
+
+#: lms/templates/instructor/instructor_dashboard_2/send_email.html
 msgid "Subject: "
 msgstr "Тема:"
 
@@ -17730,7 +17822,13 @@ msgstr ""
 msgid "Show the status for the tasks that you submitted for this problem."
 msgstr ""
 
+#: lms/templates/learner_dashboard/_dashboard_navigation_courses.html
+#: themes/edx.org/lms/templates/dashboard.html
+msgid "My Courses"
+msgstr "Мои курсы"
+
 #: lms/templates/learner_dashboard/program_details.html
+#: lms/templates/learner_dashboard/program_details_2017.html
 msgid "Program Details"
 msgstr "Информация о программе"
 
@@ -18329,10 +18427,6 @@ msgid "Registration for:"
 msgstr "Регистрация для:"
 
 #: lms/templates/shoppingcart/receipt.html
-msgid "Course Dates"
-msgstr "Сроки курса"
-
-#: lms/templates/shoppingcart/receipt.html
 #: lms/templates/shoppingcart/shopping_cart.html
 msgid "Price per student:"
 msgstr "Цена для слушателя:"
@@ -18376,10 +18470,6 @@ msgstr "Подтвердить регистрацию на: {span_start}course d
 #: lms/templates/shoppingcart/registration_code_receipt.html
 msgid "{course_name}"
 msgstr "{course_name}"
-
-#: lms/templates/shoppingcart/registration_code_receipt.html
-msgid "{start_date} - {end_date}"
-msgstr "{start_date} - {end_date}"
 
 #: lms/templates/shoppingcart/registration_code_receipt.html
 #: lms/templates/shoppingcart/registration_code_redemption.html
@@ -18455,10 +18545,6 @@ msgstr[3] ""
 #: lms/templates/shoppingcart/shopping_cart.html
 msgid "Cover Image"
 msgstr "Изображение курса"
-
-#: lms/templates/shoppingcart/shopping_cart.html
-msgid "Course Dates:"
-msgstr "Сроки курса:"
 
 #: lms/templates/shoppingcart/shopping_cart.html
 msgid "Students:"
@@ -18573,14 +18659,9 @@ msgstr ""
 msgid ""
 "Our system indicates that you are trying to access this {platform_name} "
 "course from a country or region currently subject to U.S. economic and trade"
-" sanctions. Unfortunately, at this time {platform_name} must comply with "
-"export controls, and we cannot allow you to access this course."
+" sanctions.Unfortunately, because {platform_name} is required to comply with"
+" export controls,we cannot allow you to access this course at this time."
 msgstr ""
-"Наша система показывает, что вы пытаетесь получить доступ к данному курсу "
-"{platform_name} из страны или региона, который в настоящее время подпадает "
-"под экономические и торговые санкции США.  К сожалению, на данный момент "
-"{platform_name} необходимо соблюдать требования экспортного контроля, и мы "
-"не можем предоставить вам доступ к этому курсу."
 
 #: lms/templates/static_templates/faq.html
 #: themes/red-theme/lms/templates/footer.html
@@ -18873,6 +18954,20 @@ msgstr "В настоящий момент вы не можете подтвер
 msgid "Return to Your Dashboard"
 msgstr "Вернуться к панели управления"
 
+#: lms/templates/widgets/cookie-consent.html
+msgid ""
+"This website uses cookies to ensure you get the best experience on our "
+"website."
+msgstr ""
+
+#: lms/templates/widgets/cookie-consent.html
+msgid "Got it!"
+msgstr ""
+
+#: lms/templates/widgets/cookie-consent.html
+msgid "Learn more"
+msgstr ""
+
 #: lms/templates/wiki/includes/article_menu.html
 msgid "{span_start}(active){span_end}"
 msgstr "{span_start}(active){span_end}"
@@ -18884,6 +18979,10 @@ msgstr "Версии"
 #: lms/templates/wiki/includes/article_menu.html
 msgid "{span_start}active{span_end}"
 msgstr "{span_start}активный{span_end}"
+
+#: lms/templates/wiki/includes/breadcrumbs.html
+msgid "Course Wiki"
+msgstr ""
 
 #: lms/templates/wiki/includes/breadcrumbs.html
 msgid "Add article"
@@ -18921,9 +19020,9 @@ msgstr "Об edX"
 
 #: themes/edx.org/lms/templates/footer.html
 msgid ""
-"© 2016 edX Inc.  All rights reserved except where noted.  EdX, Open edX and "
-"the edX and Open EdX logos are registered trademarks or trademarks of edX "
-"Inc."
+"© 2012-{year} edX Inc.  All rights reserved except where noted.  EdX, Open "
+"edX and the edX and Open EdX logos are registered trademarks or trademarks "
+"of edX Inc."
 msgstr ""
 
 #: themes/edx.org/lms/templates/header.html
@@ -18944,6 +19043,37 @@ msgstr ""
 "организация, поступления от подтверждённых сертификатов помогают нам "
 "финансировать свободное образование для всех, глобально"
 
+#: themes/edx.org/lms/templates/emails/activation_email.txt
+msgid ""
+"There's just one more step before you can enroll in a course: You need to "
+"activate your {platform_name} account. To activate your account, click the "
+"following link. If that doesn't work, copy and paste the link into your "
+"browser's address bar."
+msgstr ""
+
+#: themes/edx.org/lms/templates/emails/activation_email.txt
+msgid ""
+"After you activate your account, you can take any of the hundreds of courses"
+" {platform_name} offers. You will receive occasional email messages from "
+"{platform_name} about new courses or other information."
+msgstr ""
+
+#: themes/edx.org/lms/templates/emails/activation_email.txt
+msgid ""
+"If you need help, please use our web form at {contact_us_url}, email "
+"{info_email_address}, or write to {info_postal_address}."
+msgstr ""
+
+#: themes/edx.org/lms/templates/emails/activation_email.txt
+msgid "We hope you enjoy learning with {platform_name}!"
+msgstr ""
+
+#: themes/edx.org/lms/templates/emails/activation_email.txt
+msgid ""
+"This email message was automatically sent by {site_name} because someone "
+"attempted to create an account on {platform_name} using this email address."
+msgstr ""
+
 #. Translators: 'EdX', 'edX', and 'Open edX' are trademarks of 'edX Inc.'.
 #. Please do not translate any of these trademarks and company names.
 #: themes/red-theme/lms/templates/footer.html
@@ -18962,6 +19092,10 @@ msgid ""
 msgstr ""
 "{tos_link_start}Условия предоставления услуг{tos_link_end} и "
 "{honor_link_start}Кодекс Чести{honor_link_end}"
+
+#: themes/red-theme/lms/templates/header.html
+msgid "More options dropdown"
+msgstr "Меню с дополнительными опциями"
 
 #: themes/red-theme/lms/templates/header.html
 msgid "My Profile"
@@ -19008,6 +19142,39 @@ msgid ""
 msgstr ""
 "Когда вы зарегистрируетесь, ответы на многие вопросы можно будет найти на "
 "отдельных форумах курсов или в разделе FAQ."
+
+#: themes/stanford-style/lms/templates/emails/activation_email.txt
+msgid "Thank you for signing up for {platform_name}."
+msgstr ""
+
+#: themes/stanford-style/lms/templates/emails/activation_email.txt
+msgid ""
+"Change your life and start learning today by activating your {platform_name}"
+" account. Click on the link below or copy and paste it into your browser's "
+"address bar."
+msgstr ""
+
+#: themes/stanford-style/lms/templates/emails/activation_email.txt
+#: themes/stanford-style/lms/templates/emails/email_change.txt
+msgid ""
+"If you didn't request this, you don't need to do anything; you won't receive"
+" any more email from us. Please do not reply to this e-mail; if you require "
+"assistance, check the about section of the {platform_name} Courses web site."
+msgstr ""
+
+#: themes/stanford-style/lms/templates/emails/confirm_email_change.txt
+msgid ""
+"This is to confirm that you changed the e-mail associated with "
+"{platform_name} from {old_email} to {new_email}. If you did not make this "
+"request, please contact us at"
+msgstr ""
+
+#: themes/stanford-style/lms/templates/emails/reject_name_change.txt
+msgid ""
+"We are sorry. Our course staff did not approve your request to change your "
+"name from {old_name} to {new_name}. If you need further assistance, please "
+"e-mail the tech support at {email}"
+msgstr ""
 
 #: themes/stanford-style/lms/templates/static_templates/tos.html
 msgid "Put your Terms of Service here!"
@@ -19287,11 +19454,9 @@ msgstr "Выдача сертификатов"
 
 #: cms/templates/certificates.html
 msgid ""
-"After you have configured and previewed your certificate, ask your edX "
-"partner manager to activate your certificate. When your certificate has been"
-" activated, you can begin issuing certificates to learners. Course team "
-"members without the Admin role cannot edit or delete an activated "
-"certificate."
+"To begin issuing course certificates, a course team member with either the "
+"Staff or Admin role selects {em_start}Activate{em_end}. Only course team "
+"members with these roles can edit or delete an activated certificate."
 msgstr ""
 
 #: cms/templates/certificates.html
@@ -19343,6 +19508,10 @@ msgstr "Копировать"
 #: cms/templates/component.html
 msgid "Duplicate this component"
 msgstr "Создать копию этого компонента"
+
+#: cms/templates/component.html cms/templates/studio_xblock_wrapper.html
+msgid "Move"
+msgstr ""
 
 #: cms/templates/component.html
 msgid "Delete this component"
@@ -19437,11 +19606,9 @@ msgstr "Идентификатор местонахождения"
 
 #: cms/templates/container.html
 msgid ""
-"Use this ID when you create links to this unit from other course content. "
-"You enter the ID in the URL field."
+"To create a link to this unit from an HTML component in this course, enter "
+"\"/jump_to_id/<location ID>\" as the URL value."
 msgstr ""
-"Используйте этот идентификатор для создания ссылок на этот блок из других "
-"материалов курса. Идентификатор необходимо ввести в поле URL."
 
 #: cms/templates/container.html
 msgid "Location in Course Outline"
@@ -19531,10 +19698,9 @@ msgstr "например, CS101"
 #: cms/templates/course-create-rerun.html
 msgid ""
 "The unique number that identifies the new course within the organization.  "
-"(This number is often the same as the original course number.)"
+"(This number will be the same as the original course number and cannot be "
+"changed.)"
 msgstr ""
-"Уникальный номер, присвоенный новому курсу организацией (этот номер чаще "
-"всего совпадает с исходным номером курса)."
 
 #: cms/templates/course-create-rerun.html cms/templates/index.html
 #: cms/templates/settings.html
@@ -20049,6 +20215,60 @@ msgid "Export Course Content"
 msgstr "Экспортировать содержимое учебного курса"
 
 #: cms/templates/export.html
+msgid "Library Export Status"
+msgstr ""
+
+#: cms/templates/export.html
+msgid "Course Export Status"
+msgstr ""
+
+#: cms/templates/export.html
+msgid "Preparing"
+msgstr ""
+
+#: cms/templates/export.html
+msgid "Preparing to start the export"
+msgstr ""
+
+#: cms/templates/export.html
+msgid "Exporting"
+msgstr ""
+
+#: cms/templates/export.html
+msgid ""
+"Creating the export data files (You can now leave this page safely, but "
+"avoid making drastic changes to content until this export is complete)"
+msgstr ""
+
+#: cms/templates/export.html
+msgid "Compressing"
+msgstr ""
+
+#: cms/templates/export.html
+msgid "Compressing the exported data and preparing it for download"
+msgstr ""
+
+#: cms/templates/export.html cms/templates/import.html
+msgid "Success"
+msgstr "Успех"
+
+#: cms/templates/export.html
+msgid "Your exported library can now be downloaded"
+msgstr ""
+
+#: cms/templates/export.html
+msgid "Your exported course can now be downloaded"
+msgstr ""
+
+#: cms/templates/export.html
+msgid "Download Exported Library"
+msgstr ""
+
+#: cms/templates/export.html
+msgid "Download Exported Course"
+msgstr ""
+
+#: cms/templates/export.html
 msgid "Data {em_start}exported with{em_end} your course:"
 msgstr "Данные, {em_start}экспортируемые вместе{em_end} с вашим курсом:"
 
@@ -20230,11 +20450,6 @@ msgstr "Ваш курс:"
 #: cms/templates/export_git.html
 msgid "Course git url:"
 msgstr "Git url курса:"
-
-#: cms/templates/group_configurations.html
-#: cms/templates/visibility_editor.html
-msgid "Content Groups"
-msgstr "Группы по изучаемому материалу"
 
 #: cms/templates/group_configurations.html
 msgid "Experiment Group Configurations"
@@ -20732,10 +20947,6 @@ msgstr ""
 "занять длительное время для больших курсов."
 
 #: cms/templates/import.html
-msgid "Success"
-msgstr "Успех"
-
-#: cms/templates/import.html
 msgid "Your imported content has now been integrated into this library"
 msgstr "Загруженный вами контент теперь интегрирован в этот курс"
 
@@ -20848,10 +21059,6 @@ msgstr "Отправьте электронное письмо сотрудни�
 #: cms/templates/index.html
 msgid "New Library"
 msgstr "Новая библиотека"
-
-#: cms/templates/index.html
-msgid "New Program"
-msgstr "Новая программа"
 
 #: cms/templates/index.html
 msgid "Please correct the highlighted fields below."
@@ -21152,18 +21359,6 @@ msgstr ""
 "нескольких курсах. Создайте вашу первую библиотеку одним нажатием кнопки!"
 
 #: cms/templates/index.html
-msgid "You haven't created any programs yet."
-msgstr "Вы ещё не создали ни одной программы."
-
-#: cms/templates/index.html
-msgid "Programs are groups of courses related to a common subject."
-msgstr "Программы - это группы курсов, связанные общим предметом."
-
-#: cms/templates/index.html
-msgid "Create Your First Program"
-msgstr "Создайте вашу первую программу"
-
-#: cms/templates/index.html
 msgid "New to {studio_name}?"
 msgstr "Впервые в {studio_name}?"
 
@@ -21459,10 +21654,6 @@ msgstr ""
 "могут редактировать список членов команды, работающей над контентом. По "
 "крайней мере один из пользователей должен иметь права Администратора в "
 "библиотеке."
-
-#: cms/templates/program_authoring.html cms/templates/widgets/header.html
-msgid "Program Administration"
-msgstr "Администрация программы"
 
 #: cms/templates/register.html cms/templates/widgets/header.html
 msgid "Sign Up"
@@ -22291,14 +22482,10 @@ msgstr "Зачем загружать видео?"
 #: cms/templates/videos_index.html
 msgid ""
 "For a video to play on different devices, it needs to be available in "
-"multiple formats. After you upload an original video file in .mp4 or .mov "
+"multiple formats. After you upload an original video file in {file_formats} "
 "format on this page, an automated process creates those additional formats "
 "and stores them for you."
 msgstr ""
-"Для воспроизведения видео на различных устройствах, оно должно быть доступно"
-" в нескольких форматах. После того как вы загрузите оригинальный видео-файл "
-".MP4 или .MOV на этой странице, автоматизированный процесс создаст эти "
-"дополнительные форматы и сохранит их для вас."
 
 #: cms/templates/videos_index.html
 msgid "Maximum Video File Size"
@@ -22306,11 +22493,9 @@ msgstr "Максимальный размер видео файла"
 
 #: cms/templates/videos_index.html
 msgid ""
-"The maximum size for each video file that you upload is 5 GB. The upload "
-"process fails for larger files."
+"The maximum size for each video file that you upload is {em_start}5 "
+"GB{em_end}. The upload process fails for larger files."
 msgstr ""
-"Максимальный размер каждого загружаемого видео файла составляет 5 Гб. Файлы "
-"большего размера загрузить невозможно."
 
 #: cms/templates/videos_index.html
 msgid "Monitoring files as they upload"
@@ -22361,37 +22546,37 @@ msgstr "Как добавить видеоматериалы в свой кур�
 
 #: cms/templates/videos_index.html
 msgid ""
-"When status for a file is {em_start}Ready{em_end}, you can add that video to"
-" a component in your course. Copy the unique video ID. In another browser "
-"window, on the Course Outline page, create or locate a video component to "
-"play this video. Edit the video component to paste the ID into the Advanced "
-"{em_start}Video ID{em_end} field. The video can play in the LMS as soon as "
-"its status is {em_start}Ready{em_end}, although processing may not be "
-"complete for all encodings and all video hosting sites."
+"When the status for a file is {em_start}Ready{em_end}, you can add that "
+"video to a component in your course. Copy the unique video ID. In another "
+"browser window, on the Course Outline page, create or locate a video "
+"component to play this video. Edit the video component to paste the ID into "
+"the Advanced {em_start}Video ID{em_end} field. The video can play in the LMS"
+" as soon as its status is {em_start}Ready{em_end}, although processing may "
+"not be complete for all encodings and all video hosting sites."
 msgstr ""
-"Когда видео получит статус {em_start}Готово{em_end}, вы сможете добавить в "
-"свой курс компонент с этим видео. Скопируйте уникальный идентификатор видео,"
-" в отдельном окне браузера откройте страницу «Структура курса» и создайте "
-"или найдите необходимый видео компонент. В режиме редактирования компонента "
-"вставьте идентификатор видео в поле {em_start}Идентификатор видео{em_end}, "
-"расположенное во вкладке «Дополнительно». Видео можно будет просматривать в "
-"LMS, как только оно получит статус {em_start}Готово{em_end}, хотя обработка "
-"всех форматов и загрузка на видеохостингах может быть ещё не завершена."
 
 #: cms/templates/visibility_editor.html
-msgid "No content groups exist"
-msgstr "Нет групп по изучаемому материалу"
+msgid "No visibility settings"
+msgstr ""
 
 #: cms/templates/visibility_editor.html
 msgid ""
-"Use content groups to give groups of students access to a specific set of "
-"course content. Create one or more content groups, and make specific "
-"components visible to them."
+"No visibility settings are defined for this component, but visibility might "
+"be affected by inherited settings."
 msgstr ""
-"Используйте группы по изучаемому материалу, чтобы дать группам слушателей "
-"доступ к определённым материалам курса.  Создайте одну или более групп по "
-"изучаемому материалу и настройте для них видимость конкретных компонентов "
-"курса."
+
+#: cms/templates/visibility_editor.html
+msgid ""
+"You can make this component visible only to specific groups of learners "
+"based either on their enrollment track, or by content groups that you "
+"create."
+msgstr ""
+
+#: cms/templates/visibility_editor.html
+msgid ""
+"You can make this component visible only to specific groups of learners "
+"based on content groups that you create."
+msgstr ""
 
 #: cms/templates/visibility_editor.html
 msgid "Manage content groups"
@@ -22401,56 +22586,36 @@ msgstr "Управление группами по изучаемому мате
 #. is only read by screen readers and never shown in the browser.
 #: cms/templates/visibility_editor.html
 msgid ""
-"{screen_reader_start}Warning:{screen_reader_end} The Unit this component is "
-"contained in is hidden from students. Visibility settings here will be "
-"trumped by this."
+"{screen_reader_start}Warning:{screen_reader_end} The unit that contains this"
+" component is hidden from learners. The unit setting overrides the component"
+" visibility settings defined here."
 msgstr ""
-"{screen_reader_start}Предупреждение:{screen_reader_end} блок, в который "
-"входит этот компонент, скрыт от слушателей.  Это заменит собой настройки "
-"видимости, установленные здесь."
 
 #: cms/templates/visibility_editor.html
-msgid "Make visible to:"
-msgstr "Сделать видимым для:"
+msgid "Currently visible to:"
+msgstr ""
 
 #: cms/templates/visibility_editor.html
-msgid "All Students and Staff"
-msgstr "Всех обучающихся и сотрудников"
+msgid "All Learners and Staff"
+msgstr ""
 
 #: cms/templates/visibility_editor.html
-msgid "Specific Content Groups"
-msgstr "Определённых групп по изучаемому материалу"
+msgid "Change visibility to:"
+msgstr ""
 
 #: cms/templates/visibility_editor.html
-msgid "Deleted Content Group"
-msgstr "Удалённая группа по изучаемым материалам"
+msgid "Choose one"
+msgstr ""
+
+#: cms/templates/visibility_editor.html
+msgid "Select one or more groups:"
+msgstr ""
 
 #: cms/templates/visibility_editor.html
 msgid ""
-"Content group no longer exists. Please choose another or allow access to All"
-" Students and staff"
+"This group no longer exists. Choose another group or make this component "
+"visible to All Learners and Staff."
 msgstr ""
-"Группа по изучаемым материалам больше не существует.  Пожалуйста, выберите "
-"другую группу или предоставьте доступ всем слушателям и сотрудникам"
-
-#: cms/templates/visibility_editor.html
-msgid "Verification Checkpoint"
-msgstr "Контрольное подтверждение личности"
-
-#: cms/templates/visibility_editor.html
-msgid "Verification checkpoint to complete"
-msgstr "Контрольное подтверждение личности"
-
-#: cms/templates/visibility_editor.html
-msgid ""
-"Learners who require verification must pass the selected checkpoint to see "
-"the content in this component. Learners who do not require verification see "
-"this content by default."
-msgstr ""
-"Чтобы получить доступ к содержимому данного компонента, слушатели, которым "
-"необходимо подтверждение личности, должны пройти указанное контрольное "
-"подтверждение. Слушатели, которым не требуется подтверждения личности, "
-"получат доступ к этому содержимому автоматически."
 
 #: cms/templates/emails/activation_email.txt
 msgid ""
@@ -22523,6 +22688,22 @@ msgstr ""
 #: cms/templates/emails/course_creator_subject.txt
 msgid "Your course creator status for {studio_name}"
 msgstr "Ваш статус автора курсов в {studio_name}"
+
+#: cms/templates/emails/user_task_complete_email.txt
+msgid ""
+"Your {task_name} task has completed with the status '{task_status}'. Use "
+"this URL to view task details or download any files created: {detail_url}"
+msgstr ""
+
+#: cms/templates/emails/user_task_complete_email.txt
+msgid ""
+"Your {task_name} task has completed with the status '{task_status}'. Sign in"
+" to view the details of your task or download any files created."
+msgstr ""
+
+#: cms/templates/emails/user_task_complete_email_subject.txt
+msgid "{platform_name} {studio_name}: Task Status Update"
+msgstr ""
 
 #: cms/templates/maintenance/_force_publish_course.html
 msgid "Required data to force publish course."
@@ -22841,8 +23022,8 @@ msgid "Article unlocked for editing"
 msgstr "Статья разблокирована для редактирования"
 
 #: wiki/forms.py
-msgid "Filter..."
-msgstr "Фильтр..."
+msgid "Filter"
+msgstr ""
 
 #: wiki/core/plugins/base.py
 msgid "Settings for plugin"

@@ -20,10 +20,11 @@ except ImportError:
 from pytz import utc
 
 from capa.capa_problem import LoncapaProblem, LoncapaSystem
+from capa.inputtypes import Status
 from capa.responsetypes import StudentInputError, ResponseError, LoncapaProblemError
 from capa.util import convert_files_to_filenames, get_inner_html_from_xpath
 from xblock.fields import Boolean, Dict, Float, Integer, Scope, String, XMLString
-from xmodule.capa_base_constants import RANDOMIZATION, SHOWANSWER
+from xmodule.capa_base_constants import RANDOMIZATION, SHOWANSWER, SHOW_CORRECTNESS
 from xmodule.exceptions import NotFoundError
 from .fields import Date, Timedelta
 from .progress import Progress
@@ -92,7 +93,7 @@ class CapaFields(object):
     """
     display_name = String(
         display_name=_("Display Name"),
-        help=_("This name appears in the horizontal navigation at the top of the page."),
+        help=_("The display name for this component."),
         scope=Scope.settings,
         # it'd be nice to have a useful default but it screws up other things; so,
         # use display_name_with_default for those
@@ -112,6 +113,18 @@ class CapaFields(object):
     graceperiod = Timedelta(
         help=_("Amount of time after the due date that submissions will be accepted"),
         scope=Scope.settings
+    )
+    show_correctness = String(
+        display_name=_("Show Results"),
+        help=_("Defines when to show whether a learner's answer to the problem is correct. "
+               "Configured on the subsection."),
+        scope=Scope.settings,
+        default=SHOW_CORRECTNESS.ALWAYS,
+        values=[
+            {"display_name": _("Always"), "value": SHOW_CORRECTNESS.ALWAYS},
+            {"display_name": _("Never"), "value": SHOW_CORRECTNESS.NEVER},
+            {"display_name": _("Past Due"), "value": SHOW_CORRECTNESS.PAST_DUE},
+        ],
     )
     showanswer = String(
         display_name=_("Show Answer"),
@@ -390,12 +403,25 @@ class CapaMixin(CapaFields):
                 return None
         return None
 
+    def get_display_progress(self):
+        """
+        Return (score, total) to be displayed to the learner.
+        """
+        progress = self.get_progress()
+        score, total = (progress.frac() if progress else (0, 0))
+
+        # Withhold the score if hiding correctness
+        if not self.correctness_available():
+            score = None
+
+        return score, total
+
     def get_html(self):
         """
         Return some html with data about the module
         """
-        progress = self.get_progress()
-        curr_score, total_possible = (progress.frac() if progress else (0, 0))
+        curr_score, total_possible = self.get_display_progress()
+
         return self.runtime.render_template('problem_ajax.html', {
             'element_id': self.location.html_id(),
             'id': self.location.to_deprecated_string(),
@@ -738,7 +764,11 @@ class CapaMixin(CapaFields):
         if render_notifications:
             progress = self.get_progress()
             id_list = self.lcp.correct_map.keys()
-            if len(id_list) == 1:
+
+            # Show only a generic message if hiding correctness
+            if not self.correctness_available():
+                answer_notification_type = 'submitted'
+            elif len(id_list) == 1:
                 # Only one answer available
                 answer_notification_type = self.lcp.correct_map.get_correctness(id_list[0])
             elif len(id_list) > 1:
@@ -781,6 +811,8 @@ class CapaMixin(CapaFields):
                     ).format(progress=str(progress))
                 else:
                     answer_notification_message = _('Partially Correct')
+            elif answer_notification_type == 'submitted':
+                answer_notification_message = _("Answer submitted.")
 
         return answer_notification_type, answer_notification_message
 
@@ -854,7 +886,10 @@ class CapaMixin(CapaFields):
         """
         Is the user allowed to see an answer?
         """
-        if self.showanswer == '':
+        if not self.correctness_available():
+            # If correctness is being withheld, then don't show answers either.
+            return False
+        elif self.showanswer == '':
             return False
         elif self.showanswer == SHOWANSWER.NEVER:
             return False
@@ -881,6 +916,24 @@ class CapaMixin(CapaFields):
             return True
 
         return False
+
+    def correctness_available(self):
+        """
+        Is the user allowed to see whether she's answered correctly?
+
+        Limits access to the correct/incorrect flags, messages, and problem score.
+        """
+        if self.show_correctness == SHOW_CORRECTNESS.NEVER:
+            return False
+        elif self.runtime.user_is_staff:
+            # This is after the 'never' check because admins can see correctness
+            # unless the problem explicitly prevents it
+            return True
+        elif self.show_correctness == SHOW_CORRECTNESS.PAST_DUE:
+            return self.is_past_due()
+
+        # else: self.show_correctness == SHOW_CORRECTNESS.ALWAYS
+        return True
 
     def update_score(self, data):
         """
@@ -942,7 +995,12 @@ class CapaMixin(CapaFields):
         """
         For the "show answer" button.
 
-        Returns the answers: {'answers' : answers}
+        Returns the answers and rendered "correct status span" HTML:
+            {'answers' : answers, 'correct_status_html': correct_status_span_html}.
+            The "correct status span" HTML is injected beside the correct answers
+            for radio button and checkmark problems, so that there is a visual
+            indication of the correct answers that is not solely based on color
+            (and also screen reader text).
         """
         event_info = dict()
         event_info['problem_id'] = self.location.to_deprecated_string()
@@ -968,7 +1026,13 @@ class CapaMixin(CapaFields):
                 new_answer = {answer_id: answers[answer_id]}
             new_answers.update(new_answer)
 
-        return {'answers': new_answers}
+        return {
+            'answers': new_answers,
+            'correct_status_html': self.runtime.render_template(
+                'status_span.html',
+                {'status': Status('correct', self.runtime.service(self, "i18n").ugettext)}
+            )
+        }
 
     # Figure out if we should move these to capa_problem?
     def get_problem(self, _data):
@@ -1220,6 +1284,10 @@ class CapaMixin(CapaFields):
 
         # render problem into HTML
         html = self.get_problem_html(encapsulate=False, submit_notification=True)
+
+        # Withhold success indicator if hiding correctness
+        if not self.correctness_available():
+            success = 'submitted'
 
         return {
             'success': success,

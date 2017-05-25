@@ -21,24 +21,26 @@ from common.test.acceptance.tests.helpers import (
     select_option_by_text,
     get_selected_option_text
 )
+from common.test.acceptance.pages.common.logout import LogoutPage
 from common.test.acceptance.pages.lms import BASE_URL
 from common.test.acceptance.pages.lms.account_settings import AccountSettingsPage
 from common.test.acceptance.pages.lms.auto_auth import AutoAuthPage
 from common.test.acceptance.pages.lms.create_mode import ModeCreationPage
-from common.test.acceptance.pages.common.logout import LogoutPage
+from common.test.acceptance.pages.lms.course_home import CourseHomePage
 from common.test.acceptance.pages.lms.course_info import CourseInfoPage
-from common.test.acceptance.pages.lms.tab_nav import TabNavPage
-from common.test.acceptance.pages.lms.course_nav import CourseNavPage
-from common.test.acceptance.pages.lms.progress import ProgressPage
-from common.test.acceptance.pages.lms.dashboard import DashboardPage
-from common.test.acceptance.pages.lms.problem import ProblemPage
-from common.test.acceptance.pages.lms.video.video import VideoPage
+from common.test.acceptance.pages.lms.course_wiki import (
+    CourseWikiPage, CourseWikiEditPage, CourseWikiHistoryPage, CourseWikiChildrenPage
+)
 from common.test.acceptance.pages.lms.courseware import CoursewarePage
-from common.test.acceptance.pages.studio.settings import SettingsPage
+from common.test.acceptance.pages.lms.dashboard import DashboardPage
 from common.test.acceptance.pages.lms.login_and_register import CombinedLoginAndRegisterPage, ResetPasswordPage
-from common.test.acceptance.pages.lms.track_selection import TrackSelectionPage
 from common.test.acceptance.pages.lms.pay_and_verify import PaymentAndVerificationFlow, FakePaymentPage
-from common.test.acceptance.pages.lms.course_wiki import CourseWikiPage, CourseWikiEditPage
+from common.test.acceptance.pages.lms.progress import ProgressPage
+from common.test.acceptance.pages.lms.problem import ProblemPage
+from common.test.acceptance.pages.lms.tab_nav import TabNavPage
+from common.test.acceptance.pages.lms.track_selection import TrackSelectionPage
+from common.test.acceptance.pages.lms.video.video import VideoPage
+from common.test.acceptance.pages.studio.settings import SettingsPage
 from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc, CourseUpdateDesc
 
 
@@ -543,7 +545,6 @@ class PayAndVerifyTest(EventsTestMixin, UniqueCourseTest):
         self.assertEqual(enrollment_mode, 'verified')
 
 
-@attr(shard=1)
 class CourseWikiTest(UniqueCourseTest):
     """
     Tests that verify the course wiki.
@@ -580,6 +581,7 @@ class CourseWikiTest(UniqueCourseTest):
         self.course_wiki_page.open_editor()
         self.course_wiki_edit_page.wait_for_page()
 
+    @attr(shard=1)
     def test_edit_course_wiki(self):
         """
         Wiki page by default is editable for students.
@@ -595,6 +597,41 @@ class CourseWikiTest(UniqueCourseTest):
         self.course_wiki_edit_page.save_wiki_content()
         actual_content = unicode(self.course_wiki_page.q(css='.wiki-article p').text[0])
         self.assertEqual(content, actual_content)
+
+    @attr('a11y')
+    def test_view_a11y(self):
+        """
+        Verify the basic accessibility of the wiki page as initially displayed.
+        """
+        self.course_wiki_page.a11y_audit.check_for_accessibility_errors()
+
+    @attr('a11y')
+    def test_edit_a11y(self):
+        """
+        Verify the basic accessibility of edit wiki page.
+        """
+        self._open_editor()
+        self.course_wiki_edit_page.a11y_audit.check_for_accessibility_errors()
+
+    @attr('a11y')
+    def test_changes_a11y(self):
+        """
+        Verify the basic accessibility of changes wiki page.
+        """
+        self.course_wiki_page.show_history()
+        history_page = CourseWikiHistoryPage(self.browser, self.course_id, self.course_info)
+        history_page.wait_for_page()
+        history_page.a11y_audit.check_for_accessibility_errors()
+
+    @attr('a11y')
+    def test_children_a11y(self):
+        """
+        Verify the basic accessibility of changes wiki page.
+        """
+        self.course_wiki_page.show_children()
+        children_page = CourseWikiChildrenPage(self.browser, self.course_id, self.course_info)
+        children_page.wait_for_page()
+        children_page.a11y_audit.check_for_accessibility_errors()
 
 
 @attr(shard=1)
@@ -614,7 +651,8 @@ class HighLevelTabTest(UniqueCourseTest):
 
         self.course_info_page = CourseInfoPage(self.browser, self.course_id)
         self.progress_page = ProgressPage(self.browser, self.course_id)
-        self.course_nav = CourseNavPage(self.browser)
+        self.course_home_page = CourseHomePage(self.browser, self.course_id)
+        self.courseware_page = CoursewarePage(self.browser, self.course_id)
         self.tab_nav = TabNavPage(self.browser)
         self.video = VideoPage(self.browser)
 
@@ -641,7 +679,9 @@ class HighLevelTabTest(UniqueCourseTest):
             ),
             XBlockFixtureDesc('chapter', 'Test Section 2').add_children(
                 XBlockFixtureDesc('sequential', 'Test Subsection 2'),
-                XBlockFixtureDesc('sequential', 'Test Subsection 3'),
+                XBlockFixtureDesc('sequential', 'Test Subsection 3').add_children(
+                    XBlockFixtureDesc('problem', 'Test Problem A', data=load_data_str('multiple_choice.xml'))
+                ),
             )
         ).install()
 
@@ -723,6 +763,7 @@ class HighLevelTabTest(UniqueCourseTest):
         )
         self.assertEqual(expected_article_name, course_wiki.article_name)
 
+    # TODO: TNL-6546: This whole function will be able to go away, replaced by test_course_home below.
     def test_courseware_nav(self):
         """
         Navigate to a particular unit in the course.
@@ -737,26 +778,42 @@ class HighLevelTabTest(UniqueCourseTest):
             'Test Section 2': ['Test Subsection 2', 'Test Subsection 3']
         }
 
-        actual_sections = self.course_nav.sections
+        actual_sections = self.courseware_page.nav.sections
 
         for section, subsections in EXPECTED_SECTIONS.iteritems():
             self.assertIn(section, actual_sections)
             self.assertEqual(actual_sections[section], EXPECTED_SECTIONS[section])
 
         # Navigate to a particular section
-        self.course_nav.go_to_section('Test Section', 'Test Subsection')
+        self.courseware_page.nav.go_to_section('Test Section', 'Test Subsection')
 
         # Check the sequence items
         EXPECTED_ITEMS = ['Test Problem 1', 'Test Problem 2', 'Test HTML']
 
-        actual_items = self.course_nav.sequence_items
+        actual_items = self.courseware_page.nav.sequence_items
         self.assertEqual(len(actual_items), len(EXPECTED_ITEMS))
         for expected in EXPECTED_ITEMS:
             self.assertIn(expected, actual_items)
 
         # Navigate to a particular section other than the default landing section.
-        self.course_nav.go_to_section('Test Section 2', 'Test Subsection 3')
-        self.assertTrue(self.course_nav.is_on_section('Test Section 2', 'Test Subsection 3'))
+        self.courseware_page.nav.go_to_section('Test Section 2', 'Test Subsection 3')
+        self.assertTrue(self.courseware_page.nav.is_on_section('Test Section 2', 'Test Subsection 3'))
+
+    def test_course_home_tab(self):
+        """
+        Navigate to the course home page using the tab.
+        """
+        # TODO: TNL-6546: Use tab navigation and remove course_home_page.visit().
+        #self.course_info_page.visit()
+        #self.tab_nav.go_to_tab('Course')
+        self.course_home_page.visit()
+
+        # TODO: TNL-6546: Remove unified_course_view.
+        self.course_home_page.unified_course_view = True
+        self.courseware_page.nav.unified_course_view = True
+
+        # Check that the tab lands on the course home page.
+        self.assertTrue(self.course_home_page.is_browser_on_page())
 
 
 @attr(shard=1)
@@ -840,8 +897,8 @@ class VisibleToStaffOnlyTest(UniqueCourseTest):
             )
         ).install()
 
+        self.course_home_page = CourseHomePage(self.browser, self.course_id)
         self.courseware_page = CoursewarePage(self.browser, self.course_id)
-        self.course_nav = CourseNavPage(self.browser)
 
     def test_visible_to_staff(self):
         """
@@ -853,17 +910,22 @@ class VisibleToStaffOnlyTest(UniqueCourseTest):
         AutoAuthPage(self.browser, username="STAFF_TESTER", email="johndoe_staff@example.com",
                      course_id=self.course_id, staff=True).visit()
 
-        self.courseware_page.visit()
-        self.assertEqual(3, len(self.course_nav.sections['Test Section']))
+        self.course_home_page.visit()
+        self.assertEqual(3, len(self.course_home_page.outline.sections['Test Section']))
 
-        self.course_nav.go_to_section("Test Section", "Subsection With Locked Unit")
-        self.assertEqual([u'Locked Unit', u'Unlocked Unit'], self.course_nav.sequence_items)
+        self.course_home_page.outline.go_to_section("Test Section", "Subsection With Locked Unit")
+        self.courseware_page.wait_for_page()
+        self.assertEqual([u'Locked Unit', u'Unlocked Unit'], self.courseware_page.nav.sequence_items)
 
-        self.course_nav.go_to_section("Test Section", "Unlocked Subsection")
-        self.assertEqual([u'Test Unit'], self.course_nav.sequence_items)
+        self.course_home_page.visit()
+        self.course_home_page.outline.go_to_section("Test Section", "Unlocked Subsection")
+        self.courseware_page.wait_for_page()
+        self.assertEqual([u'Test Unit'], self.courseware_page.nav.sequence_items)
 
-        self.course_nav.go_to_section("Test Section", "Locked Subsection")
-        self.assertEqual([u'Test Unit'], self.course_nav.sequence_items)
+        self.course_home_page.visit()
+        self.course_home_page.outline.go_to_section("Test Section", "Locked Subsection")
+        self.courseware_page.wait_for_page()
+        self.assertEqual([u'Test Unit'], self.courseware_page.nav.sequence_items)
 
     def test_visible_to_student(self):
         """
@@ -875,14 +937,17 @@ class VisibleToStaffOnlyTest(UniqueCourseTest):
         AutoAuthPage(self.browser, username="STUDENT_TESTER", email="johndoe_student@example.com",
                      course_id=self.course_id, staff=False).visit()
 
-        self.courseware_page.visit()
-        self.assertEqual(2, len(self.course_nav.sections['Test Section']))
+        self.course_home_page.visit()
+        self.assertEqual(2, len(self.course_home_page.outline.sections['Test Section']))
 
-        self.course_nav.go_to_section("Test Section", "Subsection With Locked Unit")
-        self.assertEqual([u'Unlocked Unit'], self.course_nav.sequence_items)
+        self.course_home_page.outline.go_to_section("Test Section", "Subsection With Locked Unit")
+        self.courseware_page.wait_for_page()
+        self.assertEqual([u'Unlocked Unit'], self.courseware_page.nav.sequence_items)
 
-        self.course_nav.go_to_section("Test Section", "Unlocked Subsection")
-        self.assertEqual([u'Test Unit'], self.course_nav.sequence_items)
+        self.course_home_page.visit()
+        self.course_home_page.outline.go_to_section("Test Section", "Unlocked Subsection")
+        self.courseware_page.wait_for_page()
+        self.assertEqual([u'Test Unit'], self.courseware_page.nav.sequence_items)
 
 
 @attr(shard=1)
@@ -924,8 +989,7 @@ class TooltipTest(UniqueCourseTest):
         """
         Verify that tooltips are displayed when you hover over the sequence nav bar.
         """
-        self.course_info_page.visit()
-        self.tab_nav.go_to_tab('Course')
+        self.courseware_page.visit()
 
         self.courseware_page.verify_tooltips_displayed()
 
@@ -1027,8 +1091,7 @@ class ProblemExecutionTest(UniqueCourseTest):
         """
         super(ProblemExecutionTest, self).setUp()
 
-        self.course_info_page = CourseInfoPage(self.browser, self.course_id)
-        self.course_nav = CourseNavPage(self.browser)
+        self.course_home_page = CourseHomePage(self.browser, self.course_id)
         self.tab_nav = TabNavPage(self.browser)
 
         # Install a course with sections and problems.
@@ -1073,9 +1136,8 @@ class ProblemExecutionTest(UniqueCourseTest):
 
     def test_python_execution_in_problem(self):
         # Navigate to the problem page
-        self.course_info_page.visit()
-        self.tab_nav.go_to_tab('Course')
-        self.course_nav.go_to_section('Test Section', 'Test Subsection')
+        self.course_home_page.visit()
+        self.course_home_page.outline.go_to_section('Test Section', 'Test Subsection')
 
         problem_page = ProblemPage(self.browser)
         self.assertEqual(problem_page.problem_name.upper(), 'PYTHON PROBLEM')
@@ -1111,7 +1173,7 @@ class EntranceExamTest(UniqueCourseTest):
             self.course_info['run'], self.course_info['display_name']
         ).install()
 
-        self.courseware_page = CoursewarePage(self.browser, self.course_id)
+        self.course_home_page = CourseHomePage(self.browser, self.course_id)
         self.settings_page = SettingsPage(
             self.browser,
             self.course_info['org'],
@@ -1124,18 +1186,53 @@ class EntranceExamTest(UniqueCourseTest):
 
     def test_entrance_exam_section(self):
         """
+         Scenario: Any course that is enabled for an entrance exam, should have
+         entrance exam section in the course outline.
+            Given that I visit the course outline
+            And entrance exams are not yet enabled
+            Then I should not see an "Entrance Exam" section
+            When I log in as staff
+            And enable entrance exams
+            And I visit the course outline again as student
+            Then there should be an "Entrance Exam" chapter.'
+        """
+        # visit the course outline and make sure there is no "Entrance Exam" section.
+        self.course_home_page.visit()
+        self.assertFalse('Entrance Exam' in self.course_home_page.outline.sections.keys())
+
+        # Logout and login as a staff.
+        LogoutPage(self.browser).visit()
+        AutoAuthPage(self.browser, course_id=self.course_id, staff=True).visit()
+
+        # visit course settings page and set/enabled entrance exam for that course.
+        self.settings_page.visit()
+        self.settings_page.entrance_exam_field.click()
+        self.settings_page.save_changes()
+
+        # Logout and login as a student.
+        LogoutPage(self.browser).visit()
+        AutoAuthPage(self.browser, course_id=self.course_id, staff=False).visit()
+
+        # visit the course outline and make sure there is an "Entrance Exam" section.
+        self.course_home_page.visit()
+        self.assertTrue('Entrance Exam' in self.course_home_page.outline.sections.keys())
+
+    # TODO: TNL-6546: Remove test
+    def test_entrance_exam_section_2(self):
+        """
          Scenario: Any course that is enabled for an entrance exam, should have entrance exam chapter at course
          page.
             Given that I am on the course page
             When I view the course that has an entrance exam
             Then there should be an "Entrance Exam" chapter.'
         """
+        courseware_page = CoursewarePage(self.browser, self.course_id)
         entrance_exam_link_selector = '.accordion .course-navigation .chapter .group-heading'
         # visit course page and make sure there is not entrance exam chapter.
-        self.courseware_page.visit()
-        self.courseware_page.wait_for_page()
+        courseware_page.visit()
+        courseware_page.wait_for_page()
         self.assertFalse(element_has_text(
-            page=self.courseware_page,
+            page=courseware_page,
             css_selector=entrance_exam_link_selector,
             text='Entrance Exam'
         ))
@@ -1154,10 +1251,10 @@ class EntranceExamTest(UniqueCourseTest):
         AutoAuthPage(self.browser, course_id=self.course_id, staff=False).visit()
 
         # visit course info page and make sure there is an "Entrance Exam" section.
-        self.courseware_page.visit()
-        self.courseware_page.wait_for_page()
+        courseware_page.visit()
+        courseware_page.wait_for_page()
         self.assertTrue(element_has_text(
-            page=self.courseware_page,
+            page=courseware_page,
             css_selector=entrance_exam_link_selector,
             text='Entrance Exam'
         ))
@@ -1354,6 +1451,6 @@ class CourseInfoA11yTest(UniqueCourseTest):
         self.course_info_page = CourseInfoPage(self.browser, self.course_id)
         AutoAuthPage(self.browser, course_id=self.course_id).visit()
 
-    def test_course_home_a11y(self):
+    def test_course_info_a11y(self):
         self.course_info_page.visit()
         self.course_info_page.a11y_audit.check_for_accessibility_errors()

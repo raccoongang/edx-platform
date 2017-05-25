@@ -242,7 +242,7 @@
     }
   }
 
-  h1 {
+  .instructor-dashboard-title {
     @extend .top-header;
     display: inline-block;
     margin-bottom: ($baseline*.75);
@@ -1479,6 +1479,14 @@
       border-radius: 5px;
       margin-top: 25px;
     }
+  }
+}
+
+// view - student admin
+// --------------------
+.instructor-dashboard-wrapper-2 section.idash-section#open_response_assessment {
+  .open-response-assessment {
+    padding-top: 20px;
   }
 }
 

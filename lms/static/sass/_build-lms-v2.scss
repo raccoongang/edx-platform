@@ -18,3 +18,11 @@
 @import 'shared-v2/components';
 @import 'shared-v2/modal';
 @import 'shared-v2/help-tab';
+
+// Elements
+@import 'notifications';
+@import 'elements-v2/pagination';
+
+// Features
+@import 'features/bookmarks';
+@import 'features/course-outline';

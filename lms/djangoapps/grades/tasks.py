@@ -9,58 +9,89 @@ from django.core.exceptions import ValidationError
 from django.db.utils import DatabaseError
 from logging import getLogger
 
+log = getLogger(__name__)
+
+from celery_utils.logged_task import LoggedTask
+from celery_utils.persist_on_failure import PersistOnFailureTask
 from courseware.model_data import get_score
 from lms.djangoapps.course_blocks.api import get_course_blocks
-from opaque_keys.edx.keys import UsageKey
+from lms.djangoapps.courseware import courses
+from opaque_keys.edx.keys import CourseKey, UsageKey
 from opaque_keys.edx.locator import CourseLocator
+from openedx.core.djangoapps.monitoring_utils import (
+    set_custom_metrics_for_course_key, set_custom_metric
+)
+from student.models import CourseEnrollment
 from submissions import api as sub_api
-from student.models import anonymous_id_for_user
 from track.event_transaction_utils import (
     set_event_transaction_type,
     set_event_transaction_id,
-    get_event_transaction_type,
-    get_event_transaction_id
 )
 from util.date_utils import from_timestamp
 from xmodule.modulestore.django import modulestore
 
-from .config.models import PersistentGradesEnabledFlag
-from .new.subsection_grade import SubsectionGradeFactory
+from .constants import ScoreDatabaseTableEnum
+from .new.subsection_grade_factory import SubsectionGradeFactory
+from .new.course_grade_factory import CourseGradeFactory
 from .signals.signals import SUBSECTION_SCORE_CHANGED
 from .transformer import GradesTransformer
 
-log = getLogger(__name__)
 
-KNOWN_RETRY_ERRORS = (DatabaseError, ValidationError)  # Errors we expect occasionally, should be resolved on retry
-
-
-@task(default_retry_delay=30, routing_key=settings.RECALCULATE_GRADES_ROUTING_KEY)
-def recalculate_subsection_grade(
-        # pylint: disable=unused-argument
-        user_id, course_id, usage_id, only_if_higher, weighted_earned, weighted_possible, **kwargs
-):
+class DatabaseNotReadyError(IOError):
     """
-    Shim to allow us to modify this task's signature without blowing up production on deployment.
+    Subclass of IOError to indicate the database has not yet committed
+    the data we're trying to find.
     """
-    recalculate_subsection_grade_v2.apply(
-        kwargs=dict(
-            user_id=user_id,
-            course_id=course_id,
-            usage_id=usage_id,
-            only_if_higher=only_if_higher,
-            expected_modified_time=kwargs.get('expected_modified_time', 0),  # Use the unix epoch as a default
-            score_deleted=kwargs['score_deleted'],
-        )
-    )
+    pass
 
 
-@task(default_retry_delay=30, routing_key=settings.RECALCULATE_GRADES_ROUTING_KEY)
-def recalculate_subsection_grade_v2(**kwargs):
+KNOWN_RETRY_ERRORS = (  # Errors we expect occasionally, should be resolved on retry
+    DatabaseError,
+    ValidationError,
+    DatabaseNotReadyError
+)
+RECALCULATE_GRADE_DELAY = 2  # in seconds, to prevent excessive _has_db_updated failures. See TNL-6424.
+
+
+class _BaseTask(PersistOnFailureTask, LoggedTask):  # pylint: disable=abstract-method
+    """
+    Include persistence features, as well as logging of task invocation.
+    """
+    abstract = True
+
+
+@task(base=_BaseTask)
+def compute_grades_for_course(course_key, offset, batch_size):
+    """
+    Compute grades for a set of students in the specified course.
+
+    The set of students will be determined by the order of enrollment date, and
+    limited to at most <batch_size> students, starting from the specified
+    offset.
+    """
+
+    course = courses.get_course_by_id(CourseKey.from_string(course_key))
+    enrollments = CourseEnrollment.objects.filter(course_id=course.id).order_by('created')
+    student_iter = (enrollment.user for enrollment in enrollments[offset:offset + batch_size])
+    list(CourseGradeFactory().iter(course, students=student_iter, force_update=True))
+
+
+@task(bind=True, base=_BaseTask, default_retry_delay=30, routing_key=settings.RECALCULATE_GRADES_ROUTING_KEY)
+def recalculate_subsection_grade_v3(self, **kwargs):
+    """
+    Latest version of the recalculate_subsection_grade task.  See docstring
+    for _recalculate_subsection_grade for further description.
+    """
+    _recalculate_subsection_grade(self, **kwargs)
+
+
+def _recalculate_subsection_grade(self, **kwargs):
     """
     Updates a saved subsection grade.
 
-    Arguments:
+    Keyword Arguments:
         user_id (int): id of applicable User object
+        anonymous_user_id (int, OPTIONAL): Anonymous ID of the User
         course_id (string): identifying the course
         usage_id (string): identifying the course block
         only_if_higher (boolean): indicating whether grades should
@@ -70,36 +101,36 @@ def recalculate_subsection_grade_v2(**kwargs):
             was queued so that we can verify the underlying data update.
         score_deleted (boolean): indicating whether the grade change is
             a result of the problem's score being deleted.
-        event_transaction_id(string): uuid identifying the current
+        event_transaction_id (string): uuid identifying the current
             event transaction.
-        event_transaction_type(string): human-readable type of the
+        event_transaction_type (string): human-readable type of the
             event at the root of the current event transaction.
+        score_db_table (ScoreDatabaseTableEnum): database table that houses
+            the changed score. Used in conjunction with expected_modified_time.
     """
     try:
         course_key = CourseLocator.from_string(kwargs['course_id'])
-        if not PersistentGradesEnabledFlag.feature_enabled(course_key):
-            return
-
-        score_deleted = kwargs['score_deleted']
         scored_block_usage_key = UsageKey.from_string(kwargs['usage_id']).replace(course_key=course_key)
-        expected_modified_time = from_timestamp(kwargs['expected_modified_time'])
+
+        set_custom_metrics_for_course_key(course_key)
+        set_custom_metric('usage_id', unicode(scored_block_usage_key))
 
         # The request cache is not maintained on celery workers,
         # where this code runs. So we take the values from the
         # main request cache and store them in the local request
         # cache. This correlates model-level grading events with
         # higher-level ones.
-        set_event_transaction_id(kwargs.pop('event_transaction_id', None))
-        set_event_transaction_type(kwargs.pop('event_transaction_type', None))
+        set_event_transaction_id(kwargs.get('event_transaction_id'))
+        set_event_transaction_type(kwargs.get('event_transaction_type'))
 
         # Verify the database has been updated with the scores when the task was
         # created. This race condition occurs if the transaction in the task
         # creator's process hasn't committed before the task initiates in the worker
         # process.
-        if not _has_database_updated_with_new_score(
-                kwargs['user_id'], scored_block_usage_key, expected_modified_time, score_deleted,
-        ):
-            raise _retry_recalculate_subsection_grade(**kwargs)
+        has_database_updated = _has_db_updated_with_new_score(self, scored_block_usage_key, **kwargs)
+
+        if not has_database_updated:
+            raise DatabaseNotReadyError
 
         _update_subsection_grades(
             course_key,
@@ -107,50 +138,55 @@ def recalculate_subsection_grade_v2(**kwargs):
             kwargs['only_if_higher'],
             kwargs['user_id'],
         )
-
     except Exception as exc:   # pylint: disable=broad-except
         if not isinstance(exc, KNOWN_RETRY_ERRORS):
-            log.info("tnl-6244 grades unexpected failure: {}. kwargs={}".format(
+            log.info("tnl-6244 grades unexpected failure: {}. task id: {}. kwargs={}".format(
                 repr(exc),
-                kwargs
+                self.request.id,
+                kwargs,
             ))
-        raise _retry_recalculate_subsection_grade(exc=exc, **kwargs)
+        raise self.retry(kwargs=kwargs, exc=exc)
 
 
-def _has_database_updated_with_new_score(
-        user_id, scored_block_usage_key, expected_modified_time, score_deleted,
-):
+def _has_db_updated_with_new_score(self, scored_block_usage_key, **kwargs):
     """
     Returns whether the database has been updated with the
     expected new score values for the given problem and user.
     """
-    score = get_score(user_id, scored_block_usage_key)
+    if kwargs['score_db_table'] == ScoreDatabaseTableEnum.courseware_student_module:
+        score = get_score(kwargs['user_id'], scored_block_usage_key)
+        found_modified_time = score.modified if score is not None else None
+
+    else:
+        assert kwargs['score_db_table'] == ScoreDatabaseTableEnum.submissions
+        score = sub_api.get_score(
+            {
+                "student_id": kwargs['anonymous_user_id'],
+                "course_id": unicode(scored_block_usage_key.course_key),
+                "item_id": unicode(scored_block_usage_key),
+                "item_type": scored_block_usage_key.block_type,
+            }
+        )
+        found_modified_time = score['created_at'] if score is not None else None
 
     if score is None:
         # score should be None only if it was deleted.
         # Otherwise, it hasn't yet been saved.
-        return score_deleted
-    elif score.module_type == 'openassessment':
-        anon_id = anonymous_id_for_user(User.objects.get(id=user_id), scored_block_usage_key.course_key)
-        course_id = unicode(scored_block_usage_key.course_key)
-        item_id = unicode(scored_block_usage_key)
-
-        api_score = sub_api.get_score(
-            {
-                "student_id": anon_id,
-                "course_id": course_id,
-                "item_id": item_id,
-                "item_type": "openassessment"
-            }
-        )
-        if api_score is None:
-            # Same case as the initial 'if' above, for submissions-specific scores
-            return score_deleted
-        reported_modified_time = api_score['created_at']
+        db_is_updated = kwargs['score_deleted']
     else:
-        reported_modified_time = score.modified
+        db_is_updated = found_modified_time >= from_timestamp(kwargs['expected_modified_time'])
 
-    return reported_modified_time >= expected_modified_time
+    if not db_is_updated:
+        log.info(
+            u"Grades: tasks._has_database_updated_with_new_score is False. Task ID: {}. Kwargs: {}. Found "
+            u"modified time: {}".format(
+                self.request.id,
+                kwargs,
+                found_modified_time,
+            )
+        )
+
+    return db_is_updated
 
 
 def _update_subsection_grades(
@@ -185,37 +221,9 @@ def _update_subsection_grades(
                     only_if_higher,
                 )
                 SUBSECTION_SCORE_CHANGED.send(
-                    sender=recalculate_subsection_grade,
+                    sender=None,
                     course=course,
                     course_structure=course_structure,
                     user=student,
                     subsection_grade=subsection_grade,
                 )
-
-
-def _retry_recalculate_subsection_grade(
-        user_id,
-        course_id,
-        usage_id,
-        only_if_higher,
-        expected_modified_time,
-        score_deleted,
-        exc=None,
-):
-    """
-    Calls retry for the recalculate_subsection_grade task with the
-    given inputs.
-    """
-    recalculate_subsection_grade_v2.retry(
-        kwargs=dict(
-            user_id=user_id,
-            course_id=course_id,
-            usage_id=usage_id,
-            only_if_higher=only_if_higher,
-            expected_modified_time=expected_modified_time,
-            score_deleted=score_deleted,
-            event_transaction_id=unicode(get_event_transaction_id()),
-            event_transaction_type=unicode(get_event_transaction_type()),
-        ),
-        exc=exc,
-    )

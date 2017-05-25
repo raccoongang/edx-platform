@@ -22,7 +22,7 @@ from capa.tests.response_xml_factory import (
 from course_modes.models import CourseMode
 from courseware.models import StudentModule, BaseStudentModuleHistory
 from courseware.tests.helpers import LoginEnrollmentTestCase
-from lms.djangoapps.grades.new.course_grade import CourseGradeFactory
+from lms.djangoapps.grades.new.course_grade_factory import CourseGradeFactory
 from openedx.core.djangoapps.credit.api import (
     set_credit_requirements, get_credit_requirement_status
 )
@@ -296,13 +296,11 @@ class TestSubmittingProblems(ModuleStoreTestCase, LoginEnrollmentTestCase, Probl
         """
         Returns SubsectionGrade for given url.
         """
-        # list of grade summaries for each section
-        sections_list = []
-        for chapter in self.get_course_grade().chapter_grades:
-            sections_list.extend(chapter['sections'])
-
-        # get the first section that matches the url (there should only be one)
-        return next(section for section in sections_list if section.url_name == hw_url_name)
+        for chapter in self.get_course_grade().chapter_grades.itervalues():
+            for section in chapter['sections']:
+                if section.url_name == hw_url_name:
+                    return section
+        return None
 
     def score_for_hw(self, hw_url_name):
         """
@@ -818,7 +816,7 @@ class ProblemWithUploadedFilesTest(TestSubmittingProblems):
         self.assertEqual(name, "post")
         self.assertEqual(len(args), 1)
         self.assertTrue(args[0].endswith("/submit/"))
-        self.assertItemsEqual(kwargs.keys(), ["files", "data"])
+        self.assertItemsEqual(kwargs.keys(), ["files", "data", "timeout"])
         self.assertItemsEqual(kwargs['files'].keys(), filenames.split())
 
 

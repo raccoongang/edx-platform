@@ -12,7 +12,7 @@ from flaky import flaky
 from common.test.acceptance.tests.helpers import UniqueCourseTest, get_modal_alert, EventsTestMixin
 from common.test.acceptance.pages.common.logout import LogoutPage
 from common.test.acceptance.pages.lms.auto_auth import AutoAuthPage
-from common.test.acceptance.pages.studio.overview import CourseOutlinePage
+from common.test.acceptance.pages.studio.overview import CourseOutlinePage as StudioCourseOutlinePage
 from common.test.acceptance.pages.lms.create_mode import ModeCreationPage
 from common.test.acceptance.pages.lms.courseware import CoursewarePage
 from common.test.acceptance.pages.lms.instructor_dashboard import InstructorDashboardPage, EntranceExamAdmin
@@ -227,7 +227,7 @@ class ProctoredExamsTest(BaseInstructorDashboardTest):
 
         self.courseware_page = CoursewarePage(self.browser, self.course_id)
 
-        self.course_outline = CourseOutlinePage(
+        self.studio_course_outline = StudioCourseOutlinePage(
             self.browser,
             self.course_info['org'],
             self.course_info['number'],
@@ -301,15 +301,15 @@ class ProctoredExamsTest(BaseInstructorDashboardTest):
         # Visit the course outline page in studio
         LogoutPage(self.browser).visit()
         self._auto_auth("STAFF_TESTER", "staff101@example.com", True)
-        self.course_outline.visit()
+        self.studio_course_outline.visit()
 
         # open the exam settings to make it a proctored exam.
-        self.course_outline.open_subsection_settings_dialog()
+        self.studio_course_outline.open_subsection_settings_dialog()
 
         # select advanced settings tab
-        self.course_outline.select_advanced_tab()
+        self.studio_course_outline.select_advanced_tab()
 
-        self.course_outline.make_exam_proctored()
+        self.studio_course_outline.make_exam_proctored()
 
         # login as a verified student and visit the courseware.
         LogoutPage(self.browser).visit()
@@ -327,15 +327,15 @@ class ProctoredExamsTest(BaseInstructorDashboardTest):
         # Visit the course outline page in studio
         LogoutPage(self.browser).visit()
         self._auto_auth("STAFF_TESTER", "staff101@example.com", True)
-        self.course_outline.visit()
+        self.studio_course_outline.visit()
 
         # open the exam settings to make it a proctored exam.
-        self.course_outline.open_subsection_settings_dialog()
+        self.studio_course_outline.open_subsection_settings_dialog()
 
         # select advanced settings tab
-        self.course_outline.select_advanced_tab()
+        self.studio_course_outline.select_advanced_tab()
 
-        self.course_outline.make_exam_timed()
+        self.studio_course_outline.make_exam_timed()
 
         # login as a verified student and visit the courseware.
         LogoutPage(self.browser).visit()
@@ -1202,3 +1202,112 @@ class CertificateInvalidationTest(BaseInstructorDashboardTest):
             '.certificates-wrapper'
         ])
         self.certificates_section.a11y_audit.check_for_accessibility_errors()
+
+
+@attr(shard=10)
+class EcommerceTest(BaseInstructorDashboardTest):
+    """
+    Bok Choy tests for the "E-Commerce" tab.
+    """
+    def setUp(self):
+        super(EcommerceTest, self).setUp()
+
+    def setup_course(self, course_number):
+        """
+        Sets up the course
+        """
+        self.course_info['number'] = course_number
+        course_fixture = CourseFixture(
+            self.course_info["org"],
+            self.course_info["number"],
+            self.course_info["run"],
+            self.course_info["display_name"]
+        )
+        course_fixture.install()
+
+    def log_in_as_unique_user(self):
+        """
+        Log in as a valid lms user.
+        """
+        AutoAuthPage(
+            self.browser,
+            username="test_instructor",
+            email="test_instructor@example.com",
+            password="password",
+            course_id=self.course_id
+        ).visit()
+
+    def visit_ecommerce_section(self):
+        """
+        Log in to visit Instructor dashboard and click E-commerce tab
+        """
+        self.log_in_as_unique_user()
+        instructor_dashboard_page = self.visit_instructor_dashboard()
+        return instructor_dashboard_page.select_ecommerce_tab()
+
+    def add_course_mode(self, sku_value=None):
+        """
+        Add an honor mode to the course
+        """
+        ModeCreationPage(browser=self.browser, course_id=self.course_id, mode_slug=u'honor', min_price=10,
+                         sku=sku_value).visit()
+
+    def test_enrollment_codes_section_visible_for_non_ecommerce_course(self):
+        """
+        Test Enrollment Codes UI, under E-commerce Tab, should be visible in the Instructor Dashboard with non
+        e-commerce course
+        """
+        # Setup course
+        non_ecommerce_course_number = "34039497242734583224814321005482849780"
+        self.setup_course(non_ecommerce_course_number)
+
+        # Add an honor mode to the course
+        self.add_course_mode()
+
+        # Log in and visit E-commerce section under Instructor dashboard
+        self.assertIn(u'Enrollment Codes', self.visit_ecommerce_section().get_sections_header_values())
+
+    def test_coupon_codes_section_visible_for_non_ecommerce_course(self):
+        """
+        Test Coupon Codes UI, under E-commerce Tab, should be visible in the Instructor Dashboard with non
+        e-commerce course
+        """
+        # Setup course
+        non_ecommerce_course_number = "34039497242734583224814321005482849781"
+        self.setup_course(non_ecommerce_course_number)
+
+        # Add an honor mode to the course
+        self.add_course_mode()
+
+        # Log in and visit E-commerce section under Instructor dashboard
+        self.assertIn(u'Coupon Code List', self.visit_ecommerce_section().get_sections_header_values())
+
+    def test_enrollment_codes_section_not_visible_for_ecommerce_course(self):
+        """
+        Test Enrollment Codes UI, under E-commerce Tab, should not be visible in the Instructor Dashboard with
+        e-commerce course
+        """
+        # Setup course
+        ecommerce_course_number = "34039497242734583224814321005482849782"
+        self.setup_course(ecommerce_course_number)
+
+        # Add an honor mode to the course with sku value
+        self.add_course_mode('test_sku')
+
+        # Log in and visit E-commerce section under Instructor dashboard
+        self.assertNotIn(u'Enrollment Codes', self.visit_ecommerce_section().get_sections_header_values())
+
+    def test_coupon_codes_section_not_visible_for_ecommerce_course(self):
+        """
+        Test Coupon Codes UI, under E-commerce Tab, should not be visible in the Instructor Dashboard with
+        e-commerce course
+        """
+        # Setup course
+        ecommerce_course_number = "34039497242734583224814321005482849783"
+        self.setup_course(ecommerce_course_number)
+
+        # Add an honor mode to the course with sku value
+        self.add_course_mode('test_sku')
+
+        # Log in and visit E-commerce section under Instructor dashboard
+        self.assertNotIn(u'Coupon Code List', self.visit_ecommerce_section().get_sections_header_values())

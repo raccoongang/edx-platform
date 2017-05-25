@@ -88,6 +88,8 @@ from lms.envs.common import (
     # File upload defaults
     FILE_UPLOAD_STORAGE_BUCKET_NAME,
     FILE_UPLOAD_STORAGE_PREFIX,
+
+    COURSE_ENROLLMENT_MODES
 )
 from path import Path as path
 from warnings import simplefilter
@@ -222,6 +224,12 @@ FEATURES = {
 
     # Set this to False to facilitate cleaning up invalid xml from your modulestore.
     'ENABLE_XBLOCK_XML_VALIDATION': True,
+
+    # Allow public account creation
+    'ALLOW_PUBLIC_ACCOUNT_CREATION': True,
+
+    # Whether or not the dynamic EnrollmentTrackUserPartition should be registered.
+    'ENABLE_ENROLLMENT_TRACK_USER_PARTITION': False,
 }
 
 ENABLE_JASMINE = False
@@ -316,6 +324,7 @@ AUTHENTICATION_BACKENDS = (
 
 LMS_BASE = None
 LMS_ROOT_URL = "http://localhost:8000"
+ENTERPRISE_API_URL = LMS_ROOT_URL + '/enterprise/api/v1/'
 
 # These are standard regexes for pulling out info like course_ids, usage_ids, etc.
 # They are used so that URLs with deprecated-format strings still work.
@@ -396,6 +405,8 @@ MIDDLEWARE_CLASSES = (
 
     # use Django built in clickjacking protection
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'waffle.middleware.WaffleMiddleware',
 
     # This must be last so that it runs first in the process_response chain
     'openedx.core.djangoapps.site_configuration.middleware.SessionCookieDomainOverrideMiddleware',
@@ -549,6 +560,8 @@ LOCALE_PATHS = (REPO_ROOT + '/conf/locale',)  # edx-platform/conf/locale/
 
 # Messages
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+COURSE_IMPORT_EXPORT_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 ##### EMBARGO #####
 EMBARGO_SITE_REDIRECT_URL = None
@@ -826,6 +839,7 @@ INSTALLED_APPS = (
 
     # Database-backed configuration
     'config_models',
+    'waffle',
 
     # Monitor the status of services
     'openedx.core.djangoapps.service_status',
@@ -874,6 +888,9 @@ INSTALLED_APPS = (
     # for managing course modes
     'course_modes',
 
+    # Verified Track Content Cohorting (Beta feature that will hopefully be removed)
+    'openedx.core.djangoapps.verified_track_content',
+
     # Dark-launching languages
     'openedx.core.djangoapps.dark_lang',
 
@@ -910,9 +927,6 @@ INSTALLED_APPS = (
 
     # Bookmarks
     'openedx.core.djangoapps.bookmarks',
-
-    # programs support
-    'openedx.core.djangoapps.programs',
 
     # Catalog integration
     'openedx.core.djangoapps.catalog',
@@ -956,6 +970,9 @@ INSTALLED_APPS = (
 
     # management of user-triggered async tasks (course import/export, etc.)
     'user_tasks',
+
+    # CMS specific user task handling
+    'cms_user_tasks.apps.CmsUserTasksConfig',
 
     # Unusual migrations
     'database_fixups',
@@ -1242,3 +1259,11 @@ RETRY_ACTIVATION_EMAIL_TIMEOUT = 0.5
 
 # How long until database records about the outcome of a task and its artifacts get deleted?
 USER_TASKS_MAX_AGE = timedelta(days=7)
+
+############## Settings for the Enterprise App ######################
+
+ENTERPRISE_ENROLLMENT_API_URL = LMS_ROOT_URL + "/api/enrollment/v1/"
+
+############## Settings for the Discovery App ######################
+
+COURSE_CATALOG_API_URL = None

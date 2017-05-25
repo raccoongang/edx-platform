@@ -35,6 +35,7 @@
 @import 'shared/modal';
 @import 'shared/activation_messages';
 @import 'shared/unsubscribe';
+@import 'shared/help-tab';
 
 // shared - platform
 @import 'multicourse/home';
@@ -61,15 +62,17 @@
 @import 'views/support';
 @import 'views/oauth2';
 @import "views/financial-assistance";
-@import 'views/bookmarks';
 @import 'course/auto-cert';
 @import 'views/api-access';
+
+// features
+@import 'features/bookmarks-v1';
 
 // search
 @import 'search/search';
 
 // news
-@import 'news';
+@import 'notifications';
 
 @import 'mixins';
 @import 'mixins-inherited';

@@ -1,0 +1,55 @@
+## mako
+
+<%page expression_filter="h"/>
+
+<%!
+import json
+from django.utils.translation import ugettext as _
+from django.template.defaultfilters import escapejs
+from django.core.urlresolvers import reverse
+
+from django_comment_client.permissions import has_permission
+from openedx.core.djangolib.js_utils import dump_js_escaped_json, js_escaped_string
+from openedx.core.djangolib.markup import HTML
+%>
+
+
+<main id="main" aria-label="Content" tabindex="-1">
+  <div class="container">
+    <section class="static-tab-wrapper" style="margin-bottom: 30px;">
+
+      <h1>${_("Course calendar")}</h1>
+
+  % if calendar_id:
+
+      <div id="scheduler_here" class="dhx_cal_container" style='width:100%; height: 600px;'>
+        <div class="dhx_cal_navline">
+          <div class="dhx_cal_prev_button">&nbsp;</div>
+          <div class="dhx_cal_next_button">&nbsp;</div>
+          <div class="dhx_cal_today_button"></div>
+          <div class="dhx_cal_date"></div>
+          <div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
+          <div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
+          <div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
+        </div>
+        <div class="dhx_cal_header"></div>
+        <div class="dhx_cal_data"></div>
+      </div>
+
+  % else:
+
+      <p>${_("There is no any active calendar yet.")}</p>
+
+    % if is_staff:
+      <hr class="divider">
+      <button id="calendar-init" type="button" class="btn btn-info btn-lg">${_("Initiate course google calendar")}
+      </button>
+      <span id="initializing"
+            style="display: none;color:green;"><b>${_("Course google calendar is being initialized...")}</b></span>
+    % endif
+
+  % endif
+
+    </section>
+  </div>
+</main>

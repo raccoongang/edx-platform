@@ -41,7 +41,7 @@ class ContentStoreImportTest(SignalDisconnectTestMixin, ModuleStoreTestCase):
         self.client.login(username=self.user.username, password=self.user_password)
 
         # block_structure.update_course_in_cache cannot succeed in tests, as it needs to be run async on an lms worker
-        self.task_patcher = patch('openedx.core.djangoapps.content.block_structure.tasks.update_course_in_cache')
+        self.task_patcher = patch('openedx.core.djangoapps.content.block_structure.tasks.update_course_in_cache_v2')
         self._mock_lms_task = self.task_patcher.start()
 
     def tearDown(self):
@@ -181,13 +181,13 @@ class ContentStoreImportTest(SignalDisconnectTestMixin, ModuleStoreTestCase):
         # we try to refresh the inheritance tree for each update_item in the import
         with check_exact_number_of_calls(store, 'refresh_cached_metadata_inheritance_tree', 28):
 
-            # _get_cached_metadata_inheritance_tree should be called twice (once for import, once on publish)
-            with check_exact_number_of_calls(store, '_get_cached_metadata_inheritance_tree', 2):
+            # _get_cached_metadata_inheritance_tree should be called once
+            with check_exact_number_of_calls(store, '_get_cached_metadata_inheritance_tree', 1):
 
                 # with bulk-edit in progress, the inheritance tree should be recomputed only at the end of the import
-                # NOTE: On Jenkins, with memcache enabled, the number of calls here is only 1.
-                #       Locally, without memcache, the number of calls is actually 2 (once more during the publish step)
-                with check_number_of_calls(store, '_compute_metadata_inheritance_tree', 2):
+                # NOTE: On Jenkins, with memcache enabled, the number of calls here is 1.
+                #       Locally, without memcache, the number of calls is 1 (publish no longer counted)
+                with check_number_of_calls(store, '_compute_metadata_inheritance_tree', 1):
                     self.load_test_import_course(create_if_not_present=False, module_store=store)
 
     @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)

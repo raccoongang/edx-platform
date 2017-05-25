@@ -8,6 +8,8 @@ from django.test import TestCase, RequestFactory
 from django.test.utils import override_settings
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.utils import timezone
+from freezegun import freeze_time
 from mock import patch
 from nose.plugins.attrib import attr
 from opaque_keys.edx.locator import CourseLocator
@@ -88,6 +90,7 @@ class WebCertificateTestMixin(object):
 @attr(shard=1)
 class CertificateDownloadableStatusTests(WebCertificateTestMixin, ModuleStoreTestCase):
     """Tests for the `certificate_downloadable_status` helper function. """
+    ENABLED_SIGNALS = ['course_published']
 
     def setUp(self):
         super(CertificateDownloadableStatusTests, self).setUp()
@@ -320,7 +323,10 @@ class CertificateisInvalid(WebCertificateTestMixin, ModuleStoreTestCase):
 @attr(shard=1)
 class CertificateGetTests(SharedModuleStoreTestCase):
     """Tests for the `test_get_certificate_for_user` helper function. """
+    now = timezone.now()
+
     @classmethod
+    @freeze_time(now)
     def setUpClass(cls):
         super(CertificateGetTests, cls).setUpClass()
         cls.student = UserFactory()
@@ -367,9 +373,11 @@ class CertificateGetTests(SharedModuleStoreTestCase):
 
         self.assertEqual(cert['username'], self.student.username)
         self.assertEqual(cert['course_key'], self.web_cert_course.id)
+        self.assertEqual(cert['created'], self.now)
         self.assertEqual(cert['type'], CourseMode.VERIFIED)
         self.assertEqual(cert['status'], CertificateStatuses.downloadable)
         self.assertEqual(cert['grade'], "0.88")
+        self.assertEqual(cert['is_passing'], True)
         self.assertEqual(cert['download_url'], 'www.google.com')
 
     def test_get_certificates_for_user(self):
@@ -382,10 +390,14 @@ class CertificateGetTests(SharedModuleStoreTestCase):
         self.assertEqual(certs[1]['username'], self.student.username)
         self.assertEqual(certs[0]['course_key'], self.web_cert_course.id)
         self.assertEqual(certs[1]['course_key'], self.pdf_cert_course.id)
+        self.assertEqual(certs[0]['created'], self.now)
+        self.assertEqual(certs[1]['created'], self.now)
         self.assertEqual(certs[0]['type'], CourseMode.VERIFIED)
         self.assertEqual(certs[1]['type'], CourseMode.HONOR)
         self.assertEqual(certs[0]['status'], CertificateStatuses.downloadable)
         self.assertEqual(certs[1]['status'], CertificateStatuses.downloadable)
+        self.assertEqual(certs[0]['is_passing'], True)
+        self.assertEqual(certs[1]['is_passing'], True)
         self.assertEqual(certs[0]['grade'], '0.88')
         self.assertEqual(certs[1]['grade'], '0.99')
         self.assertEqual(certs[0]['download_url'], 'www.google.com')
@@ -457,6 +469,7 @@ class GenerateUserCertificatesTest(EventTestMixin, WebCertificateTestMixin, Modu
     """Tests for generating certificates for students. """
 
     ERROR_REASON = "Kaboom!"
+    ENABLED_SIGNALS = ['course_published']
 
     def setUp(self):  # pylint: disable=arguments-differ
         super(GenerateUserCertificatesTest, self).setUp('certificates.api.tracker')
