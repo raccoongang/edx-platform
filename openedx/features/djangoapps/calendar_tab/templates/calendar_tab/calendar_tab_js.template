@@ -1,0 +1,20 @@
+## mako
+<%!
+from django.core.urlresolvers import reverse
+%>
+(function ($) {
+    var courseId = "${course.id}";
+    var initCalendarUrl = "${reverse('calendar_init', kwargs={'course_id': course.id})}";
+      $(document).ajaxStart(function () {
+        $("#initializing").show("slow");
+      });
+      $('#calendar-init').on("click", function () {
+        var jqxhr = $.post(initCalendarUrl, {courseId: courseId})
+          .done(function () {
+            location.reload();
+          })
+          .fail(function () {
+            console.error("An error occured during google calendar initialization.");
+          })
+      });
+})(jQuery);
