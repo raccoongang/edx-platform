@@ -1668,12 +1668,17 @@ PIPELINE_JS = {
         'source_filenames': credit_web_view_js,
         'output_filename': 'js/credit/web_view.js'
     },
-    'calendar-tab': {
+    'calendar_tab': {
         'source_filenames': [
-            'js/vendor/scheduler/dhtmlxscheduler.js',
             'js/calendar-tab.js',
         ],
-        'output_filename': 'js/calendar-tab.js',
+        'output_filename': 'js/calendar_tab.js',
+    },
+    'calendar_tab_vendor': {
+        'source_filenames': [
+            'js/vendor/scheduler/dhtmlxscheduler.js',
+        ],
+        'output_filename': 'js/calendar_tab_vendor.js',
     },
 }
 
