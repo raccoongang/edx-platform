@@ -2207,9 +2207,6 @@ INSTALLED_APPS = (
     'gamification_metric',
     'referrals',
 
-    # Features
-    'openedx.features.djangoapps.calendar_tab',
-
     # Customized celery tasks, including persisting failed tasks so they can
     # be retried
     'celery_utils',
@@ -2224,6 +2221,7 @@ INSTALLED_APPS = (
     'openedx.features.course_bookmarks',
     'openedx.features.course_experience',
     'openedx.features.enterprise_support',
+    'openedx.features.djangoapps.calendar_tab',
 )
 
 ######################### CSRF #########################################
