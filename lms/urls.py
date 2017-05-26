@@ -710,6 +710,16 @@ if settings.FEATURES.get('ENABLE_DISCUSSION_SERVICE'):
             name='resubscribe_forum_update',
         ),
     )
+if settings.FEATURES.get('ENABLE_CALENDAR'):
+    urlpatterns += (
+       url(
+           r'^courses/{}/calendar/'.format(
+               settings.COURSE_ID_PATTERN,
+           ),
+           include('openedx.features.djangoapps.calendar_tab.urls'),
+           name='calendar_tab_endpoints',
+       ),
+    )
 
 urlpatterns += (
     url(
@@ -1000,14 +1010,3 @@ if settings.FEATURES.get('ENABLE_FINANCIAL_ASSISTANCE_FORM'):
             name='submit_financial_assistance_request'
         )
     )
-
-# if settings.FEATURES.get('CALENDAR_ENABLED'):
-urlpatterns += (
-   url(
-       r'^courses/{}/calendar/'.format(
-           settings.COURSE_ID_PATTERN,
-       ),
-       include('openedx.features.djangoapps.calendar_tab.urls'),
-       name='calendar_tab_endpoints',
-   ),
-)

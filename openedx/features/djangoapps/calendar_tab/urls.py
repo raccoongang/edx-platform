@@ -5,5 +5,5 @@ from .views import calendar_view
 
 urlpatterns = patterns(
     'calendar_tab.views',
-    url(r"^/$", login_required(calendar_view), name="calendar_view")
+    url(r"^$", login_required(calendar_view), name="calendar_view")
 )
