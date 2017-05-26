@@ -717,7 +717,7 @@ if settings.FEATURES.get('ENABLE_CALENDAR'):
            r'^courses/{}/tab/calendar/'.format(
                settings.COURSE_ID_PATTERN,
            ),
-           include('openedx.features.djangoapps.calendar_tab.urls'),
+           include('openedx.features.calendar_tab.urls'),
            name='calendar_tab_endpoints',
        ),
     )
