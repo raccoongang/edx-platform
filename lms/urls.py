@@ -714,7 +714,7 @@ if settings.FEATURES.get('ENABLE_DISCUSSION_SERVICE'):
 if settings.FEATURES.get('ENABLE_CALENDAR'):
     urlpatterns += (
        url(
-           r'^courses/{}/calendar/'.format(
+           r'^courses/{}/tab/calendar/'.format(
                settings.COURSE_ID_PATTERN,
            ),
            include('openedx.features.djangoapps.calendar_tab.urls'),
