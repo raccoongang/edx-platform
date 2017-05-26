@@ -1,16 +1,20 @@
 from datetime import datetime
+
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
+from django.template.context_processors import csrf
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import TemplateView, View
-
-from opaque_keys.edx.keys import CourseKey
+from django.views.generic import View
 from opaque_keys import InvalidKeyError
-from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-from courseware.courses import get_course_with_access
-from courseware.access import has_access
+from opaque_keys.edx.keys import CourseKey
+from web_fragments.fragment import Fragment
 
+from courseware.access import has_access
+from courseware.courses import get_course_with_access
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
 from .utils import gcal_service
 
 
@@ -37,51 +41,80 @@ def get_calendar_id_by_course_id(course_key):
     return calendar_id
 
 
-class InitCalendarView(View):
-    """Creates google calendar and associates it with course"""
+def _create_base_calendar_view_context(request, course_key):
+    """
+    Returns the default template context for rendering calendar view.
+    """
+    user = request.user
+    course = get_course_with_access(user, 'load', course_key, check_if_enrolled=True)
+    return {
+        'csrf': csrf(request)['csrf_token'],
+        'course': course,
+        'user': user,
+        'is_staff': bool(has_access(user, 'staff', course)),
+        'calendar_id': get_calendar_id_by_course_id(course_key),
+    }
 
-    def post(self, request, *args, **kwargs):
-        course_id = request.POST.get('courseId')
-        if course_id is None:
-            return HttpResponse("Provide courseID", status=400)
 
+class CalendarTabFragmentView(EdxFragmentView):
+    """
+    Component implementation of the calendar tab.
+    """
+    def render_to_fragment(self, request, course_id=None, **kwargs):
+        """
+        Render the calendar tab to a fragment.
+        Args:
+            request: The Django request.
+            course_id: The id of the course.
+
+        Returns:
+            Fragment: The fragment representing the calendar tab.
+        """
+
+        course_key = CourseKey.from_string(course_id)
         try:
-            course_key = CourseKey.from_string(course_id)
-        except InvalidKeyError:
-            return HttpResponse("Provide valid courseID", status=403)
+            context = _create_base_calendar_view_context(request, course_key)
+            html = render_to_string('calendar_tab/calendar_tab_fragment.html', context)
+            fragment = Fragment(html)
+            self.add_fragment_resource_urls(fragment)
 
-        calendar_data = {
-            'summary': request.POST.get('courseId'),
-            'timeZone': settings.TIME_ZONE}
+            inline_js = render_to_string('calendar_tab/calendar_tab_js.template', context)
+            fragment.add_javascript(inline_js)
+            return fragment
 
-        try:
-            created_calendar = gcal_service.calendars().insert(body=calendar_data).execute()
-            # publish_calendar(created_calendar['id'])
-        except Exception as e:
-            # TODO: handle errors
-            print(e)
-            return JsonResponse({"errors": []}, status=400)
-        else:
-            updated = CourseOverview.objects.filter(id=course_key) \
-                                            .update(calendar_id=created_calendar['id'])
-            return JsonResponse({"calendarId": created_calendar['id']}, status=201)
+        except Exception as e:   # TODO: make it Google API specific
+            html = render_to_string('calendar_tab/500_fragment.html')
+            return Fragment(html)
 
 
-class CalendarView(TemplateView):
-    """Main view: renders calendar"""
-    template_name = 'calendar_tab/calendar_tab_page.html'
+    def vendor_js_dependencies(self):
+        """
+        Returns list of vendor JS files that this view depends on.
+        The helper function that it uses to obtain the list of vendor JS files
+        works in conjunction with the Django pipeline to ensure that in development mode
+        the files are loaded individually, but in production just the single bundle is loaded.
+        """
+        dependencies = set()
+        dependencies.update(self.get_js_dependencies('calendar_tab_vendor'))
+        return list(dependencies)
 
-    def get_context_data(self, **kwargs):
-        course_key = CourseKey.from_string(self.kwargs['course_id'])
-        course = get_course_with_access(self.request.user, "load", course_key)
-        is_staff = bool(has_access(self.request.user, 'staff', course))
-        calendar_id = get_calendar_id_by_course_id(course_key)
+    def js_dependencies(self):
+        """
+        Returns list of JS files that this view depends on.
+        The helper function that it uses to obtain the list of JS files
+        works in conjunction with the Django pipeline to ensure that in development mode
+        the files are loaded individually, but in production just the single bundle is loaded.
+        """
+        return self.get_js_dependencies('calendar_tab')
 
-        context = super(CalendarView, self).get_context_data(**kwargs)
-        context['course'] = course
-        context['is_staff'] = is_staff
-        context['calendar_id'] = calendar_id
-        return context
+    def css_dependencies(self):
+        """
+        Returns list of CSS files that this view depends on.
+        The helper function that it uses to obtain the list of CSS files
+        works in conjunction with the Django pipeline to ensure that in development mode
+        the files are loaded individually, but in production just the single bundle is loaded.
+        """
+        return self.get_css_dependencies('style-calendar-tab')
 
 
 def events_view(request, course_id):
@@ -178,3 +211,32 @@ def dataprocessor_view(request, course_id):
                             "sid": event['id']}
 
     return JsonResponse(data=response, status=status, safe=False)
+
+
+class InitCalendarView(View):
+    """Creates google calendar and associates it with course"""
+
+    def post(self, request, *args, **kwargs):
+        course_id = request.POST.get('courseId')
+        if course_id is None:
+            return HttpResponse("Provide courseID", status=400)
+
+        try:
+            course_key = CourseKey.from_string(course_id)
+        except InvalidKeyError:
+            return HttpResponse("Provide valid courseID", status=403)
+
+        calendar_data = {
+            'summary': request.POST.get('courseId'),
+            'timeZone': settings.TIME_ZONE}
+
+        try:
+            created_calendar = gcal_service.calendars().insert(body=calendar_data).execute()
+        except Exception as e:
+            # TODO: handle errors
+            print(e)
+            return JsonResponse({"errors": []}, status=400)
+        else:
+            updated = CourseOverview.objects.filter(id=course_key) \
+                                            .update(calendar_id=created_calendar['id'])
+            return JsonResponse({"calendarId": created_calendar['id']}, status=201)
