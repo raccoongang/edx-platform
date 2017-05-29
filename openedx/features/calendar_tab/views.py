@@ -7,14 +7,13 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
-from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from web_fragments.fragment import Fragment
 
 from courseware.access import has_access
 from courseware.courses import get_course_with_access
-from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
+from openedx.features.calendar_tab.models import CourseCalendar
 from .utils import gcal_service
 
 
@@ -34,10 +33,11 @@ def to_google_datetime(dhx_datetime):
     return dt_aware.isoformat()
 
 
-def get_calendar_id_by_course_id(course_key):
-    """Returns google calendar ID by given course key"""
-    course_overview_data = CourseOverview.objects.filter(id=course_key).values('id', 'calendar_id')
-    calendar_id = course_overview_data[0].get('calendar_id') if course_overview_data else ''
+def get_calendar_id_by_course_id(course_id):
+    """Returns google calendar ID by given course key
+    """
+    course_calendar_data = CourseCalendar.objects.filter(course_id=course_id).values('course_id', 'calendar_id')
+    calendar_id = course_calendar_data[0].get('calendar_id') if course_calendar_data else ''
     return calendar_id
 
 
@@ -46,13 +46,14 @@ def _create_base_calendar_view_context(request, course_key):
     Returns the default template context for rendering calendar view.
     """
     user = request.user
+    course_key = CourseKey.from_string(course_id)
     course = get_course_with_access(user, 'load', course_key, check_if_enrolled=True)
     return {
         'csrf': csrf(request)['csrf_token'],
         'course': course,
         'user': user,
-        'is_staff': bool(has_access(user, 'staff', course)),
-        'calendar_id': get_calendar_id_by_course_id(course_key),
+        'is_staff': bool(has_access(user, 'staff', course, course_id)),
+        'calendar_id': get_calendar_id_by_course_id(course_id),
     }
 
 
@@ -70,10 +71,8 @@ class CalendarTabFragmentView(EdxFragmentView):
         Returns:
             Fragment: The fragment representing the calendar tab.
         """
-
-        course_key = CourseKey.from_string(course_id)
         try:
-            context = _create_base_calendar_view_context(request, course_key)
+            context = _create_base_calendar_view_context(request, course_id)
             html = render_to_string('calendar_tab/calendar_tab_fragment.html', context)
             fragment = Fragment(html)
             self.add_fragment_resource_urls(fragment)
@@ -118,9 +117,9 @@ class CalendarTabFragmentView(EdxFragmentView):
 
 
 def events_view(request, course_id):
-    """Returns all google calendar events for given course"""
-    course_key = CourseKey.from_string(course_id)
-    calendar_id = get_calendar_id_by_course_id(course_key)
+    """Returns all google calendar events for given course
+    """
+    calendar_id = get_calendar_id_by_course_id(course_id)
     try:
         response = gcal_service.events().list(calendarId=calendar_id, pageToken=None).execute()
         events = [{
@@ -139,9 +138,9 @@ def events_view(request, course_id):
 
 @csrf_exempt
 def dataprocessor_view(request, course_id):
-    """Processes insert/update/delete event requests"""
-    course_key = CourseKey.from_string(course_id)
-    calendar_id = get_calendar_id_by_course_id(course_key)
+    """Processes insert/update/delete event requests
+    """
+    calendar_id = get_calendar_id_by_course_id(course_id)
     status = 401
     response = {'action': 'error',
                 'sid': request.POST['id'],
@@ -221,11 +220,6 @@ class InitCalendarView(View):
         if course_id is None:
             return HttpResponse("Provide courseID", status=400)
 
-        try:
-            course_key = CourseKey.from_string(course_id)
-        except InvalidKeyError:
-            return HttpResponse("Provide valid courseID", status=403)
-
         calendar_data = {
             'summary': request.POST.get('courseId'),
             'timeZone': settings.TIME_ZONE}
@@ -235,8 +229,7 @@ class InitCalendarView(View):
         except Exception as e:
             # TODO: handle errors
             print(e)
-            return JsonResponse({"errors": []}, status=400)
+            return JsonResponse(data={'errors': e}, status=500, safe=False)
         else:
-            updated = CourseOverview.objects.filter(id=course_key) \
-                                            .update(calendar_id=created_calendar['id'])
+            CourseCalendar.objects.create(course_id=course_id, calendar_id=created_calendar['id'])
             return JsonResponse({"calendarId": created_calendar['id']}, status=201)

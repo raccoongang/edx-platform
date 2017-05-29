@@ -101,9 +101,6 @@ class CourseOverview(TimeStampedModel):
     marketing_url = TextField(null=True)
     eligible_for_financial_aid = BooleanField(default=True)
 
-    # Course related extra features data
-    calendar_id = CharField(max_length=128, blank=True, null=True)
-
     @classmethod
     def _create_from_course(cls, course):
         """
