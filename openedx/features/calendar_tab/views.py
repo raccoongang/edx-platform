@@ -2,6 +2,7 @@ from datetime import datetime
 import logging
 
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
@@ -14,7 +15,7 @@ from web_fragments.fragment import Fragment
 from courseware.access import has_access
 from courseware.courses import get_course_with_access
 from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
-from openedx.features.calendar_tab.models import CourseCalendar
+from openedx.features.calendar_tab.models import CourseCalendar, CourseCalendarEvent
 from .utils import gcal_service
 
 log = logging.getLogger(__name__)
@@ -54,9 +55,24 @@ def _create_base_calendar_view_context(request, course_id):
         'csrf': csrf(request)['csrf_token'],
         'course': course,
         'user': user,
-        'is_staff': bool(has_access(user, 'staff', course, course_id)),
+        'is_staff': is_staff(user, course_id),
         'calendar_id': get_calendar_id_by_course_id(course_id),
     }
+
+
+def has_permission(user, event):
+    try:
+        db_event = CourseCalendarEvent.objects.get(event_id=event['id'])
+        return user == db_event.edx_user or is_staff(user, event['course_id'])
+    except (ObjectDoesNotExist, KeyError) as e:
+        log.warn(e)
+        return is_staff(user, event['course_id'])
+
+
+def is_staff(user, course_id):
+    course_key = CourseKey.from_string(course_id)
+    course = get_course_with_access(user, 'load', course_key, check_if_enrolled=True)
+    return bool(has_access(user, 'staff', course, course_id))
 
 
 class CalendarTabFragmentView(EdxFragmentView):
@@ -160,6 +176,7 @@ def dataprocessor_view(request, course_id):
             'end': {
                 'dateTime': to_google_datetime(post_data['end_date']),
             },
+            'course_id': course_id,
         }
         return event
 
@@ -176,6 +193,11 @@ def dataprocessor_view(request, course_id):
                 log.exception(e)
                 status = 500
             else:
+                cc_event = CourseCalendarEvent(course_calendar_id=calendar_id,
+                                               event_id=new_event['id'],
+                                               edx_user=request.user)
+                cc_event.save()
+
                 status = 201
                 response = {"action": "inserted",
                             "sid": request.POST['id'],
@@ -184,32 +206,45 @@ def dataprocessor_view(request, course_id):
         elif command == 'updated':
             event = get_event_data(request.POST)
             try:
-                updated_event = gcal_service.events().update(calendarId=calendar_id,
-                                                             eventId=event['id'],
-                                                             body=event).execute()
+                if has_permission(request.user, event):
+                    updated_event = gcal_service.events().update(calendarId=calendar_id,
+                                                                 eventId=event['id'],
+                                                                 body=event).execute()
+                    status = 200
+                    response = {"action": "updated",
+                                "sid": event['id'],
+                                "tid": updated_event['id']}
+                else:
+                    status = 403
+                    response['tid'] = event['id']
+
             except Exception as e:
                 # TODO: handle errors
                 log.exception(e)
                 status = 500
-            else:
-                status = 200
-                response = {"action": "updated",
-                            "sid": event['id'],
-                            "tid": updated_event['id']}
 
         elif command == 'deleted':
             event = get_event_data(request.POST)
             try:
-                gcal_service.events().delete(calendarId=calendar_id,
-                                             eventId=event['id']).execute()
+                if has_permission(request.user, event):
+                    gcal_service.events().delete(calendarId=calendar_id,
+                                                 eventId=event['id']).execute()
+                    try:
+                        CourseCalendarEvent.objects.get(event_id=event['id']).delete()
+                    except ObjectDoesNotExist as e:
+                        log.warn(e)
+
+                    status = 200
+                    response = {"action": "deleted",
+                                "sid": event['id']}
+                else:
+                    status = 403
+                    response['tid'] = event['id']
+
             except Exception as e:
                 # TODO: handle errors
                 log.exception(e)
                 status = 500
-            else:
-                status = 200
-                response = {"action": "deleted",
-                            "sid": event['id']}
 
     return JsonResponse(data=response, status=status, safe=False)
 
