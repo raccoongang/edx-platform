@@ -15,7 +15,7 @@ except (IOError, KeyError) as e:
         "`FEATURES['ENABLE_CALENDAR']` is True."
     )
 
-gcal_service = build('calendar', 'v3', credentials=credentials)
+gcal_service = build('calendar', 'v3', credentials=credentials, cache_discovery=False)
 
 
 # def publish_calendar(calendar_id):
