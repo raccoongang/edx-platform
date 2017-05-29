@@ -41,9 +41,8 @@ def get_calendar_id_by_course_id(course_id):
     return calendar_id
 
 
-def _create_base_calendar_view_context(request, course_key):
-    """
-    Returns the default template context for rendering calendar view.
+def _create_base_calendar_view_context(request, course_id):
+    """Returns the default template context for rendering calendar view.
     """
     user = request.user
     course_key = CourseKey.from_string(course_id)
@@ -58,8 +57,7 @@ def _create_base_calendar_view_context(request, course_key):
 
 
 class CalendarTabFragmentView(EdxFragmentView):
-    """
-    Component implementation of the calendar tab.
+    """Component implementation of the calendar tab.
     """
     def render_to_fragment(self, request, course_id=None, **kwargs):
         """
@@ -213,8 +211,8 @@ def dataprocessor_view(request, course_id):
 
 
 class InitCalendarView(View):
-    """Creates google calendar and associates it with course"""
-
+    """Creates google calendar and associates it with course
+    """
     def post(self, request, *args, **kwargs):
         course_id = request.POST.get('courseId')
         if course_id is None:
