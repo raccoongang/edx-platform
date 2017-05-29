@@ -20,9 +20,11 @@ Common traits:
 
 import datetime
 import json
+import random
 import warnings
 
 import dateutil
+from celery.schedules import crontab
 
 from .common import *
 from openedx.core.lib.logsettings import get_logger_config
@@ -119,8 +121,8 @@ CELERYBEAT_SCHEDULE = {
     """
 
     'collect_stats': {
-    'task': 'openedx.core.djangoapps.edx_global_analytics.tasks.collect_stats',
-    'schedule': 30, # number in seconds.
+        'task': 'openedx.core.djangoapps.edx_global_analytics.tasks.collect_stats',
+        'schedule': crontab(hour=0, minute=random.randint(1, 59))
     }
 }
 

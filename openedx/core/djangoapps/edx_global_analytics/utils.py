@@ -5,11 +5,10 @@ Helpers for the edX global analytics application.
 import calendar
 import datetime
 
-
 from django.core.cache import cache
-
 from django.db.models import Count
 from django.db.models import Q
+
 from student.models import UserProfile
 
 
@@ -25,7 +24,8 @@ def fetch_instance_information(name_to_cache, query_type, activity_period, cache
             Q(user__last_login=None) | Q(user__is_active=False)
         ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end).count(),
 
-        'students_per_country': dict(UserProfile.objects.exclude(
+        'students_per_country': dict(
+            UserProfile.objects.exclude(
                 Q(user__last_login=None) | Q(user__is_active=False)
             ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end).values(
                 'country'
@@ -41,16 +41,16 @@ def fetch_instance_information(name_to_cache, query_type, activity_period, cache
 
 def cache_instance_data(name_to_cache, query_result, cache_timeout):
     """
-     Caches queries, that calculate particular instance data,
-     including long time unchangeable weekly and monthly statistics.
+    Caches queries, that calculate particular instance data,
+    including long time unchangeable weekly and monthly statistics.
 
-     Arguments:
-         name_to_cache (str): Name of query.
-         query_result (query result): Django-query result.
-         cache_timeout (int/None): Caching for particular seconds amount.
+    Arguments:
+        name_to_cache (str): Name of query.
+        query_result (query result): Django-query result.
+        cache_timeout (int/None): Caching for particular seconds amount.
 
-     Returns cached query result.
-     """
+    Returns cached query result.
+    """
     cached_query_result = cache.get(name_to_cache)
 
     if cached_query_result is not None:

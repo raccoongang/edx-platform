@@ -12,9 +12,10 @@ from celery.task import task
 from django.conf import settings
 from django.contrib.sites.models import Site
 
+from lms.urls import EDX_GLOBAL_ANALYTICS_APP_URL
 from xmodule.modulestore.django import modulestore
-from .models import TokenStorage
 
+from .models import TokenStorage
 from .utils import (
     fetch_instance_information,
     get_previous_day_start_and_end_dates,
@@ -63,6 +64,43 @@ def enthusiast_level_statistics_bunch():
     return students_per_country
 
 
+def platform_coordinates(city_platform_located_in):
+    """
+    Method gets platform city latitude and longitude.
+
+    If `city_platform_located_in` (name of city) exists in OLGA setting (lms.env.json) as manual parameter
+    Google API helps to get city latitude and longitude. Else FreeGeoIP gathers latitude and longitude by IP address.
+
+    All correct city names are available from Wikipedia -
+    https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+
+    Module `pytz` also has list of cities with `pytz.all_timezones`.
+    """
+    def get_coordinates_by_ip():
+        ip_data = requests.get('http://freegeoip.net/json')
+        ip_data_json = json.loads(ip_data.text)
+
+        latitude, longitude = ip_data_json['latitude'], ip_data_json['longitude']
+
+        return latitude, longitude
+
+    google_api_request = requests.get(
+        'https://maps.googleapis.com/maps/api/geocode/json', params={'address': city_platform_located_in}
+    )
+
+    if google_api_request.status_code == 400:
+        return get_coordinates_by_ip()
+
+    result = google_api_request.json()['results']
+
+    if google_api_request.status_code == 200:
+        if not result:
+            return get_coordinates_by_ip()
+
+        location = result[0]['geometry']['location']
+        return location['lat'], location['lng']
+
+
 @task
 def collect_stats():
     """
@@ -88,15 +126,14 @@ def collect_stats():
     # Current edx-platform URL.
     platform_url = "https://" + settings.SITE_NAME
 
-    # Predefined in the server settings url to send collected data to.
-    # For production development.
-    if olga_settings.get('OLGA_PERIODIC_TASK_POST_URL'):
-        post_url = olga_settings.get('OLGA_PERIODIC_TASK_POST_URL')
-    # For local development.
-    else:
-        post_url = olga_settings.get('OLGA_PERIODIC_TASK_POST_URL_LOCAL')
+    # Production or development URL
+    post_url = \
+        olga_settings.get('OLGA_PERIODIC_TASK_POST_URL') or olga_settings.get('OLGA_PERIODIC_TASK_POST_URL_LOCAL')
 
-    # Posts desired data volume to receiving server.
+    # No url in settings
+    if not post_url:
+        return logger.info('No OLGA periodic task post URL.')
+
     # Data volume depends on server settings.
     statistics_level = olga_settings.get("STATISTICS_LEVEL")
 
@@ -113,22 +150,18 @@ def collect_stats():
         'active_students_amount_month': active_students_amount_month,
         'courses_amount': courses_amount,
         'statistics_level': 'paranoid',
-        'secret_token': secret_token
+        'secret_token': secret_token,
+
+        # Application URL for token authentication flow
+        'edx_global_analytics_app_url': EDX_GLOBAL_ANALYTICS_APP_URL
     }
 
     # Enthusiast level (extends Paranoid level)
     if statistics_level == 1:
-        # Get IP address of the platform and convert it to latitude, longitude.
-        ip_data = requests.get('http://freegeoip.net/json')
-        ip_data_json = json.loads(ip_data.text)
 
-        platform_latitude = olga_settings.get("PLATFORM_LATITUDE")
-        platform_longitude = olga_settings.get("PLATFORM_LONGITUDE")
-
-        if platform_latitude and platform_longitude:
-            latitude, longitude = platform_latitude, platform_longitude
-        else:
-            latitude, longitude = ip_data_json['latitude'], ip_data_json['longitude']
+        # Gathers latitude coordinate and the longitude coordinate.
+        city_platform_located_in = olga_settings.get("CITY_PLATFORM_LOCATED_IN")
+        latitude, longitude = platform_coordinates(city_platform_located_in)
 
         # Platform name.
         platform_name = settings.PLATFORM_NAME or Site.objects.get_current()
@@ -151,9 +184,9 @@ def collect_stats():
         logger.info('Connected without error to {0}'.format(request.url))
 
         if request.status_code == 201:
-            logger.info('Data were successfully transferred to Olga acceptor. Status code is 201.')
+            logger.info('Data were successfully transferred to OLGA acceptor. Status code is 201.')
         else:
-            logger.info('Data were not successfully transferred to Olga acceptor. Status code is {0}.'.format(
+            logger.info('Data were not successfully transferred to OLGA acceptor. Status code is {0}.'.format(
                 request.status_code
             ))
 
