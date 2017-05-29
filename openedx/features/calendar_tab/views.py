@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
@@ -15,6 +16,8 @@ from courseware.courses import get_course_with_access
 from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
 from openedx.features.calendar_tab.models import CourseCalendar
 from .utils import gcal_service
+
+log = logging.getLogger(__name__)
 
 
 def from_google_datetime(g_datetime):
@@ -71,6 +74,7 @@ class CalendarTabFragmentView(EdxFragmentView):
         """
         try:
             context = _create_base_calendar_view_context(request, course_id)
+            log.debug(context)
             html = render_to_string('calendar_tab/calendar_tab_fragment.html', context)
             fragment = Fragment(html)
             self.add_fragment_resource_urls(fragment)
@@ -80,9 +84,9 @@ class CalendarTabFragmentView(EdxFragmentView):
             return fragment
 
         except Exception as e:   # TODO: make it Google API specific
+            log.exception(e)
             html = render_to_string('calendar_tab/500_fragment.html')
             return Fragment(html)
-
 
     def vendor_js_dependencies(self):
         """
@@ -128,7 +132,7 @@ def events_view(request, course_id):
                   } for event in response['items']]
     except Exception as e:
         # TODO: handle errors
-        print(e)
+        log.exception(e)
         return JsonResponse(data={'errors': e}, status=500, safe=False)
     else:
         return JsonResponse(data=events, status=200, safe=False)
@@ -169,7 +173,7 @@ def dataprocessor_view(request, course_id):
                                                          body=event).execute()
             except Exception as e:
                 # TODO: handle errors
-                print(e)
+                log.exception(e)
                 status = 500
             else:
                 status = 201
@@ -185,7 +189,7 @@ def dataprocessor_view(request, course_id):
                                                              body=event).execute()
             except Exception as e:
                 # TODO: handle errors
-                print(e)
+                log.exception(e)
                 status = 500
             else:
                 status = 200
@@ -200,7 +204,7 @@ def dataprocessor_view(request, course_id):
                                              eventId=event['id']).execute()
             except Exception as e:
                 # TODO: handle errors
-                print(e)
+                log.exception(e)
                 status = 500
             else:
                 status = 200
@@ -226,7 +230,7 @@ class InitCalendarView(View):
             created_calendar = gcal_service.calendars().insert(body=calendar_data).execute()
         except Exception as e:
             # TODO: handle errors
-            print(e)
+            log.exception(e)
             return JsonResponse(data={'errors': e}, status=500, safe=False)
         else:
             CourseCalendar.objects.create(course_id=course_id, calendar_id=created_calendar['id'])
