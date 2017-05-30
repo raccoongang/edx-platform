@@ -63,7 +63,7 @@ def _create_base_calendar_view_context(request, course_id):
 def has_permission(user, event):
     try:
         db_event = CourseCalendarEvent.objects.get(event_id=event['id'])
-        return user == db_event.edx_user or is_staff(user, event['course_id'])
+        return user.username == db_event.edx_user or is_staff(user, event['course_id'])
     except (ObjectDoesNotExist, KeyError) as e:
         log.warn(e)
         return is_staff(user, event['course_id'])
