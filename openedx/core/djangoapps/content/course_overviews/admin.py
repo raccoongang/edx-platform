@@ -31,15 +31,9 @@ class CourseOverviewAdmin(admin.ModelAdmin):
         'enrollment_end',
         'created',
         'modified',
-        'is_calendar_attached',
     ]
 
     search_fields = ['id', 'display_name']
-
-    def is_calendar_attached(self, obj):
-        return bool(obj.calendar_id)
-    is_calendar_attached.short_description = 'Calendar'
-    is_calendar_attached.boolean = True
 
 
 class CourseOverviewImageConfigAdmin(ConfigurationModelAdmin):
