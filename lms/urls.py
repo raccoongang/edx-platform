@@ -711,6 +711,17 @@ if settings.FEATURES.get('ENABLE_DISCUSSION_SERVICE'):
         ),
     )
 
+if settings.FEATURES.get('ENABLE_CALENDAR'):
+    urlpatterns += (
+       url(
+           r'^courses/{}/tab/calendar/'.format(
+               settings.COURSE_ID_PATTERN,
+           ),
+           include('openedx.features.calendar_tab.urls'),
+           name='calendar_tab_endpoints',
+       ),
+    )
+
 urlpatterns += (
     url(
         r'^courses/{}/tab/(?P<tab_type>[^/]+)/$'.format(

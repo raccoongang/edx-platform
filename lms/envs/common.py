@@ -1560,6 +1560,12 @@ PIPELINE_CSS = {
         ],
         'output_filename': 'css/lms-learner-dashboard-rtl.css',
     },
+    'style-calendar-tab': {
+        'source_filenames': [
+            'css/vendor/scheduler/dhtmlxscheduler.css',
+        ],
+        'output_filename': 'css/calendar-tab.css',
+    }
 }
 
 
@@ -1661,9 +1667,20 @@ PIPELINE_JS = {
     'credit_wv': {
         'source_filenames': credit_web_view_js,
         'output_filename': 'js/credit/web_view.js'
-    }
+    },
+    'calendar_tab': {
+        'source_filenames': [
+            'js/calendar-tab.js',
+        ],
+        'output_filename': 'js/calendar_tab.js',
+    },
+    'calendar_tab_vendor': {
+        'source_filenames': [
+            'js/vendor/scheduler/dhtmlxscheduler.js',
+        ],
+        'output_filename': 'js/calendar_tab_vendor.js',
+    },
 }
-
 
 STATICFILES_IGNORE_PATTERNS = (
     "*.py",
@@ -2185,6 +2202,7 @@ INSTALLED_APPS = (
     'openedx.features.course_bookmarks',
     'openedx.features.course_experience',
     'openedx.features.enterprise_support',
+    'openedx.features.calendar_tab',
 )
 
 ######################### CSRF #########################################

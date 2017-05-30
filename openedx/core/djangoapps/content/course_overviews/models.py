@@ -6,7 +6,8 @@ import logging
 from urlparse import urlparse, urlunparse
 
 from django.db import models, transaction
-from django.db.models.fields import BooleanField, DateTimeField, DecimalField, TextField, FloatField, IntegerField
+from django.db.models.fields import (BooleanField, DateTimeField, DecimalField, TextField, FloatField, IntegerField,
+                                     CharField)
 from django.db.utils import IntegrityError
 from django.template import defaultfilters
 
