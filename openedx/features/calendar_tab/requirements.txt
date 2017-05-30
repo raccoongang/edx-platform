@@ -1,0 +1,3 @@
+# Calendar Tab python requirements:
+
+google-api-python-client==1.6.2
