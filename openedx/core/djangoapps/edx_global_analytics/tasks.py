@@ -77,6 +77,9 @@ def platform_coordinates(city_platform_located_in):
     Module `pytz` also has list of cities with `pytz.all_timezones`.
     """
     def get_coordinates_by_ip():
+        """
+        Gather coordinates by server IP address with FreeGeoIP service.
+        """
         ip_data = requests.get('http://freegeoip.net/json')
         ip_data_json = json.loads(ip_data.text)
 
@@ -88,17 +91,13 @@ def platform_coordinates(city_platform_located_in):
         'https://maps.googleapis.com/maps/api/geocode/json', params={'address': city_platform_located_in}
     )
 
-    if google_api_request.status_code == 400:
-        return get_coordinates_by_ip()
+    coordinates_result = google_api_request.json()['results']
 
-    result = google_api_request.json()['results']
-
-    if google_api_request.status_code == 200:
-        if not result:
-            return get_coordinates_by_ip()
-
-        location = result[0]['geometry']['location']
+    if coordinates_result:
+        location = coordinates_result[0]['geometry']['location']
         return location['lat'], location['lng']
+
+    return get_coordinates_by_ip()
 
 
 @task
@@ -161,7 +160,12 @@ def collect_stats():
 
         # Gathers latitude coordinate and the longitude coordinate.
         city_platform_located_in = olga_settings.get("CITY_PLATFORM_LOCATED_IN")
-        latitude, longitude = platform_coordinates(city_platform_located_in)
+
+        try:
+            latitude, longitude = platform_coordinates(city_platform_located_in)
+        except requests.RequestException as error:
+            logger.exception(error.message)
+            latitude, longitude = 0, 0
 
         # Platform name.
         platform_name = settings.PLATFORM_NAME or Site.objects.get_current()
