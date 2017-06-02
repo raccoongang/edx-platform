@@ -132,6 +132,10 @@ CELERYBEAT_SCHEDULE = {
 with open(CONFIG_ROOT / CONFIG_PREFIX + "env.json") as env_file:
     ENV_TOKENS = json.load(env_file)
 
+# Celery time zone settings for periodic task.
+OLGA_SETTINGS = ENV_TOKENS.get('OPENEDX_LEARNERS_GLOBAL_ANALYTICS')
+CELERY_TIMEZONE = OLGA_SETTINGS.get('CELERY_TIMEZONE') if OLGA_SETTINGS.get('CELERY_TIMEZONE') else TIME_ZONE
+
 # STATIC_ROOT specifies the directory where static files are
 # collected
 STATIC_ROOT_BASE = ENV_TOKENS.get('STATIC_ROOT_BASE', None)
