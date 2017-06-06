@@ -109,40 +109,35 @@ def collect_stats():
     Sending information depends on statistics level in settings, that have an effect on bunch of data size.
     """
 
-    # OLGA settings
     if 'OPENEDX_LEARNERS_GLOBAL_ANALYTICS' not in settings.ENV_TOKENS:
         return logger.info('No OpenEdX Learners Global Analytics settings in file `lms.env.json`.')
 
     olga_settings = settings.ENV_TOKENS.get('OPENEDX_LEARNERS_GLOBAL_ANALYTICS')
 
-    # Secret token to authorize our platform on remote server.
     try:
         token_object = TokenStorage.objects.first()
         secret_token = token_object.secret_token
     except AttributeError:
         secret_token = ""
 
-    # Current edx-platform URL.
     platform_url = "https://" + settings.SITE_NAME
 
-    # Production or development URL
     post_url = \
         olga_settings.get('OLGA_PERIODIC_TASK_POST_URL') or olga_settings.get('OLGA_PERIODIC_TASK_POST_URL_LOCAL')
 
-    # No url in settings
     if not post_url:
         return logger.info('No OLGA periodic task post URL.')
 
     # Data volume depends on server settings.
     statistics_level = olga_settings.get("STATISTICS_LEVEL")
 
-    # Paranoid level basic data.
     courses_amount = len(modulestore().get_courses())
 
     (active_students_amount_day,
      active_students_amount_week,
      active_students_amount_month) = paranoid_level_statistics_bunch()
 
+    # Paranoid level basic data.
     data = {
         'active_students_amount_day': active_students_amount_day,
         'active_students_amount_week': active_students_amount_week,
@@ -158,7 +153,6 @@ def collect_stats():
     # Enthusiast level (extends Paranoid level)
     if statistics_level == 1:
 
-        # Gathers latitude coordinate and the longitude coordinate.
         city_platform_located_in = olga_settings.get("CITY_PLATFORM_LOCATED_IN")
 
         try:
@@ -167,13 +161,10 @@ def collect_stats():
             logger.exception(error.message)
             latitude, longitude = 0, 0
 
-        # Platform name.
         platform_name = settings.PLATFORM_NAME or Site.objects.get_current()
 
-        # Get students per country.
         students_per_country = enthusiast_level_statistics_bunch()
 
-        # Update basic Paranoid`s data
         data.update({
             'latitude': latitude,
             'longitude': longitude,

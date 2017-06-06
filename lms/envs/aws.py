@@ -134,7 +134,7 @@ with open(CONFIG_ROOT / CONFIG_PREFIX + "env.json") as env_file:
 
 # Celery time zone settings for periodic task.
 OLGA_SETTINGS = ENV_TOKENS.get('OPENEDX_LEARNERS_GLOBAL_ANALYTICS')
-CELERY_TIMEZONE = OLGA_SETTINGS.get('CELERY_TIMEZONE') if OLGA_SETTINGS.get('CELERY_TIMEZONE') else TIME_ZONE
+CELERY_TIMEZONE = OLGA_SETTINGS.get('CELERY_TIMEZONE') or TIME_ZONE
 
 # STATIC_ROOT specifies the directory where static files are
 # collected

@@ -15,9 +15,11 @@ class TestInstallationInformation(TestCase):
         """
         Verifies that platform_coordinates returns city latitude and longitude as expected.
         """
-        result = platform_coordinates('Kiev')
+        latitude, longitude = platform_coordinates('Kiev')
 
-        self.assertEqual(result, (50.4501, 30.5234))
+        self.assertEqual(
+            (latitude, longitude), (50.4501, 30.5234)
+        )
 
     def test_miss_city_in_settings_for_platform_coordinates(self):
         """
@@ -26,9 +28,13 @@ class TestInstallationInformation(TestCase):
 
         Function can't check all cases. We accept as right if it returns float variables, that aren't None.
         """
-        for coordinate in platform_coordinates(''):
-            self.assertIsInstance(coordinate, float)
-            self.assertIsNotNone(coordinate)
+        latitude, longitude = platform_coordinates('')
+
+        self.assertIsNotNone(latitude)
+        self.assertIsInstance(latitude, float)
+
+        self.assertIsNotNone(longitude)
+        self.assertIsInstance(longitude, float)
 
     def test_wrong_city_name_in_settings_for_platform_coordinates(self):
         """
@@ -37,6 +43,10 @@ class TestInstallationInformation(TestCase):
 
         Function can't check all cases. We accept as right if it returns float variables, that aren't None.
         """
-        for coordinate in platform_coordinates('Lmnasasfabqwrqrn'):
-            self.assertIsInstance(coordinate, float)
-            self.assertIsNotNone(coordinate)
+        latitude, longitude = platform_coordinates('Lmnasasfabqwrqrn')
+
+        self.assertIsNotNone(latitude)
+        self.assertIsInstance(latitude, float)
+
+        self.assertIsNotNone(longitude)
+        self.assertIsInstance(longitude, float)
