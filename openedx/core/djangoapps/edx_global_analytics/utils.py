@@ -4,12 +4,18 @@ Helpers for the edX global analytics application.
 
 import calendar
 import datetime
+import logging
+
+import requests
 
 from django.core.cache import cache
 from django.db.models import Count
 from django.db.models import Q
 
 from student.models import UserProfile
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 def fetch_instance_information(name_to_cache, query_type, activity_period, cache_timeout=None):
@@ -142,3 +148,47 @@ def get_previous_month_start_and_end_dates():
     ) + datetime.timedelta(days=1)
 
     return start_of_month, end_of_month
+
+
+def get_coordinates_by_ip():
+    """
+    Gather coordinates by server IP address with FreeGeoIP service.
+    """
+    try:
+        ip_data = requests.get('https://freegeoip.net/json')
+        latitude, longitude = ip_data.json()['latitude'], ip_data.json()['longitude']
+        return latitude, longitude
+
+    except requests.RequestException as error:
+        logger.exception(error.message)
+        return '', ''
+
+
+def get_coordinates_by_platform_city_name(city_name):
+    """
+    Gather coordinates by platform city name with Google API.
+    """
+    google_api_request = requests.get(
+        'https://maps.googleapis.com/maps/api/geocode/json', params={'address': city_name}
+    )
+
+    coordinates_result = google_api_request.json()['results']
+
+    if coordinates_result:
+        location = coordinates_result[0]['geometry']['location']
+        return location['lat'], location['lng']
+
+
+def platform_coordinates(city_name):
+    """
+    Method gets platform city latitude and longitude.
+
+    If `city_platform_located_in` (name of city) exists in OLGA setting (lms.env.json) as manual parameter
+    Google API helps to get city latitude and longitude. Else FreeGeoIP gathers latitude and longitude by IP address.
+
+    All correct city names are available from Wikipedia -
+    https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+
+    Module `pytz` also has list of cities with `pytz.all_timezones`.
+    """
+    return get_coordinates_by_platform_city_name(city_name) or get_coordinates_by_ip()

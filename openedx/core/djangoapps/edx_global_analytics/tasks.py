@@ -22,7 +22,8 @@ from .utils import (
     get_previous_week_start_and_end_dates,
     get_previous_month_start_and_end_dates,
     cache_timeout_week,
-    cache_timeout_month
+    cache_timeout_month,
+    platform_coordinates
 )
 
 logger = logging.getLogger(__name__)
@@ -62,42 +63,6 @@ def enthusiast_level_statistics_bunch():
     )
 
     return students_per_country
-
-
-def platform_coordinates(city_platform_located_in):
-    """
-    Method gets platform city latitude and longitude.
-
-    If `city_platform_located_in` (name of city) exists in OLGA setting (lms.env.json) as manual parameter
-    Google API helps to get city latitude and longitude. Else FreeGeoIP gathers latitude and longitude by IP address.
-
-    All correct city names are available from Wikipedia -
-    https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-
-    Module `pytz` also has list of cities with `pytz.all_timezones`.
-    """
-    def get_coordinates_by_ip():
-        """
-        Gather coordinates by server IP address with FreeGeoIP service.
-        """
-        ip_data = requests.get('http://freegeoip.net/json')
-        ip_data_json = json.loads(ip_data.text)
-
-        latitude, longitude = ip_data_json['latitude'], ip_data_json['longitude']
-
-        return latitude, longitude
-
-    google_api_request = requests.get(
-        'https://maps.googleapis.com/maps/api/geocode/json', params={'address': city_platform_located_in}
-    )
-
-    coordinates_result = google_api_request.json()['results']
-
-    if coordinates_result:
-        location = coordinates_result[0]['geometry']['location']
-        return location['lat'], location['lng']
-
-    return get_coordinates_by_ip()
 
 
 @task
@@ -153,13 +118,9 @@ def collect_stats():
     # Enthusiast level (extends Paranoid level)
     if statistics_level == 1:
 
-        city_platform_located_in = olga_settings.get("CITY_PLATFORM_LOCATED_IN")
+        platform_city_name = olga_settings.get("PLATFORM_CITY_NAME")
 
-        try:
-            latitude, longitude = platform_coordinates(city_platform_located_in)
-        except requests.RequestException as error:
-            logger.exception(error.message)
-            latitude, longitude = 0, 0
+        latitude, longitude = platform_coordinates(platform_city_name)
 
         platform_name = settings.PLATFORM_NAME or Site.objects.get_current()
 
