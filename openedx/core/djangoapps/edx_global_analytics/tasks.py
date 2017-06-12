@@ -75,7 +75,8 @@ def collect_stats():
     """
 
     if 'OPENEDX_LEARNERS_GLOBAL_ANALYTICS' not in settings.ENV_TOKENS:
-        return logger.info('No OpenEdX Learners Global Analytics settings in file `lms.env.json`.')
+        logger.info('No OpenEdX Learners Global Analytics settings in file `lms.env.json`.')
+        return
 
     olga_settings = settings.ENV_TOKENS.get('OPENEDX_LEARNERS_GLOBAL_ANALYTICS')
 
@@ -91,7 +92,8 @@ def collect_stats():
         olga_settings.get('OLGA_PERIODIC_TASK_POST_URL') or olga_settings.get('OLGA_PERIODIC_TASK_POST_URL_LOCAL')
 
     if not post_url:
-        return logger.info('No OLGA periodic task post URL.')
+        logger.info('No OLGA periodic task post URL.')
+        return
 
     # Data volume depends on server settings.
     statistics_level = olga_settings.get("STATISTICS_LEVEL")
@@ -112,7 +114,7 @@ def collect_stats():
         'secret_token': secret_token,
 
         # Application URL for token authentication flow
-        'edx_global_analytics_app_url': EDX_GLOBAL_ANALYTICS_APP_URL
+        'edx_global_analytics_app_url': EDX_GLOBAL_ANALYTICS_APP_URL,
     }
 
     # Enthusiast level (extends Paranoid level)
