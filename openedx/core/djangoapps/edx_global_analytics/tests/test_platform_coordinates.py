@@ -70,12 +70,12 @@ class TestPlatformCoordinates(unittest.TestCase):
         result_without_city_name = get_coordinates_by_platform_city_name('Lmnasasfabqwrqrn')
         self.assertEqual(None, result_without_city_name)
 
-    def test_calls_get_coordinates_by_ip_method(self, mock_request):
+    def test_calls_coordinates_by_ip_method_sends_request_to_freegeoip_api(self, mock_request):
         """
         Verifies that get_coordinates_by_ip sends request to FreeGeoIP API.
         """
         get_coordinates_by_ip()
-        mock_request.assert_called_once()
+        mock_request.assert_called_once('https://freegeoip.net/json')
 
     def test_get_coordinates_by_ip_method_returns_coordinates_result(self, mock_request):
         """
