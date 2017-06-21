@@ -122,7 +122,7 @@ CELERYBEAT_SCHEDULE = {
 
     'collect_stats': {
         'task': 'openedx.core.djangoapps.edx_global_analytics.tasks.collect_stats',
-        'schedule': crontab(hour=0, minute=random.randint(1, 59))
+        'schedule': crontab(hour=0, minute=random.randint(1, 59)),
     }
 }
 

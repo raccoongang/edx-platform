@@ -23,7 +23,7 @@ from .utils import (
     get_previous_month_start_and_end_dates,
     cache_timeout_week,
     cache_timeout_month,
-    platform_coordinates
+    platform_coordinates,
 )
 
 logger = logging.getLogger(__name__)

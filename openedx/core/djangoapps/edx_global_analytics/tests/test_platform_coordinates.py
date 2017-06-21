@@ -18,7 +18,7 @@ class TestPlatformCoordinates(unittest.TestCase):
     """
     Tests for platform coordinates methods, that gather latitude and longitude.
     """
-    def test_get_coordinates_by_platform_city_name_method_sends_request_to_google_api_with_address(self, mock_request):
+    def test_calls_get_coordinates_by_platform_city_name_method_with_address_param(self, mock_request):
         """
         Verifies that get_coordinates_by_platform_city_name sends request to Google API with address as parameter.
         """
@@ -70,7 +70,7 @@ class TestPlatformCoordinates(unittest.TestCase):
         result_without_city_name = get_coordinates_by_platform_city_name('Lmnasasfabqwrqrn')
         self.assertEqual(None, result_without_city_name)
 
-    def test_get_coordinates_by_ip_method_sends_request_to_freegeoip_api(self, mock_request):
+    def test_calls_get_coordinates_by_ip_method(self, mock_request):
         """
         Verifies that get_coordinates_by_ip sends request to FreeGeoIP API.
         """
