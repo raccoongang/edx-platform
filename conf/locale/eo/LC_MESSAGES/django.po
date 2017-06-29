@@ -32,8 +32,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2017-04-05 06:22-0400\n"
-"PO-Revision-Date: 2017-04-05 10:22:49.567755\n"
+"POT-Creation-Date: 2017-06-29 09:53-0400\n"
+"PO-Revision-Date: 2017-06-29 13:53:57.745568\n"
 "Last-Translator: \n"
 "Language-Team: openedx-translation <openedx-translation@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -215,6 +215,8 @@ msgstr "Çöürsé Ⱡ'σяєм ιρѕυ#"
 #: common/lib/xmodule/xmodule/videoannotation_module.py
 #: common/lib/xmodule/xmodule/word_cloud_module.py
 #: openedx/core/lib/xblock_builtin/xblock_discussion/xblock_discussion.py
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
 #: cms/templates/container.html cms/templates/library.html
 msgid "Display Name"
 msgstr "Dïspläý Nämé Ⱡ'σяєм ιρѕυм ∂σłσя ѕ#"
@@ -1847,7 +1849,7 @@ msgstr "Çörréçt: Ⱡ'σяєм ιρѕυм ∂#"
 msgid "Incorrect:"
 msgstr "Ìnçörréçt: Ⱡ'σяєм ιρѕυм ∂σłσ#"
 
-#: common/lib/capa/capa/responsetypes.py
+#: common/lib/capa/capa/responsetypes.py src/xblock-poll/poll/poll.py
 msgid "Answer"
 msgstr "Ànswér Ⱡ'σяєм ιρѕυ#"
 
@@ -2183,6 +2185,8 @@ msgstr "Ànnötätïön Ⱡ'σяєм ιρѕυм ∂σłσ#"
 #: common/lib/xmodule/xmodule/capa_base.py
 #: common/lib/xmodule/xmodule/conditional_module.py
 #: common/lib/xmodule/xmodule/html_module.py
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
 msgid "This name appears in the horizontal navigation at the top of the page."
 msgstr ""
 "Thïs nämé äppéärs ïn thé hörïzöntäl nävïgätïön ät thé töp öf thé pägé. "
@@ -2416,8 +2420,10 @@ msgstr ""
 "çömprömïséd. Tö ößtäïn ä kéý för ýöür çöürsé, ör tö répört än ïssüé, pléäsé "
 "çöntäçt mööçsüppört@mäthwörks.çöm#"
 
-#: common/lib/xmodule/xmodule/capa_base.py lms/templates/help_modal.html
-#: lms/templates/manage_user_standing.html lms/templates/register-shib.html
+#: common/lib/xmodule/xmodule/capa_base.py
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+#: lms/templates/help_modal.html lms/templates/manage_user_standing.html
+#: lms/templates/register-shib.html
 #: lms/templates/peer_grading/peer_grading_problem.html
 #: lms/templates/survey/survey.html
 #: themes/stanford-style/lms/templates/register-shib.html
@@ -7104,6 +7110,7 @@ msgstr ""
 "Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя#"
 
 #: lms/djangoapps/django_comment_client/base/views.py
+#: src/rate-xblock/rate/rate.py
 msgid "Good"
 msgstr "Gööd Ⱡ'σяєм ι#"
 
@@ -10553,6 +10560,10 @@ msgstr ""
 "¢υρι∂αтαт ηση ρяσι∂єηт, ѕυηт ιη ¢υłρα qυι σƒƒι¢ια ∂єѕєяυ#"
 
 #: lms/templates/oauth2_provider/authorize.html
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/checkpoint_edit.html
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
 #: cms/templates/course-create-rerun.html cms/templates/index.html
 #: cms/templates/manage_users.html cms/templates/manage_users_lib.html
 #: lms/templates/modal/accessible_confirm.html
@@ -12068,6 +12079,649 @@ msgstr ""
 "À süßçätégörý nämé för thé dïsçüssïön. Thïs nämé äppéärs ïn thé léft päné öf"
 " thé dïsçüssïön förüm för thé çöürsé. Ⱡ'σяєм ιρѕυм ∂σłσ#"
 
+#: src/edx-jsme/edx_jsme/__init__.py
+msgid "Must provide an answer."
+msgstr "Müst prövïdé än änswér. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σ#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/reverification_block.py
+msgid ""
+"This verification checkpoint does not have a name.  To specify a name for "
+"this checkpoint, select Edit."
+msgstr ""
+"Thïs vérïfïçätïön çhéçkpöïnt döés nöt hävé ä nämé.  Tö spéçïfý ä nämé för "
+"thïs çhéçkpöïnt, séléçt Édït. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αм#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/approved.html
+msgid "Verification successful"
+msgstr "Vérïfïçätïön süççéssfül Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σ#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/approved.html
+msgid "You have successfully verified your identity."
+msgstr ""
+"Ýöü hävé süççéssfüllý vérïfïéd ýöür ïdéntïtý. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєтυя #"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/approved.html
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid "See Also"
+msgstr "Séé Àlsö Ⱡ'σяєм ιρѕυм ∂#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/approved.html
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid ""
+"Frequently asked questions about verification and earning academic credit"
+msgstr ""
+"Fréqüéntlý äskéd qüéstïöns äßöüt vérïfïçätïön änd éärnïng äçädémïç çrédït "
+"Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/checkpoint_edit.html
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
+#: lms/templates/problem.html lms/templates/word_cloud.html
+msgid "Save"
+msgstr "Sävé Ⱡ'σяєм ι#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/closed.html
+msgid "Assessment closed"
+msgstr "Àsséssmént çlöséd Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмє#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/closed.html
+msgid ""
+"Because you did not verify your identity before this assessment closed, you "
+"are no longer eligible for credit in this course. However, you can still "
+"work toward a verified certificate."
+msgstr ""
+"Béçäüsé ýöü dïd nöt vérïfý ýöür ïdéntïtý ßéföré thïs ässéssmént çlöséd, ýöü "
+"äré nö löngér élïgïßlé för çrédït ïn thïs çöürsé. Höwévér, ýöü çän stïll "
+"wörk töwärd ä vérïfïéd çértïfïçäté. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя"
+" α∂ιριѕι¢ιηg єłιт, ѕє∂ ∂σ єιυѕмσ∂ тємρσя ιη¢ι∂ι∂υηт υт łαвσяє єт ∂σłσяє "
+"мαgηα αłιqυα. υт єηιм α∂ мιηιм νєηιαм, qυιѕ ησѕтяυ∂ єχєя¢ιтαтιση υłłαм¢σ "
+"łαвσяιѕ ηιѕι υт αłιqυιρ єχ єα ¢σммσ∂σ ¢σηѕєqυαт. ∂υιѕ αυтє ιяυяє ∂σłσя ιη "
+"яєρяєнєη∂єяιт ιη νσłυρтαтє νєłιт єѕѕє ¢ιłłυм ∂σłσяє єυ ƒυgιαт ηυłłα "
+"ραяιαтυя. єχ¢єρтєυя ѕιηт σ¢¢αє¢αт ¢υρι∂αтαт ηση ρяσι∂єηт,#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/not_verified.html
+#: cms/templates/visibility_editor.html
+msgid "Verification Checkpoint"
+msgstr "Vérïfïçätïön Çhéçkpöïnt Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σ#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/not_verified.html
+#, python-format
+msgid ""
+"\n"
+"        <p>Some learners who are working toward a verified certificate have to verify their identity before they can access this content. You do not have to verify your identity, and you can proceed to the next unit.</p>\n"
+"\n"
+"        <p> To learn more about verified certificates, see %(link_start)sVerified Certificates%(link_end)s in the <i>EdX Guide for Students</i>.\n"
+"        "
+msgstr ""
+"\n"
+"        <p>Sömé léärnérs whö äré wörkïng töwärd ä vérïfïéd çértïfïçäté hävé tö vérïfý théïr ïdéntïtý ßéföré théý çän äççéss thïs çöntént. Ýöü dö nöt hävé tö vérïfý ýöür ïdéntïtý, änd ýöü çän pröçééd tö thé néxt ünït.</p>\n"
+"\n"
+"        <p> Tö léärn möré äßöüt vérïfïéd çértïfïçätés, séé %(link_start)sVérïfïéd Çértïfïçätés%(link_end)s ïn thé <i>ÉdX Güïdé för Stüdénts</i>.\n"
+"         Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя α∂ιριѕι#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/not_verified.html
+msgid "You are taking this exam as an honor student."
+msgstr ""
+"Ýöü äré täkïng thïs éxäm äs än hönör stüdént. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєтυя #"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid "Verification unsuccessful"
+msgstr "Vérïfïçätïön ünsüççéssfül Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕ#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+#, python-format
+msgid ""
+"\n"
+"        The attempt to verify your identity was unsuccessful. This assessment has closed and you are no longer eligible for credit in this course. If you feel that there has been a mistake, contact %(support_email)s.\n"
+"        "
+msgstr ""
+"\n"
+"        Thé ättémpt tö vérïfý ýöür ïdéntïtý wäs ünsüççéssfül. Thïs ässéssmént häs çlöséd änd ýöü äré nö löngér élïgïßlé för çrédït ïn thïs çöürsé. Ìf ýöü féél thät théré häs ßéén ä mïstäké, çöntäçt %(support_email)s.\n"
+"         Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя α∂ιριѕι¢ιηg єłιт, ѕє∂ ∂σ єιυѕмσ∂ тємρσя ιη¢ι∂ι∂υηт υт łαвσяє єт ∂σłσяє мαgηα αłιqυα. υт єηιм α∂ мιηιм νєηιαм, qυιѕ ησѕтяυ∂ єχєя¢ιтαтιση υłłαм¢σ łαвσяιѕ ηιѕι υт αłιqυιρ єχ єα ¢σммσ∂σ ¢σηѕєqυαт. ∂υιѕ αυтє ιяυяє ∂σłσя ιη яєρяєнєη∂єяιт ιη νσłυρтαтє νєłιт єѕѕє ¢ιłłυм ∂σłσяє єυ ƒυgιαт ηυłłα ραяιαтυя. єχ¢є#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid "Identity verification required"
+msgstr "Ìdéntïtý vérïfïçätïön réqüïréd Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢т#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid ""
+"\n"
+"        To receive credit for this course, you must verify your identity every time you receive a verification message.\n"
+"        If you do not want to verify your identity, you can opt out of verification.\n"
+"        However, you will no longer be eligible for credit in the course.\n"
+"        "
+msgstr ""
+"\n"
+"        Tö réçéïvé çrédït för thïs çöürsé, ýöü müst vérïfý ýöür ïdéntïtý évérý tïmé ýöü réçéïvé ä vérïfïçätïön méssägé.\n"
+"        Ìf ýöü dö nöt wänt tö vérïfý ýöür ïdéntïtý, ýöü çän öpt öüt öf vérïfïçätïön.\n"
+"        Höwévér, ýöü wïll nö löngér ßé élïgïßlé för çrédït ïn thé çöürsé.\n"
+"         Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя α∂ιριѕι¢ιηg єłιт, ѕє∂ ∂σ єιυѕмσ∂ тємρσя ιη¢ι∂ι∂υηт υт łαвσяє єт ∂σłσяє мαgηα αłιqυα. υт єηιм α∂ мιηιм νєηιαм, qυιѕ ησѕтяυ∂ єχєя¢ιтαтιση υłłαм¢σ łαвσяιѕ ηιѕι #"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+#, python-format
+msgid ""
+"\n"
+"        To receive credit in this course, you must try to verify your identity again. If you do not want to verify your identity, you can %(start_link)sopt out of verification%(end_link)s. However, you will no longer be eligible for credit in the course.\n"
+"        "
+msgstr ""
+"\n"
+"        Tö réçéïvé çrédït ïn thïs çöürsé, ýöü müst trý tö vérïfý ýöür ïdéntïtý ägäïn. Ìf ýöü dö nöt wänt tö vérïfý ýöür ïdéntïtý, ýöü çän %(start_link)söpt öüt öf vérïfïçätïön%(end_link)s. Höwévér, ýöü wïll nö löngér ßé élïgïßlé för çrédït ïn thé çöürsé.\n"
+"         Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя α∂ιριѕι¢ιηg єłιт, ѕє∂ ∂σ єιυѕмσ∂ тємρσя ιη¢ι∂ι∂υηт υт łαвσяє єт ∂σłσяє мαgηα αłιqυα. υт єηιм α∂ мιηιм νєηιαм, qυιѕ ησѕтяυ∂ єχєя¢ιтαтιση υłłαм¢σ łαвσяιѕ ηιѕι υт αłιqυιρ єχ єα ¢σммσ∂σ ¢σηѕєqυαт. ∂υιѕ αυтє ιяυяє ∂σłσя ιη яєρяєнєη∂єяιт ιη νσłυρтαтє#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid "Verification error"
+msgstr "Vérïfïçätïön érrör Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+#, python-format
+msgid ""
+"\n"
+"          An error occurred during the verification process.\n"
+"          Try to verify your identity again, or contact %(support_email)s for help.\n"
+"          "
+msgstr ""
+"\n"
+"          Àn érrör öççürréd dürïng thé vérïfïçätïön pröçéss.\n"
+"          Trý tö vérïfý ýöür ïdéntïtý ägäïn, ör çöntäçt %(support_email)s för hélp.\n"
+"           Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя α∂ιριѕι¢ιηg єłιт, ѕє∂ ∂σ єιυѕмσ∂ тємρσя ιη¢ι∂ι∂υηт υт łαвσяє єт ∂σłσяє мαgηα αłιqυα. υт єηιм α∂ мιηιм νєηιαм, qυιѕ ησѕтяυ∂ єχєя¢ιтαтιση υłłαм¢σ łαвσяιѕ ηιѕι υт αłιqυιρ єχ єα ¢σммσ∂σ ¢σηѕєqυαт. ∂υιѕ αυтє ιяυяє ∂σłσя ιη яєρяєнєη∂єяιт ιη νσłυρтαтє νєłιт єѕѕє ¢ιłłυм ∂σłσяє єυ ƒυgιαт ηυłłα ραяιαтυя. єχ¢єρтєυя ѕιηт σ¢¢αє¢αт ¢υρι∂αтαт ηση ρяσι∂єηт, ѕυηт ιη ¢υłρα qυι σƒƒι¢ια ∂єѕєяυηт мσłłιт αηιм ι∂ єѕт#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid "Verify Your Identity"
+msgstr "Vérïfý Ýöür Ìdéntïtý Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, #"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid "Try Again"
+msgstr "Trý Àgäïn Ⱡ'σяєм ιρѕυм ∂σł#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid "Are you sure you want to opt out of verification?"
+msgstr ""
+"Àré ýöü süré ýöü wänt tö öpt öüt öf vérïfïçätïön? Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт "
+"αмєт, ¢σηѕє¢тєтυя α#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid ""
+"\n"
+"      To receive credit for this course, you must verify your identity every time you receive a verification message.\n"
+"      If you opt out of identity verification, you are no longer eligible for course credit.\n"
+"      However, you can still work toward a verified certificate.\n"
+"      "
+msgstr ""
+"\n"
+"      Tö réçéïvé çrédït för thïs çöürsé, ýöü müst vérïfý ýöür ïdéntïtý évérý tïmé ýöü réçéïvé ä vérïfïçätïön méssägé.\n"
+"      Ìf ýöü öpt öüt öf ïdéntïtý vérïfïçätïön, ýöü äré nö löngér élïgïßlé för çöürsé çrédït.\n"
+"      Höwévér, ýöü çän stïll wörk töwärd ä vérïfïéd çértïfïçäté.\n"
+"       Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя α∂ιριѕι¢ιηg єłιт, ѕє∂ ∂σ єιυѕмσ∂ тємρσя ιη¢ι∂ι∂υηт υт łαвσяє єт ∂σłσяє мαgηα αłιqυα. υт єηιм α∂ мιηιм νєηιαм, qυιѕ ησѕтяυ∂ єχєя¢ιтαтιση υłłαм¢σ łαвσяιѕ ηιѕι υт αłιqυιρ#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid "Opt Out of Verification and Course Credit"
+msgstr ""
+"Öpt Öüt öf Vérïfïçätïön änd Çöürsé Çrédït Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєтυя #"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/skipped.html
+msgid "Verification not selected"
+msgstr "Vérïfïçätïön nöt séléçtéd Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕ#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/skipped.html
+msgid ""
+"Because you opted out of identity verification, you are no longer eligible "
+"for course credit. However, you can still work toward a verified "
+"certificate."
+msgstr ""
+"Béçäüsé ýöü öptéd öüt öf ïdéntïtý vérïfïçätïön, ýöü äré nö löngér élïgïßlé "
+"för çöürsé çrédït. Höwévér, ýöü çän stïll wörk töwärd ä vérïfïéd "
+"çértïfïçäté. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя α∂ιριѕι¢ιηg єłιт, ѕє∂ "
+"∂σ єιυѕмσ∂ тємρσя ιη¢ι∂ι∂υηт υт łαвσяє єт ∂σłσяє мαgηα αłιqυα. υт єηιм α∂ "
+"мιηιм νєηιαм, qυιѕ ησѕтяυ∂ єχєя¢ιтαтιση υłłαм¢σ łαвσяιѕ ηιѕι υт αłιqυιρ єχ "
+"єα ¢σммσ∂σ ¢σηѕєqυαт. ∂υιѕ αυтє ιяυяє ∂σłσя ιη яєρяєнєη∂єяιт ιη νσłυρтαтє "
+"νєłιт єѕѕє ¢ιłłυм ∂σłσяє єυ ƒυgιαт ηυłłα ραяιαтυя. єχ¢єρтєυя ѕιηт σ¢¢αє¢αт "
+"¢υρι∂αтαт ηση ρяσι∂єηт, ѕυηт ιη ¢υłρα qυι σƒƒι¢ια ∂єѕєяυηт мσłłιт#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/studio_preview.html
+msgid "To preview the checkpoint, select View Live Version or Preview."
+msgstr ""
+"Tö prévïéw thé çhéçkpöïnt, séléçt Vïéw Lïvé Vérsïön ör Prévïéw. Ⱡ'σяєм ιρѕυм"
+" ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя α#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/submitted.html
+msgid "Verification submitted"
+msgstr "Vérïfïçätïön süßmïttéd Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/submitted.html
+msgid ""
+"You can now continue to this assessment. You will receive a message when the"
+" verification process is complete. If verification is not successful, you "
+"will have to verify your identity again."
+msgstr ""
+"Ýöü çän nöw çöntïnüé tö thïs ässéssmént. Ýöü wïll réçéïvé ä méssägé whén thé"
+" vérïfïçätïön pröçéss ïs çömplété. Ìf vérïfïçätïön ïs nöt süççéssfül, ýöü "
+"wïll hävé tö vérïfý ýöür ïdéntïtý ägäïn. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєтυя α∂ιριѕι¢ιηg єłιт, ѕє∂ ∂σ єιυѕмσ∂ тємρσя ιη¢ι∂ι∂υηт υт łαвσяє єт "
+"∂σłσяє мαgηα αłιqυα. υт єηιм α∂ мιηιм νєηιαм, qυιѕ ησѕтяυ∂ єχєя¢ιтαтιση "
+"υłłαм¢σ łαвσяιѕ ηιѕι υт αłιqυιρ єχ єα ¢σммσ∂σ ¢σηѕєqυαт. ∂υιѕ αυтє ιяυяє "
+"∂σłσя ιη яєρяєнєη∂єяιт ιη νσłυρтαтє νєłιт єѕѕє ¢ιłłυм ∂σłσяє єυ ƒυgιαт ηυłłα"
+" ραяιαтυя. єχ¢єρтєυя ѕιηт σ¢¢αє¢αт ¢υρι∂αтαт ηση ρ#"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "This assignment has not yet been graded."
+msgstr ""
+"Thïs ässïgnmént häs nöt ýét ßéén grädéd. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєтυя#"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Upload a different file"
+msgstr "Ûplöäd ä dïfférént fïlé Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σ#"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Upload your assignment"
+msgstr "Ûplöäd ýöür ässïgnmént Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢#"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Awaiting instructor approval"
+msgstr "Àwäïtïng ïnstrüçtör äppröväl Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢#"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Approve grade"
+msgstr "Àpprövé grädé Ⱡ'σяєм ιρѕυм ∂σłσя ѕι#"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Enter grade"
+msgstr "Éntér grädé Ⱡ'σяєм ιρѕυм ∂σłσя #"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Grade Submissions"
+msgstr "Grädé Süßmïssïöns Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмє#"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+#: lms/templates/staff_problem_info.html
+msgid "Staff Debug Info"
+msgstr "Stäff Déßüg Ìnfö Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αм#"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Staff Graded Assignment"
+msgstr "Stäff Grädéd Àssïgnmént Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σ#"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+#: lms/templates/staff_problem_info.html
+msgid "Staff Debug"
+msgstr "Stäff Déßüg Ⱡ'σяєм ιρѕυм ∂σłσя #"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+#: lms/templates/staff_problem_info.html
+msgid "Module Fields"
+msgstr "Mödülé Fïélds Ⱡ'σяєм ιρѕυм ∂σłσя ѕι#"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Enter Grade"
+msgstr "Éntér Grädé Ⱡ'σяєм ιρѕυм ∂σłσя #"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Remove grade"
+msgstr "Rémövé grädé Ⱡ'σяєм ιρѕυм ∂σłσя ѕ#"
+
+#: src/rate-xblock/rate/rate.py
+msgid "Please provide us feedback on this section."
+msgstr ""
+"Pléäsé prövïdé üs féédßäçk ön thïs séçtïön. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєтυя #"
+
+#: src/rate-xblock/rate/rate.py
+msgid "Please rate your overall experience with this section."
+msgstr ""
+"Pléäsé räté ýöür övéräll éxpérïénçé wïth thïs séçtïön. Ⱡ'σяєм ιρѕυм ∂σłσя "
+"ѕιт αмєт, ¢σηѕє¢тєтυя α#"
+
+#: src/rate-xblock/rate/rate.py
+msgid "Excellent"
+msgstr "Éxçéllént Ⱡ'σяєм ιρѕυм ∂σł#"
+
+#: src/rate-xblock/rate/rate.py
+msgid "Average"
+msgstr "Àvérägé Ⱡ'σяєм ιρѕυм #"
+
+#: src/rate-xblock/rate/rate.py
+msgid "Fair"
+msgstr "Fäïr Ⱡ'σяєм ι#"
+
+#: src/rate-xblock/rate/rate.py
+msgid "Poor"
+msgstr "Pöör Ⱡ'σяєм ι#"
+
+#: src/rate-xblock/rate/rate.py
+msgid "Thank you for voting!"
+msgstr "Thänk ýöü för vötïng! Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, #"
+
+#: src/rate-xblock/rate/rate.py
+msgid "Thank you!"
+msgstr "Thänk ýöü! Ⱡ'σяєм ιρѕυм ∂σłσ#"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+msgid "Invalid Google Calendar"
+msgstr "Ìnvälïd Gööglé Çäléndär Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σ#"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
+msgid "Please correct the outlined fields."
+msgstr ""
+"Pléäsé çörréçt thé öütlïnéd fïélds. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєт#"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+msgid "Public Calendar ID"
+msgstr "Püßlïç Çäléndär ÌD Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт#"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+msgid ""
+"Google provides an ID for publicly available calendars. In the Google "
+"Calendar, open Settings and copy the ID from the Calendar Address section "
+"into this field. You can "
+msgstr ""
+"Gööglé prövïdés än ÌD för püßlïçlý äväïläßlé çäléndärs. Ìn thé Gööglé "
+"Çäléndär, öpén Séttïngs änd çöpý thé ÌD fröm thé Çäléndär Àddréss séçtïön "
+"ïntö thïs fïéld. Ýöü çän  Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя "
+"α∂ιριѕι¢ιηg єłιт, ѕє∂ ∂σ єιυѕмσ∂ тємρσя ιη¢ι∂ι∂υηт υт łαвσяє єт ∂σłσяє мαgηα"
+" αłιqυα. υт єηιм α∂ мιηιм νєηιαм, qυιѕ ησѕтяυ∂ єχєя¢ιтαтιση υłłαм¢σ łαвσяιѕ "
+"ηιѕι υт αłιqυιρ єχ єα ¢σммσ∂σ ¢σηѕєqυαт. ∂υιѕ αυтє ιяυяє ∂σłσя ιη "
+"яєρяєнєη∂єяιт ιη νσłυρтαтє νєłιт єѕѕє ¢ιłłυм ∂σłσяє єυ ƒυgιαт ηυłłα "
+"ραяιαтυя. єχ¢єρтєυя ѕιηт σ¢¢αє¢αт ¢υρι∂αтαт ηση ρяσι∂єηт, ѕυηт ιη ¢υłρα qυι "
+"σƒ#"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+msgid "Default View"
+msgstr "Défäült Vïéw Ⱡ'σяєм ιρѕυм ∂σłσя ѕ#"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+msgid ""
+"The calendar view that students see by default. A student can change this "
+"view."
+msgstr ""
+"Thé çäléndär vïéw thät stüdénts séé ßý défäült. À stüdént çän çhängé thïs "
+"vïéw. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєт#"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
+msgid "Invalid Google Document"
+msgstr "Ìnvälïd Gööglé Döçümént Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σ#"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
+msgid "Embed Code"
+msgstr "Émßéd Çödé Ⱡ'σяєм ιρѕυм ∂σłσ#"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
+msgid ""
+"Google provides an embed code for Drive documents. In the Google Drive "
+"document, from the File menu, select Publish to the Web. Modify settings as "
+"needed, click Publish, and copy the embed code into this field."
+msgstr ""
+"Gööglé prövïdés än émßéd çödé för Drïvé döçüménts. Ìn thé Gööglé Drïvé "
+"döçümént, fröm thé Fïlé ménü, séléçt Püßlïsh tö thé Wéß. Mödïfý séttïngs äs "
+"néédéd, çlïçk Püßlïsh, änd çöpý thé émßéd çödé ïntö thïs fïéld. Ⱡ'σяєм ιρѕυм"
+" ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя α∂ιριѕι¢ιηg єłιт, ѕє∂ ∂σ єιυѕмσ∂ тємρσя "
+"ιη¢ι∂ι∂υηт υт łαвσяє єт ∂σłσяє мαgηα αłιqυα. υт єηιм α∂ мιηιм νєηιαм, qυιѕ "
+"ησѕтяυ∂ єχєя¢ιтαтιση υłłαм¢σ łαвσяιѕ ηιѕι υт αłιqυιρ єχ єα ¢σммσ∂σ "
+"¢σηѕєqυαт. ∂υιѕ αυтє ιяυяє ∂σłσя ιη яєρяєнєη∂єяιт ιη νσłυρтαтє νєłιт єѕѕє "
+"¢ιłłυм ∂σłσяє єυ ƒυgιαт ηυłłα ραяιαтυя. єχ¢єρтє#"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
+msgid "Alternative text"
+msgstr "Àltérnätïvé téxt Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αм#"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
+msgid ""
+"Alternative text describes an image and appears if the image is unavailable."
+msgstr ""
+"Àltérnätïvé téxt désçrïßés än ïmägé änd äppéärs ïf thé ïmägé ïs ünäväïläßlé."
+" Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυ#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Whether or not to display results to the user."
+msgstr ""
+"Whéthér ör nöt tö dïspläý résülts tö thé üsér. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєтυя α#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "The maximum number of times a user may send a submission."
+msgstr ""
+"Thé mäxïmüm nümßér öf tïmés ä üsér mäý sénd ä süßmïssïön. Ⱡ'σяєм ιρѕυм ∂σłσя"
+" ѕιт αмєт, ¢σηѕє¢тєтυя α#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Number of times the user has sent a submission."
+msgstr ""
+"Nümßér öf tïmés thé üsér häs sént ä süßmïssïön. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт,"
+" ¢σηѕє¢тєтυя α#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Text to display after the user votes."
+msgstr ""
+"Téxt tö dïspläý äftér thé üsér vötés. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєтυ#"
+
+#. Translators: {field} is either "answers" or "questions".
+#: src/xblock-poll/poll/poll.py
+#, python-brace-format
+msgid "'{field}' is not present, or not a JSON array."
+msgstr ""
+"'{field}' ïs nöt présént, ör nöt ä JSÖN ärräý. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєтυя #"
+
+#. Translators: {noun} is either "Answer" or "Question". {item} identifies the
+#. answer or question.
+#: src/xblock-poll/poll/poll.py
+#, python-brace-format
+msgid "{noun} {item} not a javascript object!"
+msgstr ""
+"{noun} {item} nöt ä jäväsçrïpt ößjéçt! Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тє#"
+
+#. Translators: {noun} is either "Answer" or "Question". {item} identifies the
+#. answer or question.
+#: src/xblock-poll/poll/poll.py
+#, python-brace-format
+msgid "{noun} {item} contains no key."
+msgstr "{noun} {item} çöntäïns nö kéý. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢ση#"
+
+#. Translators: {noun} is either "Answer" or "Question".
+#. {noun_lower} is the lowercase version of {noun}.
+#: src/xblock-poll/poll/poll.py
+#, python-brace-format
+msgid ""
+"{noun} has no text or img. Please make sure all {noun_lower}s have one or "
+"the other, or both."
+msgstr ""
+"{noun} häs nö téxt ör ïmg. Pléäsé mäké süré äll {noun_lower}s hävé öné ör "
+"thé öthér, ör ßöth. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тє#"
+
+#. Translators: {noun} is either "Answer" or "Question".
+#. {noun_lower} is the lowercase version of {noun}.
+#: src/xblock-poll/poll/poll.py
+#, python-brace-format
+msgid ""
+"{noun} was added with no label. All {noun_lower}s must have labels. Please "
+"check the form. Check the form and explicitly delete {noun_lower}s if not "
+"needed."
+msgstr ""
+"{noun} wäs äddéd wïth nö läßél. Àll {noun_lower}s müst hävé läßéls. Pléäsé "
+"çhéçk thé förm. Çhéçk thé förm änd éxplïçïtlý délété {noun_lower}s ïf nöt "
+"néédéd. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя α∂ιριѕι¢ιηg єłιт, ѕє∂ ∂σ "
+"єιυѕмσ∂ тємρσя ιη¢ι∂ι∂υηт υт łαвσяє єт ∂σłσяє мαgηα αłιqυα. υт єηιм α∂ мιηιм"
+" νєηιαм, qυιѕ ησѕтяυ∂ єχєя¢ιтαтιση υłłαм¢σ łαвσяιѕ ηιѕι υт αłιqυιρ єχ єα "
+"¢σммσ∂σ ¢σηѕєqυαт. ∂υιѕ αυтє ιяυяє ∂σłσя ιη яєρяєнєη∂єяιт ιη νσłυρтαтє νєłιт"
+" єѕѕє ¢ιłłυм ∂σłσяє єυ ƒυgιαт ηυłłα ραяιαтυя. єχ¢єρтєυя ѕιηт σ¢¢αє¢αт "
+"¢υρι∂αтαт ηση ρяσι∂єηт, ѕυηт ιη ¢υłρα qυι σƒƒι¢ια ∂єѕєяυηт мσłłιт αηιм ι∂ "
+"єѕт łαвσяυ#"
+
+#: src/xblock-poll/poll/poll.py
+msgid ""
+"All images must have an alternative text describing the image in a way that "
+"would allow someone to answer the poll if the image did not load."
+msgstr ""
+"Àll ïmägés müst hävé än ältérnätïvé téxt désçrïßïng thé ïmägé ïn ä wäý thät "
+"wöüld ällöw söméöné tö änswér thé pöll ïf thé ïmägé dïd nöt löäd. Ⱡ'σяєм "
+"ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя α∂ιριѕι¢ιηg єłιт, ѕє∂ ∂σ єιυѕмσ∂ тємρσя "
+"ιη¢ι∂ι∂υηт υт łαвσяє єт ∂σłσяє мαgηα αłιqυα. υт єηιм α∂ мιηιм νєηιαм, qυιѕ "
+"ησѕтяυ∂ єχєя¢ιтαтιση υłłαм¢σ łαвσяιѕ ηιѕι υт αłιqυιρ єχ єα ¢σммσ∂σ "
+"¢σηѕєqυαт. ∂υιѕ αυтє ιяυяє ∂σłσя ιη яєρяєнєη∂єяιт ιη νσłυρтαтє νєłιт єѕѕє "
+"¢ιłłυм ∂σłσяє єυ ƒυgιαт ηυłłα ραяιαтυя. єχ¢єρтєυя ѕιηт σ¢¢αє¢αт ¢υρι∂αтαт "
+"ηση ρяσι∂єηт, ѕυηт ιη ¢υłρα qυι σƒƒι¢ια ∂єѕєяυηт мσłłιт αηιм ι∂ єѕт #"
+
+#. Translators: "{noun_lower} is either "answer" or "question".
+#: src/xblock-poll/poll/poll.py
+#, python-brace-format
+msgid "You must include at least one {noun_lower}."
+msgstr ""
+"Ýöü müst ïnçlüdé ät léäst öné {noun_lower}. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєт#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Maximum Submissions missing or not an integer."
+msgstr ""
+"Mäxïmüm Süßmïssïöns mïssïng ör nöt än ïntégér. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєтυя α#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Private results may not be False when Maximum Submissions is not 1."
+msgstr ""
+"Prïväté résülts mäý nöt ßé Fälsé whén Mäxïmüm Süßmïssïöns ïs nöt 1. Ⱡ'σяєм "
+"ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя #"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Poll"
+msgstr "Pöll Ⱡ'σяєм ι#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "What is your favorite color?"
+msgstr "Whät ïs ýöür fävörïté çölör? Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Red"
+msgstr "Réd Ⱡ'σяєм#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Blue"
+msgstr "Blüé Ⱡ'σяєм ι#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Green"
+msgstr "Gréén Ⱡ'σяєм ιρѕ#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Other"
+msgstr "Öthér Ⱡ'σяєм ιρѕ#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "The answer options on this poll."
+msgstr ""
+"Thé änswér öptïöns ön thïs pöll. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тє#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Total tally of answers from students."
+msgstr ""
+"Tötäl tällý öf änswérs fröm stüdénts. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєтυ#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "The student's answer"
+msgstr "Thé stüdént's änswér Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, #"
+
+#: src/xblock-poll/poll/poll.py
+msgid "You have already voted in this poll."
+msgstr ""
+"Ýöü hävé älréädý vötéd ïn thïs pöll. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєтυ#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Answer not included with request."
+msgstr ""
+"Ànswér nöt ïnçlüdéd wïth réqüést. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тє#"
+
+#. Translators: {choice} uniquely identifies a specific answer belonging to a
+#. poll or survey.
+#: src/xblock-poll/poll/poll.py
+#, python-brace-format
+msgid "No key \"{choice}\" in answers table."
+msgstr ""
+"Nö kéý \"{choice}\" ïn änswérs täßlé. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢т#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "You have already voted as many times as you are allowed."
+msgstr ""
+"Ýöü hävé älréädý vötéd äs mäný tïmés äs ýöü äré ällöwéd. Ⱡ'σяєм ιρѕυм ∂σłσя "
+"ѕιт αмєт, ¢σηѕє¢тєтυя α#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "You must specify a question."
+msgstr "Ýöü müst spéçïfý ä qüéstïön. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Survey"
+msgstr "Sürvéý Ⱡ'σяєм ιρѕυ#"
+
+#: src/xblock-poll/poll/poll.py
+#: lms/templates/instructor/instructor_dashboard_2/course_info.html
+msgid "Yes"
+msgstr "Ýés Ⱡ'σяєм#"
+
+#: src/xblock-poll/poll/poll.py
+#: lms/templates/instructor/instructor_dashboard_2/course_info.html
+msgid "No"
+msgstr "Nö Ⱡ'σя#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Maybe"
+msgstr "Mäýßé Ⱡ'σяєм ιρѕ#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Answer choices for this Survey"
+msgstr "Ànswér çhöïçés för thïs Sürvéý Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢т#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Are you enjoying the course?"
+msgstr "Àré ýöü énjöýïng thé çöürsé? Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Would you recommend this course to your friends?"
+msgstr ""
+"Wöüld ýöü réçömménd thïs çöürsé tö ýöür frïénds? Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт "
+"αмєт, ¢σηѕє¢тєтυя α#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Do you think you will learn a lot?"
+msgstr ""
+"Dö ýöü thïnk ýöü wïll léärn ä löt? Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєт#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Questions for this Survey"
+msgstr "Qüéstïöns för thïs Sürvéý Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕ#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "The user's answers"
+msgstr "Thé üsér's änswérs Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт#"
+
+#: src/xblock-poll/poll/poll.py
+msgid ""
+"Not all questions were included, or unknown questions were included. Try "
+"refreshing and trying again."
+msgstr ""
+"Nöt äll qüéstïöns wéré ïnçlüdéd, ör ünknöwn qüéstïöns wéré ïnçlüdéd. Trý "
+"réfréshïng änd trýïng ägäïn. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмє#"
+
+#. Translators: {answer_key} uniquely identifies a specific answer belonging
+#. to a poll or survey.
+#. {question_key} uniquely identifies a specific question belonging to a poll
+#. or survey.
+#: src/xblock-poll/poll/poll.py
+#, python-brace-format
+msgid "Found unknown answer '{answer_key}' for question key '{question_key}'"
+msgstr ""
+"Föünd ünknöwn änswér '{answer_key}' för qüéstïön kéý '{question_key}' Ⱡ'σяєм"
+" ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя α#"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Question"
+msgstr "Qüéstïön Ⱡ'σяєм ιρѕυм ∂#"
+
 #: cms/djangoapps/contentstore/course_group_config.py
 #: cms/djangoapps/contentstore/views/certificates.py
 msgid "invalid JSON"
@@ -12741,6 +13395,7 @@ msgstr "Çöürsés Ⱡ'σяєм ιρѕυм #"
 
 #: cms/templates/index.html cms/templates/widgets/header.html
 #: lms/templates/navigation.html lms/templates/learner_dashboard/programs.html
+#: lms/templates/program_marketing/explore_programs.html
 #: themes/edx.org/lms/templates/header.html
 #: themes/red-theme/lms/templates/header.html
 msgid "Programs"
@@ -13122,6 +13777,10 @@ msgstr "LÉÀRN MÖRÉ Ⱡ'σяєм ιρѕυм ∂σłσ#"
 #: lms/templates/course.html
 msgid "Starts"
 msgstr "Stärts Ⱡ'σяєм ιρѕυ#"
+
+#: lms/templates/course.html
+msgid "Course starts: "
+msgstr "Çöürsé stärts:  Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт α#"
 
 #: lms/templates/course.html
 msgid "Starts: {date}"
@@ -13901,10 +14560,6 @@ msgstr "Ýöü dö nöt hävé äný nötés. Ⱡ'σяєм ιρѕυм ∂σłσ�
 msgid "Hint"
 msgstr "Hïnt Ⱡ'σяєм ι#"
 
-#: lms/templates/problem.html lms/templates/word_cloud.html
-msgid "Save"
-msgstr "Sävé Ⱡ'σяєм ι#"
-
 #: lms/templates/problem.html
 msgid "Save your answer"
 msgstr "Sävé ýöür änswér Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αм#"
@@ -14321,10 +14976,6 @@ msgid "Inactive Groups"
 msgstr "Ìnäçtïvé Gröüps Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт α#"
 
 #: lms/templates/staff_problem_info.html
-msgid "Staff Debug Info"
-msgstr "Stäff Déßüg Ìnfö Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αм#"
-
-#: lms/templates/staff_problem_info.html
 msgid "Submission history"
 msgstr "Süßmïssïön hïstörý Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт#"
 
@@ -14361,10 +15012,6 @@ msgid "Add comment"
 msgstr "Àdd çömmént Ⱡ'σяєм ιρѕυм ∂σłσя #"
 
 #: lms/templates/staff_problem_info.html
-msgid "Staff Debug"
-msgstr "Stäff Déßüg Ⱡ'σяєм ιρѕυм ∂σłσя #"
-
-#: lms/templates/staff_problem_info.html
 #: lms/templates/instructor/instructor_dashboard_2/e-commerce.html
 msgid "Actions"
 msgstr "Àçtïöns Ⱡ'σяєм ιρѕυм #"
@@ -14388,10 +15035,6 @@ msgstr "Résçöré Léärnér's Süßmïssïön Ⱡ'σяєм ιρѕυм ∂σł
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Rescore Only If Score Improves"
 msgstr "Résçöré Önlý Ìf Sçöré Ìmprövés Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢т#"
-
-#: lms/templates/staff_problem_info.html
-msgid "Module Fields"
-msgstr "Mödülé Fïélds Ⱡ'σяєм ιρѕυм ∂σłσя ѕι#"
 
 #: lms/templates/staff_problem_info.html
 msgid "XML attributes"
@@ -18936,14 +19579,6 @@ msgstr "Nö énd däté sét Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт α#"
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Has the course started?"
 msgstr "Häs thé çöürsé stärtéd? Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σ#"
-
-#: lms/templates/instructor/instructor_dashboard_2/course_info.html
-msgid "Yes"
-msgstr "Ýés Ⱡ'σяєм#"
-
-#: lms/templates/instructor/instructor_dashboard_2/course_info.html
-msgid "No"
-msgstr "Nö Ⱡ'σя#"
 
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Has the course ended?"
@@ -26122,10 +26757,6 @@ msgid ""
 msgstr ""
 "Çöntént gröüp nö löngér éxïsts. Pléäsé çhöösé änöthér ör ällöw äççéss tö Àll"
 " Stüdénts änd stäff Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢#"
-
-#: cms/templates/visibility_editor.html
-msgid "Verification Checkpoint"
-msgstr "Vérïfïçätïön Çhéçkpöïnt Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σ#"
 
 #: cms/templates/visibility_editor.html
 msgid "Verification checkpoint to complete"

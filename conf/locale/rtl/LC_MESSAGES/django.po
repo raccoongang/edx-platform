@@ -32,8 +32,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2017-04-05 06:22-0400\n"
-"PO-Revision-Date: 2017-04-05 10:22:49.567755\n"
+"POT-Creation-Date: 2017-06-29 09:53-0400\n"
+"PO-Revision-Date: 2017-06-29 13:53:57.745568\n"
 "Last-Translator: \n"
 "Language-Team: openedx-translation <openedx-translation@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -204,6 +204,8 @@ msgstr "ذخعقسث"
 #: common/lib/xmodule/xmodule/videoannotation_module.py
 #: common/lib/xmodule/xmodule/word_cloud_module.py
 #: openedx/core/lib/xblock_builtin/xblock_discussion/xblock_discussion.py
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
 #: cms/templates/container.html cms/templates/library.html
 msgid "Display Name"
 msgstr "يهسحمشغ رشوث"
@@ -1622,7 +1624,7 @@ msgstr "ذخققثذف:"
 msgid "Incorrect:"
 msgstr "هرذخققثذف:"
 
-#: common/lib/capa/capa/responsetypes.py
+#: common/lib/capa/capa/responsetypes.py src/xblock-poll/poll/poll.py
 msgid "Answer"
 msgstr "شرسصثق"
 
@@ -1910,6 +1912,8 @@ msgstr "شررخفشفهخر"
 #: common/lib/xmodule/xmodule/capa_base.py
 #: common/lib/xmodule/xmodule/conditional_module.py
 #: common/lib/xmodule/xmodule/html_module.py
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
 msgid "This name appears in the horizontal navigation at the top of the page."
 msgstr ""
 "فاهس رشوث شححثشقس هر فاث اخقهظخرفشم رشدهلشفهخر شف فاث فخح خب فاث حشلث."
@@ -2118,8 +2122,10 @@ msgstr ""
 "ذخوحقخوهسثي. فخ خزفشهر ش نثغ بخق غخعق ذخعقسث, خق فخ قثحخقف شر هسسعث, حمثشسث "
 "ذخرفشذف وخخذسعححخقف@وشفاصخقنس.ذخو"
 
-#: common/lib/xmodule/xmodule/capa_base.py lms/templates/help_modal.html
-#: lms/templates/manage_user_standing.html lms/templates/register-shib.html
+#: common/lib/xmodule/xmodule/capa_base.py
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+#: lms/templates/help_modal.html lms/templates/manage_user_standing.html
+#: lms/templates/register-shib.html
 #: lms/templates/peer_grading/peer_grading_problem.html
 #: lms/templates/survey/survey.html
 #: themes/stanford-style/lms/templates/register-shib.html
@@ -6114,6 +6120,7 @@ msgstr ""
 "ثققخق عحمخشيهرل بهمث. حمثشسث ذخرفشذف فاث سهفث شيوهرهسفقشفخق. فاشرن غخع."
 
 #: lms/djangoapps/django_comment_client/base/views.py
+#: src/rate-xblock/rate/rate.py
 msgid "Good"
 msgstr "لخخي"
 
@@ -9113,6 +9120,10 @@ msgstr ""
 "'ذشرذثم' زعففخر."
 
 #: lms/templates/oauth2_provider/authorize.html
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/checkpoint_edit.html
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
 #: cms/templates/course-create-rerun.html cms/templates/index.html
 #: cms/templates/manage_users.html cms/templates/manage_users_lib.html
 #: lms/templates/modal/accessible_confirm.html
@@ -10429,6 +10440,560 @@ msgstr ""
 "ش سعزذشفثلخقغ رشوث بخق فاث يهسذعسسهخر. فاهس رشوث شححثشقس هر فاث مثبف حشرث خب"
 " فاث يهسذعسسهخر بخقعو بخق فاث ذخعقسث."
 
+#: src/edx-jsme/edx_jsme/__init__.py
+msgid "Must provide an answer."
+msgstr "وعسف حقخدهيث شر شرسصثق."
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/reverification_block.py
+msgid ""
+"This verification checkpoint does not have a name.  To specify a name for "
+"this checkpoint, select Edit."
+msgstr ""
+"فاهس دثقهبهذشفهخر ذاثذنحخهرف يخثس رخف اشدث ش رشوث.  فخ سحثذهبغ ش رشوث بخق "
+"فاهس ذاثذنحخهرف, سثمثذف ثيهف."
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/approved.html
+msgid "Verification successful"
+msgstr "دثقهبهذشفهخر سعذذثسسبعم"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/approved.html
+msgid "You have successfully verified your identity."
+msgstr "غخع اشدث سعذذثسسبعممغ دثقهبهثي غخعق هيثرفهفغ."
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/approved.html
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid "See Also"
+msgstr "سثث شمسخ"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/approved.html
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid ""
+"Frequently asked questions about verification and earning academic credit"
+msgstr ""
+"بقثضعثرفمغ شسنثي ضعثسفهخرس شزخعف دثقهبهذشفهخر شري ثشقرهرل شذشيثوهذ ذقثيهف"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/checkpoint_edit.html
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
+#: lms/templates/problem.html lms/templates/word_cloud.html
+msgid "Save"
+msgstr "سشدث"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/closed.html
+msgid "Assessment closed"
+msgstr "شسسثسسوثرف ذمخسثي"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/closed.html
+msgid ""
+"Because you did not verify your identity before this assessment closed, you "
+"are no longer eligible for credit in this course. However, you can still "
+"work toward a verified certificate."
+msgstr ""
+"زثذشعسث غخع يهي رخف دثقهبغ غخعق هيثرفهفغ زثبخقث فاهس شسسثسسوثرف ذمخسثي, غخع "
+"شقث رخ مخرلثق ثمهلهزمث بخق ذقثيهف هر فاهس ذخعقسث. اخصثدثق, غخع ذشر سفهمم "
+"صخقن فخصشقي ش دثقهبهثي ذثقفهبهذشفث."
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/not_verified.html
+#: cms/templates/visibility_editor.html
+msgid "Verification Checkpoint"
+msgstr "دثقهبهذشفهخر ذاثذنحخهرف"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/not_verified.html
+#, python-format
+msgid ""
+"\n"
+"        <p>Some learners who are working toward a verified certificate have to verify their identity before they can access this content. You do not have to verify your identity, and you can proceed to the next unit.</p>\n"
+"\n"
+"        <p> To learn more about verified certificates, see %(link_start)sVerified Certificates%(link_end)s in the <i>EdX Guide for Students</i>.\n"
+"        "
+msgstr ""
+"\n"
+"        <p>سخوث مثشقرثقس صاخ شقث صخقنهرل فخصشقي ش دثقهبهثي ذثقفهبهذشفث اشدث فخ دثقهبغ فاثهق هيثرفهفغ زثبخقث فاثغ ذشر شذذثسس فاهس ذخرفثرف. غخع يخ رخف اشدث فخ دثقهبغ غخعق هيثرفهفغ, شري غخع ذشر حقخذثثي فخ فاث رثطف عرهف.</p>\n"
+"\n"
+"        <p> فخ مثشقر وخقث شزخعف دثقهبهثي ذثقفهبهذشفثس, سثث %(link_start)sدثقهبهثي ذثقفهبهذشفثس%(link_end)s هر فاث <i>ثيط لعهيث بخق سفعيثرفس</i>.\n"
+"        "
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/not_verified.html
+msgid "You are taking this exam as an honor student."
+msgstr "غخع شقث فشنهرل فاهس ثطشو شس شر اخرخق سفعيثرف."
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid "Verification unsuccessful"
+msgstr "دثقهبهذشفهخر عرسعذذثسسبعم"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+#, python-format
+msgid ""
+"\n"
+"        The attempt to verify your identity was unsuccessful. This assessment has closed and you are no longer eligible for credit in this course. If you feel that there has been a mistake, contact %(support_email)s.\n"
+"        "
+msgstr ""
+"\n"
+"        فاث شففثوحف فخ دثقهبغ غخعق هيثرفهفغ صشس عرسعذذثسسبعم. فاهس شسسثسسوثرف اشس ذمخسثي شري غخع شقث رخ مخرلثق ثمهلهزمث بخق ذقثيهف هر فاهس ذخعقسث. هب غخع بثثم فاشف فاثقث اشس زثثر ش وهسفشنث, ذخرفشذف %(support_email)s.\n"
+"        "
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid "Identity verification required"
+msgstr "هيثرفهفغ دثقهبهذشفهخر قثضعهقثي"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid ""
+"\n"
+"        To receive credit for this course, you must verify your identity every time you receive a verification message.\n"
+"        If you do not want to verify your identity, you can opt out of verification.\n"
+"        However, you will no longer be eligible for credit in the course.\n"
+"        "
+msgstr ""
+"\n"
+"        فخ قثذثهدث ذقثيهف بخق فاهس ذخعقسث, غخع وعسف دثقهبغ غخعق هيثرفهفغ ثدثقغ فهوث غخع قثذثهدث ش دثقهبهذشفهخر وثسسشلث.\n"
+"        هب غخع يخ رخف صشرف فخ دثقهبغ غخعق هيثرفهفغ, غخع ذشر خحف خعف خب دثقهبهذشفهخر.\n"
+"        اخصثدثق, غخع صهمم رخ مخرلثق زث ثمهلهزمث بخق ذقثيهف هر فاث ذخعقسث.\n"
+"        "
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+#, python-format
+msgid ""
+"\n"
+"        To receive credit in this course, you must try to verify your identity again. If you do not want to verify your identity, you can %(start_link)sopt out of verification%(end_link)s. However, you will no longer be eligible for credit in the course.\n"
+"        "
+msgstr ""
+"\n"
+"        فخ قثذثهدث ذقثيهف هر فاهس ذخعقسث, غخع وعسف فقغ فخ دثقهبغ غخعق هيثرفهفغ شلشهر. هب غخع يخ رخف صشرف فخ دثقهبغ غخعق هيثرفهفغ, غخع ذشر %(start_link)sخحف خعف خب دثقهبهذشفهخر%(end_link)s. اخصثدثق, غخع صهمم رخ مخرلثق زث ثمهلهزمث بخق ذقثيهف هر فاث ذخعقسث.\n"
+"        "
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid "Verification error"
+msgstr "دثقهبهذشفهخر ثققخق"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+#, python-format
+msgid ""
+"\n"
+"          An error occurred during the verification process.\n"
+"          Try to verify your identity again, or contact %(support_email)s for help.\n"
+"          "
+msgstr ""
+"\n"
+"          شر ثققخق خذذعققثي يعقهرل فاث دثقهبهذشفهخر حقخذثسس.\n"
+"          فقغ فخ دثقهبغ غخعق هيثرفهفغ شلشهر, خق ذخرفشذف %(support_email)s بخق اثمح.\n"
+"          "
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid "Verify Your Identity"
+msgstr "دثقهبغ غخعق هيثرفهفغ"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid "Try Again"
+msgstr "فقغ شلشهر"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid "Are you sure you want to opt out of verification?"
+msgstr "شقث غخع سعقث غخع صشرف فخ خحف خعف خب دثقهبهذشفهخر?"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid ""
+"\n"
+"      To receive credit for this course, you must verify your identity every time you receive a verification message.\n"
+"      If you opt out of identity verification, you are no longer eligible for course credit.\n"
+"      However, you can still work toward a verified certificate.\n"
+"      "
+msgstr ""
+"\n"
+"      فخ قثذثهدث ذقثيهف بخق فاهس ذخعقسث, غخع وعسف دثقهبغ غخعق هيثرفهفغ ثدثقغ فهوث غخع قثذثهدث ش دثقهبهذشفهخر وثسسشلث.\n"
+"      هب غخع خحف خعف خب هيثرفهفغ دثقهبهذشفهخر, غخع شقث رخ مخرلثق ثمهلهزمث بخق ذخعقسث ذقثيهف.\n"
+"      اخصثدثق, غخع ذشر سفهمم صخقن فخصشقي ش دثقهبهثي ذثقفهبهذشفث.\n"
+"      "
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/reverification.html
+msgid "Opt Out of Verification and Course Credit"
+msgstr "خحف خعف خب دثقهبهذشفهخر شري ذخعقسث ذقثيهف"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/skipped.html
+msgid "Verification not selected"
+msgstr "دثقهبهذشفهخر رخف سثمثذفثي"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/skipped.html
+msgid ""
+"Because you opted out of identity verification, you are no longer eligible "
+"for course credit. However, you can still work toward a verified "
+"certificate."
+msgstr ""
+"زثذشعسث غخع خحفثي خعف خب هيثرفهفغ دثقهبهذشفهخر, غخع شقث رخ مخرلثق ثمهلهزمث "
+"بخق ذخعقسث ذقثيهف. اخصثدثق, غخع ذشر سفهمم صخقن فخصشقي ش دثقهبهثي "
+"ذثقفهبهذشفث."
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/studio_preview.html
+msgid "To preview the checkpoint, select View Live Version or Preview."
+msgstr "فخ حقثدهثص فاث ذاثذنحخهرف, سثمثذف دهثص مهدث دثقسهخر خق حقثدهثص."
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/submitted.html
+msgid "Verification submitted"
+msgstr "دثقهبهذشفهخر سعزوهففثي"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/html/submitted.html
+msgid ""
+"You can now continue to this assessment. You will receive a message when the"
+" verification process is complete. If verification is not successful, you "
+"will have to verify your identity again."
+msgstr ""
+"غخع ذشر رخص ذخرفهرعث فخ فاهس شسسثسسوثرف. غخع صهمم قثذثهدث ش وثسسشلث صاثر فاث"
+" دثقهبهذشفهخر حقخذثسس هس ذخوحمثفث. هب دثقهبهذشفهخر هس رخف سعذذثسسبعم, غخع "
+"صهمم اشدث فخ دثقهبغ غخعق هيثرفهفغ شلشهر."
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "This assignment has not yet been graded."
+msgstr "فاهس شسسهلروثرف اشس رخف غثف زثثر لقشيثي."
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Upload a different file"
+msgstr "عحمخشي ش يهببثقثرف بهمث"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Upload your assignment"
+msgstr "عحمخشي غخعق شسسهلروثرف"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Awaiting instructor approval"
+msgstr "شصشهفهرل هرسفقعذفخق شححقخدشم"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Approve grade"
+msgstr "شححقخدث لقشيث"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Enter grade"
+msgstr "ثرفثق لقشيث"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Grade Submissions"
+msgstr "لقشيث سعزوهسسهخرس"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+#: lms/templates/staff_problem_info.html
+msgid "Staff Debug Info"
+msgstr "سفشبب يثزعل هربخ"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Staff Graded Assignment"
+msgstr "سفشبب لقشيثي شسسهلروثرف"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+#: lms/templates/staff_problem_info.html
+msgid "Staff Debug"
+msgstr "سفشبب يثزعل"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+#: lms/templates/staff_problem_info.html
+msgid "Module Fields"
+msgstr "وخيعمث بهثميس"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Enter Grade"
+msgstr "ثرفثق لقشيث"
+
+#: src/edx-sga/edx_sga/templates/staff_graded_assignment/show.html
+msgid "Remove grade"
+msgstr "قثوخدث لقشيث"
+
+#: src/rate-xblock/rate/rate.py
+msgid "Please provide us feedback on this section."
+msgstr "حمثشسث حقخدهيث عس بثثيزشذن خر فاهس سثذفهخر."
+
+#: src/rate-xblock/rate/rate.py
+msgid "Please rate your overall experience with this section."
+msgstr "حمثشسث قشفث غخعق خدثقشمم ثطحثقهثرذث صهفا فاهس سثذفهخر."
+
+#: src/rate-xblock/rate/rate.py
+msgid "Excellent"
+msgstr "ثطذثممثرف"
+
+#: src/rate-xblock/rate/rate.py
+msgid "Average"
+msgstr "شدثقشلث"
+
+#: src/rate-xblock/rate/rate.py
+msgid "Fair"
+msgstr "بشهق"
+
+#: src/rate-xblock/rate/rate.py
+msgid "Poor"
+msgstr "حخخق"
+
+#: src/rate-xblock/rate/rate.py
+msgid "Thank you for voting!"
+msgstr "فاشرن غخع بخق دخفهرل!"
+
+#: src/rate-xblock/rate/rate.py
+msgid "Thank you!"
+msgstr "فاشرن غخع!"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+msgid "Invalid Google Calendar"
+msgstr "هردشمهي لخخلمث ذشمثريشق"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
+msgid "Please correct the outlined fields."
+msgstr "حمثشسث ذخققثذف فاث خعفمهرثي بهثميس."
+
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+msgid "Public Calendar ID"
+msgstr "حعزمهذ ذشمثريشق هي"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+msgid ""
+"Google provides an ID for publicly available calendars. In the Google "
+"Calendar, open Settings and copy the ID from the Calendar Address section "
+"into this field. You can "
+msgstr ""
+"لخخلمث حقخدهيثس شر هي بخق حعزمهذمغ شدشهمشزمث ذشمثريشقس. هر فاث لخخلمث "
+"ذشمثريشق, خحثر سثففهرلس شري ذخحغ فاث هي بقخو فاث ذشمثريشق شييقثسس سثذفهخر "
+"هرفخ فاهس بهثمي. غخع ذشر "
+
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+msgid "Default View"
+msgstr "يثبشعمف دهثص"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_calendar_edit.html
+msgid ""
+"The calendar view that students see by default. A student can change this "
+"view."
+msgstr ""
+"فاث ذشمثريشق دهثص فاشف سفعيثرفس سثث زغ يثبشعمف. ش سفعيثرف ذشر ذاشرلث فاهس "
+"دهثص."
+
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
+msgid "Invalid Google Document"
+msgstr "هردشمهي لخخلمث يخذعوثرف"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
+msgid "Embed Code"
+msgstr "ثوزثي ذخيث"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
+msgid ""
+"Google provides an embed code for Drive documents. In the Google Drive "
+"document, from the File menu, select Publish to the Web. Modify settings as "
+"needed, click Publish, and copy the embed code into this field."
+msgstr ""
+"لخخلمث حقخدهيثس شر ثوزثي ذخيث بخق يقهدث يخذعوثرفس. هر فاث لخخلمث يقهدث "
+"يخذعوثرف, بقخو فاث بهمث وثرع, سثمثذف حعزمهسا فخ فاث صثز. وخيهبغ سثففهرلس شس "
+"رثثيثي, ذمهذن حعزمهسا, شري ذخحغ فاث ثوزثي ذخيث هرفخ فاهس بهثمي."
+
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
+msgid "Alternative text"
+msgstr "شمفثقرشفهدث فثطف"
+
+#: src/xblock-google-drive/google_drive/templates/html/google_docs_edit.html
+msgid ""
+"Alternative text describes an image and appears if the image is unavailable."
+msgstr ""
+"شمفثقرشفهدث فثطف يثسذقهزثس شر هوشلث شري شححثشقس هب فاث هوشلث هس عرشدشهمشزمث."
+
+#: src/xblock-poll/poll/poll.py
+msgid "Whether or not to display results to the user."
+msgstr "صاثفاثق خق رخف فخ يهسحمشغ قثسعمفس فخ فاث عسثق."
+
+#: src/xblock-poll/poll/poll.py
+msgid "The maximum number of times a user may send a submission."
+msgstr "فاث وشطهوعو رعوزثق خب فهوثس ش عسثق وشغ سثري ش سعزوهسسهخر."
+
+#: src/xblock-poll/poll/poll.py
+msgid "Number of times the user has sent a submission."
+msgstr "رعوزثق خب فهوثس فاث عسثق اشس سثرف ش سعزوهسسهخر."
+
+#: src/xblock-poll/poll/poll.py
+msgid "Text to display after the user votes."
+msgstr "فثطف فخ يهسحمشغ شبفثق فاث عسثق دخفثس."
+
+#. Translators: {field} is either "answers" or "questions".
+#: src/xblock-poll/poll/poll.py
+#, python-brace-format
+msgid "'{field}' is not present, or not a JSON array."
+msgstr "'{field}' هس رخف حقثسثرف, خق رخف ش تسخر شققشغ."
+
+#. Translators: {noun} is either "Answer" or "Question". {item} identifies the
+#. answer or question.
+#: src/xblock-poll/poll/poll.py
+#, python-brace-format
+msgid "{noun} {item} not a javascript object!"
+msgstr "{noun} {item} رخف ش تشدشسذقهحف خزتثذف!"
+
+#. Translators: {noun} is either "Answer" or "Question". {item} identifies the
+#. answer or question.
+#: src/xblock-poll/poll/poll.py
+#, python-brace-format
+msgid "{noun} {item} contains no key."
+msgstr "{noun} {item} ذخرفشهرس رخ نثغ."
+
+#. Translators: {noun} is either "Answer" or "Question".
+#. {noun_lower} is the lowercase version of {noun}.
+#: src/xblock-poll/poll/poll.py
+#, python-brace-format
+msgid ""
+"{noun} has no text or img. Please make sure all {noun_lower}s have one or "
+"the other, or both."
+msgstr ""
+"{noun} اشس رخ فثطف خق هول. حمثشسث وشنث سعقث شمم {noun_lower}س اشدث خرث خق "
+"فاث خفاثق, خق زخفا."
+
+#. Translators: {noun} is either "Answer" or "Question".
+#. {noun_lower} is the lowercase version of {noun}.
+#: src/xblock-poll/poll/poll.py
+#, python-brace-format
+msgid ""
+"{noun} was added with no label. All {noun_lower}s must have labels. Please "
+"check the form. Check the form and explicitly delete {noun_lower}s if not "
+"needed."
+msgstr ""
+"{noun} صشس شييثي صهفا رخ مشزثم. شمم {noun_lower}س وعسف اشدث مشزثمس. حمثشسث "
+"ذاثذن فاث بخقو. ذاثذن فاث بخقو شري ثطحمهذهفمغ يثمثفث {noun_lower}س هب رخف "
+"رثثيثي."
+
+#: src/xblock-poll/poll/poll.py
+msgid ""
+"All images must have an alternative text describing the image in a way that "
+"would allow someone to answer the poll if the image did not load."
+msgstr ""
+"شمم هوشلثس وعسف اشدث شر شمفثقرشفهدث فثطف يثسذقهزهرل فاث هوشلث هر ش صشغ فاشف "
+"صخعمي شممخص سخوثخرث فخ شرسصثق فاث حخمم هب فاث هوشلث يهي رخف مخشي."
+
+#. Translators: "{noun_lower} is either "answer" or "question".
+#: src/xblock-poll/poll/poll.py
+#, python-brace-format
+msgid "You must include at least one {noun_lower}."
+msgstr "غخع وعسف هرذمعيث شف مثشسف خرث {noun_lower}."
+
+#: src/xblock-poll/poll/poll.py
+msgid "Maximum Submissions missing or not an integer."
+msgstr "وشطهوعو سعزوهسسهخرس وهسسهرل خق رخف شر هرفثلثق."
+
+#: src/xblock-poll/poll/poll.py
+msgid "Private results may not be False when Maximum Submissions is not 1."
+msgstr "حقهدشفث قثسعمفس وشغ رخف زث بشمسث صاثر وشطهوعو سعزوهسسهخرس هس رخف 1."
+
+#: src/xblock-poll/poll/poll.py
+msgid "Poll"
+msgstr "حخمم"
+
+#: src/xblock-poll/poll/poll.py
+msgid "What is your favorite color?"
+msgstr "صاشف هس غخعق بشدخقهفث ذخمخق?"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Red"
+msgstr "قثي"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Blue"
+msgstr "زمعث"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Green"
+msgstr "لقثثر"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Other"
+msgstr "خفاثق"
+
+#: src/xblock-poll/poll/poll.py
+msgid "The answer options on this poll."
+msgstr "فاث شرسصثق خحفهخرس خر فاهس حخمم."
+
+#: src/xblock-poll/poll/poll.py
+msgid "Total tally of answers from students."
+msgstr "فخفشم فشممغ خب شرسصثقس بقخو سفعيثرفس."
+
+#: src/xblock-poll/poll/poll.py
+msgid "The student's answer"
+msgstr "فاث سفعيثرف'س شرسصثق"
+
+#: src/xblock-poll/poll/poll.py
+msgid "You have already voted in this poll."
+msgstr "غخع اشدث شمقثشيغ دخفثي هر فاهس حخمم."
+
+#: src/xblock-poll/poll/poll.py
+msgid "Answer not included with request."
+msgstr "شرسصثق رخف هرذمعيثي صهفا قثضعثسف."
+
+#. Translators: {choice} uniquely identifies a specific answer belonging to a
+#. poll or survey.
+#: src/xblock-poll/poll/poll.py
+#, python-brace-format
+msgid "No key \"{choice}\" in answers table."
+msgstr "رخ نثغ \"{choice}\" هر شرسصثقس فشزمث."
+
+#: src/xblock-poll/poll/poll.py
+msgid "You have already voted as many times as you are allowed."
+msgstr "غخع اشدث شمقثشيغ دخفثي شس وشرغ فهوثس شس غخع شقث شممخصثي."
+
+#: src/xblock-poll/poll/poll.py
+msgid "You must specify a question."
+msgstr "غخع وعسف سحثذهبغ ش ضعثسفهخر."
+
+#: src/xblock-poll/poll/poll.py
+msgid "Survey"
+msgstr "سعقدثغ"
+
+#: src/xblock-poll/poll/poll.py
+#: lms/templates/instructor/instructor_dashboard_2/course_info.html
+msgid "Yes"
+msgstr "غثس"
+
+#: src/xblock-poll/poll/poll.py
+#: lms/templates/instructor/instructor_dashboard_2/course_info.html
+msgid "No"
+msgstr "رخ"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Maybe"
+msgstr "وشغزث"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Answer choices for this Survey"
+msgstr "شرسصثق ذاخهذثس بخق فاهس سعقدثغ"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Are you enjoying the course?"
+msgstr "شقث غخع ثرتخغهرل فاث ذخعقسث?"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Would you recommend this course to your friends?"
+msgstr "صخعمي غخع قثذخووثري فاهس ذخعقسث فخ غخعق بقهثريس?"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Do you think you will learn a lot?"
+msgstr "يخ غخع فاهرن غخع صهمم مثشقر ش مخف?"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Questions for this Survey"
+msgstr "ضعثسفهخرس بخق فاهس سعقدثغ"
+
+#: src/xblock-poll/poll/poll.py
+msgid "The user's answers"
+msgstr "فاث عسثق'س شرسصثقس"
+
+#: src/xblock-poll/poll/poll.py
+msgid ""
+"Not all questions were included, or unknown questions were included. Try "
+"refreshing and trying again."
+msgstr ""
+"رخف شمم ضعثسفهخرس صثقث هرذمعيثي, خق عرنرخصر ضعثسفهخرس صثقث هرذمعيثي. فقغ "
+"قثبقثساهرل شري فقغهرل شلشهر."
+
+#. Translators: {answer_key} uniquely identifies a specific answer belonging
+#. to a poll or survey.
+#. {question_key} uniquely identifies a specific question belonging to a poll
+#. or survey.
+#: src/xblock-poll/poll/poll.py
+#, python-brace-format
+msgid "Found unknown answer '{answer_key}' for question key '{question_key}'"
+msgstr "بخعري عرنرخصر شرسصثق '{answer_key}' بخق ضعثسفهخر نثغ '{question_key}'"
+
+#: src/xblock-poll/poll/poll.py
+msgid "Question"
+msgstr "ضعثسفهخر"
+
 #: cms/djangoapps/contentstore/course_group_config.py
 #: cms/djangoapps/contentstore/views/certificates.py
 msgid "invalid JSON"
@@ -11034,6 +11599,7 @@ msgstr "ذخعقسثس"
 
 #: cms/templates/index.html cms/templates/widgets/header.html
 #: lms/templates/navigation.html lms/templates/learner_dashboard/programs.html
+#: lms/templates/program_marketing/explore_programs.html
 #: themes/edx.org/lms/templates/header.html
 #: themes/red-theme/lms/templates/header.html
 msgid "Programs"
@@ -11393,6 +11959,10 @@ msgstr "مثشقر وخقث"
 #: lms/templates/course.html
 msgid "Starts"
 msgstr "سفشقفس"
+
+#: lms/templates/course.html
+msgid "Course starts: "
+msgstr "ذخعقسث سفشقفس: "
 
 #: lms/templates/course.html
 msgid "Starts: {date}"
@@ -12072,10 +12642,6 @@ msgstr "غخع يخ رخف اشدث شرغ رخفثس."
 msgid "Hint"
 msgstr "اهرف"
 
-#: lms/templates/problem.html lms/templates/word_cloud.html
-msgid "Save"
-msgstr "سشدث"
-
 #: lms/templates/problem.html
 msgid "Save your answer"
 msgstr "سشدث غخعق شرسصثق"
@@ -12434,10 +13000,6 @@ msgid "Inactive Groups"
 msgstr "هرشذفهدث لقخعحس"
 
 #: lms/templates/staff_problem_info.html
-msgid "Staff Debug Info"
-msgstr "سفشبب يثزعل هربخ"
-
-#: lms/templates/staff_problem_info.html
 msgid "Submission history"
 msgstr "سعزوهسسهخر اهسفخقغ"
 
@@ -12470,10 +13032,6 @@ msgid "Add comment"
 msgstr "شيي ذخووثرف"
 
 #: lms/templates/staff_problem_info.html
-msgid "Staff Debug"
-msgstr "سفشبب يثزعل"
-
-#: lms/templates/staff_problem_info.html
 #: lms/templates/instructor/instructor_dashboard_2/e-commerce.html
 msgid "Actions"
 msgstr "شذفهخرس"
@@ -12496,10 +13054,6 @@ msgstr "قثسذخقث مثشقرثق'س سعزوهسسهخر"
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Rescore Only If Score Improves"
 msgstr "قثسذخقث خرمغ هب سذخقث هوحقخدثس"
-
-#: lms/templates/staff_problem_info.html
-msgid "Module Fields"
-msgstr "وخيعمث بهثميس"
 
 #: lms/templates/staff_problem_info.html
 msgid "XML attributes"
@@ -16511,14 +17065,6 @@ msgstr "رخ ثري يشفث سثف"
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Has the course started?"
 msgstr "اشس فاث ذخعقسث سفشقفثي?"
-
-#: lms/templates/instructor/instructor_dashboard_2/course_info.html
-msgid "Yes"
-msgstr "غثس"
-
-#: lms/templates/instructor/instructor_dashboard_2/course_info.html
-msgid "No"
-msgstr "رخ"
 
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Has the course ended?"
@@ -22647,10 +23193,6 @@ msgid ""
 msgstr ""
 "ذخرفثرف لقخعح رخ مخرلثق ثطهسفس. حمثشسث ذاخخسث شرخفاثق خق شممخص شذذثسس فخ شمم"
 " سفعيثرفس شري سفشبب"
-
-#: cms/templates/visibility_editor.html
-msgid "Verification Checkpoint"
-msgstr "دثقهبهذشفهخر ذاثذنحخهرف"
 
 #: cms/templates/visibility_editor.html
 msgid "Verification checkpoint to complete"

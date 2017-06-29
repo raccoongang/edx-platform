@@ -21,7 +21,7 @@ locales:
     # # when the user's browser is in English and the user is not logged in.
     # #- en@lolcat  # LOLCAT English
     # #- en@pirate  # Pirate English
-    - es_419  # Spanish (Latin America)
+    #- es_419  # Spanish (Latin America)
     # - es_AR  # Spanish (Argentina)
     # - es_EC  # Spanish (Ecuador)
     # - es_ES  # Spanish (Spain)
@@ -33,7 +33,7 @@ locales:
     # - fa_IR  # Persian (Iran)
     # - fi_FI  # Finnish (Finland)
     # - fil  # Filipino
-    - fr  # French
+    #- fr  # French
     # - gl  # Galician
     # - gu  # Gujarati
     # - he  # Hebrew
@@ -61,7 +61,7 @@ locales:
     # - pt_BR  # Portuguese (Brazil)
     # - pt_PT  # Portuguese (Portugal)
     # - ro  # Romanian
-    - ru  # Russian
+    #- ru  # Russian
     # - si  # Sinhala
     # - sk  # Slovak
     # - sl  # Slovenian
@@ -73,11 +73,11 @@ locales:
     # - te  # Telugu
     # - th  # Thai
     # - tr_TR  # Turkish (Turkey)
-    # - uk  # Ukranian
+    - uk  # Ukranian
     # - ur  # Urdu
     # - uz  # Uzbek
     # - vi  # Vietnamese
-    - zh_CN  # Chinese (China)
+    #- zh_CN  # Chinese (China)
     # - zh_HK  # Chinese (Hong Kong)
     # - zh_TW  # Chinese (Taiwan)
 

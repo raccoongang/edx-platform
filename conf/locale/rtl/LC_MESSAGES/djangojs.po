@@ -26,8 +26,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2017-04-05 06:22-0400\n"
-"PO-Revision-Date: 2017-04-05 10:22:49.876530\n"
+"POT-Creation-Date: 2017-06-29 09:53-0400\n"
+"PO-Revision-Date: 2017-06-29 13:53:57.999673\n"
 "Last-Translator: \n"
 "Language-Team: openedx-translation <openedx-translation@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -47,7 +47,7 @@ msgstr ""
 #: cms/static/js/views/list_item_editor.js
 #: cms/static/js/views/modals/edit_xblock.js cms/static/js/views/tabs.js
 #: cms/static/js/views/utils/xblock_utils.js lms/static/js/ccx/schedule.js
-#: lms/static/js/views/fields.js
+#: lms/static/js/views/fields.js src/xblock-poll/poll/public/js/poll_edit.js
 msgid "Saving"
 msgstr "سشدهرل"
 
@@ -4809,6 +4809,28 @@ msgstr "رعوزثق خب سفعيثرفس"
 #: lms/templates/courseware/progress_graph.js
 msgid "Overall Score"
 msgstr "خدثقشمم سذخقث"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/js/checkpoint_edit.js
+msgid "The Verification Checkpoint Name field cannot be empty."
+msgstr "فاث دثقهبهذشفهخر ذاثذنحخهرف رشوث بهثمي ذشررخف زث ثوحفغ."
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/js/checkpoint_edit.js
+msgid ""
+"You must select a value other than 0 for the Verification Attempts field."
+msgstr ""
+"غخع وعسف سثمثذف ش دشمعث خفاثق فاشر 0 بخق فاث دثقهبهذشفهخر شففثوحفس بهثمي."
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/js/checkpoint_edit.js
+msgid "Please enter a valid number for the Grace Period field."
+msgstr "حمثشسث ثرفثق ش دشمهي رعوزثق بخق فاث لقشذث حثقهخي بهثمي."
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/js/checkpoint_edit.js
+msgid "Verification Checkpoint Save Error"
+msgstr "دثقهبهذشفهخر ذاثذنحخهرف سشدث ثققخق"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/js/checkpoint_edit.js
+msgid "An unexpected error occurred. Select Save to try again."
+msgstr "شر عرثطحثذفثي ثققخق خذذعققثي. سثمثذف سشدث فخ فقغ شلشهر."
 
 #: cms/static/cms/js/main.js cms/static/js/views/active_video_upload_list.js
 msgid ""

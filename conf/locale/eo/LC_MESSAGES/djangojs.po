@@ -26,8 +26,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2017-04-05 06:22-0400\n"
-"PO-Revision-Date: 2017-04-05 10:22:49.876530\n"
+"POT-Creation-Date: 2017-06-29 09:53-0400\n"
+"PO-Revision-Date: 2017-06-29 13:53:57.999673\n"
 "Last-Translator: \n"
 "Language-Team: openedx-translation <openedx-translation@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -47,7 +47,7 @@ msgstr ""
 #: cms/static/js/views/list_item_editor.js
 #: cms/static/js/views/modals/edit_xblock.js cms/static/js/views/tabs.js
 #: cms/static/js/views/utils/xblock_utils.js lms/static/js/ccx/schedule.js
-#: lms/static/js/views/fields.js
+#: lms/static/js/views/fields.js src/xblock-poll/poll/public/js/poll_edit.js
 msgid "Saving"
 msgstr "Sävïng Ⱡ'σяєм ιρѕυ#"
 
@@ -5359,6 +5359,36 @@ msgstr "Nümßér öf Stüdénts Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αм
 #: lms/templates/courseware/progress_graph.js
 msgid "Overall Score"
 msgstr "Övéräll Sçöré Ⱡ'σяєм ιρѕυм ∂σłσя ѕι#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/js/checkpoint_edit.js
+msgid "The Verification Checkpoint Name field cannot be empty."
+msgstr ""
+"Thé Vérïfïçätïön Çhéçkpöïnt Nämé fïéld çännöt ßé émptý. Ⱡ'σяєм ιρѕυм ∂σłσя "
+"ѕιт αмєт, ¢σηѕє¢тєтυя α#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/js/checkpoint_edit.js
+msgid ""
+"You must select a value other than 0 for the Verification Attempts field."
+msgstr ""
+"Ýöü müst séléçt ä välüé öthér thän 0 för thé Vérïfïçätïön Àttémpts fïéld. "
+"Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/js/checkpoint_edit.js
+msgid "Please enter a valid number for the Grace Period field."
+msgstr ""
+"Pléäsé éntér ä välïd nümßér för thé Gräçé Pérïöd fïéld. Ⱡ'σяєм ιρѕυм ∂σłσя "
+"ѕιт αмєт, ¢σηѕє¢тєтυя α#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/js/checkpoint_edit.js
+msgid "Verification Checkpoint Save Error"
+msgstr ""
+"Vérïfïçätïön Çhéçkpöïnt Sävé Érrör Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєт#"
+
+#: src/edx-reverification-block/edx_reverification_block/xblock/static/js/checkpoint_edit.js
+msgid "An unexpected error occurred. Select Save to try again."
+msgstr ""
+"Àn ünéxpéçtéd érrör öççürréd. Séléçt Sävé tö trý ägäïn. Ⱡ'σяєм ιρѕυм ∂σłσя "
+"ѕιт αмєт, ¢σηѕє¢тєтυя α#"
 
 #: cms/static/cms/js/main.js cms/static/js/views/active_video_upload_list.js
 msgid ""
