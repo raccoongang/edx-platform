@@ -23,12 +23,18 @@ from startup_configurations.validate_config import validate_cms_config
 from openedx.core.djangoapps.theming.core import enable_theming
 from openedx.core.djangoapps.theming.helpers import is_comprehensive_theming_enabled
 
+from lms.startup import enable_third_party_auth
 
 def run():
     """
     Executed during django startup
     """
     third_party_auth.patch()
+
+    # To override the settings before executing the autostartup() for python-social-auth
+    if settings.FEATURES.get('ENABLE_THIRD_PARTY_AUTH', False):
+        enable_third_party_auth()
+
     django_db_models_options.patch()
 
     # Comprehensive theming needs to be set up before django startup,

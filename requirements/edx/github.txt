@@ -96,3 +96,11 @@ git+https://github.com/edx/edx-proctoring.git@0.17.0#egg=edx-proctoring==0.17.0
 -e git+https://github.com/mitodl/edx-sga@172a90fd2738f8142c10478356b2d9ed3e55334a#egg=edx-sga
 -e git+https://github.com/open-craft/xblock-poll@v1.2.3#egg=xblock-poll==1.2.3
 git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.15#egg=xblock-drag-and-drop-v2==2.0.15
+
+#Microsoft Azure AD SSO
+-e git+https://github.com/raccoongang/microsoft-oauth2-client.git@ficus-rg#egg=microsoft_oauth2_client
+
+#Third Party XBlocks Microsoft installation
+-e git+https://github.com/OfficeDev/xblock-officemix.git@3f876b5f0267b017812620239533a29c7d562d24#egg=xblock_officemix
+-e git+https://github.com/raccoongang/xblock-filestorage.git@1e44c36915c00bbac4534d2ed37b504ea515f60e#egg=xblock_filestorage
+-e git+https://github.com/raccoongang/open_edx_calendar_tab.git@53eb9f76899b0e7c066bedb934452b835efb9635#egg=edx_calendar_tab

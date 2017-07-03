@@ -483,4 +483,29 @@ CMS_MKTG_URLS = ENV_TOKENS.get('CMS_MKTG_URLS', {})
 SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING = FEATURES.get("SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING", True)
 
 MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB = FEATURES.get("MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB", MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB)
+
+#Microsoft Azure AD SSO
+# Add extra dir for mako templates finder
+# '/edx/app/edxapp/venvs/edxapp/src/microsoft-oauth2-client/sso_edx_microsoft/templates')
+MICROSOFT_MAKO_TEMPLATES = ENV_TOKENS.get('MICROSOFT_MAKO_TEMPLATES', [])
+MAKO_TEMPLATES['main'] = MICROSOFT_MAKO_TEMPLATES + MAKO_TEMPLATES['main']
+DEFAULT_TEMPLATE_ENGINE['DIRS'] = MICROSOFT_MAKO_TEMPLATES + DEFAULT_TEMPLATE_ENGINE['DIRS']
+STATICFILES_DIRS = ['/edx/app/edxapp/venvs/edxapp/src/microsoft-oauth2-client/sso_edx_microsoft/static'] + STATICFILES_DIRS
+ 
+AZURE_RESOURCE_ENDPOINT = "https://graph.windows.net/"
+AZURE_LOGIN_ENDPOINT = "https://login.microsoftonline.com/"
+AZURE_AD_ID = AUTH_TOKENS.get('AZURE_AD_ID')
+ 
+ROOT_URLCONF = 'sso_edx_microsoft.cms_urls'
+ 
+ 
+##### Third-party auth options ################################################
+if FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
+    AUTHENTICATION_BACKENDS = (
+        ENV_TOKENS.get('THIRD_PARTY_AUTH_BACKENDS', []) + list(AUTHENTICATION_BACKENDS)
+    )
+ 
+    # The reduced session expiry time during the third party login pipeline. (Value in seconds)
+    SOCIAL_AUTH_PIPELINE_TIMEOUT = ENV_TOKENS.get('SOCIAL_AUTH_PIPELINE_TIMEOUT', 600)
+#Microsoft Azure AD SSO
 #RACCOONGANG

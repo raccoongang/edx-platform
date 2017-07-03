@@ -103,6 +103,16 @@ urlpatterns = (
 
     # URLs for API access management
     url(r'^api-admin/', include('openedx.core.djangoapps.api_admin.urls', namespace='api_admin')),
+
+    #calendar tab
+    url(
+        r'^courses/{}/calendar/'.format(
+            settings.COURSE_ID_PATTERN,
+        ),
+        include('calendar_tab.urls'),
+        name='calendar_endpoints',
+    ),
+
 )
 
 urlpatterns += (
