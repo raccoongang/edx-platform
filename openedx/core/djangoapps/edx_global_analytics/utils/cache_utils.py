@@ -13,9 +13,8 @@ def cache_instance_data(name_to_cache, query_result):
     including long time unchangeable weekly and monthly statistics.
 
     Arguments:
-        name_to_cache (str): Name of query.
+        name_to_cache (str): year-week or year-month accordance as string.
         query_result (query result): Django-query result.
-        cache_timeout (int/None): Caching for particular seconds amount.
 
     Returns cached query result.
     """
@@ -31,18 +30,22 @@ def cache_instance_data(name_to_cache, query_result):
 
 def get_cache_week_key():
     """
-    Return year and week number of previous week as unique string key for cache.
+    Return previous week `year` and `week` numbers as unique string key for cache.
     """
-    year, week_number, _ = (date.today() - timedelta(days=7)).isocalendar()
-    return '%s-%s'.format(year, week_number)
+    previous_week = date.today() - timedelta(days=7)
+    year, week_number, _ = previous_week.isocalendar()
+
+    return '{0}-{1}-week'.format(year, week_number)
 
 
 def get_cache_month_key():
     """
-    Return year and month number of previous week as unique string key for cache.
+    Return previous month `year` and `month` numbers as unique string key for cache.
     """
-    previous_month = (date.today() - timedelta(days=date.today().day))
+    current_month_days_count = date.today().day
+    previous_month = (date.today() - timedelta(days=current_month_days_count))
+
     month_number = previous_month.month
     year = previous_month.year
 
-    return '%s-%s'.format(year, month_number)
+    return '{0}-{1}-month'.format(year, month_number)

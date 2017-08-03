@@ -45,7 +45,7 @@ class TestStatisticsLevelBunches(unittest.TestCase):
         enthusiast_level_statistics_bunch()
 
         mock_fetch_instance_information.assert_called_once_with(
-            'students_per_country', 'students_per_country', get_previous_day_start_and_end_dates(), cache_timeout=None
+            'students_per_country', get_previous_day_start_and_end_dates(), name_to_cache=None
         )
 
     def test_enthusiast_statistics_result(self, mock_fetch_instance_information):
@@ -57,6 +57,4 @@ class TestStatisticsLevelBunches(unittest.TestCase):
 
         result = enthusiast_level_statistics_bunch()
 
-        self.assertEqual(
-            mock_students_per_country, result
-        )
+        self.assertEqual(mock_students_per_country, result)

@@ -4,15 +4,12 @@ Tests for edX global analytics application functions, that calculate statistics.
 
 import datetime
 
-from mock import patch
-
 from django.test import TestCase
 from django.utils import timezone
 from django_countries.fields import Country
 
 from student.tests.factories import UserFactory
 
-from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import cache_timeout_week
 from openedx.core.djangoapps.edx_global_analytics.utils.utils import fetch_instance_information
 
 
@@ -47,11 +44,8 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
         self.create_default_data()
 
         activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
-        cache_timeout = None
 
-        result = fetch_instance_information(
-            'active_students_amount_day', 'active_students_amount', activity_period, cache_timeout
-        )
+        result = fetch_instance_information('active_students_amount', activity_period, name_to_cache=None)
 
         self.assertEqual(2, result)
 
@@ -69,28 +63,10 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
             profile.save()
 
         activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
-        cache_timeout = None
 
-        result = fetch_instance_information(
-            'students_per_country', 'students_per_country', activity_period, cache_timeout
-        )
+        result = fetch_instance_information('students_per_country', activity_period, name_to_cache=None)
 
         self.assertItemsEqual({u'US': 1, u'CA': 1}, result)
-
-    @patch('openedx.core.djangoapps.edx_global_analytics.utils.cache_utils.cache_instance_data')
-    def test_caching_students_with_timeout(self, mock_cache_instance_data):
-        """
-        Verify that cache_instance_data called during fetch instance information method is occurring
-        with not none `cache_timeout`.
-        """
-        activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
-        cache_timeout = cache_timeout_week()
-
-        fetch_instance_information(
-            'students_per_country', 'students_per_country', activity_period, cache_timeout
-        )
-
-        mock_cache_instance_data.assert_called_once()
 
     def test_no_students_with_country(self):
         """
@@ -101,10 +77,7 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
         UserFactory.create(last_login=last_login)
 
         activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
-        cache_timeout = None
 
-        result = fetch_instance_information(
-            'students_per_country', 'students_per_country', activity_period, cache_timeout
-        )
+        result = fetch_instance_information('students_per_country', activity_period, name_to_cache=None)
 
         self.assertEqual({None: 0}, result)
