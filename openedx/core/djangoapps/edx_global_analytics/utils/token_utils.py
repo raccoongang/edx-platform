@@ -7,7 +7,7 @@ import httplib
 import requests
 
 from openedx.core.djangoapps.edx_global_analytics.models import AccessTokensStorage
-from openedx.core.djangoapps.edx_global_analytics.utils.utils import request_exception_handler_with_logger
+from openedx.core.djangoapps.edx_global_analytics.utils.utilities import request_exception_handler_with_logger
 
 
 def clean_unauthorized_access_token():

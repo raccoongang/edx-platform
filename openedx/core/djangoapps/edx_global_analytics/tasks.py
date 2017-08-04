@@ -11,13 +11,9 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from xmodule.modulestore.django import modulestore
 
-
-from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import (
-    get_cache_week_key,
-    get_cache_month_key,
-)
+from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import get_cache_week_key, get_cache_month_key
 from openedx.core.djangoapps.edx_global_analytics.utils.token_utils import get_acceptor_api_access_token
-from openedx.core.djangoapps.edx_global_analytics.utils.utils import (
+from openedx.core.djangoapps.edx_global_analytics.utils.utilities import (
     fetch_instance_information,
     get_previous_day_start_and_end_dates,
     get_previous_week_start_and_end_dates,
