@@ -3,9 +3,9 @@
 `EdX global analytics` is part of edx-platform as Django application. It has arisen out of [Open edX](https://open.edx.org)
 requirement to collect edx-platform installations statistics data from all over the world.
 
-So once at 24 hours this application fetches and sends edX installation statistics to [OLGA](https://github.com/raccoongang/OLGA) developed by @raccoongang team.
-OLGA is required to be able to collect, visualize and process this data. In general, it provides possibilities
-for analysing trends of platform usage and users engagement in e-learning process per country and globally around the world.
+Once at 24 hours this application fetches and sends edX installation statistics to [OLGA](https://github.com/raccoongang/OLGA) developed by @raccoongang team.
+OLGA is required to be able to collect, visualize and process this data. It provides possibilities for analysing trends of platform usage
+and users engagement in e-learning process per country and globally around the world.
 It is currently carried out via graphs, world map and activity metrics.
 
 ## Sent statistics to OLGA looks like
@@ -14,15 +14,16 @@ It is currently carried out via graphs, world map and activity metrics.
 
 ## Types of statistics sent, and dependence on statistics level
 
-Firstly, `statistic level` is a string constant in settings (`lms.env.json`) which regulates size of bunch platform sends.
+Firstly, `statistic level` is a string constant in settings (`lms.env.json`) which regulates size of statistics platform sends.
 It is optional point, if you leave blank string there, it will work on `Paranoid` level (described below).
 
-First `Paranoid` level with paranoid constant allows platform to transfer:
+`Paranoid` level with paranoid constant allows platform to transfer:
 1. Access token for OLGA server.
-2. Active students amount per last calendar day, week and month*.
+2. Active students amount per last calendar day, week and month (active student is a student whose last login datetime
+value is included in particular calendar period).
 3. Courses amount.
 
-Second `Enthusiast` level and the last one with `enthusiast` constant extends `Paranoid` level with:
+`Enthusiast` level and the last one with `enthusiast` constant extends `Paranoid` level with:
 1. Platform URL and platform name.
 2. Platform's latitude and longitude.
 3. Active students per country accordance for last calendar day.
@@ -40,8 +41,8 @@ Settings context:
 ...,
 "OPENEDX_LEARNERS_GLOBAL_ANALYTICS": {
     "CELERY_TIMEZONE": "Europe/Kiev",
-    "OLGA_ACCEPTOR_PERIODIC_TASK_URL": "",
-    "OLGA_ACCEPTOR_PERIODIC_TASK_URL_LOCAL_DEV": "http://192.168.1.10:7000",
+    "ACCEPTOR_URL": "",
+    "ACCEPTOR_URL_DEVELOP": "http://192.168.1.10:7000",
     "PLATFORM_CITY_NAME": "Kiev",
     "STATISTICS_LEVEL": "enthusiast"
 }, ...
@@ -74,6 +75,10 @@ Run celery task locally with command:
 ./manage.py lms celery worker -B --settings=devstack_with_worker
 ```
 
+## Production
+
+[production settings and things]
+
 ## Application's architecture
 
 ### Celery
@@ -83,7 +88,7 @@ Celery run one task once per day at time between `00:01` and `00:59` for sending
 Celery settings located in `lms/envs/aws.py`:
 
 ```
-For scheduling tasks, entries can be added to this dict.
+For scheduling tasks, need to be added to this dict.
 CELERYBEAT_SCHEDULE = {
     """
     'collect_stats' is the celery periodic task that gathers information about the
