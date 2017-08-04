@@ -7,6 +7,7 @@ from datetime import date, timedelta
 from django.core.cache import cache
 from django.db.models import Count
 from django.db.models import Q
+
 from student.models import UserProfile
 
 
@@ -31,6 +32,27 @@ def cache_instance_data(name_to_cache, query_type, activity_period):
     return query_result
 
 
+def get_query_result(query_type, activity_period):
+    """
+    Return query result per query type.
+    """
+    period_start, period_end = activity_period
+
+    if query_type == 'active_students_amount':
+        return UserProfile.objects.exclude(
+            Q(user__last_login=None) | Q(user__is_active=False)
+        ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end).count()
+
+    if query_type == 'students_per_country':
+        return dict(
+            UserProfile.objects.exclude(
+                Q(user__last_login=None) | Q(user__is_active=False)
+            ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end).values(
+                'country'
+            ).annotate(count=Count('country')).values_list('country', 'count')
+        )
+
+
 def get_cache_week_key():
     """
     Return previous week `year` and `week` numbers as unique string key for cache.
@@ -52,24 +74,3 @@ def get_cache_month_key():
     year = previous_month.year
 
     return '{0}-{1}-month'.format(year, month_number)
-
-
-def get_query_result(query_type, activity_period):
-    """
-    Return query result per query type.
-    """
-    period_start, period_end = activity_period
-
-    if query_type == 'active_students_amount':
-        return UserProfile.objects.exclude(
-            Q(user__last_login=None) | Q(user__is_active=False)
-        ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end).count()
-
-    if query_type == 'students_per_country':
-        return dict(
-            UserProfile.objects.exclude(
-                Q(user__last_login=None) | Q(user__is_active=False)
-            ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end).values(
-                'country'
-            ).annotate(count=Count('country')).values_list('country', 'count')
-        )

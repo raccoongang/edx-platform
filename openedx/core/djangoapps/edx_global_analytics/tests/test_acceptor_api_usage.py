@@ -9,7 +9,7 @@ import uuid
 from ddt import ddt, data, unpack
 from mock import patch, call
 
-from openedx.core.djangoapps.edx_global_analytics.utils.utils import send_instance_statistics_to_acceptor
+from openedx.core.djangoapps.edx_global_analytics.utils.utilities import send_instance_statistics_to_acceptor
 from openedx.core.djangoapps.edx_global_analytics.utils.token_utils import (
     access_token_authorization,
     access_token_registration,
@@ -17,7 +17,7 @@ from openedx.core.djangoapps.edx_global_analytics.utils.token_utils import (
 
 
 @ddt
-@patch('openedx.core.djangoapps.edx_global_analytics.utils.utils.requests.post')
+@patch('openedx.core.djangoapps.edx_global_analytics.utils.utilities.requests.post')
 class TestAcceptorApiUsage(unittest.TestCase):
     """
     Test functionality for acceptor API usage.
@@ -46,7 +46,7 @@ class TestAcceptorApiUsage(unittest.TestCase):
 
         self.assertEqual(mock_request.call_args_list, expected_calls)
 
-    @patch('openedx.core.djangoapps.edx_global_analytics.utils.utils.logging.Logger.info')
+    @patch('openedx.core.djangoapps.edx_global_analytics.utils.utilities.logging.Logger.info')
     @data(
         [httplib.CREATED, 'Data were successfully transferred to OLGA acceptor. Status code is {0}.'],
         [httplib.BAD_REQUEST, 'Data were not successfully transferred to OLGA acceptor. Status code is {0}.']

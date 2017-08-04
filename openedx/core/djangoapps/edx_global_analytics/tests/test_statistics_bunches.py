@@ -7,7 +7,7 @@ from datetime import date
 
 from mock import patch
 
-from openedx.core.djangoapps.edx_global_analytics.utils.utils import get_previous_day_start_and_end_dates
+from openedx.core.djangoapps.edx_global_analytics.utils.utilities import get_previous_day_start_and_end_dates
 from openedx.core.djangoapps.edx_global_analytics.tasks import (
     enthusiast_level_statistics_bunch,
     paranoid_level_statistics_bunch
@@ -32,7 +32,7 @@ class TestStatisticsLevelBunches(unittest.TestCase):
             (5, 5, 5), result
         )
 
-    @patch('openedx.core.djangoapps.edx_global_analytics.utils.utils.get_previous_day_start_and_end_dates')
+    @patch('openedx.core.djangoapps.edx_global_analytics.utils.utilities.get_previous_day_start_and_end_dates')
     def test_fetching_enthusiast_statistics(
             self, mock_get_previous_day_start_and_end_dates, mock_fetch_instance_information
     ):

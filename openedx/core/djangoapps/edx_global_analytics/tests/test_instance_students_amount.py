@@ -10,7 +10,7 @@ from django_countries.fields import Country
 
 from student.tests.factories import UserFactory
 
-from openedx.core.djangoapps.edx_global_analytics.utils.utils import fetch_instance_information
+from openedx.core.djangoapps.edx_global_analytics.utils.utilities import fetch_instance_information
 
 
 class TestStudentsAmountPerParticularPeriod(TestCase):

@@ -7,14 +7,14 @@ import unittest
 import requests
 from mock import patch, call
 
-from openedx.core.djangoapps.edx_global_analytics.utils.utils import (
+from openedx.core.djangoapps.edx_global_analytics.utils.utilities import (
     get_coordinates_by_platform_city_name,
     get_coordinates_by_ip,
     platform_coordinates,
 )
 
 
-@patch('openedx.core.djangoapps.edx_global_analytics.utils.utils.requests.get')
+@patch('openedx.core.djangoapps.edx_global_analytics.utils.utilities.requests.get')
 class TestPlatformCoordinates(unittest.TestCase):
     """
     Tests for platform coordinates methods, that gather latitude and longitude.
@@ -110,7 +110,7 @@ class TestPlatformCoordinates(unittest.TestCase):
         )
 
 
-@patch('openedx.core.djangoapps.edx_global_analytics.utils.utils.get_coordinates_by_platform_city_name')
+@patch('openedx.core.djangoapps.edx_global_analytics.utils.utilities.get_coordinates_by_platform_city_name')
 class TestPlatformCoordinatesHandler(unittest.TestCase):
     """
     Tests for platform_coordinates method, that handle platform coordinates receiving from independent APIs.
@@ -130,7 +130,7 @@ class TestPlatformCoordinatesHandler(unittest.TestCase):
             (latitude, longitude), result
         )
 
-    @patch('openedx.core.djangoapps.edx_global_analytics.utils.utils.get_coordinates_by_ip')
+    @patch('openedx.core.djangoapps.edx_global_analytics.utils.utilities.get_coordinates_by_ip')
     def test_platform_coordinates_handles_to_freegeoip(
             self, mock_get_coordinates_by_ip, mock_get_coordinates_by_platform_city_name
     ):
