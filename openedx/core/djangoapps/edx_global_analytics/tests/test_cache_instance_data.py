@@ -4,6 +4,7 @@ Tests for edX global analytics application cache functionality.
 
 from datetime import date
 
+from ddt import ddt, data, unpack
 from mock import patch
 from django.test import TestCase
 
@@ -37,39 +38,37 @@ class TestCacheInstanceData(TestCase):
         mock_cache.get.return_value = None
         mock_get_query_result.return_value = 'query_result'
 
-        cache_instance_data('name_to_cache', 'active_students_amount', 'activity_period')
+        cache_instance_data('name_to_cache', 'query_type', 'activity_period')
 
         mock_cache.set.assert_called_once_with('name_to_cache', 'query_result')
 
 
-@patch('openedx.core.djangoapps.edx_global_analytics.utils.cache_utils.date')
+@ddt
 class TestCacheInstanceDataHelpFunctions(TestCase):
     """
     Tests for cache help functions.
     """
 
-    def test_cache_timeout_week(self, mock_date):
+    @data(
+        [date(2017, 1, 9), get_cache_week_key, '2017-1-week'],
+        [date(2017, 4, 9), get_cache_month_key, '2017-3-month']
+    )
+    @unpack
+    @patch('openedx.core.djangoapps.edx_global_analytics.utils.cache_utils.date')
+    def test_cache_keys(self, fake_date, get_cache_key, expected_result, mock_date):
         """
-        Verify that get_cache_week_key returns correct cache key.
+        Verify that `get cache key` methods return correct cache keys.
 
-        9 January is a monday, it is second week from year's start.
-        get_cache_week_key returns previous week `year` and `week` numbers.
+        `get_cache_week_key`:
+            - 9th January is a monday, it is second week from year's start.
+            - returns previous week `year` and `week` numbers.
+
+        `get_cache_month_key`:
+            - 4th month is an April.
+            - get_cache_month_key returns previous month `year` and `month` numbers.
         """
-        mock_date.today.return_value = date(2017, 1, 9)
+        mock_date.today.return_value = fake_date
 
-        result = get_cache_week_key()
+        result = get_cache_key()
 
-        self.assertEqual('2017-1-week', result)
-
-    def test_cache_timeout_month(self, mock_date):
-        """
-        Verify that get_cache_month_key returns correct cache key.
-
-        4th month is an April.
-        get_cache_month_key returns previous month `year` and `month` numbers.
-        """
-        mock_date.today.return_value = date(2017, 4, 9)
-
-        result = get_cache_month_key()
-
-        self.assertEqual('2017-3-month', result)
+        self.assertEqual(expected_result, result)

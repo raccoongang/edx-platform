@@ -46,12 +46,13 @@ class TestAcceptorApiUsage(unittest.TestCase):
 
         self.assertEqual(mock_request.call_args_list, expected_calls)
 
-    @patch('openedx.core.djangoapps.edx_global_analytics.utils.utilities.logging.Logger.info')
+
     @data(
         [httplib.CREATED, 'Data were successfully transferred to OLGA acceptor. Status code is {0}.'],
         [httplib.BAD_REQUEST, 'Data were not successfully transferred to OLGA acceptor. Status code is {0}.']
     )
     @unpack
+    @patch('openedx.core.djangoapps.edx_global_analytics.utils.utilities.logging.Logger.info')
     def test_sent_statistics(self, status_code, log_message, mock_logging, mock_request):
         """
         Verify that send_instance_statistics_to_acceptor successfully dispatches statistics to acceptor API.
