@@ -12680,6 +12680,10 @@ msgstr "Войти"
 msgid "Welcome to {platform_name}"
 msgstr "Добро пожаловать в {platform_name}!"
 
+#: raccoongang
+msgid "Welcome to"
+msgstr "Добро пожаловать в"
+
 #: lms/templates/register-sidebar.html
 msgid ""
 "Registering with {platform_name} gives you access to all of our current and "

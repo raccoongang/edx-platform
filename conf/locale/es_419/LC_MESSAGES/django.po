@@ -12797,6 +12797,10 @@ msgstr "Iniciar sesión"
 msgid "Welcome to {platform_name}"
 msgstr "Bienvenido a la plataforma {platform_name}"
 
+#: raccoongang
+msgid "Welcome to"
+msgstr "Bienvenido a la"
+
 #: lms/templates/register-sidebar.html
 msgid ""
 "Registering with {platform_name} gives you access to all of our current and "

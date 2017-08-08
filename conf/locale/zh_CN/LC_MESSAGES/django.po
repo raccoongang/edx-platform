@@ -11744,6 +11744,10 @@ msgstr "登录"
 msgid "Welcome to {platform_name}"
 msgstr "欢迎来到{platform_name}"
 
+#: raccoongang
+msgid "Welcome to"
+msgstr "欢迎来到"
+
 #: lms/templates/register-sidebar.html
 msgid ""
 "Registering with {platform_name} gives you access to all of our current and "

@@ -10646,6 +10646,10 @@ msgstr "로그인"
 msgid "Welcome to {platform_name}"
 msgstr "{platform_name}에 오신것을 환영합니다."
 
+#: raccoongang
+msgid "Welcome to"
+msgstr "에 오신것을 환영합니다."
+
 #: lms/templates/register-sidebar.html
 msgid ""
 "Registering with {platform_name} gives you access to all of our current and "

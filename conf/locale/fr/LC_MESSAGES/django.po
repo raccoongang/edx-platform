@@ -12813,6 +12813,10 @@ msgstr "Connexion"
 msgid "Welcome to {platform_name}"
 msgstr "Bienvenue sur {platform_name}"
 
+#: raccoongang
+msgid "Welcome to"
+msgstr "Bienvenue sur"
+
 #: lms/templates/register-sidebar.html
 msgid ""
 "Registering with {platform_name} gives you access to all of our current and "
