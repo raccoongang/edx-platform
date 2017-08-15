@@ -49,13 +49,14 @@ Settings context:
 ```
 
 `CELERY_TIMEZONE`: Time zone in edx-platform is enabled by default, platform's developer can set time zone in `lms.env.json` for `TIME_ZONE` key.
+
 `EdX global analytics` supports own time zone setting — time zone platform will fetch and send statistics to OLGA.
 It is needed because server with platform can be located in one place, but organization (for example university and students), that owns this platform, in another.
 
 `OLGA_ACCEPTOR_PERIODIC_TASK_URL` and `OLGA_ACCEPTOR_PERIODIC_TASK_URL_LOCAL_DEV` are URLs that platform transfer statistics to. It depends on platform status: development or production.
 
 `PLATFORM_CITY_NAME` — set city name platform located in for gathering latitude and longitude.
-It is required for `enthusiast` level.
+It will be callected only if statistics level is `enthusiast`.
 
 `STATISTICS_LEVEL` — direct statistics level (explained above).
 
