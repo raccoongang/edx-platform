@@ -30,9 +30,9 @@ value is included in particular calendar period).
 
 \*active student is a student whose last login datetime value is included in particular calendar periods (day, week or month).
 
-## Development details
+## Settings of application
 
-Platform's developer is able to configure `EdX global analytics` settings in `lms.env.json`.
+Platform's administrator (developer, devops) is able to configure `EdX global analytics` settings in `lms.env.json`.
 This settings already exist after default platform installation, developer just needs to change it.
 
 Settings context:
@@ -40,11 +40,11 @@ Settings context:
 ```
 ...,
 "OPENEDX_LEARNERS_GLOBAL_ANALYTICS": {
-    "CELERY_TIMEZONE": "Europe/Kiev",
     "ACCEPTOR_URL": "",
     "ACCEPTOR_URL_DEVELOP": "http://192.168.1.10:7000",
+    "CELERY_TIMEZONE": "Europe/Kiev",
     "PLATFORM_CITY_NAME": "Kiev",
-    "STATISTICS_LEVEL": "enthusiast"
+    "STATISTICS_LEVEL": "paranoid"
 }, ...
 ```
 
@@ -58,6 +58,14 @@ It is needed because server with platform can be located in one place, but organ
 It is required for `enthusiast` level.
 
 `STATISTICS_LEVEL` — direct statistics level (explained above).
+
+## Production
+
+To turn on sharing extended statistics, change `STATISTICS_LEVEL` to `enthusiast` (it is `paranoid` by default).
+
+## Development details
+
+Developer is able to change `ACCEPTOR_URL_DEVELOP` point to local enviroment host (for example `localhost`).
 
 ### Tests
 
@@ -74,10 +82,6 @@ Run celery task locally with command:
 ```
 ./manage.py lms celery worker -B --settings=devstack_with_worker
 ```
-
-## Production
-
-[production settings and things]
 
 ## Application's architecture
 
