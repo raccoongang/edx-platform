@@ -56,7 +56,7 @@ It is needed because server with platform can be located in one place, but organ
 `OLGA_ACCEPTOR_PERIODIC_TASK_URL` and `OLGA_ACCEPTOR_PERIODIC_TASK_URL_LOCAL_DEV` are URLs that platform transfer statistics to. It depends on platform status: development or production.
 
 `PLATFORM_CITY_NAME` — set city name platform located in for gathering latitude and longitude.
-It will be callected only if statistics level is `enthusiast`.
+It will be collected only if statistics level is `enthusiast`.
 
 `STATISTICS_LEVEL` — direct statistics level (explained above).
 
