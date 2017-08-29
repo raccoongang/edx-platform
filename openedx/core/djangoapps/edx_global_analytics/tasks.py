@@ -3,6 +3,7 @@ This file contains periodic tasks for edx_global_statistics, which will collect 
 and send this data to appropriate service for further processing.
 """
 
+import datetime
 import json
 import logging
 
@@ -11,6 +12,7 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from xmodule.modulestore.django import modulestore
 
+from openedx.core.djangoapps.edx_global_analytics.models import TaskLog
 from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import get_cache_week_key, get_cache_month_key
 from openedx.core.djangoapps.edx_global_analytics.utils.token_utils import get_acceptor_api_access_token
 from openedx.core.djangoapps.edx_global_analytics.utils.utilities import (
@@ -73,6 +75,35 @@ def get_olga_acceptor_url(olga_settings):
     return olga_acceptor_url
 
 
+def has_task_been_done_today():
+    """
+    Docs.
+    """
+    task_object = TaskLog.objects.first()
+
+    if not task_object:
+        return False
+
+    if task_object.task_last_run_datetime.date() == datetime.datetime.now().date():
+        return True
+
+    return False
+
+
+def log_task_run_datetime():
+    """
+    Docs.
+    """
+    task_object = TaskLog.objects.first()
+
+    if not task_object:
+        TaskLog.objects.create(task_last_run_datetime=datetime.datetime.now())
+        return
+
+    task_object.task_last_run_datetime = datetime.datetime.now()
+    task_object.save()
+
+
 @task
 def collect_stats():
     """
@@ -81,6 +112,11 @@ def collect_stats():
 
     Sending information depends on statistics level in settings, that have an effect on bunch of data size.
     """
+    if has_task_been_done_today():
+        return
+
+    log_task_run_datetime()
+
     if 'OPENEDX_LEARNERS_GLOBAL_ANALYTICS' not in settings.ENV_TOKENS:
         logger.info('No OpenEdX Learners Global Analytics settings in file `lms.env.json`.')
         return

@@ -7,8 +7,15 @@ from django.db import models
 
 class AccessTokensStorage(models.Model):
     """
-    This model represents relationship`s key with analytics-server.
+    This model represents relationship's key with analytics-server.
 
     `access_token` is a sequence of characters as special key for data sending access.
     """
     access_token = models.CharField(max_length=255, null=True)
+
+
+class TaskLog(models.Model):
+    """
+    Model for storing sending statistics task's logs.
+    """
+    task_last_run_datetime = models.DateTimeField()
