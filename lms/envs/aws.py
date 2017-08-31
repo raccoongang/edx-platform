@@ -31,6 +31,8 @@ import os
 from path import Path as path
 from xmodule.modulestore.modulestore_settings import convert_module_store_setting_if_needed
 
+import raven
+
 # SERVICE_VARIANT specifies name of the variant used, which decides what JSON
 # configuration files are read during startup.
 SERVICE_VARIANT = os.environ.get('SERVICE_VARIANT', None)
@@ -914,5 +916,11 @@ ENTERPRISE_ENROLLMENT_API_URL = ENV_TOKENS.get('ENTERPRISE_ENROLLMENT_API_URL', 
 
 #### RaccoonGang ####
 LOCALESET_FROM_REQUEST = ENV_TOKENS.get('LOCALESET_FROM_REQUEST', {"en": "en_US.utf8"})
+
+if ENV_TOKENS.get(SENTRY_DNS):
+    INSTALLED_APPS += ( 'raven.contrib.django.raven_compat', )
+    RAVEN_CONFIG = {
+        'dsn': SENTRY_DNS,
+    }
 #### RaccoonGang ####
 
