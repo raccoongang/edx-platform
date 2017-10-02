@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 from django.http import Http404, HttpResponse
 from django.template import RequestContext
 from django.utils.encoding import smart_str
+from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
