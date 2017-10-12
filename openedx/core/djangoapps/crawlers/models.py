@@ -2,13 +2,15 @@
 This module handles the detection of crawlers, so that we can handle them
 appropriately in other parts of the code.
 """
-from django.db import models
-
 from config_models.models import ConfigurationModel
+from django.db import models
 
 
 class CrawlersConfig(ConfigurationModel):
     """Configuration for the crawlers django app."""
+    class Meta(object):
+        app_label = "crawlers"
+
     known_user_agents = models.TextField(
         blank=True,
         help_text="A comma-separated list of known crawler user agents.",

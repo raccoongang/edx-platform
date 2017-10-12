@@ -193,7 +193,7 @@ class TestOwnUsernameAPI(CacheIsolationTestCase, UserAPITestCase):
         """
 
         # verify that the endpoint is inaccessible when not logged in
-        self._verify_get_own_username(12, expected_status=401)
+        self._verify_get_own_username(13, expected_status=401)
 
 
 @ddt.ddt

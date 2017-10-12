@@ -43,9 +43,11 @@ $transparent: rgba(0,0,0,0) !default; // used when color value is needed for UI 
 // ====================
 $uxpl-blue-base: rgb(0, 117, 180) !default; // wcag2a compliant
 $uxpl-blue-hover-active: rgb(6, 86, 131) !default; // wcag2a compliant
+$uxpl-light-blue-base: rgb(242, 248, 251) !default
 
 $uxpl-green-base: rgb(0, 129, 0) !default; // wcag2a compliant
 $uxpl-green-hover-active: rgb(0, 155, 0) !default; // wcag2a compliant
+$uxpl-green-dark-hover-active: rgb(0,88,0) !default;
 
 $uxpl-pink-base: rgb(194, 56, 125) !default; // wcag2a compliant
 $uxpl-pink-hover-active: lighten($uxpl-pink-base, 7%) !default; // wcag2a compliant
@@ -216,10 +218,9 @@ $color-warning: $orange-l2 !default;
 $color-error: $red-l2 !default;
 $color-staff-only: $black !default;
 $color-gated: $black !default;
-$color-visibility-set: $black !default;
 
 $color-heading-base: $gray-d2 !default;
-$color-copy-base: $gray-l1 !default;
+$color-copy-base: $gray-d2 !default;
 $color-copy-emphasized: $gray-d2 !default;
 
 // +Timing
@@ -278,3 +279,5 @@ $body-line-height: golden-ratio(.875em, 1);
 // carried over from LMS for xmodules
 $action-primary-active-bg: #1AA1DE !default; // $m-blue
 $very-light-text: $white !default;
+
+$color-background-alternate: rgb(242, 248, 251) !default;

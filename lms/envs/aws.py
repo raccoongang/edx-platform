@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 This is the default template for our main set of AWS servers. This does NOT
 cover the content machines, which use content.py
@@ -121,6 +123,7 @@ with open(CONFIG_ROOT / CONFIG_PREFIX + "env.json") as env_file:
 STATIC_ROOT_BASE = ENV_TOKENS.get('STATIC_ROOT_BASE', None)
 if STATIC_ROOT_BASE:
     STATIC_ROOT = path(STATIC_ROOT_BASE)
+    WEBPACK_LOADER['DEFAULT']['STATS_FILE'] = STATIC_ROOT / "webpack-stats.json"
 
 
 # STATIC_URL_BASE specifies the base url to use for static files
@@ -133,6 +136,9 @@ if STATIC_URL_BASE:
 
 # DEFAULT_COURSE_ABOUT_IMAGE_URL specifies the default image to show for courses that don't provide one
 DEFAULT_COURSE_ABOUT_IMAGE_URL = ENV_TOKENS.get('DEFAULT_COURSE_ABOUT_IMAGE_URL', DEFAULT_COURSE_ABOUT_IMAGE_URL)
+
+# COURSE_MODE_DEFAULTS specifies the course mode to use for courses that do not set one
+COURSE_MODE_DEFAULTS = ENV_TOKENS.get('COURSE_MODE_DEFAULTS', COURSE_MODE_DEFAULTS)
 
 # MEDIA_ROOT specifies the directory where user-uploaded files are stored.
 MEDIA_ROOT = ENV_TOKENS.get('MEDIA_ROOT', MEDIA_ROOT)
@@ -168,6 +174,7 @@ AWS_SES_REGION_ENDPOINT = ENV_TOKENS.get('AWS_SES_REGION_ENDPOINT', 'email.us-ea
 REGISTRATION_EXTRA_FIELDS = ENV_TOKENS.get('REGISTRATION_EXTRA_FIELDS', REGISTRATION_EXTRA_FIELDS)
 REGISTRATION_EXTENSION_FORM = ENV_TOKENS.get('REGISTRATION_EXTENSION_FORM', REGISTRATION_EXTENSION_FORM)
 REGISTRATION_EMAIL_PATTERNS_ALLOWED = ENV_TOKENS.get('REGISTRATION_EMAIL_PATTERNS_ALLOWED')
+REGISTRATION_FIELD_ORDER = ENV_TOKENS.get('REGISTRATION_FIELD_ORDER', REGISTRATION_FIELD_ORDER)
 
 # Set the names of cookies shared with the marketing site
 # These have the same cookie domain as the session, which in production
@@ -231,6 +238,9 @@ UNIVERSITY_EMAIL = ENV_TOKENS.get('UNIVERSITY_EMAIL', UNIVERSITY_EMAIL)
 PRESS_EMAIL = ENV_TOKENS.get('PRESS_EMAIL', PRESS_EMAIL)
 
 CONTACT_MAILING_ADDRESS = ENV_TOKENS.get('CONTACT_MAILING_ADDRESS', CONTACT_MAILING_ADDRESS)
+
+# Account activation email sender address
+ACTIVATION_EMAIL_FROM_ADDRESS = ENV_TOKENS.get('ACTIVATION_EMAIL_FROM_ADDRESS', ACTIVATION_EMAIL_FROM_ADDRESS)
 
 # Currency
 PAID_COURSE_REGISTRATION_CURRENCY = ENV_TOKENS.get('PAID_COURSE_REGISTRATION_CURRENCY',
@@ -302,7 +312,12 @@ ENABLE_COMPREHENSIVE_THEMING = ENV_TOKENS.get('ENABLE_COMPREHENSIVE_THEMING', EN
 # Marketing link overrides
 MKTG_URL_LINK_MAP.update(ENV_TOKENS.get('MKTG_URL_LINK_MAP', {}))
 
+# Intentional defaults.
 SUPPORT_SITE_LINK = ENV_TOKENS.get('SUPPORT_SITE_LINK', SUPPORT_SITE_LINK)
+PASSWORD_RESET_SUPPORT_LINK = ENV_TOKENS.get('PASSWORD_RESET_SUPPORT_LINK', SUPPORT_SITE_LINK)
+ACTIVATION_EMAIL_SUPPORT_LINK = ENV_TOKENS.get(
+    'ACTIVATION_EMAIL_SUPPORT_LINK', SUPPORT_SITE_LINK
+)
 
 # Mobile store URL overrides
 MOBILE_STORE_URLS = ENV_TOKENS.get('MOBILE_STORE_URLS', MOBILE_STORE_URLS)
@@ -314,6 +329,8 @@ TIME_ZONE = ENV_TOKENS.get('TIME_ZONE', TIME_ZONE)
 LANGUAGES = ENV_TOKENS.get('LANGUAGES', LANGUAGES)
 LANGUAGE_DICT = dict(LANGUAGES)
 LANGUAGE_CODE = ENV_TOKENS.get('LANGUAGE_CODE', LANGUAGE_CODE)
+LANGUAGE_COOKIE = ENV_TOKENS.get('LANGUAGE_COOKIE', LANGUAGE_COOKIE)
+
 USE_I18N = ENV_TOKENS.get('USE_I18N', USE_I18N)
 
 # Additional installed apps
@@ -506,6 +523,13 @@ if AWS_SECRET_ACCESS_KEY == "":
 
 AWS_STORAGE_BUCKET_NAME = AUTH_TOKENS.get('AWS_STORAGE_BUCKET_NAME', 'edxuploads')
 
+#
+# To support Azure Storage via the Django-Storages library
+#
+AZURE_ACCOUNT_NAME = AUTH_TOKENS.get('AZURE_ACCOUNT_NAME', None)
+AZURE_ACCOUNT_KEY = AUTH_TOKENS.get('AZURE_ACCOUNT_KEY', None)
+AZURE_CONTAINER = AUTH_TOKENS.get('AZURE_CONTAINER', None)
+
 # Disabling querystring auth instructs Boto to exclude the querystring parameters (e.g. signature, access key) it
 # normally appends to every returned URL.
 AWS_QUERYSTRING_AUTH = AUTH_TOKENS.get('AWS_QUERYSTRING_AUTH', True)
@@ -515,6 +539,8 @@ if AUTH_TOKENS.get('DEFAULT_FILE_STORAGE'):
     DEFAULT_FILE_STORAGE = AUTH_TOKENS.get('DEFAULT_FILE_STORAGE')
 elif AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY:
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+elif AZURE_ACCOUNT_NAME and AZURE_ACCOUNT_KEY and AZURE_CONTAINER:
+    DEFAULT_FILE_STORAGE = 'openedx.core.storage.AzureStorageExtended'
 else:
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
@@ -596,6 +622,9 @@ BROKER_URL = "{0}://{1}:{2}@{3}/{4}".format(CELERY_BROKER_TRANSPORT,
                                             CELERY_BROKER_VHOST)
 BROKER_USE_SSL = ENV_TOKENS.get('CELERY_BROKER_USE_SSL', False)
 
+# Block Structures
+BLOCK_STRUCTURES_SETTINGS = ENV_TOKENS.get('BLOCK_STRUCTURES_SETTINGS', BLOCK_STRUCTURES_SETTINGS)
+
 # upload limits
 STUDENT_FILEUPLOAD_MAX_SIZE = ENV_TOKENS.get("STUDENT_FILEUPLOAD_MAX_SIZE", STUDENT_FILEUPLOAD_MAX_SIZE)
 
@@ -617,6 +646,10 @@ TRACKING_SEGMENTIO_SOURCE_MAP = ENV_TOKENS.get("TRACKING_SEGMENTIO_SOURCE_MAP", 
 
 # Student identity verification settings
 VERIFY_STUDENT = AUTH_TOKENS.get("VERIFY_STUDENT", VERIFY_STUDENT)
+DISABLE_ACCOUNT_ACTIVATION_REQUIREMENT_SWITCH = ENV_TOKENS.get(
+    "DISABLE_ACCOUNT_ACTIVATION_REQUIREMENT_SWITCH",
+    DISABLE_ACCOUNT_ACTIVATION_REQUIREMENT_SWITCH
+)
 
 # Grades download
 GRADES_DOWNLOAD_ROUTING_KEY = ENV_TOKENS.get('GRADES_DOWNLOAD_ROUTING_KEY', HIGH_MEM_QUEUE)
@@ -657,10 +690,10 @@ X_FRAME_OPTIONS = ENV_TOKENS.get('X_FRAME_OPTIONS', X_FRAME_OPTIONS)
 if FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
     AUTHENTICATION_BACKENDS = (
         ENV_TOKENS.get('THIRD_PARTY_AUTH_BACKENDS', [
-            'social.backends.google.GoogleOAuth2',
-            'social.backends.linkedin.LinkedinOAuth2',
-            'social.backends.facebook.FacebookOAuth2',
-            'social.backends.azuread.AzureADOAuth2',
+            'social_core.backends.google.GoogleOAuth2',
+            'social_core.backends.linkedin.LinkedinOAuth2',
+            'social_core.backends.facebook.FacebookOAuth2',
+            'social_core.backends.azuread.AzureADOAuth2',
             'third_party_auth.saml.SAMLAuthBackend',
             'third_party_auth.lti.LTIAuthBackend',
         ]) + list(AUTHENTICATION_BACKENDS)
@@ -783,6 +816,9 @@ ECOMMERCE_API_TIMEOUT = ENV_TOKENS.get('ECOMMERCE_API_TIMEOUT', ECOMMERCE_API_TI
 
 COURSE_CATALOG_API_URL = ENV_TOKENS.get('COURSE_CATALOG_API_URL', COURSE_CATALOG_API_URL)
 
+CREDENTIALS_INTERNAL_SERVICE_URL = ENV_TOKENS.get('CREDENTIALS_INTERNAL_SERVICE_URL', CREDENTIALS_INTERNAL_SERVICE_URL)
+CREDENTIALS_PUBLIC_SERVICE_URL = ENV_TOKENS.get('CREDENTIALS_PUBLIC_SERVICE_URL', CREDENTIALS_PUBLIC_SERVICE_URL)
+
 ##### Custom Courses for EdX #####
 if FEATURES.get('CUSTOM_COURSES_EDX'):
     INSTALLED_APPS += ('lms.djangoapps.ccx', 'openedx.core.djangoapps.ccxcon')
@@ -842,8 +878,8 @@ CREDIT_HELP_LINK_URL = ENV_TOKENS.get('CREDIT_HELP_LINK_URL', CREDIT_HELP_LINK_U
 
 #### JWT configuration ####
 JWT_AUTH.update(ENV_TOKENS.get('JWT_AUTH', {}))
-PUBLIC_RSA_KEY = ENV_TOKENS.get('PUBLIC_RSA_KEY', PUBLIC_RSA_KEY)
-PRIVATE_RSA_KEY = ENV_TOKENS.get('PRIVATE_RSA_KEY', PRIVATE_RSA_KEY)
+JWT_PRIVATE_SIGNING_KEY = ENV_TOKENS.get('JWT_PRIVATE_SIGNING_KEY', JWT_PRIVATE_SIGNING_KEY)
+JWT_EXPIRED_PRIVATE_SIGNING_KEYS = ENV_TOKENS.get('JWT_EXPIRED_PRIVATE_SIGNING_KEYS', JWT_EXPIRED_PRIVATE_SIGNING_KEYS)
 
 ################# PROCTORING CONFIGURATION ##################
 
@@ -892,8 +928,98 @@ AFFILIATE_COOKIE_NAME = ENV_TOKENS.get('AFFILIATE_COOKIE_NAME', AFFILIATE_COOKIE
 
 ############## Settings for LMS Context Sensitive Help ##############
 
-DOC_LINK_BASE_URL = ENV_TOKENS.get('DOC_LINK_BASE_URL', DOC_LINK_BASE_URL)
+HELP_TOKENS_BOOKS = ENV_TOKENS.get('HELP_TOKENS_BOOKS', HELP_TOKENS_BOOKS)
 
-############## Settings for the Enterprise App ######################
 
-ENTERPRISE_ENROLLMENT_API_URL = ENV_TOKENS.get('ENTERPRISE_ENROLLMENT_API_URL', ENTERPRISE_ENROLLMENT_API_URL)
+############## OPEN EDX ENTERPRISE SERVICE CONFIGURATION ######################
+# The Open edX Enterprise service is currently hosted via the LMS container/process.
+# However, for all intents and purposes this service is treated as a standalone IDA.
+# These configuration settings are specific to the Enterprise service and you should
+# not find references to them within the edx-platform project.
+
+# Publicly-accessible enrollment URL, for use on the client side.
+ENTERPRISE_PUBLIC_ENROLLMENT_API_URL = ENV_TOKENS.get(
+    'ENTERPRISE_PUBLIC_ENROLLMENT_API_URL',
+    (LMS_ROOT_URL or '') + '/api/enrollment/v1/'
+)
+
+# Enrollment URL used on the server-side.
+ENTERPRISE_ENROLLMENT_API_URL = ENV_TOKENS.get(
+    'ENTERPRISE_ENROLLMENT_API_URL',
+    ENTERPRISE_ENROLLMENT_API_URL
+)
+
+# Enterprise logo image size limit in KB's
+ENTERPRISE_CUSTOMER_LOGO_IMAGE_SIZE = ENV_TOKENS.get(
+    'ENTERPRISE_CUSTOMER_LOGO_IMAGE_SIZE',
+    ENTERPRISE_CUSTOMER_LOGO_IMAGE_SIZE
+)
+
+# Course enrollment modes to be hidden in the Enterprise enrollment page
+# if the "Hide audit track" flag is enabled for an EnterpriseCustomer
+ENTERPRISE_COURSE_ENROLLMENT_AUDIT_MODES = ENV_TOKENS.get(
+    'ENTERPRISE_COURSE_ENROLLMENT_AUDIT_MODES',
+    ENTERPRISE_COURSE_ENROLLMENT_AUDIT_MODES
+)
+
+
+############## ENTERPRISE SERVICE API CLIENT CONFIGURATION ######################
+# The LMS communicates with the Enterprise service via the EdxRestApiClient class
+# The below environmental settings are utilized by the LMS when interacting with
+# the service, and override the default parameters which are defined in common.py
+
+DEFAULT_ENTERPRISE_API_URL = None
+if LMS_ROOT_URL is not None:
+    DEFAULT_ENTERPRISE_API_URL = LMS_ROOT_URL + '/enterprise/api/v1/'
+ENTERPRISE_API_URL = ENV_TOKENS.get('ENTERPRISE_API_URL', DEFAULT_ENTERPRISE_API_URL)
+
+ENTERPRISE_SERVICE_WORKER_USERNAME = ENV_TOKENS.get(
+    'ENTERPRISE_SERVICE_WORKER_USERNAME',
+    ENTERPRISE_SERVICE_WORKER_USERNAME
+)
+ENTERPRISE_API_CACHE_TIMEOUT = ENV_TOKENS.get(
+    'ENTERPRISE_API_CACHE_TIMEOUT',
+    ENTERPRISE_API_CACHE_TIMEOUT
+)
+
+############## ENTERPRISE SERVICE LMS CONFIGURATION ##################################
+# The LMS has some features embedded that are related to the Enterprise service, but
+# which are not provided by the Enterprise service. These settings override the
+# base values for the parameters as defined in common.py
+
+ENTERPRISE_PLATFORM_WELCOME_TEMPLATE = ENV_TOKENS.get(
+    'ENTERPRISE_PLATFORM_WELCOME_TEMPLATE',
+    ENTERPRISE_PLATFORM_WELCOME_TEMPLATE
+)
+ENTERPRISE_SPECIFIC_BRANDED_WELCOME_TEMPLATE = ENV_TOKENS.get(
+    'ENTERPRISE_SPECIFIC_BRANDED_WELCOME_TEMPLATE',
+    ENTERPRISE_SPECIFIC_BRANDED_WELCOME_TEMPLATE
+)
+ENTERPRISE_EXCLUDED_REGISTRATION_FIELDS = set(
+    ENV_TOKENS.get(
+        'ENTERPRISE_EXCLUDED_REGISTRATION_FIELDS',
+        ENTERPRISE_EXCLUDED_REGISTRATION_FIELDS
+    )
+)
+
+############## CATALOG/DISCOVERY SERVICE API CLIENT CONFIGURATION ######################
+# The LMS communicates with the Catalog service via the EdxRestApiClient class
+# The below environmental settings are utilized by the LMS when interacting with
+# the service, and override the default parameters which are defined in common.py
+
+COURSES_API_CACHE_TIMEOUT = ENV_TOKENS.get('COURSES_API_CACHE_TIMEOUT', COURSES_API_CACHE_TIMEOUT)
+
+# Add an ICP license for serving content in China if your organization is registered to do so
+ICP_LICENSE = ENV_TOKENS.get('ICP_LICENSE', None)
+
+#RACCOONGANG
+SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING = FEATURES.get("SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING", True)
+LOCALESET_FROM_REQUEST = ENV_TOKENS.get('LOCALESET_FROM_REQUEST', {"en": "en_US.utf8"})
+
+ORA2_FILEUPLOAD_BACKEND = ENV_TOKENS.get('ORA2_FILEUPLOAD_BACKEND', 'filesystem')
+ORA2_FILEUPLOAD_ROOT = ENV_TOKENS.get('ORA2_FILEUPLOAD_BACKEND',  os.path.join(MEDIA_ROOT, 'submissions_attachments/'))
+ORA2_FILEUPLOAD_CACHE_NAME = ENV_TOKENS.get('ORA2_FILEUPLOAD_CACHE_NAME', 'default')
+#RACCOONGANG
+
+############## Settings for CourseGraph ############################
+COURSEGRAPH_JOB_QUEUE = ENV_TOKENS.get('COURSEGRAPH_JOB_QUEUE', LOW_PRIORITY_QUEUE)

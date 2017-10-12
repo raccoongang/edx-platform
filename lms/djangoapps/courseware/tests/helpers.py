@@ -3,16 +3,14 @@ Helpers for courseware tests.
 """
 import json
 
+from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import RequestFactory
 
 from courseware.access import has_access
-from courseware.masquerade import (
-    handle_ajax,
-    setup_masquerade
-)
+from courseware.masquerade import handle_ajax, setup_masquerade
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from student.models import Registration
 
@@ -52,6 +50,14 @@ class LoginEnrollmentTestCase(TestCase):
             )
         )
         return response
+
+    def assert_account_activated(self, url, method="GET", **kwargs):
+        make_request = getattr(self.client, method.lower())
+        response = make_request(url, **kwargs)
+        message_list = list(messages.get_messages(response.wsgi_request))
+        self.assertEqual(len(message_list), 1)
+        self.assertIn("success", message_list[0].tags)
+        self.assertTrue("You have activated your account." in message_list[0].message)
 
     # ============ User creation and login ==============
 
@@ -102,7 +108,7 @@ class LoginEnrollmentTestCase(TestCase):
         activation_key = Registration.objects.get(user__email=email).activation_key
         # and now we try to activate
         url = reverse('activate', kwargs={'key': activation_key})
-        self.assert_request_status_code(200, url)
+        self.assert_account_activated(url)
         # Now make sure that the user is now actually activated
         user = User.objects.get(email=email)
         self.assertTrue(user.is_active)

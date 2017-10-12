@@ -3,25 +3,30 @@ Asset compilation and collection.
 """
 
 from __future__ import print_function
-from datetime import datetime
-from functools import wraps
-from threading import Timer
+
 import argparse
 import glob
 import os
 import traceback
+from datetime import datetime
+from functools import wraps
+from threading import Timer
 
 from paver import tasks
-from paver.easy import sh, path, task, cmdopts, needs, consume_args, call_task, no_help
-from watchdog.observers.polling import PollingObserver
+from paver.easy import call_task, cmdopts, consume_args, needs, no_help, path, sh, task
 from watchdog.events import PatternMatchingEventHandler
-
-from .utils.envs import Env
-from .utils.cmd import cmd, django_cmd
-from .utils.timer import timed
+from watchdog.observers.polling import PollingObserver
 
 from openedx.core.djangoapps.theming.paver_helpers import get_theme_paths
 
+from .utils.cmd import cmd, django_cmd
+from .utils.envs import Env
+from .utils.process import run_background_process
+from .utils.timer import timed
+
+from pwd import getpwnam  
+from django.core.wsgi import get_wsgi_application
+from django.conf import settings as django_settings
 # setup baseline paths
 
 ALL_SYSTEMS = ['lms', 'studio']
@@ -47,15 +52,18 @@ COMMON_LOOKUP_PATHS = [
 # A list of NPM installed libraries that should be copied into the common
 # static directory.
 NPM_INSTALLED_LIBRARIES = [
-    'backbone/backbone.js',
     'backbone.paginator/lib/backbone.paginator.js',
-    'moment-timezone/builds/moment-timezone-with-data.js',
-    'moment/min/moment-with-locales.js',
+    'backbone/backbone.js',
+    'bootstrap/dist/js/bootstrap.js',
+    'hls.js/dist/hls.js',
     'jquery-migrate/dist/jquery-migrate.js',
     'jquery.scrollto/jquery.scrollTo.js',
     'jquery/dist/jquery.js',
+    'moment-timezone/builds/moment-timezone-with-data.js',
+    'moment/min/moment-with-locales.js',
     'picturefill/dist/picturefill.js',
     'requirejs/require.js',
+    'tether/dist/js/tether.js',
     'underscore.string/dist/underscore.string.js',
     'underscore/underscore.js',
 ]
@@ -478,7 +486,6 @@ def compile_sass(options):
     compilation_results = {'success': [], 'failure': []}
 
     print("\t\tStarted compiling Sass:")
-
     # compile common sass files
     is_successful = _compile_sass('common', None, debug, force, timing_info)
     if is_successful:
@@ -657,6 +664,26 @@ def collect_assets(systems, settings, **kwargs):
         )))
         print("\t\tFinished collecting {} assets.".format(sys))
 
+    print ("Sync static from {static_collector_dir}/* to {platform_static_dir}/".format(
+        static_collector_dir=django_settings.STATIC_ROOT_BASE,
+        platform_static_dir=django_settings.EDX_PLATFORM_STATIC_ROOT_BASE
+    ))
+    os.system("rsync -av {static_collector_dir}/* {platform_static_dir}/ ".format(
+        static_collector_dir=django_settings.STATIC_ROOT_BASE,
+        platform_static_dir=django_settings.EDX_PLATFORM_STATIC_ROOT_BASE
+    ))
+
+    print ("Sync static from {static_collector_dir}/{current_sys}/* to {platform_static_dir}/{current_sys}/ with --delete-after option".format(
+            static_collector_dir=django_settings.STATIC_ROOT_BASE,
+            platform_static_dir=django_settings.EDX_PLATFORM_STATIC_ROOT_BASE,
+            current_sys=sys
+        ))
+    for sys in systems:
+        os.system("rsync -av {static_collector_dir}/{current_sys}/* {platform_static_dir}/{current_sys}/ --delete-after".format(
+            static_collector_dir=django_settings.STATIC_ROOT_BASE,
+            platform_static_dir=django_settings.EDX_PLATFORM_STATIC_ROOT_BASE,
+            current_sys=sys
+        ))
 
 def _collect_assets_cmd(system, **kwargs):
     """
@@ -700,6 +727,29 @@ def execute_compile_sass(args):
                 ),
             ),
         )
+
+
+def execute_webpack(prod, settings=None):
+    sh(
+        cmd(
+            "NODE_ENV={node_env} STATIC_ROOT_LMS={static_root_lms} STATIC_ROOT_CMS={static_root_cms} $(npm bin)/webpack"
+            .format(
+                node_env="production" if prod else "development",
+                static_root_lms=Env.get_django_setting("STATIC_ROOT", "lms", settings=settings),
+                static_root_cms=Env.get_django_setting("STATIC_ROOT", "cms", settings=settings)
+            )
+        )
+    )
+
+
+def execute_webpack_watch(settings=None):
+    run_background_process(
+        "STATIC_ROOT_LMS={static_root_lms} STATIC_ROOT_CMS={static_root_cms} $(npm bin)/webpack --watch --watch-poll=200"
+        .format(
+            static_root_lms=Env.get_django_setting("STATIC_ROOT", "lms", settings=settings),
+            static_root_cms=Env.get_django_setting("STATIC_ROOT", "cms", settings=settings)
+        )
+    )
 
 
 def get_parsed_option(command_opts, opt_key, default=None):
@@ -768,6 +818,11 @@ def watch_assets(options):
 
     print("Starting asset watcher...")
     observer.start()
+
+    # We only want Webpack to re-run on changes to its own entry points, not all JS files, so we use its own watcher
+    # instead of subclassing from Watchdog like the other watchers do
+    execute_webpack_watch(settings=Env.DEVSTACK_SETTINGS)
+
     if not getattr(options, 'background', False):
         # when running as a separate process, the main thread needs to loop
         # in order to allow for shutdown by contrl-c
@@ -777,7 +832,6 @@ def watch_assets(options):
         except KeyboardInterrupt:
             observer.stop()
         print("\nStopped asset watcher.")
-
 
 @task
 @needs(
@@ -795,7 +849,7 @@ def update_assets(args):
         help="lms or studio",
     )
     parser.add_argument(
-        '--settings', type=str, default="devstack",
+        '--settings', type=str, default=Env.DEVSTACK_SETTINGS,
         help="Django settings module",
     )
     parser.add_argument(
@@ -822,12 +876,66 @@ def update_assets(args):
         '--collect-log', dest=COLLECTSTATIC_LOG_DIR_ARG, default=None,
         help="When running collectstatic, direct output to specified log directory",
     )
+
     args = parser.parse_args(args)
+    if args.settings == 'aws':
+        args.settings = 'static_collector'
     collect_log_args = {}
+
+    current_sys = args.system[0]
+
+    if args.system[0] == 'studio':
+        current_sys = 'cms'
+
+    os.environ.setdefault("SERVICE_VARIANT","{sys}".format(sys=current_sys))
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "{sys}.envs.static_collector".format(sys=current_sys))
+
+    application = get_wsgi_application()  # pylint: disable=invalid-name
+
+    def chown(path, user=None, group=None):
+        """Change owner user and group of the given path.
+
+        user and group can be the uid/gid or the user/group names, and in that case,
+        they are converted to their respective uid/gid.
+        """
+
+        if user is None and group is None:
+            raise ValueError("user and/or group must be set")
+
+        _user = user
+        _group = group
+
+        # -1 means don't change it
+        if user is None:
+            _user = -1
+        # user can either be an int (the uid) or a string (the system username)
+        elif isinstance(user, basestring):
+            _user = getpwnam(user).pw_uid
+            if _user is None:
+                raise LookupError("no such user: {!r}".format(user))
+
+        if group is None:
+            _group = -1
+        elif not isinstance(group, int):
+            _group = getpwnam(group).pw_gid
+            if _group is None:
+                raise LookupError("no such group: {!r}".format(group))
+        try:
+            os.chown(path, _user, _group)
+        except Exception:
+            raise ValueError("Error chown for {staticdir}...".format(staticdir=path))
+
+    STATIC_COLLECTOR_ROOT=os.environ.get('STATIC_COLLECTOR_ROOT', '/edx/var/edxapp/static_collector')
+    if not os.path.isdir(STATIC_COLLECTOR_ROOT):
+        os.mkdir(STATIC_COLLECTOR_ROOT)
+        print('\t\tDirectory "STATIC_COLLECTOR_ROOT" has been created to store '
+                        ' static files.')
+        chown(STATIC_COLLECTOR_ROOT, 'edxapp', 'edxapp')
 
     process_xmodule_assets()
     process_npm_assets()
     compile_coffeescript()
+    execute_webpack(prod=(args.settings != Env.DEVSTACK_SETTINGS), settings=args.settings)
 
     # Compile sass for themes and system
     execute_compile_sass(args)

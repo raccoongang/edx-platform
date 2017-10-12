@@ -29,12 +29,6 @@ from openedx.core.djangoapps.theming import helpers as theming_helpers
   <%static:include path="dashboard/${template_name}.underscore" />
 </script>
 % endfor
-
-% for template_name in ["dashboard_search_item", "dashboard_search_results", "search_loading", "search_error"]:
-<script type="text/template" id="${template_name}-tpl">
-    <%static:include path="search/${template_name}.underscore" />
-</script>
-% endfor
 </%block>
 
 <%block name="js_extra">
@@ -50,7 +44,7 @@ from openedx.core.djangoapps.theming import helpers as theming_helpers
     });
   </script>
   % if settings.FEATURES.get('ENABLE_DASHBOARD_SEARCH'):
-    <%static:require_module module_name="js/search/dashboard/dashboard_search_factory" class_name="DashboardSearchFactory">
+    <%static:require_module module_name="course_search/js/dashboard_search_factory" class_name="DashboardSearchFactory">
         DashboardSearchFactory();
     </%static:require_module>
   % endif
@@ -64,10 +58,11 @@ from openedx.core.djangoapps.theming import helpers as theming_helpers
 </%block>
 
 <div class="dashboard-notifications" tabindex="-1">
-    %if message:
-        <section class="dashboard-banner">
-            ${message | n, decode.utf8}
-        </section>
+
+    %if banner_account_activation_message:
+        <div class="dashboard-banner">
+            ${banner_account_activation_message | n, decode.utf8}
+        </div>
     %endif
 
     %if enrollment_message:
@@ -75,6 +70,25 @@ from openedx.core.djangoapps.theming import helpers as theming_helpers
             ${enrollment_message | n, decode.utf8}
         </section>
     %endif
+
+    %if enterprise_message:
+        <div class="dashboard-banner">
+            ${ enterprise_message | n, decode.utf8 }
+        </div>
+    %endif
+
+    %if account_activation_messages:
+      <div class="activation-message-container">
+        % for account_activation_message in account_activation_messages:
+          <div class="account-activation ${account_activation_message.tags}" role="alert" aria-label="Account Activation Message" tabindex="-1">
+            <div class="message-copy" >
+              ${ account_activation_message | n, decode.utf8 }
+            </div>
+          </div>
+        % endfor
+      </div>
+    %endif
+
 </div>
 
 <section class="container dashboard" id="dashboard-main">
@@ -136,9 +150,15 @@ from openedx.core.djangoapps.theming import helpers as theming_helpers
   </section>
 </main>
 
+  %if sidebar_account_activation_message:
+    <div class="sidebar-notification">
+      ${sidebar_account_activation_message | n, decode.utf8}
+    </div>
+  %endif
+
   % if settings.FEATURES.get('ENABLE_DASHBOARD_SEARCH'):
     <div id="dashboard-search-bar" class="search-bar dashboard-search-bar" role="search" aria-label="Dashboard">
-      <form>
+      <form class="search-form">
         <label for="dashboard-search-input">${_('Search Your Courses')}</label>
         <div class="search-field-wrapper">
           <input id="dashboard-search-input" type="text" class="search-field"/>
@@ -173,27 +193,29 @@ from openedx.core.djangoapps.theming import helpers as theming_helpers
       </div>
   % endif
 
-  <section class="profile-sidebar" id="profile-sidebar" role="region" aria-label="Account Status Info">
-    <header class="profile">
-      <h2 class="account-status-title sr">${_("Account Status Info")}: </h2>
-    </header>
-    <section class="user-info">
-      <ul>
+  % if display_sidebar_on_dashboard:
+    <section class="profile-sidebar" id="profile-sidebar" role="region" aria-label="Account Status Info">
+      <header class="profile">
+        <h2 class="account-status-title sr">${_("Account Status Info")}: </h2>
+      </header>
+      <section class="user-info">
+        <ul>
 
-        % if len(order_history_list):
-        <li class="order-history">
-          <span class="title">${_("Order History")}</span>
-          % for order_history_item in order_history_list:
-            <span><a href="${order_history_item['receipt_url']}" target="_blank" class="edit-name">${order_history_item['order_date']}</a></span>
-          % endfor
-        </li>
-        % endif
+          % if len(order_history_list):
+          <li class="order-history">
+            <span class="title">${_("Order History")}</span>
+            % for order_history_item in order_history_list:
+              <span><a href="${order_history_item['receipt_url']}" target="_blank" class="edit-name">${order_history_item['order_date']}</a></span>
+            % endfor
+          </li>
+          % endif
 
-        <%include file="${theming_helpers.get_template_path('dashboard/_dashboard_status_verification.html')}" />
+          <%include file="${theming_helpers.get_template_path('dashboard/_dashboard_status_verification.html')}" />
 
-      </ul>
+        </ul>
+      </section>
     </section>
-  </section>
+  % endif
 </section>
 
 <section id="email-settings-modal" class="modal" aria-hidden="true">

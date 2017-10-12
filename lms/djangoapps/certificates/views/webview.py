@@ -2,48 +2,51 @@
 """
 Certificate HTML webview.
 """
-from datetime import datetime
-from uuid import uuid4
 import logging
 import urllib
+from datetime import datetime
+import pytz
+from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.http import HttpResponse, Http404
+from django.http import Http404, HttpResponse
 from django.template import RequestContext
-from django.utils.translation import ugettext as _
 from django.utils.encoding import smart_str
+from django.contrib.auth.decorators import login_required
+from django.utils.translation import ugettext as _
+from opaque_keys import InvalidKeyError
+from opaque_keys.edx.keys import CourseKey
+from django.contrib.auth.decorators import login_required
 
 from badges.events.course_complete import get_completion_badge
 from badges.utils import badges_enabled
+from certificates.api import (
+    emit_certificate_event,
+    get_active_web_certificate,
+    get_certificate_footer_context,
+    get_certificate_header_context,
+    get_certificate_template,
+    get_certificate_url,
+    has_html_certificates_enabled
+)
+from certificates.models import (
+    CertificateHtmlViewConfiguration,
+    CertificateSocialNetworks,
+    CertificateStatuses,
+    GeneratedCertificate
+)
 from courseware.access import has_access
 from edxmako.shortcuts import render_to_response
 from edxmako.template import Template
 from eventtracking import tracker
-from opaque_keys import InvalidKeyError
-from opaque_keys.edx.keys import CourseKey
-from openedx.core.lib.courses import course_image_url
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.core.lib.courses import course_image_url
 from student.models import LinkedInAddToProfileConfiguration
 from util import organizations_helpers as organization_api
 from util.views import handle_500
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError
-
-from certificates.api import (
-    get_active_web_certificate,
-    get_certificate_url,
-    emit_certificate_event,
-    has_html_certificates_enabled,
-    get_certificate_template,
-    get_certificate_header_context,
-    get_certificate_footer_context,
-)
-from certificates.models import (
-    GeneratedCertificate,
-    CertificateStatuses,
-    CertificateHtmlViewConfiguration,
-    CertificateSocialNetworks)
 
 log = logging.getLogger(__name__)
 
@@ -153,7 +156,7 @@ def _update_context_with_basic_info(context, course_id, platform_name, configura
     # Translators:  'All rights reserved' is a legal term used in copyrighting to protect published content
     reserved = _("All rights reserved")
     context['copyright_text'] = u'&copy; {year} {platform_name}. {reserved}.'.format(
-        year=settings.COPYRIGHT_YEAR,
+        year=datetime.now(pytz.timezone(settings.TIME_ZONE)).year,
         platform_name=platform_name,
         reserved=reserved
     )
@@ -229,6 +232,11 @@ def _update_course_context(request, context, course, platform_name):
     context['accomplishment_copy_course_name'] = accomplishment_copy_course_name
     course_number = course.display_coursenumber if course.display_coursenumber else course.number
     context['course_number'] = course_number
+    context['certificate_title'] = course.certificate_title
+    context['certificate_title_color'] = course.certificate_title_color
+    context['certificate_subtitle'] = course.certificate_subtitle
+    context['certificate_subtitle_color'] = course.certificate_subtitle_color
+    context['certificate_image_url'] = request.build_absolute_uri(course_image_url(course, 'banner_image'))
     if context['organization_long_name']:
         # Translators:  This text represents the description of course
         context['accomplishment_copy_course_description'] = _('a course of study offered by {partner_short_name}, '
@@ -489,6 +497,7 @@ def render_cert_by_uuid(request, certificate_uuid):
     template_path="certificates/server-error.html",
     test_func=lambda request: request.GET.get('preview', None)
 )
+@login_required
 def render_html_view(request, user_id, course_id):
     """
     This public view generates an HTML representation of the specified user and course

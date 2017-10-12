@@ -6,11 +6,12 @@ from celery.utils.log import get_task_logger  # pylint: disable=no-name-in-modul
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
+from edx_rest_api_client import exceptions
 from edx_rest_api_client.client import EdxRestApiClient
 from provider.oauth2.models import Client
 
 from openedx.core.djangoapps.credentials.models import CredentialsApiConfig
-from openedx.core.djangoapps.credentials.utils import get_user_credentials
+from openedx.core.djangoapps.credentials.utils import get_credentials
 from openedx.core.djangoapps.programs.utils import ProgramProgressMeter
 from openedx.core.lib.token_utils import JwtBuilder
 
@@ -83,7 +84,7 @@ def get_certified_programs(student):
 
     """
     certified_programs = []
-    for credential in get_user_credentials(student):
+    for credential in get_credentials(student):
         if 'program_uuid' in credential['credential']:
             certified_programs.append(credential['credential']['program_uuid'])
     return certified_programs
@@ -196,6 +197,11 @@ def award_program_certificates(self, username):
             try:
                 award_program_certificate(credentials_client, username, program_uuid)
                 LOGGER.info('Awarded certificate for program %s to user %s', program_uuid, username)
+            except exceptions.HttpNotFoundError:
+                LOGGER.exception(
+                    'Certificate for program %s not configured, unable to award certificate to %s',
+                    program_uuid, username
+                )
             except Exception:  # pylint: disable=broad-except
                 # keep trying to award other certs, but retry the whole task to fix any missing entries
                 LOGGER.exception('Failed to award certificate for program %s to user %s', program_uuid, username)

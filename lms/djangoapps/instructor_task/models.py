@@ -12,20 +12,19 @@ file and check it in at the same time as your model changes. To do that,
 ASSUMPTIONS: modules have unique IDs, even across different module_types
 
 """
-from uuid import uuid4
 import csv
-import json
 import hashlib
+import json
 import os.path
+from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.db import models, transaction
 
-from openedx.core.storage import get_storage
 from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
-
+from openedx.core.storage import get_storage
 
 # define custom states used by InstructorTask
 QUEUING = 'QUEUING'
@@ -203,6 +202,14 @@ class ReportStore(object):
                     'gzip': True,
                 },
             )
+        if storage_type == 'azure':
+            return DjangoStorageReportStore(
+                storage_class='openedx.core.storage.AzureStorageExtended',
+                storage_kwargs={
+                    'container': config['CONTAINER'],
+                    'url_expiry_secs': config.get('URL_EXPIRY_SECS', 300)
+                }
+            )
         elif storage_type == 'localfs':
             return DjangoStorageReportStore(
                 storage_class='django.core.files.storage.FileSystemStorage',
@@ -286,10 +293,17 @@ class DjangoStorageReportStore(ReportStore):
             return []
         files = [(filename, os.path.join(course_dir, filename)) for filename in filenames]
         files.sort(key=lambda f: self.storage.modified_time(f[1]), reverse=True)
-        return [
+
+        if (settings.GRADES_DOWNLOAD['STORAGE_TYPE']=='azure' or settings.GRADES_DOWNLOAD['STORAGE_TYPE']=='s3'):
+            return [
             (filename, self.storage.url(full_path))
-            for filename, full_path in files
-        ]
+                for filename, full_path in files
+            ]
+        else:
+            return [
+                (filename, self.storage.url(os.path.join('grades', full_path)))
+                for filename, full_path in files
+            ]
 
     def path_to(self, course_id, filename=''):
         """

@@ -22,29 +22,24 @@ DjangoOrmFieldCache: A base-class for single-row-per-field caches.
 """
 
 import json
-from abc import abstractmethod, ABCMeta
-from collections import defaultdict, namedtuple
-from .models import (
-    StudentModule,
-    XModuleUserStateSummaryField,
-    XModuleStudentPrefsField,
-    XModuleStudentInfoField
-)
 import logging
-from opaque_keys.edx.keys import CourseKey, UsageKey
-from opaque_keys.edx.block_types import BlockTypeKeyV1
-from opaque_keys.edx.asides import AsideUsageKeyV1, AsideUsageKeyV2
+from abc import ABCMeta, abstractmethod
+from collections import defaultdict, namedtuple
+
 from contracts import contract, new_contract
-
 from django.db import DatabaseError
-
-from xblock.runtime import KeyValueStore
-from xblock.exceptions import KeyValueMultiSaveError, InvalidScopeError
-from xblock.fields import Scope, UserScope
-from xmodule.modulestore.django import modulestore
+from opaque_keys.edx.asides import AsideUsageKeyV1, AsideUsageKeyV2
+from opaque_keys.edx.block_types import BlockTypeKeyV1
+from opaque_keys.edx.keys import CourseKey, UsageKey
 from xblock.core import XBlockAside
-from courseware.user_state_client import DjangoXBlockUserStateClient
+from xblock.exceptions import InvalidScopeError, KeyValueMultiSaveError
+from xblock.fields import Scope, UserScope
+from xblock.runtime import KeyValueStore
 
+from courseware.user_state_client import DjangoXBlockUserStateClient
+from xmodule.modulestore.django import modulestore
+
+from .models import StudentModule, XModuleStudentInfoField, XModuleStudentPrefsField, XModuleUserStateSummaryField
 
 log = logging.getLogger(__name__)
 
@@ -942,7 +937,7 @@ class ScoresClient(object):
     Eventually, this should read and write scores, but at the moment it only
     handles the read side of things.
     """
-    Score = namedtuple('Score', 'correct total')
+    Score = namedtuple('Score', 'correct total created')
 
     def __init__(self, course_key, user_id):
         self.course_key = course_key
@@ -965,9 +960,9 @@ class ScoresClient(object):
         # attached to them (since old mongo identifiers don't include runs).
         # So we have to add that info back in before we put it into our lookup.
         self._locations_to_scores.update({
-            UsageKey.from_string(location).map_into_course(self.course_key): self.Score(correct, total)
-            for location, correct, total
-            in scores_qset.values_list('module_state_key', 'grade', 'max_grade')
+            UsageKey.from_string(location).map_into_course(self.course_key): self.Score(correct, total, created)
+            for location, correct, total, created
+            in scores_qset.values_list('module_state_key', 'grade', 'max_grade', 'created')
         })
         self._has_fetched = True
 

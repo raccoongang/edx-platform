@@ -3,7 +3,7 @@
 
 .header-global {
   @extend %ui-depth1;
-  border-bottom: 1px solid $gray-l1;
+  border-bottom: 2px solid $header-border-color;
   box-shadow: 0 1px 5px 0 $shadow-l1;
   background: $header-bg;
   position: relative;
@@ -18,7 +18,11 @@
     max-width: grid-width(12);
   }
 
-  h1.logo {
+  .logo-header {
+    display: inline;
+  }
+
+  .logo {
     @include float(left);
     @include margin(-2px, 39px, 0, 0);
     position: relative;
@@ -27,10 +31,6 @@
       display: block;
     }
 
-    img.ec-logo-size {
-      width: 84px;
-      height: 56px;
-    }
   }
 
   nav {
@@ -121,6 +121,8 @@
     @extend %ui-print-excluded;
     padding-left: 0;
     margin: 0;
+    display: flex;
+    align-items: center;
 
     .settings-language-form {
       margin: 4px;
@@ -183,7 +185,7 @@
       }
     }
 
-    .dropdown {
+    .user-dropdown {
       font-size: $body-font-size;
       padding: 0 ($baseline/2);
       color: $base-font-color;
@@ -191,9 +193,11 @@
       background: $white;
       box-shadow: none;
       text-shadow: none;
+      line-height: 1;
+      vertical-align: super;
     }
 
-    .dropdown-menu {
+    .user-dropdown-menu {
       background: $white;
       border-radius: 4px;
       box-shadow: 0 2px 2px 0 rgba(0,0,0, 0.3);
@@ -388,7 +392,7 @@
     }
   }
 
-  h1.logo {
+  .logo {
     @include float(left);
     margin: -2px 39px 0 10px;
     position: relative;
@@ -422,8 +426,13 @@
     }
   }
 
+  .logo-header {
+    display: inline;
+  }
+
   .nav-account-management {
     margin: 0 auto;
+    display: inline;
   }
 
   .guest {
@@ -889,13 +898,18 @@
 }
 
 .doc-link {
-    @include float(right);
-    @include margin(($baseline*0.75), ($baseline*0.75), ($baseline*0.75), ($baseline*0.75));
-    font-size: 14px;
-    font-weight: bold;
-    color: $base-font-color;
+  @include float(right);
+  @include margin(($baseline*0.75), ($baseline*0.75), ($baseline*0.75), ($baseline*0.75));
+  font-size: 14px;
+  font-weight: bold;
+  color: $base-font-color;
 
-    &:visited {
-      color: $base-font-color;
-    }
+  &:visited {
+    color: $base-font-color;
+  }
+}
+
+.page-header {
+  padding: $baseline;
+  border-bottom: 1px solid $border-color-2;
 }

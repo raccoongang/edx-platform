@@ -10,14 +10,7 @@ html, body {
   font-size: 1em;
   font-style: normal;
   line-height: 1em;
-}
-
-html{
-  background: white;
-}
-
-body {
-  background: $body-bg;
+  background: $white;
 }
 
 // removing the outline on any element that we make programmatically focusable
@@ -34,7 +27,6 @@ h1, h2, h3, h4, h5, h6 {
 h1 {
   color: $base-font-color;
   font: normal 2em/1.4em $sans-serif;
-  letter-spacing: 1px;
   margin-bottom: ($baseline*1.5);
   text-align: center;
 }
@@ -42,9 +34,7 @@ h1 {
 h2 {
   color: $lighter-base-font-color;
   font: normal 1.2em/1.2em $serif;
-  letter-spacing: 1px;
   margin-bottom: ($baseline*0.75);
-  text-transform: uppercase;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -58,8 +48,8 @@ p {
 }
 
 span {
-  font: inherit;
   color: inherit;
+  font: inherit;
 }
 
 /* Fix for CodeMirror: prevent top-level span from affecting deeply-embedded span in CodeMirror */
@@ -90,7 +80,7 @@ p {
 
     &:hover, &:focus {
       color: $link-hover;
-      text-decoration: underline;
+      text-decoration: none;
     }
   }
 }
@@ -104,7 +94,7 @@ a, a:visited {
   &:hover,
   &:focus {
     color: $link-hover;
-    text-decoration: underline;
+    text-decoration: none;
   }
 
   &:disabled, &.is-disabled, &.disabled {
@@ -117,7 +107,7 @@ a, a:visited {
 .content-wrapper {
   width: flex-grid(12);
   margin: 0 auto;
-  background: $content-wrapper-bg;
+  background-color: $white;
 
   @media print {
     padding-bottom: 0;
@@ -193,37 +183,6 @@ mark {
   border-radius: 2px;
   background-color: #f7e9a8;
   color: #333;
-}
-
-.site-status {
-  display: none;
-  padding: ($baseline/2);
-  @include linear-gradient(top, $shadow-l1, rgba(0, 0, 0, .0));
-  background-color: $site-status-color;
-  box-shadow: 0 -1px 0 rgba(0, 0, 0, .3) inset;
-  font-size: 14px;
-
-  .white-error-icon {
-    position: relative;
-    top: -4px;
-    float: left;
-    display: block;
-    width: 27px;
-    height: 24px;
-    margin-right: ($baseline*0.75);
-    background: url('#{$static-path}/images/large-white-error-icon.png') no-repeat;
-  }
-
-  .inner-wrapper {
-    margin: auto;
-    max-width: 1180px;
-    min-width: 760px;
-  }
-
-  p {
-    line-height: 1.3;
-    color: $white;
-  }
 }
 
 .ie-banner {
@@ -355,4 +314,15 @@ mark {
     height: auto;
     margin: 0;
   }
+}
+.sticky {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+
+    &:after,
+    &:before {
+      content: '';
+      display: table;
+    }
 }

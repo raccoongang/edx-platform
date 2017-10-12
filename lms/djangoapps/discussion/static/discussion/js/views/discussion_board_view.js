@@ -26,7 +26,7 @@
                 'keydown .forum-nav-browse-filter-input': 'keyboardBinding',
                 'click .forum-nav-browse-menu-wrapper': 'ignoreClick',
                 'keydown .search-input': 'performSearch',
-                'click .search-btn': 'performSearch',
+                'click .search-button': 'performSearch',
                 'topic:selected': 'clearSearch'
             },
 
@@ -53,7 +53,7 @@
                     el: this.$('.forum-search')
                 }).render();
                 this.renderBreadcrumbs();
-                $(window).bind('load scroll resize', this.updateSidebar);
+                $(window).bind('load scroll resize', _.bind(this.updateSidebar, this));
                 this.showBrowseMenu(true);
                 return this;
             },

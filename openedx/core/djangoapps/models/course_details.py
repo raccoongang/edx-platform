@@ -5,12 +5,15 @@ import re
 import logging
 
 from django.conf import settings
+from django.dispatch import Signal
 
 from xmodule.fields import Date
 from xmodule.modulestore.exceptions import ItemNotFoundError
 from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.lib.courses import course_image_url
 from xmodule.modulestore.django import modulestore
+
+COURSE_PACING_CHANGE = Signal(providing_args=["course_key", "course_self_paced"])
 
 
 # This list represents the attribute keys for a course's 'about' info.
@@ -38,6 +41,10 @@ class CourseDetails(object):
     def __init__(self, org, course_id, run):
         # still need these for now b/c the client's screen shows these 3
         # fields
+        self.certificate_title = ""
+        self.certificate_title_color = "#000"
+        self.certificate_subtitle = ""
+        self.certificate_subtitle_color = "#000"
         self.org = org
         self.course_id = course_id
         self.run = run
@@ -118,6 +125,10 @@ class CourseDetails(object):
         course_details.self_paced = course_descriptor.self_paced
         course_details.learning_info = course_descriptor.learning_info
         course_details.instructor_info = course_descriptor.instructor_info
+        course_details.certificate_title = course_descriptor.certificate_title
+        course_details.certificate_title_color = course_descriptor.certificate_title_color
+        course_details.certificate_subtitle = course_descriptor.certificate_subtitle
+        course_details.certificate_subtitle_color = course_descriptor.certificate_subtitle_color
 
         # Default course license is "All Rights Reserved"
         course_details.license = getattr(course_descriptor, "license", "all-rights-reserved")
@@ -188,6 +199,7 @@ class CourseDetails(object):
         descriptor = module_store.get_course(course_key)
 
         dirty = False
+        is_pacing_changed = False
 
         # In the descriptor's setter, the date is converted to JSON
         # using Date's to_json method. Calling to_json on something that
@@ -265,15 +277,41 @@ class CourseDetails(object):
             descriptor.language = jsondict['language']
             dirty = True
 
+        if 'certificate_title' in jsondict and jsondict['certificate_title'] != descriptor.certificate_title:
+            descriptor.certificate_title = jsondict['certificate_title']
+            dirty = True
+
+        if 'certificate_title_color' in jsondict\
+            and jsondict['certificate_title_color'] != descriptor.certificate_title_color:
+            color = jsondict['certificate_title_color']
+            descriptor.certificate_title_color = color.startswith('#') and color or '#{}'.format(color)
+            dirty = True
+
+        if 'certificate_subtitle' in jsondict\
+            and jsondict['certificate_subtitle'] != descriptor.certificate_subtitle:
+            descriptor.certificate_subtitle = jsondict['certificate_subtitle']
+            dirty = True
+
+        if 'certificate_subtitle_color' in jsondict\
+            and jsondict['certificate_subtitle_color'] != descriptor.certificate_subtitle_color:
+            color = jsondict['certificate_subtitle_color']
+            descriptor.certificate_subtitle_color = color.startswith('#') and color or '#{}'.format(color)
+            dirty = True
+
         if (SelfPacedConfiguration.current().enabled
                 and descriptor.can_toggle_course_pacing
                 and 'self_paced' in jsondict
                 and jsondict['self_paced'] != descriptor.self_paced):
             descriptor.self_paced = jsondict['self_paced']
             dirty = True
+            is_pacing_changed = True
 
         if dirty:
             module_store.update_item(descriptor, user.id)
+
+        # fires a signal indicating that the course pacing has changed
+        if is_pacing_changed:
+            COURSE_PACING_CHANGE.send(sender=None, course_key=course_key, course_self_paced=descriptor.self_paced)
 
         # NOTE: below auto writes to the db w/o verifying that any of
         # the fields actually changed to make faster, could compare

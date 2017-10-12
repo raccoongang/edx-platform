@@ -3,32 +3,32 @@ Unit tests for masquerade.
 """
 import json
 import pickle
-from mock import patch
-from nose.plugins.attrib import attr
 from datetime import datetime
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils.timezone import UTC
+from mock import patch
+from nose.plugins.attrib import attr
+from xblock.runtime import DictKeyValueStore
 
 from capa.tests.response_xml_factory import OptionResponseXMLFactory
 from courseware.masquerade import (
     CourseMasquerade,
     MasqueradingKeyValueStore,
+    get_masquerading_user_group,
     handle_ajax,
-    setup_masquerade,
-    get_masquerading_group_info
+    setup_masquerade
 )
 from courseware.tests.factories import StaffFactory
 from courseware.tests.helpers import LoginEnrollmentTestCase, masquerade_as_group_member
 from courseware.tests.test_submitting_problems import ProblemSubmissionTestMixin
+from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from student.tests.factories import UserFactory
-from xblock.runtime import DictKeyValueStore
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
-from xmodule.modulestore.tests.factories import ItemFactory, CourseFactory
+from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 from xmodule.partitions.partitions import Group, UserPartition
-from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 
 
 class MasqueradeTestCase(SharedModuleStoreTestCase, LoginEnrollmentTestCase):
@@ -101,6 +101,18 @@ class MasqueradeTestCase(SharedModuleStoreTestCase, LoginEnrollmentTestCase):
         """
         url = reverse(
             'info',
+            kwargs={
+                'course_id': unicode(self.course.id),
+            }
+        )
+        return self.client.get(url)
+
+    def get_progress_page(self):
+        """
+        Returns the server response for progress page.
+        """
+        url = reverse(
+            'progress',
             kwargs={
                 'course_id': unicode(self.course.id),
             }
@@ -381,6 +393,31 @@ class TestStaffMasqueradeAsSpecificStudent(StaffMasqueradeTestCase, ProblemSubmi
         content = self.get_course_info_page().content
         self.assertIn("OOGIE BLOOGIE", content)
 
+    def test_masquerade_as_specific_student_progress(self):
+        """
+        Test masquerading as a specific user for progress page.
+        """
+        # Give the student some correct answers, check their progress page
+        self.login_student()
+        self.submit_answer('Correct', 'Correct')
+        student_progress = self.get_progress_page().content
+        self.assertNotIn("1 of 2 possible points", student_progress)
+        self.assertIn("2 of 2 possible points", student_progress)
+
+        # Staff answers are slightly different
+        self.login_staff()
+        self.submit_answer('Incorrect', 'Correct')
+        staff_progress = self.get_progress_page().content
+        self.assertNotIn("2 of 2 possible points", staff_progress)
+        self.assertIn("1 of 2 possible points", staff_progress)
+
+        # Should now see the student's scores
+        self.update_masquerade(role='student', user_name=self.student_user.username)
+        masquerade_progress = self.get_progress_page().content
+        self.assertNotIn("1 of 2 possible points", masquerade_progress)
+        self.assertIn("2 of 2 possible points", masquerade_progress)
+        self.verify_real_user_profile_link()
+
 
 @attr(shard=1)
 class TestGetMasqueradingGroupId(StaffMasqueradeTestCase):
@@ -398,22 +435,20 @@ class TestGetMasqueradingGroupId(StaffMasqueradeTestCase):
         modulestore().update_item(self.course, self.test_user.id)
 
     @patch.dict('django.conf.settings.FEATURES', {'DISABLE_START_DATES': False})
-    def test_group_masquerade(self):
+    def test_get_masquerade_group(self):
         """
-        Tests that a staff member can masquerade as being in a particular group.
+        Tests that a staff member can masquerade as being in a group in a user partition
         """
-        # Verify that there is no masquerading group initially
-        group_id, user_partition_id = get_masquerading_group_info(self.test_user, self.course.id)
-        self.assertIsNone(group_id)
-        self.assertIsNone(user_partition_id)
+        # Verify there is no masquerading group initially
+        group = get_masquerading_user_group(self.course.id, self.test_user, self.user_partition)
+        self.assertIsNone(group)
 
         # Install a masquerading group
         self.ensure_masquerade_as_group_member(0, 1)
 
         # Verify that the masquerading group is returned
-        group_id, user_partition_id = get_masquerading_group_info(self.test_user, self.course.id)
-        self.assertEqual(group_id, 1)
-        self.assertEqual(user_partition_id, 0)
+        group = get_masquerading_user_group(self.course.id, self.test_user, self.user_partition)
+        self.assertEqual(group.id, 1)
 
 
 class ReadOnlyKeyValueStore(DictKeyValueStore):

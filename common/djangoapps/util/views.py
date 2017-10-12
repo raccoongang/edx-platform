@@ -1,31 +1,29 @@
 import json
 import logging
-from smtplib import SMTPException
 import sys
 from functools import wraps
+from smtplib import SMTPException
 
+import zendesk
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.cache import caches
 from django.core.mail import send_mail
 from django.core.validators import ValidationError, validate_email
+from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseServerError
 from django.views.decorators.csrf import requires_csrf_token
 from django.views.defaults import server_error
-from django.http import (Http404, HttpResponse, HttpResponseNotAllowed,
-                         HttpResponseServerError, HttpResponseForbidden)
-import dogstats_wrapper as dog_stats_api
-import zendesk
-import calc
-
 from opaque_keys import InvalidKeyError
-
 from opaque_keys.edx.keys import CourseKey, UsageKey
 
+import calc
+import dogstats_wrapper as dog_stats_api
+import track.views
 from edxmako.shortcuts import render_to_response, render_to_string
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
-import track.views
-from student.roles import GlobalStaff
+from openedx.features.enterprise_support import api as enterprise_api
 from student.models import CourseEnrollment
+from student.roles import GlobalStaff
 
 log = logging.getLogger(__name__)
 
@@ -223,7 +221,7 @@ class _ZendeskApi(object):
         return None
 
 
-def _get_zendesk_custom_field_context(request):
+def _get_zendesk_custom_field_context(request, **kwargs):
     """
     Construct a dictionary of data that can be stored in Zendesk custom fields.
     """
@@ -240,6 +238,11 @@ def _get_zendesk_custom_field_context(request):
     enrollment = CourseEnrollment.get_enrollment(request.user, CourseKey.from_string(course_id))
     if enrollment and enrollment.is_active:
         context["enrollment_mode"] = enrollment.mode
+
+    enterprise_learner_data = kwargs.get('learner_data', None)
+    if enterprise_learner_data:
+        enterprise_customer_name = enterprise_learner_data[0]['enterprise_customer']['name']
+        context["enterprise_customer_name"] = enterprise_customer_name
 
     return context
 
@@ -434,6 +437,12 @@ def submit_feedback(request):
 
     success = False
     context = get_feedback_form_context(request)
+
+    #Update the tag info with 'enterprise_learner' if the user belongs to an enterprise customer.
+    enterprise_learner_data = enterprise_api.get_enterprise_learner_data(site=request.site, user=request.user)
+    if enterprise_learner_data:
+        context["tags"]["learner_type"] = "enterprise_learner"
+
     support_backend = configuration_helpers.get_value('CONTACT_FORM_SUBMISSION_BACKEND', SUPPORT_BACKEND_ZENDESK)
 
     if support_backend == SUPPORT_BACKEND_EMAIL:
@@ -456,7 +465,7 @@ def submit_feedback(request):
 
         custom_fields = None
         if settings.ZENDESK_CUSTOM_FIELDS:
-            custom_field_context = _get_zendesk_custom_field_context(request)
+            custom_field_context = _get_zendesk_custom_field_context(request, learner_data=enterprise_learner_data)
             custom_fields = _format_zendesk_custom_fields(custom_field_context)
 
         success = _record_feedback_in_zendesk(

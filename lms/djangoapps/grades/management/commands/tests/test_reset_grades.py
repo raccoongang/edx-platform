@@ -2,15 +2,16 @@
 Tests for reset_grades management command.
 """
 from datetime import datetime, timedelta
+
 import ddt
 from django.core.management.base import CommandError
 from django.test import TestCase
 from freezegun import freeze_time
-from mock import patch, MagicMock
+from mock import MagicMock, patch
+from opaque_keys.edx.locator import BlockUsageLocator, CourseLocator
 
 from lms.djangoapps.grades.management.commands import reset_grades
-from lms.djangoapps.grades.models import PersistentSubsectionGrade, PersistentCourseGrade
-from opaque_keys.edx.locator import CourseLocator, BlockUsageLocator
+from lms.djangoapps.grades.models import PersistentCourseGrade, PersistentSubsectionGrade
 
 
 @ddt.ddt
@@ -81,14 +82,14 @@ class TestResetGrades(TestCase):
             "earned_graded": 6.0,
             "possible_graded": 8.0,
             "visible_blocks": MagicMock(),
-            "attempted": True,
+            "first_attempted": datetime.now(),
         }
 
         for course_key in courses_keys:
             for user_id in self.user_ids:
                 course_grade_params['user_id'] = user_id
                 course_grade_params['course_id'] = course_key
-                PersistentCourseGrade.update_or_create_course_grade(**course_grade_params)
+                PersistentCourseGrade.update_or_create(**course_grade_params)
                 for subsection_key in self.subsection_keys_by_course[course_key]:
                     subsection_grade_params['user_id'] = user_id
                     subsection_grade_params['usage_key'] = subsection_key
@@ -100,7 +101,7 @@ class TestResetGrades(TestCase):
         """
         for course_key in course_keys:
             if db_table == "course" or db_table is None:
-                self.assertIsNotNone(PersistentCourseGrade.read_course_grade(self.user_ids[0], course_key))
+                self.assertIsNotNone(PersistentCourseGrade.read(self.user_ids[0], course_key))
             if db_table == "subsection" or db_table is None:
                 for subsection_key in self.subsection_keys_by_course[course_key]:
                     self.assertIsNotNone(PersistentSubsectionGrade.read_grade(self.user_ids[0], subsection_key))
@@ -112,7 +113,7 @@ class TestResetGrades(TestCase):
         for course_key in course_keys:
             if db_table == "course" or db_table is None:
                 with self.assertRaises(PersistentCourseGrade.DoesNotExist):
-                    PersistentCourseGrade.read_course_grade(self.user_ids[0], course_key)
+                    PersistentCourseGrade.read(self.user_ids[0], course_key)
 
             if db_table == "subsection" or db_table is None:
                 for subsection_key in self.subsection_keys_by_course[course_key]:
@@ -302,17 +303,17 @@ class TestResetGrades(TestCase):
             self.command.handle(delete=True, all_courses=True, db_table="not course or subsection")
 
     def test_no_run_mode(self):
-        with self.assertRaisesMessage(CommandError, 'Either --delete or --dry_run must be specified.'):
+        with self.assertRaisesMessage(CommandError, 'Must specify exactly one of --delete, --dry_run'):
             self.command.handle(all_courses=True)
 
     def test_both_run_modes(self):
-        with self.assertRaisesMessage(CommandError, 'Both --delete and --dry_run cannot be specified.'):
+        with self.assertRaisesMessage(CommandError, 'Must specify exactly one of --delete, --dry_run'):
             self.command.handle(all_courses=True, dry_run=True, delete=True)
 
     def test_no_course_mode(self):
-        with self.assertRaisesMessage(CommandError, 'Either --courses or --all_courses must be specified.'):
+        with self.assertRaisesMessage(CommandError, 'Must specify exactly one of --courses, --all_courses'):
             self.command.handle(dry_run=True)
 
     def test_both_course_modes(self):
-        with self.assertRaisesMessage(CommandError, 'Both --courses and --all_courses cannot be specified.'):
+        with self.assertRaisesMessage(CommandError, 'Must specify exactly one of --courses, --all_courses'):
             self.command.handle(dry_run=True, all_courses=True, courses=['some/course/key'])

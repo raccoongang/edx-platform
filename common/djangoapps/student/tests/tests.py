@@ -2,62 +2,53 @@
 """
 Miscellaneous tests for the student app.
 """
-from datetime import datetime, timedelta
 import json
 import logging
 import unittest
+from datetime import datetime, timedelta
 from urllib import quote
 
 import ddt
+import httpretty
+import pytz
+from config_models.models import cache
 from django.conf import settings
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import AnonymousUser, User
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
 from django.test.client import Client
-import httpretty
 from markupsafe import escape
 from mock import Mock, patch
 from nose.plugins.attrib import attr
-from opaque_keys.edx.locations import SlashSeparatedCourseKey, CourseLocator
+from opaque_keys.edx.locations import CourseLocator, SlashSeparatedCourseKey
 from provider.constants import CONFIDENTIAL
 from pyquery import PyQuery as pq
-import pytz
 
+import shoppingcart  # pylint: disable=import-error
 from bulk_email.models import Optout  # pylint: disable=import-error
 from certificates.models import CertificateStatuses  # pylint: disable=import-error
 from certificates.tests.factories import GeneratedCertificateFactory  # pylint: disable=import-error
-from config_models.models import cache
 from course_modes.models import CourseMode
 from lms.djangoapps.verify_student.models import SoftwareSecurePhotoVerification
-from openedx.core.djangoapps.catalog.tests.factories import (
-    generate_course_run_key,
-    ProgramFactory,
-    CourseFactory as CatalogCourseFactory,
-    CourseRunFactory,
-)
+from openedx.core.djangoapps.catalog.tests.factories import CourseFactory as CatalogCourseFactory
+from openedx.core.djangoapps.catalog.tests.factories import CourseRunFactory, ProgramFactory, generate_course_run_key
 from openedx.core.djangoapps.programs.tests.mixins import ProgramsApiConfigMixin
 from openedx.core.djangoapps.site_configuration.tests.mixins import SiteMixin
 from openedx.core.djangolib.testing.utils import CacheIsolationTestCase, skip_unless_lms
-import shoppingcart  # pylint: disable=import-error
 from student.models import (
-    anonymous_id_for_user, user_by_anonymous_id, CourseEnrollment,
-    unique_id_for_user, LinkedInAddToProfileConfiguration, UserAttribute
+    CourseEnrollment,
+    LinkedInAddToProfileConfiguration,
+    UserAttribute,
+    anonymous_id_for_user,
+    unique_id_for_user,
+    user_by_anonymous_id
 )
-from student.tests.factories import UserFactory, CourseModeFactory, CourseEnrollmentFactory
-from student.views import (
-    process_survey_link,
-    _cert_info,
-    complete_course_mode_info,
-)
+from student.tests.factories import CourseEnrollmentFactory, CourseModeFactory, UserFactory
+from student.views import _cert_info, complete_course_mode_info, process_survey_link
 from util.model_utils import USER_SETTINGS_CHANGED_EVENT_NAME
 from util.testing import EventTestMixin
-from xmodule.modulestore.tests.django_utils import (
-    ModuleStoreTestCase,
-    ModuleStoreEnum,
-    SharedModuleStoreTestCase,
-)
+from xmodule.modulestore.tests.django_utils import ModuleStoreEnum, ModuleStoreTestCase, SharedModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, check_mongo_calls
-
 
 log = logging.getLogger(__name__)
 
@@ -114,9 +105,9 @@ class CourseEndingTest(TestCase):
             }
         )
 
-        cert_status = {'status': 'generating', 'grade': '67', 'mode': 'honor'}
-        with patch('lms.djangoapps.grades.new.course_grade.CourseGradeFactory.get_persisted') as patch_persisted_grade:
-            patch_persisted_grade.return_value = Mock(percent=100)
+        cert_status = {'status': 'generating', 'grade': '0.67', 'mode': 'honor'}
+        with patch('lms.djangoapps.grades.new.course_grade_factory.CourseGradeFactory.read') as patch_persisted_grade:
+            patch_persisted_grade.return_value = Mock(percent=1.0)
             self.assertEqual(
                 _cert_info(user, course, cert_status, course_mode),
                 {
@@ -125,14 +116,14 @@ class CourseEndingTest(TestCase):
                     'show_download_url': False,
                     'show_survey_button': True,
                     'survey_url': survey_url,
-                    'grade': '100',
+                    'grade': '1.0',
                     'mode': 'honor',
                     'linked_in_url': None,
                     'can_unenroll': False,
                 }
             )
 
-        cert_status = {'status': 'generating', 'grade': '67', 'mode': 'honor'}
+        cert_status = {'status': 'generating', 'grade': '0.67', 'mode': 'honor'}
         self.assertEqual(
             _cert_info(user, course, cert_status, course_mode),
             {
@@ -141,7 +132,7 @@ class CourseEndingTest(TestCase):
                 'show_download_url': False,
                 'show_survey_button': True,
                 'survey_url': survey_url,
-                'grade': '67',
+                'grade': '0.67',
                 'mode': 'honor',
                 'linked_in_url': None,
                 'can_unenroll': False,
@@ -150,7 +141,7 @@ class CourseEndingTest(TestCase):
 
         download_url = 'http://s3.edx/cert'
         cert_status = {
-            'status': 'downloadable', 'grade': '67',
+            'status': 'downloadable', 'grade': '0.67',
             'download_url': download_url,
             'mode': 'honor'
         }
@@ -164,7 +155,7 @@ class CourseEndingTest(TestCase):
                 'download_url': download_url,
                 'show_survey_button': True,
                 'survey_url': survey_url,
-                'grade': '67',
+                'grade': '0.67',
                 'mode': 'honor',
                 'linked_in_url': None,
                 'can_unenroll': False,
@@ -172,7 +163,7 @@ class CourseEndingTest(TestCase):
         )
 
         cert_status = {
-            'status': 'notpassing', 'grade': '67',
+            'status': 'notpassing', 'grade': '0.67',
             'download_url': download_url,
             'mode': 'honor'
         }
@@ -184,7 +175,7 @@ class CourseEndingTest(TestCase):
                 'show_download_url': False,
                 'show_survey_button': True,
                 'survey_url': survey_url,
-                'grade': '67',
+                'grade': '0.67',
                 'mode': 'honor',
                 'linked_in_url': None,
                 'can_unenroll': True,
@@ -194,7 +185,7 @@ class CourseEndingTest(TestCase):
         # Test a course that doesn't have a survey specified
         course2 = Mock(end_of_course_survey_url=None, id=CourseLocator(org="a", course="b", run="c"))
         cert_status = {
-            'status': 'notpassing', 'grade': '67',
+            'status': 'notpassing', 'grade': '0.67',
             'download_url': download_url, 'mode': 'honor'
         }
         self.assertEqual(
@@ -204,7 +195,7 @@ class CourseEndingTest(TestCase):
                 'show_disabled_download_button': False,
                 'show_download_url': False,
                 'show_survey_button': False,
-                'grade': '67',
+                'grade': '0.67',
                 'mode': 'honor',
                 'linked_in_url': None,
                 'can_unenroll': True,
@@ -217,11 +208,88 @@ class CourseEndingTest(TestCase):
         self.assertEqual(_cert_info(user, course2, cert_status, course_mode), {})
 
         cert_status = {
-            'status': 'notpassing', 'grade': '67',
+            'status': 'notpassing', 'grade': '0.67',
             'download_url': download_url,
             'mode': 'honor'
         }
         self.assertEqual(_cert_info(user, course2, cert_status, course_mode), {})
+
+    @ddt.data(
+        (0.70, 0.60),
+        (0.60, 0.70),
+        (None, 0.70),
+        (None, 0.0),
+        (0.70, None),
+        (0.0, None),
+        (0.70, 0.0),
+        (0.0, 0.70),
+    )
+    @ddt.unpack
+    def test_cert_grade(self, persisted_grade, cert_grade):
+        """
+        Tests that the higher of the persisted grade and the grade
+        from the certs table is used on the learner dashboard.
+        """
+        expected_grade = max(persisted_grade, cert_grade)
+        user = Mock(username="fred", id="1")
+        survey_url = "http://a_survey.com"
+        course = Mock(
+            end_of_course_survey_url=survey_url,
+            certificates_display_behavior='end',
+            id=CourseLocator(org="x", course="y", run="z"),
+        )
+        course_mode = 'honor'
+
+        if cert_grade is not None:
+            cert_status = {'status': 'generating', 'grade': unicode(cert_grade), 'mode': 'honor'}
+        else:
+            cert_status = {'status': 'generating', 'mode': 'honor'}
+
+        with patch('lms.djangoapps.grades.new.course_grade_factory.CourseGradeFactory.read') as patch_persisted_grade:
+            patch_persisted_grade.return_value = Mock(percent=persisted_grade)
+            self.assertEqual(
+                _cert_info(user, course, cert_status, course_mode),
+                {
+                    'status': 'generating',
+                    'show_disabled_download_button': True,
+                    'show_download_url': False,
+                    'show_survey_button': True,
+                    'survey_url': survey_url,
+                    'grade': unicode(expected_grade),
+                    'mode': 'honor',
+                    'linked_in_url': None,
+                    'can_unenroll': False,
+                }
+            )
+
+    def test_cert_grade_no_grades(self):
+        """
+        Tests that the default cert info is returned
+        when the learner has no persisted grade or grade
+        in the certs table.
+        """
+        user = Mock(username="fred", id="1")
+        survey_url = "http://a_survey.com"
+        course = Mock(
+            end_of_course_survey_url=survey_url,
+            certificates_display_behavior='end',
+            id=CourseLocator(org="x", course="y", run="z"),
+        )
+        course_mode = 'honor'
+        cert_status = {'status': 'generating', 'mode': 'honor'}
+
+        with patch('lms.djangoapps.grades.new.course_grade_factory.CourseGradeFactory.read') as patch_persisted_grade:
+            patch_persisted_grade.return_value = None
+            self.assertEqual(
+                _cert_info(user, course, cert_status, course_mode),
+                {
+                    'status': 'processing',
+                    'show_disabled_download_button': False,
+                    'show_download_url': False,
+                    'show_survey_button': False,
+                    'can_unenroll': True,
+                }
+            )
 
 
 @ddt.ddt

@@ -36,7 +36,7 @@ $fg-gutter: $gw-gutter !default;
 $fg-max-columns: 12 !default;
 $fg-max-width: 1400px !default;
 $fg-min-width: 810px !default;
-
+$lms-max-width: 1180px !default;
 
 // ----------------------------
 // #COLORS
@@ -200,7 +200,7 @@ $ui-notification-height: ($baseline*10);
 $twitter-blue: #55ACEE;
 $facebook-blue: #3B5998;
 $linkedin-blue: #0077B5;
-$google-red: #DD4B39;
+$google-red: #D73924;
 $microsoft-blue: #00BCF2;
 
 // shadows
@@ -218,11 +218,18 @@ $active-color: $blue !default;
 $highlight-color: rgb(255,255,0) !default;
 $alert-color: rgb(212, 64, 64) !default;
 $success-color: rgb(0, 155, 0) !default;
-
+$success-color-hover: rgb(0, 129, 0) !default;
 
 // ----------------------------
 // #COLORS- EDX-SPECIFIC
 // ----------------------------
+
+// logo colors
+$micromasters-color: #005585;
+$xseries-color: #424242;
+$professional-certificate-color: #9a1f60;
+$zebra-stripe-color: rgb(249, 250, 252);
+$divider-color: rgb(226,231,236);
 
 // old color variables
 // DEPRECATED: Do not continue to use these colors, instead use pattern libary and base colors above.
@@ -324,6 +331,7 @@ $credit-color-base: rgb(244,195,0) !default; // accessible with black text
 
 // edx-specific: Studio/Staff actions
 $staff-color: $uxpl-pink-base !default;
+
 
 
 // ----------------------------
@@ -451,13 +459,14 @@ $button-archive-color: rgb(238,238,238) !default; // #eeeeee
 // larger, random elements
 $dark-trans-bg: rgba(0, 0, 0, .75) !default;
 
-$body-bg: $uxpl-grayscale-x-back !default;
+$body-bg: #fff !default;
 
 $container-bg: $white !default;
 
 // header
 $header-image: linear-gradient(-90deg, rgba(255,255,255, 1), rgba(230,230,230, 0.9)) !default;
 $header-bg: $white !default;
+$header-border-color: $blue !default;
 $header-graphic-super-color: $m-blue-d1 !default;
 $header-graphic-sub-color: $m-gray-d2 !default;
 $header-sans-serif: 'Open Sans', Arial, Helvetica, sans-serif !default;
@@ -504,6 +513,17 @@ $dashboard-profile-header-color: transparent !default;
 $dashboard-profile-color: rgb(252,252,252) !default;
 $dot-color: rgb(221, 221, 221) !default;
 $dashboard-course-cover-border: rgb(221, 221, 221) !default;
+
+// dashboard notification messages
+$palette-info-border: #cce3f0;
+$palette-info-back: #f2f8fb;
+$palette-info-text: #0075b4;
+$palette-error-border: #ebccd1;
+$palette-error-back: #feeced;
+$palette-error-text: #b20610;
+$palette-success-border: #b9edb9;
+$palette-success-back: #ecfaec;
+$palette-success-text: #008100;
 
 // course elements
 $content-wrapper-bg: $white !default;

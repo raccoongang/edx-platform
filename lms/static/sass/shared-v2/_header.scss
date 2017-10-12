@@ -2,20 +2,24 @@
 
 .header-global {
     @extend %ui-depth1;
-    box-sizing: border-box;
-    position: relative;
-    width: 100%;
-    border-bottom: 1px solid $gray-l1;
+    border-bottom: 2px solid $header-border-color;
     box-shadow: 0 1px 5px 0 $shadow-l1;
     background: $header-bg;
+    position: relative;
+    width: 100%;
+    height: 76px;
+
+    .logo-header {
+      display: inline;
+    }
 
     .wrapper-header {
         @include clearfix();
         box-sizing: border-box;
         margin: 0 auto;
-        padding: 10px 10px 0;
+        padding: 18px ($baseline/2) 0;
         width: 100%;
-        max-width: 1180px;
+        max-width: $lms-max-width;
 
         .left {
             @include float(left);
@@ -27,10 +31,7 @@
 
         .logo {
             @include float(left);
-            @include margin-left(10px);
-            @include margin-right(10px);
-            margin-top: 4px;
-            margin-bottom: 0;
+            margin: -2px 39px 0 0;
             position: relative;
         }
 
@@ -38,6 +39,9 @@
             @include float(left);
             @include margin(12px, 10px, 0px, 10px);
             color: $lms-label-color;
+            .provider {
+              font-weight: bold;
+            }
         }
 
         .wrapper-user-menu {
@@ -66,13 +70,17 @@
             }
 
             .item {
+                font-size: 0.875em;
                 font-weight: font-weight(semi-bold);
                 text-transform: uppercase;
 
+                a {
+                    color: $palette-info-text;
+                }
                 &.active {
                     a {
                         text-decoration: none;
-                        color: $link-color;
+                        color: $palette-info-text;
                     }
                 }
             }

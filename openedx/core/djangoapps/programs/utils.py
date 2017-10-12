@@ -1,28 +1,39 @@
 # -*- coding: utf-8 -*-
 """Helper functions for working with Programs."""
-from collections import defaultdict
 import datetime
+import logging
+from collections import defaultdict
+from copy import deepcopy
+from itertools import chain
 from urlparse import urljoin
 
+from dateutil.parser import parse
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.utils.functional import cached_property
+from edx_rest_api_client.exceptions import SlumberBaseException
 from opaque_keys.edx.keys import CourseKey
 from pytz import utc
+from requests.exceptions import ConnectionError, Timeout
 
 from course_modes.models import CourseMode
 from lms.djangoapps.certificates import api as certificate_api
 from lms.djangoapps.commerce.utils import EcommerceService
+from lms.djangoapps.courseware.access import has_access
 from openedx.core.djangoapps.catalog.utils import get_programs
+from openedx.core.djangoapps.commerce.utils import ecommerce_api_client
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.djangoapps.credentials.utils import get_credentials
 from student.models import CourseEnrollment
 from util.date_utils import strftime_localized
 from xmodule.modulestore.django import modulestore
 
-
 # The datetime module's strftime() methods require a year >= 1900.
 DEFAULT_ENROLLMENT_START_DATE = datetime.datetime(1900, 1, 1, tzinfo=utc)
+
+log = logging.getLogger(__name__)
 
 
 def get_program_marketing_url(programs_config):
@@ -55,17 +66,32 @@ class ProgramProgressMeter(object):
 
     Keyword Arguments:
         enrollments (list): List of the user's enrollments.
+        uuid (str): UUID identifying a specific program. If provided, the meter
+            will only inspect this one program, not all programs the user may be
+            engaged with.
     """
-    def __init__(self, user, enrollments=None):
+    def __init__(self, user, enrollments=None, uuid=None):
         self.user = user
 
         self.enrollments = enrollments or list(CourseEnrollment.enrollments_for_user(self.user))
         self.enrollments.sort(key=lambda e: e.created, reverse=True)
 
-        # enrollment.course_id is really a CourseKey (╯ಠ_ಠ）╯︵ ┻━┻
-        self.course_run_ids = [unicode(e.course_id) for e in self.enrollments]
+        self.enrolled_run_modes = {}
+        self.course_run_ids = []
+        for enrollment in self.enrollments:
+            # enrollment.course_id is really a CourseKey (╯ಠ_ಠ）╯︵ ┻━┻
+            enrollment_id = unicode(enrollment.course_id)
+            mode = enrollment.mode
+            if mode == CourseMode.NO_ID_PROFESSIONAL_MODE:
+                mode = CourseMode.PROFESSIONAL
+            self.enrolled_run_modes[enrollment_id] = mode
+            # We can't use dict.keys() for this because the course run ids need to be ordered
+            self.course_run_ids.append(enrollment_id)
 
-        self.programs = attach_program_detail_url(get_programs())
+        if uuid:
+            self.programs = [get_programs(uuid=uuid)]
+        else:
+            self.programs = attach_program_detail_url(get_programs())
 
     def invert_programs(self):
         """Intersect programs and enrollments.
@@ -117,31 +143,83 @@ class ProgramProgressMeter(object):
 
         return programs
 
-    @property
-    def progress(self):
+    def _is_course_in_progress(self, now, course):
+        """Check if course qualifies as in progress as part of the program.
+
+        A course is considered to be in progress if a user is enrolled in a run
+        of the correct mode or a run of the correct mode is still available for enrollment.
+
+        Arguments:
+            now (datetime): datetime for now
+            course (dict): Containing nested course runs.
+
+        Returns:
+            bool, indicating whether the course is in progress.
+        """
+        enrolled_runs = [run for run in course['course_runs'] if run['key'] in self.course_run_ids]
+
+        # Check if the user is enrolled in a required run and mode/seat.
+        runs_with_required_mode = [
+            run for run in enrolled_runs
+            if run['type'] == self.enrolled_run_modes[run['key']]
+        ]
+
+        if runs_with_required_mode:
+            not_failed_runs = [run for run in runs_with_required_mode if run not in self.failed_course_runs]
+            if not_failed_runs:
+                return True
+
+        # Check if seats required for course completion are still available.
+        upgrade_deadlines = []
+        for run in enrolled_runs:
+            for seat in run['seats']:
+                if seat['type'] == run['type'] and run['type'] != self.enrolled_run_modes[run['key']]:
+                    upgrade_deadlines.append(seat['upgrade_deadline'])
+
+        # An upgrade deadline of None means the course is always upgradeable.
+        return any(not deadline or deadline and parse(deadline) > now for deadline in upgrade_deadlines)
+
+    def progress(self, programs=None, count_only=True):
         """Gauge a user's progress towards program completion.
+
+        Keyword Arguments:
+            programs (list): Specific list of programs to check the user's progress
+                against. If left unspecified, self.engaged_programs will be used.
+
+            count_only (bool): Whether or not to return counts of completed, in
+                progress, and unstarted courses instead of serialized representations
+                of the courses.
 
         Returns:
             list of dict, each containing information about a user's progress
                 towards completing a program.
         """
-        progress = []
-        for program in self.engaged_programs:
-            completed, in_progress, not_started = 0, 0, 0
+        now = datetime.datetime.now(utc)
 
-            for course in program['courses']:
+        progress = []
+        programs = programs or self.engaged_programs
+        for program in programs:
+            program_copy = deepcopy(program)
+            completed, in_progress, not_started = [], [], []
+
+            for course in program_copy['courses']:
                 if self._is_course_complete(course):
-                    completed += 1
-                elif self._is_course_in_progress(course):
-                    in_progress += 1
+                    completed.append(course)
+                elif self._is_course_enrolled(course):
+                    course_in_progress = self._is_course_in_progress(now, course)
+                    if course_in_progress:
+                        in_progress.append(course)
+                    else:
+                        course['expired'] = not course_in_progress
+                        not_started.append(course)
                 else:
-                    not_started += 1
+                    not_started.append(course)
 
             progress.append({
-                'uuid': program['uuid'],
-                'completed': completed,
-                'in_progress': in_progress,
-                'not_started': not_started,
+                'uuid': program_copy['uuid'],
+                'completed': len(completed) if count_only else completed,
+                'in_progress': len(in_progress) if count_only else in_progress,
+                'not_started': len(not_started) if count_only else not_started,
             })
 
         return progress
@@ -195,12 +273,17 @@ class ProgramProgressMeter(object):
                 # count towards completion of a course in a program). This may change
                 # in the future to make use of the more rigid set of "applicable seat
                 # types" associated with each program type in the catalog.
-                'type': course_run['type'],
+
+                # Runs of type 'credit' are counted as 'verified' since verified
+                # certificates are earned when credit runs are completed. LEARNER-1274
+                # tracks a cleaner way to do this using the discovery service's
+                # applicable_seat_types field.
+                'type': 'verified' if course_run['type'] == 'credit' else course_run['type'],
             }
 
         return any(reshape(course_run) in self.completed_course_runs for course_run in course['course_runs'])
 
-    @property
+    @cached_property
     def completed_course_runs(self):
         """
         Determine which course runs have been completed by the user.
@@ -208,17 +291,52 @@ class ProgramProgressMeter(object):
         Returns:
             list of dicts, each representing a course run certificate
         """
+        return self.course_runs_with_state['completed']
+
+    @cached_property
+    def failed_course_runs(self):
+        """
+        Determine which course runs have been failed by the user.
+
+        Returns:
+            list of dicts, each a course run ID
+        """
+        return [run['course_run_id'] for run in self.course_runs_with_state['failed']]
+
+    @cached_property
+    def course_runs_with_state(self):
+        """
+        Determine which course runs have been completed and failed by the user.
+
+        Returns:
+            dict with a list of completed and failed runs
+        """
         course_run_certificates = certificate_api.get_certificates_for_user(self.user.username)
-        return [
-            {'course_run_id': unicode(certificate['course_key']), 'type': certificate['type']}
-            for certificate in course_run_certificates
-            if certificate_api.is_passing_status(certificate['status'])
-        ]
 
-    def _is_course_in_progress(self, course):
-        """Check if a user is in the process of completing a course.
+        completed_runs, failed_runs = [], []
+        for certificate in course_run_certificates:
+            certificate_type = certificate['type']
 
-        A user is considered to be in the process of completing a course if
+            # Treat "no-id-professional" certificates as "professional" certificates
+            if certificate_type == CourseMode.NO_ID_PROFESSIONAL_MODE:
+                certificate_type = CourseMode.PROFESSIONAL
+
+            course_data = {
+                'course_run_id': unicode(certificate['course_key']),
+                'type': certificate_type
+            }
+
+            if certificate_api.is_passing_status(certificate['status']):
+                completed_runs.append(course_data)
+            else:
+                failed_runs.append(course_data)
+
+        return {'completed': completed_runs, 'failed': failed_runs}
+
+    def _is_course_enrolled(self, course):
+        """Check if a user is enrolled in a course.
+
+        A user is considered to be enrolled in a course if
         they're enrolled in any of the nested course runs.
 
         Arguments:
@@ -248,12 +366,9 @@ class ProgramDataExtender(object):
         self.course_overview = None
         self.enrollment_start = None
 
-    def extend(self, include_instructors=False):
+    def extend(self):
         """Execute extension handlers, returning the extended data."""
-        if include_instructors:
-            self._execute('_extend')
-        else:
-            self._execute('_extend_course_runs')
+        self._execute('_extend')
         return self.data
 
     def _execute(self, prefix, *args):
@@ -264,9 +379,6 @@ class ProgramDataExtender(object):
     def _handlers(cls, prefix):
         """Returns a generator yielding method names beginning with the given prefix."""
         return (name for name in cls.__dict__ if name.startswith(prefix))
-
-    def _extend_with_instructors(self):
-        self._execute('_attach_instructors')
 
     def _extend_course_runs(self):
         """Execute course run data handlers."""
@@ -326,39 +438,207 @@ class ProgramDataExtender(object):
             required_mode = CourseMode.mode_for_course(self.course_run_key, required_mode_slug)
             ecommerce = EcommerceService()
             sku = getattr(required_mode, 'sku', None)
-
             if ecommerce.is_enabled(self.user) and sku:
-                run_mode['upgrade_url'] = ecommerce.checkout_page_url(required_mode.sku)
+                run_mode['upgrade_url'] = ecommerce.get_checkout_page_url(required_mode.sku)
             else:
                 run_mode['upgrade_url'] = None
         else:
             run_mode['upgrade_url'] = None
 
-    def _attach_instructors(self):
+
+def get_certificates(user, extended_program):
+    """
+    Find certificates a user has earned related to a given program.
+
+    Arguments:
+        user (User): The user whose enrollments to inspect.
+        extended_program (dict): The program for which to locate certificates.
+            This is expected to be an "extended" program whose course runs already
+            have certificate URLs attached.
+
+    Returns:
+        list: Contains dicts representing course run and program certificates the
+            given user has earned which are associated with the given program.
+    """
+    certificates = []
+
+    for course in extended_program['courses']:
+        for course_run in course['course_runs']:
+            url = course_run.get('certificate_url')
+            if url:
+                certificates.append({
+                    'type': 'course',
+                    'title': course_run['title'],
+                    'url': url,
+                })
+
+                # We only want one certificate per course to be returned.
+                break
+
+    program_credentials = get_credentials(user, program_uuid=extended_program['uuid'])
+    if program_credentials:
+        certificates.append({
+            'type': 'program',
+            'title': extended_program['title'],
+            'url': program_credentials[0]['certificate_url'],
+        })
+
+    return certificates
+
+
+# pylint: disable=missing-docstring
+class ProgramMarketingDataExtender(ProgramDataExtender):
+    """
+    Utility for extending program data meant for the program marketing page which lives in the
+    edx-platform git repository with user-specific (e.g., CourseEnrollment) data, pricing data,
+    and program instructor data.
+
+    Arguments:
+        program_data (dict): Representation of a program.
+        user (User): The user whose enrollments to inspect.
+    """
+    def __init__(self, program_data, user):
+        super(ProgramMarketingDataExtender, self).__init__(program_data, user)
+
+        # Aggregate dict of instructors for the program keyed by name
+        self.instructors = {}
+
+        # Values for programs' price calculation.
+        self.data['avg_price_per_course'] = 0.0
+        self.data['number_of_courses'] = 0
+        self.data['full_program_price'] = 0.0
+
+    def _extend_program(self):
+        """Aggregates data from the program data structure."""
+        cache_key = 'program.instructors.{uuid}'.format(
+            uuid=self.data['uuid']
+        )
+        program_instructors = cache.get(cache_key)
+
+        for course in self.data['courses']:
+            self._execute('_collect_course', course)
+            if not program_instructors:
+                for course_run in course['course_runs']:
+                    self._execute('_collect_instructors', course_run)
+
+        if not program_instructors:
+            # We cache the program instructors list to avoid repeated modulestore queries
+            program_instructors = self.instructors.values()
+            cache.set(cache_key, program_instructors, 3600)
+
+        self.data['instructors'] = program_instructors
+
+    def extend(self):
+        """Execute extension handlers, returning the extended data."""
+        self.data.update(super(ProgramMarketingDataExtender, self).extend())
+        self._collect_one_click_purchase_eligibility_data()
+        return self.data
+
+    @classmethod
+    def _handlers(cls, prefix):
+        """Returns a generator yielding method names beginning with the given prefix."""
+        # We use a set comprehension here to deduplicate the list of
+        # function names given the fact that the subclass overrides
+        # some functions on the parent class.
+        return {name for name in chain(cls.__dict__, ProgramDataExtender.__dict__) if name.startswith(prefix)}
+
+    def _attach_course_run_can_enroll(self, run_mode):
+        run_mode['can_enroll'] = bool(has_access(self.user, 'enroll', self.course_overview))
+
+    def _attach_course_run_certificate_url(self, run_mode):
+        """
+        We override this function here and stub it out because
+        the superclass (ProgramDataExtender) requires a non-anonymous
+        User which we may or may not have when rendering marketing
+        pages. The certificate URL is not needed when rendering
+        the program marketing page.
+        """
+        pass
+
+    def _attach_course_run_upgrade_url(self, run_mode):
+        if not self.user.is_anonymous():
+            super(ProgramMarketingDataExtender, self)._attach_course_run_upgrade_url(run_mode)
+        else:
+            run_mode['upgrade_url'] = None
+
+    def _collect_course_pricing(self, course):
+        self.data['number_of_courses'] += 1
+        course_runs = course['course_runs']
+        if course_runs:
+            seats = course_runs[0]['seats']
+            if seats:
+                self.data['full_program_price'] += float(seats[0]['price'])
+            self.data['avg_price_per_course'] = self.data['full_program_price'] / self.data['number_of_courses']
+
+    def _collect_instructors(self, course_run):
         """
         Extend the program data with instructor data. The instructor data added here is persisted
         on each course in modulestore and can be edited in Studio. Once the course metadata publisher tool
         supports the authoring of course instructor data, we will be able to migrate course
         instructor data into the catalog, retrieve it via the catalog API, and remove this code.
         """
-        cache_key = 'program.instructors.{uuid}'.format(
-            uuid=self.data['uuid']
-        )
-        program_instructors = cache.get(cache_key)
-        if not program_instructors:
-            instructors_by_name = {}
-            module_store = modulestore()
+        module_store = modulestore()
+        course_run_key = CourseKey.from_string(course_run['key'])
+        course_descriptor = module_store.get_course(course_run_key)
+        if course_descriptor:
+            course_instructors = getattr(course_descriptor, 'instructor_info', {})
+
+            # Deduplicate program instructors using instructor name
+            self.instructors.update(
+                {instructor.get('name'): instructor for instructor in course_instructors.get('instructors', [])}
+            )
+
+    def _collect_one_click_purchase_eligibility_data(self):
+        """
+        Extend the program data with data about learner's eligibility for one click purchase,
+        discount data of the program and SKUs of seats that should be added to basket.
+        """
+        applicable_seat_types = self.data['applicable_seat_types']
+        is_learner_eligible_for_one_click_purchase = self.data['is_program_eligible_for_one_click_purchase']
+        skus = []
+        if is_learner_eligible_for_one_click_purchase:
             for course in self.data['courses']:
-                for course_run in course['course_runs']:
-                    course_run_key = CourseKey.from_string(course_run['key'])
-                    course_descriptor = module_store.get_course(course_run_key)
-                    if course_descriptor:
-                        course_instructors = getattr(course_descriptor, 'instructor_info', {})
-                        # Deduplicate program instructors using instructor name
-                        instructors_by_name.update({instructor.get('name'): instructor for instructor
-                                                    in course_instructors.get('instructors', [])})
+                is_learner_eligible_for_one_click_purchase = not any(
+                    course_run['is_enrolled'] for course_run in course['course_runs']
+                )
+                if is_learner_eligible_for_one_click_purchase:
+                    published_course_runs = filter(lambda run: run['status'] == 'published', course['course_runs'])
+                    if len(published_course_runs) == 1:
+                        for seat in published_course_runs[0]['seats']:
+                            if seat['type'] in applicable_seat_types and seat['sku']:
+                                skus.append(seat['sku'])
+                    else:
+                        # If a course in the program has more than 1 published course run
+                        # learner won't be eligible for a one click purchase.
+                        is_learner_eligible_for_one_click_purchase = False
+                        skus = []
+                        break
+                else:
+                    skus = []
+                    break
 
-            program_instructors = instructors_by_name.values()
-            cache.set(cache_key, program_instructors, 3600)
+        if skus:
+            try:
+                User = get_user_model()
+                service_user = User.objects.get(username=settings.ECOMMERCE_SERVICE_WORKER_USERNAME)
+                api = ecommerce_api_client(service_user)
 
-        self.data['instructors'] = program_instructors
+                # Make an API call to calculate the discounted price
+                discount_data = api.baskets.calculate.get(sku=skus)
+
+                program_discounted_price = discount_data['total_incl_tax']
+                program_full_price = discount_data['total_incl_tax_excl_discounts']
+                discount_data['is_discounted'] = program_discounted_price < program_full_price
+                discount_data['discount_value'] = program_full_price - program_discounted_price
+
+                self.data.update({
+                    'discount_data': discount_data,
+                    'full_program_price': discount_data['total_incl_tax']
+                })
+            except (ConnectionError, SlumberBaseException, Timeout):
+                log.exception('Failed to get discount price for following product SKUs: %s ', ', '.join(skus))
+
+        self.data.update({
+            'is_learner_eligible_for_one_click_purchase': is_learner_eligible_for_one_click_purchase,
+            'skus': skus,
+        })
