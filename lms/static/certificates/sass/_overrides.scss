@@ -14,7 +14,221 @@
 // ------------------------------
 // #DEVELOPERS
 // ------------------------------
+.wrapper-view,
+.certificate {
+    background: #f5f5f5;
+}
+.footer-app,
+.layout-accomplishment .wrapper-about .about,
+.wrapper-banner .banner {
+    max-width: 1125px;
+}
+.layout-accomplishment .accomplishment-rendering {
+    position: static;
+    top: auto;
+    border: none;
+    background: url('../images/stamp.png') 0 100% no-repeat;
+    background-size: contain;
+    padding: 78px 60px 36px;
+    max-width: 1125px;
+    background-color: #fff;
+    
+    .accomplishment-type,
+    .deco-corner {
+        display: none;
+    }
+}
+.wrapper-banner-user {
+    margin-bottom: 25px;
+}
+.certificate_title {
+    font-size: 52px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1.3;
+    text-transform: uppercase;
+}
+.certificate_subtitle {
+    font-size: 23px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    line-height: 1.3;
+}
+.layout-accomplishment .accomplishment-rendering .accomplishment-summary {
+    font-size: 16px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1.3;
+    margin-left: 0;
+    margin-bottom: 13px;
+}
+.layout-accomplishment .accomplishment-rendering .accomplishment-recipient {
+    font-size: 42px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    line-height: 1.3;
+    margin-left: 0;
+}
+.accomplishment-course.hd-1.emphasized {
+    font-size: 28px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    line-height: 1.3;
+    margin-left: 0;
+}
+.layout-accomplishment .accomplishment-rendering .accomplishment-statement-detail {
+    font-size: 16px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1.3;
+    margin-left: 0;
+}
+.wrapper-statement-and-signatories {
+    display: flex;
+}
+.wrapper-banner-user {
+    background: #586165;
+}
+.accomplishment-rendering .accomplishment-signatories {
+    margin-left: auto;
+    border-bottom: none;
+    margin-bottom: 0;
+}
+.accomplishment-rendering .accomplishment-signatories .list-signatories {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+.layout-accomplishment .accomplishment-signatories .signatory {
+    width: 100%;
+    margin: 0;
+}
+.accomplishment-rendering .accomplishment-statement {
+    border-bottom: none;
+}
+.certificate .accomplishment-rendering .accomplishment-statement {
+    text-align: left;
+    min-width: 60%;
+    margin-bottom: 0;
+}
+.certificate .accomplishment-rendering .accomplishment-statement-lead {
+    padding: 84px 0 0;
+}
+.accomplishment-rendering .accomplishment-signatories .signatory-credentials,
+.accomplishment-rendering .accomplishment-signatories .signatory-name,
+.layout-accomplishment.certificate-honor .accomplishment-rendering .accomplishment-signatories .signatory-signature {
+    text-align: right;
+    padding-right: 0;
+}
+.layout-accomplishment.certificate-honor .accomplishment-rendering .accomplishment-signatories .signatory-signature {
+    margin-bottom: 0;
+}
+.accomplishment-summary.copy.copy-lead.copy-lead__other {
+    margin-bottom: 33px;
+}
+.list-signatories .src {
+    margin-bottom: 28px;
+}
+.accomplishment-rendering .accomplishment-signatories .signatory-name {
+    font-size: 16px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 600;
+    font-style: normal;
+}
+.accomplishment-rendering .accomplishment-signatories .signatory-credentials .role {
+    font-size: 14px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    margin-bottom: 9px;
+}
+.accomplishment-rendering .accomplishment-signatories .signatory-credentials .organization {
+    font-size: 14px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 400;
+    font-style: italic;
+}
+.layout-accomplishment .accomplishment-orgs {
+    display: flex;
+    align-items: flex-end;
 
+    .src {
+        margin-right: 37px;
+    }
+}
+.metadata.accomplishment-date {
+    margin-right: 83px;
+}
+.metadata .label {
+    text-transform: uppercase;
+    color: #9e9e9e;
+    font-size: 14px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 600;
+    font-style: normal;
+}
+.accomplishment-date .value {
+    color: #000;
+    font-size: 14px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 600;
+    font-style: normal;
+}
+.accomplishment-id .value {
+    color: #0d7fb0;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 600;
+    font-style: normal;
+}
+.header-app .logo {
+    width: 300px;
+}
+.about_text {
+    font-size: 14px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    color: #6a6969;
+    margin-left: calc(0.5 * 1rem);
+    margin-right: calc(0.5 * 1rem);
+
+    span {
+        color: #3487b0;
+    }
+}
+.hd-4 {
+    font-size: 20px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    color: #6a6969;
+}
+.copy-meta {
+    font-size: 14px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    color: #6a6969;
+}
+.layout-accomplishment .wrapper-about {
+    margin-bottom: 0;
+}
+.copy-micro {
+    font-size: 12px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    color: #000;
+}
+.footer-app {
+    border-color: #e5e9eb;
+}
 // ------------------------------
 // #SHAME
 // ------------------------------

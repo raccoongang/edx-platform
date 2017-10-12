@@ -73,7 +73,7 @@
 
     body {
         height: auto;
-        margin: spacing-vertical(mid-large) spacing-vertical(mid-small) 0 spacing-vertical(mid-small) !important;
+        margin: 0!important;
         padding: 0;
     }
 
@@ -104,8 +104,7 @@
     .wrapper-introduction,
     .accomplishment-metadata-title,
     .accomplishment-metadata .accomplishment-recipient,
-    .deco-corner,
-    .accomplishment-date .label {
+    .deco-corner {
         @extend %print-hide;
     }
 
@@ -191,8 +190,8 @@
 
     .accomplishment-rendering {
         top: 0 !important;
-        border: rem(1) solid palette(grayscale, back);
-        border-top: rem(2) solid $cert-base-color;
+        // border: rem(1) solid palette(grayscale, back);
+        // border-top: rem(2) solid $cert-base-color;
         box-shadow: none;
         padding: spacing-vertical(small) spacing-horizontal(mid-large);
 
@@ -207,7 +206,7 @@
         }
 
         .wrapper-statement-and-signatories {
-            border-bottom: rem(2) solid palette(grayscale, x-back);
+            // border-bottom: rem(2) solid palette(grayscale, x-back);
         }
 
         .accomplishment-statement {
@@ -331,7 +330,7 @@
     .certificate-distinguished {
 
         .accomplishment-rendering {
-            border-top-color: $cert-distinguished-color;
+            // border-top-color: $cert-distinguished-color;
         }
     }
 }
