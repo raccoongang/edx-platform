@@ -214,4 +214,4 @@ urlpatterns += (
     url(r'^500$', handler500),
 )
 
-urlpatterns+= oraurlpatterns
+#urlpatterns+= oraurlpatterns
