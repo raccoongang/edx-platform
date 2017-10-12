@@ -1032,4 +1032,4 @@ if settings.FEATURES.get('ENABLE_FINANCIAL_ASSISTANCE_FORM'):
         )
     )
 
-urlpatterns+= oraurlpatterns
+#urlpatterns+= oraurlpatterns
