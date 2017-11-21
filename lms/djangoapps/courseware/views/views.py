@@ -89,7 +89,9 @@ from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.features.course_experience import UNIFIED_COURSE_TAB_FLAG, course_home_url_name
 from openedx.features.course_experience.views.course_dates import CourseDatesFragmentView
+from openedx.features.course_experience.utils import get_course_outline_block_tree
 from openedx.features.enterprise_support.api import data_sharing_consent_required
+
 from shoppingcart.utils import is_shopping_cart_enabled
 from student.models import CourseEnrollment, UserTestGroup
 from survey.utils import must_answer_survey
@@ -105,6 +107,7 @@ from xmodule.x_module import STUDENT_VIEW
 
 from ..entrance_exams import user_can_skip_entrance_exam
 from ..module_render import get_module, get_module_by_usage_id, get_module_for_descriptor
+
 
 log = logging.getLogger("edx.courseware")
 
@@ -326,6 +329,10 @@ def course_info(request, course_id):
         # Decide whether or not to show the reviews link in the course tools bar
         show_reviews_link = CourseReviewsModuleFragmentView.is_configured()
 
+        certificate_data = certs_api.get_active_web_certificate(course)
+
+        course_block_tree = get_course_outline_block_tree(request, course_id)
+
         context = {
             'request': request,
             'masquerade_user': user,
@@ -341,6 +348,8 @@ def course_info(request, course_id):
             'dates_fragment': dates_fragment,
             'url_to_enroll': url_to_enroll,
             'show_reviews_link': show_reviews_link,
+            'certificate_data': certificate_data,
+            'blocks': course_block_tree,
             # TODO: (Experimental Code). See https://openedx.atlassian.net/wiki/display/RET/2.+In-course+Verification+Prompts
             'upgrade_link': check_and_get_upgrade_link(request, user, course.id),
             'upgrade_price': get_cosmetic_verified_display_price(course),
@@ -813,6 +822,8 @@ def course_about(request, course_id):
         # Embed the course reviews tool
         reviews_fragment_view = CourseReviewsModuleFragmentView().render_to_fragment(request, course=course)
 
+        certificate_data = certs_api.get_active_web_certificate(course)
+
         context = {
             'course': course,
             'course_details': course_details,
@@ -842,6 +853,7 @@ def course_about(request, course_id):
             'pre_requisite_courses': pre_requisite_courses,
             'course_image_urls': overview.image_urls,
             'reviews_fragment_view': reviews_fragment_view,
+            'certificate_data': certificate_data,
         }
 
         return render_to_response('courseware/course_about.html', context)
