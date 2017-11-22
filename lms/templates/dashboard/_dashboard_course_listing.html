@@ -6,8 +6,10 @@ import urllib
 from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
 from django.core.urlresolvers import reverse
+from certificates.api import get_active_web_certificate
 from course_modes.models import CourseMode
 from course_modes.helpers import enrollment_mode_display
+from courseware.courses import get_course
 from openedx.core.djangolib.js_utils import dump_js_escaped_json, js_escaped_string
 from openedx.core.djangolib.markup import HTML, Text
 from openedx.features.course_experience import course_home_url_name
@@ -100,6 +102,28 @@ from util.course import get_link_for_about_page, get_encoded_course_sharing_utm_
           % else:
             <span>${course_overview.display_name_with_default}</span>
           % endif
+        <!--theme creation-->
+            <% course=get_course(course_overview.id, depth=1) %>
+            <% certificate_data = get_active_web_certificate(course)%>
+            <!--School Name-->
+            <span>
+            % if certificate_data:
+                % for signatory in certificate_data.get('signatories', []):
+                <div>
+                    <p>
+                        <span>${signatory['organization']}</span>
+                    </p>
+                </div>
+                % endfor
+            % endif
+            </span>
+            <!--Subsections Names-->
+            <span>
+            % for chapter in course.get_children():
+                <div>${ chapter.display_name }</div>
+            % endfor
+            </span>
+        <!--end-->
         </h3>
         <div class="course-info">
           <span class="info-university">${course_overview.display_org_with_default} - </span>
