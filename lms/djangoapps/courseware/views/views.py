@@ -956,6 +956,33 @@ def _progress(request, course_key, student_id):
     courseware_summary = course_grade.chapter_grades.values()
     grade_summary = course_grade.summary
 
+    persent_current = grade_summary['percent']
+    persentage_current = int(persent_current * 100)
+
+    assessments = course.grading_policy['GRADE_CUTOFFS']
+    assessments_sorted = sorted(assessments.items(), key=lambda x: x[1])
+
+    # Example for
+    # assessments: {u'A': 0.24, u'C': 0.16, u'B': 0.21}
+    # assessments_sorted: [(u'C', 0.16), (u'B', 0.21), (u'A', 0.24)]
+
+    assessment_key_maximum = assessments_sorted[-1][0]
+    assessment_key_minimum = assessments_sorted[0][0]
+
+    assessment_key_current = ''
+    assessment_key_next = ''
+    points_difference = None
+
+    for count, assessment in enumerate(assessments_sorted):
+        if persent_current >= assessment[1]:
+            assessment_key_current = assessment[0]
+            if assessment_key_current != assessment_key_maximum:
+                assessment_key_next = assessments_sorted[count + 1][0]
+                points_difference = int((assessments[assessment_key_next] - persent_current) * 100)
+
+    if not assessment_key_current:
+        points_difference = int((assessments[assessment_key_minimum] * 100 - persent_current * 100))
+
     studio_url = get_studio_url(course, 'settings/grading')
 
     # checking certificate generation configuration
@@ -973,6 +1000,12 @@ def _progress(request, course_key, student_id):
         'passed': is_course_passed(course, grade_summary),
         'credit_course_requirements': _credit_course_requirements(course_key, student),
         'certificate_data': _get_cert_data(student, course, course_key, is_active, enrollment_mode),
+        'persentage_current': persentage_current,
+        'assessment_minimum': assessment_key_minimum,
+        'assessment_maximum': assessment_key_maximum,
+        'assessment_current': assessment_key_current,
+        'assessment_next': assessment_key_next,
+        'points_difference': points_difference,
         # TODO: (Experimental Code). See https://openedx.atlassian.net/wiki/display/RET/2.+In-course+Verification+Prompts
         'upgrade_link': check_and_get_upgrade_link(request, student, course.id),
         'upgrade_price': get_cosmetic_verified_display_price(course),
