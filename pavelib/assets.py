@@ -667,6 +667,33 @@ def collect_assets(systems, settings, **kwargs):
         )))
         print("\t\tFinished collecting {} assets.".format(sys))
 
+    print ("Sync static from {static_collector_dir}/* to {platform_static_dir}/".format(
+        static_collector_dir=django_settings.STATIC_ROOT_BASE,
+        platform_static_dir=django_settings.EDX_PLATFORM_STATIC_ROOT_BASE
+    ))
+    os.system("rsync -av {static_collector_dir}/* {platform_static_dir}/ ".format(
+        static_collector_dir=django_settings.STATIC_ROOT_BASE,
+        platform_static_dir=django_settings.EDX_PLATFORM_STATIC_ROOT_BASE
+    ))
+
+    print ("Sync static from {static_collector_dir}/{current_sys}/* to {platform_static_dir}/{current_sys}/ with --delete-after option".format(
+            static_collector_dir=django_settings.STATIC_ROOT_BASE,
+            platform_static_dir=django_settings.EDX_PLATFORM_STATIC_ROOT_BASE,
+            current_sys=sys
+        ))
+    for sys in systems:
+        if (sys == 'lms'):
+            os.system("rsync -av {static_collector_dir}/js/i18n/* {platform_static_dir}/cms/js/i18n/ --delete-after".format(
+                static_collector_dir=django_settings.STATIC_ROOT_BASE,
+                platform_static_dir=django_settings.EDX_PLATFORM_STATIC_ROOT_BASE,
+                current_sys=sys
+            ))
+            os.system("rsync -av {static_collector_dir}/{current_sys}/* {platform_static_dir}/{current_sys}/ --delete-after".format(
+                static_collector_dir=django_settings.STATIC_ROOT_BASE,
+                platform_static_dir=django_settings.EDX_PLATFORM_STATIC_ROOT_BASE,
+                current_sys=sys
+            ))
+
 
 def _collect_assets_cmd(system, **kwargs):
     """
