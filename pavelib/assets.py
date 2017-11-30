@@ -957,6 +957,25 @@ def update_assets(args):
             platform_static_dir=EDX_PLATFORM_STATIC_ROOT_BASE
         ))
 
+    print ("Sync static from {static_collector_dir}/{current_sys}/* to {platform_static_dir}/{current_sys}/ with --delete-after option".format(
+            static_collector_dir=django_settings.STATIC_ROOT_BASE,
+            platform_static_dir=django_settings.EDX_PLATFORM_STATIC_ROOT_BASE,
+            current_sys=sys
+        ))
+
+    for sys in args.system:
+        if (sys == 'lms'):
+            os.system("rsync -av {static_collector_dir}/js/i18n/* {platform_static_dir}/studio/js/i18n/ --delete-after".format(
+                static_collector_dir=django_settings.STATIC_ROOT_BASE,
+                platform_static_dir=django_settings.EDX_PLATFORM_STATIC_ROOT_BASE,
+                current_sys=sys
+            ))
+            os.system("rsync -av {static_collector_dir}/{current_sys}/* {platform_static_dir}/{current_sys}/ --delete-after".format(
+                static_collector_dir=django_settings.STATIC_ROOT_BASE,
+                platform_static_dir=django_settings.EDX_PLATFORM_STATIC_ROOT_BASE,
+                current_sys=sys
+            ))
+
     if args.watch:
         call_task(
             'pavelib.assets.watch_assets',
