@@ -1,5 +1,6 @@
 """HTTP end-points for the User API. """
 import copy
+import re
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -161,7 +162,7 @@ class LoginSessionView(APIView):
 class RegistrationView(APIView):
     """HTTP end-points for creating a new user. """
 
-    DEFAULT_FIELDS = ["email", "name", "username", "password"]
+    DEFAULT_FIELDS = ["email", "name", "password"]
 
     EXTRA_FIELDS = [
         "confirm_email",
@@ -329,6 +330,7 @@ class RegistrationView(APIView):
         data = request.POST.copy()
 
         email = data.get('email')
+        data['username'] = re.sub('[\W]', '', email)[:30]
         username = data.get('username')
 
         # Handle duplicate email/username
