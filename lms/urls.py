@@ -649,7 +649,7 @@ urlpatterns += (
 
     # Course experience
     url(
-        r'^courses/{}/course/'.format(
+        r'^courses/{}/courseware/'.format(
             settings.COURSE_ID_PATTERN,
         ),
         include('openedx.features.course_experience.urls'),
