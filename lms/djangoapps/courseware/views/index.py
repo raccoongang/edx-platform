@@ -329,10 +329,12 @@ class CoursewareIndex(View):
         """
         course_url_name = default_course_url_name(self.course.id)
         course_url = reverse(course_url_name, kwargs={'course_id': unicode(self.course.id)})
+        course_home_url = reverse('info', kwargs={'course_id': unicode(self.course.id)})
         courseware_context = {
             'csrf': csrf(self.request)['csrf_token'],
             'course': self.course,
             'course_url': course_url,
+            'course_home_url': course_home_url,
             'chapter': self.chapter,
             'section': self.section,
             'init': '',

@@ -153,6 +153,7 @@ ${HTML(fragment.foot_html())}
 
     </div>
 % endif
+
     <section class="course-content" id="course-content">
         <header class="page-header has-secondary">
             <div class="page-header-main">
@@ -161,7 +162,7 @@ ${HTML(fragment.foot_html())}
                         <div class="breadcrumbs">
                             % if COURSE_OUTLINE_PAGE_FLAG.is_enabled(course.id):
                                 <span class="nav-item nav-item-course">
-                                    <a href="${course_url}">${course_home_page_title(course)}</a>
+                                    <a href="${course_home_url}">${_('Home')}</a>
                                 </span>
                                 <span class="icon fa fa-angle-right" aria-hidden="true"></span>
                             % endif
@@ -214,7 +215,6 @@ ${HTML(fragment.foot_html())}
                 </p>
                 % endif
             % endif
-
               ${HTML(fragment.body_html())}
         </main>
     </section>
