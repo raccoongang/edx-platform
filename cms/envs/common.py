@@ -1067,6 +1067,9 @@ OPTIONAL_APPS = (
 
     # Organizations App (http://github.com/edx/edx-organizations)
     'organizations',
+
+    # Azure video upload feature
+    'azure_video_pipeline',
 )
 
 
