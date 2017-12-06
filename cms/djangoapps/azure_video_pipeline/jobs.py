@@ -139,7 +139,7 @@ def run_job_monitoring_task(job_id, azure_config):
             TASK_LOGGER.error("AzureMS video processing Job failed.")
 
         # Job canceled:
-        if int(state) > 4:
+        if int(state) > JobStatus.ERROR:
             output_media_asset, video_id = get_video_id_for_job(job_id, ams_api)
             TASK_LOGGER.warn("AzureMS video processing Job canceled [Output Media Asset:{}, video ID:{}]".format(
                 output_media_asset['Name'], video_id
