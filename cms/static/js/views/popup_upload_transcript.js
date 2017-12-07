@@ -18,13 +18,13 @@ define(
                 'click .js-close-popup': 'closePopup'
             },
 
-            initialize: function (options) {
+            initialize: function(options) {
                 this.template = HtmlUtils.template(popupUploadTranscriptTemplate);
                 this.setLanguageTranscript = options.setLanguageTranscript;
                 this.uploadTranscript = options.uploadTranscript;
             },
 
-            render: function () {
+            render: function() {
                 var languages = $('.content-primary').data('all-languages');
                 HtmlUtils.setHtml(
                     this.$el,
@@ -33,18 +33,18 @@ define(
                 return this;
             },
 
-            setLanguage: function (event) {
+            setLanguage: function(event) {
                 var val = $(event.currentTarget).val();
                 this.setLanguageTranscript(val);
-                this.$el.find('.js-upload-transcript').prop("disabled", val=='').attr("aria-disabled", false)
+                this.$el.find('.js-upload-transcript').prop('disabled', val === '').attr('aria-disabled', false);
             },
 
-            trigerUploadTranscript: function (event) {
+            trigerUploadTranscript: function(event) {
                 event.preventDefault();
                 this.uploadTranscript();
             },
 
-            closePopup: function (event) {
+            closePopup: function(event) {
                 event.preventDefault();
                 this.remove();
             }

@@ -1,3 +1,4 @@
+/* global Backbone */
 define(
     ['underscore', 'gettext', 'js/utils/date_utils', 'js/views/baseview', 'common/js/components/views/feedback_prompt',
      'common/js/components/views/feedback_notification', 'common/js/components/utils/view_utils',
@@ -55,21 +56,20 @@ define(
                     )
                 );
 
-                if (this.model.get('status_value') == 'file_complete' && this.storageService == 'azure') {
+                if (this.model.get('status_value') === 'file_complete' && this.storageService === 'azure') {
                     this.renderTranscripts();
                 }
 
                 return this;
             },
 
-            renderTranscripts: function () {
+            renderTranscripts: function() {
                 this.transcriptsView = new PreviousTranscriptsVideoUploadView({
                     collection: this.transcriptsCollection,
                     transcriptHandlerUrl: this.transcriptHandlerUrl,
                     edxVideoId: this.model.get('edx_video_id')
                 });
                 this.$el.after(this.transcriptsView.render().$el);
-
             },
 
             removeVideo: function(event) {
@@ -97,9 +97,9 @@ define(
                 );
             },
 
-            getTranscripts: function () {
-                if (this.model.get('status_value') == 'file_complete' && this.storageService == 'azure') {
-                    var view = this;
+            getTranscripts: function() {
+                var view = this;
+                if (this.model.get('status_value') === 'file_complete' && this.storageService === 'azure') {
                     $.ajax({
                         url: this.transcriptHandlerUrl + '/' + this.model.get('edx_video_id'),
                         contentType: 'application/json',
@@ -107,11 +107,11 @@ define(
                         type: 'GET'
                     }).done(function(responseData) {
                         view.transcriptsCollection.reset(responseData.transcripts);
-                    })
+                    });
                 }
             },
 
-            toggleTranscripts: function (event) {
+            toggleTranscripts: function(event) {
                 var isHidden = this.transcriptsView.$el.find('.fa-plus').attr('aria-hidden');
                 this.transcriptsView.$el.find('.fa-plus').attr('aria-hidden', !isHidden);
                 event.preventDefault();
@@ -120,7 +120,7 @@ define(
                 $(event.currentTarget).toggleClass('active-transcripts');
             },
 
-            addTranscripts: function (event) {
+            addTranscripts: function(event) {
                 event.preventDefault();
                 this.transcriptsView.$el.find('.js-add-transcript').click();
             }

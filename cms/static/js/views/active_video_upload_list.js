@@ -1,3 +1,4 @@
+/* global AzureStorage */
 define([
     'jquery',
     'underscore',
@@ -49,7 +50,7 @@ define([
                 }
             },
 
-            addCollection: function (model) {
+            addCollection: function(model) {
                 this.collection.add(model);
             },
 
@@ -311,9 +312,9 @@ define([
 
             addUploadFailureView: function(fileName, failureMessage, model) {
                 if (model) {
-                    this.setStatus(model.cid, ActiveVideoUpload.STATUS_FAILED, failureMessage)
+                    this.setStatus(model.cid, ActiveVideoUpload.STATUS_FAILED, failureMessage);
                 } else {
-                    model = new ActiveVideoUpload({
+                    model = new ActiveVideoUpload({  // eslint-disable-line no-param-reassign
                         fileName: fileName,
                         status: ActiveVideoUpload.STATUS_FAILED,
                         failureMessage: failureMessage
@@ -418,7 +419,10 @@ define([
                 });
             },
 
-            uploadAzureStorage: function (uploadData) {
+            uploadAzureStorage: function(uploadData) {
+                var arrayUploadUrl;
+                var blobService;
+                var speedSummary;
                 var uploadUrl = uploadData.url,
                     view = this,
                     finishedOrError = false,
@@ -429,26 +433,27 @@ define([
 
                 sasToken = uploadUrl.split('?').pop();
                 uploadUrl = uploadUrl.split('?')[0];
-                var arrayUploadUrl = uploadUrl.split('/');
+                arrayUploadUrl = uploadUrl.split('/');
                 blobName = arrayUploadUrl.pop();
                 blobContainer = arrayUploadUrl.pop();
                 blobUri = uploadUrl.split(blobContainer)[0];
 
-                var blobService = AzureStorage.createBlobServiceWithSas(blobUri, sasToken);
-                var speedSummary = blobService.createBlockBlobFromBrowserFile(
+                blobService = AzureStorage.createBlobServiceWithSas(blobUri, sasToken);
+                speedSummary = blobService.createBlockBlobFromBrowserFile(
                     blobContainer,
                     blobName,
                     uploadData.files[0],
-                    function(error, result, response) {
+                    function(error, result, response) {  // eslint-disable-line no-unused-vars
+                        var data;
                         finishedOrError = true;
                         if (error) {
-                            var data = {
+                            data = {
                                 cid: uploadData.cid,
                                 jqXHR: {}
                             };
                             view.fileUploadFail('event', data);
                         } else {
-                            view.fileUploadDone('event', uploadData)
+                            view.fileUploadDone('event', uploadData);
                         }
                     }
                 );
@@ -457,8 +462,9 @@ define([
 
                 function refreshProgress() {
                     var timerId = setTimeout(function() {
+                        var progress;
                         if (!finishedOrError) {
-                            var progress = speedSummary.getCompletePercent() / 100;
+                            progress = speedSummary.getCompletePercent() / 100;
                             view.setProgress(uploadData.cid, progress);
                             refreshProgress();
                         } else {
