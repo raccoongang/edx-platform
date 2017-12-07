@@ -10,7 +10,8 @@ define(
                         duration: 42,
                         created: '2014-11-25T23:13:05',
                         edx_video_id: 'dummy_id',
-                        status: 'uploading'
+                        status: 'uploading',
+                        status_value: ''
                     },
                     view = new PreviousVideoUploadView({
                         model: new Backbone.Model($.extend({}, defaultData, modelData)),
@@ -27,7 +28,7 @@ define(
             it('should render video name correctly', function() {
                 var testName = 'test name';
                 var $el = render({client_video_id: testName});
-                expect($el.find('.name-col').text()).toEqual(testName);
+                expect($el.find('.name-col>span').text()).toEqual(testName);
             });
 
             _.each(

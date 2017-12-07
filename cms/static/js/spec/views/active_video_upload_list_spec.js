@@ -8,7 +8,9 @@ define(
         'common/js/spec_helpers/template_helpers',
         'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers',
         'accessibility',
-        'mock-ajax'
+        'mock-ajax',
+        'azure-storage.common',
+        'azure-storage.blob'
     ],
     function($, ActiveVideoUpload, ActiveVideoUploadListView, StringUtils, TemplateHelpers, AjaxHelpers) {
         'use strict';

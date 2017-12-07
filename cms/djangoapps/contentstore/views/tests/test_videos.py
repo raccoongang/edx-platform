@@ -184,7 +184,7 @@ class VideosHandlerTestCase(VideoUploadTestMixin, CourseTestCase):
             original_video = self.previous_uploads[-(i + 1)]
             self.assertEqual(
                 set(response_video.keys()),
-                set(["edx_video_id", "client_video_id", "created", "duration", "status"])
+                set(["edx_video_id", "client_video_id", "created", "duration", "status", "status_value"])
             )
             dateutil.parser.parse(response_video["created"])
             for field in ["edx_video_id", "client_video_id", "duration"]:

@@ -326,7 +326,9 @@ def _get_index_videos(course):
     return list(
         {
             attr: video[attr]
-            for attr in ["edx_video_id", "client_video_id", "created", "duration", "status", "status_value"]
+            for attr in [
+                "edx_video_id", "client_video_id", "created", "duration", "status", "status_value"
+            ]
         }
         for video in _get_videos(course)
     )
