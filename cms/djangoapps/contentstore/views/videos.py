@@ -42,22 +42,27 @@ __all__ = ["videos_handler", "video_encodings_download", "video_transcripts_hand
 
 LOGGER = logging.getLogger(__name__)
 
-
 # Default expiration, in seconds, of one-time URLs used for uploading videos.
 KEY_EXPIRATION_IN_SECONDS = 86400
 
-if str(settings.FEATURES['ENABLE_VIDEO_UPLOAD_PIPELINE']) == 'azure':
-    STORAGE_SERVICE = 'azure'
-    VIDEO_SUPPORTED_FILE_FORMATS = {
+
+def get_storage_service():
+    return 'azure' if settings.FEATURES['ENABLE_VIDEO_UPLOAD_PIPELINE'] == 'azure' else 's3'
+
+
+def get_supported_video_formats():
+    azure_formats = {
         '.mp4': 'video/mp4',
     }
-else:
-    STORAGE_SERVICE = 's3'
-    VIDEO_SUPPORTED_FILE_FORMATS = {
+    aws_formats = {
         '.mp4': 'video/mp4',
         '.mov': 'video/quicktime',
     }
+    return azure_formats if settings.FEATURES['ENABLE_VIDEO_UPLOAD_PIPELINE'] == 'azure' else aws_formats
 
+
+STORAGE_SERVICE = get_storage_service()
+VIDEO_SUPPORTED_FILE_FORMATS = get_supported_video_formats()
 VIDEO_UPLOAD_MAX_FILE_SIZE_GB = 5
 
 # maximum time for video to remain in upload state
@@ -458,7 +463,6 @@ def storage_service_bucket(course=None):
     if str(settings.FEATURES['ENABLE_VIDEO_UPLOAD_PIPELINE']) == 'azure':
         return get_media_service_client(course.org)
     else:
-
         conn = s3.connection.S3Connection(
             settings.AWS_ACCESS_KEY_ID,
             settings.AWS_SECRET_ACCESS_KEY
@@ -527,8 +531,9 @@ def video_transcripts_handler(request, course_key_string, edx_video_id=None):
 
 
 def video_transcripts_json(video):
-    transcripts = [{'name': transcript.content, 'language': transcript.language}
-                   for transcript in video.subtitles.all()]
+    transcripts = [
+        {'name': transcript.content, 'language': transcript.language} for transcript in video.subtitles.all()
+    ]
     return JsonResponse(
         {"transcripts": transcripts},
         status=200
@@ -562,6 +567,7 @@ def video_transcript_post(request, course, video):
         content=transcript_file.name
 
     )
-    return JsonResponse({'status': 'ok',
-                         'transcript': {'name': transcript.content, 'language': transcript.language}},
-                        status=200)
+    return JsonResponse(
+        {'status': 'ok', 'transcript': {'name': transcript.content, 'language': transcript.language}},
+        status=200
+    )
