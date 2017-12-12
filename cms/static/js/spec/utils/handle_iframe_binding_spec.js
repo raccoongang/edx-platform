@@ -8,7 +8,7 @@ function($, _, IframeBinding) {
         var doc = document.implementation.createHTMLDocument('New Document');
         var iframe_html = '<iframe src="http://www.youtube.com/embed/NHd27UvY-lw" frameborder="0" height="350" width="618"></iframe>';
         iframe_html += '<iframe src="http://www.youtube.com/embed/NHd27UvY-lw?allowFullScreen=false" frameborder="0" height="350" width="618"></iframe>';
-        iframe_html += '<embed type="application/x-shockwave-flash" src="http://www.youtube.com/embed/NHd27UvY-lw" height="315" width="560">';
+        iframe_html += '<embed type="application/x-shockwave-flash" src="http://www.youtube.com/embed/NHd27UvY-lw" height="350" width="623">';
         doc.body.innerHTML = iframe_html;
 
         var verify_no_modification = function(src) {
