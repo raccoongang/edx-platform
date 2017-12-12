@@ -460,20 +460,20 @@ define([
 
                 this.setStatus(uploadData.cid, ActiveVideoUpload.STATUS_UPLOADING);
 
-                function refreshProgress() {
-                    var timerId = setTimeout(function() {
-                        var progress;
-                        if (!finishedOrError) {
-                            progress = speedSummary.getCompletePercent() / 100;
-                            view.setProgress(uploadData.cid, progress);
-                            refreshProgress();
-                        } else {
-                            clearTimeout(timerId);
-                        }
-                    }, 200);
-                }
+                var timerId = setInterval(function() {
+                    if (!finishedOrError) {
+                        view.refreshProgress(speedSummary, uploadData.cid);
+                    } else {
+                        clearTimeout(timerId);
+                    }
+                }, 200);
 
-                refreshProgress();
+                this.refreshProgress(speedSummary, uploadData.cid);
+            },
+
+            refreshProgress: function (speedSummary, cid) {
+                var progress = speedSummary.getCompletePercent() / 100;
+                this.setProgress(cid, progress);
             }
         });
 
