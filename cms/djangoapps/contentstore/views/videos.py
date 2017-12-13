@@ -47,7 +47,7 @@ KEY_EXPIRATION_IN_SECONDS = 86400
 
 
 def get_storage_service():
-    return 'azure' if settings.FEATURES['ENABLE_VIDEO_UPLOAD_PIPELINE'] == 'azure' else 's3'
+    return settings.FEATURES['VIDEO_UPLOAD_STORAGE']
 
 
 def get_supported_video_formats():
@@ -58,7 +58,7 @@ def get_supported_video_formats():
         '.mp4': 'video/mp4',
         '.mov': 'video/quicktime',
     }
-    return azure_formats if settings.FEATURES['ENABLE_VIDEO_UPLOAD_PIPELINE'] == 'azure' else aws_formats
+    return azure_formats if settings.FEATURES['VIDEO_UPLOAD_STORAGE'] == 'azure' else aws_formats
 
 
 STORAGE_SERVICE = get_storage_service()
@@ -273,7 +273,9 @@ def _get_and_validate_course(course_key_string, user):
         getattr(settings, "VIDEO_UPLOAD_PIPELINE", None) and
         course.video_pipeline_configured,
 
-        settings.FEATURES["ENABLE_VIDEO_UPLOAD_PIPELINE"] == "azure" and course
+        settings.FEATURES["ENABLE_VIDEO_UPLOAD_PIPELINE"] and
+        settings.FEATURES["VIDEO_UPLOAD_STORAGE"] == "azure" and
+        course
     ]):
         return course
     else:
@@ -460,7 +462,7 @@ def storage_service_bucket(course=None):
     """
     Returns an S3 bucket for video uploads.
     """
-    if str(settings.FEATURES['ENABLE_VIDEO_UPLOAD_PIPELINE']) == 'azure':
+    if settings.FEATURES['VIDEO_UPLOAD_STORAGE'] == 'azure':
         return get_media_service_client(course.org)
     else:
         conn = s3.connection.S3Connection(
@@ -474,7 +476,7 @@ def storage_service_key(bucket, file_name):
     """
     Returns an S3 key to the given file in the given bucket.
     """
-    if str(settings.FEATURES['ENABLE_VIDEO_UPLOAD_PIPELINE']) == 'azure':
+    if settings.FEATURES['VIDEO_UPLOAD_STORAGE'] == 'azure':
         asset = bucket.create_asset(file_name)
         bucket.asset = asset
         return bucket
@@ -508,7 +510,7 @@ def is_status_update_request(request_data):
 @login_required
 @require_http_methods(("GET", "POST",))
 def video_transcripts_handler(request, course_key_string, edx_video_id=None):
-    if str(settings.FEATURES['ENABLE_VIDEO_UPLOAD_PIPELINE']) != 'azure':
+    if settings.FEATURES['VIDEO_UPLOAD_STORAGE'] != 'azure':
         return HttpResponseBadRequest()
 
     course = _get_and_validate_course(course_key_string, request.user)

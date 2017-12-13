@@ -302,7 +302,7 @@ class VideosHandlerTestCase(VideoUploadTestMixin, CourseTestCase):
             self.assertIn('error', response)
             self.assertEqual(response['error'], "Request 'files' entry contain unsupported content_type")
 
-    @override_settings(FEATURES={'ENABLE_VIDEO_UPLOAD_PIPELINE': 'azure'})
+    @override_settings(FEATURES={'VIDEO_UPLOAD_STORAGE': 'azure', "ENABLE_VIDEO_UPLOAD_PIPELINE": True})
     @patch("contentstore.views.videos.get_media_service_client")
     @ddt.data(
         (
@@ -653,7 +653,7 @@ class VideoUrlsCsvTestCase(VideoUploadTestMixin, CourseTestCase):
         )
 
 
-@patch.dict("django.conf.settings.FEATURES", {"ENABLE_VIDEO_UPLOAD_PIPELINE": "azure"})
+@patch.dict("django.conf.settings.FEATURES", {"VIDEO_UPLOAD_STORAGE": "azure", "ENABLE_VIDEO_UPLOAD_PIPELINE": True})
 class AzureVideoUploadsTestCase(CourseTestCase):
     """
     Test cases for Azure video upload backend.
@@ -717,7 +717,7 @@ class AzureVideoUploadsTestCase(CourseTestCase):
         self.assertIs(bucket.asset, asset_mock)
 
 
-@patch.dict("django.conf.settings.FEATURES", {"ENABLE_VIDEO_UPLOAD_PIPELINE": "azure"})
+@patch.dict("django.conf.settings.FEATURES", {"VIDEO_UPLOAD_STORAGE": "azure", "ENABLE_VIDEO_UPLOAD_PIPELINE": True})
 class VideoTranscriptsTestCase(CourseTestCase):
     """
     Test cases for the transcripts upload endpoint.

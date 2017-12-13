@@ -1304,7 +1304,7 @@ class CourseDescriptor(CourseFields, SequenceDescriptor, LicenseMixin):
         """
         # Azure video upload backend doesn't use 'course_video_upload_token' setting, but still needs
         # it to be resolved as configured:
-        if settings.FEATURES.get('ENABLE_VIDEO_UPLOAD_PIPELINE') == 'azure':
+        if settings.FEATURES.get('VIDEO_UPLOAD_STORAGE') == 'azure':
             return True
 
         return (
