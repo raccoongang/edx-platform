@@ -1,4 +1,4 @@
-/* global _ */
+/* global _  AzureStorage */
 define(
     [
         'jquery',
@@ -76,12 +76,12 @@ define(
                 expect(this.view.onBeforeUnload()).toBeUndefined();
             });
 
-            it('called uploadAzureStorage when storageService equal to azure', function() {
-                this.view.storageService = 'azure';
+            it('called uploadAzureStorage when storageService is equal to value azure', function() {
                 var uploadData = {
                     files: [{name: 'video.mp4', size: 10000}],
                     redirected: true
                 };
+                this.view.storageService = 'azure';
                 this.view.uploadAzureStorage = jasmine.createSpy();
 
                 this.view.$uploadForm.fileupload('add', uploadData);
@@ -89,14 +89,14 @@ define(
                 expect(this.view.uploadAzureStorage).toHaveBeenCalled();
             });
 
-            it('upload file in AzureStorage', function() {
+            it('file upload due to the AzureStorage', function() {
                 var sasToken = 'sr=b&sp=w&sv=2014-02-14&st=2017-12-11',
                     blobUri = 'http://azure.blob.core.windows.net/',
                     blobContainer = 'asset-50c9517e',
                     blobName = 'video.mp4',
                     uploadData = {
                         files: [{name: 'video.mp4', size: 10000}],
-                        url: blobUri + blobContainer + '/' + blobName + '?' +  sasToken,
+                        url: blobUri + blobContainer + '/' + blobName + '?' + sasToken,
                         cid: 'c12'
 
                     },
@@ -105,13 +105,13 @@ define(
                 jasmine.clock().install();
                 createBlockBlobFromBrowserFile.and.callFake(
                     function() {
-                        return 'speedSummary'
+                        return 'speedSummary';
                     }
                 );
                 AzureStorage.createBlobServiceWithSas = jasmine.createSpy();
                 AzureStorage.createBlobServiceWithSas.and.callFake(
                     function() {
-                        return {createBlockBlobFromBrowserFile: createBlockBlobFromBrowserFile}
+                        return {createBlockBlobFromBrowserFile: createBlockBlobFromBrowserFile};
                     }
                 );
                 this.view.setStatus = jasmine.createSpy();
@@ -149,7 +149,7 @@ define(
             it('test refresh progress', function() {
                 var getCompletePercent = jasmine.createSpy();
                 getCompletePercent.and.callFake(
-                    function() { return 20 }
+                    function() { return 20; }
                 );
                 this.view.setProgress = jasmine.createSpy();
 

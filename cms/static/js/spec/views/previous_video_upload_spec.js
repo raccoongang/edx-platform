@@ -7,7 +7,7 @@ define(
         'common/js/spec_helpers/template_helpers',
         'common/js/spec_helpers/view_helpers'
     ],
-    function($, _, Backbone, PreviousVideoUploadView, TemplateHelpers, ViewHelpers ) {
+    function($, _, Backbone, PreviousVideoUploadView, TemplateHelpers, ViewHelpers) {
         'use strict';
         describe('PreviousVideoUploadView', function() {
             var previousVideoUploadView = function(modelData) {
@@ -23,7 +23,7 @@ define(
                         model: new Backbone.Model($.extend({}, defaultData, modelData)),
                         videoHandlerUrl: '/videos/course-v1:org.0+course_0+Run_0'
                     });
-                return viewItem
+                return viewItem;
             };
             var render = function(modelData) {
                 var view = previousVideoUploadView(modelData);
@@ -41,7 +41,7 @@ define(
                 expect($el.find('.name-col>span').text()).toEqual(testName);
             });
 
-            it('called renderTranscripts if video status equal to file_complete and storageService equal to azure',
+            it('called renderTranscripts if video status is equal to file_complete and storageService is equal to azure',
                 function() {
                     var view = previousVideoUploadView({status_value: 'file_complete'});
                     view.storageService = 'azure';
@@ -77,7 +77,7 @@ define(
                 ).toEqual('transcript2.vtt (fr)');
             });
 
-            it('should render link add transcripts correctly', function() {
+            it('should render correct link for transcripts adding', function() {
                 var view = previousVideoUploadView({status_value: 'file_complete'});
                 view.storageService = 'azure';
                 view.render();
@@ -85,7 +85,7 @@ define(
                 expect(view.$('.js-add-transcript').length).toEqual(1);
             });
 
-            it('should render link toggle transcripts correctly', function() {
+            it('should render correct link for transcripts toggle', function() {
                 var view = previousVideoUploadView({status_value: 'file_complete'});
                 view.storageService = 'azure';
                 view.transcriptsCollection = new Backbone.Collection([
