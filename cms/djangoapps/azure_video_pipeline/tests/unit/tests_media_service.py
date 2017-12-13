@@ -104,7 +104,11 @@ class MediaServiceClientTests(unittest.TestCase):
     def test_get_locators_list(self, requests_get, headers):
         media_services = self.make_one()
         locators = media_services.get_locators_list(LocatorTypes.OnDemandOrigin)
-        requests_get.assert_called_once_with('https://rest_api_endpoint/api/Locators?$filter=Type eq 2', headers={})
+        requests_get.assert_called_once_with(
+            'https://rest_api_endpoint/api/Locators',
+            headers={},
+            params={'$filter': 'Type eq {}'.format(LocatorTypes.OnDemandOrigin)}
+        )
         self.assertEqual(locators, ['locator1', 'locator2'])
 
     def test_raise_for_status_get_list_locators(self):
@@ -120,8 +124,9 @@ class MediaServiceClientTests(unittest.TestCase):
         asset_id = 'asset_id'
         locator = media_services.get_asset_locator(asset_id, LocatorTypes.SAS)
         requests_get.assert_called_once_with(
-            "https://rest_api_endpoint/api/Assets('{}')/Locators?$filter=Type eq 1".format(asset_id),
-            headers={}
+            "https://rest_api_endpoint/api/Assets('{}')/Locators".format(asset_id),
+            headers={},
+            params = {'$filter': 'Type eq {}'.format(LocatorTypes.SAS)}
         )
         self.assertEqual(locator, 'locator')
 
@@ -261,7 +266,8 @@ class MediaServiceClientTests(unittest.TestCase):
         asset = media_services.get_input_asset_by_video_id(video_id)
         # assert
         requests_get_mock.assert_called_once_with(
-            "https://rest_api_endpoint/api/Assets?$filter=Name eq 'UPLOADED::test:video:id'",
-            headers={}
+            "https://rest_api_endpoint/api/Assets",
+            headers={},
+            params = {'$filter': "Name eq 'UPLOADED::{}'".format(video_id)}
         )
         self.assertEqual(asset, {'id', 'asset_id'})

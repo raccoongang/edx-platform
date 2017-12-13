@@ -132,19 +132,21 @@ class MediaServiceClient(object):
         })
 
     def get_locators_list(self, locator_type=LocatorTypes.OnDemandOrigin):
-        url = '{}Locators?$filter=Type eq {}'.format(self.rest_api_endpoint, locator_type)
+        url = '{}Locators'.format(self.rest_api_endpoint)
         headers = self.get_headers()
-        response = requests.get(url, headers=headers)
+        payload = {'$filter': 'Type eq {}'.format(locator_type)}
+        response = requests.get(url, params=payload, headers=headers)
         if response.status_code == 200:
             locators = response.json().get('value', [])
             return locators
         else:
             response.raise_for_status()
 
-    def get_asset_locator(self, input_asset_id, type):
-        url = "{}Assets('{}')/Locators?$filter=Type eq {}".format(self.rest_api_endpoint, input_asset_id, type)
+    def get_asset_locator(self, input_asset_id, locator_type):
+        url = "{}Assets('{}')/Locators".format(self.rest_api_endpoint, input_asset_id)
         headers = self.get_headers()
-        response = requests.get(url, headers=headers)
+        payload = {'$filter': 'Type eq {}'.format(locator_type)}
+        response = requests.get(url, params=payload, headers=headers)
         if response.status_code == 200:
             locators = response.json().get('value', [])
             return locators[0] if locators else None
@@ -167,9 +169,10 @@ class MediaServiceClient(object):
 
         :param video_id: Edx video ID
         """
-        url = "{}Assets?$filter=Name eq '{}::{}'".format(self.rest_api_endpoint, asset_prefix, video_id)
+        url = "{}Assets".format(self.rest_api_endpoint)
         headers = self.get_headers()
-        response = requests.get(url, headers=headers)
+        payload = {"$filter": "Name eq '{}::{}'".format(asset_prefix, video_id)}
+        response = requests.get(url, params=payload, headers=headers)
         if response.status_code == 200:
             assets = response.json().get('value', [])
             return assets and assets[0]
@@ -267,9 +270,10 @@ class MediaServiceClient(object):
         requests.delete(url, headers=headers)
 
     def get_media_processor(self, name='Media Encoder Standard'):
-        url = "{}MediaProcessors()?$filter=Name eq '{}'".format(self.rest_api_endpoint, name)
+        url = "{}MediaProcessors()".format(self.rest_api_endpoint)
         headers = self.get_headers()
-        response = requests.get(url, headers=headers)
+        payload = {"$filter": "Name eq '{}'".format(name)}
+        response = requests.get(url, params=payload, headers=headers)
         if response.status_code == 200:
             try:
                 media_processor = response.json().get('value', [])[0]
