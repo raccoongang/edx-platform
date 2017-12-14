@@ -79,7 +79,7 @@ class CourseMetadata(object):
             filtered_list.append('video_upload_pipeline')
 
         # Do not show video_upload_pipeline if the upload backend is Azure.
-        if settings.FEATURES.get('VIDEO_UPLOAD_STORAGE') == 'azure':
+        if settings.VIDEO_UPLOAD_PIPELINE.get("CLOUD", "") == 'azure':
             filtered_list.append('video_upload_pipeline')
 
         # Do not show social sharing url field if the feature is disabled.

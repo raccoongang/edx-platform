@@ -302,7 +302,6 @@ class VideosHandlerTestCase(VideoUploadTestMixin, CourseTestCase):
             self.assertIn('error', response)
             self.assertEqual(response['error'], "Request 'files' entry contain unsupported content_type")
 
-    @override_settings(FEATURES={'VIDEO_UPLOAD_STORAGE': 'azure', "ENABLE_VIDEO_UPLOAD_PIPELINE": True})
     @patch("contentstore.views.videos.get_media_service_client")
     @ddt.data(
         (
@@ -337,22 +336,24 @@ class VideosHandlerTestCase(VideoUploadTestMixin, CourseTestCase):
         """
         Test that video upload works correctly against supported and unsupported file formats on Azure backend.
         """
-        get_azure_ms_mock.return_value = Mock(generate_url=Mock(return_value="test_url"))
 
-        # Check supported formats
-        response = self.client.post(
-            self.url,
-            json.dumps({"files": files}),
-            content_type="application/json"
-        )
-        self.assertEqual(response.status_code, expected_status)
-        response = json.loads(response.content)
+        with patch("contentstore.views.videos.STORAGE_SERVICE", 'azure'):
+            get_azure_ms_mock.return_value = Mock(generate_url=Mock(return_value="test_url"))
 
-        if expected_status == 200:
-            self.assertNotIn('error', response)
-        else:
-            self.assertIn('error', response)
-            self.assertEqual(response['error'], "Request 'files' entry contain unsupported content_type")
+            # Check supported formats
+            response = self.client.post(
+                self.url,
+                json.dumps({"files": files}),
+                content_type="application/json"
+            )
+            self.assertEqual(response.status_code, expected_status)
+            response = json.loads(response.content)
+
+            if expected_status == 200:
+                self.assertNotIn('error', response)
+            else:
+                self.assertIn('error', response)
+                self.assertEqual(response['error'], "Request 'files' entry contain unsupported content_type")
 
     @override_settings(AWS_ACCESS_KEY_ID='test_key_id', AWS_SECRET_ACCESS_KEY='test_secret')
     @patch('boto.s3.connection.S3Connection')
@@ -653,7 +654,8 @@ class VideoUrlsCsvTestCase(VideoUploadTestMixin, CourseTestCase):
         )
 
 
-@patch.dict("django.conf.settings.FEATURES", {"VIDEO_UPLOAD_STORAGE": "azure", "ENABLE_VIDEO_UPLOAD_PIPELINE": True})
+@patch.dict("django.conf.settings.FEATURES", {"ENABLE_VIDEO_UPLOAD_PIPELINE": True})
+@override_settings(VIDEO_UPLOAD_PIPELINE={"CLOUD": "azure"})
 class AzureVideoUploadsTestCase(CourseTestCase):
     """
     Test cases for Azure video upload backend.
@@ -702,7 +704,9 @@ class AzureVideoUploadsTestCase(CourseTestCase):
         bucket_mock = 'test_bucket'
         get_azure_ms_mock.return_value(bucket_mock)
         # act
-        _ = storage_service_bucket(self.course)
+        with patch("contentstore.views.videos.STORAGE_SERVICE", 'azure'):
+            _ = storage_service_bucket(self.course)
+
         # assert
         get_azure_ms_mock.assert_called_once_with(self.course.org)
 
@@ -711,13 +715,16 @@ class AzureVideoUploadsTestCase(CourseTestCase):
         asset_mock = Mock()
         bucket_mock = Mock(create_asset=Mock(return_value=asset_mock))
         # act
-        bucket = storage_service_key(bucket_mock, 'test_file_name')
+        with patch("contentstore.views.videos.STORAGE_SERVICE", 'azure'):
+            bucket = storage_service_key(bucket_mock, 'test_file_name')
+
         # assert
         bucket_mock.create_asset.assert_called_once_with('test_file_name')
         self.assertIs(bucket.asset, asset_mock)
 
 
-@patch.dict("django.conf.settings.FEATURES", {"VIDEO_UPLOAD_STORAGE": "azure", "ENABLE_VIDEO_UPLOAD_PIPELINE": True})
+@patch.dict("django.conf.settings.FEATURES", {"ENABLE_VIDEO_UPLOAD_PIPELINE": True})
+@patch("contentstore.views.videos.STORAGE_SERVICE", 'azure')
 class VideoTranscriptsTestCase(CourseTestCase):
     """
     Test cases for the transcripts upload endpoint.
