@@ -8,7 +8,11 @@
 </div>
 <% } %>
 
-<h2><%- gettext("Sign In") %></h2>
+<div class="form-controls">
+    <a class="form-controls__link" href="/register">Регистрация</a>
+    <a class="form-controls__link form-controls__link_active" href="/login">Вход</a>
+</div>
+<h2 class="form-header"><%- gettext("Sign In") %></h2>
 
 <form id="login" class="login-form" tabindex="-1" method="POST">
 
