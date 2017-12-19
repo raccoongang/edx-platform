@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
 from django.utils.translation import ugettext as _, ugettext_noop
-from django.views.decorators.http import require_GET, require_http_methods
+from django.views.decorators.http import require_GET, require_http_methods, require_POST
 import rfc6266
 
 from azure_video_pipeline.utils import get_media_service_client
@@ -38,7 +38,7 @@ from util.json_request import expect_json, JsonResponse
 from .course import get_course_and_check_access
 
 
-__all__ = ["videos_handler", "video_encodings_download", "video_transcripts_handler"]
+__all__ = ["videos_handler", "video_encodings_download", "video_transcripts_handler", "video_encrypt"]
 
 LOGGER = logging.getLogger(__name__)
 
@@ -123,6 +123,7 @@ class StatusDisplayStrings(object):
         "youtube_duplicate": _YOUTUBE_DUPLICATE,
         "invalid_token": _INVALID_TOKEN,
         "imported": _IMPORTED,
+        "file_encrypted": _COMPLETE
     }
 
     @staticmethod
@@ -572,3 +573,36 @@ def video_transcript_post(request, course, video):
         {'status': 'ok', 'transcript': {'name': transcript.content, 'language': transcript.language}},
         status=200
     )
+
+
+@expect_json
+@login_required
+@require_POST
+def video_encrypt(request, course_key_string, edx_video_id):
+
+    if STORAGE_SERVICE != 'azure':
+        return HttpResponseBadRequest()
+
+    course = _get_and_validate_course(course_key_string, request.user)
+
+    if not course:
+        return HttpResponseNotFound()
+
+    try:
+        video = Video.objects.get(
+            edx_video_id=edx_video_id,
+            courses__course_id=course_key_string,
+            courses__is_hidden=False
+        )
+    except Video.DoesNotExist:
+        return HttpResponseNotFound()
+
+    encrypt = request.json.get('encrypt')
+
+    if encrypt is None:
+        return HttpResponseBadRequest()
+
+    return JsonResponse(
+        {'status': 'ok',
+         'status_value': video.status},
+        status=200)
