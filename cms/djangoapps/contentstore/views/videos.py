@@ -124,7 +124,8 @@ class StatusDisplayStrings(object):
         "invalid_token": _INVALID_TOKEN,
         "imported": _IMPORTED,
         "file_encrypted": _COMPLETE,
-        "encryption_error": _FAILED
+        "encryption_error": _FAILED,
+        "decryption_error": _FAILED
     }
 
     @staticmethod
@@ -624,6 +625,7 @@ def video_encrypt(request, course_key_string, edx_video_id):
         error_messages = {
             'file_corrupt': _('Target Video is no longer available on Azure'),
             'encryption_error': _('Something went wrong. Encryption process failed.'),
+            'decryption_error': _('Something went wrong. Decryption process failed.'),
         }
         return JsonResponse(
             {"error": error_messages.get(status, '')},

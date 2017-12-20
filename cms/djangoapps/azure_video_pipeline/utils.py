@@ -61,16 +61,26 @@ def get_media_service_client(organization):
 
 
 def encrypt_file(video_id, organization):
+    """
+    AES open.
+    Associate an encryption key (EnvelopeEncryption) with the asset and
+    configure authorization policies for the key open.
+    """
     media_service = get_media_service_client(organization)
     asset = media_service.get_input_asset_by_video_id(video_id, "ENCODED")
 
     if not asset:
         return 'file_corrupt'
 
+    content_key = media_service.get_asset_content_keys(asset['Id'], ContentKeyType.ENVELOPE_ENCRYPTION)
+
     try:
         remove_access_policies_and_locators(media_service, asset)
-        content_key = create_content_key_and_associate_with_encoded_asset(media_service, asset)
-        create_authorization_policy_and_associate_with_content_key(media_service, content_key)
+
+        if content_key is None:
+            content_key = create_content_key_and_associate_with_encoded_asset(media_service, asset)
+            create_authorization_policy_and_associate_with_content_key(media_service, content_key)
+
         create_delivery_policy_and_associate_with_encoded_asset(media_service, asset, content_key)
         create_access_policies_and_locators(media_service, asset)
     except HTTPError as er:
@@ -80,7 +90,21 @@ def encrypt_file(video_id, organization):
     return 'file_encrypted'
 
 
-def remove_encryption(video, organization):
+def remove_encryption(video_id, organization):
+    media_service = get_media_service_client(organization)
+    asset = media_service.get_input_asset_by_video_id(video_id, "ENCODED")
+
+    if not asset:
+        return 'file_corrupt'
+
+    try:
+        remove_access_policies_and_locators(media_service, asset)
+        remove_delivery_policy_link_from_asset_and_delivery_policy(media_service, asset)
+        create_access_policies_and_locators(media_service, asset)
+    except HTTPError as er:
+        LOGGER.info('Video id - {} decryption error: {}'.format(video_id, er))
+        return 'decryption_error'
+
     return 'file_complete'
 
 
@@ -159,6 +183,13 @@ def create_access_policies_and_locators(media_service, asset):
         asset['Id'],
         locator_type=LocatorTypes.SAS
     )
+
+
+def remove_delivery_policy_link_from_asset_and_delivery_policy(media_service, asset):
+    delivery_policies = media_service.get_asset_delivery_policies(asset['Id'])
+    for delivery_policy in delivery_policies:
+        media_service.delete_delivery_policy_link_from_asset(asset['Id'], delivery_policy["Id"])
+        media_service.delete_delivery_policy(delivery_policy["Id"])
 
 
 def encrypt_content_key_with_public_key(protection_key):

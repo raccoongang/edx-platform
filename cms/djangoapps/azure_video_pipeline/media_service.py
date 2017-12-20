@@ -550,3 +550,44 @@ class MediaServiceClient(object):
             return None
         else:
             response.raise_for_status()
+
+    def get_asset_delivery_policies(self, asset_id):
+        url = "{}Assets('{}')/DeliveryPolicies".format(self.rest_api_endpoint, asset_id)
+        headers = self.get_headers()
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return response.json().get('value', [])
+        else:
+            response.raise_for_status()
+
+    def delete_delivery_policy_link_from_asset(self, asset_id, delivery_policy_id):
+        url = "{}Assets('{}')/$links/DeliveryPolicies('{}')".format(self.rest_api_endpoint,
+                                                                    asset_id,
+                                                                    delivery_policy_id)
+        headers = self.get_headers()
+        requests.delete(url, headers=headers)
+
+    def delete_delivery_policy(self, delivery_policy_id):
+        url = "{}DeliveryPolicies('{}')".format(self.rest_api_endpoint, delivery_policy_id)
+        headers = self.get_headers()
+        requests.delete(url, headers=headers)
+
+    def get_asset_content_keys(self, asset_id, content_key_type=None):
+        url = "{}Assets('{}')/ContentKeys".format(self.rest_api_endpoint, asset_id)
+        headers = self.get_headers()
+        payload = {}
+
+        if content_key_type:
+            payload = {'$filter': 'ContentKeyType eq {}'.format(content_key_type)}
+
+        response = requests.get(url, params=payload, headers=headers)
+        if response.status_code == 200:
+            content_keys = response.json().get('value', [])
+
+            if content_key_type:
+                return content_keys[0] if content_keys else None
+
+            return content_keys
+
+        else:
+            response.raise_for_status()
