@@ -104,7 +104,8 @@ define(
 
             getTranscripts: function() {
                 var view = this;
-                if (this.model.get('status_value') === 'file_complete' && this.storageService === 'azure') {
+                if (this.storageService === 'azure' &&
+                    $.inArray(this.model.get('status_value'), ['file_complete', 'file_encrypted']) !== -1) {
                     $.ajax({
                         url: this.transcriptHandlerUrl + '/' + this.model.get('edx_video_id'),
                         contentType: 'application/json',
