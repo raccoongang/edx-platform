@@ -449,7 +449,6 @@ class MediaServiceClient(object):
         else:
             response.raise_for_status()
 
-
     def associate_content_key_with_asset(self, asset_id, content_key_id):
         url = "{}Assets('{}')/$links/ContentKeys".format(self.rest_api_endpoint, asset_id)
         headers = self.get_headers()
@@ -466,7 +465,7 @@ class MediaServiceClient(object):
         url = "{}ContentKeyAuthorizationPolicies".format(self.rest_api_endpoint)
         headers = self.get_headers()
         data = {
-            "Name": name,
+            "Name": name
         }
         response = requests.post(url, headers=headers, json=data)
         if response.status_code == 201:
@@ -478,7 +477,7 @@ class MediaServiceClient(object):
         url = "{}ContentKeyAuthorizationPolicyOptions".format(self.rest_api_endpoint)
         headers = self.get_headers()
         headers.update({
-            "DataServiceVersion": "3.0",
+            "DataServiceVersion": "3.0"
         })
         data = {
             "Name": name,
@@ -514,7 +513,7 @@ class MediaServiceClient(object):
         url = "{}ContentKeys('{}')/GetKeyDeliveryUrl".format(self.rest_api_endpoint, content_key_id)
         headers = self.get_headers()
         headers.update({
-            "DataServiceVersion": "3.0",
+            "DataServiceVersion": "3.0"
         })
         data = {"keyDeliveryType": key_delivery_type}
         response = requests.post(url, headers=headers, json=data)
