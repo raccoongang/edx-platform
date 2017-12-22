@@ -127,7 +127,7 @@ class MediaServiceClientTests(unittest.TestCase):
         requests_get.assert_called_once_with(
             "https://rest_api_endpoint/api/Assets('{}')/Locators".format(asset_id),
             headers={},
-            params = {'$filter': 'Type eq {}'.format(LocatorTypes.SAS)}
+            params={'$filter': 'Type eq {}'.format(LocatorTypes.SAS)}
         )
         self.assertEqual(locator, 'locator')
 
@@ -269,7 +269,7 @@ class MediaServiceClientTests(unittest.TestCase):
         requests_get_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/Assets",
             headers={},
-            params = {'$filter': "Name eq 'UPLOADED::{}'".format(video_id)}
+            params={'$filter': "Name eq 'UPLOADED::{}'".format(video_id)}
         )
         self.assertEqual(asset, {'id', 'asset_id'})
 
@@ -287,7 +287,7 @@ class MediaServiceClientTests(unittest.TestCase):
         requests_get_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/GetProtectionKeyId",
             headers={},
-            params = {'contentKeyType': content_key_type}
+            params={'contentKeyType': content_key_type}
         )
         self.assertEqual(protection_key_id, 'protection_key_id')
 
@@ -305,7 +305,7 @@ class MediaServiceClientTests(unittest.TestCase):
         requests_get_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/GetProtectionKey",
             headers={},
-            params = {"ProtectionKeyId": "'{}'".format(protection_key_id)}
+            params={"ProtectionKeyId": "'{}'".format(protection_key_id)}
         )
         self.assertEqual(protection_key, 'protection_key')
 

@@ -234,14 +234,14 @@ class UtilsTests(unittest.TestCase):
     def test_remove_access_policies_and_locators(self):
         # arrange
         media_service = mock.Mock(
-            get_asset_locators = mock.Mock(
-                return_value = [
-                    {'Id': 'locator_id_1','AccessPolicyId': 'access_policy_id_1'},
-                    {'Id': 'locator_id_2','AccessPolicyId': ''}
+            get_asset_locators=mock.Mock(
+                return_value=[
+                    {'Id': 'locator_id_1', 'AccessPolicyId': 'access_policy_id_1'},
+                    {'Id': 'locator_id_2', 'AccessPolicyId': ''}
                 ]
             ),
-            delete_access_policy = mock.Mock(),
-            delete_locator = mock.Mock()
+            delete_access_policy=mock.Mock(),
+            delete_locator=mock.Mock()
         )
         asset = {'Id': 'asset_id'}
         # act

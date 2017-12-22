@@ -914,10 +914,10 @@ class VideoEncryptTestCase(CourseTestCase):
            return_value='file_complete')
     @patch("contentstore.views.videos.update_video_status")
     def test_video_encrypt_positive_when_encrypt_equal_false(self,
-                                                            update_video_status,
-                                                            remove_encryption,
-                                                            video_get,
-                                                            get_and_validate_course):
+                                                             update_video_status,
+                                                             remove_encryption,
+                                                             video_get,
+                                                             get_and_validate_course):
         # arrange
         request_mock = Mock(method="POST")
         type(request_mock).META = PropertyMock(return_value={"HTTP_ACCEPT": ['application/json']})

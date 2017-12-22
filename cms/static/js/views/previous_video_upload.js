@@ -139,14 +139,14 @@ define(
 
                 event.preventDefault();
 
-                if (this.model.get('status_value') == 'file_complete') {
+                if (this.model.get('status_value') === 'file_complete') {
                     title = gettext('Are you sure you want to add encryption to this video file?');
                     runMessage = gettext('Adding encryption');
                     postData = {encrypt: true};
                 } else {
                     title = gettext('Are you sure you want to remove encryption from this video file?');
                     runMessage = gettext('Removing encryption');
-                    postData = {encrypt: false}
+                    postData = {encrypt: false};
                 }
 
                 ViewUtils.confirmThenRunOperation(
@@ -161,14 +161,14 @@ define(
                                     url: videoView.videoHandlerUrl + '/encrypt/' + videoView.model.get('edx_video_id'),
                                     type: 'POST',
                                     data: JSON.stringify(postData),
-                                    contentType: "application/json",
+                                    contentType: 'application/json',
                                     dataType: 'json'
                                 }).done(function(data) {
-                                    videoView.model.set('status_value',  data.status_value);
-                                    videoView.$(".js-lock-unlock-file").toggleClass(
+                                    videoView.model.set('status_value', data.status_value);
+                                    videoView.$('.js-lock-unlock-file').toggleClass(
                                         'encrypted',
-                                        data.status_value=='file_encrypted'
-                                    )
+                                        data.status_value === 'file_encrypted'
+                                    );
                                 });
                             }
                         );
