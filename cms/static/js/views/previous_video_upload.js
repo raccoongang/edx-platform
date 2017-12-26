@@ -15,7 +15,8 @@ define(
             events: {
                 'click .remove-video-button.action-button': 'removeVideo',
                 'click .js-toggle-transcripts': 'toggleTranscripts',
-                'click .js-add-transcript': 'addTranscripts'
+                'click .js-add-transcript': 'addTranscripts',
+                'click .js-lock-unlock-file': 'lockUnlockfile'
             },
 
             initialize: function(options) {
@@ -56,7 +57,8 @@ define(
                     )
                 );
 
-                if (this.model.get('status_value') === 'file_complete' && this.storageService === 'azure') {
+                if (this.storageService === 'azure' &&
+                    $.inArray(this.model.get('status_value'), ['file_complete', 'file_encrypted']) !== -1) {
                     this.renderTranscripts();
                 }
 
@@ -64,6 +66,9 @@ define(
             },
 
             renderTranscripts: function() {
+                if (this.transcriptsView) {
+                    this.transcriptsView.remove();
+                }
                 this.transcriptsView = new PreviousTranscriptsVideoUploadView({
                     collection: this.transcriptsCollection,
                     transcriptHandlerUrl: this.transcriptHandlerUrl,
@@ -99,7 +104,8 @@ define(
 
             getTranscripts: function() {
                 var view = this;
-                if (this.model.get('status_value') === 'file_complete' && this.storageService === 'azure') {
+                if (this.storageService === 'azure' &&
+                    $.inArray(this.model.get('status_value'), ['file_complete', 'file_encrypted']) !== -1) {
                     $.ajax({
                         url: this.transcriptHandlerUrl + '/' + this.model.get('edx_video_id'),
                         contentType: 'application/json',
@@ -123,6 +129,51 @@ define(
             addTranscripts: function(event) {
                 event.preventDefault();
                 this.transcriptsView.$el.find('.js-add-transcript').click();
+            },
+
+            lockUnlockfile: function(event) {
+                var videoView = this,
+                    postData,
+                    title,
+                    runMessage;
+
+                event.preventDefault();
+
+                if (this.model.get('status_value') === 'file_complete') {
+                    title = gettext('Are you sure you want to add encryption to this video file?');
+                    runMessage = gettext('Adding encryption');
+                    postData = {encrypt: true};
+                } else {
+                    title = gettext('Are you sure you want to remove encryption from this video file?');
+                    runMessage = gettext('Removing encryption');
+                    postData = {encrypt: false};
+                }
+
+                ViewUtils.confirmThenRunOperation(
+                    title,
+                    gettext('If the current video file is used in "Azure-media-service" xBlock, please go to the xBlock and redefine the video file.'), // eslint-disable-line max-len,
+                    gettext('OK'),
+                    function() {
+                        ViewUtils.runOperationShowingMessage(
+                            runMessage,
+                            function() {
+                                return $.ajax({
+                                    url: videoView.videoHandlerUrl + '/encrypt/' + videoView.model.get('edx_video_id'),
+                                    type: 'POST',
+                                    data: JSON.stringify(postData),
+                                    contentType: 'application/json',
+                                    dataType: 'json'
+                                }).done(function(data) {
+                                    videoView.model.set('status_value', data.status_value);
+                                    videoView.$('.js-lock-unlock-file').toggleClass(
+                                        'encrypted',
+                                        data.status_value === 'file_encrypted'
+                                    );
+                                });
+                            }
+                        );
+                    }
+                );
             }
         });
 
