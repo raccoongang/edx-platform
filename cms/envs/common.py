@@ -802,6 +802,7 @@ VIDEO_UPLOAD_PIPELINE = {
     'BUCKET': '',
     'ROOT_PATH': '',
     'CONCURRENT_UPLOAD_LIMIT': 4,
+    'CLOUD': 'aws'
 }
 
 ############################ APPS #####################################

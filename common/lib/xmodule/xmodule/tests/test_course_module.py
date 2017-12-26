@@ -408,5 +408,5 @@ class VideoUploadCourseDescriptorTestCase(unittest.TestCase):
         """
         Test CourseDescriptor.video_pipeline_configured if video upload backend is Azure.
         """
-        type(settings_mock).FEATURES = PropertyMock(return_value={'ENABLE_VIDEO_UPLOAD_PIPELINE': 'azure'})
+        type(settings_mock).VIDEO_UPLOAD_PIPELINE = PropertyMock(return_value={'CLOUD': 'azure'})
         self.assertTrue(self.course.video_pipeline_configured)

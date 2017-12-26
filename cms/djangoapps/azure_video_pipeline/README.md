@@ -31,7 +31,10 @@ The configuration process include two steps:
 To enable video upload feature for Azure provide following settings:
 ```
 # cms.env.json
-FEATURES['ENABLE_VIDEO_UPLOAD_PIPELINE'] = 'azure'
+FEATURES["ENABLE_VIDEO_UPLOAD_PIPELINE"] = true
+VIDEO_UPLOAD_PIPELINE = {
+    "CLOUD": "azure"        # <-- it is "aws" as default alternative
+}
 ```
 This setting opens extra Content menu item `Video Uploads` and video uploads page accordingly.
 
