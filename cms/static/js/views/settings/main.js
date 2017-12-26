@@ -1,9 +1,9 @@
 define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui', 'js/utils/date_utils',
     'js/models/uploads', 'js/views/uploads', 'js/views/license', 'js/models/license',
-    'common/js/components/views/feedback_notification', 'jquery.timepicker', 'date', 'gettext',
-    'js/views/learning_info', 'js/views/instructor_info', 'edx-ui-toolkit/js/utils/string-utils'],
+    'common/js/components/views/feedback_notification', 'js/views/settings/intro_video', 'jquery.timepicker', 'date',
+    'gettext', 'js/views/learning_info', 'js/views/instructor_info', 'edx-ui-toolkit/js/utils/string-utils'],
        function(ValidatingView, CodeMirror, _, $, ui, DateUtils, FileUploadModel,
-                FileUploadDialog, LicenseView, LicenseModel, NotificationView,
+                FileUploadDialog, LicenseView, LicenseModel, NotificationView, IntroVideoView,
                 timepicker, date, gettext, LearningInfoView, InstructorInfoView, StringUtils) {
            var DetailsView = ValidatingView.extend({
     // Model class is CMS.Models.Settings.CourseDetails
@@ -14,7 +14,6 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    'change input': 'updateModel',
                    'change textarea': 'updateModel',
                    'change select': 'updateModel',
-                   'click .remove-course-introduction-video': 'removeVideo',
                    'focus #course-overview': 'codeMirrorize',
                    'mouseover .timezone': 'updateTime',
         // would love to move to a general superclass, but event hashes don't inherit in backbone :-(
@@ -71,6 +70,12 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        el: $('.course-instructor-details-fields'),
                        model: this.model
                    });
+
+                   this.intro_video_view = new IntroVideoView({
+                       el: $('#field-course-introduction-video'),
+                       model: this.model,
+                       parent: this
+                   });
                },
 
                render: function() {
@@ -96,13 +101,6 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    this.$el.find('#' + this.fieldToSelectorMap.description).val(this.model.get('description'));
 
                    this.$el.find('#' + this.fieldToSelectorMap['short_description']).val(this.model.get('short_description'));
-
-                   this.$el.find('.current-course-introduction-video iframe').attr('src', this.model.videosourceSample());
-                   this.$el.find('#' + this.fieldToSelectorMap['intro_video']).val(this.model.get('intro_video') || '');
-                   if (this.model.has('intro_video')) {
-                       this.$el.find('.remove-course-introduction-video').show();
-                   }
-                   else this.$el.find('.remove-course-introduction-video').hide();
 
                    this.$el.find('#' + this.fieldToSelectorMap['effort']).val(this.model.get('effort'));
 
@@ -150,6 +148,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    this.licenseView.render();
                    this.learning_info_view.render();
                    this.instructor_info_view.render();
+                   this.intro_video_view.render();
 
                    return this;
                },
@@ -325,15 +324,6 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    this.imageTimer = setTimeout(function() {
                        $(previewSelector).attr('src', $(imagePathInputElement).val());
                    }, 1000);
-               },
-               removeVideo: function(event) {
-                   event.preventDefault();
-                   if (this.model.has('intro_video')) {
-                       this.model.set_videosource(null);
-                       this.$el.find('.current-course-introduction-video iframe').attr('src', '');
-                       this.$el.find('#' + this.fieldToSelectorMap['intro_video']).val('');
-                       this.$el.find('.remove-course-introduction-video').hide();
-                   }
                },
                codeMirrors: {},
                codeMirrorize: function(e, forcedTarget) {
