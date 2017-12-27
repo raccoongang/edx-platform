@@ -1,6 +1,3 @@
-<label for="course-introduction-video">
-    <%= gettext("Course Introduction Video") %>
-</label>
 <div class="input input-existing">
     <div class="current current-course-introduction-video">
           <iframe width="618" height="350"

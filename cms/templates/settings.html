@@ -16,7 +16,7 @@
 %>
 
 <%block name="header_extras">
-% for template_name in ["basic-modal", "modal-button", "upload-dialog", "license-selector", "course-settings-learning-fields", "course-instructor-details", "settings-intro-video"]:
+% for template_name in ["basic-modal", "modal-button", "upload-dialog", "license-selector", "course-settings-learning-fields", "course-instructor-details", "settings-intro-video-youtube", "settings-intro-video-azure"]:
   <script type="text/template" id="${template_name}-tpl">
     <%static:include path="js/${template_name}.underscore" />
   </script>
@@ -448,11 +448,26 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
                 % if about_page_editable:
                 <!-- intro video -->
                 <li class="field video" id="field-course-introduction-video">
-                  INTRO VIDEO PLAYER RENDERS HERE
+                  <label for="video-thumbnail-image-url">${_("Course Introduction Video")}</label>
+                  <div>
+                  <select name="intro-video-source" id="intro-video-source" style="float: right;">
+                    <option value="youtube" id="intro-video-source-youtube">
+                      ${_("YouTube")}
+                    </option>
+                    <option value="azure" id="intro-video-source-azure">
+                      ${_("Azure")}
+                    </option>
+                  </select>
+                  <span class="tip">${_("Currently, there are two media services available to set the introduction video from")}:
+                  </span>
+                  </div>
+                  <br>
+                  <div id="field-body-course-introduction-video">
+                    <!-- INTRO VIDEO PLAYER RENDERS HERE -->
+                  </div>
                 </li>
                 <!-- intro video ends -->
-                  % endif
-
+                % endif
 
               </ol>
             </div>

@@ -28,6 +28,7 @@ ABOUT_ATTRIBUTES = [
     'entrance_exam_enabled',
     'entrance_exam_id',
     'entrance_exam_minimum_score_pct',
+    'intro_video_source',
 ]
 
 
@@ -72,6 +73,7 @@ class CourseDetails(object):
         self.self_paced = None
         self.learning_info = []
         self.instructor_info = []
+        self.intro_video_source = ''
 
     @classmethod
     def fetch_about_attribute(cls, course_key, attribute):

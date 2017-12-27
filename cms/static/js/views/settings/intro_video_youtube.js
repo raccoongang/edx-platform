@@ -1,14 +1,9 @@
 define([
     'js/views/baseview',
     'underscore',
-    'text!templates/settings-intro-video.underscore'
+    'text!templates/settings-intro-video-youtube.underscore'
 ], function(BaseView, _, introVideoTemplate) {
-    var defaultIntroVideoData = {
-        'all-rights-reserved': {
-            'name': gettext('All Rights Reserved'),
-            'tooltip': gettext('You reserve all rights for your work')
-        }
-    };
+    var defaultIntroVideoData = {};
 
     var IntroVideoView = BaseView.extend({
         events: {

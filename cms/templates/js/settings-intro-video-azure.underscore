@@ -1,0 +1,23 @@
+<div class="input input-existing">
+
+    <div class="tc-wrapper">
+        <div class="azuremediaplayer">
+            <video class="amp-default-skin amp-big-play-centered video-wrapper"
+                   data-setup='{ "controls": true, "autoplay": false, "logo": {"enabled": false}, "height": 460 }'>
+
+            </video>
+
+            <h1>AZURE PLAYER TEMPLATE</h1>
+
+        </div>
+    </div>
+
+    <span class="tip tip-stacked">
+        <%= gettext("Please, choose the video from available ones") %>
+    </span>
+
+    <select name="course-video-list" id="course-video-list">
+        <option value="1">One</option>
+        <option value="2">Another</option>
+    </select>
+</div>

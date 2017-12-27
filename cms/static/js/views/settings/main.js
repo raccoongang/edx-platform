@@ -1,9 +1,10 @@
 define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui', 'js/utils/date_utils',
     'js/models/uploads', 'js/views/uploads', 'js/views/license', 'js/models/license',
-    'common/js/components/views/feedback_notification', 'js/views/settings/intro_video', 'jquery.timepicker', 'date',
+    'common/js/components/views/feedback_notification', 'js/views/settings/intro_video_youtube',
+    'js/views/settings/intro_video_azure','jquery.timepicker', 'date',
     'gettext', 'js/views/learning_info', 'js/views/instructor_info', 'edx-ui-toolkit/js/utils/string-utils'],
-       function(ValidatingView, CodeMirror, _, $, ui, DateUtils, FileUploadModel,
-                FileUploadDialog, LicenseView, LicenseModel, NotificationView, IntroVideoView,
+       function(ValidatingView, CodeMirror, _, $, ui, DateUtils, FileUploadModel, FileUploadDialog,
+                LicenseView, LicenseModel, NotificationView, IntroVideoYouTubeView, IntroVideoAzureView,
                 timepicker, date, gettext, LearningInfoView, InstructorInfoView, StringUtils) {
            var DetailsView = ValidatingView.extend({
     // Model class is CMS.Models.Settings.CourseDetails
@@ -71,11 +72,18 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        model: this.model
                    });
 
-                   this.intro_video_view = new IntroVideoView({
-                       el: $('#field-course-introduction-video'),
+                   this.intro_video_youtube_view = new IntroVideoYouTubeView({
+                       el: $('#field-body-course-introduction-video'),
                        model: this.model,
                        parent: this
                    });
+
+                   this.intro_video_azure_view = new IntroVideoAzureView({
+                       el: $('#field-body-course-introduction-video'),
+                       model: this.model,
+                       parent: this
+                   });
+
                },
 
                render: function() {
@@ -145,10 +153,17 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        paceToggleTip.text(gettext('Course pacing cannot be changed once a course has started.'));
                    }
 
+                   this.$el.find('#' + 'intro-video-source-' + this.model.get('intro_video_source')).prop('selected', true);
+
                    this.licenseView.render();
                    this.learning_info_view.render();
                    this.instructor_info_view.render();
-                   this.intro_video_view.render();
+                   // YouTube or Azure video player:
+                   if (this.model.get('intro_video_source') === 'youtube') {
+                       this.intro_video_youtube_view.render();
+                   } else {
+                       this.intro_video_azure_view.render();
+                   }
 
                    return this;
                },
@@ -165,6 +180,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    'description': 'course-description',
                    'short_description': 'course-short-description',
                    'intro_video': 'course-introduction-video',
+                   'intro_video_source': 'intro-video-source',
                    'effort': 'course-effort',
                    'course_image_asset_path': 'course-image-url',
                    'banner_image_asset_path': 'banner-image-url',
@@ -290,6 +306,12 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                                this.$el.find('.remove-course-introduction-video').hide();
                            }
                        }, this), 1000);
+                       break;
+                   case 'intro-video-source':
+                       this.clearValidationErrors();
+                       var value = $(event.currentTarget).val();
+                       this.model.set('intro_video_source', value);
+                       this.render();
                        break;
                    case 'course-pace-self-paced':
             // Fallthrough to handle both radio buttons
