@@ -37,7 +37,8 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
     require(["js/factories/settings"], function(SettingsFactory) {
         SettingsFactory(
             "${details_url | n, js_escaped_string}",
-            ${show_min_grade_warning | n, dump_js_escaped_json}
+            ${show_min_grade_warning | n, dump_js_escaped_json},
+            JSON.parse(${course_videos | n, dump_js_escaped_json}),
         );
     });
 </%block>
@@ -451,10 +452,10 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
                   <label for="video-thumbnail-image-url">${_("Course Introduction Video")}</label>
                   <div>
                   <select name="intro-video-source" id="intro-video-source" style="float: right;">
-                    <option value="youtube" id="intro-video-source-youtube">
+                    <option value="youtube" id="intro-video-source-youtube"${' selected' if intro_video_source == 'youtube' else '' }>
                       ${_("YouTube")}
                     </option>
-                    <option value="azure" id="intro-video-source-azure">
+                    <option value="azure" id="intro-video-source-azure"${' selected' if intro_video_source == 'azure' else '' }>
                       ${_("Azure")}
                     </option>
                   </select>

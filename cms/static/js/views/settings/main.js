@@ -77,11 +77,11 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        model: this.model,
                        parent: this
                    });
-
                    this.intro_video_azure_view = new IntroVideoAzureView({
                        el: $('#field-body-course-introduction-video'),
                        model: this.model,
-                       parent: this
+                       parent: this,
+                       courseVideos: options.courseVideos
                    });
 
                },
@@ -152,8 +152,6 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        instructorPacedButton.attr('disabled', true);
                        paceToggleTip.text(gettext('Course pacing cannot be changed once a course has started.'));
                    }
-
-                   this.$el.find('#' + 'intro-video-source-' + this.model.get('intro_video_source')).prop('selected', true);
 
                    this.licenseView.render();
                    this.learning_info_view.render();
@@ -306,6 +304,12 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                                this.$el.find('.remove-course-introduction-video').hide();
                            }
                        }, this), 1000);
+                       break;
+                   case 'course-video-list':
+                       this.clearValidationErrors();
+                       var value = $(event.currentTarget).val();
+                       this.model.set('intro_video_id', value);
+                       this.render();
                        break;
                    case 'intro-video-source':
                        this.clearValidationErrors();

@@ -29,6 +29,7 @@ ABOUT_ATTRIBUTES = [
     'entrance_exam_id',
     'entrance_exam_minimum_score_pct',
     'intro_video_source',
+    'intro_video_id',
 ]
 
 
@@ -55,6 +56,8 @@ class CourseDetails(object):
         self.short_description = ""
         self.overview = ""  # html to render as the overview
         self.intro_video = None  # a video pointer
+        self.intro_video_source = ''
+        self.intro_video_id = ''
         self.effort = None  # hours/week
         self.license = "all-rights-reserved"  # default course license is all rights reserved
         self.course_image_name = ""
@@ -73,7 +76,6 @@ class CourseDetails(object):
         self.self_paced = None
         self.learning_info = []
         self.instructor_info = []
-        self.intro_video_source = ''
 
     @classmethod
     def fetch_about_attribute(cls, course_key, attribute):

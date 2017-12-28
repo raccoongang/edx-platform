@@ -1,6 +1,6 @@
 <div class="input input-existing">
 
-    <div class="tc-wrapper">
+    <div class="tc-wrapper" style="display:none;">
         <div class="azuremediaplayer">
             <video class="amp-default-skin amp-big-play-centered video-wrapper"
                    data-setup='{ "controls": true, "autoplay": false, "logo": {"enabled": false}, "height": 460 }'>
@@ -17,7 +17,10 @@
     </span>
 
     <select name="course-video-list" id="course-video-list">
-        <option value="1">One</option>
-        <option value="2">Another</option>
+    <% _.forEach(courseVideos, function(video) { %>
+        <option id="<%= video.edx_video_id %>" value="<%= video.edx_video_id %>"<%if (video.edx_video_id === model.intro_video_id) {%> selected<%}%>>
+            <span><%= video.client_video_id %></span> [ video ID: <%= video.edx_video_id %> ]
+        </option>
+    <% }); %>
     </select>
 </div>

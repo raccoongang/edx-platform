@@ -10,11 +10,13 @@ define([
         initialize: function(options) {
             this.introVideoData = options.introVideoData || defaultIntroVideoData;
             this.parent = options.parent;
+            this.courseVideos = options.courseVideos;
         },
 
         render: function() {
             this.$el.html(_.template(introVideoTemplate)({
-                model: this.model.attributes
+                model: this.model.attributes,
+                courseVideos: this.courseVideos
             }));
             return this;
         }
