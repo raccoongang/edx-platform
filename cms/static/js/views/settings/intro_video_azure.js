@@ -6,6 +6,9 @@ define([
     var defaultIntroVideoData = {};
 
     var IntroVideoView = BaseView.extend({
+        events: {
+            'click .remove-course-introduction-azure-video': 'removeVideo'
+        },
 
         initialize: function(options) {
             this.introVideoData = options.introVideoData || defaultIntroVideoData;
@@ -19,6 +22,16 @@ define([
                 courseVideos: this.courseVideos
             }));
             return this;
+        },
+
+        removeVideo: function(event) {
+            event.preventDefault();
+            if (this.model.has('intro_video_id')) {
+                this.$el.find('#course-video-list').val('');
+                this.$el.find('.azuremediaplayer').hide();
+                this.$el.find('.remove-course-introduction-azure-video').hide();
+                this.model.set('intro_video_id', '');
+            }
         }
 
     });
