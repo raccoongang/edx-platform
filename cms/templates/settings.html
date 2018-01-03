@@ -16,7 +16,7 @@
 %>
 
 <%block name="header_extras">
-% for template_name in ["basic-modal", "modal-button", "upload-dialog", "license-selector", "course-settings-learning-fields", "course-instructor-details", "settings-intro-video-youtube", "settings-intro-video-azure"]:
+% for template_name in ["basic-modal", "modal-button", "upload-dialog", "license-selector", "course-settings-learning-fields", "course-instructor-details", "settings-intro-video-youtube"]:
   <script type="text/template" id="${template_name}-tpl">
     <%static:include path="js/${template_name}.underscore" />
   </script>
@@ -25,6 +25,9 @@
 
 <%block name="jsextra">
   <link rel="stylesheet" type="text/css" href="${static.url('js/vendor/timepicker/jquery.timepicker.css')}" />
+  <link rel="stylesheet" type="text/css"
+        href="https://amp.azure.net/libs/amp/1.8.1/skins/amp-default/azuremediaplayer.min.css" />
+  <link rel="stylesheet" type="text/css" href="${static.url('js/vendor/azure-media-player/player.js')}" />
 
   <script type="text/javascript">
 window.CMS = window.CMS || {};
@@ -37,8 +40,9 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
     require(["js/factories/settings"], function(SettingsFactory) {
         SettingsFactory(
             "${details_url | n, js_escaped_string}",
+            "${video_handler_url | n, js_escaped_string}",
             ${show_min_grade_warning | n, dump_js_escaped_json},
-            JSON.parse(${course_videos | n, dump_js_escaped_json}),
+            JSON.parse(${course_videos_json | n, dump_js_escaped_json}),
         );
     });
 </%block>

@@ -81,7 +81,8 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        el: $('#field-body-course-introduction-video'),
                        model: this.model,
                        parent: this,
-                       courseVideos: options.courseVideos
+                       courseVideos: options.courseVideos,
+                       videoHandlerUrl: options.videoHandlerUrl
                    });
 
                },

@@ -17,7 +17,6 @@ import django.utils
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_http_methods, require_GET
 from django.views.decorators.csrf import ensure_csrf_cookie
-from edxval.models import Video
 
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
@@ -226,16 +225,6 @@ def _dismiss_notification(request, course_action_state_id):  # pylint: disable=u
     action_state.delete()
 
     return JsonResponse({'success': True})
-
-
-def get_course_videos_data(course_key):
-    videos_qs = Video.objects.filter(
-        courses__course_id=course_key,
-        courses__is_hidden=False,
-        status__in=["file_complete", "file_encrypted"]
-    ).order_by('-created', 'edx_video_id').values('edx_video_id', 'client_video_id')
-    json_course_videos = json.dumps(list(videos_qs))
-    return json_course_videos
 
 
 # pylint: disable=unused-argument
@@ -980,6 +969,9 @@ def settings_handler(request, course_key_string):
     PUT
         json: update the Course and About xblocks through the CourseDetails model
     """
+    # code style violation to avoid circular import:
+    from contentstore.views.videos import get_course_videos_data
+
     course_key = CourseKey.from_string(course_key_string)
     credit_eligibility_enabled = settings.FEATURES.get('ENABLE_CREDIT_ELIGIBILITY', False)
     with modulestore().bulk_operations(course_key):
@@ -987,6 +979,7 @@ def settings_handler(request, course_key_string):
         if 'text/html' in request.META.get('HTTP_ACCEPT', '') and request.method == 'GET':
             upload_asset_url = reverse_course_url('assets_handler', course_key)
             course_details = CourseDetails.fetch(course_key)
+            course = get_course_and_check_access(course_key, request.user)
 
             # see if the ORG of this course can be attributed to a defined configuration . In that case, the
             # course about page should be editable in Studio
@@ -1009,7 +1002,6 @@ def settings_handler(request, course_key_string):
                 settings.FEATURES.get('EDITABLE_SHORT_DESCRIPTION', True)
             )
             self_paced_enabled = SelfPacedConfiguration.current().enabled
-
             settings_context = {
                 'context_course': course_module,
                 'course_locator': course_key,
@@ -1031,9 +1023,10 @@ def settings_handler(request, course_key_string):
                 'is_entrance_exams_enabled': is_entrance_exams_enabled(),
                 'self_paced_enabled': self_paced_enabled,
                 'enable_extended_course_details': enable_extended_course_details,
-                'course_videos': get_course_videos_data(course_key),
+                'video_handler_url': reverse_course_url('videos_handler', unicode(course.id)),
                 'intro_video_source': course_details.intro_video_source,
                 'intro_video_id': course_details.intro_video_id,
+                'course_videos_json': get_course_videos_data(course_key),
             }
             if is_prerequisite_courses_enabled():
                 courses, in_process_course_actions = get_courses_accessible_to_user(request)

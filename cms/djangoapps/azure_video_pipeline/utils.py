@@ -1,9 +1,25 @@
+import logging
+
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext as _
 
 from .media_service import MediaServiceClient
 from .models import AzureOrgProfile
+
+LOGGER = logging.getLogger(__name__)
+
+
+class LocatorTypes(object):
+    SAS = 1
+    OnDemandOrigin = 2
+
+
+class AccessPolicyPermissions(object):
+    NONE = 0
+    READ = 1
+    WRITE = 2
+    DELETE = 3
 
 
 def get_azure_config(organization):

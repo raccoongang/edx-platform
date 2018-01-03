@@ -1,32 +1,35 @@
 <div class="input input-existing">
 
-    <% if (model.intro_video_id) {%>
+    <% if (typeof videoInfo === 'undefined' && !model.intro_video_id) { %>
+    <div> Selected video will be rendered here...</div>
+    <% } else if (typeof videoInfo === 'undefined') { %>
+    <div> Checking for video file...</div>
+    <% } else if (model.intro_video_id) { %>
     <div class="tc-wrapper">
         <div class="azuremediaplayer">
             <video class="amp-default-skin amp-big-play-centered video-wrapper"
-                   data-setup='{ "controls": true, "autoplay": false, "logo": {"enabled": false}, "height": 460 }'>
+                   data-setup='{ "controls": true, "autoplay": false, "logo": {"enabled": false}, "height": 640 }'>
+                <source
+                    src="<%= videoInfo.smooth_streaming_url %>"
 
+                    type="application/vnd.ms-sstr+xml"
+                />
             </video>
-
-            <h1>AZURE PLAYER TEMPLATE</h1>
-
         </div>
     </div>
-    <div class="actions">
-        <a href="#" class="remove-item remove-course-introduction-azure-video">
-            <span class="delete-icon"></span><%= gettext("Delete Current Video") %>
-        </a>
-    </div>
-    <%};%>
+    <script src="https://amp.azure.net/libs/amp/1.8.1/azuremediaplayer.min.js"></script>
+    <% }; %>
+</div>
 
+<div>
+    <% if (model.intro_video_source === 'azure') { %>
     <select name="course-video-list" id="course-video-list">
-        <option id="video-list-none" value=""><%= gettext("Please, choose the video from available ones")
-        %></option>
-
+        <option id="video-list-none" value=""><%= gettext("Please, choose the video from available ones") %></option>
         <% _.forEach(courseVideos, function(video) { %>
-        <option id="<%= video.edx_video_id %>" value="<%= video.edx_video_id %>"<%if (video.edx_video_id === model.intro_video_id) {%> selected<%}%>>
+        <option id="<% video.edx_video_id %>" value="<%= video.edx_video_id %>"<%if (video.edx_video_id === model.intro_video_id) {%> selected<%}%>>
             <span><%= video.client_video_id %></span> [ video ID: <%= video.edx_video_id %> ]
         </option>
         <% }); %>
     </select>
+    <%};%>
 </div>
