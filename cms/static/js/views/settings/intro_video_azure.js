@@ -44,6 +44,11 @@ define([
                 }
                 console.error(errorMsg);
             })
+        },
+
+        reset: function() {
+            this.model.set('intro_video_id', '');
+            this.model.set('intro_video_manifest', '')
         }
 
     });

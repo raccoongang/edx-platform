@@ -178,11 +178,11 @@ class CourseDetails(object):
             store.update_item(about_item, user_id, allow_not_found=True)
 
     @classmethod
-    def update_about_video(cls, course, video_id, user_id):
+    def update_about_video(cls, course, video_id, video_source, user_id):
         """
         Updates the Course's about video to the given video ID.
         """
-        recomposed_video_tag = CourseDetails.recompose_video_tag(video_id)
+        recomposed_video_tag = CourseDetails.recompose_video_tag(video_id, video_source)
         cls.update_about_item(course, 'video', recomposed_video_tag, user_id)
 
     @classmethod
@@ -289,7 +289,11 @@ class CourseDetails(object):
             if attribute in jsondict:
                 cls.update_about_item(descriptor, attribute, jsondict[attribute], user.id)
 
-        cls.update_about_video(descriptor, jsondict['intro_video'], user.id)
+        video_source = jsondict['intro_video_source']
+        if video_source == 'youtube':
+            cls.update_about_video(descriptor, jsondict['intro_video'], video_source,  user.id)
+        else:
+            cls.update_about_video(descriptor, jsondict['intro_video_manifest'], video_source, user.id)
 
         # Could just return jsondict w/o doing any db reads, but I put
         # the reads in as a means to confirm it persisted correctly
@@ -318,7 +322,7 @@ class CourseDetails(object):
             return None
 
     @staticmethod
-    def recompose_video_tag(video_key):
+    def recompose_video_tag(video_key, video_source):
         """
         Returns HTML string to embed the video in an iFrame.
         """
@@ -327,9 +331,19 @@ class CourseDetails(object):
         #  the right thing
         result = None
         if video_key:
-            result = (
-                '<iframe title="YouTube Video" width="560" height="315" src="//www.youtube.com/embed/' +
-                video_key +
-                '?rel=0" frameborder="0" allowfullscreen=""></iframe>'
-            )
+            if video_source == 'youtube':
+                result = (
+                    '<iframe title="YouTube Video" width="560" height="315" src="//www.youtube.com/embed/' +
+                    video_key +
+                    '?rel=0" frameborder="0" allowfullscreen=""></iframe>'
+                )
+            if video_source == 'azure':
+                result = (u"""
+                    <div class="azuremediaplayer">
+                        <video class="amp-default-skin amp-big-play-centered video-wrapper"
+                            data-setup='{ "controls": true, "autoplay": false, "logo": {"enabled": false}, "height": 312 }'>
+                            <source src="%s" type="application/vnd.ms-sstr+xml" />
+                        </video>
+                    </div>
+                """) % video_key
         return result

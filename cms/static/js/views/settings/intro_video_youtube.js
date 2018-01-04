@@ -35,7 +35,12 @@ define([
                 this.model.set_videosource(null);
                 this.render();
             }
+        },
+
+        reset: function() {
+            this.model.set('intro_video', '');
         }
+
     });
     return IntroVideoView;
 });

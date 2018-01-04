@@ -8,7 +8,7 @@
     <div class="tc-wrapper">
         <div class="azuremediaplayer">
             <video class="amp-default-skin amp-big-play-centered video-wrapper"
-                   data-setup='{ "controls": true, "autoplay": false, "logo": {"enabled": false}, "height": 640 }'>
+                   data-setup='{ "controls": true, "autoplay": false, "logo": {"enabled": false}, "height": 480 }'>
                 <source
                     src="<%= videoInfo.smooth_streaming_url %>"
 

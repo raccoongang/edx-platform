@@ -33,7 +33,9 @@
 
                     var modal_id = $(this).attr('href');
 
-                    if ($(modal_id).hasClass('video-modal')) {
+                    if ($(modal_id).find('azuremediaplayer')) {
+                        // do not perform cloning of Azure Media Player, please.
+                    } else if ($(modal_id).hasClass('video-modal')) {
             // Video modals need to be cloned before being presented as a modal
             // This is because actions on the video get recorded in the history.
             // Deleting the video (clone) prevents the odd back button behavior.

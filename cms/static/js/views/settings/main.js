@@ -317,6 +317,11 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        this.clearValidationErrors();
                        var value = $(event.currentTarget).val();
                        this.model.set('intro_video_source', value);
+                       if (value === 'youtube') {
+                           this.intro_video_azure_view.reset();
+                       } else {
+                           this.intro_video_youtube_view.reset();
+                       }
                        this.render();
                        break;
                    case 'course-pace-self-paced':
