@@ -21,6 +21,8 @@ import datetime
 import json
 
 import dateutil
+from celery.schedules import crontab
+import random
 
 from .common import *
 from openedx.core.lib.derived import derive_settings
@@ -99,6 +101,15 @@ CELERY_QUEUES = {
 }
 
 CELERY_ROUTES = "{}celery.Router".format(QUEUE_VARIANT)
+
+# If we're a worker on the high_mem queue, set ourselves to die after processing
+# one request to avoid having memory leaks take down the worker server. This env
+# var is set in /etc/init/edx-workers.conf -- this should probably be replaced
+# with some celery API call to see what queue we started listening to, but I
+# don't know what that call is or if it's active at this point in the code.
+if os.environ.get('QUEUE') == 'high_mem':
+    CELERYD_MAX_TASKS_PER_CHILD = 1
+
 CELERYBEAT_SCHEDULE = {}  # For scheduling tasks, entries can be added to this dict
 
 ########################## NON-SECURE ENV CONFIG ##############################
@@ -106,6 +117,21 @@ CELERYBEAT_SCHEDULE = {}  # For scheduling tasks, entries can be added to this d
 
 with open(CONFIG_ROOT / CONFIG_PREFIX + "env.json") as env_file:
     ENV_TOKENS = json.load(env_file)
+
+# Celery time zone settings for periodic task.
+OPENEDX_LEARNERS_GLOBAL_ANALYTICS_ENABLE = ENV_TOKENS.get('OPENEDX_LEARNERS_GLOBAL_ANALYTICS_ENABLE', False)
+OPENEDX_LEARNERS_GLOBAL_ANALYTICS_SETTINGS = ENV_TOKENS.get('OPENEDX_LEARNERS_GLOBAL_ANALYTICS', None)
+if OPENEDX_LEARNERS_GLOBAL_ANALYTICS_ENABLE and OPENEDX_LEARNERS_GLOBAL_ANALYTICS_SETTINGS:
+    CELERY_TIMEZONE = OPENEDX_LEARNERS_GLOBAL_ANALYTICS_SETTINGS.get('CELERY_TIMEZONE') or TIME_ZONE
+    CELERYBEAT_SCHEDULE.update({
+        # 'collect_stats' is the celery periodic task that gathers information about the
+        # students amount, geographical coordinates of the platform, courses amount and
+        # makes a POST request with the data to the appropriate service.
+        'collect_stats': {
+            'task': 'openedx.core.djangoapps.edx_global_analytics.tasks.collect_stats',
+            'schedule': crontab(hour=0, minute=random.randint(1, 59)),
+        }
+    })
 
 # STATIC_ROOT specifies the directory where static files are
 # collected
