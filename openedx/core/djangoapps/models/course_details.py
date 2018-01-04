@@ -28,8 +28,9 @@ ABOUT_ATTRIBUTES = [
     'entrance_exam_enabled',
     'entrance_exam_id',
     'entrance_exam_minimum_score_pct',
-    'intro_video_source',
     'intro_video_id',
+    'intro_video_manifest',
+    'intro_video_source',
 ]
 
 
@@ -56,8 +57,9 @@ class CourseDetails(object):
         self.short_description = ""
         self.overview = ""  # html to render as the overview
         self.intro_video = None  # a video pointer
-        self.intro_video_source = ''
         self.intro_video_id = ''
+        self.intro_video_manifest = ''
+        self.intro_video_source = ''
         self.effort = None  # hours/week
         self.license = "all-rights-reserved"  # default course license is all rights reserved
         self.course_image_name = ""

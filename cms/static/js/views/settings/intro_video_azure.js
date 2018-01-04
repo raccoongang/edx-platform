@@ -6,10 +6,6 @@ define([
     var IntroVideoView = BaseView.extend({
         defaultFailureMessage: gettext('This may be happening because of an error with our server or your internet connection. Try refreshing the page or making sure you are online.'),  // eslint-disable-line max-len
 
-        events: {
-            'click .remove-course-introduction-azure-video': 'removeVideo'
-        },
-
         initialize: function(options) {
             this.introVideoData = options.introVideoData;
             this.parent = options.parent;
@@ -29,16 +25,6 @@ define([
             return this;
         },
 
-        removeVideo: function(event) {
-            event.preventDefault();
-            if (this.model.has('intro_video_id')) {
-                this.$el.find('#course-video-list').val('');
-                this.$el.find('.azuremediaplayer').hide();
-                this.$el.find('.remove-course-introduction-azure-video').hide();
-                this.model.set('intro_video_id', '');
-            }
-        },
-
         getIntroVideoData: function(edxVideoId) {
             if (!edxVideoId) return;
             $.ajax({
@@ -47,6 +33,7 @@ define([
                 contentType: 'application/json',
                 context: this
             }).done(function(responseData) {
+                this.model.set('intro_video_manifest', responseData.video_info.smooth_streaming_url);
                 this.render(responseData.video_info);
             }).fail(function(response) {
                 var errorMsg;

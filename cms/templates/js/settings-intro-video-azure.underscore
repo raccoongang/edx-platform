@@ -24,7 +24,9 @@
 <div>
     <% if (model.intro_video_source === 'azure') { %>
     <select name="course-video-list" id="course-video-list">
-        <option id="video-list-none" value=""><%= gettext("Please, choose the video from available ones") %></option>
+        <option id="video-list-none" value="">
+            <%= model.intro_video_id ? gettext("Delete current video") : gettext("Please, choose the video from available ones") %>
+        </option>
         <% _.forEach(courseVideos, function(video) { %>
         <option id="<% video.edx_video_id %>" value="<%= video.edx_video_id %>"<%if (video.edx_video_id === model.intro_video_id) {%> selected<%}%>>
             <span><%= video.client_video_id %></span> [ video ID: <%= video.edx_video_id %> ]

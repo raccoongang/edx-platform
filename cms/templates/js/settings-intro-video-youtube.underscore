@@ -1,6 +1,9 @@
 <div class="input input-existing">
+    <% if (!model.intro_video) { %>
+    <div> Selected video will be rendered here...</div>
+    <% } else { %>
     <div class="current current-course-introduction-video">
-          <iframe width="618" height="350"
+          <iframe width="100%" height="480"
                   title=<%= gettext("Course Introduction Video") %>
                   src="" frameborder="0"
                   allowfullscreen>
@@ -11,6 +14,7 @@
             <span class="delete-icon"></span><%= gettext("Delete Current Video") %>
         </a>
     </div>
+    <% }; %>
 </div>
 
 <div class="input">

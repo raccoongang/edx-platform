@@ -295,6 +295,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    case 'course-introduction-video':
                        this.clearValidationErrors();
                        var previewsource = this.model.set_videosource($(event.currentTarget).val());
+                       this.intro_video_youtube_view.render();
                        clearTimeout(this.videoTimer);
                        this.videoTimer = setTimeout(_.bind(function() {
                            this.$el.find('.current-course-introduction-video iframe').attr('src', previewsource);
@@ -311,15 +312,6 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        var value = $(event.currentTarget).val();
                        this.model.set('intro_video_id', value);
                        this.render();
-                       clearTimeout(this.videoTimer);
-                       this.videoTimer = setTimeout(_.bind(function() {
-                           if (this.model.has('intro_video_id')) {
-                               this.$el.find('.remove-course-introduction-azure-video').show();
-                           }
-                           else {
-                               this.$el.find('.remove-course-introduction-azure-video').hide();
-                           }
-                       }, this), 1000);
                        break;
                    case 'intro-video-source':
                        this.clearValidationErrors();

@@ -33,9 +33,7 @@ define([
             event.preventDefault();
             if (this.model.has('intro_video')) {
                 this.model.set_videosource(null);
-                this.$el.find('.current-course-introduction-video iframe').attr('src', '');
-                this.$el.find('#course-introduction-video').val('');
-                this.$el.find('.remove-course-introduction-video').hide();
+                this.render();
             }
         }
     });
