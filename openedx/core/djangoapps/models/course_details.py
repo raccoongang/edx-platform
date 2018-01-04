@@ -340,7 +340,7 @@ class CourseDetails(object):
             if video_source == 'azure':
                 result = (u"""
                     <div class="azuremediaplayer">
-                        <video class="amp-default-skin amp-big-play-centered video-wrapper"
+                        <video id="intro-player" class="amp-default-skin amp-big-play-centered video-wrapper"
                             data-setup='{ "controls": true, "autoplay": false, "logo": {"enabled": false}, "height": 312 }'>
                             <source src="%s" type="application/vnd.ms-sstr+xml" />
                         </video>

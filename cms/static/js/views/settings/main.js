@@ -309,6 +309,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        break;
                    case 'course-video-list':
                        this.clearValidationErrors();
+                       this.intro_video_azure_view.reset();
                        var value = $(event.currentTarget).val();
                        this.model.set('intro_video_id', value);
                        this.render();
