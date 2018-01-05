@@ -234,6 +234,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                updateModel: function(event) {
                    var value;
                    var index = event.currentTarget.getAttribute('data-index');
+                   var lang = event.currentTarget.getAttribute('data-lang');
                    switch (event.currentTarget.id) {
                    case 'course-learning-info-' + index:
                        value = $(event.currentTarget).val();
@@ -324,6 +325,17 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                            this.intro_video_youtube_view.reset();
                        }
                        this.render();
+                       break;
+                   case 'captions-' + lang:
+                       var checkedCaptions = $("input[type=checkbox]:checked.intro-captions");
+                       var captions = _.map(checkedCaptions, function(captionInput) {
+                           return captionInput.dataset;
+                       });
+                       if (captions) {
+                           this.model.set('intro_video_captions', JSON.stringify(captions));
+                       } else {
+                           this.model.set('intro_video_captions',  JSON.stringify([]));
+                       }
                        break;
                    case 'course-pace-self-paced':
             // Fallthrough to handle both radio buttons

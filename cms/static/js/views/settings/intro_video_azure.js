@@ -13,11 +13,25 @@ define([
             this.videoHandlerUrl = options.videoHandlerUrl;
         },
 
-        render: function(videoInfo) {
+        render: function(responseData) {
+            // helper to use in template
+            var captionEnabled = function(caption) {
+                var result = _.filter(JSON.parse(this.model.intro_video_captions), function(parsedCaption) {
+                    return parsedCaption.lang === caption.language;
+                });
+                return !!result.length;
+            };
+
+            if (responseData) {
+                var videoInfo = responseData.video_info;
+                var captions = responseData.captions;
+            }
             this.$el.html(_.template(introVideoTemplate)({
                 model: this.model.attributes,
                 courseVideos: this.courseVideos,
-                videoInfo: videoInfo
+                videoInfo: videoInfo,
+                captions: captions || [],
+                captionEnabled: captionEnabled
             }));
             if (!videoInfo) {
                 this.getIntroVideoData(this.model.get('intro_video_id'));
@@ -34,7 +48,7 @@ define([
                 context: this
             }).done(function(responseData) {
                 this.model.set('intro_video_manifest', responseData.video_info.smooth_streaming_url);
-                this.render(responseData.video_info);
+                this.render(responseData);
             }).fail(function(response) {
                 var errorMsg;
                 try {
@@ -48,7 +62,8 @@ define([
 
         reset: function() {
             this.model.set('intro_video_id', '');
-            this.model.set('intro_video_manifest', '')
+            this.model.set('intro_video_manifest', '');
+            this.model.set('intro_video_captions', '[]');
         }
 
     });

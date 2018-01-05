@@ -1,6 +1,8 @@
 """
 CourseDetails
 """
+import json
+
 import re
 import logging
 
@@ -28,6 +30,7 @@ ABOUT_ATTRIBUTES = [
     'entrance_exam_enabled',
     'entrance_exam_id',
     'entrance_exam_minimum_score_pct',
+    'intro_video_captions',
     'intro_video_id',
     'intro_video_manifest',
     'intro_video_source',
@@ -57,6 +60,7 @@ class CourseDetails(object):
         self.short_description = ""
         self.overview = ""  # html to render as the overview
         self.intro_video = None  # a video pointer
+        self.intro_video_captions = ''
         self.intro_video_id = ''
         self.intro_video_manifest = ''
         self.intro_video_source = ''
@@ -178,11 +182,11 @@ class CourseDetails(object):
             store.update_item(about_item, user_id, allow_not_found=True)
 
     @classmethod
-    def update_about_video(cls, course, video_id, video_source, user_id):
+    def update_about_video(cls, course, video_id, user_id, video_source, captions=None):
         """
         Updates the Course's about video to the given video ID.
         """
-        recomposed_video_tag = CourseDetails.recompose_video_tag(video_id, video_source)
+        recomposed_video_tag = CourseDetails.recompose_video_tag(video_id, video_source, captions)
         cls.update_about_item(course, 'video', recomposed_video_tag, user_id)
 
     @classmethod
@@ -291,9 +295,11 @@ class CourseDetails(object):
 
         video_source = jsondict['intro_video_source']
         if video_source == 'youtube':
-            cls.update_about_video(descriptor, jsondict['intro_video'], video_source,  user.id)
+            cls.update_about_video(descriptor, jsondict['intro_video'], user.id, video_source)
         else:
-            cls.update_about_video(descriptor, jsondict['intro_video_manifest'], video_source, user.id)
+            cls.update_about_video(
+                descriptor, jsondict['intro_video_manifest'], user.id, video_source, jsondict['intro_video_captions']
+            )
 
         # Could just return jsondict w/o doing any db reads, but I put
         # the reads in as a means to confirm it persisted correctly
@@ -322,7 +328,7 @@ class CourseDetails(object):
             return None
 
     @staticmethod
-    def recompose_video_tag(video_key, video_source):
+    def recompose_video_tag(video_key, video_source, captions_json):
         """
         Returns HTML string to embed the video in an iFrame.
         """
@@ -338,12 +344,23 @@ class CourseDetails(object):
                     '?rel=0" frameborder="0" allowfullscreen=""></iframe>'
                 )
             if video_source == 'azure':
+                text_tracks_template = ''
+                if captions_json:
+                    captions = json.loads(captions_json)
+
+                    def make_track_temlpate(caption):
+                        return u'<track kind="subtitles" src="%s" srclang="%s" label="%s" />' % (
+                            caption[u'url'], caption[u'lang'], caption[u'label']
+                        )
+                    text_tracks_template = u'\n'.join([make_track_temlpate(caption) for caption in captions])
+
                 result = (u"""
                     <div class="azuremediaplayer">
                         <video id="intro-player" class="amp-default-skin amp-big-play-centered video-wrapper"
                             data-setup='{ "controls": true, "autoplay": false, "logo": {"enabled": false}, "height": 312 }'>
                             <source src="%s" type="application/vnd.ms-sstr+xml" />
+                            %s
                         </video>
                     </div>
-                """) % video_key
+                """) % (video_key, text_tracks_template)
         return result

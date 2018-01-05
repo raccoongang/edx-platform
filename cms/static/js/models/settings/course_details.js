@@ -18,6 +18,7 @@ define(['backbone', 'underscore', 'gettext', 'js/models/validation_helpers', 'js
                 short_description: '',
                 overview: '',
                 intro_video: null,
+                intro_video_captions: '[]',
                 intro_video_id: null,
                 intro_video_manifest: '',
                 intro_video_source: 'youtube',

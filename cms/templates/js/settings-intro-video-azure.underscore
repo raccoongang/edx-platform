@@ -3,7 +3,7 @@
     <% if (typeof videoInfo === 'undefined' && !model.intro_video_id) { %>
     <div> Selected video will be rendered here...</div>
     <% } else if (typeof videoInfo === 'undefined') { %>
-    <div> Checking for video file...</div>
+    <div><b><span style="color:#edbd3c;">Checking for video file...</span></b></div>
     <% } else if (model.intro_video_id) { %>
     <div class="tc-wrapper">
         <div class="azuremediaplayer">
@@ -14,6 +14,12 @@
 
                     type="application/vnd.ms-sstr+xml"
                 />
+                <% _.forEach(captions, function(caption) { %>
+                    <% if (captionEnabled(caption)) { %>
+                    <track kind="subtitles" src="<%= caption.download_url %>" srclang="<%= caption.language %>" label="<%= caption.language_title %>" /> %>
+                    <% }; %>
+                <% }); %>
+
             </video>
         </div>
     </div>
@@ -33,5 +39,32 @@
         </option>
         <% }); %>
     </select>
+
+        <% if (typeof videoInfo !== 'undefined') { %>
+            <div>
+                <span class="tip tip-inline"><%= gettext("Azure introduction video file.")%></span>
+            </div>
+
+            <% if (captions.length) { %>
+            <% _.forEach(captions, function(caption) { %>
+            <div class="show-data">
+                <div class="heading">
+                    <input type="checkbox"
+                           id="captions-<%= caption.language%>"
+                           class="intro-captions"
+                           data-lang="<%= caption.language%>"
+                           data-label="<%= caption.language_title%>"
+                           data-url="<%= caption.download_url%>"
+                        <%= captionEnabled(caption) ? 'checked' : '' %> />
+                    <label for="captions-<%= caption.language%>">
+                        <%= caption.language_title %>  (<%= caption.language %>)
+                    </label>
+                </div>
+            </div>
+            <% }); %>
+            <span class="tip tip-inline"><%= gettext("Subtitles for introduction video.")%></span>
+            <%};%>
+        <%};%>
     <%};%>
+
 </div>
