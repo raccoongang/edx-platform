@@ -183,7 +183,6 @@ class MediaServiceClient(object):
         else:
             response.raise_for_status()
 
-
     def get_asset_locators(self, input_asset_id, locator_type=None):
         url = "{}Assets('{}')/Locators".format(self.rest_api_endpoint, input_asset_id)
         headers = self.get_headers()

@@ -152,8 +152,8 @@ def get_captions_and_video_info(edx_video_id, organization):
         asset = media_service.get_input_asset_by_video_id(edx_video_id, 'ENCODED')
 
     if asset:
-        locator_on_demand = media_service.get_asset_locator(asset['Id'], LocatorTypes.OnDemandOrigin)
-        locator_sas = media_service.get_asset_locator(asset['Id'], LocatorTypes.SAS)
+        locator_on_demand = media_service.get_asset_locators(asset['Id'], LocatorTypes.OnDemandOrigin)
+        locator_sas = media_service.get_asset_locators(asset['Id'], LocatorTypes.SAS)
 
         if locator_on_demand:
             error_message = ''
