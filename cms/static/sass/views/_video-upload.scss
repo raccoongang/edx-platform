@@ -180,6 +180,19 @@
       display: block;
     }
   }
+
+  .fa-lock {
+    display: none;
+  }
+
+  .encrypted {
+    .fa-unlock-alt {
+      display: none;
+    }
+    .fa-lock {
+      display: block;
+    }
+  }
 }
 
 .modal-cover-transcript {

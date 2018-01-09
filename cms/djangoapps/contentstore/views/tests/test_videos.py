@@ -22,8 +22,8 @@ from contentstore.models import VideoUploadConfig
 from contentstore.views.videos import (
     KEY_EXPIRATION_IN_SECONDS, StatusDisplayStrings, convert_video_status, storage_service_bucket,
     storage_service_key, get_storage_service, get_supported_video_formats, _get_and_validate_course,
-    _get_index_videos, video_transcripts_json, video_transcript_post, video_transcripts_handler
-)
+    _get_index_videos, video_transcripts_json, video_transcript_post, video_transcripts_handler,
+    video_encrypt)
 from contentstore.tests.utils import CourseTestCase
 from contentstore.utils import reverse_course_url
 from xmodule.modulestore.tests.factories import CourseFactory
@@ -858,3 +858,157 @@ class VideoTranscriptsTestCase(CourseTestCase):
         qs_mock.get.assert_called_once_with(edx_video_id="test_edx_video_id")
         video_transcript_post_mock.assert_called_once_with(request_mock, course_mock, video_mock)
         self.assertEquals(response, "some_json")
+
+
+@patch.dict("django.conf.settings.FEATURES", {"ENABLE_VIDEO_UPLOAD_PIPELINE": True})
+@patch("contentstore.views.videos.STORAGE_SERVICE", 'azure')
+class VideoEncryptTestCase(CourseTestCase):
+    """
+    Test cases for the encrypt/decrypt a video file in azure.
+    """
+    @patch("contentstore.views.videos._get_and_validate_course",
+           return_value=Mock(org='org_name'))
+    @patch("contentstore.views.videos.Video.objects.get",
+           return_value=Mock(status='file_complete', edx_video_id='edx_video_id'))
+    @patch("contentstore.views.videos.encrypt_file",
+           return_value='file_encrypted')
+    @patch("contentstore.views.videos.update_video_status")
+    def test_video_encrypt_positive_when_encrypt_equal_true(self,
+                                                            update_video_status,
+                                                            encrypt_file,
+                                                            video_get,
+                                                            get_and_validate_course):
+        # arrange
+        request_mock = Mock(method="POST")
+        type(request_mock).META = PropertyMock(return_value={"HTTP_ACCEPT": ['application/json']})
+        type(request_mock).user = PropertyMock(return_value=self.user)
+        type(request_mock).json = PropertyMock(return_value={'encrypt': True})
+        # act
+        response = video_encrypt(request_mock, "course_key", "edx_video_id")
+        # assert
+        get_and_validate_course.assert_called_once_with(
+            'course_key',
+            request_mock.user
+        )
+        video_get.assert_called_once_with(
+            edx_video_id='edx_video_id',
+            courses__course_id='course_key',
+            courses__is_hidden=False
+        )
+        encrypt_file.assert_called_once_with(
+            'edx_video_id',
+            'org_name'
+        )
+        update_video_status.assert_called_once_with(
+            'edx_video_id',
+            'file_encrypted'
+        )
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(json.loads(response.content), {'status': 'ok', 'status_value': 'file_encrypted'})
+
+    @patch("contentstore.views.videos._get_and_validate_course",
+           return_value=Mock(org='org_name'))
+    @patch("contentstore.views.videos.Video.objects.get",
+           return_value=Mock(status='file_encrypted', edx_video_id='edx_video_id'))
+    @patch("contentstore.views.videos.remove_encryption",
+           return_value='file_complete')
+    @patch("contentstore.views.videos.update_video_status")
+    def test_video_encrypt_positive_when_encrypt_equal_false(self,
+                                                             update_video_status,
+                                                             remove_encryption,
+                                                             video_get,
+                                                             get_and_validate_course):
+        # arrange
+        request_mock = Mock(method="POST")
+        type(request_mock).META = PropertyMock(return_value={"HTTP_ACCEPT": ['application/json']})
+        type(request_mock).user = PropertyMock(return_value=self.user)
+        type(request_mock).json = PropertyMock(return_value={'encrypt': False})
+        # act
+        response = video_encrypt(request_mock, "course_key", "edx_video_id")
+        # assert
+        get_and_validate_course.assert_called_once_with(
+            'course_key',
+            request_mock.user
+        )
+        video_get.assert_called_once_with(
+            edx_video_id='edx_video_id',
+            courses__course_id='course_key',
+            courses__is_hidden=False
+        )
+        remove_encryption.assert_called_once_with(
+            'edx_video_id',
+            'org_name'
+        )
+        update_video_status.assert_called_once_with(
+            'edx_video_id',
+            'file_complete'
+        )
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(json.loads(response.content), {'status': 'ok', 'status_value': 'file_complete'})
+
+    def test_video_encrypt_when_storage_service_no_equal_azure(self):
+        # arrange
+        request_mock = Mock(method="POST")
+        type(request_mock).META = PropertyMock(return_value={"HTTP_ACCEPT": ['application/json']})
+        type(request_mock).user = PropertyMock(return_value=self.user)
+
+        # act
+        with patch("contentstore.views.videos.STORAGE_SERVICE", 'some_storage'):
+            response = video_encrypt(request_mock, "course_key", "edx_video_id")
+
+        # assert
+        self.assertEquals(response.status_code, 400)
+
+    @patch("contentstore.views.videos._get_and_validate_course")
+    @patch("contentstore.views.videos.Video.objects.get")
+    def test_video_encrypt_when_encrypt_does_not_exist(self, video_get, get_and_validate_course):
+        # arrange
+        request_mock = Mock(method="POST")
+        type(request_mock).META = PropertyMock(return_value={"HTTP_ACCEPT": ['application/json']})
+        type(request_mock).user = PropertyMock(return_value=self.user)
+
+        # act
+        response = video_encrypt(request_mock, "course_key", "edx_video_id")
+
+        # assert
+        self.assertEquals(response.status_code, 400)
+
+    @patch("contentstore.views.videos._get_and_validate_course",
+           return_value=Mock(org='org_name'))
+    @patch("contentstore.views.videos.Video.objects.get",
+           return_value=Mock(status='file_complete', edx_video_id='edx_video_id'))
+    @patch("contentstore.views.videos.encrypt_file",
+           return_value='encryption_error')
+    @patch("contentstore.views.videos.update_video_status")
+    def test_video_encrypt_when_encryption_error(self,
+                                                 update_video_status,
+                                                 encrypt_file,
+                                                 video_get,
+                                                 get_and_validate_course):
+        # arrange
+        request_mock = Mock(method="POST")
+        type(request_mock).META = PropertyMock(return_value={"HTTP_ACCEPT": ['application/json']})
+        type(request_mock).user = PropertyMock(return_value=self.user)
+        type(request_mock).json = PropertyMock(return_value={'encrypt': True})
+        # act
+        response = video_encrypt(request_mock, "course_key", "edx_video_id")
+        # assert
+        get_and_validate_course.assert_called_once_with(
+            'course_key',
+            request_mock.user
+        )
+        video_get.assert_called_once_with(
+            edx_video_id='edx_video_id',
+            courses__course_id='course_key',
+            courses__is_hidden=False
+        )
+        encrypt_file.assert_called_once_with(
+            'edx_video_id',
+            'org_name'
+        )
+        update_video_status.assert_called_once_with(
+            'edx_video_id',
+            'encryption_error'
+        )
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(json.loads(response.content), {'error': 'Something went wrong. Encryption process failed.'})

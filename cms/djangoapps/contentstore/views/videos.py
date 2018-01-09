@@ -14,10 +14,10 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
 from django.utils.translation import ugettext as _, ugettext_noop
-from django.views.decorators.http import require_GET, require_http_methods
+from django.views.decorators.http import require_GET, require_http_methods, require_POST
 import rfc6266
 
-from azure_video_pipeline.utils import get_media_service_client, LocatorTypes
+from azure_video_pipeline.utils import get_media_service_client, encrypt_file, LocatorTypes, remove_encryption
 from edxval.api import (
     create_video,
     get_videos_for_course,
@@ -39,7 +39,7 @@ from util.json_request import expect_json, JsonResponse
 from .course import get_course_and_check_access
 
 
-__all__ = ["videos_handler", "video_encodings_download", "video_transcripts_handler"]
+__all__ = ["videos_handler", "video_encodings_download", "video_transcripts_handler", "video_encrypt"]
 
 LOGGER = logging.getLogger(__name__)
 
@@ -60,6 +60,14 @@ def get_supported_video_formats():
         '.mov': 'video/quicktime',
     }
     return azure_formats if get_storage_service() == 'azure' else aws_formats
+
+
+STORAGE_SERVICE = get_storage_service()
+VIDEO_SUPPORTED_FILE_FORMATS = get_supported_video_formats()
+VIDEO_UPLOAD_MAX_FILE_SIZE_GB = 5
+
+# maximum time for video to remain in upload state
+MAX_UPLOAD_HOURS = 24
 
 
 def get_course_videos_data(course_key):
@@ -169,14 +177,6 @@ def get_captions_and_video_info(edx_video_id, organization):
             'captions': captions}
 
 
-STORAGE_SERVICE = get_storage_service()
-VIDEO_SUPPORTED_FILE_FORMATS = get_supported_video_formats()
-VIDEO_UPLOAD_MAX_FILE_SIZE_GB = 5
-
-# maximum time for video to remain in upload state
-MAX_UPLOAD_HOURS = 24
-
-
 class StatusDisplayStrings(object):
     """
     A class to map status strings as stored in VAL to display strings for the
@@ -231,6 +231,9 @@ class StatusDisplayStrings(object):
         "youtube_duplicate": _YOUTUBE_DUPLICATE,
         "invalid_token": _INVALID_TOKEN,
         "imported": _IMPORTED,
+        "file_encrypted": _COMPLETE,
+        "encryption_error": _FAILED,
+        "decryption_error": _FAILED
     }
 
     @staticmethod
@@ -683,3 +686,59 @@ def video_transcript_post(request, course, video):
         {'status': 'ok', 'transcript': {'name': transcript.content, 'language': transcript.language}},
         status=200
     )
+
+
+@expect_json
+@login_required
+@require_POST
+def video_encrypt(request, course_key_string, edx_video_id):
+
+    if STORAGE_SERVICE != 'azure':
+        return JsonResponse(status=400)
+
+    course = _get_and_validate_course(course_key_string, request.user)
+
+    if not course:
+        return HttpResponseNotFound()
+
+    try:
+        video = Video.objects.get(
+            edx_video_id=edx_video_id,
+            courses__course_id=course_key_string,
+            courses__is_hidden=False
+        )
+    except Video.DoesNotExist:
+        return HttpResponseNotFound()
+
+    encrypt = request.json.get('encrypt')
+
+    if encrypt is None:
+        return JsonResponse(
+            {"error": _("Request object is not JSON or does not contain 'encrypt")},
+            status=400
+        )
+
+    if encrypt and video.status == 'file_complete':
+        status = encrypt_file(video.edx_video_id, course.org)
+    elif not encrypt and video.status == 'file_encrypted':
+        status = remove_encryption(video.edx_video_id, course.org)
+    else:
+        return HttpResponseBadRequest()
+
+    update_video_status(video.edx_video_id, status)
+
+    if status in ['file_complete', 'file_encrypted']:
+        return JsonResponse(
+            {'status': 'ok', 'status_value': status},
+            status=200
+        )
+    else:
+        error_messages = {
+            'file_corrupt': _('Target Video is no longer available on Azure'),
+            'encryption_error': _('Something went wrong. Encryption process failed.'),
+            'decryption_error': _('Something went wrong. Decryption process failed.'),
+        }
+        return JsonResponse(
+            {"error": error_messages.get(status, '')},
+            status=400
+        )

@@ -27,6 +27,47 @@ class AccessPolicyPermissions(object):
     DELETE = 3
 
 
+class ContentKeyType(object):
+    COMMON_ENCRYPTION = 0
+    STORAGE_ENCRYPTION = 1
+    CONFIGURATION_ENCRYPTION = 2
+    ENVELOPE_ENCRYPTION = 4
+
+
+class KeyDeliveryType(object):
+    NONE = 0
+    PLAY_READY_LICENSE = 1
+    BASE_LINE_HTTP = 2
+
+
+class KeyRestrictionType(object):
+    OPEN = 0
+    TOKEN_RESTRICTED = 1
+    IP_RESTRICTED = 2
+
+
+class AssetDeliveryProtocol(object):
+    NONE = 0
+    SMOOTH_STREAMING = 1
+    DASH = 2
+    HLS = 4
+    ALL = 7
+
+
+class AssetDeliveryPolicyType(object):
+    NONE = 0
+    BLOCKED = 1
+    NO_DYNAMIC_ENCRYPTION = 2
+    DYNAMIC_ENVELOPE_ENCRYPTION = 3
+    DYNAMIC_COMMON_ENCRYPTION = 4
+
+
+class AssetDeliveryPolicyConfigurationKey(object):
+    NONE = 0
+    ENVELOPE_KEY_ACQUISITION_URL = 1
+    ENVELOPE_BASE_KEY_ACQUISITION_URL = 2
+
+
 class MediaServiceClient(object):
     """
     Client to consume Azure Media service API.
@@ -142,14 +183,24 @@ class MediaServiceClient(object):
         else:
             response.raise_for_status()
 
-    def get_asset_locator(self, input_asset_id, locator_type):
+
+    def get_asset_locators(self, input_asset_id, locator_type=None):
         url = "{}Assets('{}')/Locators".format(self.rest_api_endpoint, input_asset_id)
         headers = self.get_headers()
-        payload = {'$filter': 'Type eq {}'.format(locator_type)}
+        payload = {}
+
+        if locator_type:
+            payload = {'$filter': 'Type eq {}'.format(locator_type)}
+
         response = requests.get(url, params=payload, headers=headers)
         if response.status_code == 200:
             locators = response.json().get('value', [])
-            return locators[0] if locators else None
+
+            if locator_type:
+                return locators[0] if locators else None
+
+            return locators
+
         else:
             response.raise_for_status()
 
@@ -351,5 +402,192 @@ class MediaServiceClient(object):
         if response.status_code == 200:
             asset = response.json().get('value', [])[0]
             return asset
+        else:
+            response.raise_for_status()
+
+    def get_protection_key_id(self, content_key_type):
+        url = "{}GetProtectionKeyId".format(self.rest_api_endpoint)
+        headers = self.get_headers()
+        payload = {'contentKeyType': content_key_type}
+        response = requests.get(url, params=payload, headers=headers)
+        if response.status_code == 200:
+            return response.json().get('value')
+        else:
+            response.raise_for_status()
+
+    def get_protection_key(self, protection_key_id):
+        url = "{}GetProtectionKey".format(self.rest_api_endpoint)
+        headers = self.get_headers()
+        payload = {"ProtectionKeyId": "'{}'".format(protection_key_id)}
+        response = requests.get(url, params=payload, headers=headers)
+        if response.status_code == 200:
+            return response.json().get('value')
+        else:
+            response.raise_for_status()
+
+    def create_content_key(self, name, protection_key_id, content_key_type, encrypted_content_key):
+        url = "{}ContentKeys".format(self.rest_api_endpoint)
+        headers = self.get_headers()
+        data = {
+            "Name": name,
+            "ProtectionKeyId": protection_key_id,
+            "ContentKeyType": content_key_type,
+            "ProtectionKeyType": 0,  # to indicate that the protection key Id is the X.509 certificate thumbprint
+            "EncryptedContentKey": encrypted_content_key
+        }
+        response = requests.post(url, headers=headers, json=data)
+        if response.status_code == 201:
+            return response.json()
+        else:
+            response.raise_for_status()
+
+    def update_content_key(self, content_key_id, data):
+        url = "{}ContentKeys('{}')".format(self.rest_api_endpoint, content_key_id)
+        headers = self.get_headers()
+        response = requests.put(url, headers=headers, json=data)
+        if response.status_code == 204:
+            return None
+        else:
+            response.raise_for_status()
+
+    def associate_content_key_with_asset(self, asset_id, content_key_id):
+        url = "{}Assets('{}')/$links/ContentKeys".format(self.rest_api_endpoint, asset_id)
+        headers = self.get_headers()
+        data = {
+            "uri": "{}ContentKeys('{}')".format(self.rest_api_endpoint, content_key_id)
+        }
+        response = requests.post(url, headers=headers, json=data)
+        if response.status_code == 204:
+            return None
+        else:
+            response.raise_for_status()
+
+    def create_content_key_authorization_policy(self, name):
+        url = "{}ContentKeyAuthorizationPolicies".format(self.rest_api_endpoint)
+        headers = self.get_headers()
+        data = {
+            "Name": name
+        }
+        response = requests.post(url, headers=headers, json=data)
+        if response.status_code == 201:
+            return response.json()
+        else:
+            response.raise_for_status()
+
+    def create_content_key_open_authorization_policy_options(self, name, key_delivery_type):
+        url = "{}ContentKeyAuthorizationPolicyOptions".format(self.rest_api_endpoint)
+        headers = self.get_headers()
+        headers.update({
+            "DataServiceVersion": "3.0"
+        })
+        data = {
+            "Name": name,
+            "KeyDeliveryType": key_delivery_type,
+            "KeyDeliveryConfiguration": "",
+            "Restrictions": [{
+                "Name": "Open Authorization Policy",
+                "KeyRestrictionType": KeyRestrictionType.OPEN,
+                "Requirements": None
+            }]
+        }
+        response = requests.post(url, headers=headers, json=data)
+        if response.status_code == 201:
+            return response.json()
+        else:
+            response.raise_for_status()
+
+    def associate_authorization_policy_with_option(self, authorization_policy_id, authorization_policy_option_id):
+        url = "{}ContentKeyAuthorizationPolicies('{}')/$links/Options".format(self.rest_api_endpoint,
+                                                                              authorization_policy_id)
+        headers = self.get_headers()
+        data = {
+            "uri": "{}ContentKeyAuthorizationPolicyOptions('{}')".format(self.rest_api_endpoint,
+                                                                         authorization_policy_option_id)
+        }
+        response = requests.post(url, headers=headers, json=data)
+        if response.status_code == 204:
+            return None
+        else:
+            response.raise_for_status()
+
+    def get_key_delivery_url(self, content_key_id, key_delivery_type):
+        url = "{}ContentKeys('{}')/GetKeyDeliveryUrl".format(self.rest_api_endpoint, content_key_id)
+        headers = self.get_headers()
+        headers.update({
+            "DataServiceVersion": "3.0"
+        })
+        data = {"keyDeliveryType": key_delivery_type}
+        response = requests.post(url, headers=headers, json=data)
+        if response.status_code == 200:
+            return response.json().get('value')
+        else:
+            response.raise_for_status()
+
+    def create_asset_delivery_policy(self, name, asset_delivery_protocol,
+                                     asset_delivery_policy_type, asset_delivery_configuration):
+        url = "{}AssetDeliveryPolicies".format(self.rest_api_endpoint)
+        headers = self.get_headers()
+        data = {
+            "Name": name,
+            "AssetDeliveryProtocol": asset_delivery_protocol,
+            "AssetDeliveryPolicyType": asset_delivery_policy_type,
+            "AssetDeliveryConfiguration": asset_delivery_configuration
+        }
+        response = requests.post(url, headers=headers, json=data)
+        if response.status_code == 201:
+            return response.json()
+        else:
+            response.raise_for_status()
+
+    def associate_delivery_polic_with_asset(self, asset_id, delivery_policy_id):
+        url = "{}Assets('{}')/$links/DeliveryPolicies".format(self.rest_api_endpoint, asset_id)
+        headers = self.get_headers()
+        data = {
+            "uri": "{}AssetDeliveryPolicies('{}')".format(self.rest_api_endpoint, delivery_policy_id)
+        }
+        response = requests.post(url, headers=headers, json=data)
+        if response.status_code == 204:
+            return None
+        else:
+            response.raise_for_status()
+
+    def get_asset_delivery_policies(self, asset_id):
+        url = "{}Assets('{}')/DeliveryPolicies".format(self.rest_api_endpoint, asset_id)
+        headers = self.get_headers()
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return response.json().get('value', [])
+        else:
+            response.raise_for_status()
+
+    def delete_delivery_policy_link_from_asset(self, asset_id, delivery_policy_id):
+        url = "{}Assets('{}')/$links/DeliveryPolicies('{}')".format(self.rest_api_endpoint,
+                                                                    asset_id,
+                                                                    delivery_policy_id)
+        headers = self.get_headers()
+        requests.delete(url, headers=headers)
+
+    def delete_delivery_policy(self, delivery_policy_id):
+        url = "{}DeliveryPolicies('{}')".format(self.rest_api_endpoint, delivery_policy_id)
+        headers = self.get_headers()
+        requests.delete(url, headers=headers)
+
+    def get_asset_content_keys(self, asset_id, content_key_type=None):
+        url = "{}Assets('{}')/ContentKeys".format(self.rest_api_endpoint, asset_id)
+        headers = self.get_headers()
+        payload = {}
+
+        if content_key_type:
+            payload = {'$filter': 'ContentKeyType eq {}'.format(content_key_type)}
+
+        response = requests.get(url, params=payload, headers=headers)
+        if response.status_code == 200:
+            content_keys = response.json().get('value', [])
+
+            if content_key_type:
+                return content_keys[0] if content_keys else None
+
+            return content_keys
+
         else:
             response.raise_for_status()

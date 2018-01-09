@@ -100,3 +100,22 @@ See screenshots for clarity:
 ![New transcripts feature](doc/img/transcripts.png)
 
 ![Modal window](doc/img/transcripts-modal.png)
+
+## Video content protection
+
+After video file is uploaded to Azure service via Video Uploads page it can be protected.
+To protect certain video from the list one may click 'lock' icon in `Encrypt` column (icon changes to `locked` state):
+
+![Video protection](doc/img/video_upload_encrypt.png)
+
+In order to `unlock` already protected video click 'lock' icon again.
+
+```
+NOTE: Ideally, a decision about Video protection should be made right after its uploading.
+Due to the way how dynamic encryption works all video's usages (via xblock) in the course
+will become broken if lock enabled afterward.
+Those videos may be picked up again with new manifests published.
+```
+
+Currently, the `AES-128 clear key` protection type is supported.
+For more information about content protection, please, refer to the [Azure Media Services documentation](https://docs.microsoft.com/en-us/azure/media-services/media-services-content-protection-overview)

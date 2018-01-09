@@ -41,7 +41,7 @@ define(
                 expect($el.find('.name-col>span').text()).toEqual(testName);
             });
 
-            it('called renderTranscripts if video status is equal to file_complete and storageService is equal to azure',
+            it('called renderTranscripts if video status is equal to file_complete and storage is equal to azure',
                 function() {
                     var view = previousVideoUploadView({status_value: 'file_complete'});
                     view.storageService = 'azure';
@@ -174,6 +174,46 @@ define(
                 $el.find('a.remove-video-button').click();
                 $('.action-primary').click();
                 ViewHelpers.verifyNotificationShowing(notificationSpy, /Removing/);
+            });
+
+            it('should render encrypt button correctly', function() {
+                var view, $el, lockButton;
+                view = previousVideoUploadView();
+                view.storageService = 'azure';
+                $el = view.render().$el;
+                lockButton = $el.find('.js-lock-unlock-file');
+                expect(lockButton.length).toEqual(0);
+
+                view = previousVideoUploadView({status_value: 'file_complete'});
+                view.storageService = 'azure';
+                $el = view.render().$el;
+                lockButton = $el.find('.js-lock-unlock-file');
+                expect(lockButton.length).toEqual(1);
+                expect(lockButton.hasClass('encrypted')).toBe(false);
+
+                view = previousVideoUploadView({status_value: 'file_encrypted'});
+                view.storageService = 'azure';
+                $el = view.render().$el;
+                lockButton = $el.find('.js-lock-unlock-file');
+                expect(lockButton.length).toEqual(1);
+                expect(lockButton.hasClass('encrypted')).toBe(true);
+            });
+
+            it('shows a confirmation popup when the encrypt button is clicked', function() {
+                var view, $el;
+                view = previousVideoUploadView({status_value: 'file_complete'});
+                view.storageService = 'azure';
+                $el = view.render().$el;
+                $el.find('.js-lock-unlock-file').click();
+
+                expect($('.prompt.warning .title').text()).toEqual('Are you sure you want to add encryption to this video file?');  // eslint-disable-line max-len
+                expect(
+                    $('.prompt.warning .message').text()
+                ).toEqual(
+                    'If the current video file is used in "Azure-media-service" xBlock, please go to the xBlock and redefine the video file.'  // eslint-disable-line max-len
+                );
+                expect($('.prompt.warning .action-primary').text()).toEqual('OK');
+                expect($('.prompt.warning .action-secondary').text()).toEqual('Cancel');
             });
         });
     }
