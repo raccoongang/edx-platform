@@ -32,6 +32,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    this.$el.find('#course-organization').val(this.model.get('org'));
                    this.$el.find('#course-number').val(this.model.get('course_id'));
                    this.$el.find('#course-name').val(this.model.get('run'));
+                   this.$el.find('#intro-video-source').val(this.model.get('intro_video_source'));
                    this.$el.find('.set-date').datepicker({'dateFormat': 'm/d/yy'});
 
         // Avoid showing broken image on mistyped/nonexistent image

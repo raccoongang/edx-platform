@@ -455,16 +455,17 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
                 <li class="field video" id="field-course-introduction-video">
                   <label for="video-thumbnail-image-url">${_("Course Introduction Video")}</label>
                   <div>
-                  <select name="intro-video-source" id="intro-video-source" style="float: right;">
-                    <option value="youtube" id="intro-video-source-youtube"${' selected' if intro_video_source == 'youtube' else '' }>
-                      ${_("YouTube")}
-                    </option>
-                    <option value="azure" id="intro-video-source-azure"${' selected' if intro_video_source == 'azure' else '' }>
-                      ${_("Azure")}
-                    </option>
-                  </select>
-                  <span class="tip">${_("Currently, there are two media services available to set the introduction video from")}:
-                  </span>
+                    <select name="intro-video-source" id="intro-video-source">
+                      <option value="youtube" id="intro-video-source-youtube" selected>
+                        ${_("YouTube")}
+                      </option>
+                      <option value="azure" id="intro-video-source-azure">
+                        ${_("Azure")}
+                      </option>
+                    </select>
+                    <span class="tip">
+                      ${_("Currently, there are two media services available to set the introduction video from")}:
+                    </span>
                   </div>
                   <br>
                   <div id="field-body-course-introduction-video">

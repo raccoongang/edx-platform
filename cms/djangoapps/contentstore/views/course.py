@@ -978,7 +978,6 @@ def settings_handler(request, course_key_string):
         course_module = get_course_and_check_access(course_key, request.user)
         if 'text/html' in request.META.get('HTTP_ACCEPT', '') and request.method == 'GET':
             upload_asset_url = reverse_course_url('assets_handler', course_key)
-            course_details = CourseDetails.fetch(course_key)
             course = get_course_and_check_access(course_key, request.user)
 
             # see if the ORG of this course can be attributed to a defined configuration . In that case, the
@@ -1024,8 +1023,6 @@ def settings_handler(request, course_key_string):
                 'self_paced_enabled': self_paced_enabled,
                 'enable_extended_course_details': enable_extended_course_details,
                 'video_handler_url': reverse_course_url('videos_handler', unicode(course.id)),
-                'intro_video_source': course_details.intro_video_source,
-                'intro_video_id': course_details.intro_video_id,
                 'course_videos_json': get_course_videos_data(course_key),
             }
             if is_prerequisite_courses_enabled():
