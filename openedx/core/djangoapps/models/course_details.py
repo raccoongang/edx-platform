@@ -6,6 +6,7 @@ import json
 import re
 import logging
 
+from edxmako.shortcuts import render_to_string
 from django.conf import settings
 
 from xmodule.fields import Date
@@ -335,32 +336,18 @@ class CourseDetails(object):
         # TODO should this use a mako template? Of course, my hope is
         # that this is a short-term workaround for the db not storing
         #  the right thing
-        result = None
         if video_key:
             if video_source == 'youtube':
-                result = (
+                return (
                     '<iframe title="YouTube Video" width="560" height="315" src="//www.youtube.com/embed/' +
                     video_key +
                     '?rel=0" frameborder="0" allowfullscreen=""></iframe>'
                 )
             if video_source == 'azure':
-                text_tracks_template = ''
+                context = {
+                    'source_url': video_key
+                }
                 if captions_json:
                     captions = json.loads(captions_json)
-
-                    def make_track_temlpate(caption):
-                        return u'<track kind="subtitles" src="%s" srclang="%s" label="%s" />' % (
-                            caption[u'url'], caption[u'lang'], caption[u'label']
-                        )
-                    text_tracks_template = u'\n'.join([make_track_temlpate(caption) for caption in captions])
-
-                result = (u"""
-                    <div class="azuremediaplayer">
-                        <video id="intro-player" class="amp-default-skin amp-big-play-centered video-wrapper"
-                            data-setup='{ "controls": true, "autoplay": false, "logo": {"enabled": false}, "height": 312 }'>
-                            <source src="%s" type="application/vnd.ms-sstr+xml" />
-                            %s
-                        </video>
-                    </div>
-                """) % (video_key, text_tracks_template)
-        return result
+                    context['captions'] = captions
+                return render_to_string('azure_media_player.html', context)
