@@ -10,7 +10,7 @@ define([
             this.introVideoData = options.introVideoData;
             this.parent = options.parent;
             this.courseVideos = options.courseVideos;
-            this.videoHandlerUrl = options.videoHandlerUrl;
+            this.videoDataHandlerUrl = options.videoDataHandlerUrl;
         },
 
         render: function(responseData) {
@@ -43,7 +43,7 @@ define([
             if (!edxVideoId) return;
             $.ajax({
                 type: 'GET',
-                url: this.videoHandlerUrl + '/' + edxVideoId,
+                url: this.videoDataHandlerUrl + '/' + edxVideoId,
                 contentType: 'application/json',
                 context: this
             }).done(function(responseData) {

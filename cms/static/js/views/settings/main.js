@@ -83,7 +83,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        model: this.model,
                        parent: this,
                        courseVideos: options.courseVideos,
-                       videoHandlerUrl: options.videoHandlerUrl
+                       videoDataHandlerUrl: options.videoDataHandlerUrl
                    });
 
                },

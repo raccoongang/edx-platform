@@ -40,7 +40,7 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
     require(["js/factories/settings"], function(SettingsFactory) {
         SettingsFactory(
             "${details_url | n, js_escaped_string}",
-            "${video_handler_url | n, js_escaped_string}",
+            "${video_data_handler | n, js_escaped_string}",
             ${show_min_grade_warning | n, dump_js_escaped_json},
             JSON.parse(${course_videos_json | n, dump_js_escaped_json}),
         );
