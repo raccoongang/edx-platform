@@ -14,12 +14,9 @@
 
                     type="application/vnd.ms-sstr+xml"
                 />
-                <% _.forEach(captions, function(caption) { %>
-                    <% if (captionEnabled(caption)) { %>
-                    <track kind="subtitles" src="<%= caption.download_url %>" srclang="<%= caption.language %>" label="<%= caption.language_title %>" /> %>
-                    <% }; %>
+                <% _.forEach(JSON.parse(model.intro_video_captions), function(caption) { %>
+                    <track kind="subtitles" src="<%= caption.url %>" srclang="<%= caption.lang %>" label="<%= caption.label %>" /> %>
                 <% }); %>
-
             </video>
         </div>
     </div>
