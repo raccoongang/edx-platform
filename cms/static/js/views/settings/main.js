@@ -297,7 +297,6 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    case 'course-introduction-video':
                        this.clearValidationErrors();
                        var previewsource = this.model.set_videosource($(event.currentTarget).val());
-                       this.intro_video_youtube_view.render();
                        clearTimeout(this.videoTimer);
                        this.videoTimer = setTimeout(_.bind(function() {
                            this.$el.find('.current-course-introduction-video iframe').attr('src', previewsource);
@@ -307,7 +306,8 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                            else {
                                this.$el.find('.remove-course-introduction-video').hide();
                            }
-                       }, this), 1000);
+                           this.intro_video_youtube_view.render();
+                       }, this), 2000);
                        break;
                    case 'course-video-list':
                        this.clearValidationErrors();
