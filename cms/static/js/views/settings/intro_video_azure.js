@@ -11,9 +11,17 @@ define([
             this.parent = options.parent;
             this.courseVideos = options.courseVideos;
             this.videoHandlerUrl = options.videoHandlerUrl;
+            this.captions = '';
         },
 
-        render: function(responseData) {
+        render: function() {
+            var videoInfo = true;
+
+            if (!this.captions) {
+                this.getIntroVideoData(this.model.get('intro_video_id'));
+                videoInfo = false;
+            }
+
             // helper to use in template
             var captionEnabled = function(caption) {
                 var result = _.filter(JSON.parse(this.model.intro_video_captions), function(parsedCaption) {
@@ -22,25 +30,19 @@ define([
                 return !!result.length;
             };
 
-            if (responseData) {
-                var videoInfo = responseData.video_info;
-                var captions = responseData.captions;
-            }
             this.$el.html(_.template(introVideoTemplate)({
                 model: this.model.attributes,
                 courseVideos: this.courseVideos,
                 videoInfo: videoInfo,
-                captions: captions || [],
+                captions: this.captions,
                 captionEnabled: captionEnabled
             }));
-            if (!videoInfo) {
-                this.getIntroVideoData(this.model.get('intro_video_id'));
-            }
             return this;
         },
 
         getIntroVideoData: function(edxVideoId) {
             if (!edxVideoId) return;
+            this.captions = '';
             $.ajax({
                 type: 'GET',
                 url: this.videoHandlerUrl + '/' + edxVideoId,
@@ -48,7 +50,8 @@ define([
                 context: this
             }).done(function(responseData) {
                 this.model.set('intro_video_manifest', responseData.video_info.smooth_streaming_url);
-                this.render(responseData);
+                this.captions = responseData.captions;
+                this.render();
             }).fail(function(response) {
                 var errorMsg;
                 try {
@@ -64,6 +67,7 @@ define([
             this.model.set('intro_video_id', '');
             this.model.set('intro_video_manifest', '');
             this.model.set('intro_video_captions', '[]');
+            this.captions = '';
         }
 
     });

@@ -1,8 +1,8 @@
 <div class="input input-existing">
 
-    <% if (typeof videoInfo === 'undefined' && !model.intro_video_id) { %>
+    <% if (!videoInfo && !model.intro_video_id) { %>
     <div> Selected video will be rendered here...</div>
-    <% } else if (typeof videoInfo === 'undefined') { %>
+    <% } else if (!videoInfo) { %>
     <div><b><span style="color:#edbd3c;">Checking for video file...</span></b></div>
     <% } else if (model.intro_video_id) { %>
     <div class="tc-wrapper">
@@ -10,7 +10,7 @@
             <video class="amp-default-skin amp-big-play-centered video-wrapper"
                    data-setup='{ "controls": true, "autoplay": false, "logo": {"enabled": false}, "height": 480 }'>
                 <source
-                    src="<%= videoInfo.smooth_streaming_url %>"
+                    src="<%= model.intro_video_manifest %>"
 
                     type="application/vnd.ms-sstr+xml"
                 />
@@ -40,7 +40,7 @@
         <% }); %>
     </select>
 
-        <% if (typeof videoInfo !== 'undefined') { %>
+        <% if (videoInfo) { %>
             <div>
                 <span class="tip tip-inline"><%= gettext("Azure introduction video file.")%></span>
             </div>
