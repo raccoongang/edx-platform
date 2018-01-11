@@ -232,7 +232,7 @@ def get_captions_info(video, path_locator_sas):
 def get_video_info(video, path_locator_on_demand, path_locator_sas, asset_files):
     download_video_url = ''
 
-    if path_locator_sas:
+    if path_locator_sas and video.status == 'file_complete':
         file_size = 0
         for asset_file in asset_files:
             try:
