@@ -2,7 +2,7 @@ define([
     'jquery', 'js/models/settings/course_details', 'js/views/settings/main'
 ], function($, CourseDetailsModel, MainView) {
     'use strict';
-    return function(detailsUrl, videoHandlerUrl, showMinGradeWarning, courseVideos) {
+    return function(detailsUrl, videoDataHandlerUrl, showMinGradeWarning, courseVideos) {
         var model;
         // highlighting labels when fields are focused in
         $('form :input')
@@ -22,7 +22,7 @@ define([
                     model: model,
                     showMinGradeWarning: showMinGradeWarning,
                     courseVideos: courseVideos,
-                    videoHandlerUrl: videoHandlerUrl
+                    videoDataHandlerUrl: videoDataHandlerUrl
                 });
                 editor.render();
             },
