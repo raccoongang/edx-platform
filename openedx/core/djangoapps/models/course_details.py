@@ -294,7 +294,7 @@ class CourseDetails(object):
             if attribute in jsondict:
                 cls.update_about_item(descriptor, attribute, jsondict[attribute], user.id)
 
-        video_source = jsondict['intro_video_source']
+        video_source = jsondict.get('intro_video_source', 'youtube')
         if video_source == 'youtube':
             cls.update_about_video(descriptor, jsondict['intro_video'], user.id, video_source)
         else:
