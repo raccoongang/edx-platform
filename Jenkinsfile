@@ -32,7 +32,7 @@ def startTests(suite, shard) {
 def coverageTest() {
 	node('coverage-report-worker') {
 		cleanWs()
-		pullRequest.addLabels('Build Passing')
+		pullRequest.createStatus(status: 'pending', context: 'Coverage', description: 'Code coverage below 90%', targetUrl: "${JOB_URL}/testResults")
 		
 		checkout scm
 
