@@ -82,13 +82,13 @@ stage('Coverage') {
 
       sh 'git log --oneline | head'
 	  
-      sh "git rev-parse --short HEAD > .git/head-id"                        
+      sh "git rev-parse HEAD > .git/head-id"                        
       head_id = readFile('.git/head-id')
       echo "${head_id}"
       
-      sh "git rev-parse --short MERGE_HEAD > .git/merge-id"                        
-      merge_id = readFile('.git/merge-id')
-      echo "${merge_id}"
+      sh "git rev-parse ORIG_HEAD > .git/orig-id"                        
+      orig_id = readFile('.git/orig-id')
+      echo "${orig_id}"
 
       timeout(time: 55, unit: 'MINUTES') {
         echo "Hi, it is me coverage agent again, the worker just started!"
