@@ -32,7 +32,7 @@ def startTests(suite, shard) {
 def coverageTest() {
 	node('coverage-report-worker') {
 		cleanWs()
-		pullRequest.addLabel('Build Passing')
+		pullRequest.addLabels('Build Passing')
 		
 		checkout scm
 
