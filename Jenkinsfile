@@ -81,19 +81,14 @@ stage('Coverage') {
       checkout scm
 
       sh 'git log --oneline | head'
-      sh 'git log --oneline --graph'
-	  
-      sh "git rev-parse HEAD > .git/head-id"                        
-      head_id = readFile('.git/head-id')
-      echo "${head_id}"
-	  
-      sh "git rev-parse HEAD^1 > .git/head1-id"                        
-      head1_id = readFile('.git/head1-id')
-      echo "${head1_id}"
+
+      sh "git rev-parse HEAD^1 > .git/ci-branch-id"                        
+      ci_branch_id = readFile('.git/ci-branch-id')
+      echo "${ci_branch_id}"
       
-      sh "git rev-parse HEAD^2 > .git/head2-id"                        
-      head2_id = readFile('.git/head2-id')
-      echo "${head2_id}"
+      sh "git rev-parse HEAD^2 > .git/target-branch-id"                        
+      target_branch_id = readFile('.git/target-branch-id')
+      echo "${target_branch_id}"
 
       timeout(time: 55, unit: 'MINUTES') {
         echo "Hi, it is me coverage agent again, the worker just started!"
@@ -105,7 +100,7 @@ stage('Coverage') {
 	  unstash 'artifacts-lms-unit-4'
 	  unstash 'artifacts-cms-unit-all' 
 	  withCredentials([string(credentialsId: '73037323-f1a4-44e2-8054-04d2a9580240', variable: 'report_token')]) {
-	    withEnv(["TARGET_BRANCH=${head_id}", "CODE_COV_TOKEN=${report_token}", "CI_BRANCH=${merge_id}"]) {
+	    withEnv(["TARGET_BRANCH=${target_id}", "CODE_COV_TOKEN=${report_token}", "CI_BRANCH=${ci_branch_id}"]) {
               sh './scripts/jenkins-report.sh'
             }
 	  }
