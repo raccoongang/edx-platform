@@ -70,7 +70,7 @@ stage('Prepare') {
 }
 
 stage('Unit tests') {
-
+  parallel buildParallelSteps()
 }
 
 stage('Coverage') {
@@ -98,6 +98,11 @@ stage('Coverage') {
         echo "Hi, it is me coverage agent again, the worker just started!"
      
         try {
+	  unstash 'artifacts-lms-unit-1'
+	  unstash 'artifacts-lms-unit-2'
+	  unstash 'artifacts-lms-unit-3'
+	  unstash 'artifacts-lms-unit-4'
+	  unstash 'artifacts-cms-unit-all' 
 	  withCredentials([string(credentialsId: '73037323-f1a4-44e2-8054-04d2a9580240', variable: 'report_token')]) {
 	    sh '''
 	    source scripts/jenkins-common.sh
