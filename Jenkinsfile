@@ -98,7 +98,7 @@ stage('Prepare') {
 }
 
 stage('Unit tests') {
-	parallel buildParallelSteps()
+
 }
 
 stage('Coverage') {
