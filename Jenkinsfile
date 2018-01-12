@@ -32,10 +32,6 @@ def coverageTest() {
 		checkout scm
 
 		try {
-			unstash 'artifacts-lms-unit-1'
-			unstash 'artifacts-lms-unit-2'
-			unstash 'artifacts-lms-unit-3'
-			unstash 'artifacts-lms-unit-4'
 			unstash 'artifacts-cms-unit-all'
 			withCredentials([string(credentialsId: '73037323-f1a4-44e2-8054-04d2a9580240', variable: 'CODE_COV_TOKEN')]) {
 				sh "git rev-parse —short HEAD^1 > .git/ci-branch-id"                        
@@ -55,12 +51,6 @@ def coverageTest() {
 
 def getSuites() {
 	return [
-		[name: 'lms-unit', 'shards': [
-		1,
-		2,
-		3,
-		4,
-		]],
 		[name: 'cms-unit', 'shards': ['all']],
 	]
 }
