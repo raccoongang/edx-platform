@@ -70,7 +70,7 @@ stage('Prepare') {
 }
 
 stage('Unit tests') {
-
+  parallel buildParallelSteps()
 }
 
 stage('Coverage') {
@@ -81,37 +81,36 @@ stage('Coverage') {
       checkout scm
 
       sh 'git log --oneline | head'
-	  
-      sh "git rev-parse HEAD > .git/merge-id"                        
-      merge_id = readFile('.git/merge-id')
-      echo "${merge_id}"
 
-      sh "git rev-parse HEAD^1 > .git/ci-branch-id"                        
+      timeout(time: 55, unit: 'MINUTES') {
+        echo "Hi, it is me coverage agent again, the worker just started!"
+     
+    try {
+	  sh "git rev-parse HEAD^1 > .git/ci-branch-id"                        
       ci_branch_id = readFile('.git/ci-branch-id')
       echo "${ci_branch_id}"
       
       sh "git rev-parse HEAD^2 > .git/target-branch-id"                        
       target_branch_id = readFile('.git/target-branch-id')
       echo "${target_branch_id}"
-
-      timeout(time: 55, unit: 'MINUTES') {
-        echo "Hi, it is me coverage agent again, the worker just started!"
-     
-        try {
+	  
+	  unstash 'artifacts-lms-unit-1'
+	  unstash 'artifacts-lms-unit-2'
+	  unstash 'artifacts-lms-unit-3'
+	  unstash 'artifacts-lms-unit-4'
+	  unstash 'artifacts-cms-unit-all' 
 	  withCredentials([string(credentialsId: '73037323-f1a4-44e2-8054-04d2a9580240', variable: 'report_token')]) {
 	    sh '''
 	    source scripts/jenkins-common.sh
-	    paver coverage -b ${target_branch_id}
+	    paver coverage -b "${target_branch_id}"
 	    pip install codecov==2.0.5
 	    codecov --token=${report_token} --branch=${ci_branch_id}
 	    touch `find . -name *.xml` || true
 	    '''
 	  }
 	} finally {	
-          archiveArtifacts 'reports/**, test_root/log/**'
- 	  cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
-          }
-      }
+       archiveArtifacts 'reports/**, test_root/log/**'
+ 	   cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
     }
 }
 
