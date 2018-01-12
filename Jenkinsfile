@@ -81,6 +81,10 @@ stage('Coverage') {
       checkout scm
 
       sh 'git log --oneline | head'
+	  
+      sh "git rev-parse HEAD > .git/merge-id"                        
+      merge_id = readFile('.git/merge-id')
+      echo "${merge_id}"
 
       sh "git rev-parse HEAD^1 > .git/ci-branch-id"                        
       ci_branch_id = readFile('.git/ci-branch-id')
@@ -95,9 +99,13 @@ stage('Coverage') {
      
         try {
 	  withCredentials([string(credentialsId: '73037323-f1a4-44e2-8054-04d2a9580240', variable: 'report_token')]) {
-	    withEnv(["TARGET_BRANCH=${target_id}", "CODE_COV_TOKEN=${report_token}", "CI_BRANCH=${ci_branch_id}"]) {
-              sh './scripts/jenkins-report.sh'
-            }
+	    sh '''
+	    source edx-venv/bin/activate
+	    paver coverage -b "${target_branch_id}"
+	    pip install codecov==2.0.5
+	    codecov --token="${report_token}" --branch="${ci_branch_id}"
+	    touch `find . -name *.xml` || true
+	    '''
 	  }
 	} finally {	
           archiveArtifacts 'reports/**, test_root/log/**'
