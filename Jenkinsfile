@@ -82,10 +82,10 @@ stage('Coverage') {
 
       sh 'git log --oneline | head'
 	  
-      sh "git rev-parse —short HEAD > .git/head-id"                        
+      sh "git rev-parse --short HEAD > .git/head-id"                        
       head_id = readFile('.git/head-id')
     
-      sh "git rev-parse —short MERGE_HEAD > .git/merge-id"                        
+      sh "git rev-parse --short MERGE_HEAD > .git/merge-id"                        
       merge_id = readFile('.git/merge-id')
 
       timeout(time: 55, unit: 'MINUTES') {
