@@ -27,8 +27,8 @@ def coverageTest() {
 		try {
 			unstash 'artifacts-cms-unit-all'
 			withCredentials([string(credentialsId: '73037323-f1a4-44e2-8054-04d2a9580240', variable: 'CODE_COV_TOKEN')]) {
-				sh "git rev-parse —short HEAD^1 > .git/ci-branch-id"                        
-				sh "git rev-parse —short HEAD^2 > .git/target-branch-id"                        
+				sh "git rev-parse --short HEAD^1 > .git/ci-branch-id"                        
+				sh "git rev-parse --short HEAD^2 > .git/target-branch-id"                        
 				def CI_BRANCH = readFile('.git/ci-branch-id')
 				def TARGET_BRANCH = readFile('.git/target-branch-id') 
 				sh './scripts/jenkins-report.sh'
