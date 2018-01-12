@@ -65,6 +65,8 @@ def buildParallelSteps() {
   return parallelSteps
 }
 
+def shortCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+
 stage('Prepare') {
   echo 'Starting the build...'
 }
@@ -81,6 +83,12 @@ stage('Coverage') {
       checkout scm
 
       sh 'git log --oneline | head'
+	  
+      sh "git rev-parse —short HEAD > .git/head-id"                        
+      head_id = readFile('.git/head-id')
+    
+      sh "git rev-parse —short MERGE_HEAD > .git/merge-id"                        
+      merge_id = readFile('.git/merge-id')
 
       timeout(time: 55, unit: 'MINUTES') {
         echo "Hi, it is me coverage agent again, the worker just started!"
@@ -91,9 +99,11 @@ stage('Coverage') {
 	  unstash 'artifacts-lms-unit-3'
 	  unstash 'artifacts-lms-unit-4'
 	  unstash 'artifacts-cms-unit-all' 
-	  withEnv(["TARGET_BRANCH=open-release/ficus.master", "CODE_COV_TOKEN=${report_token}", "CI_BRANCH=${branch}"]) {
-            sh './scripts/jenkins-report.sh'
-          }
+	  withCredentials([string(credentialsId: '73037323-f1a4-44e2-8054-04d2a9580240', variable: 'report_token')]) {
+	    withEnv(["TARGET_BRANCH=${head_id}", "CODE_COV_TOKEN=${report_token}", "CI_BRANCH=${merge_id}"]) {
+              sh './scripts/jenkins-report.sh'
+            }
+	  }
 	} finally {	
           archiveArtifacts 'reports/**, test_root/log/**'
  	  cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
