@@ -16,9 +16,10 @@ def startTests(suite, shard) {
 				archiveArtifacts 'reports/**, test_root/log/**'
 				stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
 				junit 'reports/**/*.xml'
-			} 
-			
+			} finally {
+
 			deleteDir()
+			}
 		}
 	}
 }
@@ -45,9 +46,10 @@ def coverageTest() {
 				archiveArtifacts 'reports/**, test_root/log/**'
 				cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
 			}
-		} 
+		} finally {
 
 		deleteDir()
+		}
 	}
 }
 
