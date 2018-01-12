@@ -2,12 +2,9 @@
 
 def startTests(suite, shard) {
 	return {
-		echo "I am ${suite}:${shard}, and the worker is yet to be started!"
 
 		node("${suite}-${shard}-worker") {
-			context = "${suite}:${shard}"
-			setBuildStatus ("${context}", 'Unit test', 'PENDING')
-			
+
 			cleanWs()
 
 			checkout scm
@@ -17,7 +14,7 @@ def startTests(suite, shard) {
 					sh './scripts/all-tests.sh'
 				}
 			} catch (err) {
-				setBuildStatus("${context}", 'Test failed :(', 'FAILURE')
+				pullRequest.createStatus(status: 'failure', context: 'Unit tests', description: 'Something wrong', targetUrl: "${JOB_URL}/testResults")
 				throw err
 			} finally {
 				archiveArtifacts 'reports/**, test_root/log/**'
@@ -25,7 +22,7 @@ def startTests(suite, shard) {
 				junit 'reports/**/*.xml'
 			}
 			
-			setBuildStatus ("${context}", 'Test finished :)', 'SUCCESS')
+			pullRequest.createStatus(status: 'success', context: 'Unit tests', description: 'Everything is ok', targetUrl: "${JOB_URL}/testResults")
 			
 			deleteDir()
 		}
@@ -35,9 +32,6 @@ def startTests(suite, shard) {
 
 def coverageTest() {
 	node('coverage-report-worker') {
-		context = "Coverage report"
-		setBuildStatus ("${context}", 'Checking code coverage levels', 'PENDING')
-		
 		cleanWs()
 		
 		checkout scm
@@ -56,14 +50,14 @@ def coverageTest() {
 				sh './scripts/jenkins-report.sh'
 			}
 		} catch (err) {
-			setBuildStatus("${context}", 'Code coverage below 90%', 'FAILURE')
+			pullRequest.createStatus(status: 'failure', context: 'Coverage', description: 'Code coverage below 90%', targetUrl: "${JOB_URL}/testResults")
 			throw err
 		} finally {	
 			archiveArtifacts 'reports/**, test_root/log/**'
 			cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
 		}
 		
-		setBuildStatus ("${context}", 'Code coverage above 90%', 'SUCCESS')
+		pullRequest.createStatus(status: 'success', context: 'Coverage', description: 'Checking code coverage levels', targetUrl: "${JOB_URL}/testResults")
 		
 		deleteDir()
 	}
