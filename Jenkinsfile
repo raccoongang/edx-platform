@@ -49,8 +49,8 @@ def coverageTest() {
 			unstash 'artifacts-lms-unit-4'
 			unstash 'artifacts-cms-unit-all'
 			withCredentials([string(credentialsId: '73037323-f1a4-44e2-8054-04d2a9580240', variable: 'CODE_COV_TOKEN')]) {
-				def CI_BRANCH = $(git rev-parse HEAD^1)                       
-				def TARGET_BRANCH = $(git rev-parse HEAD^2)  
+				CI_BRANCH = $(git rev-parse HEAD^1)                       
+				TARGET_BRANCH = $(git rev-parse HEAD^2)  
 				sh './scripts/jenkins-report.sh'
 			}
 		} catch (err) {
