@@ -97,9 +97,11 @@ stage('Coverage') {
 	  unstash 'artifacts-lms-unit-3'
 	  unstash 'artifacts-lms-unit-4'
 	  unstash 'artifacts-cms-unit-all' 
-	  withEnv(["TARGET_BRANCH=${head_id}", "CODE_COV_TOKEN=${report_token}", "CI_BRANCH=${merge_id}"]) {
-            sh './scripts/jenkins-report.sh'
-          }
+	  withCredentials([string(credentialsId: '73037323-f1a4-44e2-8054-04d2a9580240', variable: 'report_token')]) {
+	    withEnv(["TARGET_BRANCH=${head_id}", "CODE_COV_TOKEN=${report_token}", "CI_BRANCH=${merge_id}"]) {
+              sh './scripts/jenkins-report.sh'
+            }
+	  }
 	} finally {	
           archiveArtifacts 'reports/**, test_root/log/**'
  	  cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
