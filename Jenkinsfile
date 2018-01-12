@@ -32,7 +32,7 @@ def startTests(suite, shard) {
 def coverageTest() {
 	node('coverage-report-worker') {
 		cleanWs()
-		pullRequest.createStatus(status: 'pending', context: 'Coverage', description: 'Code coverage below 90%', targetUrl: "${JOB_URL}/testResults")
+		pullRequest.createStatus(status: 'pending', context: 'Coverage', description: 'Code coverage below 90%')
 		
 		checkout scm
 
@@ -52,11 +52,11 @@ def coverageTest() {
 				cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
 			}
 		} catch (err) {
-			pullRequest.createStatus(status: 'failure', context: 'Coverage', description: 'Code coverage below 90%', targetUrl: "${JOB_URL}/testResults")
+			pullRequest.createStatus(status: 'failure', context: 'Coverage', description: 'Code coverage below 90%')
 			throw err
 		} 
 		
-		pullRequest.createStatus(status: 'success', context: 'Coverage', description: 'Checking code coverage levels', targetUrl: "${JOB_URL}/testResults")
+		pullRequest.createStatus(status: 'success', context: 'Coverage', description: 'Checking code coverage levels')
 		
 		pullRequest.removeLabel('Build Passing')
 		deleteDir()
