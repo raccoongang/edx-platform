@@ -4,7 +4,7 @@ def startTests(suite, shard) {
 	return {
 
 		node("${suite}-${shard}-worker") {
-
+			
 			cleanWs()
 
 			checkout scm
@@ -32,6 +32,7 @@ def startTests(suite, shard) {
 def coverageTest() {
 	node('coverage-report-worker') {
 		cleanWs()
+		pullRequest.createStatus(status: 'pending', context: 'Coverage', description: 'Something wrong', targetUrl: "${JOB_URL}/testResults")
 		
 		checkout scm
 
