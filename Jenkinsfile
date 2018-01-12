@@ -69,11 +69,11 @@ stage('Prepare') {
   echo 'Starting the build...'
 }
 
-stage('Test') {
+stage('Unit tests') {
   parallel buildParallelSteps()
 }
 
-stage('Analysis') {
+stage('Coverage') {
   node('coverage-report-worker') {
       // Cleaning up previous builds. Heads up! Not sure if `WsCleanup` actually works.
       step([$class: 'WsCleanup'])
