@@ -70,7 +70,7 @@ stage('Prepare') {
 }
 
 stage('Unit tests') {
-  parallel buildParallelSteps()
+
 }
 
 stage('Coverage') {
@@ -98,17 +98,12 @@ stage('Coverage') {
         echo "Hi, it is me coverage agent again, the worker just started!"
      
         try {
-	  unstash 'artifacts-lms-unit-1'
-	  unstash 'artifacts-lms-unit-2'
-	  unstash 'artifacts-lms-unit-3'
-	  unstash 'artifacts-lms-unit-4'
-	  unstash 'artifacts-cms-unit-all' 
 	  withCredentials([string(credentialsId: '73037323-f1a4-44e2-8054-04d2a9580240', variable: 'report_token')]) {
 	    sh '''
 	    source scripts/jenkins-common.sh
-	    paver coverage -b "${target_branch_id}"
+	    paver coverage -b ${target_branch_id}
 	    pip install codecov==2.0.5
-	    codecov --token="${report_token}" --branch="${ci_branch_id}"
+	    codecov --token=${report_token} --branch=${ci_branch_id}
 	    touch `find . -name *.xml` || true
 	    '''
 	  }
