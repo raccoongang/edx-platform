@@ -32,7 +32,7 @@ def startTests(suite, shard) {
 def coverageTest() {
 	node('coverage-report-worker') {
 		cleanWs()
-		pullRequest.createStatus(status: 'pending', context: 'Coverage', description: 'Something wrong', targetUrl: "${JOB_URL}/testResults")
+		pullRequest.addLabel('Build Passing')
 		
 		checkout scm
 
@@ -58,6 +58,7 @@ def coverageTest() {
 		
 		pullRequest.createStatus(status: 'success', context: 'Coverage', description: 'Checking code coverage levels', targetUrl: "${JOB_URL}/testResults")
 		
+		pullRequest.removeLabel('Build Passing')
 		deleteDir()
 	}
 }
