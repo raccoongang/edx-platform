@@ -100,7 +100,7 @@ stage('Coverage') {
         try {
 	  withCredentials([string(credentialsId: '73037323-f1a4-44e2-8054-04d2a9580240', variable: 'report_token')]) {
 	    sh '''
-	    source edx-venv/bin/activate
+	    source scripts/jenkins-common.sh
 	    paver coverage -b "${target_branch_id}"
 	    pip install codecov==2.0.5
 	    codecov --token="${report_token}" --branch="${ci_branch_id}"
