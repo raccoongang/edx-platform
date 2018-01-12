@@ -13,14 +13,13 @@ def startTests(suite, shard) {
 				withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
 					sh './scripts/all-tests.sh'
 				}
-			} catch (err) {
-				pullRequest.createStatus(status: 'failure', context: 'Unit tests', description: 'Something wrong', targetUrl: "${JOB_URL}/testResults")
-				throw err
-			} finally {
 				archiveArtifacts 'reports/**, test_root/log/**'
 				stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
 				junit 'reports/**/*.xml'
-			}
+			} catch (err) {
+				pullRequest.createStatus(status: 'failure', context: 'Unit tests', description: 'Something wrong', targetUrl: "${JOB_URL}/testResults")
+				throw err
+			} 
 			
 			pullRequest.createStatus(status: 'success', context: 'Unit tests', description: 'Everything is ok', targetUrl: "${JOB_URL}/testResults")
 			
@@ -48,14 +47,13 @@ def coverageTest() {
 				def CI_BRANCH = readFile('.git/ci-branch-id')
 				def TARGET_BRANCH = readFile('.git/target-branch-id') 
 				sh './scripts/jenkins-report.sh'
+				archiveArtifacts 'reports/**, test_root/log/**'
+				cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
 			}
 		} catch (err) {
 			pullRequest.createStatus(status: 'failure', context: 'Coverage', description: 'Code coverage below 90%', targetUrl: "${JOB_URL}/testResults")
 			throw err
-		} finally {	
-			archiveArtifacts 'reports/**, test_root/log/**'
-			cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
-		}
+		} 
 		
 		pullRequest.createStatus(status: 'success', context: 'Coverage', description: 'Checking code coverage levels', targetUrl: "${JOB_URL}/testResults")
 		
