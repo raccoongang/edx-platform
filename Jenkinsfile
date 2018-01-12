@@ -91,7 +91,7 @@ stage('Coverage') {
 	  unstash 'artifacts-lms-unit-3'
 	  unstash 'artifacts-lms-unit-4'
 	  unstash 'artifacts-cms-unit-all' 
-	  withEnv(["TARGET_BRANCH=open-release/ficus.master"]) {
+	  withEnv(["TARGET_BRANCH=open-release/ficus.master", "CODE_COV_TOKEN=${report_token}", "CI_BRANCH=${branch}"]) {
             sh './scripts/jenkins-report.sh'
           }
 	} finally {	
