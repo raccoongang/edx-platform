@@ -81,6 +81,7 @@ stage('Coverage') {
       checkout scm
 
       sh 'git log --oneline | head'
+      sh 'git log --oneline --graph'
 	  
       sh "git rev-parse HEAD > .git/head-id"                        
       head_id = readFile('.git/head-id')
