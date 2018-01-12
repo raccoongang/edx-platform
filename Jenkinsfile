@@ -84,8 +84,7 @@ stage('Coverage') {
 
       timeout(time: 55, unit: 'MINUTES') {
         echo "Hi, it is me coverage agent again, the worker just started!"
-     
-	try {
+		
 	  sh "git rev-parse HEAD^1 > .git/ci-branch-id"                        
       ci_branch_id = readFile('.git/ci-branch-id')
       echo "${ci_branch_id}"
@@ -93,15 +92,10 @@ stage('Coverage') {
       sh "git rev-parse HEAD^2 > .git/target-branch-id"                        
       target_branch_id = readFile('.git/target-branch-id')
       echo "${target_branch_id}"
-	  
-	  withCredentials([string(credentialsId: '73037323-f1a4-44e2-8054-04d2a9580240', variable: 'report_token')]) {
-	    sh '''
-	    source scripts/jenkins-common.sh
-	    paver coverage -b "${target_branch_id}"
-	    pip install codecov==2.0.5
-	    codecov --token=${report_token} --branch=${ci_branch_id}
-	    touch `find . -name *.xml` || true
-	    '''
+     
+	try {
+	  withEnv(["CI_BRANCH=${ci_branch_id}", "TARGET_BRANCH=${target_branch_id}"]) {
+	    sh './scripts/jenkins-report.sh'
 	  }
 	} finally {	
        archiveArtifacts 'reports/**, test_root/log/**'
