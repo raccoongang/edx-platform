@@ -9,10 +9,10 @@ def startTests(suite, shard) {
 				withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
 					sh './scripts/all-tests.sh'
 				}
+			} finally {
 				archiveArtifacts 'reports/**, test_root/log/**'
 				stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
 				junit 'reports/**/*.xml'
-			} finally {
 				deleteDir()
 			} 
 		}
@@ -32,10 +32,10 @@ def coverageTest() {
 				def CI_BRANCH = readFile('.git/ci-branch-id')
 				def TARGET_BRANCH = readFile('.git/target-branch-id') 
 				sh './scripts/jenkins-report.sh'
-				archiveArtifacts 'reports/**, test_root/log/**'
-				cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
-			}
+				}
 		} finally {
+			archiveArtifacts 'reports/**, test_root/log/**'
+			cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
 			deleteDir()
 		}
 	}
