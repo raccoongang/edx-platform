@@ -3,7 +3,7 @@
 def startTests(suite, shard) {
 	return {
 		node("${suite}-${shard}-worker") {
-			ansiColor('xterm') {
+			wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
 				cleanWs()
 				checkout scm
 				try {
@@ -24,7 +24,7 @@ def startTests(suite, shard) {
 
 def coverageTest() {
 	node('coverage-report-worker') {
-		ansiColor('xterm') {
+		wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
 			cleanWs()
 			checkout scm
 			try {
