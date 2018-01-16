@@ -2,19 +2,21 @@
 
 def startTests(suite, shard) {
 	return {
-		node("${suite}-${shard}-worker") {	
-			cleanWs()
-			checkout scm
-			try {
-				withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
-					sh './scripts/all-tests.sh'
-				}
-			} finally {
-				archiveArtifacts 'reports/**, test_root/log/**'
-				stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
-				junit 'reports/**/*.xml'
-				deleteDir()
-			} 
+		node("${suite}-${shard}-worker") {
+			ansiColor('xterm') {
+				cleanWs()
+				checkout scm
+				try {
+					withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
+						sh './scripts/all-tests.sh'
+					}
+				} finally {
+					archiveArtifacts 'reports/**, test_root/log/**'
+					stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
+					junit 'reports/**/*.xml'
+					deleteDir()
+				} 
+			}
 		}
 	}
 }
@@ -22,21 +24,23 @@ def startTests(suite, shard) {
 
 def coverageTest() {
 	node('coverage-report-worker') {
-		cleanWs()
-		checkout scm
-		try {
-			unstash 'artifacts-cms-unit-all'
-			withCredentials([string(credentialsId: '73037323-f1a4-44e2-8054-04d2a9580240', variable: 'CODE_COV_TOKEN')]) {
-				sh "git rev-parse --short HEAD^1 > .git/ci-branch-id"                        
-				sh "git rev-parse --short HEAD^2 > .git/target-branch-id"                        
-				def CI_BRANCH = readFile('.git/ci-branch-id')
-				def TARGET_BRANCH = readFile('.git/target-branch-id') 
-				sh './scripts/jenkins-report.sh'
+		ansiColor('xterm') {
+			cleanWs()
+			checkout scm
+			try {
+				unstash 'artifacts-cms-unit-all'
+				withCredentials([string(credentialsId: '73037323-f1a4-44e2-8054-04d2a9580240', variable: 'CODE_COV_TOKEN')]) {
+					sh "git rev-parse --short HEAD^1 > .git/ci-branch-id"                        
+					sh "git rev-parse --short HEAD^2 > .git/target-branch-id"                        
+					def CI_BRANCH = readFile('.git/ci-branch-id')
+					def TARGET_BRANCH = readFile('.git/target-branch-id') 
+					sh './scripts/jenkins-report.sh'
 				}
-		} finally {
-			archiveArtifacts 'reports/**, test_root/log/**'
-			cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
-			deleteDir()
+			} finally {
+				archiveArtifacts 'reports/**, test_root/log/**'
+				cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+				deleteDir()
+			}
 		}
 	}
 }
