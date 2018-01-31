@@ -550,8 +550,8 @@
     }
 
     // specific fields - course image
-    #field-course-image, #field-banner-image, #field-video-thumbnail-image {
-      .current-course-image {
+    #field-course-image, #field-banner-image, #field-video-thumbnail-image, .image {
+      .current-course-image, .current {
         margin-bottom: ($baseline/2);
         padding: ($baseline/2) $baseline;
         background: $gray-l6;

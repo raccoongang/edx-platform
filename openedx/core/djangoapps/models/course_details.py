@@ -60,6 +60,12 @@ class CourseDetails(object):
         self.license = "all-rights-reserved"  # default course license is all rights reserved
         self.course_image_name = ""
         self.course_image_asset_path = ""  # URL of the course image
+        self.cert_image_name1 = ""
+        self.cert_image_asset_path1 = ""
+        self.cert_image_name2 = ""
+        self.cert_image_asset_path2 = ""
+        self.cert_image_name3 = ""
+        self.cert_image_asset_path3 = ""
         self.banner_image_name = ""
         self.banner_image_asset_path = ""
         self.video_thumbnail_image_name = ""
@@ -114,6 +120,12 @@ class CourseDetails(object):
         course_details.pre_requisite_courses = course_descriptor.pre_requisite_courses
         course_details.course_image_name = course_descriptor.course_image
         course_details.course_image_asset_path = course_image_url(course_descriptor, 'course_image')
+        course_details.cert_image_name1 = course_descriptor.cert_image1
+        course_details.cert_image_asset_path1 = course_image_url(course_descriptor, 'cert_image1')
+        course_details.cert_image_name2 = course_descriptor.cert_image2
+        course_details.cert_image_asset_path2 = course_image_url(course_descriptor, 'cert_image2')
+        course_details.cert_image_name3 = course_descriptor.cert_image3
+        course_details.cert_image_asset_path3 = course_image_url(course_descriptor, 'cert_image3')
         course_details.banner_image_name = course_descriptor.banner_image
         course_details.banner_image_asset_path = course_image_url(course_descriptor, 'banner_image')
         course_details.video_thumbnail_image_name = course_descriptor.video_thumbnail_image
@@ -246,6 +258,18 @@ class CourseDetails(object):
 
         if 'course_image_name' in jsondict and jsondict['course_image_name'] != descriptor.course_image:
             descriptor.course_image = jsondict['course_image_name']
+            dirty = True
+
+        if 'cert_image_name1' in jsondict and jsondict['cert_image_name1'] != descriptor.cert_image1:
+            descriptor.cert_image1 = jsondict['cert_image_name1']
+            dirty = True
+
+        if 'cert_image_name2' in jsondict and jsondict['cert_image_name2'] != descriptor.cert_image2:
+            descriptor.cert_image2 = jsondict['cert_image_name2']
+            dirty = True
+
+        if 'cert_image_name3' in jsondict and jsondict['cert_image_name3'] != descriptor.cert_image3:
+            descriptor.cert_image3 = jsondict['cert_image_name3']
             dirty = True
 
         if 'banner_image_name' in jsondict and jsondict['banner_image_name'] != descriptor.banner_image:

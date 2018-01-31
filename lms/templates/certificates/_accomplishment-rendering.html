@@ -22,6 +22,20 @@ course_mode_class = course_mode if course_mode else ''
                 <span class="accomplishment-type-label hd-3">${document_title}</span>
             </div>
 
+            <div class="certificate-images">
+                <ul>
+                  % if image1:
+                    <li class="image-1"><img src="${image1}" /></li>
+                  % endif
+                  % if image2:
+                    <li class="image-2"><img src="${image2}" /></li>
+                  % endif
+                  % if image3:
+                    <li class="image-3"><img src="${image3}" /></li>
+                  % endif
+                </ul>
+            </div>
+
             <div class="wrapper-statement-and-signatories">
                 <div class="accomplishment-statement">
                     <p class="accomplishment-statement-lead">

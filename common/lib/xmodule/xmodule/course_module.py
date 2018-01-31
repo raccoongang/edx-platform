@@ -495,6 +495,33 @@ class CourseFields(object):
         # Ensure that courses imported from XML keep their image
         default="images_course_image.jpg"
     )
+    cert_image1 = String(
+        display_name=_("Certificate First Image"),
+        help=_(
+            "Edit the name of the certificate first image file. You must upload this file on the Files & Uploads page. "
+            "You can also set the certificate first image on the Settings & Details page."
+        ),
+        scope=Scope.settings,
+        default=""
+    )
+    cert_image2 = String(
+        display_name=_("Certificate Second Image"),
+        help=_(
+            "Edit the name of the certificate second image file. You must upload this file on the Files & Uploads page. "
+            "You can also set the certificate second image on the Settings & Details page."
+        ),
+        scope=Scope.settings,
+        default=""
+    )
+    cert_image3 = String(
+        display_name=_("Certificate Third Image"),
+        help=_(
+            "Edit the name of the certificate third image file. You must upload this file on the Files & Uploads page. "
+            "You can also set the certificate third image on the Settings & Details page."
+        ),
+        scope=Scope.settings,
+        default=""
+    )
     banner_image = String(
         display_name=_("Course Banner Image"),
         help=_(
