@@ -12,7 +12,7 @@ def startTests(suite, shard) {
                                                         sh './scripts/all-tests.sh'
                                                 }
                                         } catch (err) {
-                                                slackSend channel: 'script-channel', color: 'danger', message: "Test ${suite}-${shard} failed. Please check build info.", teamDomain: 'raccoongang', tokenCredentialId: 'slack-secret-token'
+                                                slackSend channel: 'script-channel', color: 'danger', message: "Test ${suite}-${shard} failed in ${env.JOB_NAME}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: 'raccoongang', tokenCredentialId: 'slack-secret-token'
                                         } finally {
                                                 archiveArtifacts 'reports/**, test_root/log/**'
                                                 stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
