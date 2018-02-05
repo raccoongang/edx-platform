@@ -81,7 +81,7 @@ def buildParallelSteps() {
 
 stage('Prepare') {
         echo 'Starting the build...'
-        slackSend channel: 'script-channel', color: 'good', message: 'CI Tests started! ${env.JOB_NAME} (<${env.BUILD_URL}|Open>)', teamDomain: 'raccoongang', tokenCredentialId: 'slack-secret-token'
+        slackSend channel: 'script-channel', color: 'good', message: "CI Tests started! ${env.JOB_NAME} (<${env.BUILD_URL}|Open>)", teamDomain: 'raccoongang', tokenCredentialId: 'slack-secret-token'
 }
 
 stage('Unit tests') {
