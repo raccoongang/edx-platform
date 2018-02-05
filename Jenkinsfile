@@ -2,19 +2,23 @@
 
 def startTests(suite, shard) {
         return {
-                node("${suite}-${shard}-worker") {
-                        wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
-                                cleanWs()
-                                checkout scm
-                                try {
-                                        withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
-                                                sh './scripts/all-tests.sh'
+                timeout(35) {
+                        node("${suite}-${shard}-worker") {
+                                wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
+                                        cleanWs()
+                                        checkout scm
+                                        try {
+                                                withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
+                                                        sh './scripts/all-tests.sh'
+                                                }
+                                        } catch (err) {
+                                                slackSend channel: 'script-channel', color: 'danger', message: "Test ${suite}-${shard} failed in ${env.JOB_NAME}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: 'raccoongang', tokenCredentialId: 'slack-secret-token'
+                                        } finally {
+                                                archiveArtifacts 'reports/**, test_root/log/**'
+                                                stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
+                                                junit 'reports/**/*.xml'
+                                                deleteDir()
                                         }
-                                } finally {
-                                        archiveArtifacts 'reports/**, test_root/log/**'
-                                        stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
-                                        junit 'reports/**/*.xml'
-                                        deleteDir()
                                 }
                         }
                 }
@@ -77,6 +81,7 @@ def buildParallelSteps() {
 
 stage('Prepare') {
         echo 'Starting the build...'
+        slackSend channel: 'script-channel', color: 'good', message: "CI Tests started! ${env.JOB_NAME} (<${env.BUILD_URL}|Open>)", teamDomain: 'raccoongang', tokenCredentialId: 'slack-secret-token'
 }
 
 stage('Unit tests') {
@@ -90,4 +95,3 @@ stage('Coverage') {
 stage('Done') {
         echo 'Done! :)'
 }
-
