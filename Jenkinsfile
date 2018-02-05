@@ -2,19 +2,24 @@
 
 def startTests(suite, shard) {
         return {
-                node("${suite}-${shard}-worker") {
-                        wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
-                                cleanWs()
-                                checkout scm
-                                try {
-                                        withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
-                                                sh './scripts/all-tests.sh'
+                timeout(35) {
+                        node("${suite}-${shard}-worker") {
+                                wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
+                                        cleanWs()
+                                        checkout scm
+                                        try {
+                                                withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
+                                                        sh './scripts/all-tests.sh'
+                                                }
+                                        } finally {
+                                                archiveArtifacts 'reports/**, test_root/log/**'
+                                                stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
+                                                junit 'reports/**/*.xml'
+                                                deleteDir()
                                         }
-                                } finally {
-                                        archiveArtifacts 'reports/**, test_root/log/**'
-                                        stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
-                                        junit 'reports/**/*.xml'
-                                        deleteDir()
+                                        catch (err) {
+                                                slackSend channel: 'script-channel', color: 'danger', message: "Test ${suite}-${shard} failed. Please check build info.", teamDomain: 'raccoongang', tokenCredentialId: 'slack-secret-token'
+                                        }
                                 }
                         }
                 }
