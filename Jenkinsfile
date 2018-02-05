@@ -11,14 +11,13 @@ def startTests(suite, shard) {
                                                 withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
                                                         sh './scripts/all-tests.sh'
                                                 }
+                                        } catch (err) {
+                                                slackSend channel: 'script-channel', color: 'danger', message: "Test ${suite}-${shard} failed. Please check build info.", teamDomain: 'raccoongang', tokenCredentialId: 'slack-secret-token'
                                         } finally {
                                                 archiveArtifacts 'reports/**, test_root/log/**'
                                                 stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
                                                 junit 'reports/**/*.xml'
                                                 deleteDir()
-                                        }
-                                        catch (err) {
-                                                slackSend channel: 'script-channel', color: 'danger', message: "Test ${suite}-${shard} failed. Please check build info.", teamDomain: 'raccoongang', tokenCredentialId: 'slack-secret-token'
                                         }
                                 }
                         }
