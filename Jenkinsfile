@@ -1,5 +1,8 @@
 #!groovy
 
+env.CHANNEL_NAME = "ci-open-edx"
+
+
 def startTests(suite, shard) {
         return {
                 timeout(35) {
@@ -24,7 +27,6 @@ def startTests(suite, shard) {
                 }
         }
 }
-
 
 def coverageTest() {
         node('coverage-report-worker') {
