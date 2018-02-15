@@ -1,26 +1,34 @@
 #!groovy
 
+timeout_ci = env.CI_TIMEOUT.toInteger() ?: 35
+assert timeout_ci instanceof Integer
+channel_name = env.CHANNEL_NAME ?: "ci-open-edx"
+
+
 def startTests(suite, shard) {
         return {
-                node("${suite}-${shard}-worker") {
-                        wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
-                                cleanWs()
-                                checkout scm
-                                try {
-                                        withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
-                                                sh './scripts/all-tests.sh'
+                timeout(timeout_ci.toInteger()) {
+                        node("${suite}-${shard}-worker") {
+                                wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
+                                        cleanWs()
+                                        checkout scm
+                                        try {
+                                                withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
+                                                        sh './scripts/all-tests.sh'
+                                                }
+                                        } catch (err) {
+                                                slackSend channel: channel_name, color: 'danger', message: "Test ${suite}-${shard} failed in ${env.JOB_NAME}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: 'raccoongang', tokenCredentialId: 'slack-secret-token'
+                                        } finally {
+                                                archiveArtifacts 'reports/**, test_root/log/**'
+                                                stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
+                                                junit 'reports/**/*.xml'
+                                                deleteDir()
                                         }
-                                } finally {
-                                        archiveArtifacts 'reports/**, test_root/log/**'
-                                        stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
-                                        junit 'reports/**/*.xml'
-                                        deleteDir()
                                 }
                         }
                 }
         }
 }
-
 
 def coverageTest() {
         node('coverage-report-worker') {
@@ -77,16 +85,30 @@ def buildParallelSteps() {
 
 stage('Prepare') {
         echo 'Starting the build...'
+        slackSend channel: channel_name, color: 'good', message: "CI Tests started! ${env.JOB_NAME} (<${env.BUILD_URL}|Open>)", teamDomain: 'raccoongang', tokenCredentialId: 'slack-secret-token'
 }
 
-stage('Unit tests') {
-        parallel buildParallelSteps()
-}
+stage('Git Info') {
+	node {
+		checkout scm
 
-stage('Coverage') {
-        coverageTest()
-}
+		git_branch = env.BRANCH_NAME
+		echo git_branch
+		git_commit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+		git_tag = sh(returnStdout: true, script: 'git describe --always --abbrev=0 --tags').trim()
+		echo git_tag
 
-stage('Done') {
-        echo 'Done! :)'
+		if (git_branch != "ficus-rg") {
+			// Determine actual PR commit, if necessary
+			merge_commit_parents= sh(returnStdout: true, script: 'git rev-parse HEAD | git log --pretty=%P -n 1 --date-order').trim()
+			if (merge_commit_parents.length() > 40) {
+				echo 'More than one merge commit parent signifies that the merge commit is not the PR commit'
+				echo "Changing git_commit from '${git_commit}' to '${merge_commit_parents.take(40)}'"
+				git_commit = merge_commit_parents.take(40)
+			} else {
+				echo 'Only one merge commit parent signifies that the merge commit is also the PR commit'
+				echo "Keeping git_commit as '${git_commit}'"
+			}
+		}
+	}
 }
