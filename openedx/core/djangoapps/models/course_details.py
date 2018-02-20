@@ -81,6 +81,7 @@ class CourseDetails(object):
         self.learning_info = []
         self.instructor_info = []
         # self.category = []
+        self.course_info = None
 
     @classmethod
     def fetch_about_attribute(cls, course_key, attribute):
@@ -132,6 +133,7 @@ class CourseDetails(object):
         course_details.video_thumbnail_image_asset_path = course_image_url(course_descriptor, 'video_thumbnail_image')
         course_details.language = course_descriptor.language
         course_details.self_paced = course_descriptor.self_paced
+        course_details.course_info = course_descriptor.course_info
         course_details.learning_info = course_descriptor.learning_info
         course_details.instructor_info = course_descriptor.instructor_info
         course_details.category = [i['id'] for i in CourseCategory.objects.filter(courses__id=course_key).values('id')]
@@ -300,6 +302,10 @@ class CourseDetails(object):
 
         if 'language' in jsondict and jsondict['language'] != descriptor.language:
             descriptor.language = jsondict['language']
+            dirty = True
+
+        if 'course_info' in jsondict and jsondict['course_info'] != descriptor.course_info:
+            descriptor.course_info = jsondict['course_info']
             dirty = True
 
         if (descriptor.can_toggle_course_pacing

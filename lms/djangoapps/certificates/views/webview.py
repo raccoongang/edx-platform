@@ -242,6 +242,11 @@ def _update_course_context(request, context, course, course_key, platform_name):
     context['image3'] = course.cert_image3 and request.build_absolute_uri(course_image_url(course, 'cert_image3')) or ''
     course_number = course.display_coursenumber if course.display_coursenumber else course.number
     context['course_number'] = course_number
+
+    ukr_text = course.course_info or (
+        u'наданий фахiвцями Державної установи «Центр громадського здоров`я Мiнiстерства охорони здоров`я України» '
+            u'та Благодiйної органiзацiї «Український iнститут полiтики громадського здоров`я»'
+    )
     if context['organization_long_name']:
         # Translators:  This text represents the description of course
         context['accomplishment_copy_course_description'] = _('a course of study offered by {partner_short_name}, '

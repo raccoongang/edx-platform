@@ -312,6 +312,11 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
             <span class="tip">${_('Provide useful information about your course')}</span>
           </header>
           <ol class="list-input">
+            <li class="field text" id="field-course-info">
+              <label for="course-info">${_("Course Info")}</label>
+              <input type="text" id="course-info">
+              <span class="tip tip-stacked">${_("Course info for certificate")}</span>
+            </li>
             <li class="field" id="field-course-language">
               <label for="course-language">${_("Course Language")}</label>
               <select id="course-language">

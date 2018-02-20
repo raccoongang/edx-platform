@@ -1,3 +1,4 @@
+#-*-coding: utf-8-*-
 """
 Django module container for classes and operations related to the "Course Module" content type
 """
@@ -912,6 +913,14 @@ class CourseFields(object):
             "to learners at their scheduled time."
         ),
         scope=Scope.settings, default=False
+    )
+
+    course_info = String(
+        display_name=_("Course Info"),
+        help=_("Specify the course info."),
+        default=(u'наданий фахiвцями Державної установи «Центр громадського здоров`я Мiнiстерства охорони здоров`я України» '
+                 u'та Благодiйної органiзацiї «Український iнститут полiтики громадського здоров`я»'),
+        scope=Scope.settings
     )
 
 
