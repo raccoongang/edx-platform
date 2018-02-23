@@ -81,6 +81,13 @@ class ProgramDetailsFragmentView(EdxFragmentView):
     """
     Render the program details fragment.
     """
+    @staticmethod
+    def _courses_count(courses):
+        courses_count = 0
+        for course in courses:
+            courses_count += len(set(c['key'] for c in course['course_runs']))
+        return courses_count
+
     def render_to_fragment(self, request, program_uuid, **kwargs):
         """View details about a specific program."""
         programs_config = kwargs.get('programs_config') or ProgramsApiConfig.current()
@@ -102,7 +109,14 @@ class ProgramDetailsFragmentView(EdxFragmentView):
         course_data = meter.progress(programs=[program_data], count_only=False)[0]
         certificate_data = get_certificates(request.user, program_data)
 
-        program_data.pop('courses')
+        total_courses_count = self._courses_count(program_data.pop('courses'))
+
+        not_started_courses_count = self._courses_count(course_data['not_started'])
+
+        if not_started_courses_count < total_courses_count:
+            program_data['price'] = '%.2f' % (
+                        (float(program_data['price']) / total_courses_count) * not_started_courses_count)
+
         skus = program_data.get('skus')
         ecommerce_service = EcommerceService()
 
@@ -129,7 +143,8 @@ class ProgramDetailsFragmentView(EdxFragmentView):
             'user_preferences': get_user_preferences(request.user),
             'program_data': program_data,
             'course_data': course_data,
-            'certificate_data': certificate_data
+            'certificate_data': certificate_data,
+            'add_to_cart_url': reverse('add_program_to_cart', kwargs={'uuid': program_data['uuid']}),
         }
 
         html = render_to_string('learner_dashboard/program_details_fragment.html', context)

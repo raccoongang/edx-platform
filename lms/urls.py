@@ -43,6 +43,7 @@ from openedx.core.djangoapps.password_policy.forms import PasswordPolicyAwareAdm
 from openedx.core.djangoapps.plugins import constants as plugin_constants
 from openedx.core.djangoapps.plugins import plugin_urls
 from openedx.core.djangoapps.programs.models import ProgramsApiConfig
+from openedx.core.djangoapps.programs.views import program_listing as base_program_listing
 from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.verified_track_content import views as verified_track_content_views
@@ -479,8 +480,8 @@ urlpatterns += [
     ),
 
     url(
-        r'^programs$',
-        program_listing,
+        r'^xseries$|^programs$',
+        base_program_listing,
         name='programs',
     ),
 

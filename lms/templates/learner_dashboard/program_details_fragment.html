@@ -13,11 +13,12 @@ from openedx.core.djangolib.js_utils import (
 <%block name="js_extra">
 <%static:webpack entry="ProgramDetailsFactory">
 ProgramDetailsFactory({
-    programData: ${program_data | n, dump_js_escaped_json},
+    programData: ${program_data | n,dump_js_escaped_json},
     courseData: ${course_data | n, dump_js_escaped_json},
     certificateData: ${certificate_data | n, dump_js_escaped_json},
     urls: ${urls | n, dump_js_escaped_json},
     userPreferences: ${user_preferences | n, dump_js_escaped_json},
+    addToCartUrl: "${add_to_cart_url | n}",
 });
 </%static:webpack>
 </%block>
