@@ -14,30 +14,13 @@ from openedx.core.djangoapps.programs.utils import (
     get_certificates,
     get_program_marketing_url
 )
+from openedx.core.djangoapps.programs.views import program_listing as base_program_listing
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preferences
 
 
 @login_required
-@require_GET
 def program_listing(request):
-    """View a list of programs in which the user is engaged."""
-    programs_config = ProgramsApiConfig.current()
-    if not programs_config.enabled:
-        raise Http404
-
-    meter = ProgramProgressMeter(request.user)
-
-    context = {
-        'disable_courseware_js': True,
-        'marketing_url': get_program_marketing_url(programs_config),
-        'nav_hidden': True,
-        'programs': meter.engaged_programs,
-        'progress': meter.progress(),
-        'show_program_listing': programs_config.enabled,
-        'uses_pattern_library': True,
-    }
-
-    return render_to_response('learner_dashboard/programs.html', context)
+    return base_program_listing(request, request.user)
 
 
 @login_required
