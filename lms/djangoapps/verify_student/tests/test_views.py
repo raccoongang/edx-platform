@@ -1968,7 +1968,7 @@ class TestPhotoVerificationResultsCallback(ModuleStoreTestCase):
         # now check that '_send_email' method is called on result callback
         # with required parameters
         subject = "Re-verification Status"
-        mock_send_email.assert_called_once_with(self.user.id, subject, ANY)
+        mock_send_email.assert_called_once_with(self.user.id, subject, ANY, html_message=ANY)
 
     def create_reverification_xblock(self):
         """
@@ -2378,7 +2378,7 @@ class TestEmailMessageWithCustomICRVBlock(ModuleStoreTestCase):
 
     def test_approved_email_message(self):
 
-        subject, body = _compose_message_reverification_email(
+        subject, body, __html = _compose_message_reverification_email(
             self.course.id, self.user.id, self.reverification_location, "approved", self.request
         )
 
@@ -2396,7 +2396,7 @@ class TestEmailMessageWithCustomICRVBlock(ModuleStoreTestCase):
 
     def test_denied_email_message_with_valid_due_date_and_attempts_allowed(self):
 
-        subject, body = _compose_message_reverification_email(
+        subject, body, __html = _compose_message_reverification_email(
             self.course.id, self.user.id, self.reverification_location, "denied", self.request
         )
 
@@ -2440,7 +2440,7 @@ class TestEmailMessageWithCustomICRVBlock(ModuleStoreTestCase):
             status='submitted'
         )
 
-        __, body = _compose_message_reverification_email(
+        __, body, __html = _compose_message_reverification_email(
             self.course.id, self.user.id, self.reverification_location, "denied", self.request
         )
 
@@ -2464,7 +2464,7 @@ class TestEmailMessageWithCustomICRVBlock(ModuleStoreTestCase):
         # Due date given and expired
         return_value = datetime.now(tz=pytz.UTC) + timedelta(days=22)
         with patch.object(timezone, 'now', return_value=return_value):
-            __, body = _compose_message_reverification_email(
+            __, body, __html = _compose_message_reverification_email(
                 self.course.id, self.user.id, self.reverification_location, "denied", self.request
             )
 
@@ -2574,7 +2574,7 @@ class TestEmailMessageWithDefaultICRVBlock(ModuleStoreTestCase):
             status='submitted'
         )
 
-        __, body = _compose_message_reverification_email(
+        __, body, __html = _compose_message_reverification_email(
             self.course.id, self.user.id, self.reverification_location, "denied", self.request
         )
 
