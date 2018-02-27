@@ -2440,7 +2440,7 @@ class TestEmailMessageWithCustomICRVBlock(ModuleStoreTestCase):
             status='submitted'
         )
 
-        __, body = _compose_message_reverification_email(
+        __, body, __html = _compose_message_reverification_email(
             self.course.id, self.user.id, self.reverification_location, "denied", self.request
         )
 
