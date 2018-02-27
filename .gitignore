@@ -125,4 +125,3 @@ lms/lib/comment_client/python
 autodeploy.properties
 .ws_migrations_complete
 dist
-0006_auto_20180122_1902.py

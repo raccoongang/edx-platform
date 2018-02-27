@@ -85,7 +85,6 @@ class CommonCertificatesTestCase(ModuleStoreTestCase):
         )
         self.user.profile.name = "Joe User"
         self.user.profile.save()
-        self.user.save()
         self.client.login(username=self.user.username, password='foo')
         self.request = RequestFactory().request()
         self.linkedin_url = 'http://www.linkedin.com/profile/add?{params}'
