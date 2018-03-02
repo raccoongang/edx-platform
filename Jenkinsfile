@@ -42,11 +42,13 @@ def coverageTest() {
             }
             try {
                 echo "Unstash unit-tests artifacts."
+                /*
                 unstash "artifacts-lms-unit-1"
                 unstash "artifacts-lms-unit-2"
                 unstash "artifacts-lms-unit-3"
                 unstash "artifacts-lms-unit-4"
                 unstash "artifacts-cms-unit-all"
+                */
                 echo "Changing ci_commit to HEAD."
                 ci_commit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
                 echo "CI_COMMIT = '${ci_commit}'"
@@ -72,7 +74,7 @@ def coverageTest() {
                 cobertura autoUpdateHealth: false, autoUpdateStability: false, classCoverageTargets: '95, 95, 0', coberturaReportFile: 'reports/coverage.xml', failUnhealthy: false, failUnstable: false, fileCoverageTargets: '95, 95, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '95, 95, 0', onlyStable: false, packageCoverageTargets: '95, 95, 0', sourceEncoding: 'ASCII', zoomCoverageChart: true
                 publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_coverage_combined.html', reportName: 'Diff Coverage Report', reportTitles: ''])
             }                
-            deleteDir()
+            /* deleteDir() */
         }
     }
 }
@@ -101,7 +103,7 @@ def startParallelSteps() {
     }
     return suiteNames
 }
-
+/*
 stage('Prepare') {
     echo 'Starting the build...'
     slackSend channel: channel_name, color: 'good', message: "CI Tests started! ${env.JOB_NAME} (<${env.BUILD_URL}|Open>)", teamDomain: 'raccoongang', tokenCredentialId: 'slack-secret-token'
@@ -110,7 +112,7 @@ stage('Prepare') {
 stage('Unit tests') {
     parallel startParallelSteps()
 }
-
+*/
 stage('Coverage') {
     coverageTest()
 }
