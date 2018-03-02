@@ -64,7 +64,7 @@ def coverageTest() {
                 sh """source ./scripts/jenkins-common.sh
                 paver coverage -b ${coverage_branch}
                 pip install codecov==2.0.15
-                codecov --token=${codecov_token} --branch=${codecov_branch} --commit=${ci_commit} --pr=${pr}"""
+                codecov --token=${codecov_token} --branch=${codecov_branch} --commit=${ci_commit} --pr=${codecov_pr}"""
             } catch (err) {
                 slackSend channel: channel_name, color: 'danger', message: "Coverage report failed in ${env.JOB_NAME}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: 'raccoongang', tokenCredentialId: 'slack-secret-token'
             } finally {
