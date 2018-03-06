@@ -295,10 +295,7 @@ class EmailChangeRequestTests(EventTestMixin, TestCase):
             'old_email': old_email,
             'new_email': new_email
         }
-        try:
-            html_message = mock_render_to_string('emails/email_change.html', context)
-        except:
-            html_message = None
+        html_message = mock_render_to_string('emails/email_change.html', context)
         send_mail.assert_called_with(
             mock_render_to_string('emails/email_change_subject.txt', context),
             mock_render_to_string('emails/email_change.txt', context),
