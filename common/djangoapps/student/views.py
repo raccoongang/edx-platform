@@ -1843,16 +1843,25 @@ def create_account_with_params(request, params):
         # Email subject *must not* contain newlines
         subject = ''.join(subject.splitlines())
         message = render_to_string('emails/activation_email.txt', context)
+        try:
+            html_message = render_to_string('emails/activation_email.html', context)
+        except:
+            html_message = None
 
         from_address = configuration_helpers.get_value(
             'email_from_address',
             settings.DEFAULT_FROM_EMAIL
         )
-        if settings.FEATURES.get('REROUTE_ACTIVATION_EMAIL'):
-            dest_addr = settings.FEATURES['REROUTE_ACTIVATION_EMAIL']
-            message = ("Activation for %s (%s): %s\n" % (user, user.email, profile.name) +
-                       '-' * 80 + '\n\n' + message)
-        send_activation_email.delay(subject, message, from_address, dest_addr)
+        try:
+            if settings.FEATURES.get('REROUTE_ACTIVATION_EMAIL'):
+                dest_addr = settings.FEATURES['REROUTE_ACTIVATION_EMAIL']
+                message = ("Activation for %s (%s): %s\n" % (user, user.email, profile.name) +
+                           '-' * 80 + '\n\n' + message)
+                mail.send_mail(subject, message, from_address, [dest_addr], fail_silently=False, html_message=html_message)
+            else:
+                user.email_user(subject, message, from_address, html_message=html_message)
+        except Exception:  # pylint: disable=broad-except
+            log.error(u'Unable to send activation email to user from "%s"', from_address, exc_info=True)
     else:
         registration.activate()
         _enroll_user_in_pending_courses(user)  # Enroll student in any pending courses
@@ -2214,6 +2223,7 @@ def password_reset(request):
         # bad user? tick the rate limiter counter
         AUDIT_LOG.info("Bad password_reset user passed in.")
         limiter.tick_bad_request_counter(request)
+        return JsonResponse({'success': False})
 
     return JsonResponse({
         'success': True,
@@ -2384,7 +2394,10 @@ def reactivation_email_for_user(user):
     from_address = configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
 
     try:
-        user.email_user(subject, message, from_address)
+        user.email_user(subject, message, configuration_helpers.get_value(
+            'email_from_address',
+            settings.DEFAULT_FROM_EMAIL,
+        ))
     except Exception:  # pylint: disable=broad-except
         log.error(
             u'Unable to send reactivation email from "%s" to "%s"',
@@ -2449,12 +2462,17 @@ def do_email_change_request(user, new_email, activation_key=None):
 
     message = render_to_string('emails/email_change.txt', context)
 
+    try:
+        html_message = render_to_string('emails/email_change.html', context)
+    except:
+        html_message = None
+
     from_address = configuration_helpers.get_value(
         'email_from_address',
         settings.DEFAULT_FROM_EMAIL
     )
     try:
-        mail.send_mail(subject, message, from_address, [pec.new_email])
+        mail.send_mail(subject, message, from_address, [pec.new_email], html_message=html_message)
     except Exception:  # pylint: disable=broad-except
         log.error(u'Unable to send email activation link to user from "%s"', from_address, exc_info=True)
         raise ValueError(_('Unable to send email activation link. Please try again later.'))
@@ -2501,6 +2519,11 @@ def confirm_email_change(request, key):  # pylint: disable=unused-argument
         subject = render_to_string('emails/email_change_subject.txt', address_context)
         subject = ''.join(subject.splitlines())
         message = render_to_string('emails/confirm_email_change.txt', address_context)
+        try:
+            html_message = render_to_string('emails/confirm_email_change.html', context)
+        except:
+            html_message = None
+
         u_prof = UserProfile.objects.get(user=user)
         meta = u_prof.get_meta()
         if 'old_emails' not in meta:
@@ -2513,7 +2536,7 @@ def confirm_email_change(request, key):  # pylint: disable=unused-argument
             user.email_user(
                 subject,
                 message,
-                configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
+                configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL, html_message=html_message)
             )
         except Exception:    # pylint: disable=broad-except
             log.warning('Unable to send confirmation email to old address', exc_info=True)
@@ -2529,7 +2552,7 @@ def confirm_email_change(request, key):  # pylint: disable=unused-argument
             user.email_user(
                 subject,
                 message,
-                configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
+                configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL, html_message=html_message)
             )
         except Exception:  # pylint: disable=broad-except
             log.warning('Unable to send confirmation email to new address', exc_info=True)
@@ -2583,6 +2606,45 @@ def change_email_settings(request):
         )
 
     return JsonResponse({"success": True})
+
+
+def _get_course_programs(user, user_enrolled_courses):  # pylint: disable=invalid-name
+    """Build a dictionary of program data required for display on the student dashboard.
+
+    Given a user and an iterable of course keys, find all programs relevant to the
+    user and return them in a dictionary keyed by course key.
+
+    Arguments:
+        user (User): The user to authenticate as when requesting programs.
+        user_enrolled_courses (list): List of course keys representing the courses in which
+            the given user has active enrollments.
+
+    Returns:
+        dict, containing programs keyed by course.
+    """
+    course_programs = get_programs_for_dashboard(user, user_enrolled_courses)
+    programs_data = {}
+
+    for course_key, programs in course_programs.viewitems():
+        for program in programs:
+            if program.get('status') == 'active' and program.get('category') == 'xseries':
+                try:
+                    programs_for_course = programs_data.setdefault(course_key, {})
+                    programs_for_course.setdefault('course_program_list', []).append({
+                        'course_count': len(program['course_codes']),
+                        'display_name': program['name'],
+                        'program_id': program['id'],
+                        'program_marketing_url': urljoin(
+                            settings.MKTG_URLS.get('ROOT'),
+                            'xseries' + '/{}'
+                        ).format(program['marketing_slug'])
+                    })
+                    programs_for_course['category'] = program.get('category')
+                    programs_for_course['display_category'] = get_display_category(program)
+                except KeyError:
+                    log.warning('Program structure is invalid, skipping display: %r', program)
+
+    return programs_data
 
 
 class LogoutView(TemplateView):
