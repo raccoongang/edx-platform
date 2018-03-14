@@ -588,6 +588,6 @@ COMPREHENSIVE_THEME_DIRS = [REPO_ROOT / "themes", REPO_ROOT / "common/test"]
 COMPREHENSIVE_THEME_LOCALE_PATHS = [REPO_ROOT / "themes/conf/locale", ]
 
 LMS_ROOT_URL = "http://localhost:8000"
-STATIC_ROOT_BASE = REPO_ROOT / "static_test"
-EDX_PLATFORM_STATIC_ROOT_BASE = REPO_ROOT / "static_edxplatform_test"
-STATIC_COLLECTOR_ROOT = REPO_ROOT / "static_collection_test"
+#STATIC_ROOT_BASE = REPO_ROOT / "static_test"
+#EDX_PLATFORM_STATIC_ROOT_BASE = REPO_ROOT / "static_edxplatform_test"
+#STATIC_COLLECTOR_ROOT = REPO_ROOT / "static_collection_test"
