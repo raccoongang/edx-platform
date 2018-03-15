@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-
 echo "Setting up for accessibility tests..."
 source scripts/jenkins-common.sh
 
