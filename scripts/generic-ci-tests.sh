@@ -60,7 +60,7 @@ git clean -qxfd
 
 function emptyxunit {
 
-    cat > reports/$1.xml <<END
+cat > reports/$1.xml <<END
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuite name="$1" tests="1" errors="0" failures="0" skip="0">
 <testcase classname="$1" name="$1" time="0.604"></testcase>
@@ -71,6 +71,7 @@ END
 case "$TEST_SUITE" in
 
     "quality")
+        pip install pylint
         echo "Finding fixme's and storing report..."
         paver find_fixme > fixme.log || { cat fixme.log; EXIT=1; }
         echo "Finding pep8 violations and storing report..."
@@ -88,9 +89,6 @@ case "$TEST_SUITE" in
         paver run_safelint -t $SAFELINT_THRESHOLDS > safelint.log || { cat safelint.log; EXIT=1; }
         echo "Running safe commit linter report."
         paver run_safecommit_report > safecommit.log || { cat safecommit.log; EXIT=1; }
-        # Run quality task. Pass in the 'fail-under' percentage to diff-quality
-        echo "Running diff quality."
-        paver run_quality -p 100 || EXIT=1
 
         # Need to create an empty test result so the post-build
         # action doesn't fail the build.
