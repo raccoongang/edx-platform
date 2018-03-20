@@ -894,6 +894,7 @@ STATICFILES_DIRS = [
 
 FAVICON_PATH = 'images/favicon.ico'
 DEFAULT_COURSE_ABOUT_IMAGE_URL = 'images/pencils.jpg'
+IS_USE_DEFAULT_COURSE_IMAGE_URL = True
 
 # User-uploaded content
 MEDIA_ROOT = '/edx/var/edxapp/media/'
