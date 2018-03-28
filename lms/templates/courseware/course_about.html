@@ -13,7 +13,7 @@ from openedx.core.lib.courses import course_image_url
 <%block name="headextra">
   ## OG (Open Graph) title and description added below to give social media info to display
   ## (https://developers.facebook.com/docs/opengraph/howtos/maximizing-distribution-media-content#tags)
-  <meta property="og:title" content="${course.display_name_with_default_escaped}" />
+  <meta property="og:title" content="${course_display_name_with_default}" />
   <meta property="og:description" content="${get_course_about_section(request, course, 'short_description')}" />
 </%block>
 
@@ -102,7 +102,7 @@ from openedx.core.lib.courses import course_image_url
   <script src="${static.url('js/course_info.js')}"></script>
 </%block>
 
-<%block name="pagetitle">${course.display_name_with_default_escaped}</%block>
+<%block name="pagetitle">${course_display_name_with_default}</%block>
 
 <section class="course-info">
   <header class="course-profile">
@@ -111,7 +111,7 @@ from openedx.core.lib.courses import course_image_url
       <section class="intro">
         <div class="heading-group">
           <h1>
-            ${course.display_name_with_default_escaped}
+            ${course_display_name_with_default}
             <button type="button">${course.display_org_with_default | h}</button>
           </h1>
           <br>
