@@ -592,21 +592,24 @@ class LibraryImportManager(ImportManager):
         if self.target_id is not None:
             dest_id = self.target_id
         else:
-            dest_id = LibraryLocator(self.target_id.org, self.target_id.library)
+            dest_id = LibraryLocator(courselike_key.org, courselike_key.library)
 
         existing_lib = self.store.get_library(dest_id, ignore_case=True)
 
         runtime = None
 
         if existing_lib:
+            log.info("Importing content into existing library: %s", str(existing_lib))
             dest_id = existing_lib.location.library_key
             runtime = existing_lib.runtime
+        else:
+            log.info("Creating new library: %s", str(courselike_key))
 
         if self.create_if_not_present and not existing_lib:
             try:
                 library = self.store.create_library(
-                    org=self.target_id.org,
-                    library=self.target_id.library,
+                    org=dest_id.org,
+                    library=dest_id.library,
                     user_id=self.user_id,
                     fields={"display_name": ""},
                 )
