@@ -206,12 +206,7 @@
             border: none !important;
         }
 
-        .wrapper-statement-and-signatories {
-            border-bottom: rem(2) solid palette(grayscale-cool, x-light);
-        }
-
         .accomplishment-statement {
-            @extend %print-rendering-section;
             width: span(8);
             margin: 0 auto;
         }
