@@ -20520,11 +20520,10 @@ msgstr "تأكيد "
 #: lms/templates/static_templates/404.html
 msgid ""
 "The page that you were looking for was not found. Go back to the "
-"{link_start}homepage{link_end} or let us know about any pages that may have "
-"been moved at {email}."
+"{link_start}homepage{link_end}."
 msgstr ""
-"عذراً، الصفحة التي تبحث عنها غير متوفرة. الرجاء إعلامنا عبر البريد "
-"الإلكتروني {email} إن كنت تعتقد انها مشكلة من العنوان المستخدم. يمكنك العودة"
+"عذراً، الصفحة التي تبحث عنها غير متوفرة."
+"يمكنك العودة"
 " الى {link_start}الصفحة الرئيسية{link_end}."
 
 #: lms/templates/static_templates/about.html
@@ -21381,11 +21380,9 @@ msgstr "عذراً، لم توجد الصفحة التي كنت تبحث عنه�
 
 #: cms/templates/404.html
 msgid ""
-"Go back to the {homepage} or let us know about any pages that may have been "
-"moved at {email}."
+"Go back to the {homepage}"
 msgstr ""
-"عُد إلى الصفحة الرئيسية {homepage}، أو أعلمنا عبر رسالة على عنوان البريد "
-"الإلكتروني {email} عن أي صفحات يُحتمل أن تكون قد نُقِلت."
+"عُد إلى الصفحة الرئيسية {homepage}"
 
 #: cms/templates/500.html
 msgid "{studio_name} Server Error"
