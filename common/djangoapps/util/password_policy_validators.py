@@ -63,8 +63,6 @@ def validate_password_complexity(value):
         'DIGITS': 5,
     }
 
-    complexities = getattr(settings, "PASSWORD_COMPLEXITY", None)
-
     if complexities is None:
         return
 
