@@ -23,7 +23,7 @@
 	</form>
 	<div class="post-preview">
 		<div class="post-actions">
-            <button class="edit-button" name="<%= updateModel.cid %>"><span class="edit-icon"></span><%= gettext('Edit') %></button>
+
             <button class="delete-button" name="<%= updateModel.cid %>"><span class="delete-icon"></span><%= gettext('Delete') %></button>
 		</div>
 		<h2>
