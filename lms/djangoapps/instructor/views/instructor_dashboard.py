@@ -133,7 +133,7 @@ def instructor_dashboard_2(request, course_id):
     analytics_dashboard_message = None
     if show_analytics_dashboard_message(course_key):
         # Construct a URL to the external analytics dashboard
-        analytics_dashboard_url = '{0}/courses/{1}'.format(settings.ANALYTICS_DASHBOARD_URL, unicode(course_key))
+        analytics_dashboard_url = '{0}/{1}'.format(settings.ANALYTICS_DASHBOARD_URL, unicode(course_key))
         link_start = HTML("<a href=\"{}\" target=\"_blank\">").format(analytics_dashboard_url)
         analytics_dashboard_message = _(
             "To gain insights into student enrollment and participation {link_start}"
@@ -692,7 +692,7 @@ def _section_send_email(course, access):
 
 def _get_dashboard_link(course_key):
     """ Construct a URL to the external analytics dashboard """
-    analytics_dashboard_url = '{0}/courses/{1}'.format(settings.ANALYTICS_DASHBOARD_URL, unicode(course_key))
+    analytics_dashboard_url = '{0}/{1}'.format(settings.ANALYTICS_DASHBOARD_URL, unicode(course_key))
     link = HTML(u"<a href=\"{0}\" target=\"_blank\">{1}</a>").format(
         analytics_dashboard_url, settings.ANALYTICS_DASHBOARD_NAME
     )
