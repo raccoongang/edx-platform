@@ -1334,6 +1334,8 @@ def login_user(request, error=""):  # pylint: disable=too-many-statements,unused
     trumped_by_first_party_auth = bool(request.POST.get('email')) or bool(request.POST.get('password'))
     user = None
     platform_name = configuration_helpers.get_value("platform_name", settings.PLATFORM_NAME)
+    captcha_is_valid = settings.USE_GOOGLE_RECAPTCHA and request.recaptcha_is_valid or not settings.USE_GOOGLE_RECAPTCHA
+    captcha_error_msg = _('Invalid reCAPTCHA. Please try again.')
 
     if third_party_auth_requested and not trumped_by_first_party_auth:
         # The user has already authenticated via third-party auth and has not
@@ -1462,9 +1464,12 @@ def login_user(request, error=""):  # pylint: disable=too-many-statements,unused
                 AUDIT_LOG.warning(u"Login failed - password for user.id: {0} is invalid".format(loggable_id))
             else:
                 AUDIT_LOG.warning(u"Login failed - password for {0} is invalid".format(email))
+        value = _('Email or password is incorrect.')
+        if not captcha_is_valid:
+            value += u'</li><li>{}'.format(captcha_error_msg)
         return JsonResponse({
             "success": False,
-            "value": _('Email or password is incorrect.'),
+            "value": value,
         })  # TODO: this should be status code 400  # pylint: disable=fixme
 
     # successful login, clear failed login attempts counters, if applicable
@@ -1503,12 +1508,11 @@ def login_user(request, error=""):  # pylint: disable=too-many-statements,unused
                 }
             }
         )
-    if settings.USE_GOOGLE_RECAPTCHA:
-        if not request.recaptcha_is_valid:
-            return JsonResponse({
-                "success": False,
-                "value": _('Invalid reCAPTCHA. Please try again.'),
-            })
+    if not captcha_is_valid:
+        return JsonResponse({
+            "success": False,
+            "value": _('Invalid reCAPTCHA. Please try again.'),
+        })
 
     if user is not None and user.is_active:
         try:
