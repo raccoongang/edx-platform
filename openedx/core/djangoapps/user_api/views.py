@@ -115,6 +115,13 @@ class LoginSessionView(APIView):
             required=False,
         )
 
+        form_desc.add_field(
+            "captcha",
+            label=_("reCAPTCHA"),
+            field_type="hidden",
+            required=True,
+        )
+
         return HttpResponse(form_desc.to_json(), content_type="application/json")
 
     @method_decorator(require_post_params(["email", "password"]))
