@@ -27,6 +27,11 @@
     % if configuration_helpers.get_value('DISPLAY_TOS_IN_MODAL_ON_REGISTRATION_PAGE', False):
     <script type="text/javascript" src="${static.url('js/student_account/tos_modal.js')}"></script>
     % endif
+    <script type="text/javascript">
+        var setRecaptcha = function() {
+            $('#login-captcha').val(1);
+        };
+    </script>
 </%block>
 
 <%block name="header_extras">
