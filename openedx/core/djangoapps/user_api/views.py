@@ -119,7 +119,6 @@ class LoginSessionView(APIView):
 
         form_desc.add_field(
             "captcha",
-            label=_("reCAPTCHA"),
             field_type="hidden",
             required=True,
         )
