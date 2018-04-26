@@ -1,63 +1,59 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 import copy
-import mock
 import shutil
-import lxml.html
-from lxml import etree
-import ddt
-
 from datetime import timedelta
-from fs.osfs import OSFS
-from json import loads
-from path import Path as path
-from textwrap import dedent
-from uuid import uuid4
 from functools import wraps
+from json import loads
+from textwrap import dedent
 from unittest import SkipTest
+from uuid import uuid4
 
+import ddt
+import django
+import lxml.html
+import mock
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.test.utils import override_settings
-
-from openedx.core.lib.tempdir import mkdtemp_clean
-from common.test.utils import XssTestMixin
-from contentstore.tests.utils import parse_json, AjaxEnabledTestClient, CourseTestCase
-from contentstore.views.component import ADVANCED_COMPONENT_TYPES
-
 from edxval.api import create_video, get_videos_for_course
-
-from xmodule.contentstore.django import contentstore
-from xmodule.contentstore.utils import restore_asset_from_trashcan, empty_asset_trashcan
-from xmodule.exceptions import InvalidVersionError
-from xmodule.modulestore import ModuleStoreEnum
-from xmodule.modulestore.exceptions import ItemNotFoundError
-from xmodule.modulestore.inheritance import own_metadata
-from opaque_keys.edx.keys import UsageKey, CourseKey
+from fs.osfs import OSFS
+from lxml import etree
+from opaque_keys import InvalidKeyError
+from opaque_keys.edx.keys import CourseKey, UsageKey
 from opaque_keys.edx.locations import AssetLocation, CourseLocator
-from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory, LibraryFactory, check_mongo_calls
-from xmodule.modulestore.xml_exporter import export_course_to_xml
-from xmodule.modulestore.xml_importer import import_course_from_xml, perform_xlint
+from path import Path as path
+from six import text_type
+from waffle.testutils import override_switch
 
-from xmodule.capa_module import CapaDescriptor
-from xmodule.course_module import CourseDescriptor, Textbook
-from xmodule.seq_module import SequenceDescriptor
-
-from contentstore.utils import delete_course_and_groups, reverse_url, reverse_course_url
+from contentstore.tests.utils import AjaxEnabledTestClient, CourseTestCase, get_url, parse_json
+from contentstore.utils import delete_course, reverse_course_url, reverse_url
+from contentstore.views.component import ADVANCED_COMPONENT_TYPES
+from contentstore.config import waffle
+from course_action_state.managers import CourseActionStateItemNotFoundError
+from course_action_state.models import CourseRerunState, CourseRerunUIStateManager
 from django_comment_common.utils import are_permissions_roles_seeded
-
+from openedx.core.lib.tempdir import mkdtemp_clean
 from student import auth
 from student.models import CourseEnrollment
 from student.roles import CourseCreatorRole, CourseInstructorRole
-from opaque_keys import InvalidKeyError
-from contentstore.tests.utils import get_url
-from course_action_state.models import CourseRerunState, CourseRerunUIStateManager
-
-from course_action_state.managers import CourseActionStateItemNotFoundError
+from xmodule.capa_module import CapaDescriptor
 from xmodule.contentstore.content import StaticContent
+from xmodule.contentstore.django import contentstore
+from xmodule.contentstore.utils import empty_asset_trashcan, restore_asset_from_trashcan
+from xmodule.course_module import CourseDescriptor, Textbook
+from xmodule.exceptions import InvalidVersionError
+from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.django import modulestore
-
+from xmodule.modulestore.exceptions import ItemNotFoundError
+from xmodule.modulestore.inheritance import own_metadata
+from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory, check_mongo_calls
+from xmodule.modulestore.xml_exporter import export_course_to_xml
+from xmodule.modulestore.xml_importer import import_course_from_xml, perform_xlint
+from xmodule.seq_module import SequenceDescriptor
 
 TEST_DATA_CONTENTSTORE = copy.deepcopy(settings.CONTENTSTORE)
 TEST_DATA_CONTENTSTORE['DOC_STORE_CONFIG']['db'] = 'test_xcontent_%s' % uuid4().hex
@@ -125,7 +121,7 @@ class ImportRequiredTestCases(ContentStoreTestCase):
         Asset name in XML: "/invalid\\displayname/subs-esLhHcdKGWvKs.srt"
         """
         content_store = contentstore()
-        expected_displayname = '_invalid_displayname_subs-esLhHcdKGWvKs.srt'
+        expected_displayname = u'_invalid_displayname_subs-esLhHcdKGWvKs.srt'
 
         import_course_from_xml(
             self.store,
@@ -163,11 +159,11 @@ class ImportRequiredTestCases(ContentStoreTestCase):
 
         # Test course export does not fail
         root_dir = path(mkdtemp_clean())
-        print 'Exporting to tempdir = {0}'.format(root_dir)
-        export_course_to_xml(self.store, content_store, course.id, root_dir, 'test_export')
+        print('Exporting to tempdir = {0}'.format(root_dir))
+        export_course_to_xml(self.store, content_store, course.id, root_dir, u'test_export')
 
-        filesystem = OSFS(root_dir / 'test_export/static')
-        exported_static_files = filesystem.listdir()
+        filesystem = OSFS(text_type(root_dir / 'test_export/static'))
+        exported_static_files = filesystem.listdir(u'/')
 
         # Verify that asset have been overwritten during export.
         self.assertEqual(len(exported_static_files), 1)
@@ -178,11 +174,11 @@ class ImportRequiredTestCases(ContentStoreTestCase):
         shutil.rmtree(root_dir)
 
     def test_about_overrides(self):
-        '''
+        """
         This test case verifies that a course can use specialized override for about data,
         e.g. /about/Fall_2012/effort.html
         while there is a base definition in /about/effort.html
-        '''
+        """
         course_items = import_course_from_xml(
             self.store, self.user.id, TEST_DATA_DIR, ['toy'], create_if_not_present=True
         )
@@ -196,9 +192,9 @@ class ImportRequiredTestCases(ContentStoreTestCase):
 
     @requires_pillow_jpeg
     def test_asset_import(self):
-        '''
+        """
         This test validates that an image asset is imported and a thumbnail was generated for a .gif
-        '''
+        """
         content_store = contentstore()
 
         import_course_from_xml(
@@ -244,38 +240,38 @@ class ImportRequiredTestCases(ContentStoreTestCase):
         self.assertIsNotNone(course_updates)
 
         # check that course which is imported has files 'updates.html' and 'updates.items.json'
-        filesystem = OSFS(data_dir + '/course_info_updates/info')
-        self.assertTrue(filesystem.exists('updates.html'))
-        self.assertTrue(filesystem.exists('updates.items.json'))
+        filesystem = OSFS(text_type(data_dir + '/course_info_updates/info'))
+        self.assertTrue(filesystem.exists(u'updates.html'))
+        self.assertTrue(filesystem.exists(u'updates.items.json'))
 
         # verify that course info update module has same data content as in data file from which it is imported
         # check 'data' field content
-        with filesystem.open('updates.html', 'r') as course_policy:
+        with filesystem.open(u'updates.html', 'r') as course_policy:
             on_disk = course_policy.read()
             self.assertEqual(course_updates.data, on_disk)
 
         # check 'items' field content
-        with filesystem.open('updates.items.json', 'r') as course_policy:
+        with filesystem.open(u'updates.items.json', 'r') as course_policy:
             on_disk = loads(course_policy.read())
             self.assertEqual(course_updates.items, on_disk)
 
         # now export the course to a tempdir and test that it contains files 'updates.html' and 'updates.items.json'
         # with same content as in course 'info' directory
         root_dir = path(mkdtemp_clean())
-        print 'Exporting to tempdir = {0}'.format(root_dir)
-        export_course_to_xml(self.store, content_store, course.id, root_dir, 'test_export')
+        print('Exporting to tempdir = {0}'.format(root_dir))
+        export_course_to_xml(self.store, content_store, course.id, root_dir, u'test_export')
 
         # check that exported course has files 'updates.html' and 'updates.items.json'
-        filesystem = OSFS(root_dir / 'test_export/info')
-        self.assertTrue(filesystem.exists('updates.html'))
-        self.assertTrue(filesystem.exists('updates.items.json'))
+        filesystem = OSFS(text_type(root_dir / 'test_export/info'))
+        self.assertTrue(filesystem.exists(u'updates.html'))
+        self.assertTrue(filesystem.exists(u'updates.items.json'))
 
         # verify that exported course has same data content as in course_info_update module
-        with filesystem.open('updates.html', 'r') as grading_policy:
+        with filesystem.open(u'updates.html', 'r') as grading_policy:
             on_disk = grading_policy.read()
             self.assertEqual(on_disk, course_updates.data)
 
-        with filesystem.open('updates.items.json', 'r') as grading_policy:
+        with filesystem.open(u'updates.items.json', 'r') as grading_policy:
             on_disk = loads(grading_policy.read())
             self.assertEqual(on_disk, course_updates.items)
 
@@ -306,7 +302,7 @@ class ImportRequiredTestCases(ContentStoreTestCase):
 
         for item in items:
             filesystem = OSFS(root_dir / ('test_export/' + dirname))
-            self.assertTrue(filesystem.exists(item.location.name + filename_suffix))
+            self.assertTrue(filesystem.exists(item.location.block_id + filename_suffix))
 
     @mock.patch('xmodule.course_module.requests.get')
     def test_export_course_roundtrip(self, mock_get):
@@ -320,42 +316,42 @@ class ImportRequiredTestCases(ContentStoreTestCase):
         course_id = self.import_and_populate_course()
 
         root_dir = path(mkdtemp_clean())
-        print 'Exporting to tempdir = {0}'.format(root_dir)
+        print('Exporting to tempdir = {0}'.format(root_dir))
 
         # export out to a tempdir
-        export_course_to_xml(self.store, content_store, course_id, root_dir, 'test_export')
+        export_course_to_xml(self.store, content_store, course_id, root_dir, u'test_export')
 
         # check for static tabs
-        self.verify_content_existence(self.store, root_dir, course_id, 'tabs', 'static_tab', '.html')
+        self.verify_content_existence(self.store, root_dir, course_id, u'tabs', 'static_tab', '.html')
 
         # check for about content
-        self.verify_content_existence(self.store, root_dir, course_id, 'about', 'about', '.html')
+        self.verify_content_existence(self.store, root_dir, course_id, u'about', 'about', '.html')
 
         # assert that there is an html and video directory in drafts:
         draft_dir = OSFS(root_dir / 'test_export/drafts')
-        self.assertTrue(draft_dir.exists('html'))
-        self.assertTrue(draft_dir.exists('video'))
+        self.assertTrue(draft_dir.exists(u'html'))
+        self.assertTrue(draft_dir.exists(u'video'))
         # and assert that they contain the created modules
-        self.assertIn(self.DRAFT_HTML + ".xml", draft_dir.listdir('html'))
-        self.assertIn(self.DRAFT_VIDEO + ".xml", draft_dir.listdir('video'))
+        self.assertIn(self.DRAFT_HTML + ".xml", draft_dir.listdir(u'html'))
+        self.assertIn(self.DRAFT_VIDEO + ".xml", draft_dir.listdir(u'video'))
         # and assert the child of the orphaned draft wasn't exported
-        self.assertNotIn(self.ORPHAN_DRAFT_HTML + ".xml", draft_dir.listdir('html'))
+        self.assertNotIn(self.ORPHAN_DRAFT_HTML + ".xml", draft_dir.listdir(u'html'))
 
         # check for grading_policy.json
         filesystem = OSFS(root_dir / 'test_export/policies/2012_Fall')
-        self.assertTrue(filesystem.exists('grading_policy.json'))
+        self.assertTrue(filesystem.exists(u'grading_policy.json'))
 
         course = self.store.get_course(course_id)
         # compare what's on disk compared to what we have in our course
-        with filesystem.open('grading_policy.json', 'r') as grading_policy:
+        with filesystem.open(u'grading_policy.json', 'r') as grading_policy:
             on_disk = loads(grading_policy.read())
             self.assertEqual(on_disk, course.grading_policy)
 
         # check for policy.json
-        self.assertTrue(filesystem.exists('policy.json'))
+        self.assertTrue(filesystem.exists(u'policy.json'))
 
         # compare what's on disk to what we have in the course module
-        with filesystem.open('policy.json', 'r') as course_policy:
+        with filesystem.open(u'policy.json', 'r') as course_policy:
             on_disk = loads(course_policy.read())
             self.assertIn('course/2012_Fall', on_disk)
             self.assertEqual(on_disk['course/2012_Fall'], own_metadata(course))
@@ -422,10 +418,10 @@ class ImportRequiredTestCases(ContentStoreTestCase):
 
         root_dir = path(mkdtemp_clean())
 
-        print 'Exporting to tempdir = {0}'.format(root_dir)
+        print('Exporting to tempdir = {0}'.format(root_dir))
 
         # export out to a tempdir
-        export_course_to_xml(self.store, content_store, course_id, root_dir, 'test_export')
+        export_course_to_xml(self.store, content_store, course_id, root_dir, u'test_export')
 
         shutil.rmtree(root_dir)
 
@@ -448,10 +444,10 @@ class ImportRequiredTestCases(ContentStoreTestCase):
 
         root_dir = path(mkdtemp_clean())
 
-        print 'Exporting to tempdir = {0}'.format(root_dir)
+        print('Exporting to tempdir = {0}'.format(root_dir))
 
         # export out to a tempdir
-        export_course_to_xml(self.store, content_store, course_id, root_dir, 'test_export')
+        export_course_to_xml(self.store, content_store, course_id, root_dir, u'test_export')
 
         shutil.rmtree(root_dir)
 
@@ -504,7 +500,7 @@ class ImportRequiredTestCases(ContentStoreTestCase):
 
         # Export the course
         root_dir = path(mkdtemp_clean())
-        export_course_to_xml(self.store, content_store, course_id, root_dir, 'test_roundtrip')
+        export_course_to_xml(self.store, content_store, course_id, root_dir, u'test_roundtrip')
 
         # Reimport and get the video back
         import_course_from_xml(self.store, self.user.id, root_dir)
@@ -525,7 +521,7 @@ class ImportRequiredTestCases(ContentStoreTestCase):
 
         # Export the course
         root_dir = path(mkdtemp_clean())
-        export_course_to_xml(self.store, content_store, course_id, root_dir, 'test_roundtrip')
+        export_course_to_xml(self.store, content_store, course_id, root_dir, u'test_roundtrip')
 
         # Reimport and get the video back
         import_course_from_xml(self.store, self.user.id, root_dir, create_if_not_present=True)
@@ -548,8 +544,8 @@ class ImportRequiredTestCases(ContentStoreTestCase):
 
         root_dir = path(mkdtemp_clean())
 
-        print 'Exporting to tempdir = {0}'.format(root_dir)
-        export_course_to_xml(self.store, None, course_id, root_dir, 'test_export_no_content_store')
+        print('Exporting to tempdir = {0}'.format(root_dir))
+        export_course_to_xml(self.store, None, course_id, root_dir, u'test_export_no_content_store')
 
         # Delete the course from module store and reimport it
 
@@ -604,7 +600,7 @@ class ImportRequiredTestCases(ContentStoreTestCase):
             content_store,
             course_id,
             root_dir,
-            'test_no_xml_attributes'
+            u'test_no_xml_attributes'
         )
 
 
@@ -645,7 +641,7 @@ class MiscCourseTests(ContentStoreTestCase):
                 "youtube_id_1_25": "AKqURZnYqpk",
                 "youtube_id_1_5": "DYpADpL7jAY",
                 "name": "truncated_video",
-                "end_time": 10.0,
+                "end_time": timedelta(hours=10),
             }
         )
         self.store.create_child(
@@ -691,8 +687,8 @@ class MiscCourseTests(ContentStoreTestCase):
         self.assertNotIn(malicious_code, resp.content)
 
     def test_advanced_components_in_edit_unit(self):
-        # This could be made better, but for now let's just assert that we see the advanced modules mentioned in the page
-        # response HTML
+        # This could be made better, but for now let's just assert that we see the advanced modules mentioned in the
+        # page response HTML
         self.check_components_on_page(
             ADVANCED_COMPONENT_TYPES,
             ['Word cloud', 'Annotation', 'Text Annotation', 'Video Annotation', 'Image Annotation',
@@ -703,7 +699,7 @@ class MiscCourseTests(ContentStoreTestCase):
     def test_export_on_invalid_displayname(self, invalid_displayname):
         """ Tests that assets with invalid 'displayname' does not cause export to fail """
         content_store = contentstore()
-        exported_asset_name = '_Fake_asset_displayname'
+        exported_asset_name = u'_Fake_asset_displayname'
 
         # Create an asset with slash `invalid_displayname` '
         asset_key = self.course.id.make_asset_key('asset', "fake_asset.txt")
@@ -720,11 +716,11 @@ class MiscCourseTests(ContentStoreTestCase):
 
         # Now export the course to a tempdir and test that it contains assets. The export should pass
         root_dir = path(mkdtemp_clean())
-        print 'Exporting to tempdir = {0}'.format(root_dir)
-        export_course_to_xml(self.store, content_store, self.course.id, root_dir, 'test_export')
+        print('Exporting to tempdir = {0}'.format(root_dir))
+        export_course_to_xml(self.store, content_store, self.course.id, root_dir, u'test_export')
 
         filesystem = OSFS(root_dir / 'test_export/static')
-        exported_static_files = filesystem.listdir()
+        exported_static_files = filesystem.listdir(u'/')
 
         # Verify that only single asset has been exported with the expected asset name.
         self.assertTrue(filesystem.exists(exported_asset_name))
@@ -745,13 +741,13 @@ class MiscCourseTests(ContentStoreTestCase):
         # Make an existing unit a draft
         self.store.convert_to_draft(self.problem.location, self.user.id)
         root_dir = path(mkdtemp_clean())
-        export_course_to_xml(self.store, None, self.course.id, root_dir, 'test_export')
+        export_course_to_xml(self.store, None, self.course.id, root_dir, u'test_export')
 
         # Verify that problem is exported in the drafts. This is expected because we are
         # mocking get_item to for drafts. Expect no draft is exported.
         # Specifically get_item is used in `xmodule.modulestore.xml_exporter._export_drafts`
         export_draft_dir = OSFS(root_dir / 'test_export/drafts')
-        self.assertEqual(len(export_draft_dir.listdir()), 0)
+        self.assertEqual(len(export_draft_dir.listdir(u'/')), 0)
 
         # Remove tempdir
         shutil.rmtree(root_dir)
@@ -759,7 +755,7 @@ class MiscCourseTests(ContentStoreTestCase):
     def test_assets_overwrite(self):
         """ Tests that assets will similar 'displayname' will be overwritten during export """
         content_store = contentstore()
-        asset_displayname = 'Fake_asset.txt'
+        asset_displayname = u'Fake_asset.txt'
 
         # Create two assets with similar 'displayname'
         for i in range(2):
@@ -780,12 +776,12 @@ class MiscCourseTests(ContentStoreTestCase):
 
         # Now export the course to a tempdir and test that it contains assets.
         root_dir = path(mkdtemp_clean())
-        print 'Exporting to tempdir = {0}'.format(root_dir)
-        export_course_to_xml(self.store, content_store, self.course.id, root_dir, 'test_export')
+        print('Exporting to tempdir = {0}'.format(root_dir))
+        export_course_to_xml(self.store, content_store, self.course.id, root_dir, u'test_export')
 
         # Verify that asset have been overwritten during export.
         filesystem = OSFS(root_dir / 'test_export/static')
-        exported_static_files = filesystem.listdir()
+        exported_static_files = filesystem.listdir(u'/')
         self.assertTrue(filesystem.exists(asset_displayname))
         self.assertEqual(len(exported_static_files), 1)
 
@@ -814,11 +810,11 @@ class MiscCourseTests(ContentStoreTestCase):
         return cnt
 
     def test_get_items(self):
-        '''
+        """
         This verifies a bug we had where the None setting in get_items() meant 'wildcard'
         Unfortunately, None = published for the revision field, so get_items() would return
         both draft and non-draft copies.
-        '''
+        """
         self.store.convert_to_draft(self.problem.location, self.user.id)
 
         # Query get_items() and find the html item. This should just return back a single item (not 2).
@@ -839,11 +835,11 @@ class MiscCourseTests(ContentStoreTestCase):
         self.assertTrue(getattr(items_from_draft_store[0], 'is_draft', False))
 
     def test_draft_metadata(self):
-        '''
+        """
         This verifies a bug we had where inherited metadata was getting written to the
         module as 'own-metadata' when publishing. Also verifies the metadata inheritance is
         properly computed
-        '''
+        """
         # refetch course so it has all the children correct
         course = self.store.update_item(self.course, self.user.id)
         course.graceperiod = timedelta(days=1, hours=5, minutes=59, seconds=59)
@@ -942,7 +938,7 @@ class MiscCourseTests(ContentStoreTestCase):
         """
         Tests the ajax callback to render an XModule
         """
-        with override_settings(COURSES_WITH_UNSAFE_CODE=[unicode(self.course.id)]):
+        with override_settings(COURSES_WITH_UNSAFE_CODE=[text_type(self.course.id)]):
             # also try a custom response which will trigger the 'is this course in whitelist' logic
             resp = self.client.get_json(
                 get_url('xblock_view_handler', self.vert_loc, kwargs={'view_name': 'container_preview'})
@@ -951,7 +947,7 @@ class MiscCourseTests(ContentStoreTestCase):
 
             vertical = self.store.get_item(self.vert_loc)
             for child in vertical.children:
-                self.assertContains(resp, unicode(child))
+                self.assertContains(resp, text_type(child))
 
     def test_delete(self):
         # make sure the parent points to the child object which is to be deleted
@@ -970,9 +966,9 @@ class MiscCourseTests(ContentStoreTestCase):
         self.assertNotIn(self.seq_loc, chapter.children)
 
     def test_asset_delete_and_restore(self):
-        '''
+        """
         This test will exercise the soft delete/restore functionality of the assets
-        '''
+        """
         asset_key = self._delete_asset_in_course()
 
         # now try to find it in store, but they should not be there any longer
@@ -984,7 +980,7 @@ class MiscCourseTests(ContentStoreTestCase):
         self.assertIsNotNone(content)
 
         # let's restore the asset
-        restore_asset_from_trashcan(unicode(asset_key))
+        restore_asset_from_trashcan(text_type(asset_key))
 
         # now try to find it in courseware store, and they should be back after restore
         content = contentstore('trashcan').find(asset_key, throw_on_not_found=False)
@@ -1008,7 +1004,7 @@ class MiscCourseTests(ContentStoreTestCase):
         url = reverse_course_url(
             'assets_handler',
             self.course.id,
-            kwargs={'asset_key_string': unicode(asset_key)}
+            kwargs={'asset_key_string': text_type(asset_key)}
         )
         resp = self.client.delete(url)
         self.assertEqual(resp.status_code, 204)
@@ -1016,9 +1012,9 @@ class MiscCourseTests(ContentStoreTestCase):
         return asset_key
 
     def test_empty_trashcan(self):
-        '''
+        """
         This test will exercise the emptying of the asset trashcan
-        '''
+        """
         self._delete_asset_in_course()
 
         # make sure there's something in the trashcan
@@ -1063,6 +1059,16 @@ class MiscCourseTests(ContentStoreTestCase):
         with self.store.default_store(ModuleStoreEnum.Type.split):
             resp = self.client.get_html('/c4x/InvalidOrg/InvalidCourse/asset/invalid.png')
             self.assertEqual(resp.status_code, 404)
+
+    @override_switch(
+        '{}.{}'.format(waffle.WAFFLE_NAMESPACE, waffle.ENABLE_ACCESSIBILITY_POLICY_PAGE),
+        active=False)
+    def test_disabled_accessibility_page(self):
+        """
+        Test that accessibility page returns 404 when waffle switch is disabled
+        """
+        resp = self.client.get_html('/accessibility')
+        self.assertEqual(resp.status_code, 404)
 
     def test_delete_course(self):
         """
@@ -1112,7 +1118,7 @@ class MiscCourseTests(ContentStoreTestCase):
         # check that /static/ has been converted to the full path
         # note, we know the link it should be because that's what in the 'toy' course in the test data
         asset_key = self.course.id.make_asset_key('asset', 'handouts_sample_handout.txt')
-        self.assertContains(resp, unicode(asset_key))
+        self.assertContains(resp, text_type(asset_key))
 
     def test_prefetch_children(self):
         # make sure we haven't done too many round trips to DB:
@@ -1147,7 +1153,7 @@ class MiscCourseTests(ContentStoreTestCase):
 
 
 @ddt.ddt
-class ContentStoreTest(ContentStoreTestCase, XssTestMixin):
+class ContentStoreTest(ContentStoreTestCase):
     """
     Tests for the CMS ContentStore application.
     """
@@ -1232,7 +1238,7 @@ class ContentStoreTest(ContentStoreTestCase, XssTestMixin):
         test_course_data = self.assert_created_course(number_suffix=uuid4().hex)
         course_id = _get_course_id(self.store, test_course_data)
         self.assertTrue(are_permissions_roles_seeded(course_id))
-        delete_course_and_groups(course_id, self.user.id)
+        delete_course(course_id, self.user.id)
         # should raise an exception for checking permissions on deleted course
         with self.assertRaises(ItemNotFoundError):
             are_permissions_roles_seeded(course_id)
@@ -1244,7 +1250,7 @@ class ContentStoreTest(ContentStoreTestCase, XssTestMixin):
 
         # unseed the forums for the first course
         course_id = _get_course_id(self.store, test_course_data)
-        delete_course_and_groups(course_id, self.user.id)
+        delete_course(course_id, self.user.id)
         # should raise an exception for checking permissions on deleted course
         with self.assertRaises(ItemNotFoundError):
             are_permissions_roles_seeded(course_id)
@@ -1264,7 +1270,7 @@ class ContentStoreTest(ContentStoreTestCase, XssTestMixin):
         self.assertTrue(CourseEnrollment.is_enrolled(self.user, course_id))
         self.assertTrue(self.user.roles.filter(name="Student", course_id=course_id))
 
-        delete_course_and_groups(course_id, self.user.id)
+        delete_course(course_id, self.user.id)
         # check that user's enrollment for this course is not deleted
         self.assertTrue(CourseEnrollment.is_enrolled(self.user, course_id))
         # check that user has form role "Student" for this course even after deleting it
@@ -1286,13 +1292,33 @@ class ContentStoreTest(ContentStoreTestCase, XssTestMixin):
         self.assertGreater(len(instructor_role.users_with_role()), 0)
 
         # Now delete course and check that user not in instructor groups of this course
-        delete_course_and_groups(course_id, self.user.id)
+        delete_course(course_id, self.user.id)
 
         # Update our cached user since its roles have changed
         self.user = User.objects.get_by_natural_key(self.user.natural_key()[0])
 
         self.assertFalse(instructor_role.has_user(self.user))
         self.assertEqual(len(instructor_role.users_with_role()), 0)
+
+    def test_delete_course_with_keep_instructors(self):
+        """
+        Tests that when you delete a course with 'keep_instructors',
+        it does not remove any permissions of users/groups from the course
+        """
+        test_course_data = self.assert_created_course(number_suffix=uuid4().hex)
+        course_id = _get_course_id(self.store, test_course_data)
+
+        # Add and verify instructor role for the course
+        instructor_role = CourseInstructorRole(course_id)
+        instructor_role.add_users(self.user)
+        self.assertTrue(instructor_role.has_user(self.user))
+
+        delete_course(course_id, self.user.id, keep_instructors=True)
+
+        # Update our cached user so if any change in roles can be captured
+        self.user = User.objects.get_by_natural_key(self.user.natural_key()[0])
+
+        self.assertTrue(instructor_role.has_user(self.user))
 
     def test_create_course_after_delete(self):
         """
@@ -1301,7 +1327,7 @@ class ContentStoreTest(ContentStoreTestCase, XssTestMixin):
         test_course_data = self.assert_created_course()
         course_id = _get_course_id(self.store, test_course_data)
 
-        delete_course_and_groups(course_id, self.user.id)
+        delete_course(course_id, self.user.id)
 
         self.assert_created_course()
 
@@ -1462,33 +1488,6 @@ class ContentStoreTest(ContentStoreTestCase, XssTestMixin):
         item = ItemFactory.create(parent_location=course.location)
         self.assertIsInstance(item, SequenceDescriptor)
 
-    def test_course_index_view_with_course(self):
-        """Test viewing the index page with an existing course"""
-        CourseFactory.create(display_name='Robot Super Educational Course')
-        resp = self.client.get_html('/home/')
-        self.assertContains(
-            resp,
-            '<h3 class="course-title">Robot Super Educational Course</h3>',
-            status_code=200,
-            html=True
-        )
-
-    def test_course_index_view_xss(self):
-        """Test that the index page correctly escapes course names with script
-        tags."""
-        CourseFactory.create(
-            display_name='<script>alert("course XSS")</script>'
-        )
-
-        LibraryFactory.create(display_name='<script>alert("library XSS")</script>')
-
-        resp = self.client.get_html('/home/')
-        for xss in ('course', 'library'):
-            html = '<script>alert("{name} XSS")</script>'.format(
-                name=xss
-            )
-            self.assert_no_xss(resp, html)
-
     def test_course_overview_view_with_course(self):
         """Test viewing the course overview page with an existing course"""
         course = CourseFactory.create()
@@ -1496,8 +1495,8 @@ class ContentStoreTest(ContentStoreTestCase, XssTestMixin):
         self.assertContains(
             resp,
             '<article class="outline outline-complex outline-course" data-locator="{locator}" data-course-key="{course_key}">'.format(
-                locator=unicode(course.location),
-                course_key=unicode(course.id),
+                locator=text_type(course.location),
+                course_key=text_type(course.id),
             ),
             status_code=200,
             html=True
@@ -1508,7 +1507,7 @@ class ContentStoreTest(ContentStoreTestCase, XssTestMixin):
         course = CourseFactory.create()
 
         section_data = {
-            'parent_locator': unicode(course.location),
+            'parent_locator': text_type(course.location),
             'category': 'chapter',
             'display_name': 'Section One',
         }
@@ -1517,7 +1516,7 @@ class ContentStoreTest(ContentStoreTestCase, XssTestMixin):
 
         self.assertEqual(resp.status_code, 200)
         data = parse_json(resp)
-        retarget = unicode(course.id.make_usage_key('chapter', 'REPLACE')).replace('REPLACE', r'([0-9]|[a-f]){3,}')
+        retarget = text_type(course.id.make_usage_key('chapter', 'REPLACE')).replace('REPLACE', r'([0-9]|[a-f]){3,}')
         self.assertRegexpMatches(data['locator'], retarget)
 
     def test_capa_module(self):
@@ -1525,7 +1524,7 @@ class ContentStoreTest(ContentStoreTestCase, XssTestMixin):
         course = CourseFactory.create()
 
         problem_data = {
-            'parent_locator': unicode(course.location),
+            'parent_locator': text_type(course.location),
             'category': 'problem'
         }
 
@@ -1812,7 +1811,7 @@ class MetadataSaveTestCase(ContentStoreTestCase):
 
         course = CourseFactory.create()
 
-        video_sample_xml = '''
+        video_sample_xml = """
         <video display_name="Test Video"
                 youtube="1.0:p2Q6BrNhdh8,0.75:izygArpw-Qo,1.25:1EeWXzPdhSA,1.5:rABDYkeK0x8"
                 show_captions="false"
@@ -1821,7 +1820,7 @@ class MetadataSaveTestCase(ContentStoreTestCase):
             <source src="http://www.example.com/file.mp4"/>
             <track src="http://www.example.com/track"/>
         </video>
-        '''
+        """
         self.video_descriptor = ItemFactory.create(
             parent_location=course.location, category='video',
             data={'data': video_sample_xml}
@@ -1882,7 +1881,7 @@ class RerunCourseTest(ContentStoreTestCase):
         """Create and send an ajax post for the rerun request"""
 
         # create data to post
-        rerun_course_data = {'source_course_key': unicode(source_course_key)}
+        rerun_course_data = {'source_course_key': text_type(source_course_key)}
         if not destination_course_data:
             destination_course_data = self.destination_course_data
         rerun_course_data.update(destination_course_data)
@@ -1900,30 +1899,22 @@ class RerunCourseTest(ContentStoreTestCase):
             destination_course_key = CourseKey.from_string(json_resp['destination_course_key'])
         return destination_course_key
 
-    def get_course_listing_elements(self, html, course_key):
-        """Returns the elements in the course listing section of html that have the given course_key"""
-        return html.cssselect('.course-item[data-course-key="{}"]'.format(unicode(course_key)))
-
     def get_unsucceeded_course_action_elements(self, html, course_key):
         """Returns the elements in the unsucceeded course action section that have the given course_key"""
-        return html.cssselect('.courses-processing li[data-course-key="{}"]'.format(unicode(course_key)))
+        return html.cssselect('.courses-processing li[data-course-key="{}"]'.format(text_type(course_key)))
 
     def assertInCourseListing(self, course_key):
         """
-        Asserts that the given course key is in the accessible course listing section of the html
-        and NOT in the unsucceeded course action section of the html.
+        Asserts that the given course key is NOT in the unsucceeded course action section of the html.
         """
         course_listing = lxml.html.fromstring(self.client.get_html('/home/').content)
-        self.assertEqual(len(self.get_course_listing_elements(course_listing, course_key)), 1)
         self.assertEqual(len(self.get_unsucceeded_course_action_elements(course_listing, course_key)), 0)
 
     def assertInUnsucceededCourseActions(self, course_key):
         """
-        Asserts that the given course key is in the unsucceeded course action section of the html
-        and NOT in the accessible course listing section of the html.
+        Asserts that the given course key is in the unsucceeded course action section of the html.
         """
         course_listing = lxml.html.fromstring(self.client.get_html('/home/').content)
-        self.assertEqual(len(self.get_course_listing_elements(course_listing, course_key)), 0)
         self.assertEqual(len(self.get_unsucceeded_course_action_elements(course_listing, course_key)), 1)
 
     def verify_rerun_course(self, source_course_key, destination_course_key, destination_display_name):
@@ -1955,7 +1946,7 @@ class RerunCourseTest(ContentStoreTestCase):
         source_course = CourseFactory.create()
         destination_course_key = self.post_rerun_request(source_course.id)
         self.verify_rerun_course(source_course.id, destination_course_key, self.destination_course_data['display_name'])
-        videos = list(get_videos_for_course(destination_course_key))
+        videos = list(get_videos_for_course(text_type(destination_course_key)))
         self.assertEqual(0, len(videos))
         self.assertInCourseListing(destination_course_key)
 
@@ -1964,7 +1955,7 @@ class RerunCourseTest(ContentStoreTestCase):
         create_video(
             dict(
                 edx_video_id="tree-hugger",
-                courses=[source_course.id],
+                courses=[text_type(source_course.id)],
                 status='test',
                 duration=2,
                 encoded_videos=[]
@@ -1974,8 +1965,8 @@ class RerunCourseTest(ContentStoreTestCase):
         self.verify_rerun_course(source_course.id, destination_course_key, self.destination_course_data['display_name'])
 
         # Verify that the VAL copies videos to the rerun
-        source_videos = list(get_videos_for_course(source_course.id))
-        target_videos = list(get_videos_for_course(destination_course_key))
+        source_videos = list(get_videos_for_course(text_type(source_course.id)))
+        target_videos = list(get_videos_for_course(text_type(destination_course_key)))
         self.assertEqual(1, len(source_videos))
         self.assertEqual(source_videos, target_videos)
 
@@ -2122,7 +2113,7 @@ class ContentLicenseTest(ContentStoreTestCase):
         root_dir = path(mkdtemp_clean())
         self.course.license = "creative-commons: BY SA"
         self.store.update_item(self.course, None)
-        export_course_to_xml(self.store, content_store, self.course.id, root_dir, 'test_license')
+        export_course_to_xml(self.store, content_store, self.course.id, root_dir, u'test_license')
         fname = "{block}.xml".format(block=self.course.scope_ids.usage_id.block_id)
         run_file_path = root_dir / "test_license" / "course" / fname
         run_xml = etree.parse(run_file_path.open())
@@ -2135,7 +2126,7 @@ class ContentLicenseTest(ContentStoreTestCase):
             parent_location=self.course.location, category='video',
             license="all-rights-reserved"
         )
-        export_course_to_xml(self.store, content_store, self.course.id, root_dir, 'test_license')
+        export_course_to_xml(self.store, content_store, self.course.id, root_dir, u'test_license')
         fname = "{block}.xml".format(block=video_descriptor.scope_ids.usage_id.block_id)
         video_file_path = root_dir / "test_license" / "video" / fname
         video_xml = etree.parse(video_file_path.open())
@@ -2176,6 +2167,12 @@ class EntryPageTestCase(TestCase):
         # Logout redirects.
         self._test_page("/logout", 302)
 
+    @override_switch(
+        '{}.{}'.format(waffle.WAFFLE_NAMESPACE, waffle.ENABLE_ACCESSIBILITY_POLICY_PAGE),
+        active=True)
+    def test_accessibility(self):
+        self._test_page('/accessibility')
+
 
 class SigninPageTestCase(TestCase):
     """
@@ -2194,7 +2191,7 @@ class SigninPageTestCase(TestCase):
         #       ...
         #       </fieldset>
         #       ...
-        #</form>
+        # </form>
         response = self.client.get("/signin")
         csrf_token = response.cookies.get("csrftoken")
         form = lxml.html.fromstring(response.content).get_element_by_id("login_form")
@@ -2203,7 +2200,14 @@ class SigninPageTestCase(TestCase):
         self.assertIsNotNone(csrf_token)
         self.assertIsNotNone(csrf_token.value)
         self.assertIsNotNone(csrf_input_field)
-        self.assertEqual(csrf_token.value, csrf_input_field.attrib["value"])
+
+        # TODO: Remove Django 1.11 upgrade shim
+        # SHIM: _compare_salted_tokens was introduced in 1.10. Move the import and use only that branch post-upgrade.
+        if django.VERSION < (1, 10):
+            self.assertEqual(csrf_token.value, csrf_input_field.attrib["value"])
+        else:
+            from django.middleware.csrf import _compare_salted_tokens
+            self.assertTrue(_compare_salted_tokens(csrf_token.value, csrf_input_field.attrib["value"]))
 
 
 def _create_course(test, course_key, course_data):

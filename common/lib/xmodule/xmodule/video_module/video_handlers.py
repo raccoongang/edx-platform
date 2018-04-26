@@ -7,32 +7,51 @@ StudioViewHandlers are handlers for video descriptor instance.
 
 import json
 import logging
-from datetime import datetime
+import os
+
+import six
+from django.utils.timezone import now
 from webob import Response
 
 from xblock.core import XBlock
+from xblock.exceptions import JsonHandlerError
 
 from xmodule.exceptions import NotFoundError
 from xmodule.fields import RelativeTime
 from opaque_keys.edx.locator import CourseLocator
 
 from .transcripts_utils import (
+    convert_video_transcript,
     get_or_create_sjson,
+    generate_sjson_for_all_speeds,
+    get_video_transcript_content,
+    save_to_store,
+    subs_filename,
+    Transcript,
     TranscriptException,
     TranscriptsGenerationException,
-    generate_sjson_for_all_speeds,
     youtube_speed_dict,
-    Transcript,
-    save_to_store,
-    subs_filename
 )
-
+from .transcripts_model_utils import (
+    is_val_transcript_feature_enabled_for_course
+)
 
 log = logging.getLogger(__name__)
 
 
 # Disable no-member warning:
 # pylint: disable=no-member
+
+def to_boolean(value):
+    """
+    Convert a value from a GET or POST request parameter to a bool
+    """
+    if isinstance(value, six.binary_type):
+        value = value.decode('ascii', errors='replace')
+    if isinstance(value, six.text_type):
+        return value.lower() == 'true'
+    else:
+        return bool(value)
 
 
 class VideoStudentViewHandlers(object):
@@ -45,15 +64,18 @@ class VideoStudentViewHandlers(object):
         Update values of xfields, that were changed by student.
         """
         accepted_keys = [
-            'speed', 'saved_video_position', 'transcript_language',
+            'speed', 'auto_advance', 'saved_video_position', 'transcript_language',
             'transcript_download_format', 'youtube_is_available',
             'bumper_last_view_date', 'bumper_do_not_show_again'
         ]
 
         conversions = {
             'speed': json.loads,
+            'auto_advance': json.loads,
             'saved_video_position': RelativeTime.isotime_to_timedelta,
             'youtube_is_available': json.loads,
+            'bumper_last_view_date': to_boolean,
+            'bumper_do_not_show_again': to_boolean,
         }
 
         if dispatch == 'save_user_state':
@@ -65,7 +87,7 @@ class VideoStudentViewHandlers(object):
                         value = data[key]
 
                     if key == 'bumper_last_view_date':
-                        value = datetime.utcnow()
+                        value = now()
 
                     setattr(self, key, value)
 
@@ -197,6 +219,33 @@ class VideoStudentViewHandlers(object):
                 )
         return response
 
+    @XBlock.json_handler
+    def publish_completion(self, data, dispatch):  # pylint: disable=unused-argument
+        """
+        Entry point for completion for student_view.
+
+        Parameters:
+            data: JSON dict:
+                key: "completion"
+                value: float in range [0.0, 1.0]
+
+            dispatch: Ignored.
+        Return value: JSON response (200 on success, 400 for malformed data)
+        """
+        completion_service = self.runtime.service(self, 'completion')
+        if completion_service is None:
+            raise JsonHandlerError(500, u"No completion service found")
+        elif not completion_service.completion_tracking_enabled():
+            raise JsonHandlerError(404, u"Completion tracking is not enabled and API calls are unexpected")
+        if not isinstance(data['completion'], (int, float)):
+            message = u"Invalid completion value {}. Must be a float in range [0.0, 1.0]"
+            raise JsonHandlerError(400, message.format(data['completion']))
+        elif not 0.0 <= data['completion'] <= 1.0:
+            message = u"Invalid completion value {}. Must be in range [0.0, 1.0]"
+            raise JsonHandlerError(400, message.format(data['completion']))
+        self.runtime.publish(self, "completion", data)
+        return {"result": "ok"}
+
     @XBlock.handler
     def transcript(self, request, dispatch):
         """
@@ -221,7 +270,9 @@ class VideoStudentViewHandlers(object):
                     For 'en' check if SJSON exists. For non-`en` check if SRT file exists.
         """
         is_bumper = request.GET.get('is_bumper', False)
-        transcripts = self.get_transcripts_info(is_bumper)
+        # Currently, we don't handle video pre-load/bumper transcripts in edx-val.
+        feature_enabled = is_val_transcript_feature_enabled_for_course(self.course_id) and not is_bumper
+        transcripts = self.get_transcripts_info(is_bumper, include_val_transcripts=feature_enabled)
         if dispatch.startswith('translation'):
             language = dispatch.replace('translation', '').strip('/')
 
@@ -238,17 +289,29 @@ class VideoStudentViewHandlers(object):
 
             try:
                 transcript = self.translation(request.GET.get('videoId', None), transcripts)
-            except (TypeError, NotFoundError) as ex:
-                log.info(ex.message)
+            except (TypeError, TranscriptException, NotFoundError) as ex:
+                # Catching `TranscriptException` because its also getting raised at places
+                # when transcript is not found in contentstore.
+                log.debug(six.text_type(ex))
                 # Try to return static URL redirection as last resort
                 # if no translation is required
-                return self.get_static_transcript(request, transcripts)
-            except (
-                TranscriptException,
-                UnicodeDecodeError,
-                TranscriptsGenerationException
-            ) as ex:
-                log.info(ex.message)
+                response = self.get_static_transcript(request, transcripts)
+                if response.status_code == 404 and feature_enabled:
+                    # Try to get transcript from edx-val as a last resort.
+                    transcript = get_video_transcript_content(self.edx_video_id, self.transcript_language)
+                    if transcript:
+                        transcript_conversion_props = dict(transcript, output_format=Transcript.SJSON)
+                        transcript = convert_video_transcript(**transcript_conversion_props)
+                        response = Response(
+                            transcript['content'],
+                            headerlist=[('Content-Language', self.transcript_language)],
+                            charset='utf8',
+                        )
+                        response.content_type = Transcript.mime_types[Transcript.SJSON]
+
+                return response
+            except (UnicodeDecodeError, TranscriptsGenerationException) as ex:
+                log.info(six.text_type(ex))
                 response = Response(status=404)
             else:
                 response = Response(transcript, headerlist=[('Content-Language', language)])
@@ -260,9 +323,33 @@ class VideoStudentViewHandlers(object):
                 transcript_content, transcript_filename, transcript_mime_type = self.get_transcript(
                     transcripts, transcript_format=self.transcript_download_format, lang=lang
                 )
-            except (NotFoundError, ValueError, KeyError, UnicodeDecodeError):
-                log.debug("Video@download exception")
+            except (KeyError, UnicodeDecodeError):
                 return Response(status=404)
+            except (ValueError, NotFoundError):
+                response = Response(status=404)
+                # Check for transcripts in edx-val as a last resort if corresponding feature is enabled.
+                if feature_enabled:
+                    # Make sure the language is set.
+                    if not lang:
+                        lang = self.get_default_transcript_language(transcripts)
+
+                    transcript = get_video_transcript_content(edx_video_id=self.edx_video_id, language_code=lang)
+                    if transcript:
+                        transcript_conversion_props = dict(transcript, output_format=self.transcript_download_format)
+                        transcript = convert_video_transcript(**transcript_conversion_props)
+                        response = Response(
+                            transcript['content'],
+                            headerlist=[
+                                ('Content-Disposition', 'attachment; filename="{filename}"'.format(
+                                    filename=transcript['filename']
+                                )),
+                                ('Content-Language', lang),
+                            ],
+                            charset='utf8',
+                        )
+                        response.content_type = Transcript.mime_types[self.transcript_download_format]
+
+                return response
             else:
                 response = Response(
                     transcript_content,
@@ -276,7 +363,11 @@ class VideoStudentViewHandlers(object):
 
         elif dispatch.startswith('available_translations'):
 
-            available_translations = self.available_translations(transcripts)
+            available_translations = self.available_translations(
+                transcripts,
+                verify_assets=True,
+                include_val_transcripts=feature_enabled,
+            )
             if available_translations:
                 response = Response(json.dumps(available_translations))
                 response.content_type = 'application/json'

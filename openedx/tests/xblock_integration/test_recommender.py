@@ -3,24 +3,23 @@ This test file will run through some XBlock test scenarios regarding the
 recommender system
 """
 
-from copy import deepcopy
-import json
 import itertools
+import json
 import StringIO
 import unittest
-
-from ddt import ddt, data
-from nose.plugins.attrib import attr
+from copy import deepcopy
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
-from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
-
-from lms.djangoapps.courseware.tests.helpers import LoginEnrollmentTestCase
+from ddt import data, ddt
 from lms.djangoapps.courseware.tests.factories import GlobalStaffFactory
+from lms.djangoapps.courseware.tests.helpers import LoginEnrollmentTestCase
+from nose.plugins.attrib import attr
+from six import text_type
 from openedx.core.lib.url_utils import quote_slashes
+from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
+from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 
 
 class TestRecommender(SharedModuleStoreTestCase, LoginEnrollmentTestCase):
@@ -69,7 +68,7 @@ class TestRecommender(SharedModuleStoreTestCase, LoginEnrollmentTestCase):
         cls.course_url = reverse(
             'courseware_section',
             kwargs={
-                'course_id': cls.course.id.to_deprecated_string(),
+                'course_id': text_type(cls.course.id),
                 'chapter': 'Overview',
                 'section': 'Welcome',
             }
@@ -131,8 +130,8 @@ class TestRecommender(SharedModuleStoreTestCase, LoginEnrollmentTestCase):
         if xblock_name is None:
             xblock_name = TestRecommender.XBLOCK_NAMES[0]
         return reverse('xblock_handler', kwargs={
-            'course_id': self.course.id.to_deprecated_string(),
-            'usage_id': quote_slashes(self.course.id.make_usage_key('recommender', xblock_name).to_deprecated_string()),
+            'course_id': text_type(self.course.id),
+            'usage_id': quote_slashes(text_type(self.course.id.make_usage_key('recommender', xblock_name))),
             'handler': handler,
             'suffix': ''
         })
@@ -665,7 +664,6 @@ class TestRecommenderFileUploading(TestRecommender):
         url = self.get_handler_url(event_name)
         resp = self.client.post(url, {'file': f_handler})
         self.assertEqual(resp.status_code, test_case['status'])
-        self.assert_request_status_code(200, self.course_url)
 
     @data(
         {

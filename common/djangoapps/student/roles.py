@@ -3,14 +3,15 @@ Classes used to model the roles used in the courseware. Each role is responsible
 adding users, removing users, and listing members
 """
 
+import logging
 from abc import ABCMeta, abstractmethod
+from collections import defaultdict
 
 from django.contrib.auth.models import User
-import logging
+from opaque_keys.edx.django.models import CourseKeyField
 
+from openedx.core.djangoapps.request_cache import get_cache
 from student.models import CourseAccessRole
-from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
-
 
 log = logging.getLogger(__name__)
 
@@ -34,14 +35,38 @@ def register_access_role(cls):
     return cls
 
 
+class BulkRoleCache(object):
+    CACHE_NAMESPACE = u"student.roles.BulkRoleCache"
+    CACHE_KEY = u'roles_by_user'
+
+    @classmethod
+    def prefetch(cls, users):
+        roles_by_user = defaultdict(set)
+        get_cache(cls.CACHE_NAMESPACE)[cls.CACHE_KEY] = roles_by_user
+
+        for role in CourseAccessRole.objects.filter(user__in=users).select_related('user'):
+            roles_by_user[role.user.id].add(role)
+
+        users_without_roles = filter(lambda u: u.id not in roles_by_user, users)
+        for user in users_without_roles:
+            roles_by_user[user.id] = set()
+
+    @classmethod
+    def get_user_roles(cls, user):
+        return get_cache(cls.CACHE_NAMESPACE)[cls.CACHE_KEY][user.id]
+
+
 class RoleCache(object):
     """
     A cache of the CourseAccessRoles held by a particular user
     """
     def __init__(self, user):
-        self._roles = set(
-            CourseAccessRole.objects.filter(user=user).all()
-        )
+        try:
+            self._roles = BulkRoleCache.get_user_roles(user)
+        except KeyError:
+            self._roles = set(
+                CourseAccessRole.objects.filter(user=user).all()
+            )
 
     def has_role(self, role, course_id, org):
         """
@@ -209,13 +234,16 @@ class CourseRole(RoleBase):
     def course_group_already_exists(self, course_key):
         return CourseAccessRole.objects.filter(org=course_key.org, course_id=course_key).exists()
 
+    def __repr__(self):
+        return '<{}: course_key={}>'.format(self.__class__.__name__, self.course_key)
+
 
 class OrgRole(RoleBase):
     """
     A named role in a particular org independent of course
     """
-    def __init__(self, role, org):
-        super(OrgRole, self).__init__(role, org)
+    def __repr__(self):
+        return '<{}>'.format(self.__class__.__name__)
 
 
 @register_access_role

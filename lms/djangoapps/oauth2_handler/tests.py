@@ -1,20 +1,17 @@
 # pylint: disable=missing-docstring
+import mock
 from django.core.cache import cache
 from django.test.utils import override_settings
+# Will also run default tests for IDTokens and UserInfo
+from edx_oauth2_provider.tests import IDTokenTestCase, UserInfoTestCase
 
 from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY
 from openedx.core.djangoapps.user_api.preferences.api import set_user_preference
-from student.models import anonymous_id_for_user
-from student.models import UserProfile
-from student.roles import (CourseInstructorRole, CourseStaffRole, GlobalStaff,
-                           OrgInstructorRole, OrgStaffRole)
+from student.models import UserProfile, anonymous_id_for_user
+from student.roles import CourseInstructorRole, CourseStaffRole, GlobalStaff, OrgInstructorRole, OrgStaffRole
 from student.tests.factories import UserFactory, UserProfileFactory
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
-from xmodule.modulestore.tests.factories import (check_mongo_calls, CourseFactory)
-
-
-# Will also run default tests for IDTokens and UserInfo
-from edx_oauth2_provider.tests import IDTokenTestCase, UserInfoTestCase
+from xmodule.modulestore.tests.factories import CourseFactory, check_mongo_calls
 
 
 class BaseTestMixin(ModuleStoreTestCase):
@@ -137,6 +134,13 @@ class IDTokenTest(BaseTestMixin, IDTokenTestCase):
         self.user.save()
         _scopes, claims = self.get_id_token_values('openid profile permissions')
         self.assertTrue(claims['administrator'])
+
+    def test_rate_limit_token(self):
+        with mock.patch('openedx.core.djangoapps.oauth_dispatch.views.AccessTokenView.ratelimit_rate', '1/m'):
+            response = self.get_access_token_response('openid profile permissions')
+            self.assertEqual(response.status_code, 200)
+            response = self.get_access_token_response('openid profile permissions')
+            self.assertEqual(response.status_code, 403)
 
 
 class UserInfoTest(BaseTestMixin, UserInfoTestCase):

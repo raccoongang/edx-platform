@@ -3,8 +3,9 @@ Provides helper functions for tests that want
 to configure flags related to persistent grading.
 """
 from contextlib import contextmanager
-from lms.djangoapps.grades.config.models import PersistentGradesEnabledFlag, CoursePersistentGradesFlag
-from request_cache.middleware import RequestCache
+
+from lms.djangoapps.grades.config.models import CoursePersistentGradesFlag, PersistentGradesEnabledFlag
+from openedx.core.djangoapps.request_cache.middleware import RequestCache
 
 
 @contextmanager

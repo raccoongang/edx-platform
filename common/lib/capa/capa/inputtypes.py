@@ -40,6 +40,7 @@ graded status as'status'
 
 import json
 import logging
+import re
 import shlex  # for splitting quoted strings
 import sys
 import time
@@ -48,15 +49,16 @@ from datetime import datetime
 import bleach
 import html5lib
 import pyparsing
-import re
-from calc.preview import latex_preview
-from chem import chemcalc
 from lxml import etree
-from openedx.core.djangolib.markup import HTML, Text
+from six import text_type
 
 import xqueue_interface
-from xmodule.stringify import stringify_children
+from calc.preview import latex_preview
 from capa.xqueue_interface import XQUEUE_TIMEOUT
+from chem import chemcalc
+from openedx.core.djangolib.markup import HTML, Text
+from xmodule.stringify import stringify_children
+
 from .registry import TagRegistry
 from .util import sanitize_html
 
@@ -90,6 +92,7 @@ class Status(object):
             'incomplete': _('incomplete'),
             'unanswered': _('unanswered'),
             'unsubmitted': _('unanswered'),
+            'submitted': _('submitted'),
             'queued': _('processing'),
         }
         tooltips = {
@@ -197,7 +200,7 @@ class InputTypeBase(object):
                                     (what the student entered last time)
                       * 'id' -- the id of this input, typically
                                 "{problem-location}_{response-num}_{input-num}"
-                      * 'status' (answered, unanswered, unsubmitted)
+                      * 'status' (submitted, unanswered, unsubmitted)
                       * 'input_state' -- dictionary containing any inputtype-specific state
                                         that has been preserved
                       * 'feedback' (dictionary containing keys for hints, errors, or other
@@ -249,7 +252,7 @@ class InputTypeBase(object):
         except Exception as err:
             # Something went wrong: add xml to message, but keep the traceback
             msg = u"Error in xml '{x}': {err} ".format(
-                x=etree.tostring(xml), err=err.message)
+                x=etree.tostring(xml), err=text_type(err))
             raise Exception, msg, sys.exc_info()[2]
 
     @classmethod

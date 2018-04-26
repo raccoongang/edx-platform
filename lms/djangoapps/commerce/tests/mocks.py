@@ -4,7 +4,7 @@ import json
 import httpretty
 from django.conf import settings
 
-from commerce.tests import factories
+from . import factories
 
 
 # pylint: disable=invalid-name
@@ -74,28 +74,13 @@ class mock_ecommerce_api_endpoint(object):
         )
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        assert self.expect_called == (httpretty.last_request().headers != {})
+        called_if_expected = self.expect_called == (httpretty.last_request().headers != {})
         httpretty.disable()
+
         if self.reset_on_exit:
             httpretty.reset()
 
-
-class mock_create_basket(mock_ecommerce_api_endpoint):
-    """ Mocks calls to E-Commerce API client basket creation method. """
-
-    default_response = {
-        'id': 7,
-        'order': {'number': '100004'},  # never both None.
-        'payment_data': {
-            'payment_processor_name': 'test-processor',
-            'payment_form_data': {},
-            'payment_page_url': 'http://example.com/pay',
-        },
-    }
-    method = httpretty.POST
-
-    def get_path(self):
-        return '/baskets/'
+        assert called_if_expected
 
 
 class mock_basket_order(mock_ecommerce_api_endpoint):
@@ -164,7 +149,28 @@ class mock_get_orders(mock_ecommerce_api_endpoint):
                         )])
                     )
                 ]
-            )
+            ),
+            factories.OrderFactory(
+                lines=[
+                    factories.OrderLineFactory(
+                        product=factories.ProductFactory(attribute_values=[factories.ProductAttributeFactory(
+                            name='certificate_type',
+                            value='verified'
+                        )])
+                    ),
+                    factories.OrderLineFactory(
+                        product=factories.ProductFactory(attribute_values=[factories.ProductAttributeFactory(
+                            name='certificate_type',
+                            value='verified'
+                        )])
+                    ),
+                ]
+            ),
+            factories.OrderFactory(
+                lines=[
+                    factories.OrderLineFactory(product=factories.ProductFactory(product_class='Coupon'))
+                ]
+            ),
         ]
     }
     method = httpretty.GET

@@ -190,19 +190,14 @@ class EvaluatorTest(unittest.TestCase):
         self.assert_function_values('tan', angles, tan_values)
 
         # Include those where the real part is between -pi/2 and pi/2
-        arcsin_inputs = ['-0.707', '0', '0.5', '0.588', '1.298 + 0.635*j']
-        arcsin_angles = [-0.785, 0, 0.524, 0.629, 1 + 1j]
+        arcsin_inputs = ['-0.707', '0', '0.5', '0.588', '1.298 + 0.635*j', '-1.1', '1.1']
+        arcsin_angles = [-0.785, 0, 0.524, 0.629, 1 + 1j, -1.570 + 0.443j, 1.570 - 0.443j]
         self.assert_function_values('arcsin', arcsin_inputs, arcsin_angles)
-        # Rather than a complex number, numpy.arcsin gives nan
-        self.assertTrue(numpy.isnan(calc.evaluator({}, {}, 'arcsin(-1.1)')))
-        self.assertTrue(numpy.isnan(calc.evaluator({}, {}, 'arcsin(1.1)')))
 
         # Include those where the real part is between 0 and pi
-        arccos_inputs = ['1', '0.866', '0.809', '0.834-0.989*j']
-        arccos_angles = [0, 0.524, 0.628, 1 + 1j]
+        arccos_inputs = ['1', '0.866', '0.809', '0.834-0.989*j', '-1.1', '1.1']
+        arccos_angles = [0, 0.524, 0.628, 1 + 1j, 3.141 - 0.443j, 0.443j]
         self.assert_function_values('arccos', arccos_inputs, arccos_angles)
-        self.assertTrue(numpy.isnan(calc.evaluator({}, {}, 'arccos(-1.1)')))
-        self.assertTrue(numpy.isnan(calc.evaluator({}, {}, 'arccos(1.1)')))
 
         # Has the same range as arcsin
         arctan_inputs = ['-1', '0', '0.577', '0.727', '0.272 + 1.084*j']
@@ -445,7 +440,7 @@ class EvaluatorTest(unittest.TestCase):
         """
         Substitution of variables into simple equations
         """
-        variables = {'x': 9.72, 'y': 7.91, 'loooooong': 6.4}
+        variables = {'x': 9.72, 'y': 7.91, 'loooooong': 6.4, "f_0'": 2.0, "T_{ijk}^{123}''": 5.2}
 
         # Should not change value of constant
         # even with different numbers of variables...
@@ -457,6 +452,8 @@ class EvaluatorTest(unittest.TestCase):
         self.assertEqual(calc.evaluator(variables, {}, 'x'), 9.72)
         self.assertEqual(calc.evaluator(variables, {}, 'y'), 7.91)
         self.assertEqual(calc.evaluator(variables, {}, 'loooooong'), 6.4)
+        self.assertEqual(calc.evaluator(variables, {}, "f_0'"), 2.0)
+        self.assertEqual(calc.evaluator(variables, {}, "T_{ijk}^{123}''"), 5.2)
 
         # Test a simple equation
         self.assertAlmostEqual(
@@ -559,3 +556,12 @@ class EvaluatorTest(unittest.TestCase):
             calc.evaluator({'r1': 5}, {}, "r1+r2")
         with self.assertRaisesRegexp(calc.UndefinedVariable, 'r1 r3'):
             calc.evaluator(variables, {}, "r1*r3", case_sensitive=True)
+
+    def test_mismatched_parens(self):
+        """
+        Check to see if the evaluator catches mismatched parens
+        """
+        with self.assertRaisesRegexp(calc.UnmatchedParenthesis, 'opened but never closed'):
+            calc.evaluator({}, {}, "(1+2")
+        with self.assertRaisesRegexp(calc.UnmatchedParenthesis, 'no matching opening parenthesis'):
+            calc.evaluator({}, {}, "(1+2))")

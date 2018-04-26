@@ -5,29 +5,40 @@ consist primarily of authentication, request validation, and serialization.
 """
 import logging
 
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
 from edx_rest_framework_extensions.authentication import JwtAuthentication
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
 from rest_framework.views import APIView
+from six import text_type
 
 from course_modes.models import CourseMode
 from enrollment import api
-from enrollment.errors import CourseEnrollmentError, CourseModeNotFoundError, CourseEnrollmentExistsError
+from enrollment.errors import CourseEnrollmentError, CourseEnrollmentExistsError, CourseModeNotFoundError
 from openedx.core.djangoapps.cors_csrf.authentication import SessionAuthenticationCrossDomainCsrf
 from openedx.core.djangoapps.cors_csrf.decorators import ensure_csrf_cookie_cross_domain
 from openedx.core.djangoapps.embargo import api as embargo_api
+from openedx.core.djangoapps.user_api.accounts.permissions import CanRetireUser
+from openedx.core.djangoapps.user_api.models import UserRetirementStatus
 from openedx.core.djangoapps.user_api.preferences.api import update_email_opt_in
 from openedx.core.lib.api.authentication import (
-    SessionAuthenticationAllowInactiveUser, OAuth2AuthenticationAllowInactiveUser,
+    OAuth2AuthenticationAllowInactiveUser,
+    SessionAuthenticationAllowInactiveUser
 )
 from openedx.core.lib.api.permissions import ApiKeyHeaderPermission, ApiKeyHeaderPermissionIsAuthenticated
 from openedx.core.lib.exceptions import CourseNotFoundError
 from openedx.core.lib.log_utils import audit_log
+from openedx.features.enterprise_support.api import (
+    ConsentApiServiceClient,
+    EnterpriseApiServiceClient,
+    EnterpriseApiException,
+    enterprise_enabled
+)
 from student.auth import user_has_role
 from student.models import User
 from student.roles import CourseStaffRole, GlobalStaff
@@ -66,9 +77,22 @@ class ApiKeyPermissionMixIn(object):
 
 class EnrollmentUserThrottle(UserRateThrottle, ApiKeyPermissionMixIn):
     """Limit the number of requests users can make to the enrollment API."""
-    rate = '40/minute'
+    # The staff Throttle rate is currently being adjusted to meet the needs of the eCommerce API calls.
+    # This should be reviewed for performance and we should determine the optimum throttle for the needs of this API.
+    # https://openedx.atlassian.net/wiki/spaces/LEARNER/pages/645923004/eCommerce+Guild
+    THROTTLE_RATES = {
+        'user': '40/minute',
+        'staff': '2000/minute',  # Decided on by looking at number of API calls to the Enrollment API from Staff users
+    }
 
     def allow_request(self, request, view):
+        # Use a special scope for staff to allow for a separate throttle rate
+        user = request.user
+        if user.is_authenticated() and (user.is_staff or user.is_superuser):
+            self.scope = 'staff'
+            self.rate = self.get_rate()
+            self.num_requests, self.duration = self.parse_rate(self.rate)
+
         return self.has_api_key_permissions(request) or super(EnrollmentUserThrottle, self).allow_request(request, view)
 
 
@@ -165,7 +189,7 @@ class EnrollmentView(APIView, ApiKeyPermissionMixIn):
 
         # TODO Implement proper permissions
         if request.user.username != username and not self.has_api_key_permissions(request) \
-                and not request.user.is_superuser:
+                and not request.user.is_staff:
             # Return a 404 instead of a 403 (Unauthorized). If one user is looking up
             # other users, do not let them deduce the existence of an enrollment.
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -280,6 +304,67 @@ class EnrollmentCourseDetailView(APIView):
             )
 
 
+class UnenrollmentView(APIView):
+    """
+        **Use Cases**
+
+            * Unenroll a single user from all courses.
+
+              This command can only be issued by a privileged service user.
+
+        **Example Requests**
+
+            POST /api/enrollment/v1/enrollment {
+                "username": "username12345"
+            }
+
+            **POST Parameters**
+
+              A POST request must include the following parameter.
+
+              * username: The username of the user being unenrolled.
+              This will never match the username from the request,
+              since the request is issued as a privileged service user.
+
+        **POST Response Values**
+
+             If the user does not exist, or the user is already unenrolled
+             from all courses, the request returns an HTTP 404 "Does Not Exist"
+             response.
+
+             If an unexpected error occurs, the request returns an HTTP 500 response.
+
+            If the request is successful, an HTTP 200 "OK" response is
+            returned along with a list of all courses from which the user was unenrolled.
+        """
+    authentication_classes = (JwtAuthentication,)
+    permission_classes = (permissions.IsAuthenticated, CanRetireUser)
+
+    def post(self, request):
+        """
+        Unenrolls the specified user from all courses.
+        """
+        username = None
+        user_model = get_user_model()
+
+        try:
+            # Get the username from the request and check that it exists
+            username = request.data['username']
+            user_model.objects.get(username=username)
+
+            enrollments = api.get_enrollments(username)
+            active_enrollments = [enrollment for enrollment in enrollments if enrollment['is_active']]
+            if len(active_enrollments) < 1:
+                return Response(status=status.HTTP_200_OK)
+            return Response(api.unenroll_user_from_all_courses(username))
+        except KeyError:
+            return Response(u'Username not specified.', status=status.HTTP_404_NOT_FOUND)
+        except user_model.DoesNotExist:
+            return Response(u'The user "{}" does not exist.'.format(username), status=status.HTTP_404_NOT_FOUND)
+        except Exception as exc:  # pylint: disable=broad-except
+            return Response(text_type(exc), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 @can_disable_rate_limit
 class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
     """
@@ -361,6 +446,10 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
 
               * user: Optional. The user ID of the currently logged in user. You
                 cannot use the command to enroll a different user.
+
+              * enterprise_course_consent: Optional. A Boolean value that
+                indicates the consent status for an EnterpriseCourseEnrollment
+                to be posted to the Enterprise service.
 
         **GET Response Values**
 
@@ -574,6 +663,23 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
                     }
                 )
 
+            explicit_linked_enterprise = request.data.get('linked_enterprise_customer')
+            if explicit_linked_enterprise and has_api_key_permissions and enterprise_enabled():
+                enterprise_api_client = EnterpriseApiServiceClient()
+                consent_client = ConsentApiServiceClient()
+                try:
+                    enterprise_api_client.post_enterprise_course_enrollment(username, unicode(course_id), None)
+                except EnterpriseApiException as error:
+                    log.exception("An unexpected error occurred while creating the new EnterpriseCourseEnrollment "
+                                  "for user [%s] in course run [%s]", username, course_id)
+                    raise CourseEnrollmentError(text_type(error))
+                kwargs = {
+                    'username': username,
+                    'course_id': unicode(course_id),
+                    'enterprise_customer_uuid': explicit_linked_enterprise,
+                }
+                consent_client.provide_consent(**kwargs)
+
             enrollment_attributes = request.data.get('enrollment_attributes')
             enrollment = api.get_enrollment(username, unicode(course_id))
             mode_changed = enrollment and mode is not None and enrollment['mode'] != mode
@@ -608,11 +714,19 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
                     unicode(course_id),
                     mode=mode,
                     is_active=is_active,
-                    enrollment_attributes=enrollment_attributes
+                    enrollment_attributes=enrollment_attributes,
+                    # If we are updating enrollment by authorized api caller, we should allow expired modes
+                    include_expired=has_api_key_permissions
                 )
             else:
                 # Will reactivate inactive enrollments.
-                response = api.add_enrollment(username, unicode(course_id), mode=mode, is_active=is_active)
+                response = api.add_enrollment(
+                    username,
+                    unicode(course_id),
+                    mode=mode,
+                    is_active=is_active,
+                    enrollment_attributes=enrollment_attributes
+                )
 
             email_opt_in = request.data.get('email_opt_in', None)
             if email_opt_in is not None:

@@ -1,3 +1,4 @@
+<%namespace name='static' file='/static_content.html'/>
 <%page expression_filter="h"/>
 
 <%inherit file="base.html" />
@@ -50,8 +51,8 @@ from django.utils.translation import ugettext as _
 </div>
 </%block>
 
-<%block name="requirejs">
-  require(["js/factories/login"], function(LoginFactory) {
-      LoginFactory("${reverse('homepage')}");
-  });
+<%block name="page_bundle">
+  <%static:invoke_page_bundle page_name="js/pages/login" class_name="LoginFactory">
+    "${reverse('homepage') | n, js_escaped_string}"
+  </%static:invoke_page_bundle>
 </%block>

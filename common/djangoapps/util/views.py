@@ -1,31 +1,30 @@
 import json
 import logging
-from smtplib import SMTPException
 import sys
 from functools import wraps
+from smtplib import SMTPException
+import crum
 
+import zendesk
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.cache import caches
 from django.core.mail import send_mail
 from django.core.validators import ValidationError, validate_email
+from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseServerError
 from django.views.decorators.csrf import requires_csrf_token
 from django.views.defaults import server_error
-from django.http import (Http404, HttpResponse, HttpResponseNotAllowed,
-                         HttpResponseServerError, HttpResponseForbidden)
-import dogstats_wrapper as dog_stats_api
-import zendesk
-import calc
-
 from opaque_keys import InvalidKeyError
-
 from opaque_keys.edx.keys import CourseKey, UsageKey
 
+import calc
+import dogstats_wrapper as dog_stats_api
+import track.views
 from edxmako.shortcuts import render_to_response, render_to_string
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
-import track.views
-from student.roles import GlobalStaff
+from openedx.features.enterprise_support import api as enterprise_api
 from student.models import CourseEnrollment
+from student.roles import GlobalStaff
 
 log = logging.getLogger(__name__)
 
@@ -87,6 +86,21 @@ def require_global_staff(func):
                 )
             )
     return login_required(wrapped)
+
+
+def fix_crum_request(func):
+    """
+    A decorator that ensures that the 'crum' package (a middleware that stores and fetches the current request in
+    thread-local storage) can correctly fetch the current request. Under certain conditions, the current request cannot
+    be fetched by crum (e.g.: when HTTP errors are raised in our views via 'raise Http404', et. al.). This decorator
+    manually sets the current request for crum if it cannot be fetched.
+    """
+    @wraps(func)
+    def wrapper(request, *args, **kwargs):
+        if not crum.get_current_request():
+            crum.set_current_request(request=request)
+        return func(request, *args, **kwargs)
+    return wrapper
 
 
 @requires_csrf_token
@@ -223,7 +237,7 @@ class _ZendeskApi(object):
         return None
 
 
-def _get_zendesk_custom_field_context(request):
+def _get_zendesk_custom_field_context(request, **kwargs):
     """
     Construct a dictionary of data that can be stored in Zendesk custom fields.
     """
@@ -240,6 +254,11 @@ def _get_zendesk_custom_field_context(request):
     enrollment = CourseEnrollment.get_enrollment(request.user, CourseKey.from_string(course_id))
     if enrollment and enrollment.is_active:
         context["enrollment_mode"] = enrollment.mode
+
+    enterprise_learner_data = kwargs.get('learner_data', None)
+    if enterprise_learner_data:
+        enterprise_customer_name = enterprise_learner_data[0]['enterprise_customer']['name']
+        context["enterprise_customer_name"] = enterprise_customer_name
 
     return context
 
@@ -296,10 +315,10 @@ def _record_feedback_in_zendesk(
     zendesk_tags = list(tags.values()) + ["LMS"]
 
     # Per edX support, we would like to be able to route feedback items by site via tagging
-    current_site_orgs = configuration_helpers.get_current_site_orgs()
-    if current_site_orgs:
-        for org in current_site_orgs:
-            zendesk_tags.append("whitelabel_{org}".format(org=org))
+    current_site_name = configuration_helpers.get_value("SITE_NAME")
+    if current_site_name:
+        current_site_name = current_site_name.replace(".", "_")
+        zendesk_tags.append("site_name_{site}".format(site=current_site_name))
 
     new_ticket = {
         "ticket": {
@@ -434,6 +453,12 @@ def submit_feedback(request):
 
     success = False
     context = get_feedback_form_context(request)
+
+    # Update the tag info with 'enterprise_learner' if the user belongs to an enterprise customer.
+    enterprise_learner_data = enterprise_api.get_enterprise_learner_data(user=request.user)
+    if enterprise_learner_data:
+        context["tags"]["learner_type"] = "enterprise_learner"
+
     support_backend = configuration_helpers.get_value('CONTACT_FORM_SUBMISSION_BACKEND', SUPPORT_BACKEND_ZENDESK)
 
     if support_backend == SUPPORT_BACKEND_EMAIL:
@@ -456,7 +481,7 @@ def submit_feedback(request):
 
         custom_fields = None
         if settings.ZENDESK_CUSTOM_FIELDS:
-            custom_field_context = _get_zendesk_custom_field_context(request)
+            custom_field_context = _get_zendesk_custom_field_context(request, learner_data=enterprise_learner_data)
             custom_fields = _format_zendesk_custom_fields(custom_field_context)
 
         success = _record_feedback_in_zendesk(

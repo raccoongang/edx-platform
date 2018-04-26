@@ -25,7 +25,7 @@ from xblock.field_data import DictFieldData
 from xblock.fields import ScopeIds
 from xblock.core import XBlock
 
-from opaque_keys.edx.locations import Location
+from opaque_keys.edx.locator import BlockUsageLocator, CourseLocator
 
 from xmodule.x_module import ModuleSystem, XModule, XModuleDescriptor, DescriptorSystem, STUDENT_VIEW, STUDIO_VIEW
 from xmodule.annotatable_module import AnnotatableDescriptor
@@ -188,7 +188,7 @@ class LeafDescriptorFactory(Factory):
 
     @lazy_attribute
     def location(self):
-        return Location('org', 'course', 'run', 'category', self.url_name, None)
+        return BlockUsageLocator(CourseLocator('org', 'course', 'run'), 'category', self.url_name)
 
     @lazy_attribute
     def block_type(self):
@@ -363,6 +363,7 @@ class TestStudioView(XBlockWrapperTestMixin, TestCase):
         self.assertEqual(html, rendered_content)
 
 
+@ddt.ddt
 class TestXModuleHandler(TestCase):
     """
     Tests that the xmodule_handler function correctly wraps handle_ajax
@@ -386,6 +387,21 @@ class TestXModuleHandler(TestCase):
         response = self.module.xmodule_handler(self.request)
         self.assertIsInstance(response, webob.Response)
         self.assertEqual(response.body, '{}')
+
+    @ddt.data(
+        u'{"test_key": "test_value"}',
+        '{"test_key": "test_value"}',
+    )
+    def test_xmodule_handler_with_data(self, response_data):
+        """
+        Tests that xmodule_handler function correctly wraps handle_ajax when handle_ajax response is either
+        str or unicode.
+        """
+
+        self.module.handle_ajax = Mock(return_value=response_data)
+        response = self.module.xmodule_handler(self.request)
+        self.assertIsInstance(response, webob.Response)
+        self.assertEqual(response.body, '{"test_key": "test_value"}')
 
 
 class TestXmlExport(XBlockWrapperTestMixin, TestCase):

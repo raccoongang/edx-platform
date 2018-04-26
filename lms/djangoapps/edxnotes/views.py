@@ -3,28 +3,30 @@ Views related to EdxNotes.
 """
 import json
 import logging
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, Http404
+
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.http import Http404, HttpResponse
 from django.views.decorators.http import require_GET
-from edxmako.shortcuts import render_to_response
 from opaque_keys.edx.keys import CourseKey
+from six import text_type
+
 from courseware.courses import get_course_with_access
 from courseware.model_data import FieldDataCache
 from courseware.module_render import get_module_for_descriptor
-from util.json_request import JsonResponse, JsonResponseBadRequest
+from edxmako.shortcuts import render_to_response
 from edxnotes.exceptions import EdxNotesParseError, EdxNotesServiceUnavailable
 from edxnotes.helpers import (
-    get_edxnotes_id_token,
-    get_notes,
-    is_feature_enabled,
-    get_course_position,
     DEFAULT_PAGE,
     DEFAULT_PAGE_SIZE,
     NoteJSONEncoder,
+    get_course_position,
+    get_edxnotes_id_token,
+    get_notes,
+    is_feature_enabled,
 )
-
+from util.json_request import JsonResponse, JsonResponseBadRequest
 
 log = logging.getLogger(__name__)
 
@@ -44,7 +46,7 @@ def edxnotes(request, course_id):
     course_key = CourseKey.from_string(course_id)
     course = get_course_with_access(request.user, "load", course_key)
 
-    if not is_feature_enabled(course):
+    if not is_feature_enabled(course, request.user):
         raise Http404
 
     notes_info = get_notes(request, course)
@@ -148,7 +150,7 @@ def notes(request, course_id):
     course_key = CourseKey.from_string(course_id)
     course = get_course_with_access(request.user, 'load', course_key)
 
-    if not is_feature_enabled(course):
+    if not is_feature_enabled(course, request.user):
         raise Http404
 
     page = request.GET.get('page') or DEFAULT_PAGE
@@ -164,7 +166,7 @@ def notes(request, course_id):
             text=text
         )
     except (EdxNotesParseError, EdxNotesServiceUnavailable) as err:
-        return JsonResponseBadRequest({"error": err.message}, status=500)
+        return JsonResponseBadRequest({"error": text_type(err)}, status=500)
 
     return HttpResponse(json.dumps(notes_info, cls=NoteJSONEncoder), content_type="application/json")
 
@@ -190,7 +192,7 @@ def edxnotes_visibility(request, course_id):
         request.user, request, course, field_data_cache, course_key, course=course
     )
 
-    if not is_feature_enabled(course):
+    if not is_feature_enabled(course, request.user):
         raise Http404
 
     try:

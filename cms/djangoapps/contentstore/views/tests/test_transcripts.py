@@ -1,24 +1,25 @@
 """Tests for items views."""
 
 import copy
+import ddt
 import json
 import os
 import tempfile
 import textwrap
 from uuid import uuid4
-from mock import patch
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
-from django.conf import settings
+from mock import patch, Mock
+from opaque_keys.edx.keys import UsageKey
 
 from contentstore.tests.utils import CourseTestCase, mock_requests_get
-from opaque_keys.edx.keys import UsageKey
 from openedx.core.djangoapps.contentserver.caching import del_cached_content
-from xmodule.modulestore.django import modulestore
-from xmodule.contentstore.django import contentstore
 from xmodule.contentstore.content import StaticContent
+from xmodule.contentstore.django import contentstore
 from xmodule.exceptions import NotFoundError
+from xmodule.modulestore.django import modulestore
 from xmodule.video_module import transcripts_utils
 
 TEST_DATA_CONTENTSTORE = copy.deepcopy(settings.CONTENTSTORE)
@@ -39,6 +40,20 @@ class BaseTranscripts(CourseTestCase):
                 contentstore().delete(content.get_id())
             except NotFoundError:
                 pass
+
+    def save_subs_to_store(self, subs, subs_id):
+        """
+        Save transcripts into `StaticContent`.
+        """
+        filedata = json.dumps(subs, indent=2)
+        mime_type = 'application/json'
+        filename = 'subs_{0}.srt.sjson'.format(subs_id)
+
+        content_location = StaticContent.compute_location(self.course.id, filename)
+        content = StaticContent(content_location, filename, mime_type, filedata)
+        contentstore().save(content)
+        del_cached_content(content_location)
+        return content_location
 
     def setUp(self):
         """Create initial data."""
@@ -82,8 +97,9 @@ class BaseTranscripts(CourseTestCase):
 
 
 class TestUploadTranscripts(BaseTranscripts):
-    """Tests for '/transcripts/upload' url."""
-
+    """
+    Tests for '/transcripts/upload' url.
+    """
     def setUp(self):
         """Create initial data."""
         super(TestUploadTranscripts, self).setUp()
@@ -347,20 +363,9 @@ class TestUploadTranscripts(BaseTranscripts):
 
 
 class TestDownloadTranscripts(BaseTranscripts):
-    """Tests for '/transcripts/download' url."""
-
-    def save_subs_to_store(self, subs, subs_id):
-        """Save transcripts into `StaticContent`."""
-        filedata = json.dumps(subs, indent=2)
-        mime_type = 'application/json'
-        filename = 'subs_{0}.srt.sjson'.format(subs_id)
-
-        content_location = StaticContent.compute_location(self.course.id, filename)
-        content = StaticContent(content_location, filename, mime_type, filedata)
-        contentstore().save(content)
-        del_cached_content(content_location)
-        return content_location
-
+    """
+    Tests for '/transcripts/download' url.
+    """
     def test_success_download_youtube(self):
         self.item.data = '<video youtube="1:JMD_ifUUfsU" />'
         modulestore().update_item(self.item, self.user.id)
@@ -521,22 +526,74 @@ class TestDownloadTranscripts(BaseTranscripts):
 
         self.assertEqual(resp.status_code, 404)
 
+    @patch('openedx.core.djangoapps.video_config.models.VideoTranscriptEnabledFlag.feature_enabled', Mock(return_value=True))
+    @patch('xmodule.video_module.transcripts_utils.edxval_api.get_video_transcript_data')
+    def test_download_fallback_transcript(self, mock_get_video_transcript_data):
+        """
+        Verify that the val transcript is returned if its not found in content-store.
+        """
+        mock_get_video_transcript_data.return_value = {
+            'content': json.dumps({
+                "start": [10],
+                "end": [100],
+                "text": ["Hi, welcome to Edx."],
+            }),
+            'file_name': 'edx.sjson'
+        }
 
+        self.item.data = textwrap.dedent("""
+            <video youtube="" sub="" edx_video_id="123">
+                <source src="http://www.quirksmode.org/html5/videos/big_buck_bunny.mp4"/>
+                <source src="http://www.quirksmode.org/html5/videos/big_buck_bunny.webm"/>
+                <source src="http://www.quirksmode.org/html5/videos/big_buck_bunny.ogv"/>
+            </video>
+        """)
+        modulestore().update_item(self.item, self.user.id)
+
+        download_transcripts_url = reverse('download_transcripts')
+        response = self.client.get(download_transcripts_url, {'locator': self.video_usage_key})
+
+        # Expected response
+        expected_content = u'0\n00:00:00,010 --> 00:00:00,100\nHi, welcome to Edx.\n\n'
+        expected_headers = {
+            'content-disposition': 'attachment; filename="edx.srt"',
+            'content-type': 'application/x-subrip; charset=utf-8'
+        }
+
+        # Assert the actual response
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, expected_content)
+        for attribute, value in expected_headers.iteritems():
+            self.assertEqual(response.get(attribute), value)
+
+    @patch(
+        'openedx.core.djangoapps.video_config.models.VideoTranscriptEnabledFlag.feature_enabled',
+        Mock(return_value=False),
+    )
+    def test_download_fallback_transcript_feature_disabled(self):
+        """
+        Verify the transcript download when feature is disabled.
+        """
+        self.item.data = textwrap.dedent("""
+            <video youtube="" sub="">
+                <source src="http://www.quirksmode.org/html5/videos/big_buck_bunny.mp4"/>
+                <source src="http://www.quirksmode.org/html5/videos/big_buck_bunny.webm"/>
+                <source src="http://www.quirksmode.org/html5/videos/big_buck_bunny.ogv"/>
+            </video>
+        """)
+        modulestore().update_item(self.item, self.user.id)
+
+        download_transcripts_url = reverse('download_transcripts')
+        response = self.client.get(download_transcripts_url, {'locator': self.video_usage_key})
+        # Assert the actual response
+        self.assertEqual(response.status_code, 404)
+
+
+@ddt.ddt
 class TestCheckTranscripts(BaseTranscripts):
-    """Tests for '/transcripts/check' url."""
-
-    def save_subs_to_store(self, subs, subs_id):
-        """Save transcripts into `StaticContent`."""
-        filedata = json.dumps(subs, indent=2)
-        mime_type = 'application/json'
-        filename = 'subs_{0}.srt.sjson'.format(subs_id)
-
-        content_location = StaticContent.compute_location(self.course.id, filename)
-        content = StaticContent(content_location, filename, mime_type, filedata)
-        contentstore().save(content)
-        del_cached_content(content_location)
-        return content_location
-
+    """
+    Tests for '/transcripts/check' url.
+    """
     def test_success_download_nonyoutube(self):
         subs_id = str(uuid4())
         self.item.data = textwrap.dedent("""
@@ -766,3 +823,115 @@ class TestCheckTranscripts(BaseTranscripts):
         resp = self.client.get(link, {'data': json.dumps(data)})
         self.assertEqual(resp.status_code, 400)
         self.assertEqual(json.loads(resp.content).get('status'), 'Transcripts are supported only for "video" modules.')
+
+    @ddt.data(
+        (True, 'found'),
+        (False, 'not_found')
+    )
+    @ddt.unpack
+    @patch('openedx.core.djangoapps.video_config.models.VideoTranscriptEnabledFlag.feature_enabled')
+    @patch('xmodule.video_module.transcripts_utils.edxval_api.get_video_transcript_data', Mock(return_value=True))
+    def test_command_for_fallback_transcript(self, feature_enabled, expected_command, video_transcript_feature):
+        """
+        Verify the command if a transcript is not found in content-store but
+        its there in edx-val.
+        """
+        video_transcript_feature.return_value = feature_enabled
+        self.item.data = textwrap.dedent("""
+            <video youtube="" sub="" edx_video_id="123">
+                <source src="http://www.quirksmode.org/html5/videos/big_buck_bunny.mp4"/>
+                <source src="http://www.quirksmode.org/html5/videos/big_buck_bunny.webm"/>
+                <source src="http://www.quirksmode.org/html5/videos/big_buck_bunny.ogv"/>
+            </video>
+        """)
+        modulestore().update_item(self.item, self.user.id)
+
+        # Make request to check transcript view
+        data = {
+            'locator': unicode(self.video_usage_key),
+            'videos': [{
+                'type': 'html5',
+                'video': "",
+                'mode': 'mp4',
+            }]
+        }
+        check_transcripts_url = reverse('check_transcripts')
+        response = self.client.get(check_transcripts_url, {'data': json.dumps(data)})
+
+        # Assert the response
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(
+            json.loads(response.content),
+            {
+                u'status': u'Success',
+                u'subs': u'',
+                u'youtube_local': False,
+                u'is_youtube_mode': False,
+                u'youtube_server': False,
+                u'command': expected_command,
+                u'current_item_subs': None,
+                u'youtube_diff': True,
+                u'html5_local': [],
+                u'html5_equal': False,
+            }
+        )
+
+
+class TestSaveTranscripts(BaseTranscripts):
+    """
+    Tests for '/transcripts/save' url.
+    """
+    def assert_current_subs(self, expected_subs):
+        """
+        Asserts the current subtitles set on the video module.
+
+        Arguments:
+            expected_subs (String): Expected current subtitles for video.
+        """
+        item = modulestore().get_item(self.video_usage_key)
+        self.assertEqual(item.sub, expected_subs)
+
+    def test_prioritize_youtube_sub_on_save(self):
+        """
+        Test that the '/transcripts/save' endpoint prioritises youtube subtitles over html5 ones
+        while deciding the current subs for video module.
+        """
+        # Update video module to contain 1 youtube and 2 html5 sources.
+        youtube_id = str(uuid4())
+        self.item.data = textwrap.dedent(
+            """
+            <video youtube="1:{youtube_id}" sub="">
+                <source src="http://www.testvid.org/html5/videos/testvid.mp4"/>
+                <source src="http://www.testvid2.org/html5/videos/testvid2.webm"/>
+            </video>
+            """.format(youtube_id=youtube_id)
+        )
+        modulestore().update_item(self.item, self.user.id)
+        self.assert_current_subs(expected_subs='')
+
+        # Save new subs in the content store.
+        subs = {
+            'start': [100, 200, 240],
+            'end': [200, 240, 380],
+            'text': [
+                'subs #1',
+                'subs #2',
+                'subs #3'
+            ]
+        }
+        self.save_subs_to_store(subs, youtube_id)
+
+        # Now, make request to /transcripts/save endpoint with new subs.
+        data = {
+            'locator': unicode(self.video_usage_key),
+            'metadata': {
+                'sub': youtube_id
+            }
+        }
+        resp = self.client.get(reverse('save_transcripts'), {'data': json.dumps(data)})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(json.loads(resp.content), {"status": "Success"})
+
+        # Now check item.sub, it should be same as youtube id because /transcripts/save prioritize
+        # youtube subs over html5 ones.
+        self.assert_current_subs(expected_subs=youtube_id)

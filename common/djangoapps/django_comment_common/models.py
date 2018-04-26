@@ -1,22 +1,24 @@
+import json
 import logging
 
-from django.conf import settings
-from django.db import models
-from django.contrib.auth.models import User
-
-from django.dispatch import receiver
-from django.db.models.signals import post_save
-from django.utils.translation import ugettext_noop
-
 from config_models.models import ConfigurationModel
-from student.models import CourseEnrollment
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.utils.translation import ugettext_noop
+from opaque_keys.edx.django.models import CourseKeyField
+from six import text_type
 
+from openedx.core.djangoapps.xmodule_django.models import NoneToEmptyManager
+from student.models import CourseEnrollment
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError
-from openedx.core.djangoapps.xmodule_django.models import CourseKeyField, NoneToEmptyManager
 
 FORUM_ROLE_ADMINISTRATOR = ugettext_noop('Administrator')
 FORUM_ROLE_MODERATOR = ugettext_noop('Moderator')
+FORUM_ROLE_GROUP_MODERATOR = ugettext_noop('Group Moderator')
 FORUM_ROLE_COMMUNITY_TA = ugettext_noop('Community TA')
 FORUM_ROLE_STUDENT = ugettext_noop('Student')
 
@@ -54,7 +56,9 @@ def assign_role(course_id, user, rolename):
     """
     Assign forum role `rolename` to user
     """
-    role, __ = Role.objects.get_or_create(course_id=course_id, name=rolename)
+    role, created = Role.objects.get_or_create(course_id=course_id, name=rolename)
+    if created:
+        logging.info("EDUCATOR-1635: Created role {} for course {}".format(role, course_id))
     user.roles.add(role)
 
 
@@ -72,7 +76,7 @@ class Role(models.Model):
 
     def __unicode__(self):
         # pylint: disable=no-member
-        return self.name + " for " + (self.course_id.to_deprecated_string() if self.course_id else "all courses")
+        return self.name + " for " + (text_type(self.course_id) if self.course_id else "all courses")
 
     # TODO the name of this method is a little bit confusing,
     # since it's one-off and doesn't handle inheritance later
@@ -133,6 +137,9 @@ def permission_blacked_out(course, role_names, permission_name):
 
 def all_permissions_for_user_in_course(user, course_id):  # pylint: disable=invalid-name
     """Returns all the permissions the user has in the given course."""
+    if not user.is_authenticated():
+        return {}
+
     course = modulestore().get_course(course_id)
     if course is None:
         raise ItemNotFoundError(course_id)
@@ -164,3 +171,30 @@ class ForumsConfig(ConfigurationModel):
     def __unicode__(self):
         """Simple representation so the admin screen looks less ugly."""
         return u"ForumsConfig: timeout={}".format(self.connection_timeout)
+
+
+class CourseDiscussionSettings(models.Model):
+    course_id = CourseKeyField(
+        unique=True,
+        max_length=255,
+        db_index=True,
+        help_text="Which course are these settings associated with?",
+    )
+    always_divide_inline_discussions = models.BooleanField(default=False)
+    _divided_discussions = models.TextField(db_column='divided_discussions', null=True, blank=True)  # JSON list
+
+    COHORT = 'cohort'
+    ENROLLMENT_TRACK = 'enrollment_track'
+    NONE = 'none'
+    ASSIGNMENT_TYPE_CHOICES = ((NONE, 'None'), (COHORT, 'Cohort'), (ENROLLMENT_TRACK, 'Enrollment Track'))
+    division_scheme = models.CharField(max_length=20, choices=ASSIGNMENT_TYPE_CHOICES, default=NONE)
+
+    @property
+    def divided_discussions(self):
+        """Jsonify the divided_discussions"""
+        return json.loads(self._divided_discussions)
+
+    @divided_discussions.setter
+    def divided_discussions(self, value):
+        """Un-Jsonify the divided_discussions"""
+        self._divided_discussions = json.dumps(value)

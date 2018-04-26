@@ -6,12 +6,14 @@ import json
 import logging
 
 from django.contrib.auth.models import User
-from django.db import models, transaction
-from util.db import outer_atomic
 from django.core.exceptions import ValidationError
+from django.db import models, transaction
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
+from util.db import outer_atomic
+
+from opaque_keys.edx.django.models import CourseKeyField
+from openedx.core.djangolib.model_mixins import DeletableByUserValue
 
 log = logging.getLogger(__name__)
 
@@ -60,6 +62,9 @@ class CourseUserGroup(models.Model):
             group_type=group_type,
             name=name
         )
+
+    def __unicode__(self):
+        return self.name
 
 
 class CohortMembership(models.Model):
@@ -164,6 +169,7 @@ class CourseUserGroupPartitionGroup(models.Model):
 class CourseCohortsSettings(models.Model):
     """
     This model represents cohort settings for courses.
+    The only non-deprecated fields are `is_cohorted` and `course_id`.
     """
     is_cohorted = models.BooleanField(default=False)
 
@@ -176,17 +182,26 @@ class CourseCohortsSettings(models.Model):
 
     _cohorted_discussions = models.TextField(db_column='cohorted_discussions', null=True, blank=True)  # JSON list
 
-    # pylint: disable=invalid-name
-    always_cohort_inline_discussions = models.BooleanField(default=True)
+    # Note that although a default value is specified here for always_cohort_inline_discussions (False),
+    # in reality the default value at the time that cohorting is enabled for a course comes from
+    # course_module.always_cohort_inline_discussions (via `migrate_cohort_settings`).
+    # DEPRECATED-- DO NOT USE: Instead use `CourseDiscussionSettings.always_divide_inline_discussions`
+    # via `get_course_discussion_settings` or `set_course_discussion_settings`.
+    always_cohort_inline_discussions = models.BooleanField(default=False)
 
     @property
     def cohorted_discussions(self):
-        """Jsonify the cohorted_discussions"""
+        """
+        DEPRECATED-- DO NOT USE. Instead use `CourseDiscussionSettings.divided_discussions`
+        via `get_course_discussion_settings`.
+        """
         return json.loads(self._cohorted_discussions)
 
     @cohorted_discussions.setter
     def cohorted_discussions(self, value):
-        """Un-Jsonify the cohorted_discussions"""
+        """
+        DEPRECATED-- DO NOT USE. Instead use `CourseDiscussionSettings` via `set_course_discussion_settings`.
+        """
         self._cohorted_discussions = json.dumps(value)
 
 
@@ -221,3 +236,16 @@ class CourseCohort(models.Model):
         )
 
         return course_cohort
+
+
+class UnregisteredLearnerCohortAssignments(DeletableByUserValue, models.Model):
+    """
+    Tracks the assignment of an unregistered learner to a course's cohort.
+    """
+    #pylint: disable=model-missing-unicode
+    class Meta(object):
+        unique_together = (('course_id', 'email'), )
+
+    course_user_group = models.ForeignKey(CourseUserGroup)
+    email = models.CharField(blank=True, max_length=255, db_index=True)
+    course_id = CourseKeyField(max_length=255)

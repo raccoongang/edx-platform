@@ -127,8 +127,8 @@ class CourseMetadataUtilsTestCase(TestCase):
                 ),
             ]),
             FunctionTest(url_name_for_block, [
-                TestScenario((self.demo_course,), self.demo_course.location.name),
-                TestScenario((self.html_course,), self.html_course.location.name),
+                TestScenario((self.demo_course,), self.demo_course.location.block_id),
+                TestScenario((self.html_course,), self.html_course.location.block_id),
             ]),
             FunctionTest(display_name_with_default_escaped, [
                 # Test course with no display name.
@@ -161,11 +161,16 @@ class CourseMetadataUtilsTestCase(TestCase):
                 TestScenario((DEFAULT_START_DATE, None), True),
             ]),
             FunctionTest(may_certify_for_course, [
-                TestScenario(('early_with_info', True, True), True),
-                TestScenario(('early_no_info', False, False), True),
-                TestScenario(('end', True, False), True),
-                TestScenario(('end', False, True), True),
-                TestScenario(('end', False, False), False),
+                TestScenario(('early_with_info', True, True, test_datetime, False), True),
+                TestScenario(('early_no_info', False, False, test_datetime, False), True),
+                TestScenario(('end', True, False, test_datetime, False), True),
+                TestScenario(('end', False, True, test_datetime, False), True),
+                TestScenario(('end', False, False, _NEXT_WEEK, False), False),
+                TestScenario(('end', False, False, _LAST_WEEK, False), True),
+                TestScenario(('end', False, False, None, False), False),
+                TestScenario(('early_with_info', False, False, None, False), True),
+                TestScenario(('end', False, False, _NEXT_WEEK, False), False),
+                TestScenario(('end', False, False, _NEXT_WEEK, True), True),
             ]),
         ]
 

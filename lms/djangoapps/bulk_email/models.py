@@ -2,24 +2,22 @@
 Models for bulk email
 """
 import logging
-import markupsafe
 
+import markupsafe
+from config_models.models import ConfigurationModel
 from django.contrib.auth.models import User
 from django.db import models
+from opaque_keys.edx.django.models import CourseKeyField
+from six import text_type
 
-from openedx.core.djangoapps.course_groups.models import CourseUserGroup
-from openedx.core.djangoapps.course_groups.cohorts import get_cohort_by_name
-from openedx.core.lib.html_to_text import html_to_text
-from openedx.core.lib.mail_utils import wrap_message
-
-from config_models.models import ConfigurationModel
 from course_modes.models import CourseMode
 from enrollment.api import validate_course_mode
 from enrollment.errors import CourseModeNotFoundError
-from student.roles import CourseStaffRole, CourseInstructorRole
-
-from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
-
+from openedx.core.djangoapps.course_groups.cohorts import get_cohort_by_name
+from openedx.core.djangoapps.course_groups.models import CourseUserGroup
+from openedx.core.lib.html_to_text import html_to_text
+from openedx.core.lib.mail_utils import wrap_message
+from student.roles import CourseInstructorRole, CourseStaffRole
 from util.keyword_substitution import substitute_keywords_with_data
 from util.query import use_read_replica_if_available
 
@@ -107,11 +105,12 @@ class Target(models.Model):
         staff_qset = CourseStaffRole(course_id).users_with_role()
         instructor_qset = CourseInstructorRole(course_id).users_with_role()
         staff_instructor_qset = (staff_qset | instructor_qset)
-        enrollment_qset = User.objects.filter(
+        enrollment_query = models.Q(
             is_active=True,
             courseenrollment__course_id=course_id,
             courseenrollment__is_active=True
         )
+        enrollment_qset = User.objects.filter(enrollment_query)
         if self.target_type == SEND_TO_MYSELF:
             if user_id is None:
                 raise ValueError("Must define self user to send email to self.")
@@ -120,13 +119,16 @@ class Target(models.Model):
         elif self.target_type == SEND_TO_STAFF:
             return use_read_replica_if_available(staff_instructor_qset)
         elif self.target_type == SEND_TO_LEARNERS:
-            return use_read_replica_if_available(enrollment_qset.exclude(id__in=staff_instructor_qset))
+            return use_read_replica_if_available(
+                enrollment_qset.exclude(id__in=staff_instructor_qset)
+            )
         elif self.target_type == SEND_TO_COHORT:
             return self.cohorttarget.cohort.users.filter(id__in=enrollment_qset)  # pylint: disable=no-member
         elif self.target_type == SEND_TO_TRACK:
             return use_read_replica_if_available(
-                enrollment_qset.filter(
-                    courseenrollment__mode=self.coursemodetarget.track.mode_slug
+                User.objects.filter(
+                    models.Q(courseenrollment__mode=self.coursemodetarget.track.mode_slug)
+                    & enrollment_query
                 )
             )
         else:
@@ -196,14 +198,12 @@ class CourseModeTarget(Target):
         return "{}-{}".format(self.target_type, self.track.mode_slug)  # pylint: disable=no-member
 
     def long_display(self):
-        all_modes = CourseMode.objects.filter(
-            course_id=self.track.course_id,
-            mode_slug=self.track.mode_slug,  # pylint: disable=no-member
-        )
-        return "Course mode: {}, Currencies: {}".format(
-            self.track.mode_display_name,  # pylint: disable=no-member
-            ", ".join([mode.currency for mode in all_modes])
-        )
+        course_mode = self.track
+        long_course_mode_display = 'Course mode: {}'.format(course_mode.mode_display_name)
+        if course_mode.mode_slug not in CourseMode.AUDIT_MODES:
+            mode_currency = 'Currency: {}'.format(course_mode.currency)
+            long_course_mode_display = '{}, {}'.format(long_course_mode_display, mode_currency)
+        return long_course_mode_display
 
     @classmethod
     def ensure_valid_mode(cls, mode_slug, course_id):
@@ -213,7 +213,7 @@ class CourseModeTarget(Target):
         if mode_slug is None:
             raise ValueError("Cannot create a CourseModeTarget without specifying a mode_slug.")
         try:
-            validate_course_mode(unicode(course_id), mode_slug)
+            validate_course_mode(unicode(course_id), mode_slug, include_expired=True)
         except CourseModeNotFoundError:
             raise ValueError(
                 "Track {track} does not exist in course {course_id}".format(
@@ -433,7 +433,7 @@ class CourseAuthorization(models.Model):
         if self.email_enabled:
             not_en = ""
         # pylint: disable=no-member
-        return u"Course '{}': Instructor Email {}Enabled".format(self.course_id.to_deprecated_string(), not_en)
+        return u"Course '{}': Instructor Email {}Enabled".format(text_type(self.course_id), not_en)
 
 
 class BulkEmailFlag(ConfigurationModel):

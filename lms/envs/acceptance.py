@@ -8,7 +8,6 @@ so that we can run the lettuce acceptance tests.
 # pylint: disable=wildcard-import, unused-wildcard-import
 
 from .test import *
-from .sauce import *
 
 # You need to start the server in debug mode,
 # otherwise the browser will not render the pages correctly
@@ -67,18 +66,22 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': TEST_ROOT / "db" / "test_edx.db",
-        'TEST_NAME': TEST_ROOT / "db" / "test_edx.db",
         'OPTIONS': {
             'timeout': 30,
         },
         'ATOMIC_REQUESTS': True,
+        'TEST': {
+            'NAME': TEST_ROOT / "db" / "test_edx.db",
+        },
     },
     'student_module_history': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': TEST_ROOT / "db" / "test_student_module_history.db",
-        'TEST_NAME': TEST_ROOT / "db" / "test_student_module_history.db",
         'OPTIONS': {
             'timeout': 30,
+        },
+        'TEST': {
+            'NAME': TEST_ROOT / "db" / "test_student_module_history.db",
         },
     }
 }
@@ -142,7 +145,7 @@ USE_I18N = True
 FEATURES['ENABLE_FEEDBACK_SUBMISSION'] = False
 
 # Include the lettuce app for acceptance testing, including the 'harvest' django-admin command
-INSTALLED_APPS += ('lettuce.django',)
+INSTALLED_APPS.append('lettuce.django')
 LETTUCE_APPS = ('courseware', 'instructor')
 
 # Lettuce appears to have a bug that causes it to search
@@ -185,9 +188,10 @@ XQUEUE_INTERFACE = {
 }
 
 # Point the URL used to test YouTube availability to our stub YouTube server
-YOUTUBE['API'] = "http://127.0.0.1:{0}/get_youtube_api/".format(YOUTUBE_PORT)
-YOUTUBE['METADATA_URL'] = "http://127.0.0.1:{0}/test_youtube/".format(YOUTUBE_PORT)
-YOUTUBE['TEXT_API']['url'] = "127.0.0.1:{0}/test_transcripts_youtube/".format(YOUTUBE_PORT)
+YOUTUBE_HOSTNAME = os.environ.get('BOK_CHOY_HOSTNAME', '127.0.0.1')
+YOUTUBE['API'] = "http://{0}:{1}/get_youtube_api/".format(YOUTUBE_HOSTNAME, YOUTUBE_PORT)
+YOUTUBE['METADATA_URL'] = "http://{0}:{1}/test_youtube/".format(YOUTUBE_HOSTNAME, YOUTUBE_PORT)
+YOUTUBE['TEXT_API']['url'] = "{0}:{1}/test_transcripts_youtube/".format(YOUTUBE_HOSTNAME, YOUTUBE_PORT)
 YOUTUBE['TEST_TIMEOUT'] = 1500
 
 if FEATURES.get('ENABLE_COURSEWARE_SEARCH') or \

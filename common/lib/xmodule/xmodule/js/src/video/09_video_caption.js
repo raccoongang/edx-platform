@@ -53,11 +53,11 @@
                         'caption:fetch': this.fetchCaption,
                         'caption:resize': this.onResize,
                         'caption:update': this.onCaptionUpdate,
-                        'ended': this.pause,
-                        'fullscreen': this.onResize,
-                        'pause': this.pause,
-                        'play': this.play,
-                        'destroy': this.destroy
+                        ended: this.pause,
+                        fullscreen: this.onResize,
+                        pause: this.pause,
+                        play: this.play,
+                        destroy: this.destroy
                     })
                     .removeClass('is-captions-rendered');
                 if (this.fetchXHR && this.fetchXHR.abort) {
@@ -88,20 +88,19 @@
                         '<span class="icon fa fa-quote-left" aria-hidden="true"></span>',
                         '</button>',
                         '<div class="lang menu-container" role="application">',
-                        '<p class="sr instructions" id="lang-instructions"></p>',
+                        '<p class="sr instructions" id="lang-instructions-{courseId}"></p>',
                         '<button class="control language-menu" aria-disabled="false"',
-                        'aria-describedby="lang-instructions" ',
+                        'aria-describedby="lang-instructions-{courseId}" ',
                         'title="{langTitle}">',
                         '<span class="icon fa fa-caret-left" aria-hidden="true"></span>',
                         '</button>',
                         '</div>',
                         '</div>'
-                    ].join(''),
-                        {
-                            langTitle: gettext('Open language menu')
-                        }
-                    )
-
+                    ].join('')),
+                    {
+                        langTitle: gettext('Open language menu'),
+                        courseId: this.state.id
+                    }
                 );
 
                 var subtitlesHtml = HtmlUtils.interpolateHtml(
@@ -109,7 +108,7 @@
                     [
                         '<div class="subtitles" role="region" id="transcript-{courseId}">',
                         '<h3 id="transcript-label-{courseId}" class="transcript-title sr"></h3>',
-                        '<ol id="transcript-captions" class="subtitles-menu" lang="{courseLang}"></ol>',
+                        '<ol id="transcript-captions-{courseId}" class="subtitles-menu" lang="{courseLang}"></ol>',
                         '</div>'
                     ].join('')),
                     {
@@ -182,11 +181,11 @@
                         'caption:fetch': this.fetchCaption,
                         'caption:resize': this.onResize,
                         'caption:update': this.onCaptionUpdate,
-                        'ended': this.pause,
-                        'fullscreen': this.onResize,
-                        'pause': this.pause,
-                        'play': this.play,
-                        'destroy': this.destroy
+                        ended: this.pause,
+                        fullscreen: this.onResize,
+                        pause: this.pause,
+                        play: this.play,
+                        destroy: this.destroy
                     });
 
                 if ((state.videoType === 'html5') && (state.config.autohideHtml5)) {
@@ -477,8 +476,8 @@
                 var captions = results.captions;
 
                 return {
-                    'start': start,
-                    'captions': captions
+                    start: start,
+                    captions: captions
                 };
             },
 
@@ -597,8 +596,8 @@
             },
 
             /**
-            * @desc Fetch the list of available translations. Upon successful receipt,
-            *    the list of available translations will be updated.
+            * @desc Fetch the list of available language codes. Upon successful receipt
+            * the list of available languages will be updated.
             *
             * @returns {jquery Promise}
             */
@@ -619,8 +618,6 @@
                         self.container.find('.langs-list').remove();
 
                         if (_.keys(newLanguages).length) {
-                            // And try again to fetch transcript.
-                            self.fetchCaption();
                             self.renderLanguageMenu(newLanguages);
                         }
                     },
@@ -740,15 +737,15 @@
             buildCaptions: function(container, start, captions) {
                 var process = function(text, index) {
                     var $spanEl = $('<span>', {
-                        'role': 'link',
+                        role: 'link',
                         'data-index': index,
                         'data-start': start[index],
-                        'tabindex': 0
+                        tabindex: 0
                     });
 
                     HtmlUtils.setHtml($($spanEl), HtmlUtils.HTML(text.toString()));
 
-                    return $spanEl.wrap('<li>').parent()[0]; // safe-lint: disable=javascript-jquery-insertion
+                    return $spanEl.wrap('<li>').parent()[0]; // xss-lint: disable=javascript-jquery-insertion
                 };
 
                 return AsyncProcess.array(captions, process).done(function(list) {
@@ -866,15 +863,14 @@
             *
             */
             captionMouseOverOut: function(event) {
-                var caption = $(event.target),
-                    captionIndex = parseInt(caption.attr('data-index'), 10);
+                var $caption = $(event.target),
+                    captionIndex = parseInt($caption.attr('data-index'), 10);
 
                 if (captionIndex === this.currentCaptionIndex) {
                     if (event.type === 'mouseover') {
-                        caption.removeClass('focused');
-                    }
-                    else { // mouseout
-                        caption.addClass('focused');
+                        $caption.removeClass('focused');
+                    } else { // mouseout
+                        $caption.addClass('focused');
                     }
                 }
             },
@@ -886,11 +882,11 @@
             *
             */
             captionMouseDown: function(event) {
-                var caption = $(event.target);
+                var $caption = $(event.target);
 
                 this.isMouseFocus = true;
                 this.autoScrolling = true;
-                caption.removeClass('focused');
+                $caption.removeClass('focused');
                 this.currentCaptionIndex = -1;
             },
 
@@ -911,9 +907,9 @@
             *
             */
             captionFocus: function(event) {
-                var caption = $(event.target),
-                    container = caption.parent(),
-                    captionIndex = parseInt(caption.attr('data-index'), 10);
+                var $caption = $(event.target),
+                    container = $caption.parent(),
+                    captionIndex = parseInt($caption.attr('data-index'), 10);
                 // If the focus comes from a mouse click, hide the outline, turn on
                 // automatic scrolling and set currentCaptionIndex to point outside of
                 // caption list (ie -1) to disable mouseenter, mouseleave behavior.
@@ -945,9 +941,9 @@
             *
             */
             captionBlur: function(event) {
-                var caption = $(event.target),
-                    container = caption.parent(),
-                    captionIndex = parseInt(caption.attr('data-index'), 10);
+                var $caption = $(event.target),
+                    container = $caption.parent(),
+                    captionIndex = parseInt($caption.attr('data-index'), 10);
 
                 container.removeClass('focused');
                 // If we are on first or last index, we have to turn automatic scroll
@@ -1087,8 +1083,8 @@
                 state.trigger(
                     'videoPlayer.onCaptionSeek',
                     {
-                        'type': 'onCaptionSeek',
-                        'time': time / 1000
+                        type: 'onCaptionSeek',
+                        time: time / 1000
                     }
                 );
 
@@ -1246,7 +1242,8 @@
             */
             hideCaptions: function(hide_captions, update_cookie, trigger_event) {
                 var transcriptControlEl = this.transcriptControlEl,
-                    state = this.state, text;
+                    state = this.state,
+                    text;
 
                 if (typeof update_cookie === 'undefined') {
                     update_cookie = true;

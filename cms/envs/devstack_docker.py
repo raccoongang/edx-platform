@@ -9,12 +9,17 @@ LOGGING['handlers']['local'] = LOGGING['handlers']['tracking'] = {
 
 LOGGING['loggers']['tracking']['handlers'] = ['console']
 
-HOST = 'edx.devstack.edxapp:18000'
-SITE_NAME = HOST
-LMS_ROOT_URL = 'http://{}'.format(HOST)
+LMS_BASE = 'edx.devstack.lms:18000'
+CMS_BASE = 'edx.devstack.studio:18010'
+LMS_ROOT_URL = 'http://{}'.format(LMS_BASE)
 
-# This is the public-facing host used for previews
-LMS_BASE = 'localhost:18000'
+FEATURES.update({
+    'ENABLE_COURSEWARE_INDEX': False,
+    'ENABLE_LIBRARY_INDEX': False,
+    'ENABLE_DISCUSSION_SERVICE': True,
+})
+
+CREDENTIALS_SERVICE_USERNAME = 'credentials_worker'
 
 OAUTH_OIDC_ISSUER = '{}/oauth2'.format(LMS_ROOT_URL)
 

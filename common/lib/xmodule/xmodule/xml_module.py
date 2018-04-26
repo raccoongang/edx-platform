@@ -1,22 +1,19 @@
-import json
 import copy
+import json
 import logging
 import os
 import sys
-from lxml import etree
 
+from lxml import etree
+from lxml.etree import Element, ElementTree, XMLParser
 from xblock.core import XML_NAMESPACES
 from xblock.fields import Dict, Scope, ScopeIds
 from xblock.runtime import KvsFieldData
-from xmodule.x_module import XModuleDescriptor, DEPRECATION_VSCOMPAT_EVENT
-from xmodule.modulestore.inheritance import own_metadata, InheritanceKeyValueStore
-from xmodule.modulestore import EdxJSONEncoder
 
 import dogstats_wrapper as dog_stats_api
-
-from lxml.etree import (
-    Element, ElementTree, XMLParser,
-)
+from xmodule.modulestore import EdxJSONEncoder
+from xmodule.modulestore.inheritance import InheritanceKeyValueStore, own_metadata
+from xmodule.x_module import DEPRECATION_VSCOMPAT_EVENT, XModuleDescriptor
 
 log = logging.getLogger(__name__)
 
@@ -478,8 +475,8 @@ class XmlParserMixin(object):
             # Write the definition to a file
             url_path = name_to_pathname(self.url_name)
             filepath = self._format_filepath(self.category, url_path)
-            self.runtime.export_fs.makedir(os.path.dirname(filepath), recursive=True, allow_recreate=True)
-            with self.runtime.export_fs.open(filepath, 'w') as fileobj:
+            self.runtime.export_fs.makedirs(os.path.dirname(filepath), recreate=True)
+            with self.runtime.export_fs.open(filepath, 'wb') as fileobj:
                 ElementTree(xml_object).write(fileobj, pretty_print=True, encoding='utf-8')
         else:
             # Write all attributes from xml_object onto node

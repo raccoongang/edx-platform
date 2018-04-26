@@ -1,16 +1,16 @@
 """Management command for backpopulating missing program credentials."""
-from collections import namedtuple
 import logging
+from collections import namedtuple
 
-from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.core.management import BaseCommand
 from django.db.models import Q
 from opaque_keys.edx.keys import CourseKey
 
-from certificates.models import GeneratedCertificate, CertificateStatuses  # pylint: disable=import-error
+from lms.djangoapps.certificates.models import CertificateStatuses, GeneratedCertificate  # pylint: disable=import-error
+from course_modes.models import CourseMode
 from openedx.core.djangoapps.catalog.utils import get_programs
 from openedx.core.djangoapps.programs.tasks.v1.tasks import award_program_certificates
-
 
 # TODO: Log to console, even with debug mode disabled?
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -72,7 +72,11 @@ class Command(BaseCommand):
 
     def _load_course_runs(self):
         """Find all course runs which are part of a program."""
-        programs = get_programs()
+        programs = []
+        for site in Site.objects.all():
+            logger.info('Loading programs from the catalog for site %s.', site.domain)
+            programs.extend(get_programs(site))
+
         self.course_runs = self._flatten(programs)
 
     def _flatten(self, programs):
@@ -99,6 +103,11 @@ class Command(BaseCommand):
             lambda x, y: x | y,
             [Q(course_id=course_run.key, mode=course_run.type) for course_run in self.course_runs]
         )
+
+        # Account for the fact that no-id-professional and professional are equivalent
+        for course_run in self.course_runs:
+            if course_run.type == CourseMode.PROFESSIONAL:
+                course_run_query |= Q(course_id=course_run.key, mode=CourseMode.NO_ID_PROFESSIONAL_MODE)
 
         query = status_query & course_run_query
 

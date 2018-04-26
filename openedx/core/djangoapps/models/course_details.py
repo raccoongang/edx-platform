@@ -8,7 +8,6 @@ from django.conf import settings
 
 from xmodule.fields import Date
 from xmodule.modulestore.exceptions import ItemNotFoundError
-from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.lib.courses import course_image_url
 from xmodule.modulestore.django import modulestore
 
@@ -105,6 +104,7 @@ class CourseDetails(object):
         course_details = cls(course_key.org, course_key.course, course_key.run)
         course_details.start_date = course_descriptor.start
         course_details.end_date = course_descriptor.end
+        course_details.certificate_available_date = course_descriptor.certificate_available_date
         course_details.enrollment_start = course_descriptor.enrollment_start
         course_details.enrollment_end = course_descriptor.enrollment_end
         course_details.pre_requisite_courses = course_descriptor.pre_requisite_courses
@@ -231,6 +231,15 @@ class CourseDetails(object):
             dirty = True
             descriptor.enrollment_end = converted
 
+        if 'certificate_available_date' in jsondict:
+            converted = date.from_json(jsondict['certificate_available_date'])
+        else:
+            converted = None
+
+        if converted != descriptor.certificate_available_date:
+            dirty = True
+            descriptor.certificate_available_date = converted
+
         if 'course_image_name' in jsondict and jsondict['course_image_name'] != descriptor.course_image:
             descriptor.course_image = jsondict['course_image_name']
             dirty = True
@@ -265,8 +274,7 @@ class CourseDetails(object):
             descriptor.language = jsondict['language']
             dirty = True
 
-        if (SelfPacedConfiguration.current().enabled
-                and descriptor.can_toggle_course_pacing
+        if (descriptor.can_toggle_course_pacing
                 and 'self_paced' in jsondict
                 and jsondict['self_paced'] != descriptor.self_paced):
             descriptor.self_paced = jsondict['self_paced']

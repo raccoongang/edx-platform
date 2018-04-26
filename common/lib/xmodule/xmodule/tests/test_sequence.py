@@ -2,6 +2,8 @@
 Tests for sequence module.
 """
 # pylint: disable=no-member
+import json
+
 from datetime import timedelta
 from django.utils.timezone import now
 from freezegun import freeze_time
@@ -72,6 +74,9 @@ class SequenceBlockTestCase(XModuleXmlImportTest):
         self._set_up_module_system(block)
 
         block.xmodule_runtime._services['bookmarks'] = Mock()  # pylint: disable=protected-access
+        block.xmodule_runtime._services['completion'] = Mock(  # pylint: disable=protected-access
+            return_value=Mock(vertical_is_complete=Mock(return_value=True))
+        )
         block.xmodule_runtime._services['user'] = StubUserService()  # pylint: disable=protected-access
         block.xmodule_runtime.xmodule_instance = getattr(block, '_xmodule', None)  # pylint: disable=protected-access
         block.parent = parent.location
@@ -118,8 +123,10 @@ class SequenceBlockTestCase(XModuleXmlImportTest):
         )
         self._assert_view_at_position(html, expected_position=1)
         self.assertIn(unicode(self.sequence_3_1.location), html)
+        self.assertIn("'gated': False", html)
         self.assertIn("'next_url': 'NextSequential'", html)
         self.assertIn("'prev_url': 'PrevSequential'", html)
+        self.assertNotIn("fa fa-check-circle check-circle is-hidden", html)
 
     def test_student_view_first_child(self):
         html = self._get_rendered_student_view(self.sequence_3_1, requested_child='first')
@@ -132,49 +139,158 @@ class SequenceBlockTestCase(XModuleXmlImportTest):
     def test_tooltip(self):
         html = self._get_rendered_student_view(self.sequence_3_1, requested_child=None)
         for child in self.sequence_3_1.children:
-            self.assertIn("'page_title': '{}'".format(child.name), html)
+            self.assertIn("'page_title': '{}'".format(child.block_id), html)
 
     def test_hidden_content_before_due(self):
         html = self._get_rendered_student_view(self.sequence_4_1)
         self.assertIn("seq_module.html", html)
         self.assertIn("'banner_text': None", html)
 
-    @freeze_time(COURSE_END_DATE)
     def test_hidden_content_past_due(self):
-        progress_url = 'http://test_progress_link'
-        html = self._get_rendered_student_view(
-            self.sequence_4_1,
-            extra_context=dict(progress_url=progress_url),
-        )
-        self.assertIn("hidden_content.html", html)
-        self.assertIn(progress_url, html)
+        with freeze_time(COURSE_END_DATE):
+            progress_url = 'http://test_progress_link'
+            html = self._get_rendered_student_view(
+                self.sequence_4_1,
+                extra_context=dict(progress_url=progress_url),
+            )
+            self.assertIn("hidden_content.html", html)
+            self.assertIn(progress_url, html)
 
-    @freeze_time(COURSE_END_DATE)
     def test_masquerade_hidden_content_past_due(self):
-        html = self._get_rendered_student_view(
-            self.sequence_4_1,
-            extra_context=dict(specific_masquerade=True),
-        )
-        self.assertIn("seq_module.html", html)
-        self.assertIn(
-            "'banner_text': 'Because the due date has passed, "
-            "this assignment is hidden from the learner.'",
-            html
-        )
+        with freeze_time(COURSE_END_DATE):
+            html = self._get_rendered_student_view(
+                self.sequence_4_1,
+                extra_context=dict(specific_masquerade=True),
+            )
+            self.assertIn("seq_module.html", html)
+            self.assertIn(
+                "'banner_text': 'Because the due date has passed, "
+                "this assignment is hidden from the learner.'",
+                html
+            )
 
-    @freeze_time(PAST_DUE_BEFORE_END_DATE)
     def test_hidden_content_self_paced_past_due_before_end(self):
-        html = self._get_rendered_student_view(self.sequence_4_1, self_paced=True)
+        with freeze_time(PAST_DUE_BEFORE_END_DATE):
+            html = self._get_rendered_student_view(self.sequence_4_1, self_paced=True)
+            self.assertIn("seq_module.html", html)
+            self.assertIn("'banner_text': None", html)
+
+    def test_hidden_content_self_paced_past_end(self):
+        with freeze_time(COURSE_END_DATE + timedelta(days=7)):
+            progress_url = 'http://test_progress_link'
+            html = self._get_rendered_student_view(
+                self.sequence_4_1,
+                extra_context=dict(progress_url=progress_url),
+                self_paced=True,
+            )
+            self.assertIn("hidden_content.html", html)
+            self.assertIn(progress_url, html)
+
+    def _assert_gated(self, html, sequence):
+        """
+        Assert sequence content is gated
+        """
         self.assertIn("seq_module.html", html)
         self.assertIn("'banner_text': None", html)
+        self.assertIn("'items': []", html)
+        self.assertIn("'gated': True", html)
+        self.assertIn("'prereq_url': 'PrereqUrl'", html)
+        self.assertIn("'prereq_section_name': 'PrereqSectionName'", html)
+        self.assertIn("'gated_section_name': u'{}'".format(unicode(sequence.display_name)), html)
+        self.assertIn("'next_url': 'NextSequential'", html)
+        self.assertIn("'prev_url': 'PrevSequential'", html)
 
-    @freeze_time(COURSE_END_DATE + timedelta(days=7))
-    def test_hidden_content_self_paced_past_end(self):
-        progress_url = 'http://test_progress_link'
-        html = self._get_rendered_student_view(
-            self.sequence_4_1,
-            extra_context=dict(progress_url=progress_url),
-            self_paced=True,
+    def _assert_prereq(self, html, sequence):
+        """
+        Assert sequence is a prerequisite with unfulfilled gates
+        """
+        self.assertIn("seq_module.html", html)
+        self.assertIn(
+            "'banner_text': 'This section is a prerequisite. "
+            "You must complete this section in order to unlock additional content.'",
+            html
         )
-        self.assertIn("hidden_content.html", html)
-        self.assertIn(progress_url, html)
+        self.assertIn("'gated': False", html)
+        self.assertIn(unicode(sequence.location), html)
+        self.assertIn("'prereq_url': None", html)
+        self.assertIn("'prereq_section_name': None", html)
+        self.assertIn("'next_url': 'NextSequential'", html)
+        self.assertIn("'prev_url': 'PrevSequential'", html)
+
+    def _assert_ungated(self, html, sequence):
+        """
+        Assert sequence is not gated
+        """
+        self.assertIn("seq_module.html", html)
+        self.assertIn("'banner_text': None", html)
+        self.assertIn("'gated': False", html)
+        self.assertIn(unicode(sequence.location), html)
+        self.assertIn("'prereq_url': None", html)
+        self.assertIn("'prereq_section_name': None", html)
+        self.assertIn("'next_url': 'NextSequential'", html)
+        self.assertIn("'prev_url': 'PrevSequential'", html)
+
+    def test_gated_content(self):
+        """
+        Test when sequence is both a prerequisite for a sequence
+        and gated on another prerequisite sequence
+        """
+        # setup seq_1_2 as a gate and gated
+        gating_mock_1_2 = Mock()
+        gating_mock_1_2.return_value.is_gate_fulfilled.return_value = False
+        gating_mock_1_2.return_value.required_prereq.return_value = True
+        gating_mock_1_2.return_value.compute_is_prereq_met.return_value = [
+            False,
+            {'url': 'PrereqUrl', 'display_name': 'PrereqSectionName'}
+        ]
+        self.sequence_1_2.xmodule_runtime._services['gating'] = gating_mock_1_2  # pylint: disable=protected-access
+        self.sequence_1_2.display_name = 'sequence_1_2'
+
+        html = self._get_rendered_student_view(
+            self.sequence_1_2,
+            extra_context=dict(next_url='NextSequential', prev_url='PrevSequential'),
+        )
+
+        # expect content to be gated, with no banner
+        self._assert_gated(html, self.sequence_1_2)
+
+        # change seq_1_2 to be ungated, but still a gate (prequiste)
+        gating_mock_1_2.return_value.is_gate_fulfilled.return_value = False
+        gating_mock_1_2.return_value.required_prereq.return_value = True
+        gating_mock_1_2.return_value.compute_is_prereq_met.return_value = [True, {}]
+
+        html = self._get_rendered_student_view(
+            self.sequence_1_2,
+            extra_context=dict(next_url='NextSequential', prev_url='PrevSequential'),
+        )
+
+        # assert that content and preq banner is shown
+        self._assert_prereq(html, self.sequence_1_2)
+
+        # change seq_1_2 to have no unfulfilled gates
+        gating_mock_1_2.return_value.is_gate_fulfilled.return_value = True
+        gating_mock_1_2.return_value.required_prereq.return_value = True
+        gating_mock_1_2.return_value.compute_is_prereq_met.return_value = [True, {}]
+
+        html = self._get_rendered_student_view(
+            self.sequence_1_2,
+            extra_context=dict(next_url='NextSequential', prev_url='PrevSequential'),
+        )
+
+        # assert content shown as normal
+        self._assert_ungated(html, self.sequence_1_2)
+
+    def test_handle_ajax_get_completion_success(self):
+        """
+        Test that the completion data is returned successfully on
+        targeted vertical through ajax call
+        """
+        for child in self.sequence_3_1.get_children():
+            usage_key = unicode(child.location)
+            completion_return = json.loads(self.sequence_3_1.handle_ajax(
+                'get_completion',
+                {'usage_key': usage_key}
+            ))
+            self.assertIsNot(completion_return, None)
+            self.assertTrue('complete' in completion_return)
+            self.assertEqual(completion_return['complete'], True)

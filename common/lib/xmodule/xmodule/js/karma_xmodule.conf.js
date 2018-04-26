@@ -18,7 +18,7 @@ var options = {
     // Avoid adding files to this list. Use RequireJS.
     libraryFilesToInclude: [
         // Load the core JavaScript dependencies
-        {pattern: 'common_static/coffee/src/ajax_prefix.js', included: true},
+        {pattern: 'common_static/js/src/ajax_prefix.js', included: true},
         {pattern: 'common_static/common/js/vendor/underscore.js', included: true},
         {pattern: 'common_static/common/js/vendor/backbone.js', included: true},
         {pattern: 'common_static/js/vendor/CodeMirror/codemirror.js', included: true},
@@ -39,7 +39,9 @@ var options = {
         {pattern: 'common_static/js/src/utility.js', included: true},
         {pattern: 'common_static/js/test/add_ajax_prefix.js', included: true},
         {pattern: 'common_static/js/test/i18n.js', included: true},
+        {pattern: 'common_static/common/js/vendor/hls.js', included: true},
         {pattern: 'public/js/split_test_staff.js', included: true},
+        {pattern: 'public/js/vertical_student_view.js', included: true},
         {pattern: 'src/word_cloud/d3.min.js', included: true},
 
         // Load test utilities
@@ -77,7 +79,8 @@ var options = {
     ],
 
     fixtureFiles: [
-        {pattern: 'fixtures/*.*'}
+        {pattern: 'fixtures/*.*'},
+        {pattern: 'fixtures/hls/**/*.*'}
     ],
 
     runFiles: [

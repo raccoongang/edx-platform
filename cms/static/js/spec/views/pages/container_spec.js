@@ -1,7 +1,7 @@
 define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers',
-        'common/js/spec_helpers/template_helpers', 'js/spec_helpers/edit_helpers',
-        'js/views/pages/container', 'js/views/pages/paged_container', 'js/models/xblock_info',
-        'js/collections/component_template', 'jquery.simulate'],
+    'common/js/spec_helpers/template_helpers', 'js/spec_helpers/edit_helpers',
+    'js/views/pages/container', 'js/views/pages/paged_container', 'js/models/xblock_info',
+    'js/collections/component_template', 'jquery.simulate'],
     function($, _, str, AjaxHelpers, TemplateHelpers, EditHelpers, ContainerPage, PagedContainerPage,
               XBlockInfo, ComponentTemplates) {
         'use strict';
@@ -20,7 +20,8 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                     mockXBlockVisibilityEditorHtml = readFixtures('mock/mock-xblock-visibility-editor.underscore'),
                     PageClass = globalPageOptions.page,
                     pagedSpecificTests = globalPageOptions.pagedSpecificTests,
-                    hasVisibilityEditor = globalPageOptions.hasVisibilityEditor;
+                    hasVisibilityEditor = globalPageOptions.hasVisibilityEditor,
+                    hasMoveModal = globalPageOptions.hasMoveModal;
 
                 beforeEach(function() {
                     var newDisplayName = 'New Display Name';
@@ -48,12 +49,15 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
 
                 afterEach(function() {
                     EditHelpers.uninstallMockXBlock();
+                    if (containerPage !== undefined) {
+                        containerPage.remove();
+                    }
                 });
 
                 respondWithHtml = function(html) {
                     AjaxHelpers.respondWithJson(
                         requests,
-                        {html: html, 'resources': []}
+                        {html: html, resources: []}
                     );
                 };
 
@@ -175,7 +179,7 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                         handleContainerPageRefresh(requests);
 
                         // Respond to the subsequent xblock info fetch request.
-                        AjaxHelpers.respondWithJson(requests, {'display_name': updatedDisplayName});
+                        AjaxHelpers.respondWithJson(requests, {display_name: updatedDisplayName});
 
                         // Expect the title to have been updated
                         expect(displayNameElement.text().trim()).toBe(updatedDisplayName);
@@ -190,7 +194,7 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                         // This is the response for the change operation.
                         AjaxHelpers.respondWithJson(requests, { });
                         // This is the response for the subsequent fetch operation.
-                        AjaxHelpers.respondWithJson(requests, {'display_name': updatedDisplayName});
+                        AjaxHelpers.respondWithJson(requests, {display_name: updatedDisplayName});
                         EditHelpers.verifyInlineEditChange(displayNameWrapper, updatedDisplayName);
                         expect(containerPage.model.get('display_name')).toBe(updatedDisplayName);
                     });
@@ -231,12 +235,12 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                     });
 
                     it('can show a visibility modal for a child xblock if supported for the page', function() {
-                        var visibilityButtons, request;
+                        var accessButtons, request;
                         renderContainerPage(this, mockContainerXBlockHtml);
-                        visibilityButtons = containerPage.$('.wrapper-xblock .visibility-button');
+                        accessButtons = containerPage.$('.wrapper-xblock .access-button');
                         if (hasVisibilityEditor) {
-                            expect(visibilityButtons.length).toBe(6);
-                            visibilityButtons[0].click();
+                            expect(accessButtons.length).toBe(6);
+                            accessButtons[0].click();
                             request = AjaxHelpers.currentRequest(requests);
                             expect(str.startsWith(request.url, '/xblock/locator-component-A1/visibility_view'))
                                 .toBeTruthy();
@@ -245,9 +249,21 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                                 resources: []
                             });
                             expect(EditHelpers.isShowingModal()).toBeTruthy();
+                        } else {
+                            expect(accessButtons.length).toBe(0);
                         }
-                        else {
-                            expect(visibilityButtons.length).toBe(0);
+                    });
+
+                    it('can show a move modal for a child xblock', function() {
+                        var moveButtons;
+                        renderContainerPage(this, mockContainerXBlockHtml);
+                        moveButtons = containerPage.$('.wrapper-xblock .move-button');
+                        if (hasMoveModal) {
+                            expect(moveButtons.length).toBe(6);
+                            moveButtons[0].click();
+                            expect(EditHelpers.isShowingModal()).toBeTruthy();
+                        } else {
+                            expect(moveButtons.length).toBe(0);
                         }
                     });
                 });
@@ -271,7 +287,7 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                     });
 
                     it('can save changes to settings', function() {
-                        var editButtons, modal, mockUpdatedXBlockHtml;
+                        var editButtons, $modal, mockUpdatedXBlockHtml;
                         mockUpdatedXBlockHtml = readFixtures('mock/mock-updated-xblock.underscore');
                         renderContainerPage(this, mockContainerXBlockHtml);
                         editButtons = containerPage.$('.wrapper-xblock .edit-button');
@@ -283,14 +299,14 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                             resources: []
                         });
 
-                        modal = $('.edit-xblock-modal');
-                        expect(modal.length).toBe(1);
+                        $modal = $('.edit-xblock-modal');
+                        expect($modal.length).toBe(1);
                         // Click on the settings tab
-                        modal.find('.settings-button').click();
+                        $modal.find('.settings-button').click();
                         // Change the display name's text
-                        modal.find('.setting-input').text('Mock Update');
+                        $modal.find('.setting-input').text('Mock Update');
                         // Press the save button
-                        modal.find('.action-save').click();
+                        $modal.find('.action-save').click();
                         // Respond to the save
                         AjaxHelpers.respondWithJson(requests, {
                             id: model.id
@@ -306,7 +322,8 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
 
                 describe('xblock operations', function() {
                     var getGroupElement,
-                        NUM_COMPONENTS_PER_GROUP = 3, GROUP_TO_TEST = 'A',
+                        NUM_COMPONENTS_PER_GROUP = 3,
+                        GROUP_TO_TEST = 'A',
                         allComponentsInGroup = _.map(
                             _.range(NUM_COMPONENTS_PER_GROUP),
                             function(index) {
@@ -456,13 +473,13 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
 
                             // verify content of request
                             AjaxHelpers.expectJsonRequest(requests, 'POST', '/xblock/', {
-                                'duplicate_source_locator': 'locator-component-' + GROUP_TO_TEST + (componentIndex + 1),
-                                'parent_locator': 'locator-group-' + GROUP_TO_TEST
+                                duplicate_source_locator: 'locator-component-' + GROUP_TO_TEST + (componentIndex + 1),
+                                parent_locator: 'locator-group-' + GROUP_TO_TEST
                             });
 
                             // send the response
                             AjaxHelpers.respondWithJson(requests, {
-                                'locator': 'locator-duplicated-component'
+                                locator: 'locator-duplicated-component'
                             });
 
                             // expect parent container to be refreshed
@@ -488,8 +505,8 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                             renderContainerPage(this, mockBadContainerXBlockHtml);
                             containerPage.$('.duplicate-button').first().click();
                             AjaxHelpers.expectJsonRequest(requests, 'POST', '/xblock/', {
-                                'duplicate_source_locator': 'locator-broken-javascript',
-                                'parent_locator': 'locator-container'
+                                duplicate_source_locator: 'locator-broken-javascript',
+                                parent_locator: 'locator-container'
                             });
                         });
 
@@ -498,7 +515,7 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                             renderContainerPage(this, mockContainerXBlockHtml);
                             clickDuplicate(0);
                             EditHelpers.verifyNotificationShowing(notificationSpy, /Duplicating/);
-                            AjaxHelpers.respondWithJson(requests, {'locator': 'new_item'});
+                            AjaxHelpers.respondWithJson(requests, {locator: 'new_item'});
                             EditHelpers.verifyNotificationHidden(notificationSpy);
                         });
 
@@ -576,9 +593,9 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                             renderContainerPage(this, mockContainerXBlockHtml);
                             clickNewComponent(0);
                             EditHelpers.verifyXBlockRequest(requests, {
-                                'category': 'discussion',
-                                'type': 'discussion',
-                                'parent_locator': 'locator-group-A'
+                                category: 'discussion',
+                                type: 'discussion',
+                                parent_locator: 'locator-group-A'
                             });
                         });
 
@@ -590,14 +607,14 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                             // to add children or allow authors to add children.
                             renderContainerPage(this, mockContainerXBlockHtml);
                             $('.add-xblock-component-button').each(function() {
-                                var htmlAsLink = $($(this).prop('outerHTML').replace(/(<\/?)button/g, '$1a'));
-                                $(this).replaceWith(htmlAsLink);
+                                var $htmlAsLink = $($(this).prop('outerHTML').replace(/(<\/?)button/g, '$1a'));
+                                $(this).replaceWith($htmlAsLink);
                             });
                             $('.add-xblock-component-button').first().click();
                             EditHelpers.verifyXBlockRequest(requests, {
-                                'category': 'discussion',
-                                'type': 'discussion',
-                                'parent_locator': 'locator-group-A'
+                                category: 'discussion',
+                                type: 'discussion',
+                                parent_locator: 'locator-group-A'
                             });
                         });
 
@@ -633,23 +650,23 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                                 xblockCount = containerPage.$('.studio-xblock-wrapper').length;
                                 containerPage.$('.new-component-html button')[templateIndex].click();
                                 EditHelpers.verifyXBlockRequest(requests, expectedRequest);
-                                AjaxHelpers.respondWithJson(requests, {'locator': 'new_item'});
+                                AjaxHelpers.respondWithJson(requests, {locator: 'new_item'});
                                 respondWithHtml(mockXBlockHtml);
                                 expect(containerPage.$('.studio-xblock-wrapper').length).toBe(xblockCount + 1);
                             };
 
                             it('can add an HTML component without a template', function() {
                                 verifyCreateHtmlComponent(this, 0, {
-                                    'category': 'html',
-                                    'parent_locator': 'locator-group-A'
+                                    category: 'html',
+                                    parent_locator: 'locator-group-A'
                                 });
                             });
 
                             it('can add an HTML component with a template', function() {
                                 verifyCreateHtmlComponent(this, 1, {
-                                    'category': 'html',
-                                    'boilerplate': 'announcement.yaml',
-                                    'parent_locator': 'locator-group-A'
+                                    category: 'html',
+                                    boilerplate: 'announcement.yaml',
+                                    parent_locator: 'locator-group-A'
                                 });
                             });
 
@@ -663,30 +680,31 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                             it('does show the support legend if show_legend is true', function() {
                                 var templates = new ComponentTemplates([
                                     {
-                                        'templates': [
+                                        templates: [
                                             {
-                                                'category': 'html',
-                                                'boilerplate_name': null,
-                                                'display_name': 'Text'
+                                                category: 'html',
+                                                boilerplate_name: null,
+                                                display_name: 'Text'
                                             }, {
-                                                'category': 'html',
-                                                'boilerplate_name': 'announcement.yaml',
-                                                'display_name': 'Announcement'
+                                                category: 'html',
+                                                boilerplate_name: 'announcement.yaml',
+                                                display_name: 'Announcement'
                                             }, {
-                                                'category': 'html',
-                                                'boilerplate_name': 'raw.yaml',
-                                                'display_name': 'Raw HTML'
+                                                category: 'html',
+                                                boilerplate_name: 'raw.yaml',
+                                                display_name: 'Raw HTML'
                                             }],
-                                        'type': 'html',
-                                        'support_legend': {
-                                            'show_legend': true,
-                                            'documentation_label': 'Documentation Label:',
-                                            'allow_unsupported_xblocks': false
+                                        type: 'html',
+                                        support_legend: {
+                                            show_legend: true,
+                                            documentation_label: 'Documentation Label:',
+                                            allow_unsupported_xblocks: false
                                         }
                                     }],
                                     {
                                         parse: true
-                                    }), supportDocumentation;
+                                    }),
+                                    supportDocumentation;
                                 renderContainerPage(this, mockContainerXBlockHtml, {}, templates);
                                 showTemplatePicker();
                                 supportDocumentation = containerPage.$('.support-documentation');
@@ -704,30 +722,31 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                             it('does show unsupported level if enabled', function() {
                                 var templates = new ComponentTemplates([
                                     {
-                                        'templates': [
+                                        templates: [
                                             {
-                                                'category': 'html',
-                                                'boilerplate_name': null,
-                                                'display_name': 'Text'
+                                                category: 'html',
+                                                boilerplate_name: null,
+                                                display_name: 'Text'
                                             }, {
-                                                'category': 'html',
-                                                'boilerplate_name': 'announcement.yaml',
-                                                'display_name': 'Announcement'
+                                                category: 'html',
+                                                boilerplate_name: 'announcement.yaml',
+                                                display_name: 'Announcement'
                                             }, {
-                                                'category': 'html',
-                                                'boilerplate_name': 'raw.yaml',
-                                                'display_name': 'Raw HTML'
+                                                category: 'html',
+                                                boilerplate_name: 'raw.yaml',
+                                                display_name: 'Raw HTML'
                                             }],
-                                        'type': 'html',
-                                        'support_legend': {
-                                            'show_legend': true,
-                                            'documentation_label': 'Documentation Label:',
-                                            'allow_unsupported_xblocks': true
+                                        type: 'html',
+                                        support_legend: {
+                                            show_legend: true,
+                                            documentation_label: 'Documentation Label:',
+                                            allow_unsupported_xblocks: true
                                         }
                                     }],
                                     {
                                         parse: true
-                                    }), supportDocumentation;
+                                    }),
+                                    supportDocumentation;
                                 renderContainerPage(this, mockContainerXBlockHtml, {}, templates);
                                 showTemplatePicker();
                                 supportDocumentation = containerPage.$('.support-documentation');
@@ -742,33 +761,34 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                             it('does render support level indicators if present in JSON', function() {
                                 var templates = new ComponentTemplates([
                                     {
-                                        'templates': [
+                                        templates: [
                                             {
-                                                'category': 'html',
-                                                'boilerplate_name': null,
-                                                'display_name': 'Text',
-                                                'support_level': 'fs'
+                                                category: 'html',
+                                                boilerplate_name: null,
+                                                display_name: 'Text',
+                                                support_level: 'fs'
                                             }, {
-                                                'category': 'html',
-                                                'boilerplate_name': 'announcement.yaml',
-                                                'display_name': 'Announcement',
-                                                'support_level': 'ps'
+                                                category: 'html',
+                                                boilerplate_name: 'announcement.yaml',
+                                                display_name: 'Announcement',
+                                                support_level: 'ps'
                                             }, {
-                                                'category': 'html',
-                                                'boilerplate_name': 'raw.yaml',
-                                                'display_name': 'Raw HTML',
-                                                'support_level': 'us'
+                                                category: 'html',
+                                                boilerplate_name: 'raw.yaml',
+                                                display_name: 'Raw HTML',
+                                                support_level: 'us'
                                             }],
-                                        'type': 'html',
-                                        'support_legend': {
-                                            'show_legend': true,
-                                            'documentation_label': 'Documentation Label:',
-                                            'allow_unsupported_xblocks': true
+                                        type: 'html',
+                                        support_legend: {
+                                            show_legend: true,
+                                            documentation_label: 'Documentation Label:',
+                                            allow_unsupported_xblocks: true
                                         }
                                     }],
                                     {
                                         parse: true
-                                    }), supportLevelIndicators, getScreenReaderText;
+                                    }),
+                                    supportLevelIndicators, getScreenReaderText;
                                 renderContainerPage(this, mockContainerXBlockHtml, {}, templates);
                                 showTemplatePicker();
 
@@ -798,7 +818,8 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                 initial: 'mock/mock-container-xblock.underscore',
                 addResponse: 'mock/mock-xblock.underscore',
                 hasVisibilityEditor: true,
-                pagedSpecificTests: false
+                pagedSpecificTests: false,
+                hasMoveModal: true
             }
         );
 
@@ -811,7 +832,8 @@ define(['jquery', 'underscore', 'underscore.string', 'edx-ui-toolkit/js/utils/sp
                 initial: 'mock/mock-container-paged-xblock.underscore',
                 addResponse: 'mock/mock-xblock-paged.underscore',
                 hasVisibilityEditor: false,
-                pagedSpecificTests: true
+                pagedSpecificTests: true,
+                hasMoveModal: false
             }
         );
     });

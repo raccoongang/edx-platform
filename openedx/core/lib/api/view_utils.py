@@ -1,22 +1,22 @@
 """
 Utilities related to API views
 """
-from django.core.exceptions import NON_FIELD_ERRORS, ValidationError, ObjectDoesNotExist
+from django.core.exceptions import NON_FIELD_ERRORS, ObjectDoesNotExist, ValidationError
 from django.http import Http404
 from django.utils.translation import ugettext as _
-
+from edx_rest_framework_extensions.authentication import JwtAuthentication
 from rest_framework import status
 from rest_framework.exceptions import APIException
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import clone_request
 from rest_framework.response import Response
-from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
-from rest_framework.generics import GenericAPIView
+from six import text_type
 
-from edx_rest_framework_extensions.authentication import JwtAuthentication
 from openedx.core.lib.api.authentication import (
-    SessionAuthenticationAllowInactiveUser,
     OAuth2AuthenticationAllowInactiveUser,
+    SessionAuthenticationAllowInactiveUser
 )
 from openedx.core.lib.api.permissions import IsUserInUrl
 
@@ -67,7 +67,7 @@ class DeveloperErrorViewMixin(object):
         if isinstance(exc, APIException):
             return self.make_error_response(exc.status_code, exc.detail)
         elif isinstance(exc, Http404) or isinstance(exc, ObjectDoesNotExist):
-            return self.make_error_response(404, exc.message or "Not found.")
+            return self.make_error_response(404, text_type(exc) or "Not found.")
         elif isinstance(exc, ValidationError):
             return self.make_validation_error_response(exc)
         else:

@@ -5,7 +5,7 @@ set -e
 source $HOME/jenkins_env
 
 NODE_ENV_DIR=$HOME/nenv
-NODE_VERSION=6.9.4
+NODE_VERSION=8.9.3
 
 NODE_INSTALL_COMMAND="nodeenv --node=$NODE_VERSION --prebuilt $NODE_ENV_DIR --force"
 
@@ -57,14 +57,10 @@ echo "done setting up nodeenv"
 echo "node version is `node --version`"
 echo "npm version is `npm --version`"
 
-# TODO: Provide a cached node_modules/ directory for faster/smaller installs
-
-# Manage the npm cache on Jenkins.
-# (In this case, remove it. That ensures from run-to-run, it is a clean npm environment)
-echo "--> Cleaning npm cache"
-npm cache clean
-
 # Log any paver or ansible command timing
 TIMESTAMP=$(date +%s)
-export PAVER_TIMER_LOG="test_root/log/timing.paver.$TIMESTAMP.log"
+SHARD_NUM=${SHARD:="all"}
+export PAVER_TIMER_LOG="test_root/log/timing.paver.$TEST_SUITE.$SHARD_NUM.log"
 export ANSIBLE_TIMER_LOG="test_root/log/timing.ansible.$TIMESTAMP.log"
+
+echo "This node is `curl http://169.254.169.254/latest/meta-data/hostname`"

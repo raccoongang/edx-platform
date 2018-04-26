@@ -1,16 +1,17 @@
 """
 Acceptance tests for the certificate web view feature.
 """
-from common.test.acceptance.tests.helpers import UniqueCourseTest, EventsTestMixin, load_data_str, get_element_padding
 from nose.plugins.attrib import attr
-from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc, CourseUpdateDesc
+
 from common.test.acceptance.fixtures.certificates import CertificateConfigFixture
-from common.test.acceptance.pages.lms.auto_auth import AutoAuthPage
+from common.test.acceptance.fixtures.course import CourseFixture, CourseUpdateDesc, XBlockFixtureDesc
+from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
 from common.test.acceptance.pages.lms.certificate_page import CertificatePage
-from common.test.acceptance.pages.lms.course_info import CourseInfoPage
-from common.test.acceptance.pages.lms.tab_nav import TabNavPage
-from common.test.acceptance.pages.lms.course_nav import CourseNavPage
+from common.test.acceptance.pages.lms.course_home import CourseHomePage
+from common.test.acceptance.pages.lms.courseware import CoursewarePage
 from common.test.acceptance.pages.lms.progress import ProgressPage
+from common.test.acceptance.pages.lms.tab_nav import TabNavPage
+from common.test.acceptance.tests.helpers import EventsTestMixin, UniqueCourseTest, get_element_padding, load_data_str
 
 
 @attr(shard=5)
@@ -30,7 +31,7 @@ class CertificateWebViewTest(EventsTestMixin, UniqueCourseTest):
             'course_title': 'Course title override',
             'signatories': [],
             'version': 1,
-            'is_active': True
+            'is_active': True,
         }
         course_settings = {'certificates': test_certificate_config}
         self.course_fixture = CourseFixture(
@@ -41,7 +42,8 @@ class CertificateWebViewTest(EventsTestMixin, UniqueCourseTest):
             settings=course_settings
         )
         self.course_fixture.add_advanced_settings({
-            "cert_html_view_enabled": {"value": "true"}
+            "cert_html_view_enabled": {"value": "true"},
+            "certificates_display_behavior": {"value": "early_with_info"},
         })
         self.course_fixture.install()
         self.user_id = "99"  # we have created a user with this id in fixture
@@ -126,7 +128,8 @@ class CertificateProgressPageTest(UniqueCourseTest):
         )
 
         self.course_fixture.add_advanced_settings({
-            "cert_html_view_enabled": {"value": "true"}
+            "cert_html_view_enabled": {"value": "true"},
+            "certificates_show_before_end": {"value": "true"}
         })
 
         self.course_fixture.add_update(
@@ -152,9 +155,9 @@ class CertificateProgressPageTest(UniqueCourseTest):
         self.user_id = "99"  # we have created a user with this id in fixture
         self.cert_fixture = CertificateConfigFixture(self.course_id, test_certificate_config)
 
-        self.course_info_page = CourseInfoPage(self.browser, self.course_id)
         self.progress_page = ProgressPage(self.browser, self.course_id)
-        self.course_nav = CourseNavPage(self.browser)
+        self.courseware_page = CoursewarePage(self.browser, self.course_id)
+        self.course_home_page = CourseHomePage(self.browser, self.course_id)
         self.tab_nav = TabNavPage(self.browser)
 
     def log_in_as_unique_user(self):
@@ -173,7 +176,7 @@ class CertificateProgressPageTest(UniqueCourseTest):
         """
         Scenario: View Certificate option should be present on Course Progress menu if the user is
         awarded a certificate.
-        And their should be no padding around the box containing certificate info. (See SOL-1196 for details on this)
+        And there should be no padding around the box containing certificate info. (See SOL-1196 for details on this)
 
         As a Student
         Given there is a course with certificate configuration
@@ -187,7 +190,7 @@ class CertificateProgressPageTest(UniqueCourseTest):
 
         self.complete_course_problems()
 
-        self.course_info_page.visit()
+        self.course_home_page.visit()
         self.tab_nav.go_to_tab('Progress')
 
         self.assertTrue(self.progress_page.q(css='.auto-cert-message').first.visible)
@@ -205,38 +208,38 @@ class CertificateProgressPageTest(UniqueCourseTest):
 
         Problems were added in the setUp
         """
-        self.course_info_page.visit()
-        self.tab_nav.go_to_tab('Course')
+        self.course_home_page.visit()
 
         # Navigate to Test Subsection in Test Section Section
-        self.course_nav.go_to_section('Test Section', 'Test Subsection')
+        self.course_home_page.outline.go_to_section('Test Section', 'Test Subsection')
 
         # Navigate to Test Problem 1
-        self.course_nav.go_to_vertical('Test Problem 1')
+        self.courseware_page.nav.go_to_vertical('Test Problem 1')
 
         # Select correct value for from select menu
-        self.course_nav.q(css='select option[value="{}"]'.format('blue')).first.click()
+        self.courseware_page.q(css='select option[value="{}"]'.format('blue')).first.click()
 
         # Select correct radio button for the answer
-        self.course_nav.q(css='fieldset div.field:nth-child(4) input').nth(0).click()
+        self.courseware_page.q(css='fieldset div.field:nth-child(4) input').nth(0).click()
 
         # Select correct radio buttons for the answer
-        self.course_nav.q(css='fieldset div.field:nth-child(2) input').nth(1).click()
-        self.course_nav.q(css='fieldset div.field:nth-child(4) input').nth(1).click()
+        self.courseware_page.q(css='fieldset div.field:nth-child(2) input').nth(1).click()
+        self.courseware_page.q(css='fieldset div.field:nth-child(4) input').nth(1).click()
 
         # Submit the answer
-        self.course_nav.q(css='button.submit').click()
-        self.course_nav.wait_for_ajax()
+        self.courseware_page.q(css='button.submit').click()
+        self.courseware_page.wait_for_ajax()
 
         # Navigate to the 'Test Subsection 2' of 'Test Section 2'
-        self.course_nav.go_to_section('Test Section 2', 'Test Subsection 2')
+        self.course_home_page.visit()
+        self.course_home_page.outline.go_to_section('Test Section 2', 'Test Subsection 2')
 
         # Navigate to Test Problem 2
-        self.course_nav.go_to_vertical('Test Problem 2')
+        self.courseware_page.nav.go_to_vertical('Test Problem 2')
 
         # Fill in the answer of the problem
-        self.course_nav.q(css='input[id^=input_][id$=_2_1]').fill('A*x^2 + sqrt(y)')
+        self.courseware_page.q(css='input[id^=input_][id$=_2_1]').fill('A*x^2 + sqrt(y)')
 
         # Submit the answer
-        self.course_nav.q(css='button.submit').click()
-        self.course_nav.wait_for_ajax()
+        self.courseware_page.q(css='button.submit').click()
+        self.courseware_page.wait_for_ajax()

@@ -932,7 +932,7 @@ class SplitModuleCourseTests(SplitModuleTest):
         root_block_key = modulestore().make_course_usage_key(course_key)
         self.assertIsInstance(root_block_key, root_block_cls)
         self.assertEqual(root_block_key.block_type, "course")
-        self.assertEqual(root_block_key.name, "course")
+        self.assertEqual(root_block_key.block_id, "course")
 
 
 class TestCourseStructureCache(SplitModuleTest):
@@ -2039,12 +2039,6 @@ class TestPublish(SplitModuleTest):
     """
     Test the publishing api
     """
-    def setUp(self):
-        super(TestPublish, self).setUp()
-
-    def tearDown(self):
-        SplitModuleTest.tearDown(self)
-
     @patch('xmodule.tabs.CourseTab.from_json', side_effect=mock_tab_from_json)
     def test_publish_safe(self, _from_json):
         """

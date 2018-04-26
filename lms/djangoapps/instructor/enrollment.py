@@ -6,34 +6,37 @@ Does not include any access control, be sure to check access before calling.
 
 import json
 import logging
-
 from datetime import datetime
-from django.contrib.auth.models import User
+
+import pytz
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.utils.translation import override as override_language
-from eventtracking import tracker
-import pytz
-
-from lms.djangoapps.grades.signals.signals import PROBLEM_RAW_SCORE_CHANGED
-from lms.djangoapps.grades.constants import ScoreDatabaseTableEnum
-from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY
-from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
-from openedx.core.djangoapps.user_api.models import UserPreference
-from submissions import api as sub_api  # installed from the edx-submissions repository
-from xmodule.modulestore.django import modulestore
-from xmodule.modulestore.exceptions import ItemNotFoundError
+from six import text_type
 
 from course_modes.models import CourseMode
 from courseware.models import StudentModule
 from edxmako.shortcuts import render_to_string
+from eventtracking import tracker
+from lms.djangoapps.grades.constants import ScoreDatabaseTableEnum
+from lms.djangoapps.grades.events import STATE_DELETED_EVENT_TYPE
+from lms.djangoapps.grades.signals.handlers import disconnect_submissions_signal_receiver
+from lms.djangoapps.grades.signals.signals import PROBLEM_RAW_SCORE_CHANGED
+from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.core.djangoapps.user_api.models import UserPreference
 from student.models import CourseEnrollment, CourseEnrollmentAllowed, anonymous_id_for_user
+from submissions import api as sub_api  # installed from the edx-submissions repository
+from submissions.models import score_set
 from track.event_transaction_utils import (
     create_new_event_transaction_id,
-    set_event_transaction_type,
-    get_event_transaction_id
+    get_event_transaction_id,
+    set_event_transaction_type
 )
+from xmodule.modulestore.django import modulestore
+from xmodule.modulestore.exceptions import ItemNotFoundError
 
 log = logging.getLogger(__name__)
 
@@ -48,11 +51,12 @@ class EmailEnrollmentState(object):
             # is_active is `None` if the user is not enrolled in the course
             exists_ce = is_active is not None and is_active
             full_name = user.profile.name
+            ceas = CourseEnrollmentAllowed.for_user(user).filter(course_id=course_id).all()
         else:
             mode = None
             exists_ce = False
             full_name = None
-        ceas = CourseEnrollmentAllowed.objects.filter(course_id=course_id, email=email).all()
+            ceas = CourseEnrollmentAllowed.objects.filter(email=email, course_id=course_id).all()
         exists_allowed = ceas.exists()
         state_auto_enroll = exists_allowed and ceas[0].auto_enroll
 
@@ -194,20 +198,15 @@ def send_beta_role_email(action, user, email_params):
     `user` is the User affected
     `email_params` parameters used while parsing email templates (a `dict`).
     """
-    if action == 'add':
-        email_params['message'] = 'add_beta_tester'
+    if action in ('add', 'remove'):
+        email_params['message'] = '%s_beta_tester' % action
         email_params['email_address'] = user.email
         email_params['full_name'] = user.profile.name
-
-    elif action == 'remove':
-        email_params['message'] = 'remove_beta_tester'
-        email_params['email_address'] = user.email
-        email_params['full_name'] = user.profile.name
-
     else:
         raise ValueError("Unexpected action received '{}' - expected 'add' or 'remove'".format(action))
-
-    send_mail_to_student(user.email, email_params, language=get_user_email_language(user))
+    trying_to_add_inactive_user = not user.is_active and action == 'add'
+    if not trying_to_add_inactive_user:
+        send_mail_to_student(user.email, email_params, language=get_user_email_language(user))
 
 
 def reset_student_attempts(course_id, student, module_state_key, requesting_user, delete_module=False):
@@ -245,12 +244,13 @@ def reset_student_attempts(course_id, student, module_state_key, requesting_user
             # Inform these blocks of the reset and allow them to handle their data.
             clear_student_state = getattr(block, "clear_student_state", None)
             if callable(clear_student_state):
-                clear_student_state(
-                    user_id=user_id,
-                    course_id=unicode(course_id),
-                    item_id=unicode(module_state_key),
-                    requesting_user_id=requesting_user_id
-                )
+                with disconnect_submissions_signal_receiver(score_set):
+                    clear_student_state(
+                        user_id=user_id,
+                        course_id=unicode(course_id),
+                        item_id=unicode(module_state_key),
+                        requesting_user_id=requesting_user_id
+                    )
                 submission_cleared = True
     except ItemNotFoundError:
         block = None
@@ -264,8 +264,8 @@ def reset_student_attempts(course_id, student, module_state_key, requesting_user
     if delete_module and not submission_cleared:
         sub_api.reset_score(
             user_id,
-            course_id.to_deprecated_string(),
-            module_state_key.to_deprecated_string(),
+            text_type(course_id),
+            text_type(module_state_key),
         )
 
     module_to_reset = StudentModule.objects.get(
@@ -277,25 +277,25 @@ def reset_student_attempts(course_id, student, module_state_key, requesting_user
     if delete_module:
         module_to_reset.delete()
         create_new_event_transaction_id()
-        grade_update_root_type = 'edx.grades.problem.state_deleted'
-        set_event_transaction_type(grade_update_root_type)
+        set_event_transaction_type(STATE_DELETED_EVENT_TYPE)
         tracker.emit(
-            unicode(grade_update_root_type),
+            unicode(STATE_DELETED_EVENT_TYPE),
             {
                 'user_id': unicode(student.id),
                 'course_id': unicode(course_id),
                 'problem_id': unicode(module_state_key),
                 'instructor_id': unicode(requesting_user.id),
                 'event_transaction_id': unicode(get_event_transaction_id()),
-                'event_transaction_type': unicode(grade_update_root_type),
+                'event_transaction_type': unicode(STATE_DELETED_EVENT_TYPE),
             }
         )
-        _fire_score_changed_for_block(
-            course_id,
-            student,
-            block,
-            module_state_key,
-        )
+        if not submission_cleared:
+            _fire_score_changed_for_block(
+                course_id,
+                student,
+                block,
+                module_state_key,
+            )
     else:
         _reset_module_attempts(module_to_reset)
 
@@ -354,7 +354,7 @@ def get_email_params(course, auto_enroll, secure=True, course_key=None, display_
     """
 
     protocol = 'https' if secure else 'http'
-    course_key = course_key or course.id.to_deprecated_string()
+    course_key = course_key or text_type(course.id)
     display_name = display_name or course.display_name_with_default_escaped
 
     stripped_site_name = configuration_helpers.get_value(

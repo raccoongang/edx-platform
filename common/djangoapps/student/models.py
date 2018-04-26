@@ -13,52 +13,63 @@ file and check it in at the same time as your model changes. To do that,
 import hashlib
 import json
 import logging
+import six
 import uuid
-from collections import defaultdict, OrderedDict, namedtuple
+from collections import OrderedDict, defaultdict, namedtuple
 from datetime import datetime, timedelta
 from functools import total_ordering
 from importlib import import_module
 from urllib import urlencode
 
 import analytics
-import dogstats_wrapper as dog_stats_api
 from config_models.models import ConfigurationModel
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.db import models, IntegrityError
-from django.db.models import Count
-from django.db.models.signals import pre_save, post_save
-from django.dispatch import receiver, Signal
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.db import IntegrityError, models
+from django.db.models import Count, Q
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext_noop
 from django_countries.fields import CountryField
+from edx_rest_api_client.exceptions import SlumberBaseException
 from eventtracking import tracker
 from model_utils.models import TimeStampedModel
+from opaque_keys.edx.django.models import CourseKeyField
 from opaque_keys.edx.keys import CourseKey
-from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from pytz import UTC
-from simple_history.models import HistoricalRecords
+from six import text_type
+from slumber.exceptions import HttpClientError, HttpServerError
+from user_util import user_util
 
+import dogstats_wrapper as dog_stats_api
 import lms.lib.comment_client as cc
-import request_cache
-from certificates.models import GeneratedCertificate
+from student.signals import UNENROLL_DONE, ENROLL_STATUS_CHANGE, ENROLLMENT_TRACK_UPDATED
+from lms.djangoapps.certificates.models import GeneratedCertificate
 from course_modes.models import CourseMode
+from courseware.models import (
+    CourseDynamicUpgradeDeadlineConfiguration,
+    DynamicUpgradeDeadlineConfiguration,
+    OrgDynamicUpgradeDeadlineConfiguration
+)
 from enrollment.api import _default_course_mode
+
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.djangoapps.request_cache import clear_cache, get_cache
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
-from openedx.core.djangoapps.xmodule_django.models import CourseKeyField, NoneToEmptyManager
+from openedx.core.djangoapps.xmodule_django.models import NoneToEmptyManager
+from openedx.core.djangolib.model_mixins import DeletableByUserValue
 from track import contexts
 from util.milestones_helpers import is_entrance_exams_enabled
 from util.model_utils import emit_field_changed_events, get_changed_fields_dict
 from util.query import use_read_replica_if_available
 
-UNENROLL_DONE = Signal(providing_args=["course_enrollment", "skip_refund"])
-ENROLL_STATUS_CHANGE = Signal(providing_args=["event", "user", "course_id", "mode", "cost", "currency"])
 log = logging.getLogger(__name__)
 AUDIT_LOG = logging.getLogger("audit")
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore  # pylint: disable=invalid-name
@@ -133,7 +144,9 @@ def anonymous_id_for_user(user, course_id, save=True):
     save -- Whether the id should be saved in an AnonymousUserId object.
     """
     # This part is for ability to get xblock instance in xblock_noauth handlers, where user is unauthenticated.
-    if user.is_anonymous():
+    assert user
+
+    if user.is_anonymous:
         return None
 
     cached_id = getattr(user, '_anonymous_id', {}).get(course_id)
@@ -143,9 +156,9 @@ def anonymous_id_for_user(user, course_id, save=True):
     # include the secret key as a salt, and to make the ids unique across different LMS installs.
     hasher = hashlib.md5()
     hasher.update(settings.SECRET_KEY)
-    hasher.update(unicode(user.id))
+    hasher.update(text_type(user.id))
     if course_id:
-        hasher.update(unicode(course_id).encode('utf-8'))
+        hasher.update(text_type(course_id).encode('utf-8'))
     digest = hasher.hexdigest()
 
     if not hasattr(user, '_anonymous_id'):
@@ -186,6 +199,80 @@ def user_by_anonymous_id(uid):
         return User.objects.get(anonymoususerid__anonymous_user_id=uid)
     except ObjectDoesNotExist:
         return None
+
+
+def is_username_retired(username):
+    """
+    Checks to see if the given username has been previously retired
+    """
+    locally_hashed_usernames = user_util.get_all_retired_usernames(
+        username,
+        settings.RETIRED_USER_SALTS,
+        settings.RETIRED_USERNAME_FMT
+    )
+
+    return User.objects.filter(username__in=list(locally_hashed_usernames)).exists()
+
+
+def get_retired_username_by_username(username):
+    """
+    Returns a "retired username" hashed using the newest configured salt
+    """
+    return user_util.get_retired_username(username, settings.RETIRED_USER_SALTS, settings.RETIRED_USERNAME_FMT)
+
+
+def get_retired_email_by_email(email):
+    """
+    Returns a "retired email" hashed using the newest configured salt
+    """
+    return user_util.get_retired_email(email, settings.RETIRED_USER_SALTS, settings.RETIRED_EMAIL_FMT)
+
+
+def get_all_retired_usernames_by_username(username):
+    """
+    Returns a generator of "retired usernames", one hashed with each
+    configured salt. Used for finding out if the given username has
+    ever been used and retired.
+    """
+    return user_util.get_all_retired_usernames(username, settings.RETIRED_USER_SALTS, settings.RETIRED_USERNAME_FMT)
+
+
+def get_all_retired_emails_by_email(email):
+    """
+    Returns a generator of "retired emails", one hashed with each
+    configured salt. Used for finding out if the given email has
+    ever been used and retired.
+    """
+    return user_util.get_all_retired_emails(email, settings.RETIRED_USER_SALTS, settings.RETIRED_EMAIL_FMT)
+
+
+def get_potentially_retired_user_by_username(username):
+    """
+    Attempt to return a User object based on the username, or if it
+    does not exist, then any hashed username salted with the historical
+    salts.
+    """
+    locally_hashed_usernames = list(get_all_retired_usernames_by_username(username))
+    locally_hashed_usernames.append(username)
+    return User.objects.get(username__in=locally_hashed_usernames)
+
+
+def get_potentially_retired_user_by_username_and_hash(username, hashed_username):
+    """
+    To assist in the retirement process this method will:
+    - Confirm that any locally hashed username matches the passed in one
+      (in case of salt mismatches with the upstream script).
+    - Attempt to return a User object based on the username, or if it
+      does not exist, the any hashed username salted with the historical
+      salts.
+    """
+    locally_hashed_usernames = list(get_all_retired_usernames_by_username(username))
+
+    if hashed_username not in locally_hashed_usernames:
+        raise Exception('Mismatched hashed_username, bad salt?')
+
+    locally_hashed_usernames.append(username)
+    return User.objects.get(username__in=locally_hashed_usernames)
 
 
 class UserStanding(models.Model):
@@ -466,9 +553,39 @@ def user_pre_save_callback(sender, **kwargs):
 @receiver(post_save, sender=User)
 def user_post_save_callback(sender, **kwargs):
     """
-    Emit analytics events after saving the User.
+    When a user is modified and either its `is_active` state or email address
+    is changed, and the user is, in fact, active, then check to see if there
+    are any courses that it needs to be automatically enrolled in.
+
+    Additionally, emit analytics events after saving the User.
     """
     user = kwargs['instance']
+
+    changed_fields = user._changed_fields
+
+    if 'is_active' in changed_fields or 'email' in changed_fields:
+        if user.is_active:
+            ceas = CourseEnrollmentAllowed.for_user(user).filter(auto_enroll=True)
+
+            for cea in ceas:
+                enrollment = CourseEnrollment.enroll(user, cea.course_id)
+
+                manual_enrollment_audit = ManualEnrollmentAudit.get_manual_enrollment_by_email(user.email)
+                if manual_enrollment_audit is not None:
+                    # get the enrolled by user and reason from the ManualEnrollmentAudit table.
+                    # then create a new ManualEnrollmentAudit table entry for the same email
+                    # different transition state.
+                    ManualEnrollmentAudit.create_manual_enrollment_audit(
+                        manual_enrollment_audit.enrolled_by,
+                        user.email,
+                        ALLOWEDTOENROLL_TO_ENROLLED,
+                        manual_enrollment_audit.reason,
+                        enrollment
+                    )
+
+    # Because `emit_field_changed_events` removes the record of the fields that
+    # were changed, wait to do that until after we've checked them as part of
+    # the condition on whether we want to check for automatic enrollments.
     # pylint: disable=protected-access
     emit_field_changed_events(
         user,
@@ -560,7 +677,10 @@ class PendingNameChange(models.Model):
     rationale = models.CharField(blank=True, max_length=1024)
 
 
-class PendingEmailChange(models.Model):
+class PendingEmailChange(DeletableByUserValue, models.Model):
+    """
+    This model keeps track of pending requested changes to a user's email address.
+    """
     user = models.OneToOneField(User, unique=True, db_index=True)
     new_email = models.CharField(blank=True, max_length=255, db_index=True)
     activation_key = models.CharField(('activation key'), max_length=32, unique=True, db_index=True)
@@ -680,6 +800,8 @@ class PasswordHistory(models.Model):
         Returns whether a password has 'expired' and should be reset. Note there are two different
         expiry policies for staff and students
         """
+        assert user
+
         if not settings.FEATURES['ADVANCED_SECURITY']:
             return False
 
@@ -735,6 +857,8 @@ class PasswordHistory(models.Model):
         """
         Verifies that the password adheres to the reuse policies
         """
+        assert user
+
         if not settings.FEATURES['ADVANCED_SECURITY']:
             return True
 
@@ -929,12 +1053,18 @@ class CourseEnrollmentManager(models.Manager):
 
         return is_course_full
 
-    def users_enrolled_in(self, course_id):
-        """Return a queryset of User for every user enrolled in the course."""
-        return User.objects.filter(
-            courseenrollment__course_id=course_id,
-            courseenrollment__is_active=True
-        )
+    def users_enrolled_in(self, course_id, include_inactive=False):
+        """
+        Return a queryset of User for every user enrolled in the course.  If
+        `include_inactive` is True, returns both active and inactive enrollees
+        for the course. Otherwise returns actively enrolled users only.
+        """
+        filter_kwargs = {
+            'courseenrollment__course_id': course_id,
+        }
+        if not include_inactive:
+            filter_kwargs['courseenrollment__is_active'] = True
+        return User.objects.filter(**filter_kwargs)
 
     def enrollment_counts(self, course_id):
         """
@@ -978,10 +1108,26 @@ class CourseEnrollment(models.Model):
     checking course dates, user permissions, etc.) This logic is currently
     scattered across our views.
     """
-    MODEL_TAGS = ['course_id', 'is_active', 'mode']
+    MODEL_TAGS = ['course', 'is_active', 'mode']
 
     user = models.ForeignKey(User)
-    course_id = CourseKeyField(max_length=255, db_index=True)
+
+    course = models.ForeignKey(
+        CourseOverview,
+        db_constraint=False,
+    )
+
+    @property
+    def course_id(self):
+        return self._course_id
+
+    @course_id.setter
+    def course_id(self, value):
+        if isinstance(value, basestring):
+            self._course_id = CourseKey.from_string(value)
+        else:
+            self._course_id = value
+
     created = models.DateTimeField(auto_now_add=True, null=True, db_index=True)
 
     # If is_active is False, then the student is not considered to be enrolled
@@ -994,15 +1140,14 @@ class CourseEnrollment(models.Model):
 
     objects = CourseEnrollmentManager()
 
-    # Maintain a history of requirement status updates for auditing purposes
-    history = HistoricalRecords()
-
     # cache key format e.g enrollment.<username>.<course_key>.mode = 'honor'
-    COURSE_ENROLLMENT_CACHE_KEY = u"enrollment.{}.{}.mode"
+    COURSE_ENROLLMENT_CACHE_KEY = u"enrollment.{}.{}.mode"  # TODO Can this be removed?  It doesn't seem to be used.
+
+    MODE_CACHE_NAMESPACE = u'CourseEnrollment.mode_and_active'
 
     class Meta(object):
-        unique_together = (('user', 'course_id'),)
-        ordering = ('user', 'course_id')
+        unique_together = (('user', 'course'),)
+        ordering = ('user', 'course')
 
     def __init__(self, *args, **kwargs):
         super(CourseEnrollment, self).__init__(*args, **kwargs)
@@ -1031,7 +1176,7 @@ class CourseEnrollment(models.Model):
         through some sort of approval process before being activated. If you
         don't need this functionality, just call `enroll()` instead.
 
-        Returns a CoursewareEnrollment object.
+        Returns a CourseEnrollment object.
 
         `user` is a Django User object. If it hasn't been saved yet (no `.id`
                attribute), this method will automatically save it before
@@ -1041,6 +1186,9 @@ class CourseEnrollment(models.Model):
 
         It is expected that this method is called from a method which has already
         verified the user authentication and access.
+
+        If the enrollment is done due to a CourseEnrollmentAllowed, the CEA will be
+        linked to the user being enrolled so that it can't be used by other users.
         """
         # If we're passing in a newly constructed (i.e. not yet persisted) User,
         # save it to the database so that it can have an ID that we can throw
@@ -1060,11 +1208,18 @@ class CourseEnrollment(models.Model):
             }
         )
 
+        # If there was an unlinked CEA, it becomes linked now
+        CourseEnrollmentAllowed.objects.filter(
+            email=user.email,
+            course_id=course_key,
+            user__isnull=True
+        ).update(user=user)
+
         return enrollment
 
     @classmethod
     def get_enrollment(cls, user, course_key):
-        """Returns a CoursewareEnrollment object.
+        """Returns a CourseEnrollment object.
 
         Args:
             user (User): The user associated with the enrollment.
@@ -1073,6 +1228,10 @@ class CourseEnrollment(models.Model):
         Returns:
             Course enrollment object or None
         """
+        assert user
+
+        if user.is_anonymous:
+            return None
         try:
             return cls.objects.get(
                 user=user,
@@ -1151,6 +1310,7 @@ class CourseEnrollment(models.Model):
             # Only emit mode change events when the user's enrollment
             # mode has changed from its previous setting
             self.emit_event(EVENT_NAME_ENROLLMENT_MODE_CHANGED)
+            ENROLLMENT_TRACK_UPDATED.send(sender=None, user=self.user, course_key=self.course_id)
 
     def send_signal(self, event, cost=None, currency=None):
         """
@@ -1161,7 +1321,7 @@ class CourseEnrollment(models.Model):
                                   cost=cost, currency=currency)
 
     @classmethod
-    def send_signal_full(cls, event, user=user, mode=mode, course_id=course_id, cost=None, currency=None):
+    def send_signal_full(cls, event, user=user, mode=mode, course_id=None, cost=None, currency=None):
         """
         Sends a signal announcing changes in course enrollment status.
         This version should be used if you don't already have a CourseEnrollment object
@@ -1180,7 +1340,7 @@ class CourseEnrollment(models.Model):
             assert isinstance(self.course_id, CourseKey)
             data = {
                 'user_id': self.user.id,
-                'course_id': self.course_id.to_deprecated_string(),
+                'course_id': text_type(self.course_id),
                 'mode': self.mode,
             }
 
@@ -1191,7 +1351,7 @@ class CourseEnrollment(models.Model):
                     tracking_context = tracker.get_tracker().resolve_context()
                     analytics.track(self.user_id, event_name, {
                         'category': 'conversion',
-                        'label': self.course_id.to_deprecated_string(),
+                        'label': text_type(self.course_id),
                         'org': self.course_id.org,
                         'course': self.course_id.course,
                         'run': self.course_id.run,
@@ -1217,7 +1377,7 @@ class CourseEnrollment(models.Model):
         """
         Enroll a user in a course. This saves immediately.
 
-        Returns a CoursewareEnrollment object.
+        Returns a CourseEnrollment object.
 
         `user` is a Django User object. If it hasn't been saved yet (no `.id`
                attribute), this method will automatically save it before
@@ -1248,7 +1408,7 @@ class CourseEnrollment(models.Model):
         Also emits relevant events for analytics purposes.
         """
         if mode is None:
-            mode = _default_course_mode(unicode(course_key))
+            mode = _default_course_mode(text_type(course_key))
         # All the server-side checks for whether a user is allowed to enroll.
         try:
             course = CourseOverview.get_from_id(course_key)
@@ -1256,7 +1416,7 @@ class CourseEnrollment(models.Model):
             # This is here to preserve legacy behavior which allowed enrollment in courses
             # announced before the start of content creation.
             if check_access:
-                log.warning(u"User %s failed to enroll in non-existent course %s", user.username, unicode(course_key))
+                log.warning(u"User %s failed to enroll in non-existent course %s", user.username, text_type(course_key))
                 raise NonExistentCourseError
 
         if check_access:
@@ -1264,14 +1424,14 @@ class CourseEnrollment(models.Model):
                 log.warning(
                     u"User %s failed to enroll in course %s because enrollment is closed",
                     user.username,
-                    course_key.to_deprecated_string()
+                    text_type(course_key)
                 )
                 raise EnrollmentClosedError
 
             if cls.objects.is_course_full(course):
                 log.warning(
                     u"Course %s has reached its maximum enrollment of %d learners. User %s failed to enroll.",
-                    course_key.to_deprecated_string(),
+                    text_type(course_key),
                     course.max_student_enrollments_allowed,
                     user.username,
                 )
@@ -1280,7 +1440,7 @@ class CourseEnrollment(models.Model):
             log.warning(
                 u"User %s attempted to enroll in %s, but they were already enrolled",
                 user.username,
-                course_key.to_deprecated_string()
+                text_type(course_key)
             )
             if check_access:
                 raise AlreadyEnrolledError
@@ -1301,7 +1461,7 @@ class CourseEnrollment(models.Model):
         error rate is high. For that reason, we supress User lookup errors by
         default.
 
-        Returns a CoursewareEnrollment object. If the User does not exist and
+        Returns a CourseEnrollment object. If the User does not exist and
         `ignore_errors` is set to `True`, it will return None.
 
         `email` Email address of the User to add to enroll in the course.
@@ -1388,11 +1548,8 @@ class CourseEnrollment(models.Model):
 
         `course_id` is our usual course_id string (e.g. "edX/Test101/2013_Fall)
         """
-        if not user.is_authenticated():
-            return False
-        else:
-            enrollment_state = cls._get_enrollment_state(user, course_key)
-            return enrollment_state.is_active or False
+        enrollment_state = cls._get_enrollment_state(user, course_key)
+        return enrollment_state.is_active or False
 
     @classmethod
     def is_enrolled_by_partial(cls, user, course_id_partial):
@@ -1411,12 +1568,12 @@ class CourseEnrollment(models.Model):
         """
         assert isinstance(course_id_partial, CourseKey)
         assert not course_id_partial.run  # None or empty string
-        course_key = SlashSeparatedCourseKey(course_id_partial.org, course_id_partial.course, '')
-        querystring = unicode(course_key.to_deprecated_string())
+        course_key = CourseKey.from_string('/'.join([course_id_partial.org, course_id_partial.course, '']))
+        querystring = text_type(course_key)
         try:
             return cls.objects.filter(
                 user=user,
-                course_id__startswith=querystring,
+                course__id__startswith=querystring,
                 is_active=1
             ).exists()
         except cls.DoesNotExist:
@@ -1488,7 +1645,9 @@ class CourseEnrollment(models.Model):
         Returns:
             str: Hash of the user's active enrollments. If the user is anonymous, `None` is returned.
         """
-        if user.is_anonymous():
+        assert user
+
+        if user.is_anonymous:
             return None
 
         cache_key = cls.enrollment_status_hash_cache_key(user)
@@ -1496,7 +1655,7 @@ class CourseEnrollment(models.Model):
 
         if not status_hash:
             enrollments = cls.enrollments_for_user(user).values_list('course_id', 'mode')
-            enrollments = [(e[0].lower(), e[1].lower()) for e in enrollments]
+            enrollments = [(six.text_type(e[0]).lower(), e[1].lower()) for e in enrollments]
             enrollments = sorted(enrollments, key=lambda e: e[0])
             hash_elements = [user.username]
             hash_elements += ['{course_id}={mode}'.format(course_id=e[0], mode=e[1]) for e in enrollments]
@@ -1557,6 +1716,7 @@ class CourseEnrollment(models.Model):
         # which calls this method to determine whether to refund the order.
         # This can't be set directly because refunds currently happen as a side-effect of unenrolling.
         # (side-effects are bad)
+
         if getattr(self, 'can_refund', None) is not None:
             return True
 
@@ -1570,10 +1730,13 @@ class CourseEnrollment(models.Model):
 
         # If it is after the refundable cutoff date they should not be refunded.
         refund_cutoff_date = self.refund_cutoff_date()
-        if refund_cutoff_date and datetime.now(UTC) > refund_cutoff_date:
+        # `refund_cuttoff_date` will be `None` if there is no order. If there is no order return `False`.
+        if refund_cutoff_date is None:
+            return False
+        if datetime.now(UTC) > refund_cutoff_date:
             return False
 
-        course_mode = CourseMode.mode_for_course(self.course_id, 'verified')
+        course_mode = CourseMode.mode_for_course(self.course_id, 'verified', include_expired=True)
         if course_mode is None:
             return False
         else:
@@ -1599,7 +1762,27 @@ class CourseEnrollment(models.Model):
             attribute = self.attributes.filter(namespace='order', name='order_number').last()
 
         order_number = attribute.value
-        order = ecommerce_api_client(self.user).orders(order_number).get()
+        try:
+            order = ecommerce_api_client(self.user).orders(order_number).get()
+
+        except HttpClientError:
+            log.warning(
+                u"Encountered HttpClientError while getting order details from ecommerce. "
+                u"Order={number} and user {user}".format(number=order_number, user=self.user.id))
+            return None
+
+        except HttpServerError:
+            log.warning(
+                u"Encountered HttpServerError while getting order details from ecommerce. "
+                u"Order={number} and user {user}".format(number=order_number, user=self.user.id))
+            return None
+
+        except SlumberBaseException:
+            log.warning(
+                u"Encountered an error while getting order details from ecommerce. "
+                u"Order={number} and user {user}".format(number=order_number, user=self.user.id))
+            return None
+
         refund_window_start_date = max(
             datetime.strptime(order['date_placed'], ECOMMERCE_DATE_FORMAT),
             self.course_overview.start.replace(tzinfo=None)
@@ -1612,11 +1795,6 @@ class CourseEnrollment(models.Model):
         return self.user.username
 
     @property
-    def course(self):
-        # Deprecated. Please use the `course_overview` property instead.
-        return self.course_overview
-
-    @property
     def course_overview(self):
         """
         Returns a CourseOverview of the course to which this enrollment refers.
@@ -1626,13 +1804,120 @@ class CourseEnrollment(models.Model):
             If the course is re-published within the lifetime of this
             CourseEnrollment object, then the value of this property will
             become stale.
-       """
+        """
         if not self._course_overview:
             try:
-                self._course_overview = CourseOverview.get_from_id(self.course_id)
-            except (CourseOverview.DoesNotExist, IOError):
-                self._course_overview = None
+                self._course_overview = self.course
+            except CourseOverview.DoesNotExist:
+                log.info('Course Overviews: unable to find course overview for enrollment, loading from modulestore.')
+                try:
+                    self._course_overview = CourseOverview.get_from_id(self.course_id)
+                except (CourseOverview.DoesNotExist, IOError):
+                    self._course_overview = None
         return self._course_overview
+
+    @cached_property
+    def verified_mode(self):
+        return CourseMode.verified_mode_for_course(self.course_id)
+
+    @cached_property
+    def upgrade_deadline(self):
+        """
+        Returns the upgrade deadline for this enrollment, if it is upgradeable.
+        If the seat cannot be upgraded, None is returned.
+        Note:
+            When loading this model, use `select_related` to retrieve the associated schedule object.
+        Returns:
+            datetime|None
+        """
+        log.debug('Schedules: Determining upgrade deadline for CourseEnrollment %d...', self.id)
+        if not CourseMode.is_mode_upgradeable(self.mode):
+            log.debug(
+                'Schedules: %s mode of %s is not upgradeable. Returning None for upgrade deadline.',
+                self.mode, self.course_id
+            )
+            return None
+
+        if self.dynamic_upgrade_deadline is not None:
+            # When course modes expire they aren't found any more and None would be returned.
+            # Replicate that behavior here by returning None if the personalized deadline is in the past.
+            if datetime.now(UTC) >= self.dynamic_upgrade_deadline:
+                log.debug('Schedules: Returning None since dynamic upgrade deadline has already passed.')
+                return None
+
+            if self.verified_mode is None or CourseMode.is_professional_mode(self.verified_mode):
+                log.debug('Schedules: Returning None for dynamic upgrade deadline since the course does not have a '
+                          'verified mode.')
+                return None
+
+            return self.dynamic_upgrade_deadline
+
+        return self.course_upgrade_deadline
+
+    @cached_property
+    def dynamic_upgrade_deadline(self):
+        """
+        Returns the learner's personalized upgrade deadline if one exists, otherwise it returns None.
+
+        Note that this will return a value even if the deadline is in the past. This property can be used
+        to modify behavior for users with personalized deadlines by checking if it's None or not.
+
+        Returns:
+            datetime|None
+        """
+        if not self.course_overview.self_paced:
+            return None
+
+        if not DynamicUpgradeDeadlineConfiguration.is_enabled():
+            return None
+
+        course_config = CourseDynamicUpgradeDeadlineConfiguration.current(self.course_id)
+        if course_config.opted_out():
+            # Course-level config should be checked first since it overrides the org-level config
+            return None
+
+        org_config = OrgDynamicUpgradeDeadlineConfiguration.current(self.course_id.org)
+        if org_config.opted_out() and not course_config.opted_in():
+            return None
+
+        try:
+            if not self.schedule or not self.schedule.active:  # pylint: disable=no-member
+                return None
+
+            log.debug(
+                'Schedules: Pulling upgrade deadline for CourseEnrollment %d from Schedule %d.',
+                self.id, self.schedule.id
+            )
+            upgrade_deadline = self.schedule.upgrade_deadline
+        except ObjectDoesNotExist:
+            # NOTE: Schedule has a one-to-one mapping with CourseEnrollment. If no schedule is associated
+            # with this enrollment, Django will raise an exception rather than return None.
+            log.debug('Schedules: No schedule exists for CourseEnrollment %d.', self.id)
+            return None
+
+        return upgrade_deadline
+
+    @cached_property
+    def course_upgrade_deadline(self):
+        """
+        Returns the expiration datetime for the verified course mode.
+
+        If the mode is already expired, return None. Also return None if the course does not have a verified
+        course mode.
+
+        Returns:
+            datetime|None
+        """
+        try:
+            if self.verified_mode:
+                log.debug('Schedules: Defaulting to verified mode expiration date-time for %s.', self.course_id)
+                return self.verified_mode.expiration_datetime
+            else:
+                log.debug('Schedules: No verified mode located for %s.', self.course_id)
+                return None
+        except CourseMode.DoesNotExist:
+            log.debug('Schedules: %s has no verified mode.', self.course_id)
+            return None
 
     def is_verified_enrollment(self):
         """
@@ -1675,7 +1960,7 @@ class CourseEnrollment(models.Model):
         Returns:
             Unicode cache key
         """
-        return cls.COURSE_ENROLLMENT_CACHE_KEY.format(user_id, unicode(course_key))
+        return cls.COURSE_ENROLLMENT_CACHE_KEY.format(user_id, text_type(course_key))
 
     @classmethod
     def _get_enrollment_state(cls, user, course_key):
@@ -1683,6 +1968,10 @@ class CourseEnrollment(models.Model):
         Returns the CourseEnrollmentState for the given user
         and course_key, caching the result for later retrieval.
         """
+        assert user
+
+        if user.is_anonymous:
+            return CourseEnrollmentState(None, None)
         enrollment_state = cls._get_enrollment_in_request_cache(user, course_key)
         if not enrollment_state:
             try:
@@ -1694,11 +1983,27 @@ class CourseEnrollment(models.Model):
         return enrollment_state
 
     @classmethod
+    def bulk_fetch_enrollment_states(cls, users, course_key):
+        """
+        Bulk pre-fetches the enrollment states for the given users
+        for the given course.
+        """
+        # before populating the cache with another bulk set of data,
+        # remove previously cached entries to keep memory usage low.
+        clear_cache(cls.MODE_CACHE_NAMESPACE)
+
+        records = cls.objects.filter(user__in=users, course_id=course_key).select_related('user')
+        cache = cls._get_mode_active_request_cache()
+        for record in records:
+            enrollment_state = CourseEnrollmentState(record.mode, record.is_active)
+            cls._update_enrollment(cache, record.user.id, course_key, enrollment_state)
+
+    @classmethod
     def _get_mode_active_request_cache(cls):
         """
         Returns the request-specific cache for CourseEnrollment
         """
-        return request_cache.get_cache('CourseEnrollment.mode_and_active')
+        return get_cache(cls.MODE_CACHE_NAMESPACE)
 
     @classmethod
     def _get_enrollment_in_request_cache(cls, user, course_key):
@@ -1714,7 +2019,15 @@ class CourseEnrollment(models.Model):
         Updates the cached value for the user's enrollment in the
         request cache.
         """
-        cls._get_mode_active_request_cache()[(user.id, course_key)] = enrollment_state
+        cls._update_enrollment(cls._get_mode_active_request_cache(), user.id, course_key, enrollment_state)
+
+    @classmethod
+    def _update_enrollment(cls, cache, user_id, course_key, enrollment_state):
+        """
+        Updates the cached value for the user's enrollment in the
+        given cache.
+        """
+        cache[(user_id, course_key)] = enrollment_state
 
 
 @receiver(models.signals.post_save, sender=CourseEnrollment)
@@ -1724,7 +2037,7 @@ def invalidate_enrollment_mode_cache(sender, instance, **kwargs):  # pylint: dis
 
     cache_key = CourseEnrollment.cache_key_name(
         instance.user.id,
-        unicode(instance.course_id)
+        text_type(instance.course_id)
     )
     cache.delete(cache_key)
 
@@ -1739,9 +2052,10 @@ class ManualEnrollmentAudit(models.Model):
     time_stamp = models.DateTimeField(auto_now_add=True, null=True)
     state_transition = models.CharField(max_length=255, choices=TRANSITION_STATES)
     reason = models.TextField(null=True)
+    role = models.CharField(blank=True, null=True, max_length=64)
 
     @classmethod
-    def create_manual_enrollment_audit(cls, user, email, state_transition, reason, enrollment=None):
+    def create_manual_enrollment_audit(cls, user, email, state_transition, reason, enrollment=None, role=None):
         """
         saves the student manual enrollment information
         """
@@ -1750,7 +2064,8 @@ class ManualEnrollmentAudit(models.Model):
             enrolled_email=email,
             state_transition=state_transition,
             reason=reason,
-            enrollment=enrollment
+            enrollment=enrollment,
+            role=role,
         )
 
     @classmethod
@@ -1776,15 +2091,24 @@ class ManualEnrollmentAudit(models.Model):
         return manual_enrollment
 
 
-class CourseEnrollmentAllowed(models.Model):
+class CourseEnrollmentAllowed(DeletableByUserValue, models.Model):
     """
     Table of users (specified by email address strings) who are allowed to enroll in a specified course.
     The user may or may not (yet) exist.  Enrollment by users listed in this table is allowed
-    even if the enrollment time window is past.
+    even if the enrollment time window is past.  Once an enrollment from this list effectively happens,
+    the object is marked with the student who enrolled, to prevent students from changing e-mails and
+    enrolling many accounts through the same e-mail.
     """
     email = models.CharField(max_length=255, db_index=True)
     course_id = CourseKeyField(max_length=255, db_index=True)
     auto_enroll = models.BooleanField(default=0)
+    user = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        help_text="First user which enrolled in the specified course through the specified e-mail. "
+                  "Once set, it won't change."
+    )
 
     created = models.DateTimeField(auto_now_add=True, null=True, db_index=True)
 
@@ -1793,6 +2117,21 @@ class CourseEnrollmentAllowed(models.Model):
 
     def __unicode__(self):
         return "[CourseEnrollmentAllowed] %s: %s (%s)" % (self.email, self.course_id, self.created)
+
+    @classmethod
+    def for_user(cls, user):
+        """
+        Returns the CourseEnrollmentAllowed objects that can effectively be used by a particular `user`.
+        This includes the ones that match the user's e-mail and excludes those CEA which were already consumed
+        by a different user.
+        """
+        return cls.objects.filter(email=user.email).filter(Q(user__isnull=True) | Q(user=user))
+
+    def valid_for_user(self, user):
+        """
+        Returns True if the CEA is usable by the given user, or False if it was already consumed by another user.
+        """
+        return self.user is None or self.user == user
 
     @classmethod
     def may_enroll_and_unenrolled(cls, course_id):
@@ -2152,7 +2491,7 @@ class LinkedInAddToProfileConfiguration(ConfigurationModel):
         return (
             u"{partner}-{course_key}_{cert_mode}-{target}".format(
                 partner=self.trk_partner_name,
-                course_key=unicode(course_key),
+                course_key=text_type(course_key),
                 cert_mode=cert_mode,
                 target=target
             )
@@ -2241,6 +2580,21 @@ class LanguageProficiency(models.Model):
         choices=settings.ALL_LANGUAGES,
         help_text=_("The ISO 639-1 language code for this language.")
     )
+
+
+class SocialLink(models.Model):  # pylint: disable=model-missing-unicode
+    """
+    Represents a URL connecting a particular social platform to a user's social profile.
+
+    The platforms are listed in the lms/common.py file under SOCIAL_PLATFORMS.
+    Each entry has a display name, a url_stub that describes a required
+    component of the stored URL and an example of a valid URL.
+
+    The stored social_link value must adhere to the form 'https://www.[url_stub][username]'.
+    """
+    user_profile = models.ForeignKey(UserProfile, db_index=True, related_name='social_links')
+    platform = models.CharField(max_length=30)
+    social_link = models.CharField(max_length=100, blank=True)
 
 
 class CourseEnrollmentAttribute(models.Model):
@@ -2395,8 +2749,7 @@ class UserAttribute(TimeStampedModel):
         user. Overwrites any previous value for that name, if it
         exists.
         """
-        cls.objects.filter(user=user, name=name).delete()
-        cls.objects.create(user=user, name=name, value=value)
+        cls.objects.update_or_create(user=user, name=name, defaults={'value': value})
 
     @classmethod
     def get_user_attribute(cls, user, name):
@@ -2411,7 +2764,7 @@ class UserAttribute(TimeStampedModel):
 
 
 class LogoutViewConfiguration(ConfigurationModel):
-    """ Configuration for the logout view. """
+    """ DEPRECATED: Configuration for the logout view. """
 
     def __unicode__(self):
         """Unicode representation of the instance. """

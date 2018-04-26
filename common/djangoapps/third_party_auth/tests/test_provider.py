@@ -1,17 +1,19 @@
 """Unit tests for provider.py."""
 
+import unittest
+
 from django.contrib.sites.models import Site
 from mock import Mock, patch
+
 from openedx.core.djangoapps.site_configuration.tests.test_util import with_site_configuration
 from third_party_auth import provider
 from third_party_auth.tests import testutil
-import unittest
 
 SITE_DOMAIN_A = 'professionalx.example.com'
 SITE_DOMAIN_B = 'somethingelse.example.com'
 
 
-@unittest.skipUnless(testutil.AUTH_FEATURE_ENABLED, 'third_party_auth not enabled')
+@unittest.skipUnless(testutil.AUTH_FEATURE_ENABLED, testutil.AUTH_FEATURES_KEY + ' not enabled')
 class RegistryTest(testutil.TestCase):
     """Tests registry discovery and operation."""
 
@@ -56,7 +58,7 @@ class RegistryTest(testutil.TestCase):
         self.configure_saml_provider(
             enabled=True,
             name="Disallowed",
-            idp_slug="test",
+            slug="test",
             backend_name="disallowed"
         )
         self.assertEqual(len(provider.Registry.enabled()), 0)
@@ -147,6 +149,27 @@ class RegistryTest(testutil.TestCase):
     def test_get_returns_enabled_provider(self):
         google_provider = self.configure_google_provider(enabled=True)
         self.assertEqual(google_provider.id, provider.Registry.get(google_provider.provider_id).id)
+
+    def test_oauth2_provider_keyed_by_slug(self):
+        """
+        Regression test to ensure that the Registry properly fetches OAuth2ProviderConfigs that have a slug
+        which doesn't match any of the possible backend_names.
+        """
+        google_provider = self.configure_google_provider(enabled=True, slug='custom_slug')
+        self.assertIn(google_provider, provider.Registry._enabled_providers())
+        self.assertIn(google_provider, provider.Registry.get_enabled_by_backend_name('google-oauth2'))
+
+    def test_oauth2_enabled_only_for_supplied_backend(self):
+        """
+        Test to ensure that Registry.get_enabled_by_backend_name doesn't return OAuth2 providers with incorrect
+        backend_names.
+        """
+        facebook_provider = self.configure_facebook_provider(enabled=True)
+        self.configure_google_provider(enabled=True)
+        self.assertNotIn(facebook_provider, provider.Registry.get_enabled_by_backend_name('google-oauth2'))
+
+    def test_get_returns_none_if_provider_id_is_none(self):
+        self.assertIsNone(provider.Registry.get(None))
 
     def test_get_returns_none_if_provider_not_enabled(self):
         linkedin_provider_id = "oa2-linkedin-oauth2"

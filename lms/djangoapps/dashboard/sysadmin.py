@@ -2,45 +2,45 @@
 This module creates a sysadmin dashboard for managing and viewing
 courses.
 """
-import csv
+import unicodecsv as csv
 import json
 import logging
 import os
-import subprocess
 import StringIO
+import subprocess
 
+import mongoengine
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import IntegrityError
-from django.http import HttpResponse, Http404
+from django.http import Http404, HttpResponse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.html import escape
-from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control
-from django.views.generic.base import TemplateView
-from django.views.decorators.http import condition
 from django.views.decorators.csrf import ensure_csrf_cookie
-from edxmako.shortcuts import render_to_response
-import mongoengine
+from django.views.decorators.http import condition
+from django.views.generic.base import TemplateView
+from opaque_keys.edx.keys import CourseKey
 from path import Path as path
+from six import text_type
 
-from courseware.courses import get_course_by_id
 import dashboard.git_import as git_import
-from dashboard.git_import import GitImportError
-from student.roles import CourseStaffRole, CourseInstructorRole
-from dashboard.models import CourseImportLog
-from openedx.core.djangoapps.external_auth.models import ExternalAuthMap
-from openedx.core.djangoapps.external_auth.views import generate_password
-from student.models import CourseEnrollment, UserProfile, Registration
 import track.views
+from courseware.courses import get_course_by_id
+from dashboard.git_import import GitImportError
+from dashboard.models import CourseImportLog
+from edxmako.shortcuts import render_to_response
+from openedx.core.djangoapps.external_auth.models import ExternalAuthMap
+from openedx.core.djangoapps.user_api.accounts.utils import generate_password
+from student.models import CourseEnrollment, Registration, UserProfile
+from student.roles import CourseInstructorRole, CourseStaffRole
 from xmodule.modulestore.django import modulestore
-from opaque_keys.edx.locations import SlashSeparatedCourseKey
-
 
 log = logging.getLogger(__name__)
 
@@ -266,7 +266,7 @@ class Users(SysadminDashboardView):
         self.msg += u'<ol>'
         for course in self.get_courses():
             self.msg += u'<li>{0} ({1})</li>'.format(
-                escape(course.id.to_deprecated_string()), course.location.to_deprecated_string())
+                escape(text_type(course.id)), text_type(course.location))
         self.msg += u'</ol>'
 
     def get(self, request):
@@ -428,7 +428,7 @@ class Courses(SysadminDashboardView):
 
         for course in self.get_courses():
             gdir = course.id.course
-            data.append([course.display_name, course.id.to_deprecated_string()]
+            data.append([course.display_name, text_type(course.id)]
                         + self.git_info_for_course(gdir))
 
         return dict(header=[_('Course Name'),
@@ -473,7 +473,7 @@ class Courses(SysadminDashboardView):
 
         elif action == 'del_course':
             course_id = request.POST.get('course_id', '').strip()
-            course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+            course_key = CourseKey.from_string(course_id)
             course_found = False
             if course_key in courses:
                 course_found = True
@@ -496,7 +496,7 @@ class Courses(SysadminDashboardView):
                 # don't delete user permission groups, though
                 self.msg += \
                     u"<font color='red'>{0} {1} = {2} ({3})</font>".format(
-                        _('Deleted'), course.location.to_deprecated_string(), course.id.to_deprecated_string(), course.display_name)
+                        _('Deleted'), text_type(course.location), text_type(course.id), course.display_name)
 
         context = {
             'datatable': self.make_datatable(),
@@ -585,7 +585,7 @@ class GitLogs(TemplateView):
 
         course_id = kwargs.get('course_id')
         if course_id:
-            course_id = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+            course_id = CourseKey.from_string(course_id)
 
         page_size = 10
 
@@ -654,7 +654,7 @@ class GitLogs(TemplateView):
         mdb.disconnect()
         context = {
             'logs': logs,
-            'course_id': course_id.to_deprecated_string() if course_id else None,
+            'course_id': text_type(course_id) if course_id else None,
             'error_msg': error_msg,
             'page_size': page_size
         }

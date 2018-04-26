@@ -2,20 +2,20 @@
 Models for the custom course feature
 """
 from __future__ import unicode_literals
+
 import json
 import logging
 from datetime import datetime
 
+from ccx_keys.locator import CCXLocator
 from django.contrib.auth.models import User
 from django.db import models
-from pytz import utc
 from lazy import lazy
+from opaque_keys.edx.django.models import CourseKeyField, UsageKeyField
+from pytz import utc
 
-from ccx_keys.locator import CCXLocator
-from openedx.core.djangoapps.xmodule_django.models import CourseKeyField, LocationKeyField
 from xmodule.error_module import ErrorDescriptor
 from xmodule.modulestore.django import modulestore
-
 
 log = logging.getLogger("edx.ccx")
 
@@ -108,7 +108,7 @@ class CcxFieldOverride(models.Model):
     Field overrides for custom courses.
     """
     ccx = models.ForeignKey(CustomCourseForEdX, db_index=True)
-    location = LocationKeyField(max_length=255, db_index=True)
+    location = UsageKeyField(max_length=255, db_index=True)
     field = models.CharField(max_length=255)
 
     class Meta(object):

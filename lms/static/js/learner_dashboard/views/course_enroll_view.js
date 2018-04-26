@@ -1,109 +1,110 @@
-(function(define) {
-    'use strict';
+import Backbone from 'backbone';
 
-    define(['backbone',
-            'jquery',
-            'underscore',
-            'gettext',
-            'edx-ui-toolkit/js/utils/html-utils',
-            'text!../../../templates/learner_dashboard/course_enroll.underscore'
-           ],
-         function(
-             Backbone,
-             $,
-             _,
-             gettext,
-             HtmlUtils,
-             pageTpl
-         ) {
-             return Backbone.View.extend({
-                 tpl: HtmlUtils.template(pageTpl),
+import HtmlUtils from 'edx-ui-toolkit/js/utils/html-utils';
 
-                 events: {
-                     'click .enroll-button': 'handleEnroll',
-                     'change .run-select': 'handleCourseRunSelect'
-                 },
+import pageTpl from '../../../templates/learner_dashboard/course_enroll.underscore';
 
-                 initialize: function(options) {
-                     this.$parentEl = options.$parentEl;
-                     this.enrollModel = options.enrollModel;
-                     this.urlModel = options.urlModel;
-                     this.render();
-                     if (this.urlModel) {
-                         this.trackSelectionUrl = this.urlModel.get('track_selection_url');
-                     }
-                 },
+class CourseEnrollView extends Backbone.View {
+  constructor(options) {
+    const defaults = {
+      className: 'course-enroll-view',
+      events: {
+        'click .enroll-button': 'handleEnroll',
+        'change .run-select': 'updateEnrollUrl',
+      },
+    };
+    super(Object.assign({}, defaults, options));
+  }
 
-                 render: function() {
-                     var filledTemplate;
-                     if (this.$parentEl && this.enrollModel) {
-                         filledTemplate = this.tpl(this.model.toJSON());
-                         HtmlUtils.setHtml(this.$el, filledTemplate);
-                         HtmlUtils.setHtml(this.$parentEl, HtmlUtils.HTML(this.$el));
-                     }
-                 },
+  initialize(options) {
+    this.tpl = HtmlUtils.template(pageTpl);
+    this.$parentEl = options.$parentEl;
+    this.enrollModel = options.enrollModel;
+    this.urlModel = options.urlModel;
+    this.grade = options.grade;
+    this.collectionCourseStatus = options.collectionCourseStatus;
+    this.render();
+  }
 
-                 handleEnroll: function() {
-                    // Enrollment click event handled here
-                     if (!this.model.get('course_run_key')) {
-                         this.$('.select-error').css('visibility', 'visible');
-                     } else if (!this.model.get('is_enrolled')) {
-                         // Create the enrollment.
-                         this.enrollModel.save({
-                             course_id: this.model.get('course_run_key')
-                         }, {
-                             success: _.bind(this.enrollSuccess, this),
-                             error: _.bind(this.enrollError, this)
-                         });
-                     }
-                 },
+  render() {
+    let filledTemplate;
+    const context = this.model.toJSON();
+    if (this.$parentEl && this.enrollModel) {
+      context.grade = this.grade;
+      context.collectionCourseStatus = this.collectionCourseStatus;
+      filledTemplate = this.tpl(context);
+      HtmlUtils.setHtml(this.$el, filledTemplate);
+      HtmlUtils.setHtml(this.$parentEl, HtmlUtils.HTML(this.$el));
+    }
+    this.postRender();
+  }
 
-                 handleCourseRunSelect: function(event) {
-                     var courseRunKey = $(event.target).val();
+  postRender() {
+    if (this.urlModel) {
+      this.trackSelectionUrl = this.urlModel.get('track_selection_url');
+    }
+  }
 
-                     if (courseRunKey) {
-                         this.model.updateCourseRun(courseRunKey);
-                     } else {
-                         // Set back the unselected states
-                         this.model.setUnselected();
-                     }
-                 },
+  handleEnroll() {
+    // Enrollment click event handled here
+    if (this.model.get('is_mobile_only') !== true) {
+      const courseRunKey = $('.run-select').val() || this.model.get('course_run_key');
+      this.model.updateCourseRun(courseRunKey);
+      if (this.model.get('is_enrolled')) {
+        // Create the enrollment.
+        this.enrollModel.save({
+          course_id: courseRunKey,
+        }, {
+          success: this.enrollSuccess.bind(this),
+          error: this.enrollError.bind(this),
+        });
+      }
+    }
+  }
 
-                 enrollSuccess: function() {
-                     var courseRunKey = this.model.get('course_run_key');
-                     if (this.trackSelectionUrl) {
-                         // Go to track selection page
-                         this.redirect(this.trackSelectionUrl + courseRunKey);
-                     } else {
-                         this.model.set({
-                             is_enrolled: true
-                         });
-                     }
-                 },
+  enrollSuccess() {
+    const courseRunKey = this.model.get('course_run_key');
+    window.analytics.track('edx.bi.user.program-details.enrollment');
+    if (this.trackSelectionUrl) {
+      // Go to track selection page
+      CourseEnrollView.redirect(this.trackSelectionUrl + courseRunKey);
+    } else {
+      this.model.set({
+        is_enrolled: true,
+      });
+    }
+  }
 
-                 enrollError: function(model, response) {
-                     if (response.status === 403 && response.responseJSON.user_message_url) {
-                        /**
-                         * Check if we've been blocked from the course
-                         * because of country access rules.
-                         * If so, redirect to a page explaining to the user
-                         * why they were blocked.
-                         */
-                         this.redirect(response.responseJSON.user_message_url);
-                     } else if (this.trackSelectionUrl) {
-                        /**
-                         * Otherwise, go to the track selection page as usual.
-                         * This can occur, for example, when a course does not
-                         * have a free enrollment mode, so we can't auto-enroll.
-                         */
-                         this.redirect(this.trackSelectionUrl + this.model.get('course_run_key'));
-                     }
-                 },
+  enrollError(model, response) {
+    if (response.status === 403 && response.responseJSON.user_message_url) {
+      /**
+       * Check if we've been blocked from the course
+       * because of country access rules.
+       * If so, redirect to a page explaining to the user
+       * why they were blocked.
+       */
+      CourseEnrollView.redirect(response.responseJSON.user_message_url);
+    } else if (this.trackSelectionUrl) {
+      /**
+       * Otherwise, go to the track selection page as usual.
+       * This can occur, for example, when a course does not
+       * have a free enrollment mode, so we can't auto-enroll.
+       */
+      CourseEnrollView.redirect(this.trackSelectionUrl + this.model.get('course_run_key'));
+    }
+  }
 
-                 redirect: function(url) {
-                     window.location.href = url;
-                 }
-             });
-         }
-    );
-}).call(this, define || RequireJS.define);
+  updateEnrollUrl() {
+    if (this.model.get('is_mobile_only') === true) {
+      const courseRunKey = $('.run-select').val();
+      const href = `edxapp://enroll?course_id=${courseRunKey}&email_opt_in=true`;
+      $('.enroll-course-button').attr('href', href);
+    }
+  }
+
+  static redirect(url) {
+    window.location.href = url;
+  }
+}
+
+export default CourseEnrollView;

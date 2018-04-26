@@ -3,13 +3,13 @@ Course Advanced Settings page
 """
 
 from bok_choy.promise import EmptyPromise
+
 from common.test.acceptance.pages.studio.course_page import CoursePage
 from common.test.acceptance.pages.studio.utils import (
-    press_the_notification_button,
-    type_in_codemirror,
     get_codemirror_value,
+    press_the_notification_button,
+    type_in_codemirror
 )
-
 
 KEY_CSS = '.key h3.title'
 UNDO_BUTTON_SELECTOR = ".action-item .action-undo"
@@ -182,7 +182,6 @@ class AdvancedSettingsPage(CoursePage):
             'advertised_start',
             'announcement',
             'display_name',
-            'info_sidebar_name',
             'is_new',
             'issue_badges',
             'max_student_enrollments_allowed',
@@ -218,7 +217,6 @@ class AdvancedSettingsPage(CoursePage):
             'annotation_storage_url',
             'social_sharing_url',
             'video_bumper',
-            'cert_html_view_enabled',
             'enable_proctored_exams',
             'allow_proctoring_opt_out',
             'enable_timed_exams',

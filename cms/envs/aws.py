@@ -15,6 +15,7 @@ import json
 
 from .common import *
 
+from openedx.core.lib.derived import derive_settings
 from openedx.core.lib.logsettings import get_logger_config
 import os
 
@@ -34,7 +35,6 @@ CONFIG_ROOT = path(os.environ.get('CONFIG_ROOT', ENV_ROOT))
 # based on the service variant. If no variant is use, don't use a
 # prefix.
 CONFIG_PREFIX = SERVICE_VARIANT + "." if SERVICE_VARIANT else ""
-
 
 ############### ALWAYS THE SAME ################################
 
@@ -62,7 +62,7 @@ CELERY_RESULT_BACKEND = 'djcelery.backends.cache:CacheBackend'
 
 # When the broker is behind an ELB, use a heartbeat to refresh the
 # connection and to detect if it has been dropped.
-BROKER_HEARTBEAT = 10.0
+BROKER_HEARTBEAT = 60.0
 BROKER_HEARTBEAT_CHECKRATE = 2
 
 # Each worker should only fetch one message at a time
@@ -94,6 +94,9 @@ CELERY_ROUTES = "{}celery.Router".format(QUEUE_VARIANT)
 with open(CONFIG_ROOT / CONFIG_PREFIX + "env.json") as env_file:
     ENV_TOKENS = json.load(env_file)
 
+# Do NOT calculate this dynamically at startup with git because it's *slow*.
+EDX_PLATFORM_REVISION = ENV_TOKENS.get('EDX_PLATFORM_REVISION', EDX_PLATFORM_REVISION)
+
 # STATIC_URL_BASE specifies the base url to use for static files
 STATIC_URL_BASE = ENV_TOKENS.get('STATIC_URL_BASE', None)
 if STATIC_URL_BASE:
@@ -101,10 +104,25 @@ if STATIC_URL_BASE:
     STATIC_URL = STATIC_URL_BASE.encode('ascii')
     if not STATIC_URL.endswith("/"):
         STATIC_URL += "/"
-    STATIC_URL += EDX_PLATFORM_REVISION + "/"
+    STATIC_URL += 'studio/'
 
 # DEFAULT_COURSE_ABOUT_IMAGE_URL specifies the default image to show for courses that don't provide one
 DEFAULT_COURSE_ABOUT_IMAGE_URL = ENV_TOKENS.get('DEFAULT_COURSE_ABOUT_IMAGE_URL', DEFAULT_COURSE_ABOUT_IMAGE_URL)
+
+DEFAULT_COURSE_VISIBILITY_IN_CATALOG = ENV_TOKENS.get(
+    'DEFAULT_COURSE_VISIBILITY_IN_CATALOG',
+    DEFAULT_COURSE_VISIBILITY_IN_CATALOG
+)
+
+# DEFAULT_MOBILE_AVAILABLE specifies if the course is available for mobile by default
+DEFAULT_MOBILE_AVAILABLE = ENV_TOKENS.get(
+    'DEFAULT_MOBILE_AVAILABLE',
+    DEFAULT_MOBILE_AVAILABLE
+)
+
+# MEDIA_ROOT specifies the directory where user-uploaded files are stored.
+MEDIA_ROOT = ENV_TOKENS.get('MEDIA_ROOT', MEDIA_ROOT)
+MEDIA_URL = ENV_TOKENS.get('MEDIA_URL', MEDIA_URL)
 
 # GITHUB_REPO_ROOT is the base directory
 # for course data
@@ -115,7 +133,8 @@ GITHUB_REPO_ROOT = ENV_TOKENS.get('GITHUB_REPO_ROOT', GITHUB_REPO_ROOT)
 
 STATIC_ROOT_BASE = ENV_TOKENS.get('STATIC_ROOT_BASE', None)
 if STATIC_ROOT_BASE:
-    STATIC_ROOT = path(STATIC_ROOT_BASE) / EDX_PLATFORM_REVISION
+    STATIC_ROOT = path(STATIC_ROOT_BASE) / 'studio'
+    WEBPACK_LOADER['DEFAULT']['STATS_FILE'] = STATIC_ROOT / "webpack-stats.json"
 
 EMAIL_BACKEND = ENV_TOKENS.get('EMAIL_BACKEND', EMAIL_BACKEND)
 EMAIL_FILE_PATH = ENV_TOKENS.get('EMAIL_FILE_PATH', None)
@@ -126,6 +145,9 @@ EMAIL_USE_TLS = ENV_TOKENS.get('EMAIL_USE_TLS', EMAIL_USE_TLS)
 
 LMS_BASE = ENV_TOKENS.get('LMS_BASE')
 LMS_ROOT_URL = ENV_TOKENS.get('LMS_ROOT_URL')
+LMS_INTERNAL_ROOT_URL = ENV_TOKENS.get('LMS_INTERNAL_ROOT_URL', LMS_ROOT_URL)
+ENTERPRISE_API_URL = ENV_TOKENS.get('ENTERPRISE_API_URL', LMS_INTERNAL_ROOT_URL + '/enterprise/api/v1/')
+ENTERPRISE_CONSENT_API_URL = ENV_TOKENS.get('ENTERPRISE_CONSENT_API_URL', LMS_INTERNAL_ROOT_URL + '/consent/api/v1/')
 # Note that FEATURES['PREVIEW_LMS_BASE'] gets read in from the environment file.
 
 SITE_NAME = ENV_TOKENS['SITE_NAME']
@@ -197,10 +219,6 @@ COURSES_WITH_UNSAFE_CODE = ENV_TOKENS.get("COURSES_WITH_UNSAFE_CODE", [])
 
 ASSET_IGNORE_REGEX = ENV_TOKENS.get('ASSET_IGNORE_REGEX', ASSET_IGNORE_REGEX)
 
-# following setting is for backward compatibility
-if ENV_TOKENS.get('COMPREHENSIVE_THEME_DIR', None):
-    COMPREHENSIVE_THEME_DIR = ENV_TOKENS.get('COMPREHENSIVE_THEME_DIR')
-
 COMPREHENSIVE_THEME_DIRS = ENV_TOKENS.get('COMPREHENSIVE_THEME_DIRS', COMPREHENSIVE_THEME_DIRS) or []
 
 # COMPREHENSIVE_THEME_LOCALE_PATHS contain the paths to themes locale directories e.g.
@@ -221,7 +239,10 @@ GIT_REPO_EXPORT_DIR = ENV_TOKENS.get('GIT_REPO_EXPORT_DIR', '/edx/var/edxapp/exp
 # Translation overrides
 LANGUAGES = ENV_TOKENS.get('LANGUAGES', LANGUAGES)
 LANGUAGE_CODE = ENV_TOKENS.get('LANGUAGE_CODE', LANGUAGE_CODE)
+LANGUAGE_COOKIE = ENV_TOKENS.get('LANGUAGE_COOKIE', LANGUAGE_COOKIE)
+
 USE_I18N = ENV_TOKENS.get('USE_I18N', USE_I18N)
+ALL_LANGUAGES = ENV_TOKENS.get('ALL_LANGUAGES', ALL_LANGUAGES)
 
 ENV_FEATURES = ENV_TOKENS.get('FEATURES', {})
 for feature, value in ENV_FEATURES.items():
@@ -229,34 +250,41 @@ for feature, value in ENV_FEATURES.items():
 
 # Additional installed apps
 for app in ENV_TOKENS.get('ADDL_INSTALLED_APPS', []):
-    INSTALLED_APPS += (app,)
+    INSTALLED_APPS.append(app)
 
 WIKI_ENABLED = ENV_TOKENS.get('WIKI_ENABLED', WIKI_ENABLED)
 
 LOGGING = get_logger_config(LOG_DIR,
                             logging_env=ENV_TOKENS['LOGGING_ENV'],
-                            debug=False,
                             service_variant=SERVICE_VARIANT)
 
 #theming start:
-PLATFORM_NAME = ENV_TOKENS.get('PLATFORM_NAME', 'edX')
-STUDIO_NAME = ENV_TOKENS.get('STUDIO_NAME', 'edX Studio')
-STUDIO_SHORT_NAME = ENV_TOKENS.get('STUDIO_SHORT_NAME', 'Studio')
+PLATFORM_NAME = ENV_TOKENS.get('PLATFORM_NAME', PLATFORM_NAME)
+PLATFORM_DESCRIPTION = ENV_TOKENS.get('PLATFORM_DESCRIPTION', PLATFORM_DESCRIPTION)
+STUDIO_NAME = ENV_TOKENS.get('STUDIO_NAME', STUDIO_NAME)
+STUDIO_SHORT_NAME = ENV_TOKENS.get('STUDIO_SHORT_NAME', STUDIO_SHORT_NAME)
 
 # Event Tracking
 if "TRACKING_IGNORE_URL_PATTERNS" in ENV_TOKENS:
     TRACKING_IGNORE_URL_PATTERNS = ENV_TOKENS.get("TRACKING_IGNORE_URL_PATTERNS")
 
+# Heartbeat
+HEARTBEAT_CHECKS = ENV_TOKENS.get('HEARTBEAT_CHECKS', HEARTBEAT_CHECKS)
+HEARTBEAT_EXTENDED_CHECKS = ENV_TOKENS.get('HEARTBEAT_EXTENDED_CHECKS', HEARTBEAT_EXTENDED_CHECKS)
+HEARTBEAT_CELERY_TIMEOUT = ENV_TOKENS.get('HEARTBEAT_CELERY_TIMEOUT', HEARTBEAT_CELERY_TIMEOUT)
+
 # Django CAS external authentication settings
 CAS_EXTRA_LOGIN_PARAMS = ENV_TOKENS.get("CAS_EXTRA_LOGIN_PARAMS", None)
 if FEATURES.get('AUTH_USE_CAS'):
     CAS_SERVER_URL = ENV_TOKENS.get("CAS_SERVER_URL", None)
-    AUTHENTICATION_BACKENDS = (
+    AUTHENTICATION_BACKENDS = [
         'django.contrib.auth.backends.ModelBackend',
         'django_cas.backends.CASBackend',
-    )
-    INSTALLED_APPS += ('django_cas',)
-    MIDDLEWARE_CLASSES += ('django_cas.middleware.CASMiddleware',)
+    ]
+
+    INSTALLED_APPS.append('django_cas')
+
+    MIDDLEWARE_CLASSES.append('django_cas.middleware.CASMiddleware')
     CAS_ATTRIBUTE_CALLBACK = ENV_TOKENS.get('CAS_ATTRIBUTE_CALLBACK', None)
     if CAS_ATTRIBUTE_CALLBACK:
         import importlib
@@ -268,6 +296,10 @@ if FEATURES.get('AUTH_USE_CAS'):
 # Specific setting for the File Upload Service to store media in a bucket.
 FILE_UPLOAD_STORAGE_BUCKET_NAME = ENV_TOKENS.get('FILE_UPLOAD_STORAGE_BUCKET_NAME', FILE_UPLOAD_STORAGE_BUCKET_NAME)
 FILE_UPLOAD_STORAGE_PREFIX = ENV_TOKENS.get('FILE_UPLOAD_STORAGE_PREFIX', FILE_UPLOAD_STORAGE_PREFIX)
+
+# Zendesk
+ZENDESK_URL = ENV_TOKENS.get('ZENDESK_URL', ZENDESK_URL)
+ZENDESK_CUSTOM_FIELDS = ENV_TOKENS.get('ZENDESK_CUSTOM_FIELDS', ZENDESK_CUSTOM_FIELDS)
 
 ################ SECURE AUTH ITEMS ###############################
 # Secret things: passwords, access keys, etc.
@@ -299,9 +331,16 @@ AWS_SECRET_ACCESS_KEY = AUTH_TOKENS["AWS_SECRET_ACCESS_KEY"]
 if AWS_SECRET_ACCESS_KEY == "":
     AWS_SECRET_ACCESS_KEY = None
 
+AWS_STORAGE_BUCKET_NAME = AUTH_TOKENS.get('AWS_STORAGE_BUCKET_NAME', 'edxuploads')
+
 # Disabling querystring auth instructs Boto to exclude the querystring parameters (e.g. signature, access key) it
 # normally appends to every returned URL.
 AWS_QUERYSTRING_AUTH = AUTH_TOKENS.get('AWS_QUERYSTRING_AUTH', True)
+
+AWS_DEFAULT_ACL = 'private'
+AWS_BUCKET_ACL = AWS_DEFAULT_ACL
+AWS_QUERYSTRING_EXPIRE = 7 * 24 * 60 * 60  # 7 days
+AWS_S3_CUSTOM_DOMAIN = AUTH_TOKENS.get('AWS_S3_CUSTOM_DOMAIN', 'edxuploads.s3.amazonaws.com')
 
 if AUTH_TOKENS.get('DEFAULT_FILE_STORAGE'):
     DEFAULT_FILE_STORAGE = AUTH_TOKENS.get('DEFAULT_FILE_STORAGE')
@@ -309,6 +348,15 @@ elif AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY:
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 else:
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
+COURSE_IMPORT_EXPORT_BUCKET = ENV_TOKENS.get('COURSE_IMPORT_EXPORT_BUCKET', '')
+
+if COURSE_IMPORT_EXPORT_BUCKET:
+    COURSE_IMPORT_EXPORT_STORAGE = 'contentstore.storage.ImportExportS3Storage'
+else:
+    COURSE_IMPORT_EXPORT_STORAGE = DEFAULT_FILE_STORAGE
+
+USER_TASKS_ARTIFACT_STORAGE = COURSE_IMPORT_EXPORT_STORAGE
 
 DATABASES = AUTH_TOKENS['DATABASES']
 
@@ -377,6 +425,7 @@ ALTERNATE_QUEUES = [
     DEFAULT_PRIORITY_QUEUE.replace(QUEUE_VARIANT, alternate + '.')
     for alternate in ALTERNATE_QUEUE_ENVS
 ]
+
 CELERY_QUEUES.update(
     {
         alternate: {}
@@ -384,6 +433,9 @@ CELERY_QUEUES.update(
         if alternate not in CELERY_QUEUES.keys()
     }
 )
+
+# Queue to use for updating grades due to grading policy change
+POLICY_CHANGE_GRADES_ROUTING_KEY = ENV_TOKENS.get('POLICY_CHANGE_GRADES_ROUTING_KEY', LOW_PRIORITY_QUEUE)
 
 # Event tracking
 TRACKING_BACKENDS.update(AUTH_TOKENS.get("TRACKING_BACKENDS", {}))
@@ -420,6 +472,14 @@ ADVANCED_PROBLEM_TYPES = ENV_TOKENS.get('ADVANCED_PROBLEM_TYPES', ADVANCED_PROBL
 ################ VIDEO UPLOAD PIPELINE ###############
 
 VIDEO_UPLOAD_PIPELINE = ENV_TOKENS.get('VIDEO_UPLOAD_PIPELINE', VIDEO_UPLOAD_PIPELINE)
+
+################ VIDEO IMAGE STORAGE ###############
+
+VIDEO_IMAGE_SETTINGS = ENV_TOKENS.get('VIDEO_IMAGE_SETTINGS', VIDEO_IMAGE_SETTINGS)
+
+################ VIDEO TRANSCRIPTS STORAGE ###############
+
+VIDEO_TRANSCRIPTS_SETTINGS = ENV_TOKENS.get('VIDEO_TRANSCRIPTS_SETTINGS', VIDEO_TRANSCRIPTS_SETTINGS)
 
 ################ PUSH NOTIFICATIONS ###############
 
@@ -468,7 +528,7 @@ JWT_AUTH.update(ENV_TOKENS.get('JWT_AUTH', {}))
 
 ######################## CUSTOM COURSES for EDX CONNECTOR ######################
 if FEATURES.get('CUSTOM_COURSES_EDX'):
-    INSTALLED_APPS += ('openedx.core.djangoapps.ccxcon',)
+    INSTALLED_APPS.append('openedx.core.djangoapps.ccxcon.apps.CCXConnectorConfig')
 
 # Partner support link for CMS footer
 PARTNER_SUPPORT_EMAIL = ENV_TOKENS.get('PARTNER_SUPPORT_EMAIL', PARTNER_SUPPORT_EMAIL)
@@ -478,4 +538,56 @@ AFFILIATE_COOKIE_NAME = ENV_TOKENS.get('AFFILIATE_COOKIE_NAME', AFFILIATE_COOKIE
 
 ############## Settings for Studio Context Sensitive Help ##############
 
-DOC_LINK_BASE_URL = ENV_TOKENS.get('DOC_LINK_BASE_URL', DOC_LINK_BASE_URL)
+HELP_TOKENS_BOOKS = ENV_TOKENS.get('HELP_TOKENS_BOOKS', HELP_TOKENS_BOOKS)
+
+############## Settings for CourseGraph ############################
+COURSEGRAPH_JOB_QUEUE = ENV_TOKENS.get('COURSEGRAPH_JOB_QUEUE', LOW_PRIORITY_QUEUE)
+
+########################## Parental controls config  #######################
+
+# The age at which a learner no longer requires parental consent, or None
+# if parental consent is never required.
+PARENTAL_CONSENT_AGE_LIMIT = ENV_TOKENS.get(
+    'PARENTAL_CONSENT_AGE_LIMIT',
+    PARENTAL_CONSENT_AGE_LIMIT
+)
+
+########################## Extra middleware classes  #######################
+
+# Allow extra middleware classes to be added to the app through configuration.
+MIDDLEWARE_CLASSES.extend(ENV_TOKENS.get('EXTRA_MIDDLEWARE_CLASSES', []))
+
+########################## Settings for Completion API #####################
+
+# Once a user has watched this percentage of a video, mark it as complete:
+# (0.0 = 0%, 1.0 = 100%)
+COMPLETION_VIDEO_COMPLETE_PERCENTAGE = ENV_TOKENS.get(
+    'COMPLETION_VIDEO_COMPLETE_PERCENTAGE',
+    COMPLETION_VIDEO_COMPLETE_PERCENTAGE,
+)
+
+####################### Enterprise Settings ######################
+# A shared secret to be used for encrypting passwords passed from the enterprise api
+# to the enteprise reporting script.
+ENTERPRISE_REPORTING_SECRET = AUTH_TOKENS.get(
+    'ENTERPRISE_REPORTING_SECRET',
+    ENTERPRISE_REPORTING_SECRET
+)
+
+############### Settings for Retirement #####################
+RETIRED_USERNAME_PREFIX = ENV_TOKENS.get('RETIRED_USERNAME_PREFIX', RETIRED_USERNAME_PREFIX)
+RETIRED_EMAIL_PREFIX = ENV_TOKENS.get('RETIRED_EMAIL_PREFIX', RETIRED_EMAIL_PREFIX)
+RETIRED_EMAIL_DOMAIN = ENV_TOKENS.get('RETIRED_EMAIL_DOMAIN', RETIRED_EMAIL_DOMAIN)
+RETIREMENT_SERVICE_WORKER_USERNAME = ENV_TOKENS.get(
+    'RETIREMENT_SERVICE_WORKER_USERNAME',
+    RETIREMENT_SERVICE_WORKER_USERNAME
+)
+
+####################### Plugin Settings ##########################
+
+from openedx.core.djangoapps.plugins import plugin_settings, constants as plugin_constants
+plugin_settings.add_plugins(__name__, plugin_constants.ProjectType.CMS, plugin_constants.SettingsType.AWS)
+
+########################## Derive Any Derived Settings  #######################
+
+derive_settings(__name__)

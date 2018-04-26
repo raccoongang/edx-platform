@@ -4,7 +4,9 @@ An API for retrieving user account information.
 For additional information and historical context, see:
 https://openedx.atlassian.net/wiki/display/TNL/User+API
 """
+import datetime
 
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from edx_rest_framework_extensions.authentication import JwtAuthentication
 from rest_framework import permissions
@@ -12,16 +14,29 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
+from six import text_type
+from social_django.models import UserSocialAuth
+import pytz
 
-from .api import get_account_settings, update_account_settings
-from .permissions import CanDeactivateUser
-from ..errors import UserNotFound, UserNotAuthorized, AccountUpdateError, AccountValidationError
+from openedx.core.djangoapps.user_api.preferences.api import update_email_opt_in
 from openedx.core.lib.api.authentication import (
     SessionAuthenticationAllowInactiveUser,
     OAuth2AuthenticationAllowInactiveUser,
 )
 from openedx.core.lib.api.parsers import MergePatchParser
-from student.models import User
+from student.models import (
+    User,
+    get_retired_email_by_email,
+    get_potentially_retired_user_by_username_and_hash,
+    get_potentially_retired_user_by_username
+)
+
+from .api import get_account_settings, update_account_settings
+from .permissions import CanDeactivateUser, CanRetireUser
+from .serializers import UserRetirementStatusSerializer
+from .signals import USER_RETIRE_MAILINGS
+from ..errors import UserNotFound, UserNotAuthorized, AccountUpdateError, AccountValidationError
+from ..models import UserOrgTag, RetirementState, RetirementStateError, UserRetirementStatus
 
 
 class AccountViewSet(ViewSet):
@@ -109,6 +124,12 @@ class AccountViewSet(ViewSet):
 
             * requires_parental_consent: True if the user is a minor
               requiring parental consent.
+            * social_links: Array of social links. Each
+              preference is a JSON object with the following keys:
+
+                * "platform": A particular social platform, ex: 'facebook'
+                * "social_link": The link to the user's profile on the particular platform
+
             * username: The username associated with the account.
             * year_of_birth: The year the user was born, as an integer, or null.
             * account_privacy: The user's setting for sharing her personal
@@ -238,8 +259,213 @@ class AccountDeactivationView(APIView):
 
         Marks the user as having no password set for deactivation purposes.
         """
-        user = User.objects.get(username=username)
-        user.set_unusable_password()
-        user.save()
-        account_settings = get_account_settings(request, [username])[0]
-        return Response(account_settings)
+        _set_unusable_password(User.objects.get(username=username))
+        return Response(get_account_settings(request, [username])[0])
+
+
+class AccountRetireMailingsView(APIView):
+    """
+    Part of the retirement API, accepts POSTs to unsubscribe a user
+    from all email lists.
+    """
+    authentication_classes = (JwtAuthentication, )
+    permission_classes = (permissions.IsAuthenticated, CanRetireUser)
+
+    def post(self, request):
+        """
+        POST /api/user/v1/accounts/{username}/retire_mailings/
+
+        Allows an administrative user to take the following actions
+        on behalf of an LMS user:
+        -  Update UserOrgTags to opt the user out of org emails
+        -  Call Sailthru API to force opt-out the user from all email lists
+        """
+        username = request.data['username']
+
+        try:
+            retirement = UserRetirementStatus.get_retirement_for_retirement_action(username)
+
+            with transaction.atomic():
+                # Take care of org emails first, using the existing API for consistency
+                for preference in UserOrgTag.objects.filter(user=retirement.user, key='email-optin'):
+                    update_email_opt_in(retirement.user, preference.org, False)
+
+                # This signal allows lms' email_marketing and other 3rd party email
+                # providers to unsubscribe the user as well
+                USER_RETIRE_MAILINGS.send(sender=self.__class__, user=retirement.user)
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except UserRetirementStatus.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as exc:  # pylint: disable=broad-except
+            return Response(text_type(exc), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class DeactivateLogoutView(APIView):
+    """
+    POST /api/user/v1/accounts/deactivate_logout/
+    {
+        "username": "example_username",
+    }
+
+    **POST Parameters**
+
+      A POST request must include the following parameter.
+
+      * username: Required. The username of the user being deactivated.
+
+    **POST Response Values**
+
+     If the request does not specify a username or submits a username
+     for a non-existent user, the request returns an HTTP 404 "Not Found"
+     response.
+
+     If a user who is not a superuser tries to deactivate a user,
+     the request returns an HTTP 403 "Forbidden" response.
+
+     If the specified user is successfully deactivated, the request
+     returns an HTTP 204 "No Content" response.
+
+     If an unanticipated error occurs, the request returns an
+     HTTP 500 "Internal Server Error" response.
+
+    Allows an administrative user to take the following actions
+    on behalf of an LMS user:
+    -  Change the user's password permanently to Django's unusable password
+    -  Log the user out
+    """
+    authentication_classes = (JwtAuthentication, )
+    permission_classes = (permissions.IsAuthenticated, CanRetireUser)
+
+    def post(self, request):
+        """
+        POST /api/user/v1/accounts/deactivate_logout
+
+        Marks the user as having no password set for deactivation purposes,
+        and logs the user out.
+        """
+        username = None
+        user_model = get_user_model()
+        try:
+            # Get the username from the request and check that it exists
+            username = request.data['username']
+            user = user_model.objects.get(username=username)
+
+            with transaction.atomic():
+                # 1. Unlink LMS social auth accounts
+                UserSocialAuth.objects.filter(user_id=user.id).delete()
+                # 2. Change LMS password & email
+                user.email = get_retired_email_by_email(user.email)
+                user.save()
+                _set_unusable_password(user)
+                # 3. Unlink social accounts & change password on each IDA, still to be implemented
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except KeyError:
+            return Response(u'Username not specified.', status=status.HTTP_404_NOT_FOUND)
+        except user_model.DoesNotExist:
+            return Response(u'The user "{}" does not exist.'.format(username), status=status.HTTP_404_NOT_FOUND)
+        except Exception as exc:  # pylint: disable=broad-except
+            return Response(text_type(exc), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def _set_unusable_password(user):
+    """
+    Helper method for the shared functionality of setting a user's
+    password to the unusable password, thus deactivating the account.
+    """
+    user.set_unusable_password()
+    user.save()
+
+
+class AccountRetirementView(ViewSet):
+    """
+    Provides API endpoints for managing the user retirement process.
+    """
+    authentication_classes = (JwtAuthentication,)
+    permission_classes = (permissions.IsAuthenticated, CanRetireUser, )
+    parser_classes = (MergePatchParser, )
+    serializer_class = UserRetirementStatusSerializer
+
+    def retirement_queue(self, request):
+        """
+        GET /api/user/v1/accounts/accounts_to_retire/
+        {'cool_off_days': 7, 'states': ['PENDING', 'COMPLETE']}
+
+        Returns the list of RetirementStatus users in the given states that were
+        created in the retirement queue at least `cool_off_days` ago.
+        """
+        try:
+            cool_off_days = int(request.GET['cool_off_days'])
+            states = request.GET['states'].split(',')
+
+            if cool_off_days < 0:
+                raise RetirementStateError('Invalid argument for cool_off_days, must be greater than 0.')
+
+            state_objs = RetirementState.objects.filter(state_name__in=states)
+            if state_objs.count() != len(states):
+                found = [s.state_name for s in state_objs]
+                raise RetirementStateError('Unknown state. Requested: {} Found: {}'.format(states, found))
+
+            earliest_datetime = datetime.datetime.now(pytz.UTC) - datetime.timedelta(days=cool_off_days)
+
+            retirements = UserRetirementStatus.objects.select_related(
+                'user', 'current_state', 'last_state'
+            ).filter(
+                current_state__in=state_objs, created__lt=earliest_datetime
+            ).order_by(
+                'id'
+            )
+            serializer = UserRetirementStatusSerializer(retirements, many=True)
+            return Response(serializer.data)
+        # This should only occur on the int() converstion of cool_off_days at this point
+        except ValueError:
+            return Response('Invalid cool_off_days, should be integer.', status=status.HTTP_400_BAD_REQUEST)
+        except KeyError as exc:
+            return Response('Missing required parameter: {}'.format(text_type(exc)), status=status.HTTP_400_BAD_REQUEST)
+        except RetirementStateError as exc:
+            return Response(text_type(exc), status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, username):  # pylint: disable=unused-argument
+        """
+        GET /api/user/v1/accounts/{username}/retirement_status/
+        Returns the RetirementStatus of a given user, or 404 if that row
+        doesn't exist.
+        """
+        try:
+            user = get_potentially_retired_user_by_username(username)
+            retirement = UserRetirementStatus.objects.select_related(
+                'user', 'current_state', 'last_state'
+            ).get(user=user)
+            serializer = UserRetirementStatusSerializer(instance=retirement)
+            return Response(serializer.data)
+        except (UserRetirementStatus.DoesNotExist, User.DoesNotExist):
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def partial_update(self, request):
+        """
+        PATCH /api/user/v1/accounts/update_retirement_status/
+
+        {
+            'username': 'user_to_retire',
+            'new_state': 'LOCKING_COMPLETE',
+            'response': 'User account locked and logged out.'
+        }
+
+        Updates the RetirementStatus row for the given user to the new
+        status, and append any messages to the message log.
+
+        Note that this implementation is the "merge patch" implementation proposed in
+        https://tools.ietf.org/html/rfc7396. The content_type must be "application/merge-patch+json" or
+        else an error response with status code 415 will be returned.
+        """
+        try:
+            username = request.data['username']
+            retirement = UserRetirementStatus.objects.get(user__username=username)
+            retirement.update_state(request.data)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except UserRetirementStatus.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except RetirementStateError as exc:
+            return Response(text_type(exc), status=status.HTTP_400_BAD_REQUEST)
+        except Exception as exc:  # pylint: disable=broad-except
+            return Response(text_type(exc), status=status.HTTP_500_INTERNAL_SERVER_ERROR)

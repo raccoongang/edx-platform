@@ -3,22 +3,23 @@ Useful utilities for management commands.
 """
 
 from django.core.management.base import CommandError
-
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
+from six import text_type
 
 
-def get_mutually_exclusive_required_option(options, option_1, option_2):
+def get_mutually_exclusive_required_option(options, *selections):
     """
     Validates that exactly one of the 2 given options is specified.
     Returns the name of the found option.
     """
-    validate_mutually_exclusive_option(options, option_1, option_2)
 
-    if not options.get(option_1) and not options.get(option_2):
-        raise CommandError('Either --{} or --{} must be specified.'.format(option_1, option_2))
+    selected = [sel for sel in selections if options.get(sel)]
+    if len(selected) != 1:
+        selection_string = u', '.join('--{}'.format(selection) for selection in selections)
 
-    return option_1 if options.get(option_1) else option_2
+        raise CommandError(u'Must specify exactly one of {}'.format(selection_string))
+    return selected[0]
 
 
 def validate_mutually_exclusive_option(options, option_1, option_2):
@@ -45,4 +46,4 @@ def parse_course_keys(course_key_strings):
     try:
         return [CourseKey.from_string(course_key_string) for course_key_string in course_key_strings]
     except InvalidKeyError as error:
-        raise CommandError('Invalid key specified: {}'.format(error.message))
+        raise CommandError('Invalid key specified: {}'.format(text_type(error)))

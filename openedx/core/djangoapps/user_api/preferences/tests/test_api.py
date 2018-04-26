@@ -14,6 +14,7 @@ from dateutil.parser import parse as parse_datetime
 
 from openedx.core.djangolib.testing.utils import CacheIsolationTestCase, skip_unless_lms
 from openedx.core.lib.time_zone_utils import get_display_time_zone
+from student.models import UserProfile
 from student.tests.factories import UserFactory
 
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
@@ -27,7 +28,7 @@ from ...errors import (
     PreferenceUpdateError,
     CountryCodeError,
 )
-from ...models import UserProfile, UserOrgTag
+from ...models import UserOrgTag
 from ...preferences.api import (
     get_user_preference,
     get_user_preferences,
@@ -53,9 +54,8 @@ class TestPreferenceAPI(CacheIsolationTestCase):
         super(TestPreferenceAPI, self).setUp()
         self.user = UserFactory.create(password=self.password)
         self.different_user = UserFactory.create(password=self.password)
-        self.staff_user = UserFactory(is_staff=True, password=self.password)
-        self.no_such_user = UserFactory.create(password=self.password)
-        self.no_such_user.username = "no_such_user"
+        self.staff_user = UserFactory.create(is_staff=True, password=self.password)
+        self.no_such_user = UserFactory.build(password=self.password, username="no_such_user")
         self.test_preference_key = "test_key"
         self.test_preference_value = "test_value"
         set_user_preference(self.user, self.test_preference_key, self.test_preference_value)

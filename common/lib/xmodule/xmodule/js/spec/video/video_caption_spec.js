@@ -42,10 +42,10 @@
                     $('.video .toggle-captions').trigger('click');
 
                     expect($('.video .subtitles-menu')).toHaveAttrs({
-                        'lang': 'en'
+                        lang: 'en'
                     });
                     expect($('.video .closed-captions')).toHaveAttrs({
-                        'lang': 'en'
+                        lang: 'en'
                     });
                 });
 
@@ -56,8 +56,8 @@
 
                 it('add ARIA attributes to transcript control', function() {
                     state = jasmine.initializePlayer();
-                    var captionControl = $('.toggle-transcript');
-                    expect(captionControl).toHaveAttrs({
+                    var $captionControl = $('.toggle-transcript');
+                    expect($captionControl).toHaveAttrs({
                         'aria-disabled': 'false'
                     });
                 });
@@ -69,20 +69,24 @@
                 });
 
                 it('fetch the transcript in HTML5 mode', function(done) {
+                    var transcriptURL = '/transcript/translation/en',
+                        transcriptCall;
                     state = jasmine.initializePlayer();
 
                     jasmine.waitUntil(function() {
                         return state.videoCaption.loaded;
                     }).then(function() {
                         expect($.ajaxWithPrefix).toHaveBeenCalledWith({
-                            url: '/transcript/translation/en',
+                            url: transcriptURL,
                             notifyOnError: false,
                             data: void(0),
                             success: jasmine.any(Function),
                             error: jasmine.any(Function)
                         });
-                        expect($.ajaxWithPrefix.calls.mostRecent().args[0].data)
-                            .toBeUndefined();
+                        transcriptCall = $.ajaxWithPrefix.calls.all().find(function(call) {
+                            return call.args[0].url === transcriptURL;
+                        });
+                        expect(transcriptCall.args[0].data).toBeUndefined();
                     }).always(done);
                 });
 
@@ -157,11 +161,11 @@
                     'caption:fetch': plugin.fetchCaption,
                     'caption:resize': plugin.onResize,
                     'caption:update': plugin.onCaptionUpdate,
-                    'ended': plugin.pause,
-                    'fullscreen': plugin.onResize,
-                    'pause': plugin.pause,
-                    'play': plugin.play,
-                    'destroy': plugin.destroy
+                    ended: plugin.pause,
+                    fullscreen: plugin.onResize,
+                    pause: plugin.pause,
+                    play: plugin.play,
+                    destroy: plugin.destroy
                 });
             });
 
@@ -242,13 +246,13 @@
                     it('when clicking on link with new language', function() {
                         state = jasmine.initializePlayer();
                         var Caption = state.videoCaption,
-                            link = $('.langs-list li[data-lang-code="de"] .control-lang');
+                            $link = $('.langs-list li[data-lang-code="de"] .control-lang');
 
                         spyOn(Caption, 'fetchCaption');
                         spyOn(state.storage, 'setItem');
 
                         state.lang = 'en';
-                        link.trigger('click');
+                        $link.trigger('click');
 
                         expect(Caption.fetchCaption).toHaveBeenCalled();
                         expect(state.lang).toBe('de');
@@ -256,31 +260,31 @@
                             .toHaveBeenCalledWith('language', 'de');
                         expect($('.langs-list li.is-active').length).toBe(1);
                         expect($('.subtitles .subtitles-menu')).toHaveAttrs({
-                            'lang': 'de'
+                            lang: 'de'
                         });
                         expect($('.closed-captions')).toHaveAttrs({
-                            'lang': 'de'
+                            lang: 'de'
                         });
-                        expect(link).toHaveAttr('aria-pressed', 'true');
+                        expect($link).toHaveAttr('aria-pressed', 'true');
                     });
 
                     it('when clicking on link with current language', function() {
                         state = jasmine.initializePlayer();
                         var Caption = state.videoCaption,
-                            link = $('.langs-list li[data-lang-code="en"] .control-lang');
+                            $link = $('.langs-list li[data-lang-code="en"] .control-lang');
 
                         spyOn(Caption, 'fetchCaption');
                         spyOn(state.storage, 'setItem');
 
                         state.lang = 'en';
-                        link.trigger('click');
+                        $link.trigger('click');
 
                         expect(Caption.fetchCaption).not.toHaveBeenCalled();
                         expect(state.lang).toBe('en');
                         expect(state.storage.setItem)
                             .not.toHaveBeenCalledWith('language', 'en');
                         expect($('.langs-list li.is-active').length).toBe(1);
-                        expect(link).toHaveAttr('aria-pressed', 'true');
+                        expect($link).toHaveAttr('aria-pressed', 'true');
                     });
 
                     it('open the language toggle on hover', function() {
@@ -312,7 +316,7 @@
                 describe('is not rendered', function() {
                     it('if just 1 language', function() {
                         state = jasmine.initializePlayer(null, {
-                            'transcriptLanguages': {'en': 'English'}
+                            transcriptLanguages: {en: 'English'}
                         });
 
                         expect($('.langs-list')).not.toExist();
@@ -441,8 +445,8 @@
             describe('when no transcripts file was specified', function() {
                 beforeEach(function() {
                     state = jasmine.initializePlayer('video_all.html', {
-                        'sub': '',
-                        'transcriptLanguages': {}
+                        sub: '',
+                        transcriptLanguages: {}
                     });
                 });
 
@@ -694,7 +698,7 @@
 
                 expect(Caption.fetchAvailableTranslations).not.toHaveBeenCalled();
                 expect($.ajaxWithPrefix.calls.mostRecent().args[0].data)
-                    .toEqual({'videoId': 'Z5KLxerq05Y'});
+                    .toEqual({videoId: 'Z5KLxerq05Y'});
                 expect(Caption.hideCaptions.calls.mostRecent().args)
                     .toEqual([true, false]);
                 expect(Caption.fetchCaption.calls.mostRecent().args[0]).toEqual(true);
@@ -715,7 +719,7 @@
 
                 expect(Caption.fetchAvailableTranslations).not.toHaveBeenCalled();
                 expect($.ajaxWithPrefix.calls.mostRecent().args[0].data)
-                    .toEqual({'videoId': 'Z5KLxerq05Y'});
+                    .toEqual({videoId: 'Z5KLxerq05Y'});
                 expect(Caption.hideCaptions).toHaveBeenCalledWith(false);
                 expect(Caption.fetchCaption.calls.mostRecent().args[0]).toEqual(true);
                 expect(Caption.fetchCaption.calls.count()).toEqual(1);
@@ -730,8 +734,8 @@
                     });
 
                 state.config.transcriptLanguages = {
-                    'en': 'English',
-                    'uk': 'Ukrainian'
+                    en: 'English',
+                    uk: 'Ukrainian'
                 };
 
                 spyOn(Caption, 'fetchAvailableTranslations');
@@ -768,34 +772,32 @@
             msg = 'on succes: language menu is rendered if translations available';
             it(msg, function() {
                 state.config.transcriptLanguages = {
-                    'en': 'English',
-                    'uk': 'Ukrainian',
-                    'de': 'German'
+                    en: 'English',
+                    uk: 'Ukrainian',
+                    de: 'German'
                 };
                 Caption.fetchAvailableTranslations();
 
                 expect($.ajaxWithPrefix).toHaveBeenCalled();
-                expect(Caption.fetchCaption).toHaveBeenCalled();
                 expect(state.config.transcriptLanguages).toEqual({
-                    'uk': 'Ukrainian',
-                    'de': 'German'
+                    uk: 'Ukrainian',
+                    de: 'German'
                 });
                 expect(Caption.renderLanguageMenu).toHaveBeenCalledWith({
-                    'uk': 'Ukrainian',
-                    'de': 'German'
+                    uk: 'Ukrainian',
+                    de: 'German'
                 });
             });
 
             msg = 'on succes: language menu isn\'t rendered if translations unavailable';
             it(msg, function() {
                 state.config.transcriptLanguages = {
-                    'en': 'English',
-                    'ru': 'Russian'
+                    en: 'English',
+                    ru: 'Russian'
                 };
                 Caption.fetchAvailableTranslations();
 
                 expect($.ajaxWithPrefix).toHaveBeenCalled();
-                expect(Caption.fetchCaption).not.toHaveBeenCalled();
                 expect(state.config.transcriptLanguages).toEqual({});
                 expect(Caption.renderLanguageMenu).not.toHaveBeenCalled();
             });
@@ -986,9 +988,11 @@
                     videoWrapperHeight = $('.video-wrapper').height();
                     progressSliderHeight = state.el.find('.slider').height();
                     controlHeight = state.el.find('.video-controls').height();
-                    shouldBeHeight = videoWrapperHeight -
+                    shouldBeHeight = parseInt((
+                        videoWrapperHeight -
                         0.5 * progressSliderHeight -
-                        controlHeight;
+                        controlHeight
+                    ), 10);
 
                     expect(realHeight).toBe(shouldBeHeight);
                 });

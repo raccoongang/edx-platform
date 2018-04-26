@@ -3,7 +3,7 @@ Wiki tab on courses
 """
 
 from common.test.acceptance.pages.lms.course_page import CoursePage
-from common.test.acceptance.pages.studio.utils import type_in_codemirror
+from common.test.acceptance.pages.studio.utils import type_in_codemirror, get_codemirror_value
 
 
 class CourseWikiPage(CoursePage):
@@ -45,7 +45,7 @@ class CourseWikiPage(CoursePage):
         """
         Return the name of the article
         """
-        return str(self.q(css='.main-article h1').text[0])
+        return str(self.q(css='.main-article .entry-title').text[0])
 
 
 class CourseWikiSubviewPage(CoursePage):  # pylint: disable=abstract-method
@@ -90,6 +90,13 @@ class CourseWikiEditPage(CourseWikiSubviewPage):
         with new content
         """
         type_in_codemirror(self, 0, content)
+
+    def get_wiki_editor_content(self):
+        """
+        Returns the content currently in the wiki editor.
+        """
+
+        return get_codemirror_value(self, 0)
 
     def save_wiki_content(self):
         """
