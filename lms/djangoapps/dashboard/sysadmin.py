@@ -8,6 +8,7 @@ import logging
 import os
 import StringIO
 import subprocess
+import re
 
 import mongoengine
 from django.conf import settings
@@ -340,7 +341,7 @@ class Courses(SysadminDashboardView):
         """This pulls out some git info like the last commit"""
 
         cmd = ''
-        gdir = settings.DATA_DIR / cdir
+        gdir = path(settings.DATA_DIR) / cdir
         info = ['', '', '']
 
         # Try the data dir, then try to find it in the git import dir
@@ -474,22 +475,25 @@ class Courses(SysadminDashboardView):
 
         elif action == 'del_course':
             course_id = request.POST.get('course_id', '').strip()
-            course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
             course_found = False
-            if course_key in courses:
-                course_found = True
-                course = courses[course_key]
-            else:
-                try:
-                    course = get_course_by_id(course_key)
+            if re.match(r'^{}$'.format(settings.COURSE_ID_PATTERN), course_id):
+                course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+                if course_key in courses:
                     course_found = True
-                except Exception, err:   # pylint: disable=broad-except
-                    self.msg += _(
-                        'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
-                    ).format(
-                        course_key,
-                        escape(str(err))
-                    )
+                    course = courses[course_key]
+                else:
+                    try:
+                        course = get_course_by_id(course_key)
+                        course_found = True
+                    except Exception, err:   # pylint: disable=broad-except
+                        self.msg += _(
+                            'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
+                        ).format(
+                            course_key,
+                            escape(str(err))
+                        )
+            else:
+                self.msg = u"<font color='red'>Error - {0}</font>".format(_('Course id is invalid'))
 
             if course_found:
                 # delete course that is stored with mongodb backend
