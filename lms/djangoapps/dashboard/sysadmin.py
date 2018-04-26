@@ -8,6 +8,7 @@ import logging
 import os
 import subprocess
 import StringIO
+import re
 
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -345,7 +346,7 @@ class Courses(SysadminDashboardView):
         # Try the data dir, then try to find it in the git import dir
         if not gdir.exists():
             git_repo_dir = getattr(settings, 'GIT_REPO_DIR', git_import.DEFAULT_GIT_REPO_DIR)
-            gdir = path(git_repo_dir) / cdir
+            gdir = path(git_repo_dir) + "/" + cdir
             if not gdir.exists():
                 return info
 
@@ -473,22 +474,25 @@ class Courses(SysadminDashboardView):
 
         elif action == 'del_course':
             course_id = request.POST.get('course_id', '').strip()
-            course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
             course_found = False
-            if course_key in courses:
-                course_found = True
-                course = courses[course_key]
-            else:
-                try:
-                    course = get_course_by_id(course_key)
+            if re.match(r'^{}$'.format(settings.COURSE_ID_PATTERN), course_id):
+                course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+                if course_key in courses:
                     course_found = True
-                except Exception, err:   # pylint: disable=broad-except
-                    self.msg += _(
-                        'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
-                    ).format(
-                        course_key,
-                        escape(str(err))
-                    )
+                    course = courses[course_key]
+                else:
+                    try:
+                        course = get_course_by_id(course_key)
+                        course_found = True
+                    except Exception, err:   # pylint: disable=broad-except
+                        self.msg += _(
+                            'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
+                        ).format(
+                            course_key,
+                            escape(str(err))
+                        )
+            else:
+                self.msg = u'<font color="red">' + _('Error - Expect a Course-ID but got "{}"').format(str(course_id)) + '</font>'
 
             if course_found:
                 # delete course that is stored with mongodb backend
