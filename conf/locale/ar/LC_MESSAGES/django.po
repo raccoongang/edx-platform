@@ -19268,6 +19268,25 @@ msgid "Add Moderator"
 msgstr "إضافة مشرف للمنتدى "
 
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
+msgid "Discussion Community TAs"
+msgstr "مساعدو مشرفي منتدى النقاش"
+
+#: lms/templates/instructor/instructor_dashboard_2/membership.html
+msgid ""
+"Community TAs are members of the community whom you deem particularly "
+"helpful on the discussion boards. They can edit or delete any post, clear "
+"misuse flags, close and re-open threads, endorse responses, and see posts "
+"from all groups. Their posts are marked as 'Community TA'. Only enrolled "
+"users can be added as Community TAs."
+msgstr ""
+"مساعدو أستاذ لشؤون المتعلمين هم أعضاء مجتمع المنتدى الذين تعتقد بأنهم "
+"سيشكّلون عنصرًا مساعدًا للغاية على صفحات النقاشات. وهم مخولون بتعديل أو حذف "
+"أي منشور، وإزالة إشارات إساءة الاستخدام، وفتح وإغلاق المواضيع، وتأييد ردود، "
+"ورؤية المواد المنشورة من كافة المجموعات. ويتم الإشارة إلى المواد التي يقومون"
+" بنشرها على أنها خاصة بـ’مساعد المشرف للشعبة‘. يمكنك إعطاء أدوار فريق المساق"
+" فقط للمستخدمين المسجلين."
+
+#: lms/templates/instructor/instructor_dashboard_2/membership.html
 msgid "Group Community TA"
 msgstr "مساعد مدرس لمجموعة المنتدى"
 
