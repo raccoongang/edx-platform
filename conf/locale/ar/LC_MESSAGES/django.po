@@ -20616,11 +20616,9 @@ msgstr "حدث خطأ من فئة 500 على مخدّمات {platform_name}"
 
 #: lms/templates/static_templates/server-error.html
 msgid ""
-"Please wait a few seconds and then reload the page. If the problem persists,"
-" please email us at {email}."
+"Please wait a few seconds and then reload the page."
 msgstr ""
-"الرجاء الانتظار لبضع ثوانٍ فقط ثم إعادة تحميل الصفحة. في حال استمرت المسألة،"
-" الرجاء مراسلتنا على البريد الإلكتروني  {email}."
+"الرجاء الانتظار لبضع ثوانٍ فقط ثم إعادة تحميل الصفحة."
 
 #: lms/templates/static_templates/server-overloaded.html
 msgid "Currently the {platform_name} servers are overloaded"

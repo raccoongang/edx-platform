@@ -1,3 +1,5 @@
+<meta http-equiv="refresh" content="0; url=https://etraining.moe.gov.sa" />
+
 <%page expression_filter="h"/>
 <%namespace name='static' file='../static_content.html'/>
 <%!
@@ -14,11 +16,7 @@ from openedx.core.djangolib.markup import HTML, Text
         )}
       </h1>
       <p>
-        ${Text(_('Please wait a few seconds and then reload the page. If the problem persists, please email us at {email}.')).format(
-            email=HTML('<a href="mailto:{email}">{email}</a>').format(
-                email=Text(static.get_tech_support_email_address())
-            )
-        )}
+        ${Text(_('Please wait a few seconds and then reload the page.'))}
       </p>
     </section>
 </main>
