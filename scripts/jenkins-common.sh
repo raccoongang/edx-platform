@@ -11,7 +11,6 @@ NODE_INSTALL_COMMAND="nodeenv --node=$NODE_VERSION --prebuilt $NODE_ENV_DIR --fo
 
 # Clear the mongo database
 # Note that this prevents us from running jobs in parallel on a single worker.
-mongo --quiet --eval 'db.getMongo().getDBNames().forEach(function(i){db.getSiblingDB(i).dropDatabase()})'
 
 # Ensure we have fetched origin/master
 # Some of the reporting tools compare the checked out branch to origin/master;
