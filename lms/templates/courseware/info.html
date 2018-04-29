@@ -69,53 +69,55 @@ from openedx.features.course_experience import SHOW_REVIEWS_TOOL_FLAG
           </div>
         % endif
       </div>
-      <div class="info-wrapper">
-      % if user.is_authenticated():
-        <section class="updates">
-          % if (studio_url is not None and masquerade and masquerade.role == 'staff') or user.is_staff:
-            <div class="wrap-instructor-info studio-view">
-              <a class="instructor-info-action" href="${studio_url}">
-                ${_("View Updates in Studio")}
-              </a>
+    <div class="info-wrapper">
+        <div class="row">
+            % if user.is_authenticated():
+            <div class="col-md-9">
+                <section class="updates">
+                    <h3 class="hd hd-3">${_("Course Updates and News")}</h3>
+                    ${HTML(get_course_info_section(request, masquerade_user, course, 'updates'))}
+
+                </section>
             </div>
-          % endif
+            <div class="col-md-3">
+                <section aria-label="${_('Handout Navigation')}" class="handouts">
+                    <h3 class="hd hd-3 handouts-header">${_("Course Tools")}</h3>
+                    <div>
+                        <a class="action-show-bookmarks" href="${reverse('openedx.course_bookmarks.home', args=[course.id])}">
+                            <span class="icon fa fa-bookmark" aria-hidden="true"></span>
+                            ${_("Bookmarks")}
+                        </a>
+                        % if SHOW_REVIEWS_TOOL_FLAG.is_enabled(course.id) and show_reviews_link:
+                        <a href="${reverse('openedx.course_experience.course_reviews', args=[course.id])}">
+                            <span class="icon fa fa-star" aria-hidden="true"></span>
+                            ${_("Reviews")}
+                        </a>
+                        % endif
+                    </div>
 
-          <h3 class="hd hd-3">${_("Course Updates and News")}</h3>
-          ${HTML(get_course_info_section(request, masquerade_user, course, 'updates'))}
-
-        </section>
-        <section aria-label="${_('Handout Navigation')}" class="handouts">
-          <h3 class="hd hd-3 handouts-header">${_("Course Tools")}</h3>
-            <div>
-                <a class="action-show-bookmarks" href="${reverse('openedx.course_bookmarks.home', args=[course.id])}">
-                    <span class="icon fa fa-bookmark" aria-hidden="true"></span>
-                    ${_("Bookmarks")}
-                </a>
-                % if SHOW_REVIEWS_TOOL_FLAG.is_enabled(course.id) and show_reviews_link:
-                    <a href="${reverse('openedx.course_experience.course_reviews', args=[course.id])}">
-                        <span class="icon fa fa-star" aria-hidden="true"></span>
-                        ${_("Reviews")}
-                    </a>
-                % endif
+                    % if SelfPacedConfiguration.current().enable_course_home_improvements:
+                    ${HTML(dates_fragment.body_html())}
+                    % endif
+                    <h3 class="hd hd-3  handouts-header">${_(course.info_sidebar_name)}</h3>
+                    ${HTML(get_course_info_section(request, masquerade_user, course, 'handouts'))}
+                </section>
             </div>
-
-          % if SelfPacedConfiguration.current().enable_course_home_improvements:
-            ${HTML(dates_fragment.body_html())}
-          % endif
-            <h3 class="hd hd-3  handouts-header">${_(course.info_sidebar_name)}</h3>
-            ${HTML(get_course_info_section(request, masquerade_user, course, 'handouts'))}
-        </section>
-      % else:
-        <section class="updates">
-          <h3 class="hd hd-3 handouts-header">${_("Course Updates and News")}</h3>
-          ${HTML(get_course_info_section(request, masquerade_user, course, 'guest_updates'))}
-        </section>
-        <section aria-label="${_('Handout Navigation')}" class="handouts">
-          <h3 class="hd hd-3 handouts-header">${_("Course Handouts")}</h3>
-          ${HTML(get_course_info_section(request, masquerade_user, course, 'guest_handouts'))}
-        </section>
-      % endif <!-- if course authenticated -->
-      </div>
+            % else:
+            <div class="col-md-9">
+                <section class="updates">
+                    <h3 class="hd hd-3 handouts-header">${_("Course Updates and News")}</h3>
+                    ${HTML(get_course_info_section(request, masquerade_user, course, 'guest_updates'))}
+                </section>
+            </div>
+            <div class="col-md-3">
+                <section aria-label="${_('Handout Navigation')}" class="handouts">
+                    <h3 class="hd hd-3 handouts-header">${_("Course Handouts")}</h3>
+                    ${HTML(get_course_info_section(request, masquerade_user, course, 'guest_handouts'))}
+                </section>
+            </div>
+            % endif <!-- if course authenticated -->
+        </div>
+    </div>
   </div>
 </main>
 
