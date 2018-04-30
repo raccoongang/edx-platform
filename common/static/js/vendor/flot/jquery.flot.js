@@ -101,8 +101,8 @@
                         // we don't put in show: false so we can see
                         // whether lines were actively disabled 
                         lineWidth: 2, // in pixels
-                        fill: false,
-                        fillColor: null,
+                        fill: true,
+                        fillColor: "#ffffff",
                         steps: false
                     },
                     bars: {
@@ -110,7 +110,7 @@
                         lineWidth: 2, // in pixels
                         barWidth: 1, // in units of the x axis
                         fill: true,
-                        fillColor: null,
+                        fillColor: "#26b74d",
                         align: "left", // or "center" 
                         horizontal: false
                     },
