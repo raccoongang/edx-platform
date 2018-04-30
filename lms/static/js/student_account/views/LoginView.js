@@ -200,6 +200,8 @@
                         this.renderAuthWarning();
                     }
                 } else {
+                    grecaptcha.reset();
+                    $('#login-captcha').removeAttr('value');
                     this.renderErrors(this.defaultFormErrorsTitle, this.errors);
                 }
                 this.toggleDisableButton(false);
