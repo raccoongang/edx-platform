@@ -59,8 +59,9 @@ def validate_password_complexity(value):
     code = "complexity"
 
     complexities =  {
-        'UPPER': 5,
-        'DIGITS': 5,
+        'UPPER': 1,
+        'LOWER': 1,
+        'DIGITS': 1,
     }
 
     if complexities is None:

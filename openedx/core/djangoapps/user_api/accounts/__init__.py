@@ -15,11 +15,12 @@ EMAIL_MIN_LENGTH = 3
 EMAIL_MAX_LENGTH = 254  # Limit per RFCs is 254
 
 # The minimum and maximum length for the password account field
-PASSWORD_MIN_LENGTH = 10
+PASSWORD_MIN_LENGTH = 8
 PASSWORD_MAX_LENGTH = 100
 PASSWORD_COMPLEXITY = {
-    'UPPER': 5,
-    'DIGITS': 5,
+    'UPPER': 1,
+    'LOWER': 1,
+    'DIGITS': 1,
 }
 
 ACCOUNT_VISIBILITY_PREF_KEY = 'account_privacy'
