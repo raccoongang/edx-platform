@@ -17,7 +17,7 @@ from django.core.urlresolvers import reverse
             %if captcha_error:
               <ul class="errorlist"><li>${captcha_error | n}</li></ul>
             % endif
-            <script src='https://www.google.com/recaptcha/api.js'></script>
+            <script src='https://www.google.com/recaptcha/api.js?hl=ar'></script>
           <button type="submit">${_('Submit')}</button>
     </section>
 </main>
