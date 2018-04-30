@@ -12875,7 +12875,7 @@ msgstr "عذرًا، لا تملك صلاحية دخول هذه الوحدة ا�
 
 #: lms/templates/course.html
 msgid "LEARN MORE"
-msgstr "اعرف المزيد"
+msgstr "اعرض الدورة"
 
 #: lms/templates/course.html
 msgid "Starts"
@@ -15892,11 +15892,11 @@ msgstr "استعراض صفحة اللمحة في استوديو"
 
 #: lms/templates/courseware/course_about.html
 msgid "Classes Start"
-msgstr "تبدأ الدورة"
+msgstr "بداية الدورة"
 
 #: lms/templates/courseware/course_about.html
 msgid "Classes End"
-msgstr "تنتهي الدورة"
+msgstr "نهاية الدورة"
 
 #: lms/templates/courseware/course_about.html
 msgid "Estimated Effort"
