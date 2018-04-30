@@ -15892,11 +15892,11 @@ msgstr "استعراض صفحة اللمحة في استوديو"
 
 #: lms/templates/courseware/course_about.html
 msgid "Classes Start"
-msgstr "تبدأ الحصص"
+msgstr "تبدأ الدورة"
 
 #: lms/templates/courseware/course_about.html
 msgid "Classes End"
-msgstr "تنتهي الحصص"
+msgstr "تنتهي الدورة"
 
 #: lms/templates/courseware/course_about.html
 msgid "Estimated Effort"
