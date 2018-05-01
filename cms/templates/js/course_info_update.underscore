@@ -30,6 +30,6 @@
 			<span class="calendar-icon"></span><span class="date-display"><%=
 				updateModel.get('date') %></span>
 		</h2>
-		<div class="update-contents"><%- updateModel.get('content') %></div>
+		<div class="update-contents"><%= updateModel.get('content') %></div>
 	</div>
 </li>
