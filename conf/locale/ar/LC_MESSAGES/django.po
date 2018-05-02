@@ -6407,6 +6407,12 @@ msgid "Your certificate is available"
 msgstr "شهادتك جاهزة"
 
 #: lms/djangoapps/courseware/views/views.py
+msgid ""
+"You can keep working for a higher grade, or request your certificate now."
+msgstr ""
+"يمكنك الاستمرار في العمل للحصول على درجة أعلى ، أو طلب شهادتك الآن"
+
+#: lms/djangoapps/courseware/views/views.py
 #, python-brace-format
 msgid "To see course content, {sign_in_link} or {register_link}."
 msgstr "للاطلاع على محتوى الدورة، {sign_in_link} أو {register_link}."
