@@ -921,7 +921,7 @@ CLOUDSOCIETY_SECRET = AUTH_TOKENS.get('CLOUDSOCIETY_SECRET', '')
 RG_ANALYTICS_ENROLLMENT_STAT_UPDATE = ENV_TOKENS.get(
     'RG_ANALYTICS_ENROLLMENT_STAT_UPDATE',
     {
-        'minute': '*/1',
+        'minute': '*',
         'hour': '*/12',
         'day_of_week': '*',
         'day_of_month': '*',
