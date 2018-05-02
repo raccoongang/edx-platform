@@ -917,3 +917,14 @@ SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING = FEATURES.get("SEARCH_SKIP_ENROLLME
 CLOUDSOCIETY_SECRET = AUTH_TOKENS.get('CLOUDSOCIETY_SECRET', '')
 #### RaccoonGang ####
 
+# Setting for the enrollment statistic celery task
+RG_ANALYTICS_ENROLLMENT_STAT_UPDATE = ENV_TOKENS.get(
+    'RG_ANALYTICS_ENROLLMENT_STAT_UPDATE',
+    {
+        'minute': '*/1',
+        'hour': '*/12',
+        'day_of_week': '*',
+        'day_of_month': '*',
+        'month_of_year': '*',
+    }
+)
