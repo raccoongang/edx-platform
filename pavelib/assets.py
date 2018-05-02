@@ -867,10 +867,7 @@ def update_assets(args):
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "{sys}.envs.static_collector".format(sys=current_sys))
 
     application = get_wsgi_application()  # pylint: disable=invalid-name
-    if hasattr(django_settings, 'STATIC_COLLECTOR_ROOT'):
-        STATIC_COLLECTOR_ROOT = django_settings.STATIC_COLLECTOR_ROOT
-    else:
-        STATIC_COLLECTOR_ROOT=os.environ.get('STATIC_COLLECTOR_ROOT', '/edx/var/edxapp/static_collector')
+    STATIC_COLLECTOR_ROOT = django_settings.STATIC_COLLECTOR_ROOT if hasattr(django_settings, 'STATIC_COLLECTOR_ROOT') else os.environ.get('STATIC_COLLECTOR_ROOT', '/edx/var/edxapp/static_collector')
     if not os.path.isdir(STATIC_COLLECTOR_ROOT):
         os.mkdir(STATIC_COLLECTOR_ROOT)
         print('\t\tDirectory "STATIC_COLLECTOR_ROOT" has been created to store '
