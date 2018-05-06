@@ -5,7 +5,7 @@
     </p>
     <form id="bulk-white-list-exception-form" enctype="multipart/form-data">
         <div class="customBrowseBtn">
-            <label for="browseBtn-bulk-csv"><%- gettext("Upload a CSV file") %></label>
+            <label for="browseBtn-bulk-csv" class="label-bulk-csv"><%- gettext("Upload a CSV file") %></label>
             <span class="browse-file enhanced-input-file" id="bulk-exception-upload"></span>
             <div class="file-browse btn btn-primary" aria-hidden="true">
                 <span class="browse"><%- gettext("Browse") %></span>
