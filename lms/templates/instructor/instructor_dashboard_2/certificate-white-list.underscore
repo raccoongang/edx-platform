@@ -10,7 +10,7 @@
         <%- gettext('All users on the Exception list') %>
     </label>
 </fieldset>
-<button id="generate-exception-certificates" class="btn-blue" type="button"><%- gettext('Generate Exception Certificates') %></button>
+<button id="generate-exception-certificates" class="btn" type="button"><%- gettext('Generate Exception Certificates') %></button>
 <br/>
 <% if (certificates.length === 0) { %>
     <p><%- gettext("No results") %></p>

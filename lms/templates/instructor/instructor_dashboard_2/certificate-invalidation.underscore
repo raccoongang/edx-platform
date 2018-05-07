@@ -13,7 +13,7 @@
     </div>
     <br/>
     
-    <button type="button" class="btn-blue" id="invalidate-certificate"><%- gettext('Invalidate Certificate') %></button>
+    <button type="button" class="btn" id="invalidate-certificate"><%- gettext('Invalidate Certificate') %></button>
 </div>
 
 <div class="message hidden"></div>

@@ -9,7 +9,7 @@
         <textarea class="notes-field" id="notes" rows="10" placeholder="<%- gettext('Free text notes') %>"></textarea>
     </div>
     <div>
-        <button type="button" class="btn-blue" id="add-exception"><%- gettext("Add to Exception List") %></button>
+        <button type="button" class="btn" id="add-exception"><%- gettext("Add to Exception List") %></button>
     </div>
     <div class='message hidden'></div>
 </div>
