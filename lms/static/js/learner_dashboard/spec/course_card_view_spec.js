@@ -8,7 +8,7 @@ describe('Course Card View', () => {
   let courseCardModel;
   let course;
   const startDate = 'Feb 28, 2017';
-  const endDate = 'May 30, 2017';
+  const endDate = 'May 31, 2017';
 
   const setupView = (data, isEnrolled, collectionCourseStatus) => {
     const programData = $.extend({}, data);
