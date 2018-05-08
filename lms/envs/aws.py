@@ -928,3 +928,16 @@ RG_ANALYTICS_ENROLLMENT_STAT_UPDATE = ENV_TOKENS.get(
         'month_of_year': '*',
     }
 )
+
+
+# Setting for the enrollment statistic celery task
+RG_ANALYTICS_GRADE_STAT_UPDATE = ENV_TOKENS.get(
+    'RG_ANALYTICS_GRADE_STAT_UPDATE',
+    {
+        'minute': '*',
+        'hour': '*/12',
+        'day_of_week': '*',
+        'day_of_month': '*',
+        'month_of_year': '*',
+    }
+)
