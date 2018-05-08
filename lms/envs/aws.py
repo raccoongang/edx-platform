@@ -930,7 +930,7 @@ RG_ANALYTICS_ENROLLMENT_STAT_UPDATE = ENV_TOKENS.get(
 )
 
 
-# Setting for the enrollment statistic celery task
+# Setting for the grade statistic celery task
 RG_ANALYTICS_GRADE_STAT_UPDATE = ENV_TOKENS.get(
     'RG_ANALYTICS_GRADE_STAT_UPDATE',
     {
