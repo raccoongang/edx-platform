@@ -27,6 +27,8 @@ if settings.DEBUG or settings.FEATURES.get('ENABLE_DJANGO_ADMIN_SITE'):
 urlpatterns = (
     '',
 
+    
+
     url(r'^$', 'branding.views.index', name="root"),   # Main marketing page, or redirect to courseware
 
     url(r'', include('student.urls')),
@@ -810,6 +812,18 @@ if settings.FEATURES.get('RESTRICT_ENROLL_BY_REG_METHOD'):
 urlpatterns += (
     url(r'^shoppingcart/', include('shoppingcart.urls')),
     url(r'^commerce/', include('commerce.urls', namespace='commerce')),
+)
+
+
+# Program
+urlpatterns += (
+    url(r'^program/', include('ci_program.urls')),
+)
+
+# Student Enrollment
+from student_enrollment.api import StudentEnrollment
+urlpatterns += (
+    url(r'^enrollment/enroll/', StudentEnrollment.as_view()),
 )
 
 # Embargo
