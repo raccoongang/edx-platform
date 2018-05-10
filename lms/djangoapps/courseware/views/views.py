@@ -42,6 +42,7 @@ from certificates import api as certs_api
 from certificates.models import CertificateStatuses
 from commerce.utils import EcommerceService
 from course_modes.models import CourseMode
+from opaque_keys.edx.locator import CourseLocator
 from courseware.access import has_access, has_ccx_coach_role
 from courseware.access_response import StartDateError
 from courseware.access_utils import in_preview_mode, is_course_open_for_learner
@@ -57,6 +58,7 @@ from courseware.courses import (
     sort_by_announcement,
     sort_by_start_date
 )
+from openedx.core.lib.courses import course_image_url
 from courseware.date_summary import VerifiedUpgradeDeadlineDate
 from courseware.masquerade import setup_masquerade
 from courseware.model_data import FieldDataCache
@@ -254,6 +256,8 @@ def course_info(request, course_id):
         return None
 
     course_key = CourseKey.from_string(course_id)
+    course_descriptor = get_course(course_key)
+    course_image = course_image_url(course_descriptor)
 
     # If the unified course experience is enabled, redirect to the "Course" tab
     if UNIFIED_COURSE_TAB_FLAG.is_enabled(course_key):
@@ -342,6 +346,8 @@ def course_info(request, course_id):
             'dates_fragment': dates_fragment,
             'url_to_enroll': url_to_enroll,
             'show_reviews_link': show_reviews_link,
+            'course_key': course_key,
+            'course_image': course_image,
             # TODO: (Experimental Code). See https://openedx.atlassian.net/wiki/display/RET/2.+In-course+Verification+Prompts
             'upgrade_link': check_and_get_upgrade_link(request, user, course.id),
             'upgrade_price': get_cosmetic_verified_display_price(course),
