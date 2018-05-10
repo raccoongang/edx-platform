@@ -25,7 +25,7 @@ def parse_license(lic):
 %>
 <% license_type, license_options = parse_license(license) %>
 % if license_type == "all-rights-reserved":
-    © <span class="license-text">${_("All Rights Reserved")}</span>
+    
 % elif license_type == "creative-commons":
     <%
     possible = ["by", "nc", "nd", "sa"]
