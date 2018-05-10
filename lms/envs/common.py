@@ -2238,6 +2238,8 @@ INSTALLED_APPS = (
     'openedx.features.enterprise_support',
 
     'experiments',
+    'ci_program',
+    'lms.djangoapps.student_enrollment'
 )
 
 ######################### CSRF #########################################
@@ -3238,3 +3240,5 @@ PROFILE_IMAGE_SIZES_MAP = {
     'medium': 50,
     'small': 30
 }
+
+
