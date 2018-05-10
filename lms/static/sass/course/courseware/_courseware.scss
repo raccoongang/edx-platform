@@ -432,7 +432,6 @@ html.video-fullscreen {
 
     .vert-mod {
       padding: 0;
-      margin: 0;
       line-height: 1.4;
       list-style: none;
 
@@ -494,6 +493,8 @@ html.video-fullscreen {
         }
 
         nav.sequence-bottom {
+          padding: 0 65px;
+          
           ul {
             list-style: none;
             padding: 0;
@@ -685,4 +686,8 @@ section.self-assessment {
     .CodeMirror-linenumber.CodeMirror-gutter-elt {
         color: $gray-d3 !important;
     }
+}
+
+.container-footer {
+  display: none!important;
 }
