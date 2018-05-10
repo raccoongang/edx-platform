@@ -10,7 +10,13 @@ from openedx.core.djangolib.markup import HTML
 </h3>
 
 <div class="problem-progress" id="${ id }-problem-progress"></div>
-
+% if 'incorrect' == answer_notification_type:
+  <div class="white-box text-center white-box-quiz error">
+% elif 'correct' == answer_notification_type:
+  <div class="white-box text-center white-box-quiz success">
+% else:
+  <div class="white-box text-center white-box-quiz">
+% endif
 <div class="problem">
   ${ HTML(problem['html']) }
   <div class="action">
@@ -64,6 +70,7 @@ from openedx.core.djangolib.markup import HTML
       % endif
     </div>
   </div>
+  <%doc>
     <%include file="problem_notifications.html" args="
       notification_type='warning',
       notification_icon='fa-exclamation-circle',
@@ -122,4 +129,6 @@ from openedx.core.djangolib.markup import HTML
       notification_message=_('Answers are displayed within the problem'),
       is_hidden=True"
     />
+    </%doc>
+</div>
 </div>
