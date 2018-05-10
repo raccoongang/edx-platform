@@ -1,7 +1,12 @@
 <%page expression_filter="h"/>
 <%! from openedx.core.djangolib.markup import HTML %>
 %if unit_title:
-  <h2 class="hd hd-2 unit-title">${unit_title}</h2>
+  <h2 class="hd hd-2 unit-title">
+    <div class="unit-title-img"></div>
+    <span class="unit-title-text">
+      ${unit_title}
+    </span>
+  </h2>
 % endif
 
 % if show_bookmark_button:
