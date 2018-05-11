@@ -1,6 +1,7 @@
 """
 Unified course experience settings and helper methods.
 """
+from django.conf import settings
 from django.utils.translation import ugettext as _
 
 from openedx.core.djangoapps.waffle_utils import CourseWaffleFlag, WaffleFlag, WaffleFlagNamespace
@@ -51,7 +52,7 @@ def course_home_url_name(course_key):
             requested.
 
     """
-    if UNIFIED_COURSE_TAB_FLAG.is_enabled(course_key):
+    if UNIFIED_COURSE_TAB_FLAG.is_enabled(course_key) or settings.FEATURES.get('DISABLE_HOME_PAGE', False):
         return 'openedx.course_experience.course_home'
     else:
         return 'info'

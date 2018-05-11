@@ -63,7 +63,10 @@ class CourseInfoTab(CourseTab):
         """
         The "Home" tab is not shown for the new unified course experience.
         """
-        return not UNIFIED_COURSE_TAB_FLAG.is_enabled(course.id)
+        return (
+            not UNIFIED_COURSE_TAB_FLAG.is_enabled(course.id) and
+            not settings.FEATURES.get('DISABLE_HOME_PAGE', False)
+        )
 
 
 class SyllabusTab(EnrolledTab):
