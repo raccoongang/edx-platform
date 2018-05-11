@@ -38,19 +38,11 @@ class StudentEnrollment(APIView):
             return Response(
                 {
                     "enrollment_sucess": bool(program_enrollment_status),
-                    "email_sucess": bool(email_sent_status),
-                    "status": status.HTTP_201_CREATED
-                }
+                    "email_sucess": bool(email_sent_status)
+                },
+                status=status.HTTP_201_CREATED
             )
         else:
             return Response(
-                {
-                    "status": status.HTTP_400_BAD_REQUEST
-                }
+                status=status.HTTP_400_BAD_REQUEST
             )
-            
-
-    
-    
-
-    
