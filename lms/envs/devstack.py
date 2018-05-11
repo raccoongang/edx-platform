@@ -277,3 +277,8 @@ if os.path.isfile(join(dirname(abspath(__file__)), 'private.py')):
 MODULESTORE = convert_module_store_setting_if_needed(MODULESTORE)
 
 SECRET_KEY = '85920908f28904ed733fe576320db18cabd7b6cd'
+
+
+FEATURES['ENABLE_EXTERNAL_REGISTRATION'] = True
+FEATURES['ALLOW_PUBLIC_ACCOUNT_CREATION'] = False
+EXTERNAL_REGISTRATION = 'https://example.com'

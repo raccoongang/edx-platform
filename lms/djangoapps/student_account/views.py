@@ -592,3 +592,17 @@ def account_settings_context(request):
         } for state in auth_states if state.provider.display_for_login or state.has_account]
 
     return context
+
+
+def external_registration(request):
+    """
+    View for the external registration redirect.
+
+    For setup use flag EXTERNAL_REGISTRATION. In case when this link dosen`t setup - method redirect to the `/`.
+    Can be used with SSO, when users appears from other system.
+    """
+    external_registration_link = getattr(settings, 'EXTERNAL_REGISTRATION')
+    if not external_registration_link:
+        external_registration_link = '/'
+        log.error("Please setup EXTERNAL_REGISTRATION setting")
+    return redirect(external_registration_link)

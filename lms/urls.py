@@ -7,19 +7,18 @@ from django.conf import settings
 from django.conf.urls import include, patterns, url
 from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
-from ratelimitbackend import admin
-
-from courseware.views.index import CoursewareIndex
-from courseware.views.views import CourseTabView, EnrollStaffView, StaticCourseTabView
-from django_comment_common.models import ForumsConfig
+from openassessment.fileupload import views_filesystem
 from openedx.core.djangoapps.auth_exchange.views import LoginWithAccessTokenView
 from openedx.core.djangoapps.catalog.models import CatalogIntegration
 from openedx.core.djangoapps.programs.models import ProgramsApiConfig
 from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.features.enterprise_support.api import enterprise_enabled
+from ratelimitbackend import admin
 
-from openassessment.fileupload import views_filesystem
+from courseware.views.index import CoursewareIndex
+from courseware.views.views import CourseTabView, EnrollStaffView, StaticCourseTabView
+from django_comment_common.models import ForumsConfig
 
 # Uncomment the next two lines to enable the admin:
 if settings.DEBUG or settings.FEATURES.get('ENABLE_DJANGO_ADMIN_SITE'):
@@ -124,15 +123,30 @@ if settings.FEATURES["ENABLE_COMBINED_LOGIN_REGISTRATION"]:
     urlpatterns += (
         url(r'^login$', 'student_account.views.login_and_registration_form',
             {'initial_mode': 'login'}, name="signin_user"),
-        url(r'^register$', 'student_account.views.login_and_registration_form',
-            {'initial_mode': 'register'}, name="register_user"),
     )
+    if settings.FEATURES.get('ENABLE_EXTERNAL_REGISTRATION', False):
+        urlpatterns += (
+            url(r'^register$', 'student_account.views.external_registration'),
+        )
+    else:
+        urlpatterns += (
+            url(r'^register$', 'student_account.views.login_and_registration_form',
+                {'initial_mode': 'register'}, name="register_user"),
+        )
 else:
     # Serve the old views
     urlpatterns += (
         url(r'^login$', 'student.views.signin_user', name="signin_user"),
-        url(r'^register$', 'student.views.register_user', name="register_user"),
     )
+    if settings.FEATURES.get('ENABLE_EXTERNAL_REGISTRATION', False):
+        urlpatterns += (
+            url(r'^register$', 'student_account.views.external_registration'),
+        )
+
+    else:
+        urlpatterns += (
+            url(r'^register$', 'student.views.register_user', name="register_user"),
+        )
 
 if settings.FEATURES["ENABLE_MOBILE_REST_API"]:
     urlpatterns += (
