@@ -651,7 +651,7 @@ urlpatterns += (
         r'^courses/{}/course/'.format(
             settings.COURSE_ID_PATTERN,
         ),
-        include('openedx.features.course_experience.urls')
+        include('openedx.features.course_experience.urls'),
     ),
 
     # Course bookmarks
