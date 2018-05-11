@@ -7,18 +7,19 @@ from django.conf import settings
 from django.conf.urls import include, patterns, url
 from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
-from openassessment.fileupload import views_filesystem
+from ratelimitbackend import admin
+
+from courseware.views.index import CoursewareIndex
+from courseware.views.views import CourseTabView, EnrollStaffView, StaticCourseTabView
+from django_comment_common.models import ForumsConfig
 from openedx.core.djangoapps.auth_exchange.views import LoginWithAccessTokenView
 from openedx.core.djangoapps.catalog.models import CatalogIntegration
 from openedx.core.djangoapps.programs.models import ProgramsApiConfig
 from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.features.enterprise_support.api import enterprise_enabled
-from ratelimitbackend import admin
 
-from courseware.views.index import CoursewareIndex
-from courseware.views.views import CourseTabView, EnrollStaffView, StaticCourseTabView
-from django_comment_common.models import ForumsConfig
+from openassessment.fileupload import views_filesystem
 
 # Uncomment the next two lines to enable the admin:
 if settings.DEBUG or settings.FEATURES.get('ENABLE_DJANGO_ADMIN_SITE'):
