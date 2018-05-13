@@ -6,10 +6,25 @@ import calendar
 import httplib
 import logging
 from datetime import date, timedelta
+from django.contrib.auth.models import User
+from django.db.models.aggregates import Count
+from django.db.models.expressions import F, Func, Value
 
 import requests
 
-from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import cache_instance_data, get_query_result
+import lms.djangoapps.certificates as certificates
+from certificates.models import GeneratedCertificate
+from courseware.courses import get_course_by_id
+from courseware.models import StudentModule
+from opaque_keys import InvalidKeyError
+from opaque_keys.edx.keys import CourseKey
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import (
+    cache_instance_data,
+    get_query_result,
+    get_last_analytics_sent_date,
+    set_last_analytics_sent_date,
+)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -148,5 +163,79 @@ def send_instance_statistics_to_acceptor(olga_acceptor_url, data):
 
     if status_code == httplib.CREATED:
         logger.info('Data were successfully transferred to OLGA acceptor. Status code is {0}.'.format(status_code))
+        return True
     else:
         logger.info('Data were not successfully transferred to OLGA acceptor. Status code is {0}.'.format(status_code))
+        return False
+
+
+def get_registered_students_daily(token):
+    """
+    Get registered users count daily starting from the day after the date_start.
+
+    :param token: string of the token that used in cache key creation
+    :return: Dictionary where the keys is a dates and the values is the counts.
+    """
+    last_date = get_last_analytics_sent_date('registered_students', token)
+    registered_users = User.objects. \
+        filter(date_joined__gt=last_date). \
+        annotate(date=Func(F('date_joined'), Value('%Y-%m-%d'), function='date_format')). \
+        values('date'). \
+        annotate(count=Count('id'))
+    return dict((day['date'], day['count']) for day in registered_users)
+
+
+def get_generated_certificates_daily(token):
+    """
+    Get the count of the certificates generated  daily starting from the day after the date_start.
+
+    :param token: string of the token that used in cache key creation
+    :param date_start: datetime of the last day analytics was sent for
+    :return: Dictionary where the keys is a dates and the values is the counts.
+    """
+    last_date = get_last_analytics_sent_date('generated_certificates', token)
+    generated_certificates = GeneratedCertificate.objects. \
+        filter(created_date__gt=last_date). \
+        annotate(date=Func(F('created_date'), Value('%Y-%m-%d'), function='date_format')). \
+        values('date'). \
+        annotate(count=Count('id'))
+    return dict((day['date'], day['count']) for day in generated_certificates)
+
+
+def get_enthusiastic_students_daily(token):
+    """
+    Get enthusiastic students count daily starting from the day after the date_start.
+
+    :param token: string of the token that used in cache key creation
+    :param date_start: datetime of the last day analytics was sent for
+    :return: Dictionary where the keys is a dates and the values is the counts.
+    """
+    last_date = get_last_analytics_sent_date('enthusiastic_students', token)
+    last_sections_ids = get_all_courses_last_sections_ids()
+    enthusiastic_students = StudentModule.objects. \
+        filter(created__gt=last_date, module_state_key__in=last_sections_ids). \
+        annotate(date=Func(F('created'), Value('%Y-%m-%d'), function='date_format')). \
+        values('date'). \
+        annotate(count=Count('student_id'))
+    return dict((day['date'], day['count']) for day in enthusiastic_students)
+
+
+def get_all_courses_last_sections_ids():
+    """
+    Get ids of all the courses.
+
+    :return: list of the unique courses ids
+    """
+    courses_ids = CourseOverview.objects.all().values_list('id', flat=True)
+    last_sections_ids = []
+
+    for course_id in courses_ids:
+        try:
+            course_key = CourseKey.from_string(course_id)
+        except InvalidKeyError:
+            continue
+
+        course = get_course_by_id(course_key, depth=2)
+        last_sections_ids.append(course.get_children()[-1].location)
+
+    return last_sections_ids

@@ -3,17 +3,32 @@ Tests for edx_global_analytics application helper functions aka utils.
 """
 
 import datetime
+import logging
+import pytest
 
+from certificates.models import GeneratedCertificate
 from django.test import TestCase
 from django.utils import timezone
 
+from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db.models import Q
 from django_countries.fields import Country
 
 from student.models import UserProfile
 from student.tests.factories import UserFactory
+from openedx.core.djangoapps.edx_global_analytics.utils.utilities import (
+    fetch_instance_information,
+    cache_instance_data,
+    get_registered_students_daily,
+    get_generated_certificates_daily,
+    get_last_analytics_sent_date,
+    get_enthusiastic_students_daily,
+)
+from openedx.core.djangoapps.edx_global_analytics.tasks import set_last_sent_date
 
-from ..utils import fetch_instance_information, cache_instance_data
+
+log = logging.getLogger(__name__)
 
 
 class TestStudentsAmountPerParticularPeriod(TestCase):
@@ -150,3 +165,140 @@ class TestCacheInstanceData(TestCase):
         result = cache_instance_data('active_students_amount_week', active_students_amount_week, cache_timeout)
 
         self.assertEqual(result, 2)
+
+
+class TestLastSentStatisticsDate(TestCase):
+    """
+    Tests the dates of the last sent statistics.
+    """
+
+    def test_cache_returns_default_and_latest_dates(self):
+        """
+        Verifies that cache returns the default stats date (the Unix epoch start).
+        """
+        cache.clear()
+        data = {
+            'registered_students': {
+                '2017-01-01': 17,
+                '2018-01-01': 18,
+            },
+            'generated_certificates': {
+                '2016-01-01': 16,
+            },
+            'enthusiastic_students': {
+            },
+        }
+        token = 'test-token'
+        default_date1 = get_last_analytics_sent_date('registered_students', token)
+        default_date2 = get_last_analytics_sent_date('enthusiastic_students', token)
+
+        set_last_sent_date(True, "enthusiast", token, data)
+
+        registered_students = get_last_analytics_sent_date('registered_students', token)
+        certs_latest = get_last_analytics_sent_date('generated_certificates', token)
+
+        self.assertEqual(default_date1, datetime.datetime.fromtimestamp(0))
+        self.assertEqual(default_date2, datetime.datetime.fromtimestamp(0))
+
+        self.assertEqual(registered_students, datetime.datetime.strptime('2018-01-01', '%Y-%m-%d'))
+        self.assertEqual(certs_latest, datetime.datetime.strptime('2016-01-01', '%Y-%m-%d'))
+
+
+class TestGetStatsDailyRegistered(TestCase):
+    """
+    Tests the data returned about the registered users.
+    """
+
+    def test_return_non_data_on_newest_date(self):
+        """
+        Checks that the function returns an empty dict by the date in filter that didn't existed yet.
+        """
+        self.assertEqual(len(get_registered_students_daily('test-token')), 0)
+
+    def test_return_data_on_previous_dates(self):
+        """
+        Checks that the function returns a  dict by the past date in filter.
+        """
+        cache.clear()
+        User.objects.create(username='test1', password='test1', email='test1@example.com', date_joined='2016-01-01')
+        User.objects.create(username='test2', password='test2', email='test2@example.com', date_joined='2016-01-01')
+        User.objects.create(username='test3', password='test3', email='test3@example.com', date_joined='2017-01-01')
+        first_students_part = get_registered_students_daily('test-token')
+
+        self.assertEqual(len(first_students_part), 2)
+        self.assertEqual(first_students_part['2016-01-01'], 2)
+        self.assertEqual(first_students_part['2017-01-01'], 1)
+
+        data = {
+            'registered_students': {
+                '2016-01-01': 2,
+                '2017-01-01': 1,
+            },
+            'generated_certificates': {},
+            'enthusiastic_students': {},
+        }
+        set_last_sent_date(True, "enthusiast", 'test-token', data)  # Saving the last date
+
+        User.objects.create(username='test4', password='test4', email='test4@example.com', date_joined='2018-01-01')
+        second_students_part = get_registered_students_daily('test-token')
+
+        self.assertEqual(len(second_students_part), 1)
+        self.assertEqual(second_students_part['2018-01-01'], 1)
+
+
+class TestGetStatsDailyCertificates(TestCase):
+    """
+    Tests the data returned about the generated certificates.
+    """
+
+    def test_return_non_data_on_newest_date(self):
+        """
+        Checks that the function returns an empty dict by the date in filter that didn't existed yet.
+        """
+        self.assertEqual(len(get_generated_certificates_daily('test-token')), 0)
+
+    def test_return_data_on_previous_dates(self):
+        """
+        Checks that the function returns a  dict by the past date in filter.
+        """
+        cache.clear()
+        User.objects.create(username='test1', password='test1', email='test1@example.com', date_joined='2016-01-01')
+        User.objects.create(username='test2', password='test2', email='test2@example.com', date_joined='2016-01-01')
+        User.objects.create(username='test3', password='test3', email='test3@example.com', date_joined='2017-01-01')
+        GeneratedCertificate.objects.create(user_id=1, created_date='2016-01-01')
+        GeneratedCertificate.objects.create(user_id=2, created_date='2016-01-01')
+        GeneratedCertificate.objects.create(user_id=3, created_date='2017-01-01')
+        first_certificates_part = get_generated_certificates_daily('test-token')
+
+        self.assertEqual(len(first_certificates_part), 2)
+        self.assertEqual(first_certificates_part['2016-01-01'], 2)
+        self.assertEqual(first_certificates_part['2017-01-01'], 1)
+
+        data = {
+            'registered_students': {},
+            'generated_certificates': {
+                '2016-01-01': 2,
+                '2017-01-01': 1,
+            },
+            'enthusiastic_students': {},
+        }
+        set_last_sent_date(True, "enthusiast", 'test-token', data)  # Saving the last date
+
+        User.objects.create(username='test4', password='test4', email='test4@example.com', date_joined='2018-01-01')
+        GeneratedCertificate.objects.create(user_id=4, created_date='2018-01-01')
+        second_certificates_part = get_generated_certificates_daily('test-token')
+
+        self.assertEqual(len(second_certificates_part), 1)
+        self.assertEqual(second_certificates_part['2018-01-01'], 1)
+
+
+class TestGetStatsDailyEnthusiastic(TestCase):
+    """
+    Tests the data returned about the generated certificates.
+    """
+
+    def test_return_non_data_on_newest_date(self):
+        """
+        Checks that the function returns an empty dict by the date in filter that didn't existed yet.
+        """
+        self.assertEqual(len(get_enthusiastic_students_daily('test-token')), 0)

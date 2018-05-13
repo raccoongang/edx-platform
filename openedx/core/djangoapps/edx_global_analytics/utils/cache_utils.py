@@ -2,13 +2,16 @@
 Cache functionality.
 """
 
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 from django.core.cache import cache
 from django.db.models import Count
 from django.db.models import Q
 
 from student.models import UserProfile
+
+
+WEEK_TIMEOUT = 7 * 24 * 60 * 60
 
 
 def cache_instance_data(name_to_cache, query_type, activity_period):
@@ -74,3 +77,24 @@ def get_cache_month_key():
     year = previous_month.year
 
     return '{0}-{1}-month'.format(year, month_number)
+
+
+def get_last_analytics_sent_date(type, token):
+    """
+    Get last analytics sent date from the cache.
+    """
+    cache_key = 'ega_{}_{}'.format(type, token)
+    cache_value = cache.get(cache_key, datetime.fromtimestamp(0))
+
+    if cache_value is None:
+        cache.set(cache_key, cache_value, WEEK_TIMEOUT)
+
+    return cache_value
+
+
+def set_last_analytics_sent_date(type, token, date):
+    """
+    Set last analytics sent date from the cache.
+    """
+    cache_key = 'ega_{}_{}'.format(type, token)
+    return cache.set(cache_key, date, WEEK_TIMEOUT)
