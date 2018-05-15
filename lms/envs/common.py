@@ -2161,6 +2161,13 @@ INSTALLED_APPS = (
 
     # Unusual migrations
     'database_fixups',
+
+    # Gamification
+    'gamification_metric',
+    'referrals',
+
+    # global-statistics application
+    'openedx.core.djangoapps.edx_global_analytics',
 )
 
 ######################### CSRF #########################################
