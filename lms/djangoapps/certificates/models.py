@@ -92,7 +92,7 @@ class CertificateStatuses(object):
     requesting = 'requesting'
 
     readable_statuses = {
-        downloadable: "already received",
+        downloadable: "استلمت بالفعل",
         notpassing: "didn't receive",
         error: "error states",
         audit_passing: "audit passing states",
