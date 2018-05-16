@@ -177,8 +177,8 @@ class CertificateWhitelist(models.Model):
                 'user_name': unicode(item.user.username),
                 'user_email': unicode(item.user.email),
                 'course_id': unicode(item.course_id),
-                'created': item.created.strftime("%m/%d/%Y"),
-                'certificate_generated': certificate_generated and certificate_generated.strftime("%m/%d/%Y"),
+                'created': item.created.strftime("%Y/%m/%d"),
+                'certificate_generated': certificate_generated and certificate_generated.strftime("%Y/%m/%d"),
                 'notes': unicode(item.notes or ''),
             })
         return result
@@ -457,7 +457,7 @@ class CertificateInvalidation(TimeStampedModel):
                 'id': certificate_invalidation.id,
                 'user': certificate_invalidation.generated_certificate.user.username,
                 'invalidated_by': certificate_invalidation.invalidated_by.username,
-                'created': certificate_invalidation.created.strftime("%m/%d/%Y"),
+                'created': certificate_invalidation.created.strftime("%Y/%m/%d"),
                 'notes': certificate_invalidation.notes,
             })
         return data
