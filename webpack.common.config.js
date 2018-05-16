@@ -31,6 +31,8 @@ module.exports = {
         PortfolioExperimentUpsellModal: './lms/static/common/js/components/PortfolioExperimentUpsellModal.jsx',
         EntitlementSupportPage: './lms/djangoapps/support/static/support/jsx/entitlements/index.jsx',
         PasswordResetConfirmation: './lms/static/js/student_account/components/PasswordResetConfirmation.jsx',
+        StudentAccountDeletion: './lms/static/js/student_account/components/StudentAccountDeletion.jsx',
+        StudentAccountDeletionInitializer: './lms/static/js/student_account/StudentAccountDeletionInitializer.js',
 
         // Learner Dashboard
         EntitlementFactory: './lms/static/js/learner_dashboard/course_entitlement_factory.js',
@@ -50,6 +52,8 @@ module.exports = {
         Enrollment: './openedx/features/course_experience/static/course_experience/js/Enrollment.js',
         LatestUpdate: './openedx/features/course_experience/static/course_experience/js/LatestUpdate.js',
         WelcomeMessage: './openedx/features/course_experience/static/course_experience/js/WelcomeMessage.js',
+
+        CookiePolicyBanner: './common/static/js/src/CookiePolicyBanner.jsx',
 
         // Common
         ReactRenderer: './common/static/js/src/ReactRenderer.jsx'

@@ -8,6 +8,7 @@ import mock
 import pytz
 import requests.exceptions
 from django.conf import settings
+from django.test import TestCase
 from freezegun import freeze_time
 from mock import patch
 from nose.tools import (  # pylint: disable=no-name-in-module
@@ -21,6 +22,7 @@ from testfixtures import LogCapture
 from common.test.utils import MockS3Mixin
 from lms.djangoapps.verify_student.models import (
     SoftwareSecurePhotoVerification,
+    SSOVerification,
     VerificationDeadline,
     VerificationException
 )
@@ -95,11 +97,39 @@ def mock_software_secure_post_unavailable(url, headers=None, data=None, **kwargs
     raise requests.exceptions.ConnectionError
 
 
+class TestVerification(TestCase):
+    """
+    Common tests across all types of Verications (e.g., SoftwareSecurePhotoVerication, SSOVerification)
+    """
+    def verification_active_at_datetime(self, attempt):
+        """
+        Tests to ensure the Verification is active or inactive at the appropriate datetimes.
+        """
+        # Not active before the created date
+        before = attempt.created_at - timedelta(seconds=1)
+        self.assertFalse(attempt.active_at_datetime(before))
+
+        # Active immediately after created date
+        after_created = attempt.created_at + timedelta(seconds=1)
+        self.assertTrue(attempt.active_at_datetime(after_created))
+
+        # Active immediately before expiration date
+        expiration = attempt.created_at + timedelta(days=settings.VERIFY_STUDENT["DAYS_GOOD_FOR"])
+        before_expiration = expiration - timedelta(seconds=1)
+        self.assertTrue(attempt.active_at_datetime(before_expiration))
+
+        # Not active after the expiration date
+        attempt.created_at = attempt.created_at - timedelta(days=settings.VERIFY_STUDENT["DAYS_GOOD_FOR"])
+        attempt.save()
+        self.assertFalse(attempt.active_at_datetime(datetime.now(pytz.UTC) + timedelta(days=1)))
+
+
 # Lots of patching to stub in our own settings, and HTTP posting
 @patch.dict(settings.VERIFY_STUDENT, FAKE_SETTINGS)
 @patch('lms.djangoapps.verify_student.models.requests.post', new=mock_software_secure_post)
 @ddt.ddt
-class TestPhotoVerification(MockS3Mixin, ModuleStoreTestCase):
+class TestPhotoVerification(TestVerification, MockS3Mixin, ModuleStoreTestCase):
+    shard = 4
 
     def setUp(self):
         super(TestPhotoVerification, self).setUp()
@@ -252,24 +282,7 @@ class TestPhotoVerification(MockS3Mixin, ModuleStoreTestCase):
     def test_active_at_datetime(self):
         user = UserFactory.create()
         attempt = SoftwareSecurePhotoVerification.objects.create(user=user)
-
-        # Not active before the created date
-        before = attempt.created_at - timedelta(seconds=1)
-        self.assertFalse(attempt.active_at_datetime(before))
-
-        # Active immediately after created date
-        after_created = attempt.created_at + timedelta(seconds=1)
-        self.assertTrue(attempt.active_at_datetime(after_created))
-
-        # Active immediately before expiration date
-        expiration = attempt.created_at + timedelta(days=settings.VERIFY_STUDENT["DAYS_GOOD_FOR"])
-        before_expiration = expiration - timedelta(seconds=1)
-        self.assertTrue(attempt.active_at_datetime(before_expiration))
-
-        # Not active after the expiration date
-        attempt.created_at = attempt.created_at - timedelta(days=settings.VERIFY_STUDENT["DAYS_GOOD_FOR"])
-        attempt.save()
-        self.assertFalse(attempt.active_at_datetime(datetime.now(pytz.UTC) + timedelta(days=1)))
+        self.verification_active_at_datetime(attempt)
 
     def test_initial_verification_for_user(self):
         """Test that method 'get_initial_verification' of model
@@ -318,11 +331,67 @@ class TestPhotoVerification(MockS3Mixin, ModuleStoreTestCase):
             self.assertIsNotNone(fourth_result)
             self.assertEqual(fourth_result, first_result)
 
+    def test_retire_user(self):
+        """
+        Retire user with record(s) in table
+        """
+        user = UserFactory.create()
+        user.profile.name = u"Enrique"
+        attempt = SoftwareSecurePhotoVerification(user=user)
+
+        # Populate Record
+        attempt.mark_ready()
+        attempt.status = "submitted"
+        attempt.photo_id_image_url = "https://example.com/test/image/img.jpg"
+        attempt.face_image_url = "https://example.com/test/face/img.jpg"
+        attempt.photo_id_key = 'there_was_an_attempt'
+        attempt.approve()
+
+        # Validate data before retirement
+        assert_equals(attempt.name, user.profile.name)
+        assert_equals(attempt.photo_id_image_url, 'https://example.com/test/image/img.jpg')
+        assert_equals(attempt.face_image_url, 'https://example.com/test/face/img.jpg')
+        assert_equals(attempt.photo_id_key, 'there_was_an_attempt')
+
+        # Retire User
+        attempt_again = SoftwareSecurePhotoVerification(user=user)
+        self.assertTrue(attempt_again.retire_user(user_id=user.id))
+
+        # Validate data after retirement
+        self.assertEqual(attempt_again.name, '')
+        self.assertEqual(attempt_again.face_image_url, '')
+        self.assertEqual(attempt_again.photo_id_image_url, '')
+        self.assertEqual(attempt_again.photo_id_key, '')
+
+    def test_retire_nonuser(self):
+        """
+        Attempt to Retire User with no records in table
+        """
+        user = UserFactory.create()
+        attempt = SoftwareSecurePhotoVerification(user=user)
+
+        # User with no records in table
+        self.assertFalse(attempt.retire_user(user_id=user.id))
+
+        # No user
+        self.assertFalse(attempt.retire_user(user_id=47))
+
+
+class SSOVerificationTest(TestVerification):
+    """
+    Tests for the SSOVerification model
+    """
+    def test_active_at_datetime(self):
+        user = UserFactory.create()
+        attempt = SSOVerification.objects.create(user=user)
+        self.verification_active_at_datetime(attempt)
+
 
 class VerificationDeadlineTest(CacheIsolationTestCase):
     """
     Tests for the VerificationDeadline model.
     """
+    shard = 4
 
     ENABLED_CACHES = ['default']
 

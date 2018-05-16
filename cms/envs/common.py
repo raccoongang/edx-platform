@@ -134,6 +134,7 @@ from lms.envs.common import (
     RETIRED_EMAIL_FMT,
     RETIRED_USER_SALTS,
     RETIREMENT_SERVICE_WORKER_USERNAME,
+    RETIREMENT_STATES,
 
     # Methods to derive settings
     _make_mako_template_dirs,
@@ -303,6 +304,15 @@ FEATURES = {
     # Whether archived courses (courses with end dates in the past) should be
     # shown in Studio in a separate list.
     'ENABLE_SEPARATE_ARCHIVED_COURSES': True,
+
+    # For acceptance and load testing
+    'AUTOMATIC_AUTH_FOR_TESTING': False,
+
+    # Prevent auto auth from creating superusers or modifying existing users
+    'RESTRICT_AUTOMATIC_AUTH': True,
+
+    # Set this to true to make API docs available at /api-docs/.
+    'ENABLE_API_DOCS': False,
 }
 
 ENABLE_JASMINE = False
@@ -1132,6 +1142,9 @@ INSTALLED_APPS = [
 
     # Asset management for mako templates
     'pipeline_mako',
+
+    # API Documentation
+    'rest_framework_swagger',
 ]
 
 
@@ -1244,6 +1257,9 @@ OPTIONAL_APPS = (
     # Enterprise App (http://github.com/edx/edx-enterprise)
     ('enterprise', None),
     ('consent', None),
+    ('integrated_channels.integrated_channel', None),
+    ('integrated_channels.degreed', None),
+    ('integrated_channels.sap_success_factors', None),
 )
 
 
@@ -1468,6 +1484,9 @@ RECALCULATE_GRADES_ROUTING_KEY = LOW_PRIORITY_QUEUE
 
 # Queue to use for updating grades due to grading policy change
 POLICY_CHANGE_GRADES_ROUTING_KEY = LOW_PRIORITY_QUEUE
+
+# Rate limit for regrading tasks that a grading policy change can kick off
+POLICY_CHANGE_TASK_RATE_LIMIT = '300/h'
 
 ############## Settings for CourseGraph ############################
 COURSEGRAPH_JOB_QUEUE = LOW_PRIORITY_QUEUE

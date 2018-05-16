@@ -66,6 +66,7 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
 from openedx.core.djangoapps.theming import helpers as theming_helpers
 from openedx.core.djangoapps.user_api import accounts as accounts_settings
 from openedx.core.djangoapps.user_api.accounts.utils import generate_password
+from openedx.core.djangoapps.user_api.models import UserRetirementRequest
 from openedx.core.djangoapps.user_api.preferences import api as preferences_api
 from openedx.core.djangoapps.user_api.config.waffle import PREVENT_AUTH_USER_WRITES, SYSTEM_MAINTENANCE_MSG, waffle
 from openedx.core.djangolib.markup import HTML, Text
@@ -203,7 +204,7 @@ def register_user(request, extra_context=None):
     """
     # Determine the URL to redirect to following login:
     redirect_to = get_next_url_for_login_page(request)
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return redirect(redirect_to)
 
     external_auth_response = external_auth_register(request)
@@ -352,7 +353,7 @@ def change_enrollment(request, check_access=True):
     user = request.user
 
     # Ensure the user is authenticated
-    if not user.is_authenticated():
+    if not user.is_authenticated:
         return HttpResponseForbidden()
 
     # Ensure we received a course_id
@@ -1020,7 +1021,7 @@ def activate_account(request, key):
             # Success message for logged in users.
             message = _('{html_start}Success{html_end} You have activated your account.')
 
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 # Success message for logged out users
                 message = _(
                     '{html_start}Success! You have activated your account.{html_end}'
@@ -1054,7 +1055,7 @@ def activate_account_studio(request, key):
             {'csrf': csrf(request)['csrf_token']}
         )
     else:
-        user_logged_in = request.user.is_authenticated()
+        user_logged_in = request.user.is_authenticated
         already_active = True
         if not registration.user.is_active:
             if waffle().is_enabled(PREVENT_AUTH_USER_WRITES):
@@ -1148,6 +1149,19 @@ def password_reset_confirm_wrapper(request, uidb36=None, token=None):
         # password_reset_confirm function handle it.
         return password_reset_confirm(
             request, uidb64=uidb64, token=token, extra_context=platform_name
+        )
+
+    if UserRetirementRequest.has_user_requested_retirement(user):
+        # Refuse to reset the password of any user that has requested retirement.
+        context = {
+            'validlink': True,
+            'form': None,
+            'title': _('Password reset unsuccessful'),
+            'err_msg': _('Error in resetting your password.'),
+        }
+        context.update(platform_name)
+        return TemplateResponse(
+            request, 'registration/password_reset_confirm.html', context
         )
 
     if waffle().is_enabled(PREVENT_AUTH_USER_WRITES):

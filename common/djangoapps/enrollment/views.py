@@ -5,20 +5,18 @@ consist primarily of authentication, request validation, and serialization.
 """
 import logging
 
+from course_modes.models import CourseMode
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
 from edx_rest_framework_extensions.authentication import JwtAuthentication
-from opaque_keys import InvalidKeyError
-from opaque_keys.edx.keys import CourseKey
-from rest_framework import status, permissions
-from rest_framework.response import Response
-from rest_framework.throttling import UserRateThrottle
-from rest_framework.views import APIView
-from six import text_type
-
-from course_modes.models import CourseMode
 from enrollment import api
 from enrollment.errors import CourseEnrollmentError, CourseEnrollmentExistsError, CourseModeNotFoundError
+from enrollment import REDUCE_RATE_LIMIT_FOR_STAFF_FOR_ENROLLMENT_API, \
+    USE_UNIVERSAL_RATE_LIMIT_FOR_ENROLLMENT_API
+from opaque_keys import InvalidKeyError
+from opaque_keys.edx.keys import CourseKey
+
 from openedx.core.djangoapps.cors_csrf.authentication import SessionAuthenticationCrossDomainCsrf
 from openedx.core.djangoapps.cors_csrf.decorators import ensure_csrf_cookie_cross_domain
 from openedx.core.djangoapps.embargo import api as embargo_api
@@ -33,10 +31,15 @@ from openedx.core.lib.exceptions import CourseNotFoundError
 from openedx.core.lib.log_utils import audit_log
 from openedx.features.enterprise_support.api import (
     ConsentApiServiceClient,
-    EnterpriseApiServiceClient,
     EnterpriseApiException,
+    EnterpriseApiServiceClient,
     enterprise_enabled
 )
+from rest_framework import permissions, status
+from rest_framework.response import Response
+from rest_framework.throttling import UserRateThrottle
+from rest_framework.views import APIView
+from six import text_type
 from student.auth import user_has_role
 from student.models import User
 from student.roles import CourseStaffRole, GlobalStaff
@@ -75,18 +78,33 @@ class ApiKeyPermissionMixIn(object):
 
 class EnrollmentUserThrottle(UserRateThrottle, ApiKeyPermissionMixIn):
     """Limit the number of requests users can make to the enrollment API."""
-    # The staff Throttle rate is currently being adjusted to meet the needs of the eCommerce API calls.
-    # This should be reviewed for performance and we should determine the optimum throttle for the needs of this API.
-    # https://openedx.atlassian.net/wiki/spaces/LEARNER/pages/645923004/eCommerce+Guild
+    # TODO: After confirming that reducing the throttle is successful, remove
+    # and clean up waffles. The rate limit has been increased over the course
+    # of a few months to account for unnecessary calls from the ecommerce
+    # service. These calls are no longer made and the plan is to set the
+    # rate limit back to its original state. LEARNER-5148
+
+    # Current rate limit
     THROTTLE_RATES = {
         'user': '40/minute',
-        'staff': '2000/minute',  # Decided on by looking at number of API calls to the Enrollment API from Staff users
+        'staff': '2000/minute',
     }
+
+    # Less aggressive reduction in throttle limit. This should not be necessary
+    if REDUCE_RATE_LIMIT_FOR_STAFF_FOR_ENROLLMENT_API.is_enabled():
+        THROTTLE_RATES = {
+            'user': '40/minute',
+            'staff': '400/minute',
+        }
+
+    # Original rate Limit before rate limit increases.
+    if USE_UNIVERSAL_RATE_LIMIT_FOR_ENROLLMENT_API.is_enabled():
+        rate = '40/minute'
 
     def allow_request(self, request, view):
         # Use a special scope for staff to allow for a separate throttle rate
         user = request.user
-        if user.is_authenticated() and (user.is_staff or user.is_superuser):
+        if user.is_authenticated and (user.is_staff or user.is_superuser):
             self.scope = 'staff'
             self.rate = self.get_rate()
             self.num_requests, self.duration = self.parse_rate(self.rate)
@@ -313,14 +331,14 @@ class UnenrollmentView(APIView):
         **Example Requests**
 
             POST /api/enrollment/v1/enrollment {
-                "user": "username12345"
+                "username": "username12345"
             }
 
             **POST Parameters**
 
               A POST request must include the following parameter.
 
-              * user: The username of the user being unenrolled.
+              * username: The username of the user being unenrolled.
               This will never match the username from the request,
               since the request is issued as a privileged service user.
 
@@ -342,31 +360,23 @@ class UnenrollmentView(APIView):
         """
         Unenrolls the specified user from all courses.
         """
-        # Get the User from the request.
-        username = request.data.get('user', None)
-        if not username:
-            return Response(
-                status=status.HTTP_404_NOT_FOUND,
-                data={
-                    'message': u'The user was not specified.'
-                }
-            )
+        username = None
+        user_model = get_user_model()
+
         try:
-            # make sure the specified user exists
-            User.objects.get(username=username)
-        except ObjectDoesNotExist:
-            return Response(
-                status=status.HTTP_404_NOT_FOUND,
-                data={
-                    'message': u'The user "{}" does not exist.'.format(username)
-                }
-            )
-        try:
+            # Get the username from the request and check that it exists
+            username = request.data['username']
+            user_model.objects.get(username=username)
+
             enrollments = api.get_enrollments(username)
             active_enrollments = [enrollment for enrollment in enrollments if enrollment['is_active']]
             if len(active_enrollments) < 1:
                 return Response(status=status.HTTP_200_OK)
             return Response(api.unenroll_user_from_all_courses(username))
+        except KeyError:
+            return Response(u'Username not specified.', status=status.HTTP_404_NOT_FOUND)
+        except user_model.DoesNotExist:
+            return Response(u'The user "{}" does not exist.'.format(username), status=status.HTTP_404_NOT_FOUND)
         except Exception as exc:  # pylint: disable=broad-except
             return Response(text_type(exc), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -691,13 +701,16 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
             mode_changed = enrollment and mode is not None and enrollment['mode'] != mode
             active_changed = enrollment and is_active is not None and enrollment['is_active'] != is_active
             missing_attrs = []
+            audit_with_order = False
             if enrollment_attributes:
                 actual_attrs = [
                     u"{namespace}:{name}".format(**attr)
                     for attr in enrollment_attributes
                 ]
                 missing_attrs = set(REQUIRED_ATTRIBUTES.get(mode, [])) - set(actual_attrs)
-            if has_api_key_permissions and (mode_changed or active_changed):
+                audit_with_order = mode == 'audit' and 'order:order_number' in actual_attrs
+            # Remove audit_with_order when no longer needed - implemented for REV-141
+            if has_api_key_permissions and (mode_changed or active_changed or audit_with_order):
                 if mode_changed and active_changed and not is_active:
                     # if the requester wanted to deactivate but specified the wrong mode, fail
                     # the request (on the assumption that the requester had outdated information

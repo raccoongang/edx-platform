@@ -69,6 +69,7 @@ class EmailMarketingTests(TestCase):
     """
     Tests for the EmailMarketing signals and tasks classes.
     """
+    shard = 4
 
     def setUp(self):
         update_email_marketing_config(enabled=False)
@@ -586,7 +587,7 @@ class EmailMarketingTests(TestCase):
         Ensure that a successful unsubscribe does not trigger an error log
         """
         mock_sailthru.return_value = SailthruResponse(JsonResponse({'ok': True}))
-        force_unsubscribe_all(sender=self.__class__, user=self.user)
+        force_unsubscribe_all(sender=self.__class__, email=self.user.email)
         self.assertTrue(mock_sailthru.called)
         self.assertFalse(mock_log_error.called)
 
@@ -595,7 +596,7 @@ class EmailMarketingTests(TestCase):
     def test_sailthru_on_connection_error(self, mock_sailthru, mock_log_error):
         mock_sailthru.side_effect = SailthruClientError
         with self.assertRaises(Exception):
-            force_unsubscribe_all(sender=self.__class__, user=self.user)
+            force_unsubscribe_all(sender=self.__class__, email=self.user.email)
             self.assertTrue(mock_log_error.called)
 
     @patch('email_marketing.tasks.log.error')
@@ -603,9 +604,28 @@ class EmailMarketingTests(TestCase):
     def test_sailthru_on_bad_response(self, mock_sailthru, mock_log_error):
         mock_sailthru.return_value = SailthruResponse(JsonResponse({'error': 100, 'errormsg': 'Got an error'}))
         with self.assertRaises(Exception):
-            force_unsubscribe_all(sender=self.__class__, user=self.user)
+            force_unsubscribe_all(sender=self.__class__, email=self.user.email)
             self.assertTrue(mock_sailthru.called)
             self.assertTrue(mock_log_error.called)
+
+    @patch('email_marketing.tasks.log.error')
+    @patch('email_marketing.tasks.SailthruClient.api_post')
+    def test_sailthru_with_email_changed(self, mock_sailthru, mock_log_error):
+        mock_sailthru.return_value = SailthruResponse(JsonResponse({'ok': True}))
+        force_unsubscribe_all(sender=self.__class__, email=self.user.email, new_email='email@somewhere.invalid')
+        mock_sailthru.assert_called_with("user", {
+            "id": self.user.email,
+            "optout_email": "all",
+            "keys": {
+                "email": "email@somewhere.invalid"
+            },
+            "fields": {
+                "optout_email": 1,
+                "keys": 1
+            },
+            "keysconflict": "merge"
+        })
+        self.assertFalse(mock_log_error.called)
 
 
 class MockSailthruResponse(object):
@@ -657,6 +677,7 @@ class SailthruTests(TestCase):
     """
     Tests for the Sailthru tasks class.
     """
+    shard = 4
 
     def setUp(self):
         super(SailthruTests, self).setUp()

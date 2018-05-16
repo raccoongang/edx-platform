@@ -139,6 +139,28 @@ Note -
 
     paver -h
 
+Connecting to Browser
+---------------------
+
+If you want to see the browser being automated for JavaScript or bok-choy tests,
+you can connect to the container running it via VNC.
+
++------------------------+----------------------+
+| Browser                | VNC connection       |
++========================+======================+
+| Firefox (Default)      | vnc://0.0.0.0:25900  |
++------------------------+----------------------+
+| Chrome (via Selenium)  | vnc://0.0.0.0:15900  |
++------------------------+----------------------+
+
+On macOS, enter the VNC connection string in Safari to connect via VNC. The VNC
+passwords for both browsers are randomly generated and logged at container
+startup, and can be found by running ``make vnc-passwords``.
+
+Most tests are run in Firefox by default.  To use Chrome for tests that normally
+use Firefox instead, prefix the test command with
+``SELENIUM_BROWSER=chrome SELENIUM_HOST=edx.devstack.chrome``.
+
 Running Python Unit tests
 -------------------------
 
@@ -693,7 +715,7 @@ To view test coverage:
 Python Code Style Quality
 -------------------------
 
-To view Python code style quality (including pep8 and pylint violations) run this command::
+To view Python code style quality (including PEP 8 and pylint violations) run this command::
 
     paver run_quality
 

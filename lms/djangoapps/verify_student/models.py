@@ -21,6 +21,8 @@ import requests
 import six
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
@@ -31,6 +33,7 @@ from django.utils.translation import ugettext_lazy
 from model_utils import Choices
 from model_utils.models import StatusModel, TimeStampedModel
 from opaque_keys.edx.django.models import CourseKeyField
+from openedx.core.djangolib.model_mixins import DeletableByUserValue
 
 from lms.djangoapps.verify_student.ssencrypt import (
     encrypt_and_encode,
@@ -117,6 +120,26 @@ class IDVerificationAttempt(StatusModel):
         days_good_for = settings.VERIFY_STUDENT["DAYS_GOOD_FOR"]
         return self.created_at + timedelta(days=days_good_for)
 
+    def should_display_status_to_user(self):
+        """Whether or not the status from this attempt should be displayed to the user."""
+        raise NotImplementedError
+
+    def active_at_datetime(self, deadline):
+        """Check whether the verification was active at a particular datetime.
+
+        Arguments:
+            deadline (datetime): The date at which the verification was active
+                (created before and expiration datetime is after today).
+
+        Returns:
+            bool
+
+        """
+        return (
+            self.created_at < deadline and
+            self.expiration_datetime > datetime.now(pytz.UTC)
+        )
+
 
 class SSOVerification(IDVerificationAttempt):
     """
@@ -158,6 +181,10 @@ class SSOVerification(IDVerificationAttempt):
             name=self.name,
             status=self.status,
         )
+
+    def should_display_status_to_user(self):
+        """Whether or not the status from this attempt should be displayed to the user."""
+        return False
 
 
 class PhotoVerification(IDVerificationAttempt):
@@ -251,22 +278,6 @@ class PhotoVerification(IDVerificationAttempt):
         app_label = "verify_student"
         abstract = True
         ordering = ['-created_at']
-
-    def active_at_datetime(self, deadline):
-        """Check whether the verification was active at a particular datetime.
-
-        Arguments:
-            deadline (datetime): The date at which the verification was active
-                (created before and expiration datetime is after today).
-
-        Returns:
-            bool
-
-        """
-        return (
-            self.created_at < deadline and
-            self.expiration_datetime > datetime.now(pytz.UTC)
-        )
 
     def parsed_error_msg(self):
         """
@@ -434,6 +445,30 @@ class PhotoVerification(IDVerificationAttempt):
         self.reviewing_service = reviewing_service
         self.status = "must_retry"
         self.save()
+
+    @classmethod
+    def retire_user(cls, user_id):
+        """
+        Retire user as part of GDPR Phase I
+        Returns 'True' if records found
+
+        :param user_id: int
+        :return: bool
+        """
+        try:
+            user_obj = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return False
+
+        photo_objects = cls.objects.filter(
+            user=user_obj
+        ).update(
+            name='',
+            face_image_url='',
+            photo_id_image_url='',
+            photo_id_key=''
+        )
+        return photo_objects > 0
 
 
 class SoftwareSecurePhotoVerification(PhotoVerification):
@@ -819,6 +854,10 @@ class SoftwareSecurePhotoVerification(PhotoVerification):
         log.debug("Return message:\n\n{}\n\n".format(response.text))
 
         return response
+
+    def should_display_status_to_user(self):
+        """Whether or not the status from this attempt should be displayed to the user."""
+        return True
 
 
 class VerificationDeadline(TimeStampedModel):

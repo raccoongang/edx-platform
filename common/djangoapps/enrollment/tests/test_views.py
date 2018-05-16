@@ -33,6 +33,7 @@ from openedx.core.djangoapps.embargo.test_utils import restrict_course
 from openedx.core.djangoapps.user_api.models import UserOrgTag
 from openedx.core.lib.django_test_client_utils import get_absolute_url
 from openedx.core.lib.token_utils import JwtBuilder
+from openedx.features.enterprise_support.tests import FAKE_ENTERPRISE_CUSTOMER
 from openedx.features.enterprise_support.tests.mixins.enterprise import EnterpriseServiceMockMixin
 from student.models import CourseEnrollment
 from student.roles import CourseStaffRole
@@ -932,7 +933,8 @@ class EnrollmentTest(EnrollmentTestMixin, ModuleStoreTestCase, APITestCase, Ente
     @httpretty.activate
     @override_settings(ENTERPRISE_SERVICE_WORKER_USERNAME='enterprise_worker',
                        FEATURES=dict(ENABLE_ENTERPRISE_INTEGRATION=True))
-    def test_enterprise_course_enrollment_with_ec_uuid(self):
+    @patch('openedx.features.enterprise_support.api.enterprise_customer_from_api')
+    def test_enterprise_course_enrollment_with_ec_uuid(self, mock_enterprise_customer_from_api):
         """Verify that the enrollment completes when the EnterpriseCourseEnrollment creation succeeds. """
         UserFactory.create(
             username='enterprise_worker',
@@ -949,6 +951,7 @@ class EnrollmentTest(EnrollmentTestMixin, ModuleStoreTestCase, APITestCase, Ente
             'course_id': unicode(self.course.id),
             'ec_uuid': 'this-is-a-real-uuid'
         }
+        mock_enterprise_customer_from_api.return_value = FAKE_ENTERPRISE_CUSTOMER
         self.mock_enterprise_course_enrollment_post_api()
         self.mock_consent_missing(**consent_kwargs)
         self.mock_consent_post(**consent_kwargs)
@@ -1009,6 +1012,23 @@ class EnrollmentTest(EnrollmentTestMixin, ModuleStoreTestCase, APITestCase, Ente
         self.assert_enrollment_status(
             as_server=True,
             mode=mode,
+            enrollment_attributes=enrollment_attributes
+        )
+        enrollment.refresh_from_db()
+        self.assertTrue(enrollment.is_active)
+        self.assertEqual(enrollment.mode, mode)
+        self.assertEqual(enrollment.attributes.get(namespace='order', name='order_number').value, order_number)
+
+        # Updating an enrollment should update attributes (for audit mode enrollments also)
+        order_number = 'EDX-3000'
+        enrollment_attributes = [{
+            'namespace': 'order',
+            'name': 'order_number',
+            'value': order_number,
+        }]
+        self.assert_enrollment_status(
+            as_server=True,
+            mode='audit',
             enrollment_attributes=enrollment_attributes
         )
         enrollment.refresh_from_db()
@@ -1280,10 +1300,18 @@ class UnenrollmentTest(EnrollmentTestMixin, ModuleStoreTestCase):
 
     def test_deactivate_enrollments_no_username(self):
         self._assert_active()
+        response = self._submit_unenroll(self.superuser, None)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        data = json.loads(response.content)
+        self.assertEqual(data, u"Username not specified.")
+        self._assert_active()
+
+    def test_deactivate_enrollments_empty_username(self):
+        self._assert_active()
         response = self._submit_unenroll(self.superuser, "")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         data = json.loads(response.content)
-        self.assertEqual(data['message'], 'The user was not specified.')
+        self.assertEqual(data, u'The user "" does not exist.')
         self._assert_active()
 
     def test_deactivate_enrollments_invalid_username(self):
@@ -1291,7 +1319,7 @@ class UnenrollmentTest(EnrollmentTestMixin, ModuleStoreTestCase):
         response = self._submit_unenroll(self.superuser, "a made up username")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         data = json.loads(response.content)
-        self.assertEqual(data['message'], 'The user "a made up username" does not exist.')
+        self.assertEqual(data, u'The user "a made up username" does not exist.')
         self._assert_active()
 
     def test_deactivate_enrollments_called_twice(self):
@@ -1315,7 +1343,10 @@ class UnenrollmentTest(EnrollmentTestMixin, ModuleStoreTestCase):
             self.assertFalse(is_active)
 
     def _submit_unenroll(self, submitting_user, unenrolling_username):
-        data = {'user': unenrolling_username}
+        data = {}
+        if unenrolling_username is not None:
+            data['username'] = unenrolling_username
+
         url = reverse('unenrollment')
         headers = self.build_jwt_headers(submitting_user)
         return self.client.post(url, json.dumps(data), content_type='application/json', **headers)
