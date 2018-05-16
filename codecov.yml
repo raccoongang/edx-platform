@@ -1,7 +1,10 @@
 comment: off
 coverage:
   status:
-    patch: false
+    patch:
+      default:
+        target: 95%
+        treshhold: 5%
     project:
       default:
         target: 85%
