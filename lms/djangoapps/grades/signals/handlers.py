@@ -5,7 +5,6 @@ Grades related signals.
 from logging import getLogger
 
 from courseware.model_data import get_score, set_score
-from crum import get_current_user
 from django.dispatch import receiver
 from openedx.core.lib.grade_utils import is_score_higher
 from submissions.models import score_set, score_reset
@@ -13,7 +12,6 @@ from util.date_utils import to_timestamp
 
 from courseware.model_data import get_score, set_score
 from eventtracking import tracker
-from lms.djangoapps.instructor_task.tasks_helper.module_state import GRADES_OVERRIDE_EVENT_TYPE
 from student.models import user_by_anonymous_id
 from track.event_transaction_utils import (
     get_event_transaction_type,
@@ -33,7 +31,6 @@ from ..tasks import recalculate_subsection_grade_v2
 
 log = getLogger(__name__)
 
-GRADES_RESCORE_EVENT_TYPE = 'edx.grades.problem.rescored'
 PROBLEM_SUBMITTED_EVENT_TYPE = 'edx.grades.problem.submitted'
 
 
@@ -228,23 +225,5 @@ def _emit_problem_submitted_event(kwargs):
                 'event_transaction_type': unicode(PROBLEM_SUBMITTED_EVENT_TYPE),
                 'weighted_earned': kwargs.get('weighted_earned'),
                 'weighted_possible': kwargs.get('weighted_possible'),
-            }
-        )
-
-    if root_type in [GRADES_RESCORE_EVENT_TYPE, GRADES_OVERRIDE_EVENT_TYPE]:
-        current_user = get_current_user()
-        instructor_id = getattr(current_user, 'id', None)
-        tracker.emit(
-            unicode(GRADES_RESCORE_EVENT_TYPE),
-            {
-                'course_id': unicode(kwargs['course_id']),
-                'user_id': unicode(kwargs['user_id']),
-                'problem_id': unicode(kwargs['usage_id']),
-                'new_weighted_earned': kwargs.get('weighted_earned'),
-                'new_weighted_possible': kwargs.get('weighted_possible'),
-                'only_if_higher': kwargs.get('only_if_higher'),
-                'instructor_id': unicode(instructor_id),
-                'event_transaction_id': unicode(get_event_transaction_id()),
-                'event_transaction_type': unicode(root_type),
             }
         )

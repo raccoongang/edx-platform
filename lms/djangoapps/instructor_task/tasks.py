@@ -27,36 +27,27 @@ from django.utils.translation import ugettext_noop
 
 from celery import task
 from bulk_email.tasks import perform_delegate_email_batches
-from lms.djangoapps.instructor_task.tasks_base import BaseInstructorTask
-from lms.djangoapps.instructor_task.tasks_helper.runner import run_main_task
-from lms.djangoapps.instructor_task.tasks_helper.certs import (
-    generate_students_certificates,
-)
-from lms.djangoapps.instructor_task.tasks_helper.enrollments import (
+from lms.djangoapps.instructor_task.tasks_helper import (
+    run_main_task,
+    BaseInstructorTask,
+    perform_module_state_update,
+    rescore_problem_module_state,
+    reset_attempts_module_state,
+    delete_problem_module_state,
+    upload_problem_responses_csv,
+    upload_grades_csv,
+    upload_problem_grade_report,
+    upload_students_csv,
+    cohort_students_and_upload,
     upload_enrollment_report,
     upload_may_enroll_csv,
     upload_exec_summary_report,
-    upload_students_csv,
-)
-from lms.djangoapps.instructor_task.tasks_helper.grades import (
-    generate_course_grade_report,
-    generate_problem_grade_report,
-    upload_problem_responses_csv,
-)
-from lms.djangoapps.instructor_task.tasks_helper.misc import (
-    cohort_students_and_upload,
     upload_course_survey_report,
+    generate_students_certificates,
     upload_proctored_exam_results_report,
     upload_ora2_data,
 )
-from lms.djangoapps.instructor_task.tasks_helper.module_state import (
-    delete_problem_module_state,
-    perform_module_state_update,
-    override_score_module_state,
-    rescore_problem_module_state,
-    reset_attempts_module_state
-)
-from lms.djangoapps.instructor_task.tasks_helper.runner import run_main_task
+
 
 TASK_LOG = logging.getLogger('edx.celery.task')
 
@@ -83,19 +74,6 @@ def rescore_problem(entry_id, xmodule_instance_args):
     # Translators: This is a past-tense verb that is inserted into task progress messages as {action}.
     action_name = ugettext_noop('rescored')
     update_fcn = partial(rescore_problem_module_state, xmodule_instance_args)
-
-    visit_fcn = partial(perform_module_state_update, update_fcn, None)
-    return run_main_task(entry_id, visit_fcn, action_name)
-
-
-@task(base=BaseInstructorTask)  # pylint: disable=not-callable
-def override_problem_score(entry_id, xmodule_instance_args):
-    """
-    Overrides a specific learner's score on a problem.
-    """
-    # Translators: This is a past-tense verb that is inserted into task progress messages as {action}.
-    action_name = ugettext_noop('overridden')
-    update_fcn = partial(override_score_module_state, xmodule_instance_args)
 
     def filter_fcn(modules_to_update):
         """Filter that matches problems which are marked as being done"""
@@ -194,7 +172,7 @@ def calculate_grades_csv(entry_id, xmodule_instance_args):
         xmodule_instance_args.get('task_id'), entry_id, action_name
     )
 
-    task_fn = partial(generate_course_grade_report, xmodule_instance_args)
+    task_fn = partial(upload_grades_csv, xmodule_instance_args)
     return run_main_task(entry_id, task_fn, action_name)
 
 
@@ -211,7 +189,7 @@ def calculate_problem_grade_report(entry_id, xmodule_instance_args):
         xmodule_instance_args.get('task_id'), entry_id, action_name
     )
 
-    task_fn = partial(generate_problem_grade_report, xmodule_instance_args)
+    task_fn = partial(upload_problem_grade_report, xmodule_instance_args)
     return run_main_task(entry_id, task_fn, action_name)
 
 

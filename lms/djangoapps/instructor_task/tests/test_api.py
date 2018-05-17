@@ -29,7 +29,6 @@ from lms.djangoapps.instructor_task.api import (
     generate_certificates_for_students,
     regenerate_certificates,
     submit_export_ora2_data,
-    submit_override_score,
     SpecificStudentIdMissingError,
 )
 
@@ -161,7 +160,6 @@ class InstructorTaskModuleSubmitTest(InstructorTaskModuleTestCase):
         ),
         (submit_reset_problem_attempts_in_entrance_exam, 'reset_problem_attempts', {'student': True}),
         (submit_delete_entrance_exam_state_for_student, 'delete_problem_state', {'student': True}),
-        (submit_override_score, 'override_problem_score', {'student': True, 'score': 0})
     )
     @ddt.unpack
     def test_submit_task(self, task_function, expected_task_type, params=None):

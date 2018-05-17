@@ -50,26 +50,6 @@ from django_comment_common.models import (
 )
 from edxmako.shortcuts import render_to_string
 from courseware.models import StudentModule
-
-from lms.djangoapps.instructor.access import ROLES, allow_access, list_with_level, revoke_access, update_forum_role
-from lms.djangoapps.instructor.enrollment import (
-    enroll_email,
-    get_email_params,
-    get_user_email_language,
-    send_beta_role_email,
-    send_mail_to_student,
-    unenroll_email
-)
-from lms.djangoapps.instructor.views import INVOICE_KEY
-from lms.djangoapps.instructor.views.instructor_task_helpers import extract_email_features, extract_task_features
-from lms.djangoapps.instructor_task.api import submit_override_score
-from lms.djangoapps.instructor_task.api_helper import AlreadyRunningError
-from lms.djangoapps.instructor_task.models import ReportStore
-from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-from openedx.core.djangoapps.course_groups.cohorts import is_course_cohorted
-from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
-from openedx.core.djangoapps.user_api.preferences.api import get_user_preference, set_user_preference
-from openedx.core.djangolib.markup import HTML, Text
 from shoppingcart.models import (
     Coupon,
     CourseRegistrationCode,
@@ -113,7 +93,6 @@ from certificates.models import CertificateWhitelist, GeneratedCertificate, Cert
 
 from bulk_email.models import CourseEmail, BulkEmailFlag
 from student.models import get_user_by_username_or_email
-from xmodule.modulestore.django import modulestore
 
 from .tools import (
     dump_student_extensions,
@@ -133,8 +112,6 @@ from openedx.core.djangoapps.course_groups.cohorts import is_course_cohorted
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 
 log = logging.getLogger(__name__)
-
-TASK_SUBMISSION_OK = 'created'
 
 
 def common_exceptions_400(func):
@@ -2015,7 +1992,7 @@ def reset_student_attempts(request, course_id):
         response_payload['student'] = student_identifier
     elif all_students:
         lms.djangoapps.instructor_task.api.submit_reset_problem_attempts_for_all_students(request, module_state_key)
-        response_payload['task'] = TASK_SUBMISSION_OK
+        response_payload['task'] = 'created'
         response_payload['student'] = 'All Students'
     else:
         return HttpResponseBadRequest()
@@ -2094,7 +2071,7 @@ def reset_student_attempts_for_entrance_exam(request, course_id):  # pylint: dis
     except InvalidKeyError:
         return HttpResponseBadRequest(_("Course has no valid entrance exam section."))
 
-    response_payload = {'student': student_identifier or _('All Students'), 'task': TASK_SUBMISSION_OK}
+    response_payload = {'student': student_identifier or _('All Students'), 'task': 'created'}
     return JsonResponse(response_payload)
 
 
@@ -2159,64 +2136,7 @@ def rescore_problem(request, course_id):
     else:
         return HttpResponseBadRequest()
 
-    response_payload['task'] = TASK_SUBMISSION_OK
-    return JsonResponse(response_payload)
-
-
-@transaction.non_atomic_requests
-@require_POST
-@ensure_csrf_cookie
-@cache_control(no_cache=True, no_store=True, must_revalidate=True)
-@require_level('instructor')
-@require_post_params(problem_to_reset="problem urlname to reset", score='overriding score')
-@common_exceptions_400
-def override_problem_score(request, course_id):
-    course_key = CourseKey.from_string(course_id)
-    score = strip_if_string(request.POST.get('score'))
-    problem_to_reset = strip_if_string(request.POST.get('problem_to_reset'))
-    student_identifier = request.POST.get('unique_student_identifier', None)
-
-    if not problem_to_reset:
-        return HttpResponseBadRequest("Missing query parameter problem_to_reset.")
-
-    if not student_identifier:
-        return HttpResponseBadRequest("Missing query parameter student_identifier.")
-
-    if student_identifier is not None:
-        student = get_student_from_identifier(student_identifier)
-    else:
-        return _create_error_response(request, "Invalid student ID {}.".format(student_identifier))
-
-    try:
-        usage_key = UsageKey.from_string(problem_to_reset).map_into_course(course_key)
-    except InvalidKeyError:
-        return _create_error_response(request, "Unable to parse problem id {}.".format(problem_to_reset))
-
-    # check the user's access to this specific problem
-    if not has_access(request.user, "instructor", modulestore().get_item(usage_key)):
-        _create_error_response(request, "User {} does not have permission to override scores for problem {}.".format(
-            request.user.id,
-            problem_to_reset
-        ))
-
-    response_payload = {
-        'problem_to_reset': problem_to_reset,
-        'student': student_identifier
-    }
-    try:
-        submit_override_score(
-            request,
-            usage_key,
-            student,
-            score,
-        )
-    except NotImplementedError as exc:  # if we try to override the score of a non-scorable block, catch it here
-        return _create_error_response(request, exc.message)
-
-    except ValueError as exc:
-        return _create_error_response(request, exc.message)
-
-    response_payload['task'] = TASK_SUBMISSION_OK
+    response_payload['task'] = 'created'
     return JsonResponse(response_payload)
 
 
@@ -2274,7 +2194,7 @@ def rescore_entrance_exam(request, course_id):
     lms.djangoapps.instructor_task.api.submit_rescore_entrance_exam_for_student(
         request, entrance_exam_key, student, only_if_higher,
     )
-    response_payload['task'] = TASK_SUBMISSION_OK
+    response_payload['task'] = 'created'
     return JsonResponse(response_payload)
 
 
@@ -3434,11 +3354,3 @@ def _get_boolean_param(request, param_name):
     values to boolean values.
     """
     return request.POST.get(param_name, False) in ['true', 'True', True]
-
-
-def _create_error_response(request, msg):
-    """
-    Creates the appropriate error response for the current request,
-    in JSON form.
-    """
-    return JsonResponse({"error": _(msg)}, 400)

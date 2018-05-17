@@ -11,10 +11,8 @@ define([
         describe('StaffDebugActions', function() {
             var location = 'i4x://edX/Open_DemoX/edx_demo_course/problem/test_loc';
             var locationName = 'test_loc';
-            var usernameFixtureID = 'sd_fu_' + locationName;
-            var $usernameFixture = $('<input>', {id: usernameFixtureID, placeholder: 'userman'});
-            var scoreFixtureID = 'sd_fs_' + locationName;
-            var $scoreFixture = $('<input>', {id: scoreFixtureID, placeholder: '0'});
+            var fixtureID = 'sd_fu_' + locationName;
+            var $fixture = $('<input>', {id: fixtureID, placeholder: 'userman'});
             var escapableLocationName = 'test\.\*\+\?\^\:\$\{\}\(\)\|\]\[loc';
             var escapableFixtureID = 'sd_fu_' + escapableLocationName;
             var $escapableFixture = $('<input>', {id: escapableFixtureID, placeholder: 'userman'});
@@ -40,37 +38,22 @@ define([
 
             describe('getUser', function() {
                 it('gets the placeholder username if input field is empty', function() {
-                    $('body').append($usernameFixture);
+                    $('body').append($fixture);
                     expect(StaffDebug.getUser(locationName)).toBe('userman');
-                    $('#' + usernameFixtureID).remove();
+                    $('#' + fixtureID).remove();
                 });
                 it('gets a filled in name if there is one', function() {
-                    $('body').append($usernameFixture);
-                    $('#' + usernameFixtureID).val('notuserman');
+                    $('body').append($fixture);
+                    $('#' + fixtureID).val('notuserman');
                     expect(StaffDebug.getUser(locationName)).toBe('notuserman');
 
-                    $('#' + usernameFixtureID).val('');
-                    $('#' + usernameFixtureID).remove();
+                    $('#' + fixtureID).val('');
+                    $('#' + fixtureID).remove();
                 });
                 it('gets the placeholder name if the id has escapable characters', function() {
                     $('body').append($escapableFixture);
                     expect(StaffDebug.getUser('test.*+?^:${}()|][loc')).toBe('userman');
                     $("input[id^='sd_fu_']").remove();
-                });
-            });
-            describe('getScore', function() {
-                it('gets the placeholder score if input field is empty', function() {
-                    $('body').append($scoreFixture);
-                    expect(StaffDebug.getScore(locationName)).toBe('0');
-                    $('#' + scoreFixtureID).remove();
-                });
-                it('gets a filled in score if there is one', function() {
-                    $('body').append($scoreFixture);
-                    $('#' + scoreFixtureID).val('1');
-                    expect(StaffDebug.getScore(locationName)).toBe('1');
-
-                    $('#' + scoreFixtureID).val('');
-                    $('#' + scoreFixtureID).remove();
                 });
             });
             describe('doInstructorDashAction success', function() {
@@ -103,7 +86,7 @@ define([
             });
             describe('reset', function() {
                 it('makes an ajax call with the expected parameters', function() {
-                    $('body').append($usernameFixture);
+                    $('body').append($fixture);
 
                     spyOn($, 'ajax');
                     StaffDebug.reset(locationName, location);
@@ -113,18 +96,17 @@ define([
                         problem_to_reset: location,
                         unique_student_identifier: 'userman',
                         delete_module: false,
-                        only_if_higher: undefined,
-                        score: undefined
+                        only_if_higher: undefined
                     });
                     expect($.ajax.calls.mostRecent().args[0].url).toEqual(
                         '/instructor/api/reset_student_attempts'
                     );
-                    $('#' + usernameFixtureID).remove();
+                    $('#' + fixtureID).remove();
                 });
             });
             describe('deleteStudentState', function() {
                 it('makes an ajax call with the expected parameters', function() {
-                    $('body').append($usernameFixture);
+                    $('body').append($fixture);
 
                     spyOn($, 'ajax');
                     StaffDebug.deleteStudentState(locationName, location);
@@ -134,19 +116,18 @@ define([
                         problem_to_reset: location,
                         unique_student_identifier: 'userman',
                         delete_module: true,
-                        only_if_higher: undefined,
-                        score: undefined
+                        only_if_higher: undefined
                     });
                     expect($.ajax.calls.mostRecent().args[0].url).toEqual(
                         '/instructor/api/reset_student_attempts'
                     );
 
-                    $('#' + usernameFixtureID).remove();
+                    $('#' + fixtureID).remove();
                 });
             });
             describe('rescore', function() {
                 it('makes an ajax call with the expected parameters', function() {
-                    $('body').append($usernameFixture);
+                    $('body').append($fixture);
 
                     spyOn($, 'ajax');
                     StaffDebug.rescore(locationName, location);
@@ -156,18 +137,17 @@ define([
                         problem_to_reset: location,
                         unique_student_identifier: 'userman',
                         delete_module: undefined,
-                        only_if_higher: false,
-                        score: undefined
+                        only_if_higher: false
                     });
                     expect($.ajax.calls.mostRecent().args[0].url).toEqual(
                         '/instructor/api/rescore_problem'
                     );
-                    $('#' + usernameFixtureID).remove();
+                    $('#' + fixtureID).remove();
                 });
             });
             describe('rescoreIfHigher', function() {
                 it('makes an ajax call with the expected parameters', function() {
-                    $('body').append($usernameFixture);
+                    $('body').append($fixture);
 
                     spyOn($, 'ajax');
                     StaffDebug.rescoreIfHigher(locationName, location);
@@ -177,35 +157,12 @@ define([
                         problem_to_reset: location,
                         unique_student_identifier: 'userman',
                         delete_module: undefined,
-                        only_if_higher: true,
-                        score: undefined
+                        only_if_higher: true
                     });
                     expect($.ajax.calls.mostRecent().args[0].url).toEqual(
                         '/instructor/api/rescore_problem'
                     );
-                    $('#' + usernameFixtureID).remove();
-                });
-            });
-            describe('overrideScore', function() {
-                it('makes an ajax call with the expected parameters', function() {
-                    $('body').append($usernameFixture);
-                    $('body').append($scoreFixture);
-                    $('#' + scoreFixtureID).val('1');
-                    spyOn($, 'ajax');
-                    StaffDebug.overrideScore(locationName, location);
-
-                    expect($.ajax.calls.mostRecent().args[0].type).toEqual('POST');
-                    expect($.ajax.calls.mostRecent().args[0].data).toEqual({
-                        problem_to_reset: location,
-                        unique_student_identifier: 'userman',
-                        delete_module: undefined,
-                        only_if_higher: undefined,
-                        score: '1'
-                    });
-                    expect($.ajax.calls.mostRecent().args[0].url).toEqual(
-                        '/instructor/api/override_problem_score'
-                    );
-                    $('#' + usernameFixtureID).remove();
+                    $('#' + fixtureID).remove();
                 });
             });
         });
