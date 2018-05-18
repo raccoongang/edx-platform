@@ -4,9 +4,13 @@ Course API Serializers.  Representing course catalog data
 
 import urllib
 
+from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from rest_framework import serializers
+from xmodule.modulestore.django import modulestore
 
+from lms.djangoapps.grades.new.course_grade_factory import CourseGradeFactory
 from openedx.core.djangoapps.models.course_details import CourseDetails
 from openedx.core.lib.api.fields import AbsoluteURLField
 
@@ -110,6 +114,7 @@ class CourseDetailSerializer(CourseSerializer):  # pylint: disable=abstract-meth
     """
 
     overview = serializers.SerializerMethodField()
+    enrolled_students_data = serializers.SerializerMethodField()
 
     def get_overview(self, course_overview):
         """
@@ -119,3 +124,31 @@ class CourseDetailSerializer(CourseSerializer):  # pylint: disable=abstract-meth
         # fields from CourseSerializer, which get their data
         # from the CourseOverview object in SQL.
         return CourseDetails.fetch_about_attribute(course_overview.id, 'overview')
+
+    def get_enrolled_students_data(self, course_overview):
+        enrolled_students_data = []
+        enrolled_students = User.objects.filter(
+            courseenrollment__course_id=course_overview.id,
+            courseenrollment__is_active=1
+        ).order_by('username')
+        course = modulestore().get_course(course_overview.id)
+        for student in enrolled_students:
+            course_grade = None
+            current_grade = 0
+            summary = []
+            try:
+                course_grade = CourseGradeFactory().create(student, course)
+                current_grade = int(course_grade.percent * 100)
+                for section in course_grade.summary.get('section_breakdown'):
+                    if section.get('prominent'):
+                        summary.append(section)
+            except PermissionDenied:
+                pass
+            student_data = {
+                'username': student.username,
+                'current_grade': current_grade,
+                'certificate_eligible': course_grade.passed if course_grade else False,
+                'summary': summary
+            }
+            enrolled_students_data.append(student_data)
+        return enrolled_students_data

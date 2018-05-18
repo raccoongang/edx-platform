@@ -15,6 +15,7 @@ import locale
 import sys
 from django.utils import translation
 
+from openedx.core.djangoapps.site_configuration.helpers import get_value
 from openedx.core.djangoapps.dark_lang import DARK_LANGUAGE_KEY
 from openedx.core.djangoapps.dark_lang.models import DarkLangConfig
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preference
@@ -81,7 +82,13 @@ class DarkLangMiddleware(object):
             return
 
         self._clean_accept_headers(request)
+        self._set_site_or_microsite_language(request)
         self._activate_preview_language(request)
+
+    def _set_site_or_microsite_language(self, request):
+        language = get_value('LANGUAGE_CODE', None)
+        if language:
+            request.session[LANGUAGE_SESSION_KEY] = language
 
     def _fuzzy_match(self, lang_code):
         """Returns a fuzzy match for lang_code"""

@@ -228,6 +228,8 @@ def course_info(request, course_id):
 
     Assumes the course_id is in a valid format.
     """
+    return redirect(reverse('courseware', kwargs={'course_id': course_id}))
+
     def get_last_accessed_courseware(course, request, user):
         """
         Returns the courseware module URL that the user last accessed, or None if it cannot be found.
@@ -820,6 +822,7 @@ def course_about(request, course_id):
             'pre_requisite_courses': pre_requisite_courses,
             'course_image_urls': overview.image_urls,
             'reviews_fragment_view': reviews_fragment_view,
+            'course_display_name_with_default': overview.display_name_with_default
         }
 
         return render_to_response('courseware/course_about.html', context)

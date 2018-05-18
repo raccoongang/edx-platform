@@ -119,9 +119,6 @@ class CourseOverview(TimeStampedModel):
         """
         from lms.djangoapps.certificates.api import get_active_web_certificate
         from openedx.core.lib.courses import course_image_url
-        from contentstore.courseware_index import CoursewareSearchIndexer
-        from cms.djangoapps.contentstore.courseware_index import CourseAboutSearchIndexer
-        from opaque_keys.edx.keys import CourseKey
 
         # Workaround for a problem discovered in https://openedx.atlassian.net/browse/TNL-2806.
         # If the course has a malformed grading policy such that
@@ -196,14 +193,6 @@ class CourseOverview(TimeStampedModel):
         course_overview.self_paced = course.self_paced
 
         course_overview.language = course.language
-
-        if (course_overview.catalog_visibility != 'both'):
-            # Delete course entry Search_index
-            CourseAboutSearchIndexer.remove_deleted_items(course.id)
-        else:
-            # Reindex course entry Search_index
-            store = modulestore()
-            CoursewareSearchIndexer.do_course_reindex(store, course.id)
 
         return course_overview
 
@@ -540,7 +529,7 @@ class CourseOverview(TimeStampedModel):
             # In rare cases, courses belonging to the same org may be accidentally assigned
             # an org code with a different casing (e.g., Harvardx as opposed to HarvardX).
             # Case-insensitive matching allows us to deal with this kind of dirty data.
-            course_overviews = course_overviews.filter(org__iregex=r'(' + '|'.join(orgs) + ')')
+            course_overviews = course_overviews.filter(org__iregex=r'^(' + '|'.join(orgs) + ')$')
 
         if filter_:
             course_overviews = course_overviews.filter(**filter_)
