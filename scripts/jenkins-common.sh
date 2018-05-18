@@ -62,7 +62,11 @@ echo "npm version is `npm --version`"
 # Manage the npm cache on Jenkins.
 # (In this case, remove it. That ensures from run-to-run, it is a clean npm environment)
 echo "--> Cleaning npm cache"
+npm uninstall karma-jasmine
+npm uninstall jasmine-core
 npm cache clean
+npm install jasmine-core@2.8.0
+npm install karma-jasmine@1.1.0
 
 # Log any paver or ansible command timing
 TIMESTAMP=$(date +%s)
