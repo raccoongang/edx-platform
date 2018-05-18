@@ -17,5 +17,5 @@ urlpatterns = patterns(
         DiscussionBoardFragmentView.as_view(),
         name='discussion_board_fragment_view'
     ),
-    url(r'', 'forum_form_discussion', name='forum_form_discussion'),
+#    url(r'', 'forum_form_discussion', name='forum_form_discussion'),
 )

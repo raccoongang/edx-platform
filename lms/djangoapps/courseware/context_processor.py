@@ -8,6 +8,7 @@ to the templates without having to append every view file.
 import request_cache
 from openedx.core.djangoapps.user_api.errors import UserAPIInternalError, UserNotFound
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preferences
+from openedx.core.djangoapps.site_configuration.helpers import get_value
 
 RETRIEVABLE_PREFERENCES = {
     'user_timezone': 'time_zone',
@@ -41,6 +42,6 @@ def user_timezone_locale_prefs(request):
                     key: user_preferences.get(pref_name, None)
                     for key, pref_name in RETRIEVABLE_PREFERENCES.iteritems()
                 }
-
+        user_prefs['user_language'] = get_value('LANGUAGE_CODE', None)
         cached_value.update(user_prefs)
     return cached_value

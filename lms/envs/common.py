@@ -2055,6 +2055,9 @@ INSTALLED_APPS = (
 
     'openedx.core.djangoapps.auth_exchange',
 
+    #SSO Client for Drupal. https://github.com/raccoongang/edx-oauth-client/tree/drupal
+    'edx_oauth_client',
+
     # For the wiki
     'wiki',  # The new django-wiki from benjaoming
     'django_notify',

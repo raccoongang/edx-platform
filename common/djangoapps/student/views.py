@@ -467,6 +467,7 @@ def signin_user(request):
 def register_user(request, extra_context=None):
     """Deprecated. To be replaced by :class:`student_account.views.login_and_registration_form`."""
     # Determine the URL to redirect to following login:
+    return redirect(reverse('signin_user'))
     redirect_to = get_next_url_for_login_page(request)
     if request.user.is_authenticated():
         return redirect(redirect_to)

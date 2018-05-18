@@ -6,6 +6,8 @@ from django.conf import settings
 from django.conf.urls import patterns, url
 
 from .views import EnrollmentCourseDetailView, EnrollmentListView, EnrollmentView
+from .submission_history_api import SubmissionHistoryView
+
 
 urlpatterns = patterns(
     'enrollment.views',
@@ -28,3 +30,7 @@ urlpatterns = patterns(
         name='courseenrollmentdetails'
     ),
 )
+
+urlpatterns += [
+    url(r'^submission_history$', SubmissionHistoryView.as_view()),
+]

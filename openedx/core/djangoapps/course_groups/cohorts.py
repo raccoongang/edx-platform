@@ -429,7 +429,7 @@ def remove_user_from_cohort(cohort, username_or_email):
         raise ValueError("User {} was not present in cohort {}".format(username_or_email, cohort))
 
 
-def add_user_to_cohort(cohort, username_or_email):
+def add_user_to_cohort(cohort, username_or_email, force_insert=False):
     """
     Look up the given user, and if successful, add them to the specified cohort.
 
@@ -453,7 +453,7 @@ def add_user_to_cohort(cohort, username_or_email):
         user = get_user_by_username_or_email(username_or_email)
 
         membership = CohortMembership(course_user_group=cohort, user=user)
-        membership.save()  # This will handle both cases, creation and updating, of a CohortMembership for this user.
+        membership.save(force_insert=force_insert)  # This will handle both cases, creation and updating, of a CohortMembership for this user.
 
         tracker.emit(
             "edx.cohort.user_add_requested",

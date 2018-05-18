@@ -56,6 +56,8 @@ from track import contexts
 from util.milestones_helpers import is_entrance_exams_enabled
 from util.model_utils import emit_field_changed_events, get_changed_fields_dict
 from util.query import use_read_replica_if_available
+import branding
+
 
 UNENROLL_DONE = Signal(providing_args=["course_enrollment", "skip_refund"])
 ENROLL_STATUS_CHANGE = Signal(providing_args=["event", "user", "course_id", "mode", "cost", "currency"])
@@ -292,6 +294,10 @@ class UserProfile(models.Model):
     bio = models.CharField(blank=True, null=True, max_length=3000, db_index=False)
     profile_image_uploaded_at = models.DateTimeField(null=True, blank=True)
 
+    def __init__(self, *args, **kwargs):
+        super(UserProfile, self).__init__(*args, **kwargs)
+        self._old_gender = self.gender
+
     @property
     def has_profile_image(self):
         """
@@ -436,6 +442,8 @@ def user_profile_pre_save_callback(sender, **kwargs):
     # retrieved in the post_save callback when we emit an event with new and
     # old field values.
     user_profile._changed_fields = get_changed_fields_dict(user_profile, sender)
+
+    user_profile._old_gender = user_profile.pk and sender.objects.get(pk=user_profile.pk).gender
 
 
 @receiver(post_save, sender=UserProfile)
@@ -2452,3 +2460,77 @@ class LogoutViewConfiguration(ConfigurationModel):
     def __unicode__(self):
         """Unicode representation of the instance. """
         return u'Logout view configuration: {enabled}'.format(enabled=self.enabled)
+
+
+def _automatic_add_user_to_cohort(course_id, user):
+    from openedx.core.djangoapps.course_groups import cohorts, models
+
+    if not cohorts.is_course_cohorted(course_id):
+        cohorts.set_course_cohorted(course_id, True)
+
+    try:
+        male_cohort = cohorts.get_cohort_by_name(course_id, 'Male')
+    except models.CourseUserGroup.DoesNotExist:
+        male_cohort = cohorts.add_cohort(course_id, 'Male', 'manual')
+    try:
+        female_cohort = cohorts.get_cohort_by_name(course_id, 'Female')
+    except models.CourseUserGroup.DoesNotExist:
+        female_cohort = cohorts.add_cohort(course_id, 'Female', 'manual')
+
+    def _add_to_cohort(rem_cohort, add_cohort):
+        try:
+            cohorts.remove_user_from_cohort(rem_cohort, user.email)
+        except ValueError as e:
+            log.info(e.message)
+
+        try:
+            cohorts.add_user_to_cohort(add_cohort, user.email, force_insert=True)
+        except Exception as e:
+            log.info(e.message)
+        else:
+            log.info('User "%s" automatic added to cohort "Male" on course "%s"', user, course_id)
+
+    if user.profile.gender == 'm':
+        _add_to_cohort(female_cohort, male_cohort)
+    elif user.profile.gender == 'f':
+        _add_to_cohort(male_cohort, female_cohort)
+
+
+def _remove_user_from_cohorts(course_id, user):
+    from openedx.core.djangoapps.course_groups import cohorts, models
+
+    try:
+        male_cohort = cohorts.get_cohort_by_name(course_id, 'Male')
+    except models.CourseUserGroup.DoesNotExist:
+        male_cohort = cohorts.add_cohort(course_id, 'Male', 'manual')
+    try:
+        female_cohort = cohorts.get_cohort_by_name(course_id, 'Female')
+    except models.CourseUserGroup.DoesNotExist:
+        female_cohort = cohorts.add_cohort(course_id, 'Female', 'manual')
+
+    try:
+        cohorts.remove_user_from_cohort(male_cohort, user.email)
+        cohorts.remove_user_from_cohort(female_cohort, user.email)
+    except ValueError as e:
+        log.info(e.message)
+
+
+@receiver(ENROLL_STATUS_CHANGE)
+def enroll_status_change_callback(sender, event=None, user=None, course_id=None, **kwargs):
+    if event == EnrollStatusChange.enroll:
+        _automatic_add_user_to_cohort(course_id, user)
+    elif event == EnrollStatusChange.unenroll:
+        _remove_user_from_cohorts(course_id, user)
+
+
+@receiver(models.signals.post_save, sender=UserProfile)
+def change_user_cohort(sender, instance, **kwargs):  # pylint:   disable=unused-argument, invalid-name
+    if instance._old_gender != instance.gender:
+        course_ids = [CourseKey.from_string(str(c.id)) for c in branding.get_visible_courses()]
+        course_enrollments = CourseEnrollment.objects.filter(
+            user=instance.user,
+            course_id__in=course_ids
+        )
+
+        for course_enrollment in course_enrollments:
+            _automatic_add_user_to_cohort(course_enrollment.course_id, instance.user)

@@ -32,6 +32,7 @@ def index(request):
     Redirects to main page -- info page if user authenticated, or marketing if not
     '''
 
+    return redirect(reverse('courses'))
     if request.user.is_authenticated():
         # Only redirect to dashboard if user has
         # courses in his/her dashboard. Otherwise UX is a bit cryptic.

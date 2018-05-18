@@ -144,6 +144,8 @@
 
             // Hide the thread view initially
             this.$('.inline-thread').addClass('is-hidden');
+
+            this.$('section.discussion .add_post_btn_container').removeClass('is-hidden');
         },
 
         navigateToThread: function(threadId) {
