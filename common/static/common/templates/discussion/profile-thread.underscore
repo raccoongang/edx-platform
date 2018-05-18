@@ -4,7 +4,8 @@
             <h3><%- title %></h3>
             <p class="posted-details">
                 <% if (user) { %>
-                    <a href="<%- user.url %>" class="username"><%- user.username %></a>
+                    <span class="username"><%- user.username %></span>
+                    <!--a href="<%- user.url %>" class="username"><%- user.username %></a-->
                 <% } else { %>
                     <%- gettext("anonymous") %>
                 <% } %>

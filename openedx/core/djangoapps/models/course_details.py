@@ -5,7 +5,7 @@ import re
 import logging
 
 from django.conf import settings
-from django.dispatch import Signal
+from django.dispatch import Signal, receiver
 
 from xmodule.fields import Date
 from xmodule.modulestore.exceptions import ItemNotFoundError
@@ -336,3 +336,9 @@ class CourseDetails(object):
                 '?rel=0" frameborder="0" allowfullscreen=""></iframe>'
             )
         return result
+
+
+@receiver(COURSE_PACING_CHANGE, dispatch_uid="course_pacing_changed")
+def listen_for_course_pacing_changed(sender, course_key, course_self_paced, **kwargs):  # pylint: disable=unused-argument
+    from certificates.models import CertificateGenerationCourseSetting
+    CertificateGenerationCourseSetting.set_enabled_for_course(course_key, course_self_paced)

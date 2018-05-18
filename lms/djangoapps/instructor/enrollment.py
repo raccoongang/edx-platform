@@ -115,6 +115,8 @@ def enroll_email(course_id, student_email, auto_enroll=False, email_students=Fal
     returns two EmailEnrollmentState's
         representing state before and after the action.
     """
+
+
     previous_state = EmailEnrollmentState(course_id, student_email)
     enrollment_obj = None
     if previous_state.user:
@@ -446,7 +448,7 @@ def send_mail_to_student(student, param_dict, language=None):
         ),
         'enrolled_enroll': (
             'emails/enroll_email_enrolledsubject.txt',
-            'emails/enroll_email_enrolledmessage.txt'
+            'emails/enroll_email_enrolledmessage.html'
         ),
         'allowed_unenroll': (
             'emails/unenroll_email_subject.txt',
@@ -470,11 +472,21 @@ def send_mail_to_student(student, param_dict, language=None):
         ),
     }
 
+    html_template = None
+    html_message = None
+    if message_type == 'enrolled_enroll':
+        language = 'ar'
+        html_template = 'emails/enroll_email_enrolledmessage.html'
+
     subject_template, message_template = email_template_dict.get(message_type, (None, None))
     if subject_template is not None and message_template is not None:
         subject, message = render_message_to_string(
             subject_template, message_template, param_dict, language=language
         )
+        if html_template:
+            _s, html_message = render_message_to_string(
+                subject_template, html_template, param_dict, language=language
+            )
 
     if subject and message:
         # Remove leading and trailing whitespace from body
@@ -487,7 +499,7 @@ def send_mail_to_student(student, param_dict, language=None):
             settings.DEFAULT_FROM_EMAIL
         )
 
-        send_mail(subject, message, from_address, [student], fail_silently=False)
+        send_mail(subject, message, from_address, [student], fail_silently=False,  html_message=html_message)
 
 
 def render_message_to_string(subject_template, message_template, param_dict, language=None):

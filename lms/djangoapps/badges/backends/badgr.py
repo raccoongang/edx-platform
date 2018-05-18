@@ -2,6 +2,7 @@
 Badge Awarding backend for Badgr-Server.
 """
 import hashlib
+import json
 import logging
 import mimetypes
 
@@ -60,14 +61,17 @@ class BadgrBackend(BadgeBackend):
         """
         Get a compatible badge slug from the specification.
         """
-        slug = badge_class.issuing_component + badge_class.slug
-        if badge_class.issuing_component and badge_class.course_id:
-            # Make this unique to the course, and down to 64 characters.
-            # We don't do this to badges without issuing_component set for backwards compatibility.
-            slug = hashlib.sha256(slug + unicode(badge_class.course_id)).hexdigest()
-        if len(slug) > MAX_SLUG_LENGTH:
-            # Will be 64 characters.
-            slug = hashlib.sha256(slug).hexdigest()
+        if badge_class.slug_badgr:
+            slug = badge_class.slug_badgr
+        else:
+            slug = badge_class.issuing_component + badge_class.slug
+            if badge_class.issuing_component and badge_class.course_id:
+                # Make this unique to the course, and down to 64 characters.
+                # We don't do this to badges without issuing_component set for backwards compatibility.
+                slug = hashlib.sha256(slug + unicode(badge_class.course_id)).hexdigest()
+            if len(slug) > MAX_SLUG_LENGTH:
+                # Will be 64 characters.
+                slug = hashlib.sha256(slug).hexdigest()
         return slug
 
     def _log_if_raised(self, response, data):
@@ -111,6 +115,11 @@ class BadgrBackend(BadgeBackend):
             self._badge_create_url, headers=self._get_headers(), data=data, files=files,
             timeout=settings.BADGR_TIMEOUT
         )
+
+        if not badge_class.slug_badgr:
+            badge_class.slug_badgr = json.loads(result.content)['slug']
+            badge_class.save()
+
         self._log_if_raised(result, data)
 
     def _send_assertion_created_event(self, user, assertion):

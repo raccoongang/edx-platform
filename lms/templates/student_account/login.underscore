@@ -29,7 +29,7 @@
     <div class="login-providers">
         <div class="section-title lines">
             <h3>
-                <span class="text"><%- gettext("or sign in with") %></span>
+                <span class="text"><%- gettext("You are about to explore the Young Thinkers Program Courses") %></span>
             </h3>
         </div>
 
