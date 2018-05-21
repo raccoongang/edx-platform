@@ -33,6 +33,8 @@ class Env(object):
     # Python unittest dirs
     PYTHON_COVERAGERC = REPO_ROOT / ".coveragerc"
 
+    STATIC_COLLECTOR_ROOT_TEST = REPO_ROOT / "static_collector"
+
     # Bok_choy dirs
     BOK_CHOY_DIR = REPO_ROOT / "common" / "test" / "acceptance"
     BOK_CHOY_LOG_DIR = GEN_LOG_DIR
