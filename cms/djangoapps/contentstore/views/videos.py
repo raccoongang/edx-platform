@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseNotFound
 from django.utils.translation import ugettext as _, ugettext_noop
 from django.views.decorators.http import require_GET, require_http_methods
-import rfc6266
+import rfc6266_parser
 
 from edxval.api import (
     create_video,
@@ -214,7 +214,7 @@ def video_encodings_download(request, course_key_string):
     # listing for videos uploaded through Studio
     filename = _("{course}_video_urls").format(course=course.id.course)
     # See https://tools.ietf.org/html/rfc6266#appendix-D
-    response["Content-Disposition"] = rfc6266.build_header(
+    response["Content-Disposition"] = rfc6266_parser.build_header(
         filename + ".csv",
         filename_compat="video_urls.csv"
     )
