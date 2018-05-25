@@ -11,7 +11,10 @@ define([
         uploadButton,
         previousUploads,
         videoSupportedFileFormats,
-        videoUploadMaxFileSizeInGB
+        videoUploadMaxFileSizeInGB,
+        videoMaxLengthFileName,
+        storageService,
+        transcriptHandlerUrl
     ) {
         var activeView = new ActiveVideoUploadListView({
                 postUrl: videoHandlerUrl,
@@ -19,6 +22,8 @@ define([
                 uploadButton: uploadButton,
                 videoSupportedFileFormats: videoSupportedFileFormats,
                 videoUploadMaxFileSizeInGB: videoUploadMaxFileSizeInGB,
+                videoMaxLengthFileName: videoMaxLengthFileName,
+                storageService: storageService,
                 onFileUploadDone: function(activeVideos) {
                     $.ajax({
                         url: videoHandlerUrl,
@@ -35,8 +40,10 @@ define([
                             }),
                             updatedView = new PreviousVideoUploadListView({
                                 videoHandlerUrl: videoHandlerUrl,
+                                transcriptHandlerUrl: transcriptHandlerUrl,
                                 collection: updatedCollection,
-                                encodingsDownloadUrl: encodingsDownloadUrl
+                                encodingsDownloadUrl: encodingsDownloadUrl,
+                                storageService: storageService
                             });
                         $contentWrapper.find('.wrapper-assets').replaceWith(updatedView.render().$el);
                     });
@@ -44,8 +51,10 @@ define([
             }),
             previousView = new PreviousVideoUploadListView({
                 videoHandlerUrl: videoHandlerUrl,
+                transcriptHandlerUrl: transcriptHandlerUrl,
                 collection: new Backbone.Collection(previousUploads),
-                encodingsDownloadUrl: encodingsDownloadUrl
+                encodingsDownloadUrl: encodingsDownloadUrl,
+                storageService: storageService
             });
         $contentWrapper.append(activeView.render().$el);
         $contentWrapper.append(previousView.render().$el);

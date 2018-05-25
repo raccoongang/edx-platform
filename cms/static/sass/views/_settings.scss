@@ -271,6 +271,10 @@
             display: inline-block;
           }
         }
+
+        select {
+          max-width: 100%;
+        }
       }
 
       .field-group {
@@ -513,6 +517,10 @@
         margin-top: ($baseline/2);
         border-top: 1px solid $gray-l5;
         padding-top: ($baseline/2);
+      }
+
+      #intro-video-source {
+        float: right;
       }
     }
 
@@ -1204,5 +1212,8 @@
         }
       }
     }
+  }
+  .field.video .vjs-menu-content li {
+    padding: 5px;
   }
 }

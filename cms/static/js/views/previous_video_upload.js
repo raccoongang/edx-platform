@@ -1,8 +1,11 @@
+/* global Backbone */
 define(
     ['underscore', 'gettext', 'js/utils/date_utils', 'js/views/baseview', 'common/js/components/views/feedback_prompt',
      'common/js/components/views/feedback_notification', 'common/js/components/utils/view_utils',
-     'edx-ui-toolkit/js/utils/html-utils', 'text!templates/previous-video-upload.underscore'],
+     'edx-ui-toolkit/js/utils/html-utils', 'js/views/previous_transcripts_video_upload',
+     'text!templates/previous-video-upload.underscore'],
     function(_, gettext, DateUtils, BaseView, PromptView, NotificationView, ViewUtils, HtmlUtils,
+             PreviousTranscriptsVideoUploadView,
              previousVideoUploadTemplate) {
         'use strict';
 
@@ -10,12 +13,22 @@ define(
             tagName: 'tr',
 
             events: {
-                'click .remove-video-button.action-button': 'removeVideo'
+                'click .remove-video-button.action-button': 'removeVideo',
+                'click .js-toggle-transcripts': 'toggleTranscripts',
+                'click .js-add-transcript': 'addTranscripts',
+                'click .js-lock-unlock-file': 'lockUnlockfile'
             },
 
             initialize: function(options) {
                 this.template = HtmlUtils.template(previousVideoUploadTemplate);
                 this.videoHandlerUrl = options.videoHandlerUrl;
+                this.transcriptHandlerUrl = options.transcriptHandlerUrl;
+                this.storageService = options.storageService;
+                this.transcriptsCollection = new Backbone.Collection();
+
+                this.transcriptsCollection.on('reset', this.render);
+
+                this.getTranscripts();
             },
 
             renderDuration: function(seconds) {
@@ -33,7 +46,9 @@ define(
                     // the servers where its duration is determined.
                     duration: duration > 0 ? this.renderDuration(duration) : gettext('Pending'),
                     created: DateUtils.renderDate(this.model.get('created')),
-                    status: this.model.get('status')
+                    status: this.model.get('status'),
+                    storageService: this.storageService,
+                    countTranscripts: this.transcriptsCollection.length
                 };
                 HtmlUtils.setHtml(
                     this.$el,
@@ -41,17 +56,45 @@ define(
                         _.extend({}, this.model.attributes, renderedAttributes)
                     )
                 );
+
+                if (this.storageService === 'azure') {
+                    if ($.inArray(this.model.get('status_value'), ['file_complete', 'file_encrypted']) !== -1) {
+                        this.renderTranscripts();
+                    } else if ($.inArray(this.model.get('status_value'),
+                            ['ingest', 'transcode_queue', 'transcode_active']) !== -1) {
+                        this.checkStatusVideo();
+                    }
+                }
+
                 return this;
             },
 
+            renderTranscripts: function() {
+                if (this.transcriptsView) {
+                    this.transcriptsView.remove();
+                }
+                this.transcriptsView = new PreviousTranscriptsVideoUploadView({
+                    collection: this.transcriptsCollection,
+                    transcriptHandlerUrl: this.transcriptHandlerUrl,
+                    edxVideoId: this.model.get('edx_video_id'),
+                    clientVideoId: this.model.get('client_video_id')
+                });
+                this.$el.after(this.transcriptsView.render().$el);
+            },
+
             removeVideo: function(event) {
-                var videoView = this;
+                var videoView = this,
+                    message = gettext('Removing a video from this list does not affect course content. Any content that uses a previously uploaded video ID continues to display in the course.');  // eslint-disable-line max-len
 
                 event.preventDefault();
 
+                if (this.storageService === 'azure') {
+                    message = gettext('Removing a video from this list does not affect course content. This will not delete the video file from Azure storage and it will continue to play if included in a course unit. You can update the video or remove the URL link from the course if needed.');  // eslint-disable-line max-len
+                }
+
                 ViewUtils.confirmThenRunOperation(
                     gettext('Are you sure you want to remove this video from the list?'),
-                    gettext('Removing a video from this list does not affect course content. Any content that uses a previously uploaded video ID continues to display in the course.'),  // eslint-disable-line max-len
+                    message,
                     gettext('Remove'),
                     function() {
                         ViewUtils.runOperationShowingMessage(
@@ -67,6 +110,105 @@ define(
                         );
                     }
                 );
+            },
+
+            getTranscripts: function() {
+                var view = this;
+                if (this.storageService === 'azure' &&
+                    $.inArray(this.model.get('status_value'), ['file_complete', 'file_encrypted']) !== -1) {
+                    $.ajax({
+                        url: this.transcriptHandlerUrl + '/' + this.model.get('edx_video_id'),
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        type: 'GET'
+                    }).done(function(responseData) {
+                        view.transcriptsCollection.reset(responseData.transcripts);
+                    });
+                }
+            },
+
+            toggleTranscripts: function(event) {
+                event.preventDefault();
+                this.transcriptsView.$el.toggleClass('is-hidden');
+
+                $(event.currentTarget).toggleClass('active-transcripts');
+            },
+
+            addTranscripts: function(event) {
+                event.preventDefault();
+                this.transcriptsView.$el.find('.js-add-transcript').click();
+            },
+
+            lockUnlockfile: function(event) {
+                var videoView = this,
+                    postData,
+                    title,
+                    runMessage;
+
+                event.preventDefault();
+
+                if (this.model.get('status_value') === 'file_complete') {
+                    title = gettext('Are you sure you want to add encryption to this video file?');
+                    runMessage = gettext('Adding encryption');
+                    postData = {encrypt: true};
+                } else {
+                    title = gettext('Are you sure you want to remove encryption from this video file?');
+                    runMessage = gettext('Removing encryption');
+                    postData = {encrypt: false};
+                }
+
+                ViewUtils.confirmThenRunOperation(
+                    title,
+                    gettext('If the current video file is used in "Azure-media-service" xBlock, please go to the xBlock and redefine the video file.'), // eslint-disable-line max-len,
+                    gettext('OK'),
+                    function() {
+                        ViewUtils.runOperationShowingMessage(
+                            runMessage,
+                            function() {
+                                return $.ajax({
+                                    url: videoView.videoHandlerUrl + '/encrypt/' + videoView.model.get('edx_video_id'),
+                                    type: 'POST',
+                                    data: JSON.stringify(postData),
+                                    contentType: 'application/json',
+                                    dataType: 'json'
+                                }).done(function(data) {
+                                    videoView.model.set('status_value', data.status_value);
+                                    videoView.$('.js-lock-unlock-file').toggleClass(
+                                        'encrypted',
+                                        data.status_value === 'file_encrypted'
+                                    );
+                                });
+                            }
+                        );
+                    }
+                );
+            },
+
+            checkStatusVideo: function() {
+                var view = this,
+                    video,
+                    intervalID;
+
+                intervalID = setInterval(function() {
+                    $.ajax({
+                        url: view.videoHandlerUrl + '/' + view.model.get('edx_video_id'),
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        type: 'GET'
+                    }).done(function(responseData) {
+                        video = _.find(responseData.videos, function(v) {
+                            return v.edx_video_id === view.model.get('edx_video_id');
+                        });
+
+                        if (video && video.status_value !== view.model.get('status_value')) {
+                            clearInterval(intervalID);
+                            view.model.set(video);
+                            view.render();
+                        }
+                    }).fail(function() {
+                        clearInterval(intervalID);
+                    });
+                }, 20000);
             }
         });
 

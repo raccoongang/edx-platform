@@ -1,0 +1,2 @@
+<div aria-labelledby="aria-labelledby-<%- viewId %>"><%- name %> (<%- language %>)</div>
+<span id="aria-labelledby-<%- viewId %>" class="sr"><%- StringUtils.interpolate(gettext("{name} {language} for {video_name}"), {name: name, language: language, video_name: clientVideoId}) %></span>

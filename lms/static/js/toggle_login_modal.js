@@ -22,18 +22,19 @@
                 var overlay = $("<div id='lean_overlay'></div>");
                 $('body').append(overlay);
             }
-
             options = $.extend(defaults, options);
 
             return this.each(function() {
                 var o = options;
 
                 $(this).click(function(e) {
-                    $('.modal').hide();
-
                     var modal_id = $(this).attr('href');
-
-                    if ($(modal_id).hasClass('video-modal')) {
+                    var azurePlayer = $('#intro-player').find('video')[0];
+                    $('.modal').hide();
+                    if (typeof azurePlayer !== 'undefined') {
+                        azurePlayer.play();
+                        // do not perform cloning of Azure Media Player, please.
+                    } else if ($(modal_id).hasClass('video-modal')) {
             // Video modals need to be cloned before being presented as a modal
             // This is because actions on the video get recorded in the history.
             // Deleting the video (clone) prevents the odd back button behavior.
@@ -100,12 +101,14 @@
             });
 
             function close_modal(modal_id, e) {
+                var azurePlayer = $('#intro-player').find('video')[0];
                 $('#lean_overlay').fadeOut(200);
                 $('iframe', modal_id).attr('src', '');
                 $(modal_id).css({'display': 'none'});
                 if (modal_id == '#modal_clone') {
                     $(modal_id).remove();
                 }
+                if (typeof azurePlayer !== 'undefined') { azurePlayer.pause(); }
                 e.preventDefault();
             }
         }

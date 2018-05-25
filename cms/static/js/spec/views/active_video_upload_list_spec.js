@@ -1,4 +1,4 @@
-/* global _ */
+/* global _  AzureStorage */
 define(
     [
         'jquery',
@@ -8,7 +8,9 @@ define(
         'common/js/spec_helpers/template_helpers',
         'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers',
         'accessibility',
-        'mock-ajax'
+        'mock-ajax',
+        'azure-storage.common',
+        'azure-storage.blob'
     ],
     function($, ActiveVideoUpload, ActiveVideoUploadListView, StringUtils, TemplateHelpers, AjaxHelpers) {
         'use strict';
@@ -40,12 +42,16 @@ define(
                 this.uploadButton = $('<button>');
                 this.videoSupportedFileFormats = ['.mp4', '.mov'];
                 this.videoUploadMaxFileSizeInGB = 5;
+                this.videoMaxLengthFileName = 36;
+                this.storageService = 's3';
                 this.view = new ActiveVideoUploadListView({
                     concurrentUploadLimit: concurrentUploadLimit,
                     postUrl: this.postUrl,
                     uploadButton: this.uploadButton,
                     videoSupportedFileFormats: this.videoSupportedFileFormats,
-                    videoUploadMaxFileSizeInGB: this.videoUploadMaxFileSizeInGB
+                    videoUploadMaxFileSizeInGB: this.videoUploadMaxFileSizeInGB,
+                    videoMaxLengthFileName: this.videoMaxLengthFileName,
+                    storageService: this.storageService
                 });
                 this.view.render();
                 jasmine.Ajax.install();
@@ -70,6 +76,92 @@ define(
 
             it('should not show a notification message if there are no active video uploads', function() {
                 expect(this.view.onBeforeUnload()).toBeUndefined();
+            });
+
+            it('called uploadAzureStorage when storageService is equal to value azure', function() {
+                var uploadData = {
+                    files: [{name: 'video.mp4', size: 10000}],
+                    redirected: true
+                };
+                this.view.storageService = 'azure';
+                this.view.uploadAzureStorage = jasmine.createSpy();
+
+                this.view.$uploadForm.fileupload('add', uploadData);
+
+                expect(this.view.uploadAzureStorage).toHaveBeenCalled();
+            });
+
+            it('file upload due to the AzureStorage', function() {
+                var sasToken = 'sr=b&sp=w&sv=2014-02-14&st=2017-12-11',
+                    blobUri = 'http://azure.blob.core.windows.net/',
+                    blobContainer = 'asset-50c9517e',
+                    blobName = 'video.mp4',
+                    uploadData = {
+                        files: [{name: 'video.mp4', size: 10000}],
+                        url: blobUri + blobContainer + '/' + blobName + '?' + sasToken,
+                        cid: 'c12'
+
+                    },
+                    createBlockBlobFromBrowserFile = jasmine.createSpy();
+
+                jasmine.clock().install();
+                createBlockBlobFromBrowserFile.and.callFake(
+                    function() {
+                        return 'speedSummary';
+                    }
+                );
+                AzureStorage.createBlobServiceWithSas = jasmine.createSpy();
+                AzureStorage.createBlobServiceWithSas.and.callFake(
+                    function() {
+                        return {createBlockBlobFromBrowserFile: createBlockBlobFromBrowserFile};
+                    }
+                );
+                this.view.setStatus = jasmine.createSpy();
+                this.view.refreshProgress = jasmine.createSpy();
+
+                this.view.uploadAzureStorage(uploadData);
+
+                expect(AzureStorage.createBlobServiceWithSas).toHaveBeenCalledWith(
+                    blobUri,
+                    sasToken
+                );
+
+                expect(createBlockBlobFromBrowserFile).toHaveBeenCalledWith(
+                    blobContainer,
+                    blobName,
+                    uploadData.files[0],
+                    jasmine.any(Function)
+                );
+
+                expect(this.view.setStatus).toHaveBeenCalledWith(
+                    uploadData.cid,
+                    ActiveVideoUpload.STATUS_UPLOADING
+                );
+
+                expect(this.view.refreshProgress).toHaveBeenCalledWith(
+                    'speedSummary',
+                    uploadData.cid
+                );
+                expect(this.view.refreshProgress.calls.count()).toEqual(1);
+                jasmine.clock().tick(201);
+                expect(this.view.refreshProgress.calls.count()).toEqual(2);
+                jasmine.clock().uninstall();
+            });
+
+            it('test refresh progress', function() {
+                var getCompletePercent = jasmine.createSpy();
+                getCompletePercent.and.callFake(
+                    function() { return 20; }
+                );
+                this.view.setProgress = jasmine.createSpy();
+
+                this.view.refreshProgress({getCompletePercent: getCompletePercent}, 'c12');
+
+                expect(getCompletePercent).toHaveBeenCalled();
+                expect(this.view.setProgress).toHaveBeenCalledWith(
+                    'c12',
+                    0.2
+                );
             });
 
             makeUploadUrl = function(fileName) {
@@ -298,6 +390,30 @@ define(
                             StringUtils.interpolate(
                                 '{fileName} is not in a supported file format. Supported file formats are {supportedFormats}.',  // eslint-disable-line max-len
                                 {fileName: files[index].name, supportedFormats: self.videoSupportedFileFormats.join(' and ')}  // eslint-disable-line max-len
+                            )
+                        );
+                    });
+                });
+            });
+
+            describe('filename length', function() {
+                it('should fail upload for not correct filename length', function() {
+                    var files = [
+                            {name: 'test-max_length_123456789012345678901.mp4', size: 0}
+                        ],
+                        unSupportedFiles = {
+                            files: files
+                        },
+                        self = this;
+                    this.view.storageService = 'azure';
+                    this.view.$uploadForm.fileupload('add', unSupportedFiles);
+                    _.each(this.view.itemViews, function(uploadView) {
+                        verifyUploadViewInfo(
+                            uploadView,
+                            'Your file could not be uploaded',
+                            StringUtils.interpolate(
+                                'The filename length can not exceed {maxLengthFileName} symbols.',
+                                {maxLengthFileName: self.videoMaxLengthFileName}
                             )
                         );
                     });
