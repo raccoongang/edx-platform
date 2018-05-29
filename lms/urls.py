@@ -124,30 +124,17 @@ if settings.FEATURES["ENABLE_COMBINED_LOGIN_REGISTRATION"]:
     urlpatterns += (
         url(r'^login$', 'student_account.views.login_and_registration_form',
             {'initial_mode': 'login'}, name="signin_user"),
+        # Some random string for preventing getting registration page by url
+        url(r'^zxkfjsjdfkjsdkfj$', 'student_account.views.login_and_registration_form',
+            {'initial_mode': 'register'}, name="register_user"),
     )
-    if settings.FEATURES.get('ENABLE_EXTERNAL_REGISTRATION', False):
-        urlpatterns += (
-            url(r'^register$', 'student_account.views.external_registration'),
-        )
-    else:
-        urlpatterns += (
-            url(r'^register$', 'student_account.views.login_and_registration_form',
-                {'initial_mode': 'register'}, name="register_user"),
-        )
 else:
     # Serve the old views
     urlpatterns += (
         url(r'^login$', 'student.views.signin_user', name="signin_user"),
+        # Some random string for preventing getting registration page by url
+        url(r'^fdlksdfklskdfl$', 'student.views.register_user', name="register_user"),
     )
-    if settings.FEATURES.get('ENABLE_EXTERNAL_REGISTRATION', False):
-        urlpatterns += (
-            url(r'^register$', 'student_account.views.external_registration'),
-        )
-
-    else:
-        urlpatterns += (
-            url(r'^register$', 'student.views.register_user', name="register_user"),
-        )
 
 if settings.FEATURES["ENABLE_MOBILE_REST_API"]:
     urlpatterns += (
@@ -622,16 +609,14 @@ urlpatterns += (
         include('student_account.urls')
     ),
 
-    ######################### BAOBAB customization start #########################
     # Student profile
-    # url(
-    #     r'^u/{username_pattern}$'.format(
-    #         username_pattern=settings.USERNAME_PATTERN,
-    #     ),
-    #     'student_profile.views.learner_profile',
-    #     name='learner_profile',
-    # ),
-    ######################### BAOBAB customization end #########################
+    url(
+        r'^u/{username_pattern}$'.format(
+            username_pattern=settings.USERNAME_PATTERN,
+        ),
+        'student_profile.views.learner_profile',
+        name='learner_profile',
+    ),
 
     # Student Notes
     url(
