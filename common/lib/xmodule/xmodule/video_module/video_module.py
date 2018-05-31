@@ -943,7 +943,7 @@ class VideoDescriptor(VideoFields, VideoTranscriptsMixin, VideoStudioViewHandler
 
         return {
             "only_on_web": self.only_on_web,
-            "duration": int(val_video_data.get('duration', self.file_length)),
+            "duration": int(val_video_data.get('duration', self.file_length.total_seconds())),
             "transcripts": transcripts,
             "encoded_videos": encoded_videos,
         }
