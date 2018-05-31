@@ -1081,6 +1081,9 @@ CC_PROCESSOR = {
         "SECRET_KEY": '',
         "ACCESS_KEY": '',
         "PROFILE_ID": '',
+    },
+    'MPesa':{
+        "PURCHASE_ENDPOINT": '/mpesa/payment/',
     }
 }
 
@@ -2252,6 +2255,7 @@ INSTALLED_APPS = (
     'openedx.features.enterprise_support',
 
     'experiments',
+    'mpesa_api',
 )
 
 ######################### CSRF #########################################
