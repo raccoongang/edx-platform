@@ -5,6 +5,7 @@ import sys
 import subprocess
 
 from paver import tasks
+from mock import MagicMock, patch
 from paver.easy import sh
 
 from pavelib.utils.process import kill_process
@@ -98,17 +99,18 @@ class TestSuite(object):
         Runs each of the suites in self.subsuites while tracking failures
         """
         # Uses __enter__ and __exit__ for context
-        with self:
-            # run the tests for this class, and for all subsuites
-            if self.cmd:
-                passed = self.run_test()
-                if not passed:
-                    self.failed_suites.append(self)
+        with patch('django.core.wsgi.get_wsgi_application', MagicMock()) as magic_mock:
+	        with self:
+	            # run the tests for this class, and for all subsuites
+	            if self.cmd:
+	                passed = self.run_test()
+	                if not passed:
+	                    self.failed_suites.append(self)
 
-            for suite in self.subsuites:
-                suite.run_suite_tests()
-                if len(suite.failed_suites) > 0:
-                    self.failed_suites.extend(suite.failed_suites)
+	            for suite in self.subsuites:
+	                suite.run_suite_tests()
+	                if len(suite.failed_suites) > 0:
+	                    self.failed_suites.extend(suite.failed_suites) 
 
     def report_test_results(self):
         """
