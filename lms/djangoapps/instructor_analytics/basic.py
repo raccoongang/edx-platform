@@ -253,7 +253,11 @@ def enrolled_students_features(course_key, features):
 
         student_dict = dict((feature, extract_attr(student, feature))
                             for feature in student_features)
-        profile = student.profile
+        try:
+            profile = student.profile
+        except ObjectDoesNotExist:
+            profile = None
+
         if profile is not None:
             profile_dict = dict((feature, extract_attr(profile, feature))
                                 for feature in profile_features)
