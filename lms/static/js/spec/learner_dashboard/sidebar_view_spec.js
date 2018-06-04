@@ -9,7 +9,7 @@ define([
     describe('Sidebar View', function() {
         var view = null,
             context = {
-                marketingUrl: 'https://www.example.org/programs',
+                marketingUrl: '',
                 certificatesData: [
                     {
                         'display_name': 'Testing',
