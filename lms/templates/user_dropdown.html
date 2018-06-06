@@ -68,12 +68,12 @@ from openedx.core.djangoapps.user_api.accounts.image_helpers import get_profile_
                 <span class="sr">${_("Dashboard for:")}</span>
                 <%
                 username = self.real_user.username
-                firstname = self.real_user.first_name
+                fullname = self.real_user.profile.name
                 profile_image_url = get_profile_image_urls_for_user(self.real_user)['medium']
                 %>
                 <img class="user-image-frame" src="${profile_image_url}" alt="">
-                % if firstname:
-                    <div class="label-username">${firstname}</div>
+                % if fullname:
+                    <div class="label-username">${fullname}</div>
                 % else:
                     <div class="label-username">${username}</div>
                 % endif
