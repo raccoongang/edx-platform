@@ -42,6 +42,7 @@
                     this.autoSubmit = data.thirdPartyAuth.autoSubmitRegForm;
                     this.hideAuthWarnings = data.hideAuthWarnings;
                     this.googleRecaptchaSiteKey = data.googleRecaptchaSiteKey;
+                    this.isSSO = data.isSSO;
 
                     this.listenTo(this.model, 'sync', this.saveSuccess);
                 },
@@ -63,6 +64,11 @@
                             googleRecaptchaSiteKey: this.googleRecaptchaSiteKey
                         }
                     }));
+
+                    if (this.isSSO) {
+                        $($(this.el).find('#register-username')[0]).attr('type', 'hidden');
+                        $($(this.el).find('label[for="register-username"]')[0]).hide();
+                    }
 
                     this.postRender();
 

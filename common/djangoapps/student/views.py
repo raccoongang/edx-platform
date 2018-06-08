@@ -491,6 +491,11 @@ def register_user(request, extra_context=None):
     if external_auth_response is not None:
         return external_auth_response
 
+    is_sso = (
+        third_party_auth.is_enabled()
+        and third_party_auth.pipeline.running(request)
+    )
+
     context = {
         'login_redirect_url': redirect_to,  # This gets added to the query string of the "Sign In" button in the header
         'email': '',
@@ -503,7 +508,7 @@ def register_user(request, extra_context=None):
         ),
         'selected_provider': '',
         'username': '',
-        'google_recaptcha_site_key': settings.GOOGLE_RECAPTCHA_DATA_SITE_KEY
+        'google_recaptcha_site_key': not is_sso and settings.GOOGLE_RECAPTCHA_DATA_SITE_KEY or ''
     }
 
     if extra_context is not None:

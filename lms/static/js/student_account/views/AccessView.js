@@ -83,6 +83,7 @@
                     });
 
                     this.googleRecaptchaSiteKey = options.google_recaptcha_site_key;
+                    this.isSSO = options.is_sso;
                     this.registerURL = options.register_url;
                     this.render();
 

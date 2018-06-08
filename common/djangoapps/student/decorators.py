@@ -4,6 +4,7 @@ import urllib2
 import json
 from functools import wraps
 from django.conf import settings
+import third_party_auth
 
 
 def check_recaptcha(view_func):
@@ -26,9 +27,18 @@ def check_recaptcha(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
         request.recaptcha_is_valid = None
+
         if request.method == 'POST' and settings.USE_GOOGLE_RECAPTCHA:
 
             ''' Begin reCAPTCHA validation '''
+            is_sso = (
+                third_party_auth.is_enabled()
+                and third_party_auth.pipeline.running(request)
+                and request.POST.get('social_auth_provider')
+            )
+            if is_sso:
+                request.recaptcha_is_valid = True
+                return view_func(request, *args, **kwargs)
 
             # Adding proxy #
             ssl._create_default_https_context = ssl._create_unverified_context

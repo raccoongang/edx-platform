@@ -93,7 +93,7 @@ class ExtraInfoForm(forms.ModelForm):
         for method_name, kwargs in methods.items():
             try:
                 default = lambda *a, **k: {}
-                method = getattr(client.servise, method_name, default)
+                method = getattr(client.service, method_name, default)
                 result = method(**kwargs)
 
             except Exception:

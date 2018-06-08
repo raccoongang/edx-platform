@@ -113,6 +113,11 @@ def login_and_registration_form(request, initial_mode="login"):
         } for message in messages.get_messages(request) if 'account-activation' in message.tags
     ]
 
+    is_sso = (
+        third_party_auth.is_enabled()
+        and third_party_auth.pipeline.running(request)
+    )
+
     # Otherwise, render the combined login/registration page
     context = {
         'data': {
@@ -137,7 +142,8 @@ def login_and_registration_form(request, initial_mode="login"):
             'password_reset_form_desc': json.loads(form_descriptions['password_reset']),
             'account_creation_allowed': configuration_helpers.get_value(
                 'ALLOW_PUBLIC_ACCOUNT_CREATION', settings.FEATURES.get('ALLOW_PUBLIC_ACCOUNT_CREATION', True)),
-                'google_recaptcha_site_key': settings.GOOGLE_RECAPTCHA_DATA_SITE_KEY
+                'google_recaptcha_site_key': not is_sso and settings.GOOGLE_RECAPTCHA_DATA_SITE_KEY or '',
+                'is_sso': is_sso
         },
         'login_redirect_url': redirect_to,  # This gets added to the query string of the "Sign In" button in header
         'responsive': True,
