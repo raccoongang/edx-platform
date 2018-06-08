@@ -945,6 +945,7 @@ VIDEO_UPLOAD_PIPELINE = {
     'BUCKET': '',
     'ROOT_PATH': '',
     'CONCURRENT_UPLOAD_LIMIT': 4,
+    'CLOUD': 'aws'
 }
 
 ############################ APPS #####################################
@@ -996,6 +997,9 @@ INSTALLED_APPS = [
     'student.apps.StudentConfig',  # misleading name due to sharing with lms
     'openedx.core.djangoapps.course_groups',  # not used in cms (yet), but tests run
     'xblock_config.apps.XBlockConfig',
+
+    # Azure video upload feature
+    'azure_video_pipeline',
 
     # Maintenance tools
     'maintenance',

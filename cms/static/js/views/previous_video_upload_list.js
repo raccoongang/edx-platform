@@ -12,6 +12,7 @@ define(
                 this.encodingsDownloadUrl = options.encodingsDownloadUrl;
                 this.videoImageUploadEnabled = options.videoImageSettings.video_image_upload_enabled;
                 this.isVideoTranscriptEnabled = options.isVideoTranscriptEnabled;
+                this.availableStorageService = options.availableStorageService;
                 this.itemViews = this.collection.map(function(model) {
                     return new PreviousVideoUploadView({
                         videoImageUploadURL: options.videoImageUploadURL,
@@ -22,7 +23,8 @@ define(
                         model: model,
                         transcriptAvailableLanguages: options.transcriptAvailableLanguages,
                         videoSupportedFileFormats: options.videoSupportedFileFormats,
-                        isVideoTranscriptEnabled: options.isVideoTranscriptEnabled
+                        isVideoTranscriptEnabled: options.isVideoTranscriptEnabled,
+                        availableStorageService: options.availableStorageService
                     });
                 });
             },
@@ -36,7 +38,8 @@ define(
                     this.template({
                         encodingsDownloadUrl: this.encodingsDownloadUrl,
                         videoImageUploadEnabled: this.videoImageUploadEnabled,
-                        isVideoTranscriptEnabled: this.isVideoTranscriptEnabled
+                        isVideoTranscriptEnabled: this.isVideoTranscriptEnabled,
+                        availableStorageService: this.availableStorageService
                     })
                 );
 

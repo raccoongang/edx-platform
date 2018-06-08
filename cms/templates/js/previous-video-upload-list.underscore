@@ -19,6 +19,9 @@
                 <% } %>
                 <div class="video-head-col video-col status-col"><%- gettext("Status") %></div>
                 <div  class="video-head-col video-col actions-col"><%- gettext("Action") %></div>
+                <% if (availableStorageService == 'azure') { %>
+                <div class="video-head-col video-col encrypt-col"><%- gettext("Encrypt") %></div>
+                <% } %>
             </div>
         </div>
         <div class="js-table-body"></div>
