@@ -903,23 +903,26 @@ def update_assets(args):
 
         collect_assets(args.system, args.settings, **collect_log_args)
 
+        STATIC_ROOT_BASE = django_settings.STATIC_ROOT_BASE if django_settings else Env.get_django_setting("STATIC_ROOT_BASE", "lms", settings=args.settings)
+        EDX_PLATFORM_STATIC_ROOT_BASE = django_settings.EDX_PLATFORM_STATIC_ROOT_BASE if django_settings else Env.get_django_setting("EDX_PLATFORM_STATIC_ROOT_BASE", "lms", settings=args.settings)
+
         os.system("rsync -av {static_collector_dir}/* {platform_static_dir}/ ".format(
-            static_collector_dir=Env.get_django_setting("STATIC_ROOT_BASE", "lms", settings=args.settings),
-            platform_static_dir=Env.get_django_setting("EDX_PLATFORM_STATIC_ROOT_BASE", "lms", settings=args.settings)
+            static_collector_dir=STATIC_ROOT_BASE,
+            platform_static_dir=EDX_PLATFORM_STATIC_ROOT_BASE
         ))
 
         for sys in args.system:
             if (sys == 'lms'):
                 os.system(
                     "rsync -av {static_collector_dir}/js/i18n/* {platform_static_dir}/cms/js/i18n/ --delete-after".format(
-                        static_collector_dir=Env.get_django_setting("STATIC_ROOT_BASE", "lms", settings=args.settings),
-                        platform_static_dir=Env.get_django_setting("EDX_PLATFORM_STATIC_ROOT_BASE", "lms", settings=args.settings),
+                        static_collector_dir=STATIC_ROOT_BASE,
+                        platform_static_dir=EDX_PLATFORM_STATIC_ROOT_BASE,
                         current_sys=sys
                     ))
                 os.system(
                     "rsync -av {static_collector_dir}/{current_sys}/* {platform_static_dir}/{current_sys}/ --delete-after".format(
-                        static_collector_dir=Env.get_django_setting("STATIC_ROOT_BASE", "lms", settings=args.settings),
-                        platform_static_dir=Env.get_django_setting("EDX_PLATFORM_STATIC_ROOT_BASE", "lms", settings=args.settings),
+                        static_collector_dir=STATIC_ROOT_BASE,
+                        platform_static_dir=EDX_PLATFORM_STATIC_ROOT_BASE,
                         current_sys=sys
                     ))
 
