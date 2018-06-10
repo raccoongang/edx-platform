@@ -3,12 +3,12 @@
 <%namespace name='static' file='../static_content.html'/>
 
 <main id="main" aria-label="Content" tabindex="-1">
-    <div class="program-header" style="background-image: url('${program.image}')">
+    <div class="program-header" style="background-image: url(\"${program['image']}\") !important;">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-lg-8 col-xl-5 offset-xl-1 p-xl-0 program-header-column">
-                    <h2 class="program-title">${program}</h2>
-                    <p class="program-subtitle">${program.subtitle}</p>
+                    <h2 class="program-title">${program["name"]}</h2>
+                    <p class="program-subtitle">${program["subtitle"]}</p>
                 </div>
             </div>
         </div>
@@ -20,7 +20,7 @@
                 <div class="program-overview-container">
                     <h3 class="title-main text-xs-center">Program Overview</h3>
 
-                    <p>${program.full_description}</p>
+                    <p>${program["full_description"]}</p>
                 </div>
             </div>
 
@@ -33,17 +33,17 @@
                 <main class="program-info-card-body container">
                     <div class="row">
                         <div class="col-sm-6 card-key"><i class="fa fa-hourglass"></i><span>Average Length:</span></div>
-                        <div class="col-sm-6 card-value">${program.length_of_program}</div>
+                        <div class="col-sm-6 card-value">${program["length"]}</div>
                     </div>
                     
                     <div class="row">
                         <div class="col-sm-6 card-key"><i class="fa fa-tachometer"></i><span>Effort:</span></div>
-                        <div class="col-sm-6 card-value">${program.effort}</div>
+                        <div class="col-sm-6 card-value">${program["effort"]}</div>
                     </div>
                     
                     <div class="row">
                         <div class="col-sm-6 card-key"><i class="fa fa-book"></i><span>No of courses:</span></div>
-                        <div class="col-sm-6 card-value">${program.number_of_modules}</div>
+                        <div class="col-sm-6 card-value">${program["number_of_modules"]}</div>
                     </div>
                     
                     <div class="row">
@@ -61,7 +61,7 @@
     <div class="course-list">
         <div class="container">
 
-            % for course in courses:
+            % for course in program["modules"]:
                 <div class="row">
                     <article class="program-course col-xs-12 col-sm-10 offset-sm-1 col-xl-10 offset-xl-1" id="${course['course_key']}" role="region" aria-label="${course['course'].display_name}">
                         <div class="inner-article">
@@ -77,7 +77,7 @@
                                     <div class="course-info" aria-hidden="true">
                                         <div class="course-name">
                                             <a href="/courses/${course['course_key']}/info" aria-hidden="true">
-                                                <h3 class="program-course-title section-heading">${course['course'].display_name}</h3>
+                                                <h3 class="program-course-title section-heading">${loop.index + 1}. ${course['course'].display_name}</h3>
                                             </a>
                                             <p class="program-course-desc">${course['course'].short_description}</p>
                                         </div>
