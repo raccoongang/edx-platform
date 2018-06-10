@@ -49,8 +49,7 @@ class Command(BaseCommand):
                 continue
             
             # Get the Program that contains the th Zoho program code
-            program = Program.objects.get(
-                zoho_program_code=program_to_enroll_in)
+            program = Program.objects.get(program_code=program_to_enroll_in)
 
             # Enroll the student in the program
             program_enrollment_status = program.enroll_student_in_program(user)

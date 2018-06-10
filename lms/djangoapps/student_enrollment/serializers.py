@@ -20,5 +20,5 @@ class EnrollmentSerializer(serializers.Serializer):
     """
 
     email = serializers.EmailField(max_length=128, required=True)
-    full_name = serializers.CharField(max_length=250, required=True)
     course_code = serializers.CharField(max_length=50, required=True)
+    manual_override = serializers.BooleanField()
