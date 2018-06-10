@@ -8,7 +8,9 @@ import logging
 import os
 import StringIO
 import subprocess
+import string
 
+import requests
 import mongoengine
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -40,6 +42,10 @@ from openedx.core.djangoapps.external_auth.views import generate_password
 from student.models import CourseEnrollment, Registration, UserProfile
 from student.roles import CourseInstructorRole, CourseStaffRole
 from xmodule.modulestore.django import modulestore
+from ci_program.models import Program
+
+ENROLL_ENDPOINT = 'https://ec2-54-229-66-187.eu-west-1.compute.amazonaws.com/enrollment/enroll/'
+LEGAL_CHARACTERS = string.ascii_letters + string.digits + ' @_.'
 
 log = logging.getLogger(__name__)
 
@@ -658,4 +664,98 @@ class GitLogs(TemplateView):
             'page_size': page_size
         }
 
+        return render_to_response(self.template_name, context)
+
+
+class Enrollment(SysadminDashboardView):
+    """
+    The enrollment panel contained in the SysadminDashboard. This will
+    allow Code Institute staff to enroll students in a program, and
+    will also allow Student Care to manually initiate the Zoho
+    enrollment process.
+    """
+    
+    @classmethod
+    def enroll_in_program(cls, input_data):
+        email = input_data['email']
+        program_code = input_data['program_code']
+        username = email
+        manual_override = input_data['manual_override']
+            
+        resp = requests.post(ENROLL_ENDPOINT, data={
+            'email': email,
+            'course_code': program_code,
+            'manual_override': manual_override
+        }, verify=False)
+            
+        return resp
+    
+    @method_decorator(login_required)
+    def get(self, request):
+        """
+        This page will contain a form so we just need to provide
+        the name of the template that the view will require, as
+        well as a list of programs programs to populate a 
+        dropdown list
+        """
+        programs = Program.objects.all()
+        
+        context = {
+            'programs': programs,
+            'djangopid': os.getpid(),
+            'modeflag': {'enrollment': 'active-section'},
+            'edx_platform_version': getattr(
+                settings, 'EDX_PLATFORM_VERSION_STRING', ''),
+        }
+        return render_to_response(self.template_name, context)
+    
+    @method_decorator(login_required)
+    def post(self, request):
+        email = request.POST.get("student_email", "")
+        program_code = request.POST.get("program_code", "")
+        manual_override = True
+        
+        enrollment_dict = {
+            "email": email,
+            "program_code": program_code,
+            "manual_override": manual_override
+        }
+        
+        response = self.enroll_in_program(enrollment_dict)
+        print(response.status_code)
+        
+        programs = Program.objects.all()
+        
+        context = {
+            'programs': programs,
+            'djangopid': os.getpid(),
+            'modeflag': {'enrollment': 'active-section'},
+            'edx_platform_version': getattr(
+                settings, 'EDX_PLATFORM_VERSION_STRING', ''),
+        }
+        return render_to_response(self.template_name, context)
+
+
+class FiveDay(SysadminDashboardView):
+    
+    @method_decorator(login_required)
+    def get(self, request):
+        program = Program.objects.get(program_code="5DCC")
+        
+        number_of_enrolled_students = len(
+            program.enrolled_students.all())
+        
+        number_of_students_not_logged_in = len(
+            program.enrolled_students.filter(last_login=None))
+        number_of_students_logged_in = (
+            number_of_enrolled_students - number_of_students_not_logged_in)
+        
+        context = {
+            'number_of_enrolled_students': number_of_enrolled_students,
+            'number_of_students_not_logged_in': number_of_students_not_logged_in,
+            'number_of_students_logged_in': number_of_students_logged_in,
+            'djangopid': os.getpid(),
+            'modeflag': {'fdcc': 'active-section'},
+            'edx_platform_version': getattr(settings, 'EDX_PLATFORM_VERSION_STRING', ''),
+        }
         return render_to_response(self.template_name, context)

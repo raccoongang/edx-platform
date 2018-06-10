@@ -58,10 +58,43 @@ textarea {
 	  <a href="${reverse('sysadmin')}" class="${modeflag.get('users')}">${_('Users')}</a>
       <a href="${reverse('sysadmin_courses')}" class="${modeflag.get('courses')}">${_('Courses')}</a>
       <a href="${reverse('sysadmin_staffing')}" class="${modeflag.get('staffing')}">${_('Staffing and Enrollment')}</a>
+      <a href="${reverse('sysadmin_enrollment')}" class="${modeflag.get('enrollment')}">${_('Student Enrollment')}</a>
+      <a href="${reverse('sysadmin_fdcc')}" class="${modeflag.get('fdcc')}">${_('5 Day Coding Challenge')}</a>
       ## Translators: refers to http://git-scm.com/docs/git-log
       <a href="${reverse('gitlogs')}">${_('Git Logs')}</a>
     </h2>
 	<hr />
+	
+	%if modeflag.get('enrollment'):
+	<h3>${_('Student Enrollment')}</h3>
+	<form id="enrollment-form" name="form" method="POST">
+		<input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }" />
+		
+		<ul class="list-input">
+			<li class="field text" style="padding-bottom: 1.2em">
+				<label for="program_code">${_('Program Name')}</label>
+				<select name="program_code" required>
+					% for program in programs:
+						% if program.program_code is not None:
+						    <option value="${ program.program_code }">${ program.name }</option>
+						% endif
+					% endfor
+				</select>
+			</li>
+		    <li class="field text" style="padding-bottom: 1.2em">
+			    <label for="student_email">${_('Email')}</label>
+			    <input type="email" name="student_email" size=40 required />
+		    </li>
+		</ul>
+		<button type="submit" name="action" id="submit" value="enroll_student">${_('Enroll Student')}</button>
+	</form>
+	
+	<hr/>
+	
+	<form action="" method="POST">
+		<button type="submit">Initiate Zoho Enrollment</button>
+	</form>
+	% endif
 %if modeflag.get('users'):
 	<h3>${_('User Management')}</h3>
 
@@ -107,6 +140,15 @@ textarea {
     <hr width="40%" style="align:left">
 	</form>
  %endif
+ 
+ %if modeflag.get('fdcc'):
+	<h3>${_('5 Day Coding Challenge')}</h3>
+	<br/>
+	
+	<p>${_('Total Number of Enrolled Students')}: ${number_of_enrolled_students}</p>
+	<p>${_('Total Number of Students That Logged In')}: ${number_of_students_logged_in}</p>
+	<p>${_('Total Number of Students That Didnt Log In')}: ${number_of_students_not_logged_in}</p>
+	%endif
 
 %if modeflag.get('staffing'):
 
