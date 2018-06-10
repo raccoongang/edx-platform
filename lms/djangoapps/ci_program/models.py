@@ -1,3 +1,4 @@
+from logging import getLogger
 from uuid import uuid4
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
@@ -10,7 +11,11 @@ from openedx.core.djangoapps.content.course_overviews.models import CourseOvervi
 from student.models import CourseEnrollmentAllowed
 from lms.djangoapps.instructor.enrollment import enroll_email, unenroll_email
 from lms.djangoapps.student_enrollment.utils import create_email_connection
-from lms.djangoapps.student_enrollment.utils import constuct_email
+from lms.djangoapps.student_enrollment.utils import construct_email
+from lms.djangoapps.courseware.courses import get_course
+from openedx.core.lib.courses import course_image_url
+
+log = getLogger(__name__)
 
 
 def _choices(*values):
@@ -50,25 +55,151 @@ class Program(TimeStampedModel):
         max_length=255
     )
 
-    number_of_modules = models.IntegerField(null=True, blank=True)
     length_of_program = models.CharField(max_length=25, null=True, blank=True)
     effort = models.CharField(max_length=25, null=True, blank=True)
     full_description = models.TextField(null=True, blank=True)
     image = models.URLField(null=True, blank=True)
     video = models.URLField(null=True, blank=True)
-    zoho_program_code = models.CharField(max_length=50, null=True, blank=True)
-    enrolled_students = models.ManyToManyField(User)
+    program_code = models.CharField(max_length=50, null=True, blank=True)
+    enrolled_students = models.ManyToManyField(
+        User, blank=True)
+    program_code_friendly_name = models.CharField(max_length=50, null=True, blank=True)
+    
+    @property
+    def number_of_modules(self):
+        """
+        Get the length of a program - i.e. the number of modules
+        """
+        return len(self.get_courses())
+    
+    @property
+    def email_template_location(self):
+        """
+        Each program has it's own ecosystem and branding. As such, each
+        program will have it's very own branded email. In addition to this,
+        different emails can be sent for different types of enrollment.
+        
+        A program's enrollment emails should be located in their own directory
+        in the theme's code base. Using the `program_code_friendly_name` we can
+        target the necessary directory and the enrollment_type specfic email
+        and the relevant subject
+        """
+        
+        # Use the enrollment type to determine which email should be sent - 
+        # i.e. enrollment, unenrollment & reenrollment, along with the
+        # accompany subject
+        if self.enrollment_type == 0:
+            subject = "You have been enrolled in your Code Institute {} program".format(
+                self.name)
+            template_type_name = "enrollment_email.html"
+        elif self.enrollment_type == 1:
+            subject = "Code Institute Unenrollment"
+            template_type_name = "unenrollment_email.html"
+        elif self.enrollment_type == 2:
+            subject = "You have been re-enrolled!"
+            template_type_name = "reenrollment_email.html"
+        elif self.enrollment_type == 3:
+            subject = "You have been enrolled in your Code Institute {} program".format(
+                self.name)
+            template_type_name = "upgrade_enrollment_email.html"
+        
+        # Get the name of the directory where the program's emails are
+        # stored
+        template_dir_name = self.program_code_friendly_name
+        
+        # Now use the above information to generate the path the email
+        # template
+        template_location = 'emails/{0}/{1}'.format(
+            template_dir_name, template_type_name)
+        
+        return template_location, subject
 
     def __unicode__(self):
         return unicode(self.name)
     
+    def get_program_descriptor(self, user):
+        """
+        The program descriptor will return all of necessary courseware
+        info for a given program. The information contained in the descriptor
+        should include -
+        
+          - Name
+          - Subtitle
+          - Full description
+          - Image
+          - Length
+          - Effort
+          - Number of modules
+          - Modules
+            - Name
+            - Short Description
+            - Key
+            - Image
+        """
+        
+        courses = []
+        
+        # Gather the basic information about the program
+        name = self.name
+        subtitle = self.subtitle
+        full_description = self.full_description
+        image = self.image
+        length = self.length_of_program
+        effort = self.effort
+        number_of_modules = self.number_of_modules
+        
+        # Gather the information of each of the modules in the program
+        if self.program_code == "5DCC":
+            student = User.objects.get(email=user.email)
+            users_five_day_module = student.courseenrollment_set.filter(
+                course_id__icontains="dcc").last()
+            course_id = users_five_day_module.course_id
+            course_overview = users_five_day_module
+            course_descriptor = get_course(course_id)
+            
+            courses.append({
+                    "course_key": course_id,
+                    "course": course_overview,
+                    "course_image": course_image_url(course_descriptor)
+                })
+        else:    
+            for course_overview in self.get_courses():
+                course_id = course_overview.id
+                course_descriptor = get_course(course_id)
+                
+                courses.append({
+                    "course_key": course_id,
+                    "course": course_overview,
+                    "course_image": course_image_url(course_descriptor)
+                })
+        
+        # Create a dict out the information gathered
+        program_descriptor = {
+            "name": name,
+            "subtitle": subtitle,
+            "full_description": full_description,
+            "image": image,
+            "length": length,
+            "effort": effort,
+            "number_of_modules": number_of_modules,
+            "modules": courses
+        }
+        
+        return program_descriptor
+    
     def get_course_locators(self):
+        """
+        Get the list of locators for each of the modules in a program
+        """
         list_of_locators = []
         
         for course_code in self.course_codes.all():
             course_identifiers = course_code.key.split('+')
-            list_of_locators.append(CourseLocator(course_identifiers[0],
-                course_identifiers[1], course_identifiers[2]))
+            list_of_locators.append(CourseLocator(
+                course_identifiers[0],
+                course_identifiers[1],
+                course_identifiers[2]
+            ))
         
         return list_of_locators
     
@@ -86,7 +217,11 @@ class Program(TimeStampedModel):
         
         for course_code in self.course_codes.all():
             course_identifiers = course_code.key.split('+')
-            locator = CourseLocator(course_identifiers[0], course_identifiers[1], course_identifiers[2])
+            locator = CourseLocator(
+                course_identifiers[0],
+                course_identifiers[1],
+                course_identifiers[2]
+            )
             list_of_courses.append(CourseOverview.objects.get(id=locator))
 
         return list_of_courses
@@ -112,24 +247,19 @@ class Program(TimeStampedModel):
         from_address = 'learning@codeinstitute.net'
         student_password = password
         
-        if enrollment_type == 0:
-            subject = "You have been enrolled in your Code Institute {} program".format(
-                self.name)
-            template_location = "emails/enrollment_email.html"
-        elif enrollment_type == 1:
-            subject = "Code Institute Unenrollment"
-            template_location = "emails/unenrollment_email.html"
-        elif enrollment_type == 2:
-            subject = "You have been re-enrolled!"
-            template_location = "emails/reenrollment_email.html"
+        self.enrollment_type = enrollment_type
         
-        if self.name == "5 Day Coding Challenge":
-            module_url = "https://courses.codeinstitute.net/courses/%s/course/" % self.course_codes.first().key
+        if self.name == "Five Day Coding Challenge":
+            module_url = "https://courses.codeinstitute.net/courses/{}/course/".format(
+                self.course_codes.first().key)
         else:
             module_url = None
         
+        # Get the email location & subject
+        template_location, subject = self.email_template_location
+        
         # Construct the email using the information provided
-        email_content = constuct_email(to_address, from_address,
+        email_content = construct_email(to_address, from_address,
                                        template_location,
                                        student_password=password,
                                        program_name=self.name,
@@ -147,9 +277,20 @@ class Program(TimeStampedModel):
                                             html_message=email_content,
                                             connection=email_connection)
         
-        return True if number_of_mails_sent == 1 else False
+        email_successfully_sent = None
+        log_message = ""
         
-    
+        if number_of_mails_sent == 1:
+            email_successfully_sent = True
+            log_message = "Email successfully sent to %s" % to_address
+        else:
+            email_successfully_sent = False
+            log_message = "Failed to send email to %s" % to_address
+        
+        log.info(log_message)
+
+        return email_successfully_sent
+
     def enroll_student_in_program(self, student):
         """
         Enroll a student in a program.
@@ -169,10 +310,25 @@ class Program(TimeStampedModel):
                 course_id=course.id, email=student.email)
             cea.auto_enroll = True
             cea.save()
-
-        self.enrolled_students.add(User.objects.get(email=student.email))
         
-        return True if student.courseenrollment_set.all().count() == self.number_of_modules else False
+        student_to_be_enrolled = User.objects.get(email=student.email)
+
+        self.enrolled_students.add(student_to_be_enrolled)
+        
+        student_successfully_enrolled = None
+        log_message = ""
+        
+        if self.enrolled_students.filter(username=student.username).exists():
+            student_successfully_enrolled = True
+            log_message = "%s was enrolled in %s" % (
+                student.email, self.name)
+        else:
+            student_successfully_enrolled = False
+            log_message = "Failed to enroll %s in %s" % (
+                student.email, self.name)
+        
+        log.info(log_message)
+        return student_successfully_enrolled
     
     def unenroll_student_from_program(self, student):
         """
@@ -185,15 +341,13 @@ class Program(TimeStampedModel):
         `student` is the user instance that we which to enroll in the program
 
         Returns True if the student was successfully unenrolled from all of the courses,
-            otherwise return False
+            otherwise, return False
         """
         for course in self.get_courses():
             unenroll_email(course.id, student.email)
         
         self.enrolled_students.remove(User.objects.get(email=student.email))
-        
         enrolled_courses = student.courseenrollment_set.all()
-
         cea = CourseEnrollmentAllowed.objects.filter(email=student.email).delete()
         
         return True if cea is None else False
@@ -212,7 +366,8 @@ class CourseCode(models.Model):
         help_text=_('The display name of this course code.'),
         max_length=128,
     )
-    programs = models.ManyToManyField(Program, related_name='course_codes', through='ProgramCourseCode')
+    programs = models.ManyToManyField(
+        Program, related_name='course_codes', through='ProgramCourseCode')
 
     def __unicode__(self):
         return unicode(self.display_name)
@@ -232,16 +387,17 @@ class ProgramCourseCode(TimeStampedModel):
     def __unicode__(self):
         return unicode(self.course_code)
 
-    def save(self, *a, **kw):
-        """
-        Override save() to validate m2m cardinality and automatically set the position for a new row.
-        """
-        if self.position is None:
-            # before creating, ensure that the program has an association with the same org as this course code
-            if not ProgramOrganization.objects.filter(
-                    program=self.program, organization=self.course_code.organization).exists():
-                raise ValidationError(_('Course code must be offered by the same organization offering the program.'))
-            # automatically set position attribute for a new row
-            res = ProgramCourseCode.objects.filter(program=self.program).aggregate(max_position=models.Max('position'))
-            self.position = (res['max_position'] or 0) + 1
-        return super(ProgramCourseCode, self).save(*a, **kw)
+
+class StudentEnrollment(models.Model):
+    """
+    The model that stores the relationship between `user` and the `program`
+    with the date of enrollment.
+    """
+    
+    student = models.ForeignKey(User)
+    program = models.ForeignKey(Program)
+    date_of_enrollment = models.DateTimeField(auto_now_add=True)
+    
+    def __unicode__():
+        return "%s has been enrolled in %s since %s" % (
+            self.student, self.program, self.date_of_enrollment)
