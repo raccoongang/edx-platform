@@ -897,7 +897,7 @@ def dashboard(request):
         program = Program.objects.get(name="Fullstack Web Developer")
         program.enrolled_students.add(user)
 
-    return redirect('program/' + user.program_set.first().marketing_slug)
+    return redirect('program/' + user.program_set.last().marketing_slug)
 
 
 def get_verification_error_reasons_for_display(verification_error_codes):
