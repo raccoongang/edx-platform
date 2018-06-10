@@ -83,7 +83,12 @@ class CourseTab(object):
             tab_dict (dict) - a dictionary of parameters used to build the tab.
         """
         super(CourseTab, self).__init__()
-        self.name = tab_dict.get('name', self.title)
+        if tab_dict.get('name') == 'Course':
+            self.name = 'Module'
+        elif tab_dict.get('name') == '!Home':
+            self.name = 'Home'
+        else:
+            self.name = tab_dict.get('name', getattr(self, 'name', self.type))
         self.tab_id = tab_dict.get('tab_id', getattr(self, 'tab_id', self.type))
         self.course_staff_only = tab_dict.get('course_staff_only', False)
         self.is_hidden = tab_dict.get('is_hidden', False)
