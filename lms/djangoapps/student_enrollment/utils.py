@@ -15,12 +15,11 @@ def create_user_profile(user):
     user_profile.save()
 
 
-def register_student(full_name, email, password=None):
+def register_student(email, password=None):
     """
     Register a new user with a randomly generated password
 
     `email` is the email address of the student
-    `full_name` is the name of the student
     `password` is the password to be used when creating the new user. If
         a password is not provided then a password will be generated for
         that student.
@@ -29,13 +28,8 @@ def register_student(full_name, email, password=None):
     Returns the user and the auto-generated password if a password was
         not provided
     """
-
-    # Edge in which Zoho fails to provide a first, we'll create a username
-    # based on the email address
-    if full_name:
-        username = full_name.title().replace(' ', '')
-    else:
-        username = email.split('@')[0]
+    username = email
+    
     if password:
         user = User.objects.create_user(username, email, password)
         create_user_profile(user)
@@ -62,9 +56,13 @@ def get_or_register_student(user, password=None):
     Returns a user instance, the user's password and the enrollment type.
     """
     try:
-        return User.objects.get(email=user.email), None, 2
+        user = User.objects.get(email=user.email)
+        if user.program_set.first().program_code == "5DCC":
+            return user, None, 3
+        else:
+            return user, None, 2
     except User.DoesNotExist:
-        user, password = register_student(user.full_name, user.email, password)
+        user, password = register_student(user.email, password)
         return user, password, 0
 
 
@@ -86,7 +84,7 @@ def create_email_connection():
     return connection
 
 
-def constuct_email(to_address, from_address, template_location, **kwargs):
+def construct_email(to_address, from_address, template_location, **kwargs):
     """
     Constuct the context of the email and inject it into the HTML email.
 

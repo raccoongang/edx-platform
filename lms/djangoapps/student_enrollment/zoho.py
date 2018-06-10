@@ -49,7 +49,7 @@ def fetch_all_zoho_records(endpoint, params):
 
 def get_students(status):
     """Fetch from Zoho all emails for contacts with *Onboarding* status"""
-    endpoint = ZOHO_ENDPOINT_PREFIX + '/Contacts/searchRecords'
+    endpoint = settings.ZOHO_ENDPOINT_PREFIX + '/Contacts/searchRecords'
     params = {
         'authtoken': settings.ZOHO_TOKEN,
         'scope': 'crmapi',

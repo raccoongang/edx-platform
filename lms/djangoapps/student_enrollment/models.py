@@ -28,7 +28,8 @@ class ProgramAccessStatus(models.Model):
 ENROLLMENT_TYPES = (
     (0, "Enrollment"),
     (1, "Un-enrollment"),
-    (2, "Re-enrollment")
+    (2, "Re-enrollment"),
+    (3, "Upgrade")
 )
 
 
