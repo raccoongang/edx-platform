@@ -24,6 +24,7 @@ from edxval.api import (
 )
 from mock import Mock, patch, PropertyMock, MagicMock
 
+from azure_video_pipeline.utils import encrypt_file
 from contentstore.models import VideoUploadConfig
 from contentstore.tests.utils import CourseTestCase
 from contentstore.utils import reverse_course_url
@@ -450,6 +451,12 @@ class VideoEncryptTestCase(CourseTestCase):
         )
         self.assertEquals(response.status_code, 400)
         self.assertEquals(json.loads(response.content), {'error': 'Something went wrong. Encryption process failed.'})
+
+    @patch("contentstore.views.videos.get_media_service_client")
+    def test_encrypt_file_error(self, get_ms_client_mock):
+
+        # act
+        encrypt_file('test_video_id', 'test_organization')
 
 
 @ddt.ddt

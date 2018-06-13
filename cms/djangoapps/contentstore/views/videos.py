@@ -48,7 +48,10 @@ from util.json_request import JsonResponse, expect_json
 from azure_video_pipeline.utils import (
     get_media_service_client,
     encrypt_file,
-    remove_encryption)
+    remove_encryption,
+    ALL_LANGUAGES_FOR_MICROSOFT,
+    AZURE_TRANSCRIPT_FILE_FORMAT
+)
 
 from .course import get_course_and_check_access
 
@@ -617,18 +620,22 @@ def get_all_transcript_languages():
     """
     Returns all possible languages for transcript.
     """
-    third_party_transcription_languages = {}
-    transcription_plans = get_3rd_party_transcription_plans()
-    cielo_fidelity = transcription_plans[TranscriptProvider.CIELO24]['fidelity']
+    if get_storage_service() == 'azure':
+        all_languages_dict = dict(ALL_LANGUAGES_FOR_MICROSOFT)
+    else:
+        third_party_transcription_languages = {}
+        transcription_plans = get_3rd_party_transcription_plans()
+        cielo_fidelity = transcription_plans[TranscriptProvider.CIELO24]['fidelity']
 
-    # Get third party transcription languages.
-    third_party_transcription_languages.update(transcription_plans[TranscriptProvider.THREE_PLAY_MEDIA]['languages'])
-    third_party_transcription_languages.update(cielo_fidelity['MECHANICAL']['languages'])
-    third_party_transcription_languages.update(cielo_fidelity['PREMIUM']['languages'])
-    third_party_transcription_languages.update(cielo_fidelity['PROFESSIONAL']['languages'])
+        # Get third party transcription languages.
+        third_party_transcription_languages.update(transcription_plans[TranscriptProvider.THREE_PLAY_MEDIA]['languages'])
+        third_party_transcription_languages.update(cielo_fidelity['MECHANICAL']['languages'])
+        third_party_transcription_languages.update(cielo_fidelity['PREMIUM']['languages'])
+        third_party_transcription_languages.update(cielo_fidelity['PROFESSIONAL']['languages'])
 
-    all_languages_dict = dict(settings.ALL_LANGUAGES, **third_party_transcription_languages)
-    # Return combined system settings and 3rd party transcript languages.
+        # Return combined system settings and 3rd party transcript languages.
+        all_languages_dict = dict(settings.ALL_LANGUAGES, **third_party_transcription_languages)
+
     all_languages = []
     for key, value in sorted(all_languages_dict.iteritems(), key=lambda (k, v): v):
         all_languages.append({
@@ -693,7 +700,8 @@ def videos_index_html(course):
                 unicode(course.id)
             ),
             'transcription_plans': get_3rd_party_transcription_plans(),
-            'trancript_download_file_format': Transcript.SRT
+            'trancript_download_file_format':
+                Transcript.SRT if get_storage_service() != 'azure' else AZURE_TRANSCRIPT_FILE_FORMAT
         }
         context['active_transcript_preferences'] = get_transcript_preferences(unicode(course.id))
         # Cached state for transcript providers' credentials (org-specific)

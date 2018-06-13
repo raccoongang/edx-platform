@@ -39,7 +39,8 @@ define(
                         clientVideoID: this.model.get('client_video_id'),
                         transcriptAvailableLanguages: options.transcriptAvailableLanguages,
                         videoSupportedFileFormats: options.videoSupportedFileFormats,
-                        videoTranscriptSettings: options.videoTranscriptSettings
+                        videoTranscriptSettings: options.videoTranscriptSettings,
+                        availableStorageService: options.availableStorageService
                     });
                 }
             },
@@ -62,7 +63,7 @@ define(
                 if (this.videoImageUploadEnabled) {
                     this.videoThumbnailView.setElement(this.$('.thumbnail-col')).render();
                 }
-                if (this.isVideoTranscriptEnabled) {
+                if (this.isVideoTranscriptEnabled && this.availableStorageService !== 'azure') {
                     this.videoTranscriptsView.setElement(this.$('.transcripts-col')).render();
                 }
 
@@ -70,6 +71,8 @@ define(
                     if ($.inArray(this.model.get('status_value'),
                             ['upload_completed', 'upload', 'ingest', 'transcode_queue', 'transcode_active']) !== -1) {
                         this.checkStatusVideo();
+                    } else if (this.isVideoTranscriptEnabled) {
+                        this.videoTranscriptsView.setElement(this.$('.transcripts-col')).render();
                     }
                 }
                 return this;
@@ -97,6 +100,7 @@ define(
                                     url: videoView.videoHandlerUrl + '/' + videoView.model.get('edx_video_id'),
                                     type: 'DELETE'
                                 }).done(function() {
+                                    clearInterval(videoView.intervalID);
                                     videoView.remove();
                                 });
                             }
@@ -152,10 +156,9 @@ define(
 
             checkStatusVideo: function() {
                 var view = this,
-                    video,
-                    intervalID;
+                    video;
 
-                intervalID = setInterval(function() {
+                view.intervalID = setInterval(function() {
                     $.ajax({
                         url: view.videoHandlerUrl + '/' + view.model.get('edx_video_id'),
                         contentType: 'application/json',
@@ -167,12 +170,12 @@ define(
                         });
 
                         if (video && video.status_value !== view.model.get('status_value')) {
-                            clearInterval(intervalID);
+                            clearInterval(view.intervalID);
                             view.model.set(video);
                             view.render();
                         }
                     }).fail(function() {
-                        clearInterval(intervalID);
+                        clearInterval(view.intervalID);
                     });
                 }, 20000);
             }

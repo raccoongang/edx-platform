@@ -14,17 +14,20 @@ define(
                 'click .toggle-show-transcripts-button': 'toggleShowTranscripts',
                 'click .upload-transcript-button': 'chooseFile',
                 'click .delete-transcript-button': 'deleteTranscript',
-                'click .more-details-action': 'showUploadFailureMessage'
+                'click .more-details-action': 'showUploadFailureMessage',
+                'click .add-transcripts-button': 'toggleShowFormAddTranscript',
+                'click .cancel-transcript-button': 'toggleShowFormAddTranscript'
             },
 
             initialize: function(options) {
-                this.isCollapsed = true;
+                this.isCollapsed = !!options.transcripts.length;
                 this.transcripts = options.transcripts;
                 this.edxVideoID = options.edxVideoID;
                 this.clientVideoID = options.clientVideoID;
                 this.transcriptAvailableLanguages = options.transcriptAvailableLanguages;
                 this.videoSupportedFileFormats = options.videoSupportedFileFormats;
                 this.videoTranscriptSettings = options.videoTranscriptSettings;
+                this.availableStorageService = options.availableStorageService;
                 this.template = HtmlUtils.template(videoTranscriptsTemplate);
                 this.transcriptUploadStatusTemplate = HtmlUtils.template(videoTranscriptUploadStatusTemplate);
                 this.defaultFailureTitle = gettext('The file could not be uploaded.');
@@ -106,7 +109,8 @@ define(
             Toggles Show/Hide transcript button and transcripts container.
             */
             toggleShowTranscripts: function() {
-                var $transcriptsWrapperEl = this.$el.find('.video-transcripts-wrapper');
+                var $transcriptsWrapperEl = this.$el.find('.video-transcripts-wrapper'),
+                    addTranscriptsButton = this.$el.find('.add-transcripts-button');
 
                 if ($transcriptsWrapperEl.hasClass('hidden')) {
                     this.showTranscripts();
@@ -114,6 +118,10 @@ define(
                 } else {
                     this.hideTranscripts();
                     this.isCollapsed = true;
+                }
+
+                if (addTranscriptsButton.hasClass('hidden')) {
+                    this.toggleShowFormAddTranscript();
                 }
             },
 
@@ -233,6 +241,9 @@ define(
                 );
 
                 this.renderMessage($transcriptContainer, 'uploaded');
+                if (this.availableStorageService === 'azure' && !languageCode) {
+                    this.renderNewTranscript(newLanguageCode);
+                }
             },
 
             transcriptUploadFailed: function(event, data) {
@@ -329,6 +340,17 @@ define(
                 }).show();
             },
 
+            toggleShowFormAddTranscript: function() {
+                this.$el.find('.add-transcripts-button').toggleClass('hidden');
+                this.$el.find('.js-form-add-transcript').toggleClass('hidden');
+                this.clearMessage();
+            },
+
+            renderNewTranscript: function(newLanguageCode) {
+                this.transcripts.push(newLanguageCode);
+                this.render();
+            },
+
             /*
             Renders transcripts view.
             */
@@ -339,10 +361,12 @@ define(
                         transcripts: this.transcripts,
                         transcriptAvailableLanguages: this.transcriptAvailableLanguages,
                         edxVideoID: this.edxVideoID,
+                        clientVideoID: this.clientVideoID,
                         transcriptClientTitle: this.getTranscriptClientTitle(),
                         transcriptFileFormat: this.videoTranscriptSettings.trancript_download_file_format,
                         getTranscriptDownloadLink: this.getTranscriptDownloadLink,
-                        transcriptDownloadHandlerUrl: this.videoTranscriptSettings.transcript_download_handler_url
+                        transcriptDownloadHandlerUrl: this.videoTranscriptSettings.transcript_download_handler_url,
+                        availableStorageService: this.availableStorageService
                     })
                 );
 

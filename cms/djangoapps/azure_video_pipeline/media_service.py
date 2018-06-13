@@ -3,6 +3,7 @@ import logging
 import mimetypes
 import re
 import requests
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from msrestazure.azure_active_directory import ServicePrincipalCredentials
 
@@ -504,5 +505,75 @@ class MediaServiceClient(object):
         if response.status_code == 200:
             asset = response.json().get('value', [])[0]
             return asset
+        else:
+            response.raise_for_status()
+
+    def upload_video_transcript(self, edx_video_id, transcript_file):
+        file_name = transcript_file.name
+        asset = self.get_input_asset_by_video_id(edx_video_id, asset_prefix='ENCODED')
+
+        if not asset:
+            raise ObjectDoesNotExist(
+                'Target Video to which you are trying to attach transcripts is no longer available on Azure'
+                ' or is corrupted in some way.'
+            )
+
+        mime_type = mimetypes.guess_type(file_name)[0]
+
+        try:
+            asset_file = self.create_asset_file(asset['Id'], file_name, mime_type)
+        except requests.HTTPError:
+            raise MultipleObjectsReturned(
+                'This may be happening because of file name conflict. Try to change the file name and upload again.'
+            )
+
+        access_policy = self.create_access_policy(
+            u'AccessPolicy_{}'.format(file_name.split('.')[0]),
+            duration_in_minutes=30,
+            permissions=AccessPolicyPermissions.WRITE
+        )
+        locator = self.create_locator(
+            access_policy['Id'],
+            asset['Id'],
+            locator_type=LocatorTypes.SAS
+        )
+        blob_service_client = BlobServiceClient(self.storage_account_name, self.storage_key)
+        blob_service_client.blob_service.put_block_blob_from_file(
+            'asset-{}'.format(asset['Id'].split(':')[-1]),
+            file_name,
+            transcript_file.file
+        )
+
+        self.delete_locator(locator['Id'])
+        self.delete_access_policy(access_policy['Id'])
+        self.update_asset_file(asset_file['Id'], file_data={
+            "size": transcript_file._size,
+            "ctype": transcript_file.content_type
+        })
+
+    def update_asset_file(self, file_id, file_data):
+        """
+        Update AssetFile with special MERGE request to set proper file size.
+
+        :param file_id: Azure AssetFile identifier
+        :param file_data: (dict) file info to be updated
+        """
+        url = "{}Files('{}')".format(self.rest_api_endpoint, file_id)
+        headers = self.get_headers()
+        json_data = {
+            "ContentFileSize": "{size}".format(**file_data),
+            "MimeType": "{ctype}".format(**file_data)
+        }
+        response = requests.request('MERGE', url, headers=headers, json=json_data)
+        if not response.status_code == 204:
+            response.raise_for_status()
+
+    def get_asset_files(self, input_asset_id):
+        url = "{}Assets('{}')/Files".format(self.rest_api_endpoint, input_asset_id)
+        headers = self.get_headers()
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            files = response.json().get('value', [])
+            return files
         else:
             response.raise_for_status()

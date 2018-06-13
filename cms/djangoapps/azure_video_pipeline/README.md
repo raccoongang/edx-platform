@@ -129,3 +129,35 @@ Those videos may be picked up again with new manifests published.
 
 Currently, the `AES-128 clear key` protection type is supported.
 For more information about content protection, please, refer to the [Azure Media Services documentation](https://docs.microsoft.com/en-us/azure/media-services/media-services-content-protection-overview)
+
+## Transcripts
+
+This application also extends new feature for video uploads page - ability to add transcripts for video.
+
+### Transcripts usage configuration
+
+Transcripts usage requires additional configuration.
+
+Via CMS admin site follow the URL: `admin/video_config/videotranscriptenabledflag/` and
+create/change `video-transcript-enabled-flag` configuration:
+
+![Video Upload switch](doc/img/video-transcripts-switch.png)
+
+> NOTE: Transcripts feature can be configured per course basis (by `course id`) or enabled for all courses.
+
+Now it is possible to attach transcripts file to certain video on `Video Uploads` page:
+
+![Video Upload switch](doc/img/video-transcripts-feature.png)
+
+
+Transcript files are stored next to its video files on Azure.
+
+To attach transcript file to certain video file:
+- click `Add trancripts` button;
+- pick appropriate language for transcript file to be uploaded and click `Add`;
+- choose transcript file from local file system (only `.vtt` transcript files are allowed).
+
+After file uploading transcript is available and has label in the next form `small_aa.vtt (Afar)`, where:
+- `small` - initial transcript file name;
+- `aa` - language code;
+- `(Afar)` - language label.

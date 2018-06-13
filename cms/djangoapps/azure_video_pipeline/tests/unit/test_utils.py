@@ -2,6 +2,9 @@ import unittest
 
 import json
 from django.core.exceptions import ImproperlyConfigured
+from django.test import SimpleTestCase
+from django.test.utils import override_settings
+from requests import HTTPError
 
 from azure_video_pipeline.media_service import (
     ContentKeyType, KeyDeliveryType, AssetDeliveryProtocol, AssetDeliveryPolicyType,
@@ -13,11 +16,17 @@ from azure_video_pipeline.utils import (
     create_content_key_and_associate_with_encoded_asset, create_authorization_policy_and_associate_with_content_key,
     create_delivery_policy_and_associate_with_encoded_asset, create_access_policies_and_locators,
     remove_delivery_policy_link_from_asset_and_delivery_policy,
-    get_video_info, get_captions_info, _drop_http_or_https)
+    get_video_info, get_captions_info)
 import mock
 
 
-class UtilsTests(unittest.TestCase):
+@override_settings(AZURE_CLIENT_ID='test_client_id',
+                   AZURE_CLIENT_SECRET='test_client_secret',
+                   AZURE_TENANT='test_tenant',
+                   AZURE_REST_API_ENDPOINT='test_rest_api_endpoint',
+                   AZURE_STORAGE_ACCOUNT_NAME='test_storage_account_name',
+                   AZURE_STORAGE_KEY='test_storage_key')
+class UtilsTests(SimpleTestCase):
 
     @mock.patch('azure_video_pipeline.utils.MediaServiceClient')
     @mock.patch('azure_video_pipeline.utils.get_azure_config', return_value={})
@@ -52,32 +61,31 @@ class UtilsTests(unittest.TestCase):
     def test_get_azure_config_for_platform(self):
         with mock.patch('azure_video_pipeline.models.AzureOrgProfile.objects.filter',
                         return_value=mock.Mock(first=mock.Mock(return_value=None))):
-            with mock.patch.dict('azure_video_pipeline.utils.settings.FEATURES', {
-                'AZURE_CLIENT_ID': 'client_id',
-                'AZURE_CLIENT_SECRET': 'client_secret',
-                'AZURE_TENANT': 'tenant',
-                'AZURE_REST_API_ENDPOINT': 'rest_api_endpoint',
-                'STORAGE_ACCOUNT_NAME': 'account_name',
-                'STORAGE_KEY': 'key'
-            }):
-                azure_config = get_azure_config('name_org')
+            # arrange:
+            expected_azure_config = {
+                'client_id': 'test_client_id',
+                'secret': 'test_client_secret',
+                'tenant': 'test_tenant',
+                'rest_api_endpoint': 'test_rest_api_endpoint',
+                'storage_account_name': 'test_storage_account_name',
+                'storage_key': 'test_storage_key'
+            }
+            # act:
+            azure_config = get_azure_config('name_org')
+            # assert:
+            self.assertEqual(azure_config, expected_azure_config)
 
-                expected_azure_config = {
-                    'client_id': 'client_id',
-                    'secret': 'client_secret',
-                    'tenant': 'tenant',
-                    'rest_api_endpoint': 'rest_api_endpoint',
-                    'storage_account_name': 'account_name',
-                    'storage_key': 'key'
-                }
-                self.assertEqual(azure_config, expected_azure_config)
-
-    def test_when_not_set_azure_config(self):
+    @override_settings(AZURE_CLIENT_ID=None,
+                       AZURE_CLIENT_SECRET=None,
+                       AZURE_TENANT=None,
+                       AZURE_REST_API_ENDPOINT=None,
+                       AZURE_STORAGE_ACCOUNT_NAME=None,
+                       AZURE_STORAGE_KEY=None)
+    def test_azure_config_not_set(self):
         with mock.patch('azure_video_pipeline.models.AzureOrgProfile.objects.filter',
                         return_value=mock.Mock(first=mock.Mock(return_value=None))):
-            with mock.patch.dict('azure_video_pipeline.utils.settings.FEATURES', {}):
-                with self.assertRaises(ImproperlyConfigured):
-                    get_azure_config('name_org')
+            with self.assertRaises(ImproperlyConfigured):
+                get_azure_config('name_org')
 
     @mock.patch('azure_video_pipeline.utils.get_media_service_client', return_value=mock.Mock(
         get_input_asset_by_video_id=mock.Mock(return_value=[])
@@ -187,6 +195,20 @@ class UtilsTests(unittest.TestCase):
         )
         self.assertEqual(status, 'file_encrypted')
 
+    @mock.patch('azure_video_pipeline.utils.remove_access_policies_and_locators')
+    @mock.patch('azure_video_pipeline.utils.get_media_service_client', return_value=mock.Mock(
+        get_input_asset_by_video_id=mock.Mock(return_value={'Id': 'asset_id'}),
+        get_asset_content_keys=mock.Mock(return_value={'Id': 'content_key_id'}),
+    ))
+    def test_encrypt_file_http_error(self, get_media_service_client_mock,
+                                     remove_access_policies_and_locators_mock):
+        # arrange
+        remove_access_policies_and_locators_mock.side_effect = HTTPError
+        # act
+        status = encrypt_file('video_id', 'org_name')
+        # assert
+        self.assertEqual(status, 'encryption_error')
+
     @mock.patch('azure_video_pipeline.utils.get_media_service_client', return_value=mock.Mock(
         get_input_asset_by_video_id=mock.Mock(return_value=[])
     ))
@@ -230,6 +252,20 @@ class UtilsTests(unittest.TestCase):
             {'Id': 'asset_id'}
         )
         self.assertEqual(status, 'file_complete')
+
+    @mock.patch('azure_video_pipeline.utils.remove_access_policies_and_locators')
+    @mock.patch('azure_video_pipeline.utils.get_media_service_client', return_value=mock.Mock(
+        get_input_asset_by_video_id=mock.Mock(return_value={'Id': 'asset_id'}),
+        get_asset_content_keys=mock.Mock(return_value={'Id': 'content_key_id'}),
+    ))
+    def test_remove_encryption_http_error(self, get_media_service_client_mock,
+                                          remove_access_policies_and_locators_mock):
+        # arrange
+        remove_access_policies_and_locators_mock.side_effect = HTTPError
+        # act
+        status = remove_encryption('video_id', 'org_name')
+        # assert
+        self.assertEqual(status, 'decryption_error')
 
     def test_remove_access_policies_and_locators(self):
         # arrange
@@ -505,11 +541,3 @@ class UtilsTests(unittest.TestCase):
         }
         self.assertEqual(video_info, expected_video_info)
         self.assertEqual(captions_info, [])
-
-    def test_drop_http_or_https(self):
-        # act
-        http_url = _drop_http_or_https('http://ma.streaming.mediaservices.windows.net/locator_id/')
-        https_url = _drop_http_or_https('https://ma.streaming.mediaservices.windows.net/locator_id/')
-        # assert
-        self.assertEqual(http_url, '//ma.streaming.mediaservices.windows.net/locator_id/')
-        self.assertEqual(https_url, '//ma.streaming.mediaservices.windows.net/locator_id/')

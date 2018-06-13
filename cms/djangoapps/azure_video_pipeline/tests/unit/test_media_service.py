@@ -105,30 +105,12 @@ class MediaServiceClientTests(unittest.TestCase):
                 return_value={})
     @mock.patch('azure_video_pipeline.media_service.requests.get',
                 return_value=mock.Mock(status_code=200,
-                                       json=mock.Mock(return_value={'value': ['locator1', 'locator2']})))
-    def test_get_locators_list(self, requests_get, headers):
-        media_services = self.make_one()
-        locators = media_services.get_locators_list(LocatorTypes.OnDemandOrigin)
-        requests_get.assert_called_once_with(
-            'https://rest_api_endpoint/api/Locators',
-            headers={},
-            params={'$filter': 'Type eq {}'.format(LocatorTypes.OnDemandOrigin)}
-        )
-        self.assertEqual(locators, ['locator1', 'locator2'])
-
-    def test_raise_for_status_get_list_locators(self):
-        self.raise_for_status(func='get_locators_list')
-
-    @mock.patch('azure_video_pipeline.media_service.MediaServiceClient.get_headers',
-                return_value={})
-    @mock.patch('azure_video_pipeline.media_service.requests.get',
-                return_value=mock.Mock(status_code=200,
                                        json=mock.Mock(return_value={'value': ['locator']})))
-    def test_get_asset_locators(self, requests_get, headers):
+    def test_get_asset_locators(self, requests_get_mock, get_headers_mock):
         media_services = self.make_one()
         asset_id = 'asset_id'
         locator = media_services.get_asset_locators(asset_id, LocatorTypes.SAS)
-        requests_get.assert_called_once_with(
+        requests_get_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/Assets('{}')/Locators".format(asset_id),
             headers={},
             params={'$filter': 'Type eq {}'.format(LocatorTypes.SAS)}
