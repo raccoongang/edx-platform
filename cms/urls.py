@@ -138,6 +138,8 @@ urlpatterns = [
         contentstore.views.videos_handler, name='videos_handler'),
     url(r'^videos/{}/encrypt(?:/(?P<edx_video_id>[-\w]+))?$'.format(settings.COURSE_KEY_PATTERN),
         contentstore.views.video_encrypt, name='video_encrypt'),
+    url(r'^videos/{}/data(?:/(?P<edx_video_id>[-\w]+))?$'.format(settings.COURSE_KEY_PATTERN),
+        contentstore.views.video_data_handler, name='video_data_handler'),
     url(r'^video_images/{}(?:/(?P<edx_video_id>[-\w]+))?$'.format(settings.COURSE_KEY_PATTERN),
         contentstore.views.video_images_handler, name='video_images_handler'),
     url(r'^transcript_preferences/{}$'.format(settings.COURSE_KEY_PATTERN),

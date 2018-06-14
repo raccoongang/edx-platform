@@ -43,8 +43,8 @@ from contentstore.views.videos import (
     get_video_supported_file_formats,
     _get_and_validate_course,
     _get_index_videos,
-    video_encrypt
-)
+    video_encrypt,
+    video_data_handler)
 from xmodule.modulestore.tests.factories import CourseFactory
 
 from openedx.core.djangoapps.profile_images.tests.helpers import make_image_file
@@ -451,12 +451,6 @@ class VideoEncryptTestCase(CourseTestCase):
         )
         self.assertEquals(response.status_code, 400)
         self.assertEquals(json.loads(response.content), {'error': 'Something went wrong. Encryption process failed.'})
-
-    @patch("contentstore.views.videos.get_media_service_client")
-    def test_encrypt_file_error(self, get_ms_client_mock):
-
-        # act
-        encrypt_file('test_video_id', 'test_organization')
 
 
 @ddt.ddt
@@ -1662,4 +1656,38 @@ class VideoUrlsCsvTestCase(VideoUploadTestMixin, CourseTestCase):
         self.assertEqual(
             response["Content-Disposition"],
             "attachment; filename=video_urls.csv; filename*=utf-8''n%C3%B3n-%C3%A4scii_video_urls.csv"
+        )
+
+
+@patch.dict("django.conf.settings.FEATURES", {"ENABLE_VIDEO_UPLOAD_PIPELINE": True})
+class VideoDataHandlerTestCase(VideoUploadTestMixin, CourseTestCase):
+
+    VIEW_NAME = "video_data_handler"
+
+    @patch("contentstore.views.videos._get_and_validate_course", return_value=Mock(org='org_name'))
+    @patch("contentstore.views.videos.get_captions_and_video_info",
+           return_value={'error_message': '',
+                         'video_info': 'video_info',
+                         'captions': 'captions'})
+    def test_basic(self, get_captions_and_video_info, get_and_validate_course):
+        # arrange
+        request_mock = Mock(method="GET")
+        type(request_mock).META = PropertyMock(return_value={"HTTP_ACCEPT": ['application/json']})
+        type(request_mock).user = PropertyMock(return_value=self.user)
+        # act
+        response = video_data_handler(request_mock, "course_key", "edx_video_id")
+        # assert
+        self.assertEquals(response.status_code, 200)
+        get_and_validate_course.assert_called_once_with(
+            'course_key',
+            request_mock.user
+        )
+        get_captions_and_video_info.assert_called_once_with(
+            'edx_video_id',
+            'org_name'
+        )
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(
+            json.loads(response.content),
+            {'error_message': '', 'video_info': 'video_info', 'captions': 'captions'}
         )

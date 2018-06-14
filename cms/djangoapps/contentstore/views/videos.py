@@ -46,6 +46,7 @@ from openedx.core.djangoapps.waffle_utils import WaffleSwitchNamespace
 from util.json_request import JsonResponse, expect_json
 
 from azure_video_pipeline.utils import (
+    get_captions_and_video_info,
     get_media_service_client,
     encrypt_file,
     remove_encryption,
@@ -58,6 +59,7 @@ from .course import get_course_and_check_access
 __all__ = [
     'videos_handler',
     'video_encrypt',
+    'video_data_handler',
     'video_encodings_download',
     'video_images_handler',
     'transcript_preferences_handler',
@@ -933,3 +935,34 @@ def video_encrypt(request, course_key_string, edx_video_id):
             {"error": error_messages.get(status, '')},
             status=400
         )
+
+
+def get_course_videos_data(course_key):
+    """
+    Get course videos data.
+
+    :param course_key:
+    :return: json: course videos
+    """
+    videos_qs = Video.objects.filter(
+        courses__course_id=course_key,
+        courses__is_hidden=False,
+        status__in=["file_complete", "file_encrypted"]
+    ).order_by('-created', 'edx_video_id').values('edx_video_id', 'client_video_id')
+    return json.dumps(list(videos_qs))
+
+
+@expect_json
+@login_required
+@require_http_methods("GET")
+def video_data_handler(request, course_key_string, edx_video_id):
+    """
+    The restful handler to get Azure video data.
+
+    GET
+        json: return json representing the video's streaming and downloading urls (locators) and
+        captions data (language code, label and url)
+    """
+    course = _get_and_validate_course(course_key_string, request.user)
+    video_data = get_captions_and_video_info(edx_video_id, course.org)
+    return JsonResponse(video_data, status=200)

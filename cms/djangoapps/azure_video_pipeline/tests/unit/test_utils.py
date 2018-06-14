@@ -1,10 +1,9 @@
-import unittest
-
 import json
 from django.core.exceptions import ImproperlyConfigured
 from django.test import SimpleTestCase
 from django.test.utils import override_settings
 from requests import HTTPError
+from edxval.models import Video
 
 from azure_video_pipeline.media_service import (
     ContentKeyType, KeyDeliveryType, AssetDeliveryProtocol, AssetDeliveryPolicyType,
@@ -16,7 +15,7 @@ from azure_video_pipeline.utils import (
     create_content_key_and_associate_with_encoded_asset, create_authorization_policy_and_associate_with_content_key,
     create_delivery_policy_and_associate_with_encoded_asset, create_access_policies_and_locators,
     remove_delivery_policy_link_from_asset_and_delivery_policy,
-    get_video_info, get_captions_info)
+    get_video_info, get_captions_info, _drop_http_or_https, get_captions_and_video_info)
 import mock
 
 
@@ -541,3 +540,164 @@ class UtilsTests(SimpleTestCase):
         }
         self.assertEqual(video_info, expected_video_info)
         self.assertEqual(captions_info, [])
+
+    def test_drop_http_or_https(self):
+        # act
+        http_url = _drop_http_or_https('http://ma.streaming.mediaservices.windows.net/locator_id/')
+        https_url = _drop_http_or_https('https://ma.streaming.mediaservices.windows.net/locator_id/')
+        # assert
+        self.assertEqual(http_url, '//ma.streaming.mediaservices.windows.net/locator_id/')
+        self.assertEqual(https_url, '//ma.streaming.mediaservices.windows.net/locator_id/')
+
+    @mock.patch('azure_video_pipeline.utils.Video.objects.get', side_effect=Video.DoesNotExist)
+    def test_get_captions_and_video_info_if_video_doesNotExist(self, video_get):
+        # act
+        captions_and_video_info = get_captions_and_video_info('edx_video_id', 'org_name')
+
+        # assert
+        video_get.assert_called_once_with(edx_video_id='edx_video_id')
+        self.assertEqual(
+            captions_and_video_info,
+            {'error_message': "Target Video is no longer available on Azure or is corrupted in some way.",
+             'video_info': {},
+             'captions': []}
+        )
+
+    @mock.patch('azure_video_pipeline.utils.Video.objects.get')
+    @mock.patch('azure_video_pipeline.utils.get_media_service_client', return_value=mock.Mock(
+        get_input_asset_by_video_id=mock.Mock(return_value=[])
+    ))
+    def test_get_captions_and_video_info_if_asset_doesNotExist(self, mock_media_service_client, video_get):
+        # act
+        captions_and_video_info = get_captions_and_video_info('edx_video_id', 'org_name')
+
+        # assert
+        video_get.assert_called_once_with(edx_video_id='edx_video_id')
+        mock_media_service_client.assert_called_once_with('org_name')
+        media_service = mock_media_service_client()
+        media_service.get_input_asset_by_video_id.assert_called_once_with('edx_video_id', 'ENCODED')
+        self.assertEqual(
+            captions_and_video_info,
+            {'error_message': "Target Video is no longer available on Azure or is corrupted in some way.",
+             'video_info': {},
+             'captions': []}
+        )
+
+    @mock.patch('azure_video_pipeline.utils.Video.objects.get')
+    @mock.patch('azure_video_pipeline.utils.get_media_service_client', return_value=mock.Mock(
+        get_input_asset_by_video_id=mock.Mock(return_value={'Id': 'asset_id'}),
+        get_asset_locators=mock.Mock(return_value=None)
+    ))
+    def test_get_captions_and_video_info_if_locator_on_demand_doesNotExist(self, mock_media_service_client, video_get):
+        # act
+        captions_and_video_info = get_captions_and_video_info('edx_video_id', 'org_name')
+
+        # assert
+        video_get.assert_called_once_with(edx_video_id='edx_video_id')
+        mock_media_service_client.assert_called_once_with('org_name')
+
+        media_service = mock_media_service_client()
+        media_service.get_input_asset_by_video_id.assert_called_once_with('edx_video_id', 'ENCODED')
+
+        calls = [mock.call('asset_id', LocatorTypes.OnDemandOrigin), mock.call('asset_id', LocatorTypes.SAS)]
+        media_service.get_asset_locators.assert_has_calls(calls)
+
+        self.assertEqual(
+            captions_and_video_info,
+            {'error_message': "Target Video is no longer available on Azure or is corrupted in some way.",
+             'video_info': {},
+             'captions': []}
+        )
+
+    @mock.patch('azure_video_pipeline.utils.Video.objects.get', return_value='video_object')
+    @mock.patch('azure_video_pipeline.utils.get_media_service_client', return_value=mock.Mock(
+        get_input_asset_by_video_id=mock.Mock(return_value={'Id': 'asset_id'}),
+        get_asset_locators=mock.Mock(side_effect=[{'Path': 'http_path_locator_on_demand'}, None])
+    ))
+    @mock.patch("azure_video_pipeline.utils._drop_http_or_https", return_value='path_locator_on_demand')
+    @mock.patch("azure_video_pipeline.utils.get_video_info", return_value='video_info')
+    def test_get_captions_and_video_info_if_locator_sas_doesNotExist(self,
+                                                                     mock_video_info,
+                                                                     drop_http_or_https,
+                                                                     mock_media_service_client,
+                                                                     video_get):
+        # act
+        captions_and_video_info = get_captions_and_video_info('edx_video_id', 'org_name')
+
+        # assert
+        video_get.assert_called_once_with(edx_video_id='edx_video_id')
+        mock_media_service_client.assert_called_once_with('org_name')
+
+        media_service = mock_media_service_client()
+        media_service.get_input_asset_by_video_id.assert_called_once_with('edx_video_id', 'ENCODED')
+
+        calls = [mock.call('asset_id', LocatorTypes.OnDemandOrigin), mock.call('asset_id', LocatorTypes.SAS)]
+        media_service.get_asset_locators.assert_has_calls(calls)
+
+        drop_http_or_https.assert_called_once_with('http_path_locator_on_demand')
+        mock_video_info.assert_called_once_with(
+            'video_object',
+            'path_locator_on_demand',
+            None,
+            None
+        )
+
+        self.assertEqual(
+            captions_and_video_info,
+            {'error_message': "To be able to use captions/transcripts auto-fetching, "
+                              "AMS Asset should be published properly "
+                              "(in addition to 'streaming' locator a 'progressive' "
+                              "locator must be created as well).",
+             'video_info': 'video_info',
+             'captions': []}
+        )
+
+    @mock.patch('azure_video_pipeline.utils.Video.objects.get', return_value='video_object')
+    @mock.patch('azure_video_pipeline.utils.get_media_service_client', return_value=mock.Mock(
+        get_input_asset_by_video_id=mock.Mock(return_value={'Id': 'asset_id'}),
+        get_asset_locators=mock.Mock(side_effect=[{'Path': 'http_path_locator_on_demand'},
+                                                  {'Path': 'http_path_locator_sas'}]),
+        get_asset_files=mock.Mock(return_value='asset_files')
+    ))
+    @mock.patch("azure_video_pipeline.utils._drop_http_or_https", side_effect=['path_locator_on_demand',
+                                                                               'path_locator_sas'])
+    @mock.patch("azure_video_pipeline.utils.get_captions_info", return_value='captions_info')
+    @mock.patch("azure_video_pipeline.utils.get_video_info", return_value='video_info')
+    def test_basic_functional_get_captions_and_video_info(self,
+                                                          mock_video_info,
+                                                          mock_captions_info,
+                                                          drop_http_or_https,
+                                                          mock_media_service_client,
+                                                          video_get):
+        # act
+        captions_and_video_info = get_captions_and_video_info('edx_video_id', 'org_name')
+
+        # assert
+        video_get.assert_called_once_with(edx_video_id='edx_video_id')
+        mock_media_service_client.assert_called_once_with('org_name')
+
+        media_service = mock_media_service_client()
+        media_service.get_input_asset_by_video_id.assert_called_once_with('edx_video_id', 'ENCODED')
+
+        calls_locators = [mock.call('asset_id', LocatorTypes.OnDemandOrigin), mock.call('asset_id', LocatorTypes.SAS)]
+        media_service.get_asset_locators.assert_has_calls(calls_locators)
+
+        calls_drop = [mock.call('http_path_locator_on_demand'), mock.call('http_path_locator_sas')]
+        drop_http_or_https.assert_has_calls(calls_drop)
+        mock_captions_info.assert_called_once_with(
+            'video_object',
+            'path_locator_sas'
+        )
+        mock_video_info.assert_called_once_with(
+            'video_object',
+            'path_locator_on_demand',
+            'path_locator_sas',
+            'asset_files'
+        )
+
+        self.assertEqual(
+            captions_and_video_info,
+            {'error_message': '',
+             'video_info': 'video_info',
+             'captions': 'captions_info'}
+        )

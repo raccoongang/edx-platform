@@ -149,7 +149,6 @@ Now it is possible to attach transcripts file to certain video on `Video Uploads
 
 ![Video Upload switch](doc/img/video-transcripts-feature.png)
 
-
 Transcript files are stored next to its video files on Azure.
 
 To attach transcript file to certain video file:
@@ -161,3 +160,28 @@ After file uploading transcript is available and has label in the next form `sma
 - `small` - initial transcript file name;
 - `aa` - language code;
 - `(Afar)` - language label.
+
+## Course introduction video enhancements
+
+While course initial setup it is possible to add introduction video via Studio's main menu > Settings > Schedule & Details:
+
+![Introduction video](doc/img/course_details.png)
+
+Standard OpenEdx platform has ability to set course introduction video from YouTube service.
+Provided enhancements add ability to use videos uploaded via Video Uploads page as course introduction video.
+New dropdown switch appears in `Course Introduction Video` section if platform is configured to store videos on Azure.
+
+![Standard introduction video](doc/img/intro_video_youtube.png)
+
+To use Azure uploaded file as introduction video one should switch to `Azure` and choose video from automatically listed course videos.
+
+![Azure introduction video](doc/img/intro_video_azure.png)
+
+As soon as video is chosen it renders in Azure Media Player above.
+Video's subtitles can be optionally enabled.
+
+![Azure introduction video subtitles](doc/img/intro_video_azure_subtitles.png)
+
+After changes are saved the new branded Azure introduction video is available from the LMS course `About` page:
+
+![Lms introduction video view](doc/img/lms_intro_video_azure.png)
