@@ -176,6 +176,7 @@
                             thirdPartyAuth: this.thirdPartyAuth,
                             platformName: this.platformName,
                             hideAuthWarnings: this.hideAuthWarnings,
+                            isSSO: this.isSSO,
                             googleRecaptchaSiteKey: this.googleRecaptchaSiteKey
                         });
 
