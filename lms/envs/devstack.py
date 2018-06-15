@@ -117,15 +117,36 @@ PIPELINE_SASS_ARGUMENTS = '--debug-info'
 ########################### VERIFIED CERTIFICATES #################################
 
 FEATURES['AUTOMATIC_VERIFY_STUDENT_IDENTITY_FOR_TESTING'] = True
-FEATURES['ENABLE_PAYMENT_FAKE'] = True
+FEATURES['ENABLE_PAYMENT_FAKE'] = False
 
-CC_PROCESSOR_NAME = 'CyberSource2'
+# CC_PROCESSOR_NAME = 'CyberSource2'
+# CC_PROCESSOR = {
+#     'CyberSource2': {
+#         "PURCHASE_ENDPOINT": '/shoppingcart/payment_fake/',
+#         "SECRET_KEY": 'abcd123',
+#         "ACCESS_KEY": 'abcd123',
+#         "PROFILE_ID": 'edx',
+#     }
+# }
+
+CC_PROCESSOR_NAME = 'MPesa'
 CC_PROCESSOR = {
+    'CyberSource': {
+        'SHARED_SECRET': '',
+        'MERCHANT_ID': '',
+        'SERIAL_NUMBER': '',
+        'ORDERPAGE_VERSION': '7',
+        'PURCHASE_ENDPOINT': '',
+    },
     'CyberSource2': {
-        "PURCHASE_ENDPOINT": '/shoppingcart/payment_fake/',
-        "SECRET_KEY": 'abcd123',
-        "ACCESS_KEY": 'abcd123',
-        "PROFILE_ID": 'edx',
+        "PURCHASE_ENDPOINT": '',
+        "SECRET_KEY": '',
+        "ACCESS_KEY": '',
+        "PROFILE_ID": '',
+    },
+    'MPesa':{
+        "PHONE" :'',
+        "PURCHASE_ENDPOINT": '/mpesa/payment/',
     }
 }
 
@@ -277,3 +298,6 @@ if os.path.isfile(join(dirname(abspath(__file__)), 'private.py')):
 MODULESTORE = convert_module_store_setting_if_needed(MODULESTORE)
 
 SECRET_KEY = '85920908f28904ed733fe576320db18cabd7b6cd'
+
+FEATURES['ENABLE_SHOPPING_CART'] = True
+FEATURES['ENABLE_PAID_COURSE_REGISTRATION'] = True

@@ -4,11 +4,14 @@ Course API Serializers.  Representing course catalog data
 
 import urllib
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from rest_framework import serializers
 
 from openedx.core.djangoapps.models.course_details import CourseDetails
 from openedx.core.lib.api.fields import AbsoluteURLField
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from course_modes.models import CourseMode
 
 
 class _MediaSerializer(serializers.Serializer):  # pylint: disable=abstract-method
@@ -74,6 +77,8 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
     mobile_available = serializers.BooleanField()
     hidden = serializers.SerializerMethodField()
     invitation_only = serializers.BooleanField()
+    price = serializers.SerializerMethodField()
+    about_url = serializers.SerializerMethodField()
 
     # 'course_id' is a deprecated field, please use 'id' instead.
     course_id = serializers.CharField(source='id', read_only=True)
@@ -95,6 +100,26 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
             urllib.urlencode({'course_id': course_overview.id}),
         ])
         return self.context['request'].build_absolute_uri(base_url)
+
+    def get_price(self, course_overview):
+        price = None
+        site_currency = configuration_helpers.get_value('PAID_COURSE_REGISTRATION_CURRENCY')
+
+        if site_currency:
+            registration_price = CourseMode.min_course_price_for_currency(course_overview.id, site_currency[0])
+            currency = site_currency[0]
+        else:
+            registration_price, currency = CourseMode.min_course_price(course_overview.id)
+
+        if registration_price:
+            currency_symbol = dict(settings.CURRENCIES).get(currency, settings.PAID_COURSE_REGISTRATION_CURRENCY[0])
+            price = '{0}{1:.2f}'.format(currency_symbol, registration_price)
+
+        return price
+
+    def get_about_url(self, course_overview):
+        about_url = reverse('about_course', args=[course_overview.id.to_deprecated_string()])
+        return self.context['request'].build_absolute_uri(about_url)
 
 
 class CourseDetailSerializer(CourseSerializer):  # pylint: disable=abstract-method

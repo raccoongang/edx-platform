@@ -18,8 +18,9 @@ def get_processor_config():
 
     """
     # Retrieve the configuration settings for the active credit card processor
+    CC_PROCESSOR_NAME = configuration_helpers.get_value('CC_PROCESSOR_NAME', settings.CC_PROCESSOR_NAME)
     config = settings.CC_PROCESSOR.get(
-        settings.CC_PROCESSOR_NAME, {}
+        CC_PROCESSOR_NAME, {}
     )
 
     # Check whether configuration override exists,

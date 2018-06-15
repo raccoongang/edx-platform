@@ -404,7 +404,8 @@ class PayAndVerifyView(View):
             processors = ecommerce_api_client(request.user).payment.processors.get()
         else:
             # transaction will be conducted using legacy shopping cart
-            processors = [settings.CC_PROCESSOR_NAME]
+            CC_PROCESSOR_NAME = configuration_helpers.get_value('CC_PROCESSOR_NAME', settings.CC_PROCESSOR_NAME)
+            processors = [CC_PROCESSOR_NAME]
 
         # Render the top-level page
         context = {
@@ -751,8 +752,9 @@ def checkout_with_shoppingcart(request, user, course_key, course_mode, amount):
         reverse("shoppingcart.views.postpay_callback")
     )
 
+    CC_PROCESSOR_NAME = configuration_helpers.get_value('CC_PROCESSOR_NAME', settings.CC_PROCESSOR_NAME)
     payment_data = {
-        'payment_processor_name': settings.CC_PROCESSOR_NAME,
+        'payment_processor_name': CC_PROCESSOR_NAME,
         'payment_page_url': get_purchase_endpoint(),
         'payment_form_data': get_signed_purchase_params(
             cart,
