@@ -58,7 +58,7 @@ locales:
     # - nl_NL  # Dutch (Netherlands)
     # - or  # Oriya
     # - pl  # Polish
-    # - pt_BR  # Portuguese (Brazil)
+    - pt_BR  # Portuguese (Brazil)
     # - pt_PT  # Portuguese (Portugal)
     # - ro  # Romanian
     - ru  # Russian
