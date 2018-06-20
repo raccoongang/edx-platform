@@ -380,31 +380,24 @@ class TestUserCreation(SysadminBaseTestCase):
         """
         self._setstaff_login()
         data = {
-            'student_uname': 'test_user_with_same_name@example.com',
-            'student_fullname': 'testser withsamename',
+            'student_uname': 'test_user_creation_throw_request@example.com',
+            'student_fullname': 'testser throwrequest',
             'student_password': 'edx',
             'action': 'create_user',
         }
 
         self.client.post(reverse('sysadmin'), data=data)
 
-        try:
-            User.objects.get(username=data['student_uname'])
-        except:
-            self.fail("Can not create user with given credential : {}".format(str(data)))
-
-        data['student_fullname'] = 'Other name'
+        result = self.client.post(reverse('sysadmin'), data=data)
         self.assertEqual(
-            self.client.post(reverse('sysadmin'), data=data).status_code,
+            result.status_code,
             200,
             'Creating user with same username must return code 200 and message with error description'
         )
 
-        data['student_uname'] = 'othe_username@example.com'
-        self.assertEqual(
-            self.client.post(reverse('sysadmin'), data=data).status_code,
-            200,
-            'Creating user with same full name must return code 200 and message with error description'
+        self.assertContains(
+            result,
+            text='This username already taken'
         )
 
     def test_user_create_message(self):
@@ -418,31 +411,27 @@ class TestUserCreation(SysadminBaseTestCase):
             'password': 'edx',
         }
         users_api = Users()
-        create_result = users_api.create_user(**data)
 
+        creation_result = users_api.create_user(**data)
         self.assertEqual(
             'User {user} created successfully!'.format(user=User.objects.get(username=data['uname'])),
-            create_result
+            creation_result
         )
 
-        create_result = users_api.create_user(**data)
         self.assertEqual(
             'This username already taken',
-            create_result
+            users_api.create_user(**data)
         )
 
-        taken_email ='taken_email@example.com'
+        # Create situation, when email already taken.
+        taken_email = 'taken_email@example.com'
         User.objects.create_user(
             username='one_more_user',
             email=taken_email,
         )
-        data = {
-            'uname': taken_email,
-            'name': 'test_user create_message',
-            'password': 'edx',
-        }
-        create_result = users_api.create_user(**data)
+        # Sysadmin dashboard used field uname as username and email.
+        data['uname'] = taken_email
         self.assertEqual(
             'This email already taken',
-            create_result
+            users_api.create_user(**data)
         )
