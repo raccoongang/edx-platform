@@ -152,9 +152,9 @@ class Program(TimeStampedModel):
         if self.program_code == "5DCC":
             student = User.objects.get(email=user.email)
             users_five_day_module = student.courseenrollment_set.filter(
-                course_id__icontains="dcc").last()
+                course_id__icontains="dcc").order_by('created').last()
             course_id = users_five_day_module.course_id
-            course_overview = users_five_day_module
+            course_overview = CourseOverview.objects.get(id=course_id)
             course_descriptor = get_course(course_id)
             
             courses.append({
