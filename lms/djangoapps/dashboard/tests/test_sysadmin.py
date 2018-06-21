@@ -367,8 +367,10 @@ class TestSysAdminMongoCourseImport(SysadminBaseTestCase):
         self._rm_edx4edx()
 
 
-@unittest.skipUnless(settings.FEATURES.get('ENABLE_SYSADMIN_DASHBOARD'),
-                     "ENABLE_SYSADMIN_DASHBOARD not set")
+@unittest.skipUnless(
+    settings.FEATURES.get('ENABLE_SYSADMIN_DASHBOARD'),
+    "ENABLE_SYSADMIN_DASHBOARD not set"
+)
 class TestUserCreation(SysadminBaseTestCase):
     """
     Test creating user with sysadmin dashboard.
