@@ -104,3 +104,6 @@ git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.15#egg=xblock-
 
 # Raccoongang fixed search for course visibility
 -e git+https://github.com/raccoongang/edx-search.git@1.1.0-rg#egg=edx-search
+
+# Raccoongang rg_instructor_analytics
+-e git+https://github.com/raccoongang/rg_instructor_analytics@release-0.2.4#egg=rg_instructor_analytics
