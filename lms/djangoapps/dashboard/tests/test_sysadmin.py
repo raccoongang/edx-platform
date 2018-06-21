@@ -423,13 +423,13 @@ class TestUserCreation(SysadminBaseTestCase):
             users_api.create_user(**data)
         )
 
-        # Create situation, when email already taken.
+        # Creates situation, when email is already taken.
         taken_email = 'taken_email@example.com'
         User.objects.create_user(
             username='one_more_user',
             email=taken_email,
         )
-        # Sysadmin dashboard used field uname as username and email.
+        # Sysadmin dashboard uses field uname as username and email.
         data['uname'] = taken_email
         self.assertEqual(
             'This email already taken',
