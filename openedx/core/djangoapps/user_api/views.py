@@ -1,7 +1,9 @@
 """HTTP end-points for the User API. """
 import copy
 
+import re
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured, PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
@@ -42,6 +44,9 @@ from .helpers import FormDescription, require_post_params, shim_student_view
 from .models import UserPreference, UserProfile
 from .preferences.api import get_country_time_zones, update_email_opt_in
 from .serializers import CountryTimeZoneSerializer, UserPreferenceSerializer, UserSerializer
+
+
+MAX_LENGTH_USERNAME = 30
 
 
 class LoginSessionView(APIView):
@@ -159,7 +164,7 @@ class LoginSessionView(APIView):
 class RegistrationView(APIView):
     """HTTP end-points for creating a new user. """
 
-    DEFAULT_FIELDS = ["email", "name", "username", "password"]
+    DEFAULT_FIELDS = ["email", "name", "password"]
 
     EXTRA_FIELDS = [
         "confirm_email",
@@ -327,6 +332,8 @@ class RegistrationView(APIView):
         data = request.POST.copy()
 
         email = data.get('email')
+        username_for_check = re.sub('[\W]', '_', email)[:MAX_LENGTH_USERNAME]
+        data['username'] = unique_username(username_for_check)
         username = data.get('username')
 
         # Handle duplicate email/username
@@ -1143,3 +1150,23 @@ class CountryTimeZoneListView(generics.ListAPIView):
     def get_queryset(self):
         country_code = self.request.GET.get('country_code', None)
         return get_country_time_zones(country_code)
+
+
+def unique_username(username):
+    UserModel = get_user_model()
+    new_username = username
+    prefix = 1
+
+    while True:
+        if UserModel.objects.filter(username=new_username).exists():
+            str_prefix = str(prefix)
+
+            if (len(new_username) + len(str_prefix)) > MAX_LENGTH_USERNAME:
+                new_username = username[:MAX_LENGTH_USERNAME-len(str_prefix)] + str(prefix)
+            else:
+                new_username = username + str(prefix)
+
+            prefix += 1
+        else:
+            break
+    return new_username
