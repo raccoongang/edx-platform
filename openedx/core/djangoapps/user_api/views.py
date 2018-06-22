@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """HTTP end-points for the User API. """
 import copy
 
@@ -466,7 +467,7 @@ class RegistrationView(APIView):
 
         # Translators: These instructions appear on the registration form, immediately
         # below a field meant to hold the user's full name.
-        name_instructions = _(u"This name will be used on any certificates that you earn.")
+        name_instructions = '' #_(u"This name will be used on any certificates that you earn.")
 
         form_desc.add_field(
             "name",
@@ -534,6 +535,7 @@ class RegistrationView(APIView):
             "password",
             label=password_label,
             field_type="password",
+            placeholder=_(u'Damit du falls nötig den Kurs verschieben oder stornieren kannst'),
             restrictions={
                 "min_length": PASSWORD_MIN_LENGTH,
                 "max_length": PASSWORD_MAX_LENGTH,
@@ -840,10 +842,11 @@ class RegistrationView(APIView):
 
         # Translators: "Terms of Service" is a legal document users must agree to
         # in order to register a new account.
-        label = _(u"I agree to the {platform_name} {terms_of_service}").format(
-            platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
-            terms_of_service=terms_label
-        )
+#        label = _(u"I agree to the {platform_name} {terms_of_service}").format(
+#            platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
+#            terms_of_service=terms_label
+#        )
+        label = _(u'Hiermit bestätige ich, dass ich die AGBs gelesen und verstanden habe.')
 
         # Translators: "Terms of Service" is a legal document users must agree to
         # in order to register a new account.
