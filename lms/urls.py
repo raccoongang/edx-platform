@@ -969,3 +969,17 @@ if settings.FEATURES.get('ENABLE_FINANCIAL_ASSISTANCE_FORM'):
 urlpatterns += (
     url(r'^tinymce/', include('tinymce.urls')),
 )
+
+# Raccoongang rg_instructor_analytics
+if settings.FEATURES.get('ENABLE_XBLOCK_VIEW_ENDPOINT'):
+    urlpatterns += (
+        url(
+                r'^courses/{}/tab/instructor_analytics/'.format(
+                    settings.COURSE_ID_PATTERN,
+                ),
+                include('rg_instructor_analytics.urls'),
+                name='instructor_analytics_endpoint',
+            ),
+
+    )
+
