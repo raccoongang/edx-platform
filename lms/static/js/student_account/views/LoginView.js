@@ -202,7 +202,7 @@
                         this.renderAuthWarning();
                     }
                 } else {
-                    grecaptcha.reset();
+                    if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
                     $('#login-captcha').removeAttr('value');
                     this.renderErrors(this.defaultFormErrorsTitle, this.errors);
                 }
