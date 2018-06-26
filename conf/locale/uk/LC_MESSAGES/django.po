@@ -236,7 +236,7 @@ msgstr "Ви зареєстровані як студент за програм�
 #: themes/stanford-style/lms/templates/footer.html
 #: themes/stanford-style/lms/templates/static_templates/tos.html
 msgid "Honor Code"
-msgstr "Кодекс Честі"
+msgstr "Умови користування"
 
 #: common/djangoapps/course_modes/helpers.py
 msgid "You're enrolled as a professional education student"
@@ -5244,7 +5244,10 @@ msgstr "Пакет Медіафайлів"
 #: themes/stanford-style/lms/templates/footer.html
 #: themes/stanford-style/lms/templates/static_templates/tos.html
 msgid "Terms of Service"
-msgstr "Умови надання послуг"
+msgstr "Умови користування"
+
+msgid "Terms of Services"
+msgstr "Умовами користування"
 
 #: lms/djangoapps/branding/api.py
 msgid "Download the {platform_name} mobile app from the Apple App Store"
@@ -24985,6 +24988,9 @@ msgstr ""
 #: openedx/core/djangoapps/user_api/views.py
 msgid "I agree to the {platform_name} {terms_of_service}."
 msgstr "Я погоджуюсь з {terms_of_service} {platform_name}."
+
+msgid "I agree to the {terms_of_service}."
+msgstr "Я погоджуюсь з {terms_of_service}."
 
 #. Translators: "Terms of Service" is a legal document users must agree to
 #. in order to register a new account.
