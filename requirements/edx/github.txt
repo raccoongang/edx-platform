@@ -101,3 +101,5 @@ git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.7#egg=xblock-d
 
 # Raccoongang fixed search for course visibility
 -e git+https://github.com/raccoongang/edx-search.git@0.1.2-rg#egg=edx-search
+
+git+https://github.com/raccoongang/edx_xblock_scorm.git@v1.0#egg=edx_xblock_scorm
