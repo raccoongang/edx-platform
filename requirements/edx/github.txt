@@ -98,6 +98,7 @@ git+https://github.com/edx/edx-proctoring.git@0.17.0#egg=edx-proctoring==0.17.0
 git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.15#egg=xblock-drag-and-drop-v2==2.0.15
 -e git+https://github.com/raccoongang/xblock-filestorage@1e44c36915c00bbac4534d2ed37b504ea515f60e#egg=xblock_filestorage-master
 -e git+https://github.com/eduNEXT/flow-control-xblock.git#egg=flow-control-xblock
+-e git+https://github.com/raccoongang/xblock-pdf.git@v1.0.0-rg#egg=xblock_pdf
 
 # Raccoongang XBlocks
 -e git+git@gitlab.raccoongang.com:andrey.kryachko/edx_scorm_xblock.git#egg=edx_scorm_xblock
