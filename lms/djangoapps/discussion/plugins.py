@@ -29,4 +29,4 @@ class DiscussionTab(TabFragmentViewMixin, EnrolledTab):
     def is_enabled(cls, course, user=None):
         if not super(DiscussionTab, cls).is_enabled(course, user):
             return False
-        return utils.is_discussion_enabled(course.id)
+        return utils.is_discussion_enabled(course.id) and not settings.FEATURES.get('HIDE_DISCUSSION_TAB', False)
