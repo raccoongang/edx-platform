@@ -2,7 +2,7 @@
 
 set -e
 
-source $HOME/jenkins_env
+. $HOME/jenkins_env
 
 NODE_ENV_DIR=$HOME/nenv
 NODE_VERSION=6.11.1
@@ -27,7 +27,7 @@ if [ -e $HOME/edx-venv_clean.tar.gz ]; then
 fi
 
 # Activate the Python virtualenv
-source $HOME/edx-venv/bin/activate
+. $HOME/edx-venv/bin/activate
 
 # add the node packages dir to PATH
 PATH=$PATH:node_modules/.bin
@@ -52,7 +52,7 @@ if [ $WAIT_COUNT -eq 2 ]; then
     exit 1
 fi
 
-source $NODE_ENV_DIR/bin/activate
+. $NODE_ENV_DIR/bin/activate
 echo "done setting up nodeenv"
 echo "node version is `node --version`"
 echo "npm version is `npm --version`"
