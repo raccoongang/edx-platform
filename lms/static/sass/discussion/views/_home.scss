@@ -159,5 +159,10 @@
   .helpgrid-row-notification {
     .fa-square {color: $green;}
     .fa-envelope {color: $light-gray;}
+    .fa-bell {color: $light-gray;}
+  }
+
+  div.broad-mode {
+    margin-top: 2px;
   }
 }

@@ -581,14 +581,15 @@
                 return this.retrieveFirstPage();
             };
 
-            DiscussionThreadListView.prototype.updateEmailNotifications = function() {
+            DiscussionThreadListView.prototype.updateEmailNotifications = function(evt) {
                 var $checkbox, checked, urlName;
-                $checkbox = $('input.email-setting');
+                $checkbox = $(evt.target);
                 checked = $checkbox.prop('checked');
                 urlName = (checked) ? 'enable_notifications' : 'disable_notifications';
                 DiscussionUtil.safeAjax({
                     url: DiscussionUtil.urlFor(urlName),
                     type: 'POST',
+                    data: $checkbox.prop('name') === 'broad-email-notification' ? {broad: true} : {},
                     error: function() {
                         $checkbox.prop('checked', !checked);
                     }

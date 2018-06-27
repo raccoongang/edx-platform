@@ -11,7 +11,7 @@ from django.http import Http404, HttpResponse
 from django.views.decorators.http import require_GET, require_POST
 
 from edxmako.shortcuts import render_to_response
-from notification_prefs import NOTIFICATION_PREF_KEY
+from notification_prefs import NOTIFICATION_PREF_KEY, BROAD_NOTIFICATION_PREF_KEY
 from openedx.core.djangoapps.user_api.models import UserPreference
 from openedx.core.djangoapps.user_api.preferences.api import delete_user_preference
 
@@ -91,16 +91,19 @@ class UsernameCipher(object):
         return UsernameCipher._remove_padding(decrypted)
 
 
-def enable_notifications(user):
+def enable_notifications(user, preference_key=None):
     """
     Enable notifications for a user.
     Currently only used for daily forum digests.
     """
     # Calling UserPreference directly because this method is called from a couple of places,
     # and it is not clear that user is always the user initiating the request.
+    if preference_key is None:
+        preference_key = NOTIFICATION_PREF_KEY
+
     UserPreference.objects.get_or_create(
         user=user,
-        key=NOTIFICATION_PREF_KEY,
+        key=preference_key,
         defaults={
             "value": UsernameCipher.encrypt(user.username)
         }
@@ -120,7 +123,11 @@ def ajax_enable(request):
     if not request.user.is_authenticated():
         raise PermissionDenied
 
-    enable_notifications(request.user)
+    preference_key = NOTIFICATION_PREF_KEY
+    if request.POST.get('broad'):
+        preference_key = BROAD_NOTIFICATION_PREF_KEY
+
+    enable_notifications(request.user, preference_key)
 
     return HttpResponse(status=204)
 
@@ -136,7 +143,11 @@ def ajax_disable(request):
     if not request.user.is_authenticated():
         raise PermissionDenied
 
-    delete_user_preference(request.user, NOTIFICATION_PREF_KEY)
+    preference_key = NOTIFICATION_PREF_KEY
+    if request.POST.get('broad'):
+        preference_key = BROAD_NOTIFICATION_PREF_KEY
+
+    delete_user_preference(request.user, preference_key)
 
     return HttpResponse(status=204)
 
@@ -152,9 +163,13 @@ def ajax_status(request):
     if not request.user.is_authenticated():
         raise PermissionDenied
 
+    preference_key = NOTIFICATION_PREF_KEY
+    if request.GET.get('broad'):
+        preference_key = BROAD_NOTIFICATION_PREF_KEY
+
     qs = UserPreference.objects.filter(
         user=request.user,
-        key=NOTIFICATION_PREF_KEY
+        key=preference_key
     )
 
     return HttpResponse(json.dumps({"status": len(qs)}), content_type="application/json")
@@ -186,13 +201,18 @@ def set_subscription(request, token, subscribe):  # pylint: disable=unused-argum
 
     # Calling UserPreference directly because the fact that the user is passed in the token implies
     # that it may not match request.user.
+    preference_key = NOTIFICATION_PREF_KEY
+    broad = request.GET.get('broad')
+    if broad:
+        preference_key = BROAD_NOTIFICATION_PREF_KEY
+
     if subscribe:
         UserPreference.objects.get_or_create(user=user,
-                                             key=NOTIFICATION_PREF_KEY,
+                                             key=preference_key,
                                              defaults={
                                                  "value": UsernameCipher.encrypt(user.username)
                                              })
-        return render_to_response("resubscribe.html", {'token': token})
+        return render_to_response("resubscribe.html", {'token': token, 'broad': broad})
     else:
-        UserPreference.objects.filter(user=user, key=NOTIFICATION_PREF_KEY).delete()
-        return render_to_response("unsubscribe.html", {'token': token})
+        UserPreference.objects.filter(user=user, key=preference_key).delete()
+        return render_to_response("unsubscribe.html", {'token': token, 'broad': broad})

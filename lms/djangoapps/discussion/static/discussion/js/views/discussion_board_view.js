@@ -170,12 +170,22 @@
                 HtmlUtils.append(this.$('.forum-content').empty(), HtmlUtils.template(discussionHomeTemplate)({}));
                 this.$('.forum-nav-thread-list a').removeClass('is-active').find('.sr')
                     .remove();
-                this.$('input.email-setting').bind('click', this.discussionThreadListView.updateEmailNotifications);
+                this.$('#email-setting-checkbox').bind('click', this.discussionThreadListView.updateEmailNotifications);
+                this.$('#broad-email-setting-checkbox')
+                  .bind('click', this.discussionThreadListView.updateEmailNotifications);
                 DiscussionUtil.safeAjax({
                     url: url,
                     type: 'GET',
                     success: function(response) {
-                        $('input.email-setting').prop('checked', response.status);
+                        $('#email-setting-checkbox').prop('checked', response.status);
+                    }
+                });
+                DiscussionUtil.safeAjax({
+                    url: url,
+                    type: 'GET',
+                    data: {broad: true},
+                    success: function(response) {
+                        $('#broad-email-setting-checkbox').prop('checked', response.status);
                     }
                 });
             },

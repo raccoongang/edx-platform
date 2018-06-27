@@ -5,7 +5,7 @@ from rest_framework import serializers
 from openedx.core.djangoapps.course_groups.cohorts import is_course_cohorted
 from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY
 
-from lms.djangoapps.notification_prefs import NOTIFICATION_PREF_KEY
+from lms.djangoapps.notification_prefs import NOTIFICATION_PREF_KEY, BROAD_NOTIFICATION_PREF_KEY
 
 
 class NotifierUserSerializer(serializers.ModelSerializer):
@@ -36,7 +36,7 @@ class NotifierUserSerializer(serializers.ModelSerializer):
             pref.key: pref.value
             for pref
             in user.preferences.all()
-            if pref.key in [LANGUAGE_KEY, NOTIFICATION_PREF_KEY]
+            if pref.key in [LANGUAGE_KEY, NOTIFICATION_PREF_KEY, BROAD_NOTIFICATION_PREF_KEY]
         }
 
     def get_course_info(self, user):

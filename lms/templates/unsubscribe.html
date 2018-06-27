@@ -23,7 +23,7 @@ from django.conf import settings
         )).format(
             platform_name=settings.PLATFORM_NAME,
             dashboard_link_start=HTML("<a href='{}'>").format(reverse('dashboard')),
-            undo_link_start=HTML("<a id='resub_link' href='{}'>").format(reverse('resubscribe_forum_update', args=[token])),
+            undo_link_start=HTML("<a id='resub_link' href='{}?broad={}'>").format(reverse('resubscribe_forum_update', args=[token]), broad),
             link_end=HTML("</a>"),
         )}
     </p>

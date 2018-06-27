@@ -3,7 +3,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.response import Response
 from rest_framework import pagination
 
-from notification_prefs import NOTIFICATION_PREF_KEY
+from notification_prefs import NOTIFICATION_PREF_KEY, BROAD_NOTIFICATION_PREF_KEY
 from notifier_api.serializers import NotifierUserSerializer
 from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
 
@@ -39,7 +39,7 @@ class NotifierUsersViewSet(ReadOnlyModelViewSet):
 
     # See NotifierUserSerializer for notes about related tables
     queryset = User.objects.filter(
-        preferences__key=NOTIFICATION_PREF_KEY
+        preferences__key=BROAD_NOTIFICATION_PREF_KEY
     ).select_related(
         "profile"
     ).prefetch_related(
