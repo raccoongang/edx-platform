@@ -160,6 +160,7 @@ EMAIL_FILE_PATH = ENV_TOKENS.get('EMAIL_FILE_PATH', None)
 EMAIL_HOST = ENV_TOKENS.get('EMAIL_HOST', 'localhost')  # django default is localhost
 EMAIL_PORT = ENV_TOKENS.get('EMAIL_PORT', 25)  # django default is 25
 EMAIL_USE_TLS = ENV_TOKENS.get('EMAIL_USE_TLS', False)  # django default is False
+EMAIL_USE_SSL = ENV_TOKENS.get('EMAIL_USE_SSL', False)  # django default is False
 SITE_NAME = ENV_TOKENS['SITE_NAME']
 HTTPS = ENV_TOKENS.get('HTTPS', HTTPS)
 SESSION_ENGINE = ENV_TOKENS.get('SESSION_ENGINE', SESSION_ENGINE)
@@ -704,6 +705,8 @@ if FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
             'third_party_auth.lti.LTIAuthBackend',
         ]) + list(AUTHENTICATION_BACKENDS)
     )
+    if FEATURES.get('ENABLE_CUSTOM_OAUTH_BACKEND'):
+        AUTHENTICATION_BACKENDS += ['edx_oauth_client.backends.generic_oauth_client.GenericOAuthBackend']
 
     # The reduced session expiry time during the third party login pipeline. (Value in seconds)
     SOCIAL_AUTH_PIPELINE_TIMEOUT = ENV_TOKENS.get('SOCIAL_AUTH_PIPELINE_TIMEOUT', 600)
