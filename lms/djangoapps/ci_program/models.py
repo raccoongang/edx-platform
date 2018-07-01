@@ -154,9 +154,9 @@ class Program(TimeStampedModel):
         if self.program_code == "5DCC":
             student = User.objects.get(email=user.email)
             users_five_day_module = student.courseenrollment_set.filter(
-                course_id__icontains="dcc").last()
+                course_id__icontains="dcc").order_by('created').last()
             course_id = users_five_day_module.course_id
-            course_overview = users_five_day_module
+            course_overview = CourseOverview.objects.get(id=course_id)
             course_descriptor = get_course(course_id)
             
             courses.append({
@@ -389,18 +389,3 @@ class ProgramCourseCode(TimeStampedModel):
 
     def __unicode__(self):
         return unicode(self.course_code)
-
-
-class StudentEnrollment(models.Model):
-    """
-    The model that stores the relationship between `user` and the `program`
-    with the date of enrollment.
-    """
-    
-    student = models.ForeignKey(User)
-    program = models.ForeignKey(Program)
-    date_of_enrollment = models.DateTimeField(auto_now_add=True)
-    
-    def __unicode__():
-        return "%s has been enrolled in %s since %s" % (
-            self.student, self.program, self.date_of_enrollment)

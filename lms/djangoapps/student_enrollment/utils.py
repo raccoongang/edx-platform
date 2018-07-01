@@ -1,3 +1,8 @@
+"""
+This module contains some handy utility functions for
+creating/registering users, as well as sending emails.
+"""
+
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.mail import get_connection
@@ -108,3 +113,15 @@ def construct_email(to_address, from_address, template_location, **kwargs):
         "utf-8")
 
     return html_content
+
+
+def post_to_zapier(zap_url, data):
+    """
+    Post data to Zapier. This function is a layer of abstraction on top
+    of Zapier.
+
+    `zap_url` is the endpoint that we wish to hit
+    `data` is a dictionary that contains the data that we wish to post
+        to Zapier
+    """
+    response = requests.post(zap_url, data=data)
