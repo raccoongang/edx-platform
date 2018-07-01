@@ -132,6 +132,8 @@ def enroll_email(course_id, student_email, auto_enroll=False, email_students=Fal
 
         if previous_state.enrollment:
             course_mode = previous_state.mode
+        
+        course_mode = 'honor'
 
         enrollment_obj = CourseEnrollment.enroll_by_email(student_email, course_id, course_mode)
         if email_students:
