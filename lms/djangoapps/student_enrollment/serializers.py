@@ -1,7 +1,4 @@
-from django.contrib.auth.models import User
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
-from ci_program.models import Program
 
 
 class EnrollmentSerializer(serializers.Serializer):
