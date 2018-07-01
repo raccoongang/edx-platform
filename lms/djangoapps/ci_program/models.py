@@ -291,7 +291,7 @@ class Program(TimeStampedModel):
 
         return email_successfully_sent
 
-    def enroll_student_in_program(self, student):
+    def enroll_student_in_program(self, student_email):
         """
         Enroll a student in a program.
 
@@ -305,27 +305,27 @@ class Program(TimeStampedModel):
             otherwise return False
         """
         for course in self.get_courses():
-            enroll_email(course.id, student.email, auto_enroll=True)
+            enroll_email(course.id, student_email, auto_enroll=True)
             cea, _ = CourseEnrollmentAllowed.objects.get_or_create(
-                course_id=course.id, email=student.email)
+                course_id=course.id, email=student_email)
             cea.auto_enroll = True
             cea.save()
         
-        student_to_be_enrolled = User.objects.get(email=student.email)
+        student_to_be_enrolled = User.objects.get(email=student_email)
 
         self.enrolled_students.add(student_to_be_enrolled)
         
         student_successfully_enrolled = None
         log_message = ""
         
-        if self.enrolled_students.filter(username=student.username).exists():
+        if self.enrolled_students.filter(email=student_email).exists():
             student_successfully_enrolled = True
             log_message = "%s was enrolled in %s" % (
-                student.email, self.name)
+                student_email, self.name)
         else:
             student_successfully_enrolled = False
             log_message = "Failed to enroll %s in %s" % (
-                student.email, self.name)
+                student_email, self.name)
         
         log.info(log_message)
         return student_successfully_enrolled
