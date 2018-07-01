@@ -3,11 +3,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.conf import settings
 from ci_program.models import Program
-from student_enrollment.utils import get_or_register_student
+from student_enrollment.utils import (
+    get_or_register_student, post_to_zapier
+)
 from student_enrollment.zoho import (
     get_students,
-    parse_course_of_interest_code,
-    update_student_record
+    parse_course_of_interest_code
 )
 from lms.djangoapps.student_enrollment.models import EnrollmentStatusHistory
 from lms.djangoapps.student_enrollment.models import ProgramAccessStatus
@@ -67,7 +68,7 @@ class Command(BaseCommand):
                 access.allowed_access = True
                 access.save()
             
-            update_student_record(settings.ZAPIER_ENROLLMENT_URL, user.email)
+            post_to_zapier(settings.ZAPIER_ENROLLMENT_URL, user.email)
 
             enrollment_status = EnrollmentStatusHistory(student=user, program=program, 
                                                         registered=bool(user),
