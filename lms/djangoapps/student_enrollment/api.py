@@ -118,7 +118,7 @@ class StudentEnrollment(APIView):
             # Enroll the new student into the chosen program
             log.info("Enrolling %s into %s" % (student.email, program.name))
             program_enrollment_status = program.enroll_student_in_program(
-                user)
+                student.email)
             
             # If the enrollment was successful then continue as usual,
             # otherwise issue a 500 response

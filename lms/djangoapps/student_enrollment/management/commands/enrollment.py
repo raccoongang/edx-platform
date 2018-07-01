@@ -37,7 +37,8 @@ class Command(BaseCommand):
         for student in zoho_students:
 
             # Get the user, the user's password, and their enrollment type
-            user, password, enrollment_type = get_or_register_student(student)
+            user, password, enrollment_type = get_or_register_student(
+                student['email'], student['full_name'])
 
             # Get the code for the course the student is enrolling in
             program_to_enroll_in = parse_course_of_interest_code(
@@ -52,7 +53,8 @@ class Command(BaseCommand):
             program = Program.objects.get(program_code=program_to_enroll_in)
 
             # Enroll the student in the program
-            program_enrollment_status = program.enroll_student_in_program(user)
+            program_enrollment_status = program.enroll_student_in_program(
+                user.email)
 
             # Send the email
             email_sent_status = program.send_email(
