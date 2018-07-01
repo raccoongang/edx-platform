@@ -134,17 +134,3 @@ def get_all_programs():
     Get a list of all of program codes from the `Program` model
     """
     return Program.objects.all()
-
-
-def student_has_logged_in(code, student):
-    """
-    Check to see if a student has logged in to get access to their
-    program.
-
-    `code` is the course code used as an identifier for a program
-    `student` is the user instance that wish we check for
-
-    Returns a boolean. `False` if `last_login` in `None` and `True` if the
-        `last_login` contains a timestamp
-    """
-    program = get_program_by_program_code(code)
