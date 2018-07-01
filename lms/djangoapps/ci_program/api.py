@@ -90,7 +90,7 @@ def is_student_enrolled_in_program(code, student):
         in the program
     """
     program = get_program_by_program_code(code)
-    return student.email in get_enrolled_students(program)
+    return student in get_enrolled_students(program)
 
 
 def number_of_enrolled_students(program):
