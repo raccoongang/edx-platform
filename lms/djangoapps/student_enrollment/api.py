@@ -3,7 +3,7 @@ from logging import getLogger
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from ci_program.models import Program
+from ci_program.api import get_program_by_program_code
 from student_enrollment.utils import register_student, get_or_register_student
 from student_enrollment.serializers import EnrollmentSerializer
 from django.contrib.auth.models import User
@@ -13,10 +13,9 @@ log = getLogger(__name__)
 FAILURE_CODES = (
     (0, "Email already exists"),
     (1, "Program code not found"),
-    (2, "Enrollment may only occur on a Monday"),
-    (3, "User creation failed"),
-    (4, "Failed to enroll student in program"),
-    (5, "Failed to send email")
+    (2, "User creation failed"),
+    (3, "Failed to enroll student in program"),
+    (4, "Failed to send email")
 )
 
 
@@ -26,9 +25,10 @@ class Student:
     so we can store the data in this `Student` object
     """
 
-    def __init__(self, email, course_code, manual_override=False):
+    def __init__(self, email, course_code, full_name, manual_override=False):
         self.email = email
         self.course_code = course_code
+        self.full_name = full_name
         self.manual_override = manual_override
 
 
@@ -46,56 +46,18 @@ class StudentEnrollment(APIView):
         serializer = EnrollmentSerializer(data=data)
 
         if serializer.is_valid():
-            log.info("Deserialized data is valid. Commencing enrollment")
             
             # Bind the deserialised data to an instance of the above
             # `Student` object
             student = Student(
                 serializer.data['email'],
                 serializer.data['course_code'],
+                serializer.data['full_name'],
                 serializer.data['manual_override']
             )
             
-            # The automated enrollment process for the 5DCC should only
-            # occur on a Monday. In order to achieve this, need to check to
-            # sure that it is the 5DCC enrollment that is being requested.
-            # If so, we need to check to see if current day is a Monday. Or
-            # if a manual override has been provided (this may be needed in)
-            # the event that a student was late for enrollment, or an issue
-            # occurred that the process wasn't able to recover from.
-            # If not, the API will issue a response with an API specific
-            # status code and reason for failure, along with an HTTP status
-            # of 500. Otherwise create an entry in the log as proceed as
-            # normal
-            if student.course_code == "5DCC":
-                if date.today().weekday() == 0 or student.manual_override:
-                    log.info("Zap request received for %s" % student.email)
-                else:
-                    log.info(
-                        "Attempted to enroll student outside of Monday")
-                    return Response(
-                            {
-                            "enrollment_status": FAILURE_CODES[3][0],
-                            "reason": FAILURE_CODES[3][1]
-                        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
-            # Try to retrieve the course that request wants to enroll
-            # the student in. If one isn't found then return a 404
-            # along with the possible program codes to suggest an
-            # alternative
-            try:
-                program = Program.objects.get(
-                    program_code=student.course_code)
-            except Program.DoesNotExist as e:
-                log.info("Program `%s` does not exist" % student.course_code)
-                program_codes = [program.program_code for program in program.objects.all()]
-                
-                return Response(
-                    {
-                        "enrollment_status": FAILURE_CODES[2][0],
-                        "reason": FAILURE_CODES[2][1],
-                        "program_codes": program_codes 
-                    }, status=status.HTTP_404_NOT_FOUND)
+            # Get the program using the code
+            program = get_program_by_program_code(student.course_code)
             
             # Create the user and get their password so they can be
             # emailed to the student later

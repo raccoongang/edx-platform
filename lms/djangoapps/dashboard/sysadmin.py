@@ -681,11 +681,13 @@ class Enrollment(SysadminDashboardView):
         program_code = input_data['program_code']
         username = email
         manual_override = input_data['manual_override']
+        full_name = input_data['full_name']
             
         resp = requests.post(ENROLL_ENDPOINT, data={
             'email': email,
             'course_code': program_code,
-            'manual_override': manual_override
+            'manual_override': manual_override,
+            'full_name': full_name
         }, verify=False)
             
         return resp
@@ -713,12 +715,14 @@ class Enrollment(SysadminDashboardView):
     def post(self, request):
         email = request.POST.get("student_email", "")
         program_code = request.POST.get("program_code", "")
+        full_name = request.POST.get("full_name", "")
         manual_override = True
         
         enrollment_dict = {
             "email": email,
             "program_code": program_code,
-            "manual_override": manual_override
+            "manual_override": manual_override,
+            "full_name": full_name
         }
         
         response = self.enroll_in_program(enrollment_dict)

@@ -17,8 +17,11 @@ class EnrollmentSerializer(serializers.Serializer):
     `full_name` is the full name of the user that is being enrolled. This will be
         used to create a username
     `course_code` is the code used to identify a program in the database
+    `manual_override` is used to allow the enrollment to occur outside
+        of the normal permitted time (Mondays)
     """
 
     email = serializers.EmailField(max_length=128, required=True)
+    full_name = serializers.CharField(max_length=128, required=True)
     course_code = serializers.CharField(max_length=50, required=True)
     manual_override = serializers.BooleanField()
