@@ -127,6 +127,7 @@ class Program(TimeStampedModel):
           - Subtitle
           - Full description
           - Image
+          - Video
           - Length
           - Effort
           - Number of modules
@@ -144,6 +145,7 @@ class Program(TimeStampedModel):
         subtitle = self.subtitle
         full_description = self.full_description
         image = self.image
+        video = self.video
         length = self.length_of_program
         effort = self.effort
         number_of_modules = self.number_of_modules
@@ -179,6 +181,7 @@ class Program(TimeStampedModel):
             "subtitle": subtitle,
             "full_description": full_description,
             "image": image,
+            "video": video,
             "length": length,
             "effort": effort,
             "number_of_modules": number_of_modules,
