@@ -318,7 +318,7 @@ class Program(TimeStampedModel):
         student_successfully_enrolled = None
         log_message = ""
         
-        if self.enrolled_students.filter(username=student.username).exists():
+        if self.enrolled_students.filter(email=student.email).exists():
             student_successfully_enrolled = True
             log_message = "%s was enrolled in %s" % (
                 student.email, self.name)
@@ -386,18 +386,3 @@ class ProgramCourseCode(TimeStampedModel):
 
     def __unicode__(self):
         return unicode(self.course_code)
-
-
-class StudentEnrollment(models.Model):
-    """
-    The model that stores the relationship between `user` and the `program`
-    with the date of enrollment.
-    """
-    
-    student = models.ForeignKey(User)
-    program = models.ForeignKey(Program)
-    date_of_enrollment = models.DateTimeField(auto_now_add=True)
-    
-    def __unicode__():
-        return "%s has been enrolled in %s since %s" % (
-            self.student, self.program, self.date_of_enrollment)
