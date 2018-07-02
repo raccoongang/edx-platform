@@ -399,7 +399,7 @@ class WsFederationBackend(SAMLAuthBackend):
         from .models import SAMLProviderConfig
         idp_conf = SAMLProviderConfig.current(idp.name)
         cfg = json.loads(idp_conf.other_settings or '{}')
-        return OneLogin_Saml2_Auth(request_info, config, skip_signature_verification=cfg.get('SKIP_SIGNATURE_VERIFICATION'))
+        return OneLogin_Saml2_Auth(request_info, config)
 
     def auth_complete(self, *args, **kwargs):
         """
