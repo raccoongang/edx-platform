@@ -2053,9 +2053,6 @@ INSTALLED_APPS = (
 
     'third_party_auth',
 
-    # Custom Edx Oauth Client which supports an abstract SSO identity Provider
-    'edx_oauth_client',
-
     # We don't use this directly (since we use OAuth2), but we need to install it anyway.
     # When a user is deleted, Django queries all tables with a FK to the auth_user table,
     # and since django-rest-framework-oauth imports this, it will try to access tables
