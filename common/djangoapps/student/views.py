@@ -131,6 +131,7 @@ from util.milestones_helpers import get_pre_requisite_courses_not_completed
 from util.password_policy_validators import validate_password_strength
 from xmodule.modulestore.django import modulestore
 from ci_program.models import Program
+from ci_program.api import is_student_enrolled_in_program
 
 log = logging.getLogger("edx.student")
 AUDIT_LOG = logging.getLogger("audit")
@@ -899,7 +900,7 @@ def dashboard(request):
         program = Program.objects.get(name="Fullstack Web Developer")
         program.enrolled_students.add(user)
     
-    if user.program_set.get(name="Fullstack Web Developer"):
+    if is_student_enrolled_in_program("FS", user):
         program_url = 'program/' + user.program_set.get(
             name="Fullstack Web Developer").marketing_slug
 
