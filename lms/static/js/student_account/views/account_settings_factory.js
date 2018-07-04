@@ -21,7 +21,7 @@
             platformName,
             contactEmail,
             allowEmailChange,
-            stateAccountApiUrl,
+            stateAccountApiUrl
         ) {
             var accountSettingsElement, userAccountModel, userPreferencesModel, stateAccountModel, aboutSectionsData,
                 accountsSectionData, ordersSectionData, accountSettingsView, showAccountSettingsPage,
