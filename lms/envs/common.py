@@ -2238,8 +2238,11 @@ INSTALLED_APPS = (
     'openedx.features.enterprise_support',
 
     'experiments',
+
+    # CI-specific apps
     'ci_program',
-    'lms.djangoapps.student_enrollment'
+    'lms.djangoapps.student_enrollment',
+    'lms.djangoapps.learning_success'
 )
 
 ######################### CSRF #########################################
