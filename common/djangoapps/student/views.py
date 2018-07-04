@@ -9,6 +9,7 @@ import uuid
 import warnings
 from collections import defaultdict, namedtuple
 from urlparse import parse_qs, urlsplit, urlunsplit
+import urllib
 
 import analytics
 import edx_oauth2_provider
@@ -2882,6 +2883,22 @@ class LogoutView(TemplateView):
     def dispatch(self, request, *args, **kwargs):  # pylint: disable=missing-docstring
         # We do not log here, because we have a handler registered to perform logging on successful logouts.
         request.is_from_logout = True
+
+        ws_fed_idp_name = request.session.get('ws_federation_idp_name')
+        if ws_fed_idp_name:
+            idp = third_party_auth.models.SAMLProviderConfig.current(ws_fed_idp_name).get_config()
+            login_url = (idp.conf or {}).get('WS_FEDERATION_LOGIN_URL')
+            self_url = 'http{}://{}/'.format(request.is_secure() and 's' or '', request.get_host())
+
+            params = {
+                'wa': 'wsignout1.0',
+                'wreply': self_url,
+            }
+
+            logout_url = '{}?{}'.format(login_url, urllib.urlencode(params))
+
+            request.session.pop('ws_federation_idp_name', None)
+            return redirect(logout_url)
 
         # Get the list of authorized clients before we clear the session.
         self.oauth_client_ids = request.session.get(edx_oauth2_provider.constants.AUTHORIZED_CLIENTS_SESSION_KEY, [])

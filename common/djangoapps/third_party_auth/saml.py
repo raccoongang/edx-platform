@@ -440,6 +440,7 @@ class WsFederationBackend(SAMLAuthBackend):
             'session_index': auth.get_session_index(),
         }
         kwargs.update({'response': response, 'backend': self})
+        self.strategy.session['ws_federation_idp_name'] = idp_name
         return self.strategy.authenticate(*args, **kwargs)
 
 
