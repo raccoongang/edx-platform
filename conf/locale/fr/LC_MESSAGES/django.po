@@ -23566,3 +23566,15 @@ msgid ""
 msgstr ""
 "Une nouvelle révision a été créée : Fusion entre la révision #%(r1)d et la "
 "révision #%(r2)d"
+
+#: lms/djangoapps/certificates/views/webview.py
+msgid "{partner_short_name} {course_number} Certificate"
+msgstr "Certificat {partner_short_name} {course_number}"
+
+#: lms/djangoapps/certificates/views/webview.py
+msgid "successfully completed"
+msgstr "a terminé avec succès"
+
+#: lms/djangoapps/certificates/views/webview.py
+msgid "a course of study offered by {partner_short_name}"
+msgstr "un cours d'étude proposé par {partner_short_name}"
