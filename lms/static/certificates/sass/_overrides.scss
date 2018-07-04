@@ -18,4 +18,123 @@
 // ------------------------------
 // #SHAME
 // ------------------------------
-
+.layout-accomplishment .wrapper-introduction {
+    display: none;
+}
+.wrapper-banner.wrapper-banner-user,
+body .wrapper-header {
+    margin: 0;
+}
+.certificates {
+    background: url('/static/certificates/images/bg.png') no-repeat !important;
+    position: relative;
+    padding: 80px 0;
+    font-family: 'PT Serif', sans-serif;
+    &_wrapper {
+        max-width: 73.125rem;
+        margin-left: auto;
+        margin-right: auto;
+        background: url('/static/certificates/images/white-square.png') no-repeat;
+        padding: 70px 40px 70px 80px !important;
+        background-size: 100% 100%;
+        position: relative;
+    }
+    &_top-holder {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin-bottom: 32px;
+    }
+    &_date-holder {
+        width: 100%;
+        font-size: 18px;
+    }
+    &_main-holder {
+        display: flex;
+        margin-bottom: 20px;
+    }
+    &_main-left {
+        flex: 0 0 70%;
+    }
+    &_main-right {
+        flex: 0 0 30%;
+        text-align: right;
+        padding-right: 33px;
+        padding-top: 56px;
+    }
+    &_static-title {
+        width: 66%;
+        text-align: right;
+        strong {
+            font-size: 60px;
+        }
+        span {
+            font-size: 33px;
+            display: block
+        }
+    }
+    &_platform-logo {
+        width: auto;
+        height: 91px;
+    }
+    &_holder-name {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+    &_description {
+        font-size: 20px;
+        margin-bottom: 11px;
+    }
+    &_number {
+        font-size: 35px;
+    }
+    &_course-name {
+        font-size: 33px;
+        line-height: 1.1;
+        margin-bottom: 7px;
+    }
+    &_statement-detail {
+        font-size: 22px;
+    }
+    &_static-field {
+        font-size: 24px;
+    }
+    &_stamp {
+        width: 266px;
+        height: auto;
+    }
+    &_signs-holder {
+        display: flex;
+        justify-content: space-between
+    }
+    &_sign {
+        flex: 0 0 45%;
+        display: flex;
+        flex-direction: column;
+    }
+    &_sign-image {
+        align-self: center;
+        width: 120px;
+        margin-bottom: 14px;
+    }
+    &_sign-name {
+        position: relative;
+        font-weight: 700;
+        margin: 0;
+        &::before {
+            content: '';
+            position: absolute;
+            top: -16px;
+            width: 100%;
+            height: 1px;
+            background: #000;
+        }
+    }
+    &_id {
+        position: absolute;
+        bottom: -20px;
+        color: #fff;
+        font-size: 12px;
+    }
+}
