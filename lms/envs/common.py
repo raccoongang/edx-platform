@@ -3215,6 +3215,9 @@ COURSE_ENROLLMENT_MODES = {
     "honor": 6,
 }
 ############## Settings for U.S. State in Registration Form, Course Advanced Settings ###################
+# Variables US_STATE_CHOICES and DEFAULT_PROVIDER are repeated in common/lib/xmodule/xmodule/course_module.py
+# because Django cannot be imported in that file.
+
 US_STATE_CHOICES = (
    ("AL", "Alabama"),
    ("AZ", "Arizona"),
