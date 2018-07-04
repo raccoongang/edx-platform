@@ -8,15 +8,13 @@
         'text!templates/fields/field_link.underscore',
         'text!templates/fields/field_text.underscore',
         'text!templates/fields/field_textarea.underscore',
-        'text!templates/fields/field_dual.underscore',
         'backbone-super'
     ], function(gettext, $, _, Backbone, HtmlUtils,
                  field_readonly_template,
                  field_dropdown_template,
                  field_link_template,
                  field_text_template,
-                 field_textarea_template,
-                 field_dual_template
+                 field_textarea_template
     ) {
         var messageRevertDelay = 6000;
         var FieldViews = {};
@@ -648,82 +646,6 @@
             }
         });
 
-        FieldViews.EditableDualFieldView = FieldViews.EditableFieldView.extend({
-
-            fieldType: 'dual',
-
-            className: function() {
-                return 'u-field' + ' u-field-' + this.fieldType + ' u-field-' + this.options.valueAttribute + ' u-field-dual__custom';
-            },
-
-            fieldTemplate: field_dual_template,
-
-
-            events: {
-                'change input': 'saveFieldsValues',
-                'change select': 'saveFieldsValues'
-            },
-
-            initialize: function(options) {
-                _.bindAll(this, 'render', 'saveFieldsValues');
-                this._super(options);
-
-                this.listenTo(this.model, 'change', this.render);
-            },
-
-            saveFieldsValues: function() {
-                if (this.persistChanges === true) {
-                    var valueLicense = this.$('#field-input-' + this.model.cid).val(),
-                        valueState = this.$('#u-field-select-' + this.model.cid).val();
-
-                    if (valueLicense && valueState){
-                        var view = this;
-                        var options = {
-                            contentType: 'application/merge-patch+json',
-                            wait: true,
-                            success: function() {
-                                view.saveSucceeded();
-                            },
-                            error: function(model, xhr) {
-                                view.showErrorMessage(xhr);
-                            }
-                        };
-                        this.showInProgressMessage();
-                        this.model.save({license: valueLicense, state: valueState}, options);
-                    } else if (!valueLicense && !valueState){
-                        var view = this;
-                        var options = {
-                            contentType: 'application/merge-patch+json',
-                            wait: true,
-                            success: function() {
-                                view.model.clear();
-                                view.saveSucceeded();
-                            },
-                            error: function(model, xhr) {
-                                view.showErrorMessage(xhr);
-                            }
-                        };
-                        this.showInProgressMessage();
-                        this.model.save({license: valueLicense, state: valueState}, options);
-                    }
-
-                }
-            },
-
-            render: function() {
-                HtmlUtils.setHtml(this.$el, HtmlUtils.template(this.fieldTemplate)({
-                    id: this.model.cid,
-                    valueLicense: this.model.get('license'),
-                    valueState: this.model.get('state'),
-                    selectOptions: this.options.stateChoices,
-                    message: this.helpMessage
-                }));
-                this.delegateEvents();
-                return this;
-            },
-
-        });
         return FieldViews;
-
     });
 }).call(this, define || RequireJS.define);

@@ -568,9 +568,7 @@ def account_settings_context(request):
                 'options': all_languages(),
             }, 'time_zone': {
                 'options': TIME_ZONE_CHOICES,
-            }, 'state': {
-                'options': [(choice[0], _(choice[1])) for choice in settings.US_STATE_CHOICES],
-            },
+            }
         },
         'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
         'password_reset_support_link': configuration_helpers.get_value(
@@ -580,8 +578,7 @@ def account_settings_context(request):
         'user_preferences_api_url': reverse('preferences_api', kwargs={'username': user.username}),
         'disable_courseware_js': True,
         'show_program_listing': ProgramsApiConfig.is_enabled(),
-        'order_history': user_orders,
-        'user_states_api_url': reverse('states_api'),
+        'order_history': user_orders
     }
 
     if third_party_auth.is_enabled():

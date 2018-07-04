@@ -49,8 +49,7 @@ from openedx.core.djangolib.js_utils import dump_js_escaped_json, js_escaped_str
         ${ user.id | n, dump_js_escaped_json },
         platformName,
         contactEmail,
-        allowEmailChange,
-        '${ user_states_api_url | n, js_escaped_string }'
+        allowEmailChange
     );
 </%static:require_module>
 </%block>

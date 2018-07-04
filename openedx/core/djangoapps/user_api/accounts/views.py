@@ -11,11 +11,9 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ViewSet, ModelViewSet
+from rest_framework.viewsets import ViewSet
 
-from .api import get_account_settings, update_account_settings, get_state_settings, update_state_settings, \
-    create_state_settings
-
+from .api import get_account_settings, update_account_settings
 from .permissions import CanDeactivateUser
 from ..errors import UserNotFound, UserNotAuthorized, AccountUpdateError, AccountValidationError
 from openedx.core.lib.api.authentication import (
@@ -23,7 +21,6 @@ from openedx.core.lib.api.authentication import (
     OAuth2AuthenticationAllowInactiveUser,
 )
 from openedx.core.lib.api.parsers import MergePatchParser
-from calypso_reg_form.models import StateExtraInfo
 from student.models import User
 
 
@@ -246,44 +243,3 @@ class AccountDeactivationView(APIView):
         user.save()
         account_settings = get_account_settings(request, [username])[0]
         return Response(account_settings)
-
-
-class AccountStateViewSet(ViewSet):
-
-    authentication_classes = (
-        OAuth2AuthenticationAllowInactiveUser, SessionAuthenticationAllowInactiveUser, JwtAuthentication
-    )
-    permission_classes = (permissions.IsAuthenticated,)
-    parser_classes = (MergePatchParser,)
-
-    def list(self, request):
-        """
-        GET /api/user/v1/accounts_states/
-        """
-        state_settings = get_state_settings(request)
-        return Response(state_settings)
-
-    def update(self, request, pk=None):
-        """
-        PUT /api/user/v1/accounts_states/{pk}
-        """
-        try:
-            update_state_settings(request, pk)
-        except AccountValidationError as err:
-            return Response({"field_errors": err.field_errors}, status=status.HTTP_400_BAD_REQUEST)
-
-        state_settings = get_state_settings(request)
-        return Response(state_settings)
-
-    def create(self, request):
-        """
-        POST /api/user/v1/accounts_states/
-        """
-        try:
-            create_state_settings(request)
-        except AccountValidationError as err:
-            return Response({"field_errors": err.field_errors}, status=status.HTTP_400_BAD_REQUEST)
-
-        state_settings = get_state_settings(request)
-        return Response(state_settings)
-

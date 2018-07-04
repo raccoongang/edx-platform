@@ -6,7 +6,7 @@ from django.conf import settings
 from django.conf.urls import patterns, url
 
 from ..profile_images.views import ProfileImageView
-from .accounts.views import AccountDeactivationView, AccountViewSet, AccountStateViewSet
+from .accounts.views import AccountDeactivationView, AccountViewSet
 from .preferences.views import PreferencesDetailView, PreferencesView
 from .verification_api.views import PhotoVerificationStatusView
 
@@ -21,15 +21,6 @@ ACCOUNT_LIST = AccountViewSet.as_view({
 ACCOUNT_DETAIL = AccountViewSet.as_view({
     'get': 'retrieve',
     'patch': 'partial_update',
-})
-
-STATE_LIST = AccountStateViewSet.as_view({
-    'get': 'list',
-    'post': 'create',
-})
-
-STATE_DETAIL = AccountStateViewSet.as_view({
-    'put': 'update',
 })
 
 urlpatterns = patterns(
@@ -61,11 +52,5 @@ urlpatterns = patterns(
         r'^v1/preferences/{}/(?P<preference_key>[a-zA-Z0-9_]+)$'.format(settings.USERNAME_PATTERN),
         PreferencesDetailView.as_view(),
         name='preferences_detail_api'
-    ),
-    url(
-        r'^v1/accounts_states/$', STATE_LIST, name='states_api'
-    ),
-    url(
-        r'^v1/accounts_states/(?P<pk>\d+)$', STATE_DETAIL
     ),
 )

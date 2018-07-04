@@ -16,7 +16,6 @@ from . import (
 )
 from openedx.core.djangoapps.user_api.models import UserPreference
 from openedx.core.djangoapps.user_api.serializers import ReadOnlyFieldsSerializerMixin
-from calypso_reg_form.models import StateExtraInfo
 from student.models import UserProfile, LanguageProficiency
 from .image_helpers import get_profile_image_urls_for_user
 
@@ -301,12 +300,3 @@ def _visible_fields(user_profile, user, configuration=None):
         return configuration.get('shareable_fields')
     else:
         return configuration.get('public_fields')
-
-
-class StateExtraInfoSerializer(serializers.ModelSerializer):
-    """
-    Class that serializes the StateExtraInfo.
-    """
-    class Meta(object):
-        model = StateExtraInfo
-        fields = ('id', 'state', 'license')
