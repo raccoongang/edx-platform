@@ -38,4 +38,4 @@ class Command(BaseCommand):
                 print(enrollment.user)
                 if enrollment.user.last_login is None:
                     post_to_zapier(settings.ZAPIER_LOGIN_REMINDER,
-                        enrollment.user.email)
+                        {"email": enrollment.user.email})
