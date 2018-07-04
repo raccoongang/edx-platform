@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.mail import get_connection
 from django.template.loader import render_to_string
+import requests
 from student.models import UserProfile
 
 

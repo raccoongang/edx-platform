@@ -12,7 +12,6 @@ class ZohoRecord:
     """A convenience class to access a Zoho row by attribute names"""
     def __init__(self, zoho_row):
         try:
-            print(zoho_row)
             self.dict = {to_snakecase(field['val']): field['content']
                          for field in zoho_row['FL'] if field != 'no'}
         except TypeError:
