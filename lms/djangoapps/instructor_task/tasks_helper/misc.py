@@ -5,16 +5,19 @@ running state of a course.
 """
 import logging
 from collections import OrderedDict
-from datetime import datetime
+from datetime import datetime, timedelta
 from time import time
 
 import unicodecsv
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files.storage import DefaultStorage
+from django.db.models import Q
 from openassessment.data import OraAggregateData
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from pytz import UTC
 
+from certificates.models import GeneratedCertificate, CertificateStatuses
 from instructor_analytics.basic import get_proctored_exam_results
 from instructor_analytics.csvs import format_dictlist
 from openedx.core.djangoapps.course_groups.cohorts import add_user_to_cohort
@@ -285,3 +288,112 @@ def upload_ora2_data(
     TASK_LOG.info(u'%s, Task type: %s, Upload complete.', task_info_string, action_name)
 
     return UPDATE_STATUS_SUCCEEDED
+
+
+def upload_course_certificates_report(_xmodule_instance_args, _entry_id, course_id, _task_input, action_name):
+    """
+    For a given `course_id`, generate a html report containing the certificates data for a course.
+    """
+    start_time = time()
+    start_date = datetime.now(UTC)
+    num_reports = 1
+    task_progress = TaskProgress(action_name, num_reports, start_time)
+
+    current_step = {'step': 'Gathering course certificates report information'}
+    task_progress.update_task_state(extra_meta=current_step)
+
+    course_overview = CourseOverview.get_from_id(course_id)
+    header, csv_rows = get_certificates_report([course_overview])
+
+    task_progress.attempted = task_progress.succeeded = len(csv_rows)
+    task_progress.skipped = task_progress.total - task_progress.attempted
+
+    csv_rows.insert(0, header)
+
+    current_step = {'step': 'Uploading CSV'}
+    task_progress.update_task_state(extra_meta=current_step)
+
+    # Perform the upload
+    upload_csv_to_report_store(csv_rows, 'course_certificates_report', course_id, start_date)
+
+    return task_progress.update_task_state(extra_meta=current_step)
+
+
+def upload_all_courses_certificates_report(_xmodule_instance_args, _entry_id, course_id, _task_input, action_name):
+    """
+    Generate a html report containing the certificates data for all courses.
+    """
+    start_time = time()
+    start_date = datetime.now(UTC)
+    num_reports = 1
+    task_progress = TaskProgress(action_name, num_reports, start_time)
+
+    current_step = {'step': 'Gathering acourse certificates report information'}
+    task_progress.update_task_state(extra_meta=current_step)
+
+    courses = CourseOverview.objects.filter(Q(end__gte=start_date-timedelta(days=365)) | Q(end__isnull=True))
+
+    header, csv_rows = get_certificates_report(courses)
+
+    task_progress.attempted = task_progress.succeeded = len(csv_rows)
+    task_progress.skipped = task_progress.total - task_progress.attempted
+
+    csv_rows.insert(0, header)
+
+    current_step = {'step': 'Uploading CSV'}
+    task_progress.update_task_state(extra_meta=current_step)
+
+    # Perform the upload
+    upload_csv_to_report_store(csv_rows, 'all_courses_certificates_report', course_id, start_date)
+
+    return task_progress.update_task_state(extra_meta=current_step)
+
+
+def get_certificates_report(courses):
+    header = ["Awarded Date: Date", "Certificate: Name", "Student: Full Name", "Student: Email",
+              "User Certificate: Certificate Number", "User Certificate: Score",
+              "Student: State Abbreviation", "User Student License Number: License Number"]
+    csv_rows = []
+
+    for course_overview in courses:
+
+        generated_certificates = GeneratedCertificate.eligible_certificates.filter(
+            course_id=course_overview.id,
+            status=CertificateStatuses.downloadable
+        )
+        for generated_certificate in generated_certificates:
+            row = []
+            row.append(generated_certificate.modified_date.strftime("%d/%m/%Y"))
+            row.append(course_overview.display_name)
+
+            if hasattr(generated_certificate.user, 'profile'):
+                full_name = generated_certificate.user.profile.name
+            else:
+                full_name = generated_certificate.user.username
+
+            row.append(full_name)
+            row.append(generated_certificate.user.email)
+            row.append(generated_certificate.verify_uuid)
+
+            try:
+                score = '{0:.0%}'.format(float(generated_certificate.grade))
+            except (ValueError, TypeError):
+                score = '0%'
+
+            row.append(score)
+
+            try:
+                state_extra_infos = generated_certificate.user.extrainfo.stateextrainfo_set.all()
+            except AttributeError:
+                state_extra_infos = []
+
+            for state_extra_info in state_extra_infos:
+                row_copy = row[:]
+                row_copy.append(state_extra_info.state)
+                row_copy.append(state_extra_info.license)
+                csv_rows.append(row_copy)
+
+            if not state_extra_infos:
+                csv_rows.append(row)
+
+    return header, csv_rows

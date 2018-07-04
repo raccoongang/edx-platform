@@ -37,7 +37,9 @@ from lms.djangoapps.instructor_task.tasks import (
     proctored_exam_results_csv,
     rescore_problem,
     reset_problem_attempts,
-    send_bulk_course_email
+    send_bulk_course_email,
+    course_certificates_report_csv,
+    all_courses_certificates_report_csv
 )
 from util import milestones_helpers
 from xmodule.modulestore.django import modulestore
@@ -443,6 +445,30 @@ def submit_export_ora2_data(request, course_key):
     task_class = export_ora2_data
     task_input = {}
     task_key = ''
+
+    return submit_task(request, task_type, task_class, course_key, task_input, task_key)
+
+
+def submit_course_certificates_report_csv(request, course_key):
+    """
+    AlreadyRunningError is raised if the course certificates report are already being updated.
+    """
+    task_type = 'course_certificates_report_csv'
+    task_class = course_certificates_report_csv
+    task_input = {}
+    task_key = ""
+
+    return submit_task(request, task_type, task_class, course_key, task_input, task_key)
+
+
+def submit_all_courses_certificates_report_csv(request, course_key):
+    """
+    AlreadyRunningError is raised if the courses certificates report are already being updated.
+    """
+    task_type = 'all_courses_certificates_report_csv'
+    task_class = all_courses_certificates_report_csv
+    task_input = {}
+    task_key = ""
 
     return submit_task(request, task_type, task_class, course_key, task_input, task_key)
 

@@ -40,7 +40,9 @@ from lms.djangoapps.instructor_task.tasks_helper.misc import (
     cohort_students_and_upload,
     upload_course_survey_report,
     upload_ora2_data,
-    upload_proctored_exam_results_report
+    upload_proctored_exam_results_report,
+    upload_course_certificates_report,
+    upload_all_courses_certificates_report
 )
 from lms.djangoapps.instructor_task.tasks_helper.module_state import (
     delete_problem_module_state,
@@ -297,4 +299,36 @@ def export_ora2_data(entry_id, xmodule_instance_args):
     """
     action_name = ugettext_noop('generated')
     task_fn = partial(upload_ora2_data, xmodule_instance_args)
+    return run_main_task(entry_id, task_fn, action_name)
+
+
+@task(base=BaseInstructorTask, routing_key=settings.GRADES_DOWNLOAD_ROUTING_KEY)  # pylint: disable=not-callable
+def course_certificates_report_csv(entry_id, xmodule_instance_args):
+    """
+    Grade a course and push the results to an S3 bucket for download.
+    """
+    # Translators: This is a past-tense verb that is inserted into task progress messages as {action}.
+    action_name = ugettext_noop('generated')
+    TASK_LOG.info(
+        u"Task: %s, InstructorTask ID: %s, Task type: %s, Preparing for task execution",
+        xmodule_instance_args.get('task_id'), entry_id, action_name
+    )
+
+    task_fn = partial(upload_course_certificates_report, xmodule_instance_args)
+    return run_main_task(entry_id, task_fn, action_name)
+
+
+@task(base=BaseInstructorTask, routing_key=settings.GRADES_DOWNLOAD_ROUTING_KEY)  # pylint: disable=not-callable
+def all_courses_certificates_report_csv(entry_id, xmodule_instance_args):
+    """
+    Grade a course and push the results to an S3 bucket for download.
+    """
+    # Translators: This is a past-tense verb that is inserted into task progress messages as {action}.
+    action_name = ugettext_noop('generated')
+    TASK_LOG.info(
+        u"Task: %s, InstructorTask ID: %s, Task type: %s, Preparing for task execution",
+        xmodule_instance_args.get('task_id'), entry_id, action_name
+    )
+
+    task_fn = partial(upload_all_courses_certificates_report, xmodule_instance_args)
     return run_main_task(entry_id, task_fn, action_name)

@@ -82,6 +82,11 @@ from openedx.core.djangolib.markup import HTML, Text
       <input type="button" name="export-ora2-data" class="async-report-btn" value="${_("Generate ORA Data Report")}" data-endpoint="${ section_data['export_ora2_data_url'] }"/>
     </p>
   %endif
+    <p>${_("Click to generate a CSV certificates report.")}</p>
+    <p>
+      <input type="button" name="course-certificates-report-csv" class="async-report-btn" value="${_("Generate CSV Course Report")}" data-endpoint="${ section_data['course_certificates_report_url'] }"/>
+      <input type="button" name="all-courses-certificates-report-csv" class="async-report-btn" value="${_("Generate CSV All Courses Report")}" data-endpoint="${ section_data['all_courses_certificates_report_url'] }"/>
+    </p>
 
     <div class="request-response msg msg-confirm copy" id="report-request-response"></div>
     <div class="request-response-error msg msg-error copy" id="report-request-response-error"></div>
