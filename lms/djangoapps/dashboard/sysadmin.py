@@ -44,7 +44,7 @@ from student.roles import CourseInstructorRole, CourseStaffRole
 from xmodule.modulestore.django import modulestore
 from ci_program.models import Program
 
-ENROLL_ENDPOINT = 'https://ec2-54-229-66-187.eu-west-1.compute.amazonaws.com/enrollment/enroll/'
+ENROLL_ENDPOINT = 'https://courses.codeinstitute.net/enrollment/enroll/'
 LEGAL_CHARACTERS = string.ascii_letters + string.digits + ' @_.'
 
 log = logging.getLogger(__name__)
