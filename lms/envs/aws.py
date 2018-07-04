@@ -1023,3 +1023,7 @@ PROFILE_IMAGE_SIZES_MAP = ENV_TOKENS.get(
     'PROFILE_IMAGE_SIZES_MAP',
     PROFILE_IMAGE_SIZES_MAP
 )
+
+############## Settings for Learning Success ######################
+
+STRACKR_LMS_API_ENDPOINT = AUTH_TOKENS.get(STRACKR_LMS_API_ENDPOINT, None)
