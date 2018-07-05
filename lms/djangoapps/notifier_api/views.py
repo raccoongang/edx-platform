@@ -38,13 +38,21 @@ class NotifierUsersViewSet(ReadOnlyModelViewSet):
     pagination_class = NotifierPaginator
 
     # See NotifierUserSerializer for notes about related tables
-    queryset = User.objects.filter(
-        preferences__key=BROAD_NOTIFICATION_PREF_KEY
-    ).select_related(
-        "profile"
-    ).prefetch_related(
-        "preferences",
-        "courseenrollment_set",
-        "course_groups",
-        "roles__permissions"
-    )
+    def get_queryset(self):
+        q_filter = self.request.GET.get('filter', '')
+        pref_key = BROAD_NOTIFICATION_PREF_KEY if q_filter == 'broad' else NOTIFICATION_PREF_KEY
+
+        queryset = User.objects.filter(
+            preferences__key=pref_key
+        ).select_related(
+            "profile"
+        ).prefetch_related(
+            "preferences",
+            "courseenrollment_set",
+            "course_groups",
+            "roles__permissions"
+        )
+        return queryset
+
+
+
