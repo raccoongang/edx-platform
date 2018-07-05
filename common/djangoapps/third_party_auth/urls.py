@@ -6,6 +6,7 @@ from social_django.views import complete
 from social_core.utils import setting_name
 
 from .views import inactive_user_view, lti_login_and_complete_view, post_to_custom_auth_form, saml_metadata_view
+from .decorators import signout_for_ws_federation
 
 
 extra = getattr(settings, setting_name('TRAILING_SLASH'), True) and '/' or ''
