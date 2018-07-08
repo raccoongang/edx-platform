@@ -7198,6 +7198,27 @@ msgid "enrollment"
 msgstr "التسجيل"
 
 #: lms/djangoapps/instructor/views/api.py
+msgid ""
+"The enrollment report is being created. This report contains"
+" information about learners who can enroll in the course."
+" To view the status of the report, see Pending Tasks below."
+msgstr ""
+"يتم إنشاء تقرير التسجيل. يحتوي هذا التقرير على"
+"معلومات حول المتعلمين الذين يمكنهم التسجيل في الدورة التدريبية."
+"لعرض حالة التقرير ، راجع مهام قيد الانتظار أدناه."
+
+#: lms/djangoapps/instructor/views/api.py
+msgid ""
+"This enrollment report is currently being created."
+" To view the status of the report, see Pending Tasks below."
+" You will be able to download the report when it is complete."
+
+msgstr ""
+"يتم إنشاء تقرير التسجيل هذا حاليًا."
+"لعرض حالة التقرير ، راجع مهام قيد الانتظار أدناه."
+"ستتمكن من تنزيل التقرير عند اكتماله."
+
+#: lms/djangoapps/instructor/views/api.py
 msgid "The file must contain a 'cohort' column containing cohort names."
 msgstr "يجب أن يحتوي الملف على عمود بعنوان ’cohort‘ وفيه أسماء الشُعب."
 
