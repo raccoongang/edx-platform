@@ -5520,7 +5520,7 @@ msgstr ""
 #. Translators:  This text represents the description of course
 #: lms/djangoapps/certificates/views/webview.py
 msgid "a course of study offered by {partner_short_name}."
-msgstr "un cours offert par {partner_short_name}."
+msgstr "un cours d'étude proposé par {partner_short_name}."
 
 #: lms/djangoapps/certificates/views/webview.py
 msgid "I completed the {course_title} course on {platform_name}."
