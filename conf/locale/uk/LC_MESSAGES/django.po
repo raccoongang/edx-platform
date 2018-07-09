@@ -238,6 +238,9 @@ msgstr "Ви зареєстровані як студент за програм�
 msgid "Honor Code"
 msgstr "Умови користування"
 
+msgid "Honor Codes"
+msgstr "Умовами користування"
+
 #: common/djangoapps/course_modes/helpers.py
 msgid "You're enrolled as a professional education student"
 msgstr "Ви підписані як студент вищої освіти"
@@ -10997,7 +11000,10 @@ msgstr "Перевірити Кодекс честі"
 #. in order to register a new account.
 #: openedx/core/djangoapps/user_api/api.py
 msgid "Terms of Service and Honor Code"
-msgstr "Умови надання послуг та Кодекс Честі"
+msgstr "Умови користування"
+
+msgid "Terms of Service and Honor Codes"
+msgstr "Умовами користування"
 
 #: openedx/core/djangoapps/user_api/api.py
 msgid "Review the Terms of Service and Honor Code"
@@ -11018,6 +11024,9 @@ msgstr "Я походжуюся з {terms_of_service} {platform_name}"
 #: openedx/core/djangoapps/user_api/api.py
 msgid "You must agree to the {platform_name} {terms_of_service}"
 msgstr "Ви повинні прийняти {terms_of_service} {platform_name}"
+
+msgid "You must agree to the {terms_of_service}."
+msgstr "Ви повинні прийняти {terms_of_service}."
 
 #: openedx/core/djangoapps/user_api/api.py
 msgid "Review the Terms of Service"

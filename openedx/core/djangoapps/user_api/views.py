@@ -673,31 +673,36 @@ class RegistrationView(APIView):
         """
         # Separate terms of service and honor code checkboxes
         if self._is_field_visible("terms_of_service"):
-            terms_text = _(u"Honor Code")
+            terms_text_custom = _(u"Honor Codes")
+            terms_text_origin = _(u"Honor Code")
 
         # Combine terms of service and honor code checkboxes
         else:
             # Translators: This is a legal document users must agree to
             # in order to register a new account.
-            terms_text = _(u"Terms of Service and Honor Code")
+            terms_text_custom = _(u"Terms of Service and Honor Codes")
+            terms_text_origin = _(u"Terms of Service and Honor Code")
 
-        terms_link = u"<a href=\"{url}\">{terms_text}</a>".format(
+        terms_link_custom = u"<a href=\"{url}\">{terms_text}</a>".format(
             url=marketing_link("HONOR"),
-            terms_text=terms_text
+            terms_text=terms_text_custom
+        )
+
+        terms_link_origin = u"<a href=\"{url}\">{terms_text}</a>".format(
+            url=marketing_link("HONOR"),
+            terms_text=terms_text_origin
         )
 
         # Translators: "Terms of Service" is a legal document users must agree to
         # in order to register a new account.
-        label = _(u"I agree to the {platform_name} {terms_of_service}.").format(
-            platform_name=settings.PLATFORM_NAME,
-            terms_of_service=terms_link
+        label = _(u"I agree to the {terms_of_service}.").format(
+            terms_of_service=terms_link_custom
         )
 
         # Translators: "Terms of Service" is a legal document users must agree to
         # in order to register a new account.
-        error_msg = _(u"You must agree to the {platform_name} {terms_of_service}.").format(
-            platform_name=settings.PLATFORM_NAME,
-            terms_of_service=terms_link
+        error_msg = _(u"You must agree to the {terms_of_service}.").format(
+            terms_of_service=terms_link_origin
         )
 
         form_desc.add_field(
@@ -744,8 +749,7 @@ class RegistrationView(APIView):
 
         # Translators: "Terms of service" is a legal document users must agree to
         # in order to register a new account.
-        error_msg = _(u"You must agree to the {platform_name} {terms_of_service}.").format(
-            platform_name=settings.PLATFORM_NAME,
+        error_msg = _(u"You must agree to the {terms_of_service}.").format(
             terms_of_service=terms_link_origin
         )
 
