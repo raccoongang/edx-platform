@@ -208,7 +208,7 @@ class StudentModuleHistory(BaseStudentModuleHistory):
 
     student_module = models.ForeignKey(StudentModule, db_index=True)
 
-    def __repr__(self): # pragma: no cover
+    def __repr__(self):
         return 'StudentModuleHistory<{}>'.format(unicode(repr(self.student_module)))
 
     def __unicode__(self):
