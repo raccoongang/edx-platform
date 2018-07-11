@@ -43,6 +43,8 @@ from third_party_auth.decorators import xframe_allow_whitelisted
 from util.bad_request_rate_limiter import BadRequestRateLimiter
 from util.date_utils import strftime_localized
 
+from student.decorators import check_recaptcha
+
 AUDIT_LOG = logging.getLogger("audit")
 log = logging.getLogger(__name__)
 User = get_user_model()  # pylint:disable=invalid-name
@@ -162,6 +164,7 @@ def login_and_registration_form(request, initial_mode="login"):
 
 
 @require_http_methods(['POST'])
+@check_recaptcha
 def password_change_request_handler(request):
     """Handle password change requests originating from the account page.
 
@@ -191,6 +194,10 @@ def password_change_request_handler(request):
     if limiter.is_rate_limit_exceeded(request):
         AUDIT_LOG.warning("Password reset rate limit exceeded")
         return HttpResponseForbidden()
+
+    if settings.USE_GOOGLE_RECAPTCHA:
+        if not request.recaptcha_is_valid:
+            return HttpResponseBadRequest(_("Invalid reCAPTCHA. Please try again."))
 
     user = request.user
     # Prefer logged-in user's email

@@ -21,10 +21,24 @@
 
                 submitButton: '.js-reset',
 
-                preRender: function() {
+                preRender: function(data) {
+                    this.googleRecaptchaSiteKey = data.googleRecaptchaSiteKey;
                     this.element.show($(this.el));
                     this.element.show($(this.el).parent());
                     this.listenTo(this.model, 'sync', this.saveSuccess);
+                },
+
+                render: function(html) {
+                    var fields = html || '';
+
+                    $(this.el).html(_.template(this.tpl)({
+                        fields: fields,
+                        googleRecaptchaSiteKey: this.googleRecaptchaSiteKey
+                    }));
+
+                    this.postRender();
+
+                    return this;
                 },
 
                 saveSuccess: function() {

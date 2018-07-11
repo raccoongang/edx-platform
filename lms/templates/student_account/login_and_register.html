@@ -33,12 +33,11 @@
         };
     </script>
 </%block>
-
 <%block name="header_extras">
     % for template_name in ["account", "access", "form_field", "login", "register", "institution_login", "institution_register", "password_reset", "hinted_login"]:
         <script type="text/template" id="${template_name}-tpl">
             <%static:include path="student_account/${template_name}.underscore" />
-            %if template_name == 'login' or template_name == 'register':
+            %if template_name in ['login', 'register', 'password_reset']:
                 <script src='https://www.google.com/recaptcha/api.js?hl=ar'></script>
             % endif
         </script>
