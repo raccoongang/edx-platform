@@ -47,7 +47,7 @@ class ExtraInfoForm(forms.ModelForm):
     def _years_range(self):
         g_to_i = lambda g: g - 622 + ((g - 622) / 32)
         current_year = date.today().year
-        max_year = current_year - 4
+        max_year = current_year - 18
         min_year = current_year - 100
         return xrange(g_to_i(min_year), g_to_i(max_year))
 
