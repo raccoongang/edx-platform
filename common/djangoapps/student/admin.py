@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from ratelimitbackend import admin
+from custom_reg_form.models import ExtraInfo
 
 from student.models import (
     CourseAccessRole,
@@ -170,10 +171,17 @@ class UserProfileInline(admin.StackedInline):
     can_delete = False
     verbose_name_plural = _('User profile')
 
+class ExtraInfoInline(admin.StackedInline):
+    model = ExtraInfo
+    fields = ('nationality_id', 'date_of_birth')
+    can_delete = False
+    verbose_name_plural = _('Extra info')
+    readonly_fields = ('nationality_id', 'date_of_birth')
+
 
 class UserAdmin(BaseUserAdmin):
     """ Admin interface for the User model. """
-    inlines = (UserProfileInline,)
+    inlines = (ExtraInfoInline, UserProfileInline,)
 
     def get_readonly_fields(self, request, obj=None):
         """
