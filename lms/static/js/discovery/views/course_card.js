@@ -23,7 +23,7 @@
 
             tagName: 'li',
             templateId: '#course_card-tpl',
-            className: 'courses-listing-item',
+            className: 'courses-listing-item courses-list__item',
 
             initialize: function() {
                 this.tpl = _.template($(this.templateId).html());
