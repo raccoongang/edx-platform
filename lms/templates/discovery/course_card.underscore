@@ -9,7 +9,7 @@
         <li class="short-info-list__item">
             <img class="short-info-list__img" src="/static/edx-theme/images/vendor-icon.svg">
             <div class="short-info-list__text">
-                <strong class="custom-param-name">Vendor</strong>
+                <strong class="custom-param-name"><%- gettext('Vendor') %></strong>
                 <span class="custom-param-value"><%- course_vendor %></span>
             </div>
         </li>
@@ -18,7 +18,7 @@
         <li class="short-info-list__item">
             <img class="short-info-list__img" src="/static/edx-theme/images/duration-icon.svg">
             <div class="short-info-list__text">
-                <strong class="custom-param-name">Duration</strong>
+                <strong class="custom-param-name"><%- gettext('Duration') %></strong>
                 <span class="custom-param-value"><%- duration %></span>
             </div>
         </li>
@@ -26,7 +26,7 @@
         <li class="short-info-list__item">
             <img class="short-info-list__img" src="/static/edx-theme/images/certificate-icon.svg">
             <div class="short-info-list__text">
-                <strong class="custom-param-name">Verified Certificate Available</strong>
+                <strong class="custom-param-name"><%- gettext('Verified Certificate Available') %></strong>
                 <span class="custom-param-value">
                 <% if ( modes == 'audit' || modes == 'verified' || modes == 'honor') { %>
                   Yes
