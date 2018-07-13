@@ -29,9 +29,9 @@
                 <strong class="custom-param-name"><%- gettext('Verified Certificate Available') %></strong>
                 <span class="custom-param-value">
                 <% if ( modes == 'audit' || modes == 'verified' || modes == 'honor') { %>
-                  Yes
+                  <%- gettext('Yes') %>
                 <% } else  {%>
-                  No
+                  <%- gettext('No') %>
                 <% } %>
                 </span>
             </div>
