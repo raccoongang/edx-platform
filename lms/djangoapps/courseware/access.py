@@ -682,17 +682,17 @@ def _has_access_to_course(user, access_level, course_key):
         debug("Deny: unknown access level")
         return ACCESS_DENIED
 
-    org_user = OrganizationUser.objects.filter(
-        active=True,
-        organization__short_name=course_key.org,
-        user_id=user.id
-    ).values().first()
+#    org_user = OrganizationUser.objects.filter(
+#        active=True,
+#        organization__short_name=course_key.org,
+#        user_id=user.id
+#    ).values().first()
 
-    staff_access = (
-        CourseStaffRole(course_key).has_user(user) or
-        OrgStaffRole(course_key.org).has_user(user) or
-        (org_user and org_user['is_staff'])
-    )
+#    staff_access = (
+#        CourseStaffRole(course_key).has_user(user) or
+#        OrgStaffRole(course_key.org).has_user(user) or
+#        (org_user and org_user['is_staff'])
+#    )
 
     if staff_access and access_level == 'staff':
         debug("Allow: user has course staff access")
