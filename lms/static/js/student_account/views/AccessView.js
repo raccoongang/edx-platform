@@ -154,7 +154,8 @@
 
                         this.subview.passwordHelp = new PasswordResetView({
                             fields: data.fields,
-                            model: this.resetModel
+                            model: this.resetModel,
+                            googleRecaptchaSiteKey: this.googleRecaptchaSiteKey
                         });
 
                     // Listen for 'password-email-sent' event to toggle sub-views
