@@ -51,7 +51,7 @@
 
         <%= context.fields %>
 
-        <div class="g-recaptcha" data-callback="setRecaptcha"  data-expired-callback="resetRecaptcha" data-sitekey="<%= context.googleRecaptchaSiteKey %>"></div>
+        <div class="g-recaptcha" data-callback="setLoginRecaptcha"  data-expired-callback="resetLoginRecaptcha" data-sitekey="<%= context.googleRecaptchaSiteKey %>"></div>
 
         <button type="submit" class="action action-primary action-update js-login login-button"><%- gettext("Sign in") %></button>
     </div>
