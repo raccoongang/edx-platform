@@ -51,6 +51,7 @@
                     userLanguage,
                     userTimezone
                 );
+                data.defaultThemeURL = defaultThemeURL;
                 this.$el.html(this.tpl(data));
                 return this;
             }

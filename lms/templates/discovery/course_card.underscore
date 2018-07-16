@@ -7,7 +7,7 @@
     <ol class="short-info-list">
         <% if ( course_vendor ) { %>
         <li class="short-info-list__item">
-            <img class="short-info-list__img" src="/static/edx-theme/images/vendor-icon.svg">
+            <img class="short-info-list__img" src="<%- defaultThemeURL %>/images/vendor-icon.svg">
             <div class="short-info-list__text">
                 <strong class="custom-param-name"><%- gettext('Vendor') %></strong>
                 <span class="custom-param-value"><%- course_vendor %></span>
@@ -16,7 +16,7 @@
         <% } %>
         <% if ( duration ) { %>
         <li class="short-info-list__item">
-            <img class="short-info-list__img" src="/static/edx-theme/images/duration-icon.svg">
+            <img class="short-info-list__img" src="<%- defaultThemeURL %>/images/duration-icon.svg">
             <div class="short-info-list__text">
                 <strong class="custom-param-name"><%- gettext('Duration') %></strong>
                 <span class="custom-param-value"><%- duration %></span>
@@ -24,7 +24,7 @@
         </li>
         <% } %>
         <li class="short-info-list__item">
-            <img class="short-info-list__img" src="/static/edx-theme/images/certificate-icon.svg">
+            <img class="short-info-list__img" src="<%- defaultThemeURL %>/images/certificate-icon.svg">
             <div class="short-info-list__text">
                 <strong class="custom-param-name"><%- gettext('Verified Certificate Available') %></strong>
                 <span class="custom-param-value">
