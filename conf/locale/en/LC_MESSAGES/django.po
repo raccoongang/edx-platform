@@ -740,6 +740,11 @@ msgid "Invalid reCAPTCHA. Please try again."
 msgstr ""
 
 #: common/djangoapps/student/views.py
+#: openedx/core/djangoapps/user_api/views.py
+msgid "Please verify reCAPTCHA."
+msgstr ""
+
+#: common/djangoapps/student/views.py
 #, python-brace-format
 msgid ""
 "You've successfully logged into your {provider_name} account, but this "
