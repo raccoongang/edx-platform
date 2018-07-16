@@ -34,6 +34,7 @@ class ExtraInfo(models.Model):
     )
     date_of_birth_year = models.PositiveIntegerField()
 
+    @property
     def date_of_birth(self):
         return '{}{}{}'.format(
             self.date_of_birth_year or '',
