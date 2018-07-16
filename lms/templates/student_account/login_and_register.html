@@ -28,8 +28,23 @@
     <script type="text/javascript" src="${static.url('js/student_account/tos_modal.js')}"></script>
     % endif
     <script type="text/javascript">
-        var setRecaptcha = function() {
+        var setLoginRecaptcha = function() {
             $('#login-captcha').val(1);
+        };
+        var resetLoginRecaptcha = function() {
+            $('#login-captcha').removeAttr('value');
+        };
+        var setRegisterRecaptcha = function() {
+            $('#register-captcha').val(1);
+        };
+        var resetRegisterRecaptcha = function() {
+            $('#register-captcha').removeAttr('value');
+        };
+        var setPasswordRecaptcha = function() {
+            $('#password-reset-captcha').val(1);
+        };
+        var resetPasswordRecaptcha = function() {
+            $('#password-reset-captcha').removeAttr('value');
         };
     </script>
 </%block>
