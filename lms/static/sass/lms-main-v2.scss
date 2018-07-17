@@ -4,7 +4,7 @@
 
 // NOTE: This is the left-to-right (LTR) configured style compile.
 // It should mirror lms-main-v2-rtl w/ the exception of bi-app references.
-
+$output-bourbon-deprecation-warnings: false !default;
 
 // Load the RTL version of the edX Pattern Library
 $pattern-library-path: '../edx-pattern-library' !default;
