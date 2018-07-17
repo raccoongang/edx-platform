@@ -71,27 +71,27 @@ class LoginSessionView(APIView):
 
         # Translators: This label appears above a field on the login form
         # meant to hold the user's email address.
-        email_label = _(u"Email")
+        email_label = _(u"National ID")
 
         # Translators: This example email address is used as a placeholder in
         # a field on the login form meant to hold the user's email address.
-        email_placeholder = _(u"username@domain.com")
+        email_placeholder = _(u"xxxxxxxxxx")
 
         # Translators: These instructions appear on the login form, immediately
         # below a field meant to hold the user's email address.
-        email_instructions = _("The email address you used to register with {platform_name}").format(
+        email_instructions = _("The national id address you used to register with {platform_name}").format(
             platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
         )
 
         form_desc.add_field(
             "email",
-            field_type="email",
+            field_type="text",
             label=email_label,
             placeholder=email_placeholder,
             instructions=email_instructions,
             restrictions={
-                "min_length": EMAIL_MIN_LENGTH,
-                "max_length": EMAIL_MAX_LENGTH,
+                "min_length": 10,
+                "max_length": 10,
             }
         )
 
