@@ -9,6 +9,8 @@ import xml.etree.ElementTree as ET
 from django.conf import settings
 from django import forms
 from django.utils.translation import ugettext as _
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 
 from .models import ExtraInfo
 
@@ -106,3 +108,35 @@ class ExtraInfoForm(forms.ModelForm):
             msg = _(
                 "Sorry, the information you provided is incorrect, please make sure you enter correct information")
             self.add_error('nationality_id', forms.ValidationError(msg, code='invalid'))
+
+
+class SetNationalIdForm(ExtraInfoForm):
+    user = None
+    email = forms.EmailField(required=True)
+    password = forms.CharField(required=True, widget=forms.PasswordInput)
+
+    def __init__(self, *args, **kwargs):
+        super(ExtraInfoForm, self).__init__(*args, **kwargs)
+        self.fields['mobile'].required = False
+        self.fields['nationality_id'].required = True
+        self.fields['date_of_birth_day'] = forms.ChoiceField(choices=tuple((x, x) for x in range(1, 31)), required=True)
+        self.fields['date_of_birth_month'] = forms.ChoiceField(choices=tuple((x, x) for x in range(1, 13)))
+        self.fields['date_of_birth_year'] = forms.ChoiceField(choices=((x, x) for x in self._years_range()))
+
+    def clean(self):
+        cleaned_data = super(ExtraInfoForm, self).clean()
+
+        try:
+            user = User.objects.get(email=cleaned_data['email'])
+        except User.DoesNotExist:
+            self.add_error('email', forms.ValidationError(_('Email does not exist'), code='invalid'))
+        else:
+            self.user = authenticate(username=user.username, password=cleaned_data['password'])
+            if not self.user:
+                self.add_error('password', forms.ValidationError(_('Wrong password'), code='invalid'))
+
+    def save(self, commit=True):
+        if self.user:
+            self.cleaned_data.pop('email', None)
+            self.cleaned_data.pop('password', None)
+            self._meta.model.objects.update_or_create(user=self.user, defaults=self.cleaned_data)
