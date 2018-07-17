@@ -6,7 +6,7 @@ import freezegun
 import json
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase
 from django.test.utils import override_settings
 
@@ -17,7 +17,6 @@ FROZEN_TIME = '2015-01-01'
 VERIFY_STUDENT = {'DAYS_GOOD_FOR': 365}
 
 
-@freezegun.freeze_time(FROZEN_TIME)
 @override_settings(VERIFY_STUDENT=VERIFY_STUDENT)
 class PhotoVerificationStatusViewTests(TestCase):
     """ Tests for the PhotoVerificationStatusView endpoint. """
@@ -25,6 +24,10 @@ class PhotoVerificationStatusViewTests(TestCase):
     PASSWORD = 'test'
 
     def setUp(self):
+        freezer = freezegun.freeze_time(FROZEN_TIME)
+        freezer.start()
+        self.addCleanup(freezer.stop)
+
         super(PhotoVerificationStatusViewTests, self).setUp()
         self.user = UserFactory(password=self.PASSWORD)
         self.staff = UserFactory(is_staff=True, password=self.PASSWORD)

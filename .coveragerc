@@ -8,7 +8,7 @@ source =
     common/lib/capa
     common/lib/xmodule
     lms
-    openedx/core/djangoapps
+    openedx
     pavelib
 
 omit =
@@ -17,6 +17,7 @@ omit =
     cms/djangoapps/contentstore/views/dev.py
     cms/djangoapps/*/migrations/*
     cms/djangoapps/*/features/*
+    cms/lib/*/migrations/*
     lms/debug/*
     lms/envs/*
     lms/djangoapps/*/migrations/*
@@ -25,6 +26,7 @@ omit =
     common/djangoapps/*/migrations/*
     openedx/core/djangoapps/*/migrations/*
     openedx/core/djangoapps/debug/*
+    openedx/features/*/migrations/*
 
 concurrency=multiprocessing
 
@@ -45,7 +47,6 @@ output = reports/coverage.xml
 [paths]
 jenkins_source =
     /home/jenkins/workspace/$JOB_NAME
-    /home/jenkins/workspace/$SUBSET_JOB
 
 devstack_source =
     /edx/app/edxapp/edx-platform

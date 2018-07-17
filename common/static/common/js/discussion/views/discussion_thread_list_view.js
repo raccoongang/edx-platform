@@ -32,8 +32,8 @@
                 this.retrieveFollowed = function() {
                     return DiscussionThreadListView.prototype.retrieveFollowed.apply(self, arguments);
                 };
-                this.chooseCohort = function() {
-                    return DiscussionThreadListView.prototype.chooseCohort.apply(self, arguments);
+                this.chooseGroup = function() {
+                    return DiscussionThreadListView.prototype.chooseGroup.apply(self, arguments);
                 };
                 this.chooseFilter = function() {
                     return DiscussionThreadListView.prototype.chooseFilter.apply(self, arguments);
@@ -85,7 +85,7 @@
                 'click .forum-nav-thread-link': 'threadSelected',
                 'click .forum-nav-load-more-link': 'loadMorePages',
                 'change .forum-nav-filter-main-control': 'chooseFilter',
-                'change .forum-nav-filter-cohort-control': 'chooseCohort'
+                'change .forum-nav-filter-cohort-control': 'chooseGroup'
             };
 
             DiscussionThreadListView.prototype.initialize = function(options) {
@@ -194,7 +194,7 @@
                 edx.HtmlUtils.append(
                     this.$el,
                     this.template({
-                        isCohorted: this.courseSettings.get('is_cohorted'),
+                        isDiscussionDivisionEnabled: this.courseSettings.get('is_discussion_division_enabled'),
                         isPrivilegedUser: DiscussionUtil.isPrivilegedUser()
                     })
                 );
@@ -222,6 +222,10 @@
                     thread = this.displayedCollection.models[i];
                     $content = this.renderThread(thread);
                     this.$('.forum-nav-thread-list').append($content);
+                }
+                if (this.$('.forum-nav-thread-list li').length === 0) {
+                    this.clearSearchAlerts();
+                    this.addSearchAlert(gettext('There are no posts in this topic yet.'));
                 }
                 this.showMetadataAccordingToSort();
                 this.renderMorePages();
@@ -404,16 +408,17 @@
                         return $(elem).data('discussion-id');
                     }).get();
                     this.retrieveDiscussions(discussionIds);
-                    return this.$('.forum-nav-filter-cohort').toggle($item.data('cohorted') === true);
+                    return this.$('.forum-nav-filter-cohort').toggle($item.data('divided') === true);
                 }
             };
 
             DiscussionThreadListView.prototype.chooseFilter = function() {
                 this.filter = $('.forum-nav-filter-main-control :selected').val();
+                this.clearSearchAlerts();
                 return this.retrieveFirstPage();
             };
 
-            DiscussionThreadListView.prototype.chooseCohort = function() {
+            DiscussionThreadListView.prototype.chooseGroup = function() {
                 this.group_id = this.$('.forum-nav-filter-cohort-control :selected').val();
                 return this.retrieveFirstPage();
             };
@@ -450,7 +455,8 @@
 
             DiscussionThreadListView.prototype.retrieveFirstPage = function(event) {
                 this.collection.current_page = 0;
-                this.collection.reset();
+                this.$('.forum-nav-thread-list').empty();
+                this.collection.models = [];
                 return this.loadMorePages(event);
             };
 
@@ -507,6 +513,7 @@
                         var message, noResponseMsg;
                         if (textStatus === 'success') {
                             self.collection.reset(response.discussion_data);
+                            self.clearSearchAlerts();
                             Content.loadContentInfos(response.annotated_content_info);
                             self.collection.current_page = response.page;
                             self.collection.pages = response.num_pages;
@@ -533,8 +540,11 @@
                                 self.addSearchAlert(message);
                             } else if (response.discussion_data.length === 0) {
                                 self.addSearchAlert(gettext('No posts matched your query.'));
+                                self.displayedCollection.models = [];
                             }
-                            self.displayedCollection.reset(self.collection.models);
+                            if (self.collection.models.length !== 0) {
+                                self.displayedCollection.reset(self.collection.models);
+                            }
                             if (text) {
                                 return self.searchForUser(text);
                             }

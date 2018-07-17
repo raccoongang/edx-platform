@@ -36,6 +36,7 @@
                 this.pages = options.pages || 1;
                 this.current_page = 1;
                 this.sort_preference = options.sort;
+                this.is_commentable_divided = options.is_commentable_divided;
                 this.bind('add', function(item) {
                     item.discussion = self;
                 });
@@ -135,12 +136,13 @@
                                     _results.push(new Thread(data));
                                 }
                                 return _results;
-                            })()
+                            }())
                         ][0];
                         new_collection = _.union(models, new_threads);
                         Content.loadContentInfos(response.annotated_content_info);
                         self.pages = response.num_pages;
                         self.current_page = response.page;
+                        self.is_commentable_divided = response.is_commentable_divided;
                         return self.reset(new_collection);
                     },
                     error: error
@@ -218,6 +220,6 @@
             };
 
             return Discussion;
-        })(Backbone.Collection);
+        }(Backbone.Collection));
     }
 }).call(window);

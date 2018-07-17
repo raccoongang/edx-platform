@@ -1,12 +1,12 @@
 import logging
+import textwrap
 
 from lxml import etree
 from pkg_resources import resource_string
-
-from xmodule.x_module import XModule
-from xmodule.raw_module import RawDescriptor
 from xblock.fields import Scope, String
-import textwrap
+
+from xmodule.raw_module import RawDescriptor
+from xmodule.x_module import XModule
 
 log = logging.getLogger(__name__)
 
@@ -47,11 +47,9 @@ class AnnotatableFields(object):
 
 class AnnotatableModule(AnnotatableFields, XModule):
     js = {
-        'coffee': [
-            resource_string(__name__, 'js/src/html/display.coffee'),
-            resource_string(__name__, 'js/src/annotatable/display.coffee'),
-        ],
         'js': [
+            resource_string(__name__, 'js/src/html/display.js'),
+            resource_string(__name__, 'js/src/annotatable/display.js'),
             resource_string(__name__, 'js/src/javascript_loader.js'),
             resource_string(__name__, 'js/src/collapsible.js'),
         ]
