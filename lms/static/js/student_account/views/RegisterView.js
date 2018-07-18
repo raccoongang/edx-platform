@@ -152,12 +152,18 @@
                         $form = this.$form,
                         $label,
                         $emailElement,
+                        $passwordElement,
                         $confirmEmailElement,
+                        $confirmPasswordElement,
                         email = '',
-                        confirmEmail = '';
+                        password = '',
+                        confirmEmail = '',
+                        confirmPassword = '';
 
                     $emailElement = $form.find('input[name=email]');
+                    $passwordElement = $form.find('input[name=password]');
                     $confirmEmailElement = $form.find('input[name=confirm_email]');
+                    $confirmPasswordElement = $form.find('input[name=confirm_password]');
 
                     if ($confirmEmailElement.length) {
                         email = $emailElement.val();
@@ -171,6 +177,22 @@
                         } else if (confirmEmail !== '') {
                             obj.confirm_email = confirmEmail;
                             $confirmEmailElement.removeClass('error');
+                            $label.removeClass('error');
+                        }
+                    }
+
+                    if ($confirmPasswordElement.length) {
+                        password = $passwordElement.val();
+                        confirmPassword = $confirmPasswordElement.val();
+                        $label = $form.find('label[for=' + $confirmPasswordElement.attr('id') + ']');
+
+                        if (confirmPassword !== '' && password !== confirmPassword) {
+                            this.errors.push('<li>' + $confirmPasswordElement.data('errormsg-required') + '</li>');
+                            $confirmPasswordElement.addClass('error');
+                            $label.addClass('error');
+                        } else if (confirmPassword !== '') {
+                            obj.confirm_password = confirmPassword;
+                            $confirmPasswordElement.removeClass('error');
                             $label.removeClass('error');
                         }
                     }

@@ -170,10 +170,9 @@ class LoginSessionView(APIView):
 class RegistrationView(APIView):
     """HTTP end-points for creating a new user. """
 
-    DEFAULT_FIELDS = ["email", "name", "username", "password"]
+    DEFAULT_FIELDS = ["email", "confirm_email", "name", "username", "password", "confirm_password"]
 
     EXTRA_FIELDS = [
-        "confirm_email",
         "first_name",
         "last_name",
         "city",
@@ -236,6 +235,33 @@ class RegistrationView(APIView):
         self.field_order = field_order
         self.current_provider = None
 
+    def _add_custom_field(self, field_name, field, custom_form, form_desc):
+        restrictions = {}
+        if getattr(field, 'max_length', None):
+            restrictions['max_length'] = field.max_length
+        if getattr(field, 'min_length', None):
+            restrictions['min_length'] = field.min_length
+        field_options = getattr(
+            getattr(custom_form, 'Meta', None), 'serialization_options', {}
+        ).get(field_name, {})
+        field_type = field_options.get('field_type', FormDescription.FIELD_TYPE_MAP.get(field.__class__))
+        if not field_type:
+            raise ImproperlyConfigured(
+                "Field type '{}' not recognized for registration extension field '{}'.".format(
+                    field_type,
+                    field_name
+                )
+            )
+        form_desc.add_field(
+            field_name, label=field.label,
+            default=field_options.get('default'),
+            field_type=field_options.get('field_type', FormDescription.FIELD_TYPE_MAP.get(field.__class__)),
+            placeholder=field.initial, instructions=field.help_text, required=field.required,
+            restrictions=restrictions,
+            options=getattr(field, 'choices', None), error_messages=field.error_messages,
+            include_default_option=field_options.get('include_default_option'),
+        )
+
     @method_decorator(ensure_csrf_cookie)
     def get(self, request):
         """Return a description of the registration form.
@@ -265,36 +291,17 @@ class RegistrationView(APIView):
         custom_form = get_registration_extension_form()
 
         if custom_form and not self.current_provider:
+            for field_name in ['nationality_id', 'date_of_birth_year', 'date_of_birth_month', 'date_of_birth_day']:
+                field = custom_form.fields[field_name]
+                self._add_custom_field(field_name, field, custom_form, form_desc)
+
             # Default fields are always required
             for field_name in self.DEFAULT_FIELDS:
-                self.field_handlers[field_name](form_desc, required=True)
+                if field_name != 'name':
+                    self.field_handlers[field_name](form_desc, required=True)
 
-            for field_name, field in custom_form.fields.items():
-                restrictions = {}
-                if getattr(field, 'max_length', None):
-                    restrictions['max_length'] = field.max_length
-                if getattr(field, 'min_length', None):
-                    restrictions['min_length'] = field.min_length
-                field_options = getattr(
-                    getattr(custom_form, 'Meta', None), 'serialization_options', {}
-                ).get(field_name, {})
-                field_type = field_options.get('field_type', FormDescription.FIELD_TYPE_MAP.get(field.__class__))
-                if not field_type:
-                    raise ImproperlyConfigured(
-                        "Field type '{}' not recognized for registration extension field '{}'.".format(
-                            field_type,
-                            field_name
-                        )
-                    )
-                form_desc.add_field(
-                    field_name, label=field.label,
-                    default=field_options.get('default'),
-                    field_type=field_options.get('field_type', FormDescription.FIELD_TYPE_MAP.get(field.__class__)),
-                    placeholder=field.initial, instructions=field.help_text, required=field.required,
-                    restrictions=restrictions,
-                    options=getattr(field, 'choices', None), error_messages=field.error_messages,
-                    include_default_option=field_options.get('include_default_option'),
-                )
+            field = custom_form.fields['mobile']
+            self._add_custom_field('mobile', field, custom_form, form_desc)
 
             # Extra fields configured in Django settings
             # may be required, optional, or hidden
@@ -561,6 +568,24 @@ class RegistrationView(APIView):
                 "max_length": PASSWORD_MAX_LENGTH,
             },
             required=required
+        )
+
+    def _add_confirm_password_field(self, form_desc, required=True):
+        password_label = _(u"Confirm Password")
+        error_msg = _(u"The password do not match.")
+
+        form_desc.add_field(
+            "confirm_password",
+            label=password_label,
+            field_type="password",
+            restrictions={
+                "min_length": PASSWORD_MIN_LENGTH,
+                "max_length": PASSWORD_MAX_LENGTH,
+            },
+            required=required,
+            error_messages={
+                "required": error_msg
+            }
         )
 
     def _add_level_of_education_field(self, form_desc, required=True):
