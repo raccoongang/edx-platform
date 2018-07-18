@@ -108,6 +108,8 @@ class ExtraInfoForm(forms.ModelForm):
             msg = _(
                 "Sorry, the information you provided is incorrect, please make sure you enter correct information")
             self.add_error('nationality_id', forms.ValidationError(msg, code='invalid'))
+        else:
+            self.full_name = '{FirstName} {FatherName} {FamilyName}'.format(**result)
 
 
 class SetNationalIdForm(ExtraInfoForm):
