@@ -1748,6 +1748,7 @@ def _do_create_account(form, custom_form=None):
             user.save()
             if custom_form:
                 custom_model = custom_form.save(commit=False)
+                form.cleaned_data['name'] = custom_form.full_name
                 custom_model.user = user
                 custom_model.save()
     except IntegrityError:
