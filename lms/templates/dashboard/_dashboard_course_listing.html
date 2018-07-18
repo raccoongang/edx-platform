@@ -195,6 +195,7 @@ from student.helpers import (
                 % endif
               % endif
             % endif
+            % if can_unenroll or show_email_settings:
             <div class="wrapper-action-more" data-course-key="${enrollment.course_id}">
               <button type="button" class="action action-more" id="actions-dropdown-link-${dashboard_index}" aria-haspopup="true" aria-expanded="false" aria-controls="actions-dropdown-${dashboard_index}" data-course-number="${course_overview.number}" data-course-name="${course_overview.display_name_with_default}" data-dashboard-index="${dashboard_index}">
                 <span class="sr">${_('Course options for')}</span>
@@ -291,6 +292,7 @@ from student.helpers import (
               </div>
             </div>
           </div>
+          %endif
         </div>
       </div>
   </section>

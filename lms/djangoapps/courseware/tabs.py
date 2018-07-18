@@ -11,7 +11,7 @@ from openedx.core.lib.course_tabs import CourseTabPluginManager
 from student.models import CourseEnrollment
 from student.roles import CourseStaffRole
 from xmodule.tabs import CourseTab, CourseTabList, key_checker
-
+from courseware.masquerade import is_masquerading_as_student
 
 class EnrolledTab(CourseTab):
     """
@@ -324,7 +324,7 @@ def _get_dynamic_tabs(course, user):
     for tab_type in CourseTabPluginManager.get_tab_types():
         if getattr(tab_type, "is_dynamic", False):
             tab = tab_type(dict())
-            if tab.is_enabled(course, user=user):
+            if tab.is_enabled(course, user=user) and not is_masquerading_as_student(user, course.id):
                 dynamic_tabs.append(tab)
     dynamic_tabs.sort(key=lambda dynamic_tab: dynamic_tab.name)
     return dynamic_tabs
