@@ -8,20 +8,25 @@ from django.contrib.messages import get_messages
 %>
 
 <main id="main" aria-label="Content" tabindex="-1">
-    <%
-        success = None
-        storage = get_messages(request)
-        for message in storage:
-            if 'set_national_id_success' in message.extra_tags:
-                success = message
-    %>
-    % if success:
-        <div class="success-msg">${success}</div>
-    % else:
-        <form method="post" action="${reverse('set_national_id')}">
-            ${form.as_ul()}
-            <input type="hidden" id="csrf_token" name="csrfmiddlewaretoken" value="${csrf_token}">
-            <input type="submit" value="${_('Submit')}">
-        </form>
-    % endif
+    <div class="login-register-content">
+        <h2 class="national-id-form__title">National ID</h2>
+        <%
+            success = None
+            storage = get_messages(request)
+            for message in storage:
+                if 'set_national_id_success' in message.extra_tags:
+                    success = message
+        %>
+        % if success:
+            <div class="success-msg">${success}</div>
+        % else:
+            <form class="national-id-form" method="post" action="${reverse('set_national_id')}">
+                <ul class="national-id-form__list">
+                    ${form.as_ul()}
+                </ul>
+                <input type="hidden" id="csrf_token" name="csrfmiddlewaretoken" value="${csrf_token}">
+                <input type="submit" value="${_('Submit')}">
+            </form>
+        % endif
+    </div>
 </main>
