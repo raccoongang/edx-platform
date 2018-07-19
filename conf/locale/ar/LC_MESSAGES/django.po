@@ -9462,14 +9462,6 @@ msgstr "الشركة"
 msgid "Please select your Country."
 msgstr "يُرجى اختيار البلد"
 
-#: openedx/core/djangoapps/user_api/views.py
-msgid "Enter Password"
-msgstr "أدخل كلمة المرور"
-
-#: openedx/core/djangoapps/user_api/views.py
-msgid "Confirm Password"
-msgstr "أعد إدخال كلمة المرور"
-
 #. Translators: This label appears above a field on the registration form
 #. which allows the user to input the Job Title
 #: lms/djangoapps/student_account/views.py
