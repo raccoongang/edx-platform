@@ -9463,10 +9463,6 @@ msgid "Please select your Country."
 msgstr "يُرجى اختيار البلد"
 
 #: openedx/core/djangoapps/user_api/views.py
-msgid "Confirm Email"
-msgstr "أعد إدخال البريد الإلكتروني"
-
-#: openedx/core/djangoapps/user_api/views.py
 msgid "Enter Password"
 msgstr "أدخل كلمة المرور"
 
