@@ -560,7 +560,7 @@ class RegistrationView(APIView):
         # Translators: This label appears above a field on the registration form
         # meant to hold the user's password.
         password_label = _(u"Password")
-        password_placeholder = _(u"Enter Password")
+        password_placeholder = _(u"Password")
 
         form_desc.add_field(
             "password",
