@@ -464,11 +464,13 @@ class RegistrationView(APIView):
         # Translators: This label appears above a field on the registration form
         # meant to confirm the user's email address.
         email_label = _(u"Confirm Email")
+        email_placeholder = _(u"Confirm Email")
         error_msg = _(u"The email addresses do not match.")
 
         form_desc.add_field(
             "confirm_email",
             label=email_label,
+            placeholder=email_placeholder,
             required=required,
             error_messages={
                 "required": error_msg
@@ -558,11 +560,13 @@ class RegistrationView(APIView):
         # Translators: This label appears above a field on the registration form
         # meant to hold the user's password.
         password_label = _(u"Password")
+        password_placeholder = _(u"Enter Password")
 
         form_desc.add_field(
             "password",
             label=password_label,
             field_type="password",
+            placeholder=password_placeholder,
             restrictions={
                 "min_length": PASSWORD_MIN_LENGTH,
                 "max_length": PASSWORD_MAX_LENGTH,
@@ -573,11 +577,13 @@ class RegistrationView(APIView):
     def _add_confirm_password_field(self, form_desc, required=True):
         password_label = _(u"Confirm Password")
         error_msg = _(u"The password do not match.")
+        password_placeholder = _(u"Confirm Password")
 
         form_desc.add_field(
             "confirm_password",
             label=password_label,
             field_type="password",
+            placeholder=password_placeholder,
             restrictions={
                 "min_length": PASSWORD_MIN_LENGTH,
                 "max_length": PASSWORD_MAX_LENGTH,
