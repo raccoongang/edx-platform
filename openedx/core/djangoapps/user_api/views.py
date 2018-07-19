@@ -291,7 +291,7 @@ class RegistrationView(APIView):
         custom_form = get_registration_extension_form()
 
         if custom_form and not self.current_provider:
-            for field_name in ['nationality_id', 'date_of_birth_year', 'date_of_birth_month', 'date_of_birth_day']:
+            for field_name in ['nationality_id', 'date_of_birth_day', 'date_of_birth_month', 'date_of_birth_year']:
                 field = custom_form.fields[field_name]
                 self._add_custom_field(field_name, field, custom_form, form_desc)
 
