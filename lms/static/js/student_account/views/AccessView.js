@@ -83,6 +83,7 @@
                     });
 
                     this.googleRecaptchaSiteKey = options.google_recaptcha_site_key;
+                    this.setNationalIdUrl = options.set_national_id_url;
                     this.isSSO = options.is_sso;
                     this.registerURL = options.register_url;
                     this.render();
@@ -138,6 +139,7 @@
                             createAccountOption: this.createAccountOption,
                             hideAuthWarnings: this.hideAuthWarnings,
                             googleRecaptchaSiteKey: this.googleRecaptchaSiteKey,
+                            setNationalIdUrl: this.setNationalIdUrl,
                             registerURL: this.registerURL
                         });
 
