@@ -16,6 +16,16 @@ class ExtraInfo(models.Model):
         max_length=255,
     )
 
+    zip_code = models.CharField(
+        verbose_name=_('Zip'),
+        max_length=255,
+    )
+
+    usa_state = models.CharField(
+        verbose_name=_('State'),
+        max_length=255,
+    )
+
     def __unicode__(self):
         return unicode(self.user)
 
