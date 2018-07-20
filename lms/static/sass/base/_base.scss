@@ -359,3 +359,16 @@ mark {
     margin: 0;
   }
 }
+
+section.about {
+  h1 {
+    margin: 20px 0;
+    text-align: left;
+  }
+  p {
+    line-height: 1.3;
+  }
+  ul li {
+    margin-bottom: 10px;
+  }
+}
