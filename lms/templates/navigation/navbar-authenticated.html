@@ -28,6 +28,19 @@ from django.utils.translation import ugettext as _
         </a>
       </li>
     % endif
+
+    % if user.is_staff:
+      <li class="item nav-global-01">
+        <a href="${reverse('skills_map:skills-hq')}">${_("Staff HQ")}</a>
+      </li>
+    % endif
+
+    % if not user.is_staff:
+      <li class="item nav-global-01">
+        <a href="${reverse('custom_dashboard')}">${_("Graded Assignments")}</a>
+      </li>
+    % endif
+
     %if settings.FEATURES.get('ENABLE_SYSADMIN_DASHBOARD','') and user.is_staff:
       <li class="item">
         ## Translators: This is short for "System administration".

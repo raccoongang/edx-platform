@@ -115,6 +115,17 @@ urlpatterns = (
     url(r'^api/experiments/', include('experiments.urls', namespace='api_experiments')),
 
     url(r'^(?P<key>.+)/openassessment-filesystem-storage', views_filesystem.filesystem_storage, name='openassessment-filesystem-storage'),
+
+    # URLs for Staff HQ
+    url(r'^staff-hq/', include('lms.djangoapps.alux_skills_map.urls', namespace="skills_map")),
+
+    # URLs for PCI tool
+    url(r'^pci/', include('lms.djangoapps.pcitool.urls', namespace="pcitool")),
+
+    # URLs for custom dashboard
+    # Consider refactoring so all details are handled in app's urls file
+    url(r'^studentsdashboard', 'custom_dashboard.views.custom_dashboard', name="custom_dashboard"),
+    url(r'^studentfeedback', 'custom_dashboard.views.get_feedback', name="studentfeedback"),
 )
 
 # TODO: This needs to move to a separate urls.py once the student_account and

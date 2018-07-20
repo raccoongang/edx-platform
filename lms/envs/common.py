@@ -2244,6 +2244,15 @@ INSTALLED_APPS = (
     'openedx.features.enterprise_support',
 
     'experiments',
+
+    # ALUx Staff HQ application
+    'alux_skills_map',
+
+    # ALUx PCI tool application
+    'pcitool',
+
+   # ALUx custom dashboard application
+    'custom_dashboard',
 )
 
 ######################### CSRF #########################################
