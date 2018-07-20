@@ -1037,6 +1037,9 @@ INSTALLED_APPS = (
 
     # Waffle related utilities
     'openedx.core.djangoapps.waffle_utils',
+
+    # ALUx Staff HQ application
+    'alux_skills_map',
 )
 
 
