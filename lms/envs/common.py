@@ -2251,7 +2251,7 @@ INSTALLED_APPS = (
     # ALUx PCI tool application
     'pcitool',
 
-   # ALUx custom dashboard application
+    # ALUx custom dashboard application
     'custom_dashboard',
 )
 
