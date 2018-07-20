@@ -74,7 +74,7 @@ class AuthorizationCheckMiddleware(object):
                 request.method == 'GET' and
                 not request.user.is_authenticated() and
                 '/admin' not in request.get_full_path() and
-                'signin_user' != resolve(request.get_full_path()).url_name
+                'signin_user' != resolve(request.path).url_name
 
         ):
             return HttpResponseRedirect(reverse('signin_user'))
