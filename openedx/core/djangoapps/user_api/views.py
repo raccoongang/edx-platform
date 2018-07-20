@@ -577,6 +577,24 @@ class RegistrationView(APIView):
     def _add_confirm_password_field(self, form_desc, required=True):
         password_label = _(u"Confirm Password")
         error_msg = _(u"The password do not match.")
+
+        form_desc.add_field(
+            "confirm_password",
+            label=password_label,
+            field_type="password",
+            restrictions={
+                "min_length": PASSWORD_MIN_LENGTH,
+                "max_length": PASSWORD_MAX_LENGTH,
+            },
+            required=required,
+            error_messages={
+                "required": error_msg
+            }
+        )
+
+    def _add_confirm_password_field(self, form_desc, required=True):
+        password_label = _(u"Confirm Password")
+        error_msg = _(u"The password do not match.")
         password_placeholder = _(u"Confirm Password")
 
         form_desc.add_field(

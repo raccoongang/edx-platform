@@ -1042,3 +1042,7 @@ urlpatterns += (
     url(r'^contact/$', 'branding.views.contact_form', name='contact_form'),
     url(r'^contact_form_sended/$', 'branding.views.contact_form_sended', name='contact_form_sended'),
 )
+
+urlpatterns += (
+    url(r'^set_national_id/$', 'custom_reg_form.views.set_national_id', name='set_national_id'),
+)

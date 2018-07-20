@@ -89,6 +89,7 @@ def tpa_hint_ends_existing_session(func):
 
     return inner
 
+
 def signout_for_ws_federation(view):
     def wrapper(request, backend, *args, **kwargs):
         if request.GET.get('wa') == 'wsignoutcleanup1.0':
