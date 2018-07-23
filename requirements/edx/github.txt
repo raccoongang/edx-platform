@@ -93,7 +93,7 @@ git+https://github.com/edx/edx-proctoring.git@0.18.1#egg=edx-proctoring==0.18.1
 git+https://github.com/open-craft/xblock-poll@v1.2.7#egg=xblock-poll==1.2.7
 git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.18#egg=xblock-drag-and-drop-v2==2.0.18
 #aluxsga
--e git+git@github.com:aludeveloper/aluxsga.git@master#egg=aluxsga
+#-e git+git@github.com:aludeveloper/aluxsga.git@master#egg=aluxsga
 #xblock-in-video-quiz
 git+https://github.com/Stanford-Online/xblock-in-video-quiz@release/v0.1.6#egg=invideoquiz
 
