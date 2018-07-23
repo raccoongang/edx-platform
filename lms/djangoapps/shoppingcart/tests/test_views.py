@@ -1493,14 +1493,11 @@ class ShoppingCartViewsTests(SharedModuleStoreTestCase, XssTestMixin):
 @ddt.ddt
 class ShoppingCartViewDeletedCourseTests(SharedModuleStoreTestCase, XssTestMixin):
     """
-    Test shopping cart view deleted course under various states
-    """
+    Testing shopping cart view with deleted courses.
 
-    @classmethod
-    def setUpClass(cls):
-        super(ShoppingCartViewDeletedCourseTests, cls).setUpClass()
-        cls.course = CourseFactory.create(org='MITxx', number='9999', display_name='Robot Super Puper Course')
-        cls.course_key = cls.course.id
+    Shopping cart need to work with course that added to cart and deleted.
+
+    """
 
     def setUp(self):
         super(ShoppingCartViewDeletedCourseTests, self).setUp()
@@ -1514,21 +1511,26 @@ class ShoppingCartViewDeletedCourseTests(SharedModuleStoreTestCase, XssTestMixin
 
     @patch('shoppingcart.views.render_to_response', render_mock)
     def test_add_course_to_cart_and_delete_this_course(self):
+        """
+        Testing shopping cart work with course that added to cart and deleted.
+        """
+        course = CourseFactory.create(org='MITxx', number='9999', display_name='Robot Super Puper Course')
+        course_key = course.id
         self.login_user()
 
-        resp = self.client.post(reverse('shoppingcart.views.add_course_to_cart', args=[self.course_key.to_deprecated_string()]))
+        resp = self.client.post(reverse('shoppingcart.views.add_course_to_cart', args=[course_key.to_deprecated_string()]))
         self.assertEqual(resp.status_code, 200)
-        self.assertTrue(PaidCourseRegistration.contained_in_order(self.cart, self.course_key))
+        self.assertTrue(PaidCourseRegistration.contained_in_order(self.cart, course_key))
 
         module_store = modulestore()
-        with module_store.bulk_operations(self.course_key):
-            module_store.delete_course(self.course_key, self.user)
+        with module_store.bulk_operations(course_key):
+            module_store.delete_course(course_key, self.user)
 
         resp = self.client.get(reverse('shoppingcart.views.show_cart', args=[]))
         self.assertEqual(resp.status_code, 200)
-        ((template, context), _tmp) = render_mock.call_args
+        (template, context), _tmp = render_mock.call_args
         self.assertEqual(context['shoppingcart_items'], [])
-        self.assertFalse(PaidCourseRegistration.contained_in_order(self.cart, self.course_key))
+        self.assertFalse(PaidCourseRegistration.contained_in_order(self.cart, course_key))
 
 
 class ReceiptRedirectTest(SharedModuleStoreTestCase):
