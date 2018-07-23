@@ -68,15 +68,15 @@
     ## The OpenEdX link may be hidden when this view is served
     ## through an API to partner sites (such as marketing sites or blogs),
     ## which are not technically powered by OpenEdX.
-    % if not hide_openedx_link:
-    <div class="footer-about-openedx">
-      <p>
-        <a href="${footer['openedx_link']['url']}">
-          <img src="${footer['openedx_link']['image']}" alt="${footer['openedx_link']['title']}" width="140" />
-        </a>
-      </p>
-    </div>
-    % endif
+    <!--% if not hide_openedx_link:-->
+    <!--<div class="footer-about-openedx">-->
+      <!--<p>-->
+        <!--<a href="${footer['openedx_link']['url']}">-->
+          <!--<img src="${footer['openedx_link']['image']}" alt="${footer['openedx_link']['title']}" width="140" />-->
+        <!--</a>-->
+      <!--</p>-->
+    <!--</div>-->
+    <!--% endif-->
   </footer>
 </div>
 % if include_dependencies:
