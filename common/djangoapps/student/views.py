@@ -25,6 +25,7 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import NoReverseMatch, reverse, reverse_lazy
 from django.core.validators import ValidationError, validate_email
 from django.db import IntegrityError, transaction
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import Signal, receiver
 from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
@@ -1400,7 +1401,7 @@ def login_user(request, error=""):  # pylint: disable=too-many-statements,unused
         email = request.POST['email'] or False
         password = request.POST['password']
         try:
-            user = User.objects.select_related().get(extrainfo__nationality_id=email)
+            user = User.objects.select_related().get(Q(extrainfo__nationality_id=email) | Q(email=email))
         except User.DoesNotExist:
             if settings.FEATURES['SQUELCH_PII_IN_LOGS']:
                 AUDIT_LOG.warning(u"Login failed - Unknown user email")
