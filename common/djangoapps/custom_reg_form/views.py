@@ -12,12 +12,12 @@ from .forms import SetNationalIdForm
 
 def set_national_id(request):
     if request.method == 'POST':
-        form = SetNationalIdForm(request.POST)
+        form = SetNationalIdForm(request.POST, user=request.user.is_authenticated() and request.user or None)
         if form.is_valid():
             form.save()
             messages.success(request, _('You National ID updated successfully. Now you can log in using it.'), extra_tags='set_national_id_success')
             return redirect(reverse('set_national_id'))
     elif request.method == 'GET':
-        form = SetNationalIdForm()
+        form = SetNationalIdForm(user=request.user.is_authenticated() and request.user or None)
 
     return render_to_response('set_national_id.html', {'form': form})
