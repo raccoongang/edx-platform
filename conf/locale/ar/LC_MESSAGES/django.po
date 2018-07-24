@@ -1010,7 +1010,7 @@ msgstr "محاولات فاشلة كثيرة لتسجيل الدخول. يُرج
 
 #: common/djangoapps/student/views/login.py lms/templates/provider_login.html
 msgid "Email or password is incorrect."
-msgstr "عنوان البريد الإلكتروني أو كلمة المرور خاطئين."
+msgstr "رقم الهوية / البريد الإلكتروني أو كلمة المرور خاطئين."
 
 #: common/djangoapps/student/views/login.py
 msgid "No inactive user with this e-mail exists"
@@ -9465,6 +9465,14 @@ msgstr "يُرجى اختيار البلد"
 #: openedx/core/djangoapps/user_api/views.py
 msgid "The password do not match."
 msgstr "كلمة المرور غير متطابقة"
+
+#: openedx/core/djangoapps/user_api/views.py
+msgid "Email / National ID"
+msgstr "رقم الهوية / البريد الإلكتروني"
+
+#: openedx/core/djangoapps/user_api/views.py
+msgid "The national id or email address you used to register with {platform_name}"
+msgstr "رقم الهوية او عنوان البريد الإلكتروني الذي استخدمته للتسجيل في {platform_name}"
 
 #. Translators: This label appears above a field on the registration form
 #. which allows the user to input the Job Title
