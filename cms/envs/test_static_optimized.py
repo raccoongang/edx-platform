@@ -16,10 +16,14 @@ from .common import *  # pylint: disable=wildcard-import, unused-wildcard-import
 # Use an in-memory database since this settings file is only used for updating assets
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'localhost',
+        'NAME': 'edxtest',
+        'PASSWORD': '',
+        'PORT': '3306',
+        'USER': 'root',
         'ATOMIC_REQUESTS': True,
-    },
-
+    }
 }
 
 ######################### PIPELINE ####################################

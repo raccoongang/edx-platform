@@ -65,21 +65,21 @@ CONTENTSTORE = {
 # which they can flush without messing up your dev db
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': TEST_ROOT / "db" / "test_edx.db",
-        'TEST_NAME': TEST_ROOT / "db" / "test_edx.db",
-        'OPTIONS': {
-            'timeout': 30,
-        },
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'localhost',
+        'NAME': 'edxtest',
+        'PASSWORD': '',
+        'PORT': '3306',
+        'USER': 'root',
         'ATOMIC_REQUESTS': True,
     },
     'student_module_history': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': TEST_ROOT / "db" / "test_student_module_history.db",
-        'TEST_NAME': TEST_ROOT / "db" / "test_student_module_history.db",
-        'OPTIONS': {
-            'timeout': 30,
-        },
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'localhost',
+        'NAME': 'student_module_history_test',
+        'PASSWORD': '',
+        'PORT': '3306',
+        'USER': 'root',
     }
 }
 

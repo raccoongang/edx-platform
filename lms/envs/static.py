@@ -24,14 +24,21 @@ LOGGING = get_logger_config(ENV_ROOT / "log",
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ENV_ROOT / "db" / "edx.db",
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'localhost',
+        'NAME': 'edxtest',
+        'PASSWORD': '',
+        'PORT': '3306',
+        'USER': 'root',
         'ATOMIC_REQUESTS': True,
     },
     'student_module_history': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ENV_ROOT / "db" / "student_module_history.db",
-        'ATOMIC_REQUESTS': True,
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'localhost',
+        'NAME': 'student_module_history_test',
+        'PASSWORD': '',
+        'PORT': '3306',
+        'USER': 'root',
     }
 }
 

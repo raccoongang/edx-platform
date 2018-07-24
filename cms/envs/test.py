@@ -129,12 +129,15 @@ CONTENTSTORE = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': TEST_ROOT / "db" / "cms.db",
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'localhost',
+        'NAME': 'edxtest',
+        'PASSWORD': '',
+        'PORT': '3306',
+        'USER': 'root',
         'ATOMIC_REQUESTS': True,
-    },
+   }
 }
-
 if os.environ.get('DISABLE_MIGRATIONS'):
     # Create tables directly from apps' models. This can be removed once we upgrade
     # to Django 1.9, which allows setting MIGRATION_MODULES to None in order to skip migrations.

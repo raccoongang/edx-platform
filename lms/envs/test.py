@@ -186,12 +186,22 @@ CONTENTSTORE = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'localhost',
+        'NAME': 'edxtest',
+        'PASSWORD': '',
+        'PORT': '3306',
+        'USER': 'root',
         'ATOMIC_REQUESTS': True,
     },
     'student_module_history': {
-        'ENGINE': 'django.db.backends.sqlite3',
-    },
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'localhost',
+        'NAME': 'student_module_history_test',
+        'PASSWORD': '',
+        'PORT': '3306',
+        'USER': 'root',
+    }
 }
 
 if os.environ.get('DISABLE_MIGRATIONS'):
