@@ -1001,7 +1001,7 @@ msgid ""
 msgstr ""
 "لتسجيل الدخول، يجب تنشيط حسابك.<br /><br />لقد قمنا للتو بإرسال رابط التنشيط"
 " إلى <strong>{email}</strong>. إذا لم تتلق رسالة إلكترونية تحقق من مجلدات "
-"الرسائل غير المرغوب فيها أو <a href=\"{support_url}\">اتصل بفريق الدعم بمنصة"
+"الرسائل غير المرغوب فيها أو <a href=\"{support_url}\">اتصل بفريق الدعم ب"
 "  {platform}</a> ."
 
 #: common/djangoapps/student/views/login.py
@@ -11306,18 +11306,24 @@ msgstr "تمت إعادة مظهر الموقع إلى الإعداد الافت
 msgid "Theming Administration"
 msgstr "إدارة المظهر"
 
-#: openedx/core/djangoapps/user_api/accounts/__init__.py
+#. Translators: This message is shown when the Unicode usernames are NOT
+#. allowed
+#: common/djangoapps/student/forms.py
 msgid ""
-"Usernames can only contain letters (A-Z, a-z), numerals (0-9), underscores "
-"(_), and hyphens (-)."
+"Usernames can only contain Roman letters, western numerals (0-9), "
+"underscores (_), and hyphens (-)."
 msgstr ""
 "يمكن أن تحتوي أسماء المستخدمين فقط على أحرف (A-Z و a-z) وأرقام (0-9) وشرطات "
 "سفلية (_) وواصلات (-)."
 
-#: openedx/core/djangoapps/user_api/accounts/__init__.py
+#. Translators: This message is shown only when the Unicode usernames are
+#. allowed
+#: common/djangoapps/student/forms.py
 msgid ""
-"Usernames can only contain letters, numerals, and @/./+/-/_ characters."
-msgstr "يمكن أن تحتوي أسماء المستخدمين فقط على أحرف وأرقام و @/./+/-/_."
+"Usernames can only contain letters, numerals, underscore (_), numbers and "
+"@/./+/-/_ characters."
+msgstr ""
+"يمكن أن تحتوي أسماء المستخدمين فقط على أحرف وأرقام و @/./+/-/_."
 
 #. Translators: This message is shown to users who attempt to create a new
 #. account using
