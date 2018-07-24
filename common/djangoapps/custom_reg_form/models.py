@@ -18,7 +18,8 @@ class ExtraInfo(models.Model):
     )
     nationality_id = models.CharField(
         verbose_name=_("National ID"),
-        max_length=10
+        max_length=10,
+        unique=True
     )
     date_of_birth_day = models.PositiveIntegerField(
         validators=[
@@ -37,7 +38,7 @@ class ExtraInfo(models.Model):
     @property
     def date_of_birth(self):
         return '{}{}{}'.format(
-            self.date_of_birth_year or '',
-            self.date_of_birth_month or '',
-            self.date_of_birth_day or ''
+            self.date_of_birth_year or '0000',
+            str(self.date_of_birth_month or '').rjust(2, '0'),
+            str(self.date_of_birth_day or '').rjust(2, '0')
         )

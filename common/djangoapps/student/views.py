@@ -1397,10 +1397,10 @@ def login_user(request, error=""):  # pylint: disable=too-many-statements,unused
                 "value": _('There was an error receiving your login information. Please email us.'),
             })  # TODO: this should be status code 400
 
-        email = request.POST['email']
+        email = request.POST['email'] or False
         password = request.POST['password']
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.select_related().get(extrainfo__nationality_id=email)
         except User.DoesNotExist:
             if settings.FEATURES['SQUELCH_PII_IN_LOGS']:
                 AUDIT_LOG.warning(u"Login failed - Unknown user email")
