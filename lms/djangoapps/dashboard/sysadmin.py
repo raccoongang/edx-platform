@@ -502,7 +502,7 @@ class Courses(SysadminDashboardView):
                     result_ids = [result["data"]["id"] for result in response["results"]]
                     self._searcher.remove('courseware_content', result_ids)
                     self._searcher.remove('course_info', [course_id])
-                except Exception as e: # pragma: no cover
+                except Exception as e:  # pragma: no cover
                     log.error(e.message)
 
                 CourseOverview.objects.filter(id=course.id).delete()

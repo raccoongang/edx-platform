@@ -1161,9 +1161,9 @@ class CertificateEventTests(CommonCertificatesTestCase, EventTrackingTestCase):
             course_id=unicode(self.course.id)
         )
         new_user = UserFactory.create(
-                email='other_user@edx.org',
-                username='other_user',
-                password='foo'
+            email='other_user@edx.org',
+            username='other_user',
+            password='foo'
         )
         new_user.profile.name = "Other User"
         new_user.profile.save()

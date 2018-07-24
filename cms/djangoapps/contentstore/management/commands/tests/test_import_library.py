@@ -15,6 +15,7 @@ from xmodule.modulestore.django import modulestore
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 
+
 @ddt.ddt
 class TestImportLibrary(ModuleStoreTestCase):
     """
@@ -56,7 +57,7 @@ class TestImportLibrary(ModuleStoreTestCase):
         Compare library_key of imported library with self-generated
         """
         self.assertEqual(unicode(self.library_from_store.location.library_key), unicode(self.library_key))
-        """ 
+        """
         Compare display_name of imported library with original
         """
         self.assertEqual(unicode(self.library_from_store), u"Library: " + unicode(self.display_name))
@@ -66,4 +67,3 @@ class TestImportLibrary(ModuleStoreTestCase):
         errstring = "Imported libraries count is zero"
         with self.assertRaisesRegexp(CommandError, errstring):
             call_command('import-library', self.content_dir, invalid_source_dir)
-

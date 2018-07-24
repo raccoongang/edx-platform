@@ -147,7 +147,7 @@ class DarkLangMiddlewareSetLocaleAdditional(object):
         if not DarkLangConfig.current().enabled:
             return
 
-        reload(sys)  
+        reload(sys)
         sys.setdefaultencoding('utf8')
 
         language = translation.get_language_from_request(request)
@@ -155,4 +155,3 @@ class DarkLangMiddlewareSetLocaleAdditional(object):
             locale.setlocale(locale.LC_ALL, settings.LOCALESET_FROM_REQUEST.get(language))
         except:
             pass
-

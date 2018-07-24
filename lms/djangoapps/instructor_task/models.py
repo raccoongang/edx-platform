@@ -309,9 +309,9 @@ class DjangoStorageReportStore(ReportStore):
         files = [(filename, os.path.join(course_dir, filename)) for filename in filenames]
         files.sort(key=lambda f: self.storage.modified_time(f[1]), reverse=True)
 
-        if (settings.GRADES_DOWNLOAD['STORAGE_TYPE']=='azure' or settings.GRADES_DOWNLOAD['STORAGE_TYPE']=='s3'):
+        if (settings.GRADES_DOWNLOAD['STORAGE_TYPE'] == 'azure' or settings.GRADES_DOWNLOAD['STORAGE_TYPE'] == 's3'):
             return [
-            (filename, self.storage.url(full_path))
+                (filename, self.storage.url(full_path))
                 for filename, full_path in files
             ]
         else:
