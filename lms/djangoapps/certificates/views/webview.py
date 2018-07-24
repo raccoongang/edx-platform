@@ -310,6 +310,9 @@ def _update_context_with_user_info(context, user, user_certificate):
     context['user_certificate_create'] = user_certificate.created_date
     context['user_phone'] = ''
     context['user_address'] = ''
+    context['user_city'] = user.profile.city
+    context['user__usa_state'] = ''
+    context['user_zip'] = ''
     context['user_states'] = []
 
     try:
@@ -319,6 +322,8 @@ def _update_context_with_user_info(context, user, user_certificate):
     else:
         context.update({
             'user_phone': user_extra_info.phone,
+            'user_usa_state': user_extra_info.usa_state,
+            'user_zip': user_extra_info.zip_code,
             'user_address': user_extra_info.address,
             'user_states': user_extra_info.stateextrainfo_set.values('license', 'state')
         })

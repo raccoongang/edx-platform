@@ -20,6 +20,8 @@ from calypso_reg_form.models import StateExtraInfo
 from student.models import UserProfile, LanguageProficiency
 from .image_helpers import get_profile_image_urls_for_user
 
+from calypso_reg_form.models import ExtraInfo
+
 
 PROFILE_IMAGE_KEY_PREFIX = 'image_url'
 LOGGER = logging.getLogger(__name__)
@@ -74,6 +76,12 @@ class UserReadOnlySerializer(serializers.Serializer):
             user_profile = None
             LOGGER.warning("user profile for the user [%s] does not exist", user.username)
 
+        try:
+            user_extra_info = user.extrainfo
+        except ObjectDoesNotExist:
+            user_extra_info = None
+            LOGGER.warning("user extra info for the user [%s] does not exist", user.username)
+
         accomplishments_shared = badges_enabled()
 
         data = {
@@ -123,9 +131,17 @@ class UserReadOnlySerializer(serializers.Serializer):
                     ),
                     "mailing_address": user_profile.mailing_address,
                     "requires_parental_consent": user_profile.requires_parental_consent(),
-                    "account_privacy": get_profile_visibility(user_profile, user, self.configuration)
+                    "account_privacy": get_profile_visibility(user_profile, user, self.configuration),
+                    "city": user_profile.city
                 }
             )
+
+        if user_extra_info:
+            data.update({
+                'phone': user_extra_info.phone,
+                'zip_code': user_extra_info.zip_code,
+                'usa_state': user_extra_info.usa_state,
+            })
 
         if self.custom_fields:
             fields = self.custom_fields
@@ -162,6 +178,19 @@ class AccountUserSerializer(serializers.HyperlinkedModelSerializer, ReadOnlyFiel
         explicit_read_only_fields = ()
 
 
+class AccountExtraInfoSerializer(serializers.HyperlinkedModelSerializer, ReadOnlyFieldsSerializerMixin):
+    class Meta(object):
+        model = ExtraInfo
+        fields = ('phone', 'zip_code', 'usa_state')
+        read_only_fields = ()
+        explicit_read_only_fields = ()
+        extra_kwargs = {
+            'phone': {'required': False},
+            'zip_code': {'required': False},
+            'usa_state': {'required': False}
+        }
+
+
 class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, ReadOnlyFieldsSerializerMixin):
     """
     Class that serializes the portion of UserProfile model needed for account information.
@@ -174,7 +203,8 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
         model = UserProfile
         fields = (
             "name", "gender", "goals", "year_of_birth", "level_of_education", "country",
-            "mailing_address", "bio", "profile_image", "requires_parental_consent", "language_proficiencies"
+            "mailing_address", "bio", "profile_image", "requires_parental_consent",
+            "language_proficiencies", "city"
         )
         # Currently no read-only field, but keep this so view code doesn't need to know.
         read_only_fields = ()

@@ -34,9 +34,12 @@ from . import (
 )
 from .serializers import (
     AccountLegacyProfileSerializer, AccountUserSerializer,
-    UserReadOnlySerializer, _visible_fields, StateExtraInfoSerializer  # pylint: disable=invalid-name
+    UserReadOnlySerializer, _visible_fields, StateExtraInfoSerializer, # pylint: disable=invalid-name
+    AccountExtraInfoSerializer
 )
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+
+from calypso_reg_form.models import ExtraInfo
 
 
 # Public access point for this function.
@@ -127,7 +130,7 @@ def update_account_settings(requesting_user, update, username=None):
     if username is None:
         username = requesting_user.username
 
-    existing_user, existing_user_profile = _get_user_and_profile(username)
+    existing_user, existing_user_profile, existing_extra_info = _get_user_and_profile(username)
 
     if requesting_user.username != username:
         raise UserNotAuthorized()
@@ -164,8 +167,9 @@ def update_account_settings(requesting_user, update, username=None):
 
     user_serializer = AccountUserSerializer(existing_user, data=update)
     legacy_profile_serializer = AccountLegacyProfileSerializer(existing_user_profile, data=update)
+    extra_info_serializer = AccountExtraInfoSerializer(existing_extra_info, data=update)
 
-    for serializer in user_serializer, legacy_profile_serializer:
+    for serializer in user_serializer, legacy_profile_serializer, extra_info_serializer:
         field_errors = add_serializer_errors(serializer, update, field_errors)
 
     # If the user asked to change email, validate it.
@@ -190,7 +194,7 @@ def update_account_settings(requesting_user, update, username=None):
         if "language_proficiencies" in update:
             old_language_proficiencies = legacy_profile_serializer.data["language_proficiencies"]
 
-        for serializer in user_serializer, legacy_profile_serializer:
+        for serializer in user_serializer, legacy_profile_serializer, extra_info_serializer:
             serializer.save()
 
         # if any exception is raised for user preference (i.e. account_privacy), the entire transaction for user account
@@ -254,8 +258,9 @@ def _get_user_and_profile(username):
         raise UserNotFound()
 
     existing_user_profile, _ = UserProfile.objects.get_or_create(user=existing_user)
+    existing_extra_info, _ = ExtraInfo.objects.get_or_create(user=existing_user)
 
-    return existing_user, existing_user_profile
+    return existing_user, existing_user_profile, existing_extra_info
 
 
 @intercept_errors(UserAPIInternalError, ignore_errors=[UserAPIRequestError])

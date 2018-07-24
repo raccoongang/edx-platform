@@ -123,12 +123,48 @@
                             })
                         },
                         {
+                            view: new AccountSettingsFieldViews.TextFieldView({
+                                model: userAccountModel,
+                                title: gettext('City'),
+                                valueAttribute: 'city',
+                                options: fieldsData.level_of_education.options,
+                                persistChanges: true
+                            })
+                        },
+                        {
+                            view: new AccountSettingsFieldViews.TextFieldView({
+                                model: userAccountModel,
+                                title: gettext('State'),
+                                valueAttribute: 'usa_state',
+                                options: fieldsData.level_of_education.options,
+                                persistChanges: true
+                            })
+                        },
+                        {
                             view: new AccountSettingsFieldViews.DropdownFieldView({
                                 model: userAccountModel,
                                 required: true,
                                 title: gettext('Country or Region'),
                                 valueAttribute: 'country',
                                 options: fieldsData.country.options,
+                                persistChanges: true
+                            })
+                        },
+                        {
+                            view: new AccountSettingsFieldViews.TextFieldView({
+                                model: userAccountModel,
+                                title: gettext('Zip'),
+                                valueAttribute: 'zip_code',
+                                options: fieldsData.level_of_education.options,
+                                persistChanges: true
+                            })
+                        },
+                        {
+                            view: new AccountSettingsFieldViews.TextFieldView({
+                                model: userAccountModel,
+                                title: gettext('Phone'),
+                                valueAttribute: 'phone',
+                                options: fieldsData.level_of_education.options,
                                 persistChanges: true
                             })
                         },
