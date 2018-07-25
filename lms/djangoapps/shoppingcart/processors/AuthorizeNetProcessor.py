@@ -274,7 +274,7 @@ def _payment_accepted(order_id, auth_amount, currency, decision):
         raise CCProcessorDataException(_("The payment processor accepted an order whose number is not in our system."))
 
     if dict(RESPONSE_CODES)[decision] == 'Approved':
-        if auth_amount == order.total_cost and currency.lower() == order.currency.lower():
+        if float(auth_amount) == float(order.total_cost) and currency.lower() == order.currency.lower():
             return {
                 'accepted': True,
                 'amt_charged': auth_amount,
