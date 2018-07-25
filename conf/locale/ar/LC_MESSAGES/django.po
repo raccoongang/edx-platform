@@ -1001,7 +1001,7 @@ msgid ""
 msgstr ""
 "لتسجيل الدخول، يجب تنشيط حسابك.<br /><br />لقد قمنا للتو بإرسال رابط التنشيط"
 " إلى <strong>{email}</strong>. إذا لم تتلق رسالة إلكترونية تحقق من مجلدات "
-"الرسائل غير المرغوب فيها أو <a href=\"{support_url}\">اتصل بفريق الدعم بمنصة"
+"الرسائل غير المرغوب فيها أو <a href=\"{support_url}\">اتصل بفريق الدعم ب"
 "  {platform}</a> ."
 
 #: common/djangoapps/student/views/login.py
@@ -1010,7 +1010,7 @@ msgstr "محاولات فاشلة كثيرة لتسجيل الدخول. يُرج
 
 #: common/djangoapps/student/views/login.py lms/templates/provider_login.html
 msgid "Email or password is incorrect."
-msgstr "عنوان البريد الإلكتروني أو كلمة المرور خاطئين."
+msgstr "رقم الهوية / البريد الإلكتروني أو كلمة المرور خاطئين."
 
 #: common/djangoapps/student/views/login.py
 msgid "No inactive user with this e-mail exists"
@@ -1119,7 +1119,7 @@ msgid ""
 "enrolled in. Sign In to continue."
 msgstr ""
 "{html_start}تهانينا! لقد قمت بتنشيط حسابك.{html_end} سوف تتلقى الآن في بريدك"
-" تحديثات وتنبيهات متعلقة بالدورات التي قمت بتسجيل فيها. قم بتسجيل الدخول "
+" تحديثات وتنبيهات متعلقة بالدورات التي قمت بالتسجيل فيها. قم بتسجيل الدخول "
 "للمتابعة."
 
 #: common/djangoapps/student/views/management.py
@@ -9462,6 +9462,18 @@ msgstr "الشركة"
 msgid "Please select your Country."
 msgstr "يُرجى اختيار البلد"
 
+#: openedx/core/djangoapps/user_api/views.py
+msgid "The password do not match."
+msgstr "كلمة المرور غير متطابقة"
+
+#: openedx/core/djangoapps/user_api/views.py
+msgid "Email / National ID"
+msgstr "رقم الهوية / البريد الإلكتروني"
+
+#: openedx/core/djangoapps/user_api/views.py
+msgid "The national id or email address you used to register with {platform_name}"
+msgstr "رقم الهوية او عنوان البريد الإلكتروني الذي استخدمته للتسجيل في {platform_name}"
+
 #. Translators: This label appears above a field on the registration form
 #. which allows the user to input the Job Title
 #: lms/djangoapps/student_account/views.py
@@ -11302,18 +11314,24 @@ msgstr "تمت إعادة مظهر الموقع إلى الإعداد الافت
 msgid "Theming Administration"
 msgstr "إدارة المظهر"
 
-#: openedx/core/djangoapps/user_api/accounts/__init__.py
+#. Translators: This message is shown when the Unicode usernames are NOT
+#. allowed
+#: common/djangoapps/student/forms.py
 msgid ""
-"Usernames can only contain letters (A-Z, a-z), numerals (0-9), underscores "
-"(_), and hyphens (-)."
+"Usernames can only contain Roman letters, western numerals (0-9), "
+"underscores (_), and hyphens (-)."
 msgstr ""
 "يمكن أن تحتوي أسماء المستخدمين فقط على أحرف (A-Z و a-z) وأرقام (0-9) وشرطات "
 "سفلية (_) وواصلات (-)."
 
-#: openedx/core/djangoapps/user_api/accounts/__init__.py
+#. Translators: This message is shown only when the Unicode usernames are
+#. allowed
+#: common/djangoapps/student/forms.py
 msgid ""
-"Usernames can only contain letters, numerals, and @/./+/-/_ characters."
-msgstr "يمكن أن تحتوي أسماء المستخدمين فقط على أحرف وأرقام و @/./+/-/_."
+"Usernames can only contain letters, numerals, underscore (_), numbers and "
+"@/./+/-/_ characters."
+msgstr ""
+"يمكن أن تحتوي أسماء المستخدمين فقط على أحرف وأرقام و @/./+/-/_."
 
 #. Translators: This message is shown to users who attempt to create a new
 #. account using
