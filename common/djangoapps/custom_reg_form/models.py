@@ -35,6 +35,9 @@ class ExtraInfo(models.Model):
     )
     date_of_birth_year = models.PositiveIntegerField()
 
+    def __str__(self):
+        return 'ExtraInfo: {}[{}]'.format(self.user.username, self.nationality_id)
+
     @property
     def date_of_birth(self):
         return '{}{}{}'.format(
@@ -42,3 +45,7 @@ class ExtraInfo(models.Model):
             str(self.date_of_birth_month or '').rjust(2, '0'),
             str(self.date_of_birth_day or '').rjust(2, '0')
         )
+
+    @classmethod
+    def has_national_id(cls, user):
+        return bool(hasattr(user, 'extrainfo') and user.extrainfo.nationality_id)
