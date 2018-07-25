@@ -5355,7 +5355,12 @@ msgstr ""
 #. Translators:  This text represents the description of course
 #: lms/djangoapps/certificates/views/webview.py
 msgid "a course of study offered by {partner_short_name}."
-msgstr "مساق دروس تعليمية يقدِّمه {partner_short_name}."
+msgstr "تدريب تقدمه المنظمة العالمية للحركة الكشفية {partner_short_name}."
+
+#. Translators:  This text represents the description of course
+#: lms/djangoapps/certificates/views/webview.py
+msgid "a course of study offered by {partner_short_name}"
+msgstr "تدريب تقدمه المنظمة العالمية للحركة الكشفية {partner_short_name}"
 
 #: lms/djangoapps/certificates/views/webview.py
 msgid "I completed the {course_title} course on {platform_name}."
@@ -23184,3 +23189,11 @@ msgid ""
 "A new revision was created: Merge between Revision #%(r1)d and Revision "
 "#%(r2)d"
 msgstr "أُنشأت مراجعة جديدة: الدمج بين المراجعة #%(r1)d والمراجعة #%(r2)d "
+
+#: lms/djangoapps/certificates/views/webview.py
+msgid "{partner_short_name} {course_number} Certificate"
+msgstr "شهادة {partner_short_name} {course_number}"
+
+#: lms/djangoapps/certificates/views/webview.py
+msgid "successfully completed"
+msgstr "أتم بنجاح"
