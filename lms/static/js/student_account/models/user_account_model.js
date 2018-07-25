@@ -15,6 +15,7 @@
                 usa_state: null,
                 country: null,
                 zip_code: null,
+                address: null,
                 phone: null,
                 date_joined: '',
                 gender: null,
