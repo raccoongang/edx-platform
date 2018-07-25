@@ -1243,6 +1243,8 @@ MIDDLEWARE_CLASSES = (
 
     # This must be last
     'openedx.core.djangoapps.site_configuration.middleware.SessionCookieDomainOverrideMiddleware',
+
+    'custom_reg_form.middleware.CheckNationalId'
 )
 
 # Clickjacking protection can be enabled by setting this to 'DENY'
