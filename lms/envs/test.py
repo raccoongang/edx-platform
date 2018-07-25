@@ -188,12 +188,36 @@ CONTENTSTORE = {
 }
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'ATOMIC_REQUESTS': True,
+    "default": {
+        "ATOMIC_REQUESTS": True,
+        "CONN_MAX_AGE": 0,
+        "ENGINE": "django.db.backends.mysql",
+        "HOST": "localhost",
+        "OPTIONS": {
+            'init_command': 'SET autocommit=0',
+        },
+        "PASSWORD": "123456789",
+        "PORT": "3306",
+        "USER": "newuser",
+        'TEST': {
+            'COLLATION': "utf8_general_ci",
+            'CHARSET': "utf8",
+        },
     },
     'student_module_history': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        "CONN_MAX_AGE": 0,
+        "ENGINE": "django.db.backends.mysql",
+        "HOST": "localhost",
+        "OPTIONS": {
+            'init_command': 'SET autocommit=0',
+        },
+        "PASSWORD": "123456789",
+        "PORT": "3306",
+        "USER": "newuser",
+        'TEST': {
+            'COLLATION': "utf8_general_ci",
+            'CHARSET': "utf8",
+        },
     },
 }
 
