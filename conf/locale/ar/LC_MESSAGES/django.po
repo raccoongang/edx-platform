@@ -5357,6 +5357,11 @@ msgstr ""
 msgid "a course of study offered by {partner_short_name}."
 msgstr "تدريب تقدمه المنظمة العالمية للحركة الكشفية {partner_short_name}."
 
+#. Translators:  This text represents the description of course
+#: lms/djangoapps/certificates/views/webview.py
+msgid "a course of study offered by {partner_short_name}"
+msgstr "تدريب تقدمه المنظمة العالمية للحركة الكشفية {partner_short_name}"
+
 #: lms/djangoapps/certificates/views/webview.py
 msgid "I completed the {course_title} course on {platform_name}."
 msgstr "لقد أتممت مساق {course_title} على {platform_name}."
