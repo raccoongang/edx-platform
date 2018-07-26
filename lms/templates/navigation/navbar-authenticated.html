@@ -39,6 +39,9 @@ from django.utils.translation import ugettext as _
       <li class="item nav-global-01">
         <a href="${reverse('custom_dashboard')}">${_("Graded Assignments")}</a>
       </li>
+      <li class="item nav-global-01">
+        <a href="${reverse('widget:index')}">${_("External Content")}</a>
+      </li>
     % endif
 
     %if settings.FEATURES.get('ENABLE_SYSADMIN_DASHBOARD','') and user.is_staff:
