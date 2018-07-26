@@ -2934,7 +2934,8 @@ ACCOUNT_VISIBILITY_CONFIGURATION = {
         "city",
         "phone",
         "zip_code",
-        "usa_state"
+        "usa_state",
+        "address"
     ]
 }
 

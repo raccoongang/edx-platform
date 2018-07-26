@@ -141,6 +141,7 @@ class UserReadOnlySerializer(serializers.Serializer):
                 'phone': user_extra_info.phone,
                 'zip_code': user_extra_info.zip_code,
                 'usa_state': user_extra_info.usa_state,
+                'address': user_extra_info.address
             })
 
         if self.custom_fields:
@@ -181,13 +182,14 @@ class AccountUserSerializer(serializers.HyperlinkedModelSerializer, ReadOnlyFiel
 class AccountExtraInfoSerializer(serializers.HyperlinkedModelSerializer, ReadOnlyFieldsSerializerMixin):
     class Meta(object):
         model = ExtraInfo
-        fields = ('phone', 'zip_code', 'usa_state')
+        fields = ('phone', 'zip_code', 'usa_state', 'address')
         read_only_fields = ()
         explicit_read_only_fields = ()
         extra_kwargs = {
             'phone': {'required': False},
             'zip_code': {'required': False},
-            'usa_state': {'required': False}
+            'usa_state': {'required': False},
+            'address': {'required': False}
         }
 
 

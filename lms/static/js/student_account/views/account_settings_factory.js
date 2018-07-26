@@ -127,7 +127,6 @@
                                 model: userAccountModel,
                                 title: gettext('City'),
                                 valueAttribute: 'city',
-                                options: fieldsData.level_of_education.options,
                                 persistChanges: true
                             })
                         },
@@ -136,7 +135,6 @@
                                 model: userAccountModel,
                                 title: gettext('State'),
                                 valueAttribute: 'usa_state',
-                                options: fieldsData.level_of_education.options,
                                 persistChanges: true
                             })
                         },
@@ -155,7 +153,14 @@
                                 model: userAccountModel,
                                 title: gettext('Zip'),
                                 valueAttribute: 'zip_code',
-                                options: fieldsData.level_of_education.options,
+                                persistChanges: true
+                            })
+                        },
+                        {
+                            view: new AccountSettingsFieldViews.TextFieldView({
+                                model: userAccountModel,
+                                title: gettext('Address'),
+                                valueAttribute: 'address',
                                 persistChanges: true
                             })
                         },
