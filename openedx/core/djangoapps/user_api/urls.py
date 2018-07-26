@@ -9,7 +9,11 @@ from ..profile_images.views import ProfileImageView
 from .accounts.views import AccountViewSet
 from .preferences.views import PreferencesView, PreferencesDetailView
 from .verification_api.views import PhotoVerificationStatusView
-from lms.djangoapps.etc_api.views import CreateUserAccountWithoutPasswordView, BulkEnrollView, SetActivateUserStatus
+from lms.djangoapps.etc_api.views import (
+    CreateUserAccountWithoutPasswordView,
+    BulkEnrollView, SetActivateUserStatus,
+    SetEnrollmentStatus,
+)
 ME = AccountViewSet.as_view({
     'get': 'get',
 })
@@ -59,5 +63,9 @@ urlpatterns = patterns(
     url(
         r'set/activate/status$',
         SetActivateUserStatus.as_view()
+    ),
+    url(
+        r'set/enrollment/status$',
+        SetEnrollmentStatus.as_view()
     ),
 )

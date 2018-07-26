@@ -64,8 +64,12 @@ class ApiKeyHeaderPermissionInToken(ApiKeyHeaderPermission, permissions.IsAuthen
 
         if not is_enable_api:
             raise Http404
-        #and request.META.get("HTTP_X_APP_ETC_API_KEY") == api_key
+
         return (
                 (settings.DEBUG and api_key is None) or
-                (is_enable_api is not None and api_key is not None )
+                (
+                        is_enable_api is not None and
+                        api_key is not None and
+                        request.META.get("HTTP_X_APP_ETC_API_KEY") == api_key
+                )
         )
