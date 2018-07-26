@@ -964,7 +964,7 @@ INSTALLED_APPS += (
     'etc_api',
 )
 
-DEFAULT_TEMPLATE_ENGINE['OPTIONS']['context_processors'] += ('appsembler.context_processors.intercom',)
+DEFAULT_TEMPLATE_ENGINE['OPTIONS']['context_processors'] += ('etcapi.context_processors.intercom',)
 
 SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING = True
 
@@ -1099,5 +1099,5 @@ if TAXOMAN_ENABLED:
 # Cutoff date for granting audit certificates
 AUDIT_CERT_CUTOFF_DATE = None
 
-EDX_APP_SEMBLER_API_KEY = AUTH_TOKENS.get('EDX_APP_SEMBLER_API_KEY')
+EDX_APP_ETC_API_KEY = AUTH_TOKENS.get('EDX_APP_ETC_API_KEY')
 

@@ -315,7 +315,7 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 #     'appsembler_api',
 # )
 
-DEFAULT_TEMPLATE_ENGINE['OPTIONS']['context_processors'] += ('appsembler.context_processors.intercom',)
+DEFAULT_TEMPLATE_ENGINE['OPTIONS']['context_processors'] += ('etcapi.context_processors.intercom',)
 
 CUSTOM_LOGOUT_REDIRECT_URL = ENV_TOKENS.get('CUSTOM_LOGOUT_REDIRECT_URL', '/')
 
@@ -432,7 +432,7 @@ AUDIT_CERT_CUTOFF_DATE = None
 
 # MANDRILL
 MANDRILL_API_KEY = AUTH_TOKENS.get('MANDRILL_API_KEY', False)
-EDX_APP_SEMBLER_API_KEY = AUTH_TOKENS.get('EDX_APP_SEMBLER_API_KEY')
+EDX_APP_ETC_API_KEY = AUTH_TOKENS.get('EDX_APP_ETC_API_KEY')
 
 ENABLE_REDIRECT_REGISTER = ENV_TOKENS.get('ENABLE_REDIRECT_REGISTER', False)
 REGISTER_REDIRECT_URL = ENV_TOKENS.get('REGISTER_REDIRECT_URL', '')

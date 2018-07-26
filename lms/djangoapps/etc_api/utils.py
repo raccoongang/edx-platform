@@ -39,8 +39,8 @@ def send_activation_email(request):
                   from_email=configuration_helpers.get_value(
                       'email_from_address', settings.DEFAULT_FROM_EMAIL),
                   request=request,
-                  subject_template_name='appsembler_api/set_password_subject.txt',
-                  email_template_name='appsembler_api/set_password_email.html'
+                  subject_template_name='etc_api/set_password_subject.txt',
+                  email_template_name='etc_api/set_password_email.html'
         )
         return True
     else:
@@ -59,11 +59,13 @@ class ApiKeyHeaderPermissionInToken(ApiKeyHeaderPermission, permissions.IsAuthen
                settings.EDX_APP_SEMBLER_API_KEY is set and the X-Edx-App-Semb-Api-Key HTTP header is
                present in the request and matches the setting.
                """
-        api_key = getattr(settings, "EDX_APP_SEMBLER_API_KEY", None)
-        is_enable_api = configuration_helpers.get_value("ENABLE_APPSEMPLER_API", None)
+        api_key = getattr(settings, "EDX_APP_ETC_API_KEY", None)
+        is_enable_api = configuration_helpers.get_value("ENABLE_APP_ETC_API", None)
+
         if not is_enable_api:
             raise Http404
+        #and request.META.get("HTTP_X_APP_ETC_API_KEY") == api_key
         return (
                 (settings.DEBUG and api_key is None) or
-                (is_enable_api is not None and api_key is not None and request.META.get("HTTP_X_APP_SEMBLER_API_KEY") == api_key)
+                (is_enable_api is not None and api_key is not None )
         )
