@@ -187,28 +187,3 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
             )
 
 
-@can_disable_rate_limit
-class SetEnrollmentStatus(APIView, ApiKeyPermissionMixIn):
-    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    permission_classes = ApiKeyHeaderPermissionInToken,
-
-    def post(self, request):
-
-        data = request.data
-        # set the honor_code and honor_code like checked,
-        # so we can use the already defined methods for creating an user
-        try:
-            enroll_id = int(data['enroll_id'])
-            enrollment_obj = CourseEnrollment.objects.get(id=enroll_id)
-            enrollment_obj.is_active = True if 'true' == "{}".format(data['is_active']).lower() else False
-            enrollment_obj.save()
-        except  User.DoesNotExist:
-            errors = {"user_message": "Wrong id User does not exist"}
-            return Response(errors, status=400)
-
-
-        return Response(data={
-            'enrollment_id': enrollment_obj.id, 'status': enrollment_obj.is_active
-        }, status=status.HTTP_200_OK)
-
-

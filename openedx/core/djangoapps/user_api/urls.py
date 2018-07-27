@@ -64,8 +64,5 @@ urlpatterns = patterns(
         r'set/activate/status$',
         SetActivateUserStatus.as_view()
     ),
-    url(
-        r'set/enrollment/status$',
-        SetEnrollmentStatus.as_view()
-    ),
+
 )
