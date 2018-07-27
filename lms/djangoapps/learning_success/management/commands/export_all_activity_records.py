@@ -49,14 +49,14 @@ def format_date(value):
     return value
 
 
-def thirty_day_units(student, completion_timestamps):
+def thirty_day_units(completion_timestamps):
     thirty_days_ago = timezone.now() - timedelta(days=30)
     return sum(date > thirty_days_ago for date in completion_timestamps)
 
 
-def days_into_data(student, completion_timestamps):
-    days_into_generator = ((date - student.date_joined).days
-                           for date in completion_timestamps)
+def days_into_data(first_active, completion_timestamps):
+    days_into_generator = (
+        (date - first_active).days for date in completion_timestamps)
     return ','.join(map(str, sorted(days_into_generator)))
 
 
@@ -68,9 +68,11 @@ def completed_lessons_per_module(breadcrumb_dict):
     return Counter(format_module_field(breadcrumbs[0], '_lessons')
                    for breadcrumbs in breadcrumb_dict.keys())
 
+
 def completed_units_per_module(breadcrumb_dict):
     return Counter(format_module_field(breadcrumbs[0], '_units')
                    for breadcrumbs in breadcrumb_dict.keys())
+
 
 def all_student_data(program):
     """Yield a progress metadata dictionary for each of the students
@@ -80,44 +82,50 @@ def all_student_data(program):
     all_components = harvest_program(program)
 
     for student in program.enrolled_students.all():
-        # Provide default values in cases where student hasn't started
-        first_unit_complete = None
-        latest_unit_complete = None
-        latest_unit_breadcrumbs = (u'',) * 4
-        # we care about the lesson level (depth 3) and unit level (depth 4)
+        # A short name for the activities queryset
+        student_activities = student.studentmodule_set
+
+        # remember details of the first activity
+        first_activity = student_activities.order_by('created').first()
+        first_active = (
+            first_activity.created if first_activity else student.date_joined)
+
+        # We care about the lesson level (depth 3) and unit level (depth 4).
         # Dictionaries of breadcrumbs to timestamps of completion
         completed_lessons = {}
         completed_units = {}
-        for activity in student.studentmodule_set.order_by('modified'):
+        # Provide default values in cases where student hasn't started
+        latest_unit_started = None
+        latest_unit_breadcrumbs = (u'',) * 4
+        for activity in student_activities.order_by('modified'):
             block_id = activity.module_state_key.block_id
             breadcrumbs = all_components.get(block_id)
             if breadcrumbs and len(breadcrumbs) == 3:  # lesson
-                lesson_breadcrumbs = breadcrumbs[:3]
                 # for each lesson learned, store latest timestamp
-                completed_lessons[lesson_breadcrumbs] = activity.modified
+                completed_lessons[breadcrumbs] = activity.modified
 
             if breadcrumbs and len(breadcrumbs) >= 4:  # unit or inner block
                 unit_breadcrumbs = breadcrumbs[:4]
                 # for each unit learned, store latest timestamp
                 completed_units[unit_breadcrumbs] = activity.modified
-                # remember details of the first and latest unit overall
-                if not first_unit_complete:
-                    first_unit_complete = activity.modified
-                latest_unit_complete = activity.modified
+
+                # remember details of the latest unit overall
+                # we use 'created' (not 'modified') to ignore backward leaps
+                # to old units; sadly, there's no way to ignore forward leaps
+                latest_unit_started = activity.created
                 latest_unit_breadcrumbs = unit_breadcrumbs
 
         student_dict = {
             'email': student.email,
-            'date_joined': format_date(
-                first_unit_complete or student.date_joined),
+            'date_joined': format_date(first_active),
             'last_login': format_date(student.last_login),
-            'latest_unit_completion': format_date(latest_unit_complete),
+            'latest_unit_completion': format_date(latest_unit_started),
             'latest_module': latest_unit_breadcrumbs[0].encode('utf-8'),
             'latest_section': latest_unit_breadcrumbs[1].encode('utf-8'),
             'latest_lesson': latest_unit_breadcrumbs[2].encode('utf-8'),
             'latest_unit': latest_unit_breadcrumbs[3].encode('utf-8'),
-            'units_in_30d': thirty_day_units(student, completed_units.values()),
-            'days_into_data': days_into_data(student, completed_units.values()),
+            'units_in_30d': thirty_day_units(completed_units.values()),
+            'days_into_data': days_into_data(first_active, completed_units.values()),
         }
 
         student_dict.update(completed_lessons_per_module(completed_lessons))
