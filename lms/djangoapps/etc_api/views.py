@@ -6,19 +6,16 @@ from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from util.disable_rate_limit import can_disable_rate_limit
 from openedx.core.djangoapps.user_api.accounts.api import check_account_exists
 from student.views import create_account_with_params
 from student.models import CourseEnrollment, EnrollmentClosedError, CourseFullError, AlreadyEnrolledError, UserProfile
 from enrollment.views import EnrollmentCrossDomainSessionAuth, EnrollmentUserThrottle, ApiKeyPermissionMixIn
-from instructor.views.api import save_registration_code, students_update_enrollment, require_level
 from django.core.validators import validate_slug
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from student.forms import PasswordResetFormNoActive
 from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiveUser
-
 
 log = logging.getLogger(__name__)
 
@@ -69,7 +66,8 @@ class CreateUserAccountWithoutPasswordView(APIView):
 
         return response
 
-    def send_activation_email(self, request):
+    @staticmethod
+    def send_activation_email(request):
         form = PasswordResetFormNoActive(request.data)
         if form.is_valid():
             form.save(use_https=request.is_secure(),
@@ -95,7 +93,6 @@ class SetActivateUserStatus(APIView):
 
         data = request.data
         try:
-            user_id = int(data['user_id'])
             user = User.objects.get(id=data['user_id'])
             is_active = True if 'true' == "{}".format(data['is_active']).lower() else False
             user.is_active = is_active
@@ -104,12 +101,12 @@ class SetActivateUserStatus(APIView):
             errors = {"user_message": "Wrong id User does not exist"}
             return Response(errors, status=400)
 
-        response = Response({'user_id': user_id, 'is_active': is_active}, status=200)
+        response = Response({'user_id': data['user_id'], 'is_active': is_active}, status=200)
 
         return response
 
 
-@can_disable_rate_limit
+
 class EnrollView(APIView, ApiKeyPermissionMixIn):
     authentication_classes = (OAuth2AuthenticationAllowInactiveUser,)
     permission_classes = ApiKeyHeaderPermission,
@@ -123,23 +120,17 @@ class EnrollView(APIView, ApiKeyPermissionMixIn):
         """
         data = request.data
         try:
-            user_id = int(data['user_id'])
-            user = User.objects.get(id=user_id)
+            user = User.objects.get(id=data['user_id'])
         except  User.DoesNotExist:
             errors = {"user_message": "Wrong id User does not exist"}
             return Response(errors, status=400)
-        data['identifiers'] = user.email
-        course_id = data.get('course_id')
-        data['courses'] = course_id
-        data['action'] = 'enroll'
-        data['auto_enroll'] = 'true'
-        data['email_students'] = 'true'
-        students_update_enrollment(
-            request, course_id=course_id
+        course_id = SlashSeparatedCourseKey.from_deprecated_string(data['course_id'])
+        enrollment_obj, __ = CourseEnrollment.objects.update_or_create(
+            user=user,
+            course_id=course_id,
+            defaults={
+                'mode': data['mode'],
+                'is_active': True if 'true' == "{}".format(data['is_active']).lower() else False
+            }
         )
-        course_id = SlashSeparatedCourseKey.from_deprecated_string(course_id)
-        enrollment_obj = CourseEnrollment.get_enrollment(user, course_id)
-        enrollment_obj.is_active = True if 'true' == "{}".format(data['is_active']).lower() else False
-        enrollment_obj.mode = data['mode']
-        enrollment_obj.save()
         return Response(data={'enrollment_id': enrollment_obj.id}, status=status.HTTP_200_OK)
