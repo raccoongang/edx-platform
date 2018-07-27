@@ -5,7 +5,7 @@ from django.utils import timezone
 from opaque_keys.edx.locator import CourseLocator
 from xmodule.modulestore.django import modulestore
 
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import datetime, timedelta
 import json
 
@@ -74,6 +74,18 @@ def completed_units_per_module(breadcrumb_dict):
                    for breadcrumbs in breadcrumb_dict.keys())
 
 
+def lessons_days_into_per_module(first_active, breadcrumb_dict):
+    # there's a bit of voodoo here, to split the breadcrumb_dict into separate
+    # timestamp lists, one per module
+    per_module_lessons_times = defaultdict(list)
+    for tup, timestamp in breadcrumb_dict.items():
+        module = tup[0]
+        per_module_lessons_times[module].append(timestamp)
+    return {format_module_field(module, '_days_into'):
+            days_into_data(first_active, timestamps)
+            for module, timestamps in per_module_lessons_times.items()}
+
+
 def all_student_data(program):
     """Yield a progress metadata dictionary for each of the students
 
@@ -130,6 +142,8 @@ def all_student_data(program):
 
         student_dict.update(completed_lessons_per_module(completed_lessons))
         student_dict.update(completed_units_per_module(completed_units))
+        student_dict.update(
+            lessons_days_into_per_module(first_active, completed_units))
 
         yield student_dict
 
