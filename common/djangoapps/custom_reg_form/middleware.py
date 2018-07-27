@@ -18,6 +18,7 @@ class CheckNationalId(object):
             or is_admin
             or not request.user.is_authenticated()
             or ExtraInfo.has_national_id(request.user)
+            or request.session.get('ws_federation_idp_name')
         )
 
         if do_redirect:
