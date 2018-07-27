@@ -4,7 +4,7 @@ App has endpoints fo create user and enroll user. Also enable endpoint for enabl
 Configuration instructions:
 Code need next additional settings:
 
-add to lms.auth.json 'EDX_API_KEY'. It's key for check valid token.
+Add to lms.auth.json 'EDX_API_KEY'. It's key for check valid token.
 The following token should be available in the python code: 'HTTP_X_EDX_API_KEY,
 X-Edx-Api-Key HTTP header is present in the request
 
