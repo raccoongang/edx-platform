@@ -2,7 +2,7 @@
 Specific overrides to the base prod settings to make development easier.
 """
 from os.path import abspath, dirname, join
-SECRET_KEY = '85920908f28904ed733fe576320db18cabd7b6cd'
+
 from .aws import *  # pylint: disable=wildcard-import, unused-wildcard-import
 
 # Don't use S3 in devstack, fall back to filesystem
@@ -280,5 +280,6 @@ if os.path.isfile(join(dirname(abspath(__file__)), 'private.py')):
 # Lastly, run any migrations, if needed.
 MODULESTORE = convert_module_store_setting_if_needed(MODULESTORE)
 
+SECRET_KEY = '85920908f28904ed733fe576320db18cabd7b6cd'
 EDX_APP_ETC_API_KEY = AUTH_TOKENS.get('EDX_APP_ETC_API_KEY')
 
