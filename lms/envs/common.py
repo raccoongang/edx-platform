@@ -2168,6 +2168,7 @@ INSTALLED_APPS = (
 
     'django_mptt_admin',
     'program_marketing',
+    'etc_api'
 )
 
 # Migrations which are not in the standard module "migrations"
