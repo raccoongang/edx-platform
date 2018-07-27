@@ -941,8 +941,6 @@ ELASTIC_SEARCH_IMPL = ExtHostElasticsearch
 
 SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING = True
 
-# aws_appsembler.py
-
 from .appsembler import *
 
 if FEATURES.get('ENABLE_TAXOMAN', False):
@@ -960,7 +958,6 @@ for feature, value in ENV_APPSEMBLER_FEATURES.items():
     APPSEMBLER_FEATURES[feature] = value
 
 INSTALLED_APPS += (
-    # 'appsembler',
     'etc_api',
 )
 
@@ -1079,15 +1076,6 @@ if 'LMS_AUTHENTICATION_BACKENDS' in APPSEMBLER_FEATURES.keys():
 
 EXCLUSIVE_SSO_LOGISTRATION_URL_MAP = ENV_TOKENS.get('EXCLUSIVE_SSO_LOGISTRATION_URL_MAP', {})
 
-#attempt to import model from our custom fork of edx-organizations
-# if it works, then also add the middleware
-# try:
-#     from organizations.models import UserOrganizationMapping
-#     MIDDLEWARE_CLASSES += (
-#         'organizations.middleware.OrganizationMiddleware',
-#     )
-# except ImportError:
-#     pass
 
 
 if TAXOMAN_ENABLED:
