@@ -940,6 +940,3 @@ class ExtHostElasticsearch(Elasticsearch):
 ELASTIC_SEARCH_IMPL = ExtHostElasticsearch
 
 SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING = True
-
-EDX_APP_ETC_API_KEY = AUTH_TOKENS.get('EDX_APP_ETC_API_KEY')
-
