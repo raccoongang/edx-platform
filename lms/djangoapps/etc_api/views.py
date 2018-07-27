@@ -11,15 +11,24 @@ from rest_framework.response import Response
 from util.disable_rate_limit import can_disable_rate_limit
 from openedx.core.djangoapps.user_api.accounts.api import check_account_exists
 from student.views import create_account_with_params
-from student.models import CourseEnrollment, EnrollmentClosedError, \
-    CourseFullError, AlreadyEnrolledError, UserProfile
-from enrollment.views import EnrollmentCrossDomainSessionAuth, \
-    EnrollmentUserThrottle, ApiKeyPermissionMixIn
-from instructor.views.api import save_registration_code, \
-    students_update_enrollment, require_level
-from .serializers import BulkEnrollmentSerializer
+from student.models import (
+    CourseEnrollment,
+    EnrollmentClosedError,
+    CourseFullError,
+    AlreadyEnrolledError,
+    UserProfile
+)
+from enrollment.views import (
+    EnrollmentCrossDomainSessionAuth,
+    EnrollmentUserThrottle,
+    ApiKeyPermissionMixIn
+)
+from instructor.views.api import(
+    save_registration_code,
+    students_update_enrollment,
+    require_level
+)
 from .utils import  send_activation_email, ApiKeyHeaderPermissionInToken
-from django.contrib.auth import authenticate, login
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.core.validators  import validate_slug
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
@@ -40,20 +49,18 @@ class CreateUserAccountWithoutPasswordView(APIView):
 
     def post(self, request):
         """
+        Create user account without password
 
+        Creates a user using mail, login and also name and surname.
+        Sets a random password and sends a user a message to change it.
         """
-        #{Prename, surname, email, username}
         data = request.data
-        # set the honor_code and honor_code like checked,
-        # so we can use the already defined methods for creating an user
         data['honor_code'] = "True"
         data['terms_of_service'] = "True"
-
         data['name'] = request.data.get('prename')
         email = request.data.get('email')
         username = request.data.get('username')
         validate_slug(username)
-        # Handle duplicate email/username
         conflicts = check_account_exists(username=username , email=email)
         if conflicts:
             errors = {"user_message": "User already exists"}
@@ -68,7 +75,6 @@ class CreateUserAccountWithoutPasswordView(APIView):
             data['send_activation_email'] = False
 
             user = create_account_with_params(request, data)
-            # set the user as inactive
             user.is_active = True
             user.first_name = request.data.get('prename')
             user.last_name = request.data.get('surname')
@@ -96,15 +102,13 @@ class SetActivateUserStatus(APIView):
 
     def post(self, request):
         """
-
+        Enable or disable user by user id.
         """
-        #{user_id, activate status}
+
         data = request.data
-        # set the honor_code and honor_code like checked,
-        # so we can use the already defined methods for creating an user
         try:
             user_id = int(data['user_id'])
-            user = User.objects.get(id=user_id)
+            user = User.objects.get(id=data['user_id'])
             is_active = True if 'true' == "{}".format(data['is_active']).lower() else False
             user.is_active = is_active
             user.save()
@@ -118,16 +122,18 @@ class SetActivateUserStatus(APIView):
 
 
 @can_disable_rate_limit
-class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
+class EnrollView(APIView, ApiKeyPermissionMixIn):
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     permission_classes = ApiKeyHeaderPermissionInToken,
 
     def post(self, request):
+        """
+        Enrolling user on the course with the specified mod.
 
+        Create or update enroll user on the course. Can deactivate enroll
+        or activate enroll with use 'is_active' param.
+        """
         data = request.data
-        for key, value in data.iteritems():
-            data[key] = str(value)
-        #user_id = int(data['user_id'])
         try:
             user_id = int(data['user_id'])
             user = User.objects.get(id=user_id)
@@ -140,39 +146,12 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
         data['action'] = 'enroll'
         data['auto_enroll'] = 'true'
         data['email_students'] = 'true'
-
-        serializer = BulkEnrollmentSerializer(data=request.data)
-        if serializer.is_valid():
-
-
-            request.POST = request.data
-            response_dict = {
-                'auto_enroll': 'true',
-                'email_students': serializer.data.get('email_students'),
-                'action': 'enroll',
-                'courses': {}
-            }
-
-            staff = User.objects.filter(is_staff=True).first()
-            if staff is not None:
-                staff.backend = "api backend"
-                login(request, staff)
-
-            for course in serializer.data.get('courses'):
-                response = students_update_enrollment(
-                    request, course_id=course
-                )
-
-                response_dict['courses'][course] = json.loads(response.content)
-
-
-            course_id = SlashSeparatedCourseKey.from_deprecated_string(serializer.data.get('courses')[0])
-            enrollment_obj = CourseEnrollment.get_enrollment(user, course_id)
-            enrollment_obj.is_active = True if 'true' == "{}".format(data['is_active']).lower() else False
-            enrollment_obj.mode = data['mode']
-            enrollment_obj.save()
-            return Response(data={'enrollment_id': enrollment_obj.id }, status=status.HTTP_200_OK)
-        else:
-            return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+        students_update_enrollment(
+            request, course_id=course_id
+        )
+        course_id = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+        enrollment_obj = CourseEnrollment.get_enrollment(user, course_id)
+        enrollment_obj.is_active = True if 'true' == "{}".format(data['is_active']).lower() else False
+        enrollment_obj.mode = data['mode']
+        enrollment_obj.save()
+        return Response(data={'enrollment_id': enrollment_obj.id }, status=status.HTTP_200_OK)
