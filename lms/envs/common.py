@@ -2167,8 +2167,8 @@ INSTALLED_APPS = (
     'openedx.core.djangoapps.edx_global_analytics',
 
     'django_mptt_admin',
-    'program_marketing'
-    #'etc_api'
+    'program_marketing',
+    'etc_api'
 )
 
 # Migrations which are not in the standard module "migrations"

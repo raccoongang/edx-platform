@@ -12,7 +12,6 @@ from .verification_api.views import PhotoVerificationStatusView
 from lms.djangoapps.etc_api.views import (
     CreateUserAccountWithoutPasswordView,
     BulkEnrollView, SetActivateUserStatus,
-    SetEnrollmentStatus,
 )
 ME = AccountViewSet.as_view({
     'get': 'get',

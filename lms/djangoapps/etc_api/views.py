@@ -4,30 +4,21 @@ import string
 import random
 
 from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
-
 from django.contrib.auth.models import User
-
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-
 from util.disable_rate_limit import can_disable_rate_limit
-
 from openedx.core.djangoapps.user_api.accounts.api import check_account_exists
-
 from student.views import create_account_with_params
 from student.models import CourseEnrollment, EnrollmentClosedError, \
     CourseFullError, AlreadyEnrolledError, UserProfile
-
 from enrollment.views import EnrollmentCrossDomainSessionAuth, \
     EnrollmentUserThrottle, ApiKeyPermissionMixIn
-
 from instructor.views.api import save_registration_code, \
     students_update_enrollment, require_level
-
 from .serializers import BulkEnrollmentSerializer
 from .utils import  send_activation_email, ApiKeyHeaderPermissionInToken
-
 from django.contrib.auth import authenticate, login
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.core.validators  import validate_slug
@@ -185,5 +176,3 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
             return Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
-
-
