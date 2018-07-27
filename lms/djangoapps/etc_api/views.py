@@ -19,6 +19,9 @@ from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiv
 
 log = logging.getLogger(__name__)
 
+def string_to_boolean(string):
+    return str(string).lower() in ['true',]
+
 
 class CreateUserAccountWithoutPasswordView(APIView):
     authentication_classes = (OAuth2AuthenticationAllowInactiveUser,)
@@ -38,10 +41,8 @@ class CreateUserAccountWithoutPasswordView(APIView):
         email = request.data.get('email')
         username = request.data.get('username')
         validate_slug(username)
-        conflicts = check_account_exists(username=username, email=email)
-        if conflicts:
-            errors = {"user_message": "User already exists"}
-            return Response(errors, status=409)
+        if check_account_exists(username=username, email=email):
+            return Response(data={"user_message": "User already exists"}, status=409)
 
         try:
             data['password'] = uuid4().hex
@@ -50,21 +51,16 @@ class CreateUserAccountWithoutPasswordView(APIView):
             user.first_name = request.data.get('prename')
             user.last_name = request.data.get('surname')
             user.save()
-            user_id = user.id
             self.send_activation_email(request)
         except ValidationError as err:
             # Should only get non-field errors from this function
             assert NON_FIELD_ERRORS not in err.message_dict
             # Only return first error for each field
-            errors = {"user_message": "Wrong parameters on user creation"}
-            return Response(errors, status=400)
+            return Response(data={"user_message": "Wrong parameters on user creation"}, status=400)
         except ValueError as err:
-            errors = {"user_message": "Wrong email format"}
-            return Response(errors, status=400)
+            return Response(data={"user_message": "Wrong email format"}, status=400)
 
-        response = Response({'user_id': user_id}, status=200)
-
-        return response
+        return Response(data={'user_id': user.id}, status=200)
 
     @staticmethod
     def send_activation_email(request):
@@ -77,9 +73,6 @@ class CreateUserAccountWithoutPasswordView(APIView):
                       subject_template_name='etc_api/set_password_subject.txt',
                       email_template_name='etc_api/set_password_email.html'
                       )
-            return True
-        else:
-            return False
 
 
 class SetActivateUserStatus(APIView):
@@ -90,20 +83,15 @@ class SetActivateUserStatus(APIView):
         """
         Enable or disable user by user id.
         """
-
         data = request.data
         try:
             user = User.objects.get(id=data['user_id'])
-            is_active = True if 'true' == "{}".format(data['is_active']).lower() else False
-            user.is_active = is_active
+            user.is_active = string_to_boolean(data['is_active'])
             user.save()
         except  User.DoesNotExist:
-            errors = {"user_message": "Wrong id User does not exist"}
-            return Response(errors, status=400)
+            return Response(data={"user_message": "Wrong id User does not exist"}, status=400)
 
-        response = Response({'user_id': data['user_id'], 'is_active': is_active}, status=200)
-
-        return response
+        return Response(data={'user_id': data['user_id'], 'is_active': user.is_active}, status=200)
 
 
 
@@ -122,15 +110,14 @@ class EnrollView(APIView, ApiKeyPermissionMixIn):
         try:
             user = User.objects.get(id=data['user_id'])
         except  User.DoesNotExist:
-            errors = {"user_message": "Wrong id User does not exist"}
-            return Response(errors, status=400)
+            return Response(data={"user_message": "Wrong id User does not exist"}, status=400)
         course_id = SlashSeparatedCourseKey.from_deprecated_string(data['course_id'])
         enrollment_obj, __ = CourseEnrollment.objects.update_or_create(
             user=user,
             course_id=course_id,
             defaults={
                 'mode': data['mode'],
-                'is_active': True if 'true' == "{}".format(data['is_active']).lower() else False
+                'is_active': string_to_boolean(data['is_active'])
             }
         )
         return Response(data={'enrollment_id': enrollment_obj.id}, status=status.HTTP_200_OK)
