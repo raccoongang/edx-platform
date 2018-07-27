@@ -4,9 +4,10 @@ App has endpoints fo create user and enroll user. Also enable endpoint for enabl
 Configuration instructions:
 Code need next additional settings:
 
-add to lms.auth.json 'EDX_APP_ETC_API_KEY'. It's key for check valid token.
-The following token should be available in the python code: 'HTTP_X_APP_ETC_API_KEY'
-In admin page for this sites add to site's setting: 'ENABLE_APP_ETC_API': true
+add to lms.auth.json 'EDX_API_KEY'. It's key for check valid token.
+The following token should be available in the python code: 'HTTP_X_EDX_API_KEY,
+X-Edx-Api-Key HTTP header is present in the request
+
 
 Testing instructions:
 endpoints:
@@ -16,8 +17,7 @@ curl -X POST
 http://localhost:8000/api/user/create
 -H 'Cache-Control: no-cache'
 -H 'Content-Type: application/json'
--H 'Postman-Token: c4ceae4c-7470-4dbc-bf61-79057e3dae71'
--H 'X-APP-ETC-API-KEY: 12345'
+-H 'X-Edx-Api-Key: PUT_YOUR_API_KEY_HERE'
 -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
 -F email=andrey.lykhoman12344566@raccoongang.com
 -F username=andreylykhoman006
@@ -28,8 +28,7 @@ http://localhost:8000/api/user/create
 curl -X POST
 http://localhost:8000/api/user/set/activate/status
 -H 'Cache-Control: no-cache'
--H 'Postman-Token: 0dac28e7-18a6-4b6c-9f74-fc53b90ebf7e'
--H 'X-APP-ETC-API-KEY: 12345'
+-H 'X-Edx-Api-Key: PUT_YOUR_API_KEY_HERE'
 -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
 -F user_id=21
 -F is_active=true
@@ -39,8 +38,7 @@ curl -X POST
 http://localhost:8000/api/user/enrollment
 -H 'Cache-Control: no-cache'
 -H 'Content-Type: application/x-www-form-urlencoded'
--H 'Postman-Token: b86810e9-5644-416e-9331-8ea57e1679b7'
--H 'X-APP-ETC-API-KEY: 12345'
+-H 'X-Edx-Api-Key: PUT_YOUR_API_KEY_HERE'
 -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
 -F 'course_id=course-v1:edX+DemoX+Demo_Course'
 -F user_id=21

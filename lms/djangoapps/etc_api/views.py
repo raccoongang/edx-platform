@@ -1,8 +1,6 @@
-import json
 import logging
-import string
-import random
-
+from uuid import uuid4
+from django.conf import settings
 from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
@@ -11,41 +9,23 @@ from rest_framework.response import Response
 from util.disable_rate_limit import can_disable_rate_limit
 from openedx.core.djangoapps.user_api.accounts.api import check_account_exists
 from student.views import create_account_with_params
-from student.models import (
-    CourseEnrollment,
-    EnrollmentClosedError,
-    CourseFullError,
-    AlreadyEnrolledError,
-    UserProfile
-)
-from enrollment.views import (
-    EnrollmentCrossDomainSessionAuth,
-    EnrollmentUserThrottle,
-    ApiKeyPermissionMixIn
-)
-from instructor.views.api import(
-    save_registration_code,
-    students_update_enrollment,
-    require_level
-)
-from .utils import  send_activation_email, ApiKeyHeaderPermissionInToken
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from django.core.validators  import validate_slug
+from student.models import CourseEnrollment, EnrollmentClosedError, CourseFullError, AlreadyEnrolledError, UserProfile
+from enrollment.views import EnrollmentCrossDomainSessionAuth, EnrollmentUserThrottle, ApiKeyPermissionMixIn
+from instructor.views.api import save_registration_code, students_update_enrollment, require_level
+from django.core.validators import validate_slug
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
+from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from student.forms import PasswordResetFormNoActive
+from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiveUser
 
-class CsrfExemptSessionAuthentication(SessionAuthentication):
-
-    def enforce_csrf(self, request):
-        return  # To not perform the csrf check previously happening
 
 log = logging.getLogger(__name__)
 
 
-
 class CreateUserAccountWithoutPasswordView(APIView):
-    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    permission_classes = ApiKeyHeaderPermissionInToken,
-
+    authentication_classes = (OAuth2AuthenticationAllowInactiveUser,)
+    permission_classes = ApiKeyHeaderPermission,
 
     def post(self, request):
         """
@@ -61,26 +41,20 @@ class CreateUserAccountWithoutPasswordView(APIView):
         email = request.data.get('email')
         username = request.data.get('username')
         validate_slug(username)
-        conflicts = check_account_exists(username=username , email=email)
+        conflicts = check_account_exists(username=username, email=email)
         if conflicts:
             errors = {"user_message": "User already exists"}
             return Response(errors, status=409)
 
         try:
-            password = ''.join(random.choice(
-                string.ascii_uppercase + string.ascii_lowercase + string.digits)
-                               for _ in range(32))
-
-            data['password'] = password
-            data['send_activation_email'] = False
-
+            data['password'] = uuid4().hex
             user = create_account_with_params(request, data)
             user.is_active = True
             user.first_name = request.data.get('prename')
             user.last_name = request.data.get('surname')
             user.save()
             user_id = user.id
-            send_activation_email(request)
+            self.send_activation_email(request)
         except ValidationError as err:
             # Should only get non-field errors from this function
             assert NON_FIELD_ERRORS not in err.message_dict
@@ -95,10 +69,24 @@ class CreateUserAccountWithoutPasswordView(APIView):
 
         return response
 
-class SetActivateUserStatus(APIView):
-    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    permission_classes = ApiKeyHeaderPermissionInToken,
+    def send_activation_email(self, request):
+        form = PasswordResetFormNoActive(request.data)
+        if form.is_valid():
+            form.save(use_https=request.is_secure(),
+                      from_email=configuration_helpers.get_value(
+                          'email_from_address', settings.DEFAULT_FROM_EMAIL),
+                      request=request,
+                      subject_template_name='etc_api/set_password_subject.txt',
+                      email_template_name='etc_api/set_password_email.html'
+                      )
+            return True
+        else:
+            return False
 
+
+class SetActivateUserStatus(APIView):
+    authentication_classes = (OAuth2AuthenticationAllowInactiveUser,)
+    permission_classes = ApiKeyHeaderPermission,
 
     def post(self, request):
         """
@@ -123,8 +111,8 @@ class SetActivateUserStatus(APIView):
 
 @can_disable_rate_limit
 class EnrollView(APIView, ApiKeyPermissionMixIn):
-    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    permission_classes = ApiKeyHeaderPermissionInToken,
+    authentication_classes = (OAuth2AuthenticationAllowInactiveUser,)
+    permission_classes = ApiKeyHeaderPermission,
 
     def post(self, request):
         """
@@ -140,7 +128,7 @@ class EnrollView(APIView, ApiKeyPermissionMixIn):
         except  User.DoesNotExist:
             errors = {"user_message": "Wrong id User does not exist"}
             return Response(errors, status=400)
-        data['identifiers']=user.email
+        data['identifiers'] = user.email
         course_id = data.get('course_id')
         data['courses'] = course_id
         data['action'] = 'enroll'
@@ -154,4 +142,4 @@ class EnrollView(APIView, ApiKeyPermissionMixIn):
         enrollment_obj.is_active = True if 'true' == "{}".format(data['is_active']).lower() else False
         enrollment_obj.mode = data['mode']
         enrollment_obj.save()
-        return Response(data={'enrollment_id': enrollment_obj.id }, status=status.HTTP_200_OK)
+        return Response(data={'enrollment_id': enrollment_obj.id}, status=status.HTTP_200_OK)
