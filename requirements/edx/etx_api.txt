@@ -1,6 +1,0 @@
-django-souvenirs==1.0.2
-python-intercom==0.2.13
-raven==5.21.0
-
-# for usage aggregation to Google Cloud SQL
-psycopg2==2.7.1
