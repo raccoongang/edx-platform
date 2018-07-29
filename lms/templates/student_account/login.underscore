@@ -51,8 +51,6 @@
 
         <%= context.fields %>
 
-        <a href="<%= context.setNationalIdUrl %>"><%- gettext("Set National ID") %></a>
-
         <div class="g-recaptcha" data-callback="setLoginRecaptcha"  data-expired-callback="resetLoginRecaptcha" data-sitekey="<%= context.googleRecaptchaSiteKey %>"></div>
 
         <button type="submit" class="action action-primary action-update js-login login-button"><%- gettext("Sign in") %></button>
