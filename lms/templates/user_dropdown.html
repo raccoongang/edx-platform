@@ -41,10 +41,15 @@ from openedx.core.djangoapps.user_api.accounts.image_helpers import get_profile_
             <span class="sr-only">${_("Dashboard for:")}</span>
             <%
             username = self.real_user.username
+            fullname = self.real_user.profile.name
             profile_image_url = get_profile_image_urls_for_user(self.real_user)['medium']
             %>
             <img class="menu-image" src="${profile_image_url}" alt="">
-            ${username}
+            % if fullname:
+                ${fullname}
+            % else:
+                ${username}
+            % endif
         </a>
         <div role="group" aria-label="User menu" class="user-menu">
             <button type="button" class="menu-button button-more has-dropdown js-dropdown-button" aria-expanded="false" aria-controls="${_("Usermenu")}">
@@ -68,10 +73,15 @@ from openedx.core.djangoapps.user_api.accounts.image_helpers import get_profile_
                 <span class="sr">${_("Dashboard for:")}</span>
                 <%
                 username = self.real_user.username
+                fullname = self.real_user.profile.name
                 profile_image_url = get_profile_image_urls_for_user(self.real_user)['medium']
                 %>
                 <img class="user-image-frame" src="${profile_image_url}" alt="">
-                <div class="label-username">${username}</div>
+                % if fullname:
+                    <div class="label-username">${fullname}</div>
+                % else:
+                    <div class="label-username">${username}</div>
+                % endif
             </a>
         </li>
         <li class="primary">
