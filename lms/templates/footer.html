@@ -20,11 +20,18 @@
     <div class="colophon">
       <nav class="nav-colophon" aria-label="${_('About')}">
         <ol>
-            % for item_num, link in enumerate(footer['navigation_links'], start=1):
-            <li class="nav-colophon-0${item_num}">
-              <a id="${link['name']}" href="${link['url']}">${link['title']}</a>
-            </li>
-            % endfor
+          <li class="nav-colophon-01">
+            <a href="/about">${_("About")}</a>
+          </li>
+          <li class="nav-colophon-02">
+            <a href="/blog">${_("Blog")}</a>
+          </li>
+          <li class="nav-colophon-03">
+            <a href="/contact">${_("Contact")}</a>
+          </li>
+          <!--<li class="nav-colophon-03">-->
+            <!--<a href="/donate">${_("Donate")}</a>-->
+          <!--</li>-->
         </ol>
       </nav>
 
@@ -61,15 +68,15 @@
     ## The OpenEdX link may be hidden when this view is served
     ## through an API to partner sites (such as marketing sites or blogs),
     ## which are not technically powered by OpenEdX.
-    % if not hide_openedx_link:
-    <div class="footer-about-openedx">
-      <p>
-        <a href="${footer['openedx_link']['url']}">
-          <img src="${footer['openedx_link']['image']}" alt="${footer['openedx_link']['title']}" width="140" />
-        </a>
-      </p>
-    </div>
-    % endif
+    <!--% if not hide_openedx_link:-->
+    <!--<div class="footer-about-openedx">-->
+      <!--<p>-->
+        <!--<a href="${footer['openedx_link']['url']}">-->
+          <!--<img src="${footer['openedx_link']['image']}" alt="${footer['openedx_link']['title']}" width="140" />-->
+        <!--</a>-->
+      <!--</p>-->
+    <!--</div>-->
+    <!--% endif-->
   </footer>
 </div>
 % if include_dependencies:
