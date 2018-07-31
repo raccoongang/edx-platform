@@ -584,7 +584,8 @@ def account_settings_context(request):
         'user_preferences_api_url': reverse('preferences_api', kwargs={'username': user.username}),
         'disable_courseware_js': True,
         'show_program_listing': ProgramsApiConfig.is_enabled(),
-        'order_history': user_orders
+        'order_history': user_orders,
+        'is_ws_federation_login': bool(request.session.get('ws_federation_idp_name'))
     }
 
     if third_party_auth.is_enabled():
