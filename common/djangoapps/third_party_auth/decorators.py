@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.utils.decorators import available_attrs
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import logout
 
 from six.moves.urllib.parse import urlencode, urlparse
 from third_party_auth.models import LTIProviderConfig
@@ -93,6 +94,8 @@ def tpa_hint_ends_existing_session(func):
 def signout_for_ws_federation(view):
     def wrapper(request, backend, *args, **kwargs):
         if request.GET.get('wa') == 'wsignoutcleanup1.0':
+            logout(request)
+            request.session.pop('ws_federation_idp_name', None)
             return redirect(reverse('logout'))
         return view(request, backend, *args, **kwargs)
     return csrf_exempt(wrapper)
