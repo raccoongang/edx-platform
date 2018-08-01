@@ -95,7 +95,8 @@ def all_student_data(program):
 
     for student in program.enrolled_students.all():
         # A short name for the activities queryset
-        student_activities = student.studentmodule_set
+        student_activities = student.studentmodule_set.filter(
+            course_id__in=program.get_course_locators())
 
         # remember details of the first activity
         first_activity = student_activities.order_by('created').first()
@@ -143,7 +144,7 @@ def all_student_data(program):
         student_dict.update(completed_lessons_per_module(completed_lessons))
         student_dict.update(completed_units_per_module(completed_units))
         student_dict.update(
-            lessons_days_into_per_module(first_active, completed_units))
+            lessons_days_into_per_module(first_active, completed_lessons))
 
         yield student_dict
 
