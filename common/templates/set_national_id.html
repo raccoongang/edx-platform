@@ -21,9 +21,9 @@ from django.contrib.messages import get_messages
             <div class="success-msg">${success}</div>
         % else:
             <form class="national-id-form" method="post" action="${reverse('set_national_id')}">
-                <ul class="national-id-form__list">
-                    ${form.as_ul()}
-                </ul>
+                <div class="national-id-form__list">
+                    ${form.as_div()}
+                </div>
                 <input type="hidden" id="csrf_token" name="csrfmiddlewaretoken" value="${csrf_token}">
                 <input type="submit" value="${_('Submit')}">
             </form>
