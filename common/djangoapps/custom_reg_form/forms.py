@@ -123,9 +123,12 @@ class SetNationalIdForm(ExtraInfoForm):
         super(ExtraInfoForm, self).__init__(*args, **kwargs)
         self.fields.pop('mobile', None)
         self.fields['nationality_id'].required = True
+
+        # To Do ... // Add labels // #
         self.fields['date_of_birth_day'] = forms.ChoiceField(choices=tuple((x, x) for x in range(1, 31)), required=True)
         self.fields['date_of_birth_month'] = forms.ChoiceField(choices=tuple((x, x) for x in range(1, 13)))
         self.fields['date_of_birth_year'] = forms.ChoiceField(choices=((x, x) for x in self._years_range()))
+
         if self.user:
             self.fields.pop('email', None)
             self.fields.pop('password', None)
@@ -148,3 +151,12 @@ class SetNationalIdForm(ExtraInfoForm):
             self.cleaned_data.pop('email', None)
             self.cleaned_data.pop('password', None)
             self._meta.model.objects.update_or_create(user=self.user, defaults=self.cleaned_data)
+
+    def as_div(self):
+        "Returns this form rendered as HTML <li>s -- excluding the <ul></ul>."
+        return self._html_output(
+            normal_row='<div class="other_%(field_name)s"><div%(html_class_attr)s>%(errors)s%(label)s %(field)s%(help_text)s</div></div>',
+            error_row='<div>%s</div>',
+            row_ender='</div>',
+            help_text_html=' <span class="helptext">%s</span>',
+            errors_on_separate_row=False)

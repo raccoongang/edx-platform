@@ -19,12 +19,13 @@
             accountUserId,
             platformName,
             contactEmail,
-            allowEmailChange
+            allowEmailChange,
+            isWsFederationLogin
         ) {
             var accountSettingsElement, userAccountModel, userPreferencesModel, aboutSectionsData,
                 accountsSectionData, ordersSectionData, accountSettingsView, showAccountSettingsPage,
                 showLoadingError, orderNumber, getUserField, userFields, timeZoneDropdownField, countryDropdownField,
-                emailFieldView;
+                emailFieldView, passwordFieldView;
 
             accountSettingsElement = $('.wrapper-account-settings');
 
@@ -89,22 +90,6 @@
                             })
                         },
                         emailFieldView,
-                        {
-                            view: new AccountSettingsFieldViews.PasswordFieldView({
-                                model: userAccountModel,
-                                title: gettext('Password'),
-                                screenReaderTitle: gettext('Reset Your Password'),
-                                valueAttribute: 'password',
-                                emailAttribute: 'email',
-                                passwordResetSupportUrl: passwordResetSupportUrl,
-                                linkTitle: gettext('Reset Your Password'),
-                                linkHref: fieldsData.password.url,
-                                helpMessage: StringUtils.interpolate(
-                                    gettext('عند اختيارك "إعادة ضبط كلمة المرور"، ستصل رسالة لبريدك الإلكتروني المسجّل لدى حساب {platform_name}. لتغيير كلمة المرور، افتح الرسالة من بريدك وانقر على الرابط الموجود فيها.'),  // eslint-disable-line max-len
-                                    {platform_name: platformName}
-                                )
-                            })
-                        },
                         {
                             view: new AccountSettingsFieldViews.LanguagePreferenceFieldView({
                                 model: userPreferencesModel,
@@ -189,6 +174,25 @@
                     ]
                 }
             ];
+
+            if (!isWsFederationLogin) {
+                aboutSectionsData[0].fields.splice(3, 0, {
+                    view: new AccountSettingsFieldViews.PasswordFieldView({
+                        model: userAccountModel,
+                        title: gettext('Password'),
+                        screenReaderTitle: gettext('Reset Your Password'),
+                        valueAttribute: 'password',
+                        emailAttribute: 'email',
+                        passwordResetSupportUrl: passwordResetSupportUrl,
+                        linkTitle: gettext('Reset Your Password'),
+                        linkHref: fieldsData.password.url,
+                        helpMessage: StringUtils.interpolate(
+                            gettext('عند اختيارك "إعادة ضبط كلمة المرور"، ستصل رسالة لبريدك الإلكتروني المسجّل لدى حساب {platform_name}. لتغيير كلمة المرور، افتح الرسالة من بريدك وانقر على الرابط الموجود فيها.'),  // eslint-disable-line max-len
+                            {platform_name: platformName}
+                        )
+                    })
+                });
+            }
 
             // set TimeZoneField to listen to CountryField
             getUserField = function(list, search) {
