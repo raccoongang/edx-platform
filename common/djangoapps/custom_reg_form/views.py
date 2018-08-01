@@ -8,9 +8,15 @@ from django.contrib.auth import login
 from edxmako.shortcuts import render_to_response
 
 from .forms import SetNationalIdForm
+from .models import ExtraInfo
 
 
 def set_national_id(request):
+    msgs = messages.get_messages(request)
+    if (ExtraInfo.has_national_id(request.user)
+        and not filter(lambda m: 'set_national_id_success' in m.extra_tags, msgs)):
+        return redirect(reverse('dashboard'))
+
     if request.method == 'POST':
         form = SetNationalIdForm(request.POST, user=request.user.is_authenticated() and request.user or None)
         if form.is_valid():
