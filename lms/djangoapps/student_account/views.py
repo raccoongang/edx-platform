@@ -123,9 +123,9 @@ def login_and_registration_form(request, initial_mode="login"):
     if is_sso:
         reg_form_dict = json.loads(form_descriptions['registration'])
         for i, f in enumerate(reg_form_dict['fields']):
-            if f['name'] in ('captcha', 'confirm_password'):
+            if f['name'] in ('captcha', 'confirm_password', 'name'):
                 reg_form_dict['fields'].pop(i)
-                form_descriptions['registration'] = json.dumps(reg_form_dict)
+        form_descriptions['registration'] = json.dumps(reg_form_dict)
 
     # Otherwise, render the combined login/registration page
     context = {
