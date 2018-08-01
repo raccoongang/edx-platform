@@ -123,9 +123,12 @@ class SetNationalIdForm(ExtraInfoForm):
         super(ExtraInfoForm, self).__init__(*args, **kwargs)
         self.fields.pop('mobile', None)
         self.fields['nationality_id'].required = True
+
+        # To Do ... // Add labels // #
         self.fields['date_of_birth_day'] = forms.ChoiceField(choices=tuple((x, x) for x in range(1, 31)), required=True)
         self.fields['date_of_birth_month'] = forms.ChoiceField(choices=tuple((x, x) for x in range(1, 13)))
         self.fields['date_of_birth_year'] = forms.ChoiceField(choices=((x, x) for x in self._years_range()))
+
         if self.user:
             self.fields.pop('email', None)
             self.fields.pop('password', None)

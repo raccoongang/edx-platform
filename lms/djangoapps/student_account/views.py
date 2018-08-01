@@ -120,6 +120,13 @@ def login_and_registration_form(request, initial_mode="login"):
         and third_party_auth.pipeline.running(request)
     )
 
+    if is_sso:
+        reg_form_dict = json.loads(form_descriptions['registration'])
+        for i, f in enumerate(reg_form_dict['fields']):
+            if f['name'] in ('captcha', 'confirm_password'):
+                reg_form_dict['fields'].pop(i)
+                form_descriptions['registration'] = json.dumps(reg_form_dict)
+
     # Otherwise, render the combined login/registration page
     context = {
         'data': {
@@ -577,7 +584,8 @@ def account_settings_context(request):
         'user_preferences_api_url': reverse('preferences_api', kwargs={'username': user.username}),
         'disable_courseware_js': True,
         'show_program_listing': ProgramsApiConfig.is_enabled(),
-        'order_history': user_orders
+        'order_history': user_orders,
+        'is_ws_federation_login': bool(request.session.get('ws_federation_idp_name'))
     }
 
     if third_party_auth.is_enabled():
