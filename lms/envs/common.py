@@ -2247,6 +2247,8 @@ INSTALLED_APPS = (
     'openedx.features.enterprise_support',
 
     'experiments',
+
+    'ytp',
 )
 
 ######################### CSRF #########################################
