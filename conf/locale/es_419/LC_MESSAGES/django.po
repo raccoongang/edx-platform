@@ -23722,7 +23722,7 @@ msgstr ""
 
 #: lms/djangoapps/certificates/views/webview.py
 msgid "{partner_short_name} {course_number} Certificate"
-msgstr "{partner_short_name} {course_number} Certificado de"
+msgstr "Certificado de {partner_short_name} {course_number}"
 
 #: lms/djangoapps/certificates/views/webview.py
 msgid "successfully completed"
