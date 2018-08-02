@@ -14,13 +14,13 @@ ORA2_FILEUPLOAD_BACKEND = 'django'
 DEBUG = True
 USE_I18N = True
 DEFAULT_TEMPLATE_ENGINE['OPTIONS']['debug'] = True
-SITE_NAME = 'localhost:8000'
+SITE_NAME = 'localhost:9000'
 PLATFORM_NAME = ENV_TOKENS.get('PLATFORM_NAME', 'Devstack')
 # By default don't use a worker, execute tasks as if they were local functions
 CELERY_ALWAYS_EAGER = True
 HTTPS = 'off'
 
-LMS_ROOT_URL = 'http://localhost:8000'
+LMS_ROOT_URL = 'http://localhost:9000'
 ENTERPRISE_API_URL = LMS_ROOT_URL + '/enterprise/api/v1/'
 
 ################################ LOGGERS ######################################
