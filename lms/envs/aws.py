@@ -925,3 +925,29 @@ _COUNTRIES_OVERRIDE = ENV_TOKENS.get('COUNTRIES_OVERRIDE', None)
 if _COUNTRIES_OVERRIDE:
     COUNTRIES_OVERRIDE = _COUNTRIES_OVERRIDE
 
+
+########################## Course Discovery #######################
+LANGUAGE_MAP = {'terms': {lang: display for lang, display in ALL_LANGUAGES}, 'name': 'Language'}
+COURSE_DISCOVERY_MEANINGS = {
+    'modes': {
+        'name': 'Course Type',
+        'terms': {
+            'honor': 'Honor',
+            'verified': 'Verified',
+        },
+    },
+    'language': LANGUAGE_MAP,
+    'course_category': {
+        'name': 'Category',
+        'terms': {
+            'client_server': 'Client, Server & Networking',
+            'cloud_devops': 'Cloud & DevOps',
+            'data_bi': 'Data, BI, Machine Learning & Artificial Intelligence',
+            'development': 'Development',
+            'security': 'Security',
+        }
+    }
+}
+
+# Setting for overriding default filtering facets for Course discovery
+COURSE_DISCOVERY_FILTERS = ["language", "modes", "course_category"]

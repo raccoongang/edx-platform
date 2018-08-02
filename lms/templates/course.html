@@ -3,8 +3,10 @@
 <%!
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
+from openedx.core.djangoapps.models.course_details import CourseDetails
 %>
 <%page args="course" expression_filter="h"/>
+<% details = CourseDetails.fetch(course.id) %>
 <article class="course" id="${course.id}" role="region" aria-label="${course.display_name_with_default}">
   <a href="${reverse('about_course', args=[course.id.to_deprecated_string()])}">
     <header class="course-image">
@@ -18,6 +20,20 @@ from django.core.urlresolvers import reverse
         <span class="course-organization">${course.display_org_with_default}</span>
         <span class="course-code">${course.display_number_with_default}</span>
         <span class="course-title">${course.display_name_with_default}</span>
+        % if details.short_description:
+        <div class="course-short-description">${details.short_description}</div>
+        % endif
+        % if details.duration:
+        <div class="course-short-duration">${details.duration}</div>
+        % endif
+        % if course.vendor:
+        <div class="course-vendor">${course.vendor}</div>
+        % endif
+        % if course.certified:
+        <div class="course-certified">
+          ${_("Verified Certificate available:")} ${_("Yes") if course.certified else _("No")}
+        </div>
+        % endif
       </h2>
       <%
       if course.start is not None:

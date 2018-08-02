@@ -25,6 +25,9 @@
       "${user_timezone}"
     );
   </%static:require_module>
+  <script>
+    var defaultThemeURL = "${settings.STATIC_URL + settings.DEFAULT_SITE_THEME}";
+  </script>
 </%block>
 % endif
 

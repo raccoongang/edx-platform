@@ -853,6 +853,35 @@ class CourseFields(object):
         scope=Scope.settings, default=False
     )
 
+    course_category = String(
+        display_name=_("Category"),
+        help="",
+        default="",
+        scope=Scope.settings,
+        values=[
+            {"display_name": "----------", "value": ""},
+            {"display_name": _("Client, Server & Networking"), "value": "client_server"},
+            {"display_name": _("Cloud & DevOps"), "value": "cloud_devops"},
+            {"display_name": _("Data, BI, Machine Learning & Artificial Intelligence"), "value": "data_bi"},
+            {"display_name": _("Development"), "value": "development"},
+            {"display_name": _("Security"), "value": "security"},
+        ]
+    )
+
+    course_vendor = String(
+        display_name=_("Vendor"),
+        help=_('Displays whether the course has vendor.'),
+        default="Microsoft",
+        scope=Scope.settings
+    )
+
+    index_visible = Boolean(
+        display_name=_("Index page visibility"),
+        help=_('Does this course appear on the index page?'),
+        default=False,
+        scope=Scope.settings,
+    )
+
 
 class CourseModule(CourseFields, SequenceModule):  # pylint: disable=abstract-method
     """

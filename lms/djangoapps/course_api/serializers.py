@@ -6,6 +6,7 @@ import urllib
 
 from django.core.urlresolvers import reverse
 from rest_framework import serializers
+from xmodule.modulestore.django import modulestore
 
 from openedx.core.djangoapps.models.course_details import CourseDetails
 from openedx.core.lib.api.fields import AbsoluteURLField
@@ -73,6 +74,8 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
     pacing = serializers.CharField()
     mobile_available = serializers.BooleanField()
     hidden = serializers.SerializerMethodField()
+    course_vendor = serializers.SerializerMethodField()
+    duration = serializers.SerializerMethodField()
 
     # 'course_id' is a deprecated field, please use 'id' instead.
     course_id = serializers.CharField(source='id', read_only=True)
@@ -94,6 +97,22 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
             urllib.urlencode({'course_id': course_overview.id}),
         ])
         return self.context['request'].build_absolute_uri(base_url)
+
+    def get_course_vendor(self, course_overview):
+        """
+        Get the representation for SerializerMethodField `course_vendor`
+        """
+        course = modulestore().get_course(course_overview.id)
+        return course.course_vendor
+
+    def get_duration(self, course_overview):
+        """
+        Get the representation for SerializerMethodField `duration`
+        """
+        # Note: This makes a call to the modulestore, unlike the other
+        # fields from CourseSerializer, which get their data
+        # from the CourseOverview object in SQL.
+        return CourseDetails.fetch_about_attribute(course_overview.id, 'duration')
 
 
 class CourseDetailSerializer(CourseSerializer):  # pylint: disable=abstract-method

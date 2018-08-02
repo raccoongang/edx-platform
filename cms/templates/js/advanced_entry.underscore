@@ -1,14 +1,26 @@
 <li class="field-group course-advanced-policy-list-item <%= deprecated ? 'is-deprecated' : '' %>">
-	<div class="field is-not-editable text key" id="<%= key %>">
-		<h3 class="title" id="<%= keyUniqueId %>"><%= display_name %></h3>
-  </div>
+    <div class="field is-not-editable text key" id="<%= key %>">
+        <h3 class="title" id="<%= keyUniqueId %>"><%= display_name %></h3>
+    </div>
 
-  <div class="field text value">
-    <label class="sr" for="<%= valueUniqueId %>"><%= display_name %></label>
-    <textarea class="json text" id="<%= valueUniqueId %>"><%= value %></textarea>
-    <span class="tip tip-stacked"><%= help %></span>
-  </div>
-  <% if (deprecated) { %>
-      <span class="status"><%= gettext("Deprecated") %></span>
-  <% } %>
+    <div class="field text value">
+        <label class="sr" for="<%= valueUniqueId %>"><%= display_name %></label>
+
+        <% if (editor_type == 'select') { %>
+
+        <select id="<%= valueUniqueId %>">
+            <% _.each(values, function(val) { %>
+            <option value="<%= val.value %>" <% if (val.value == valueOrigin) { %> selected <% } %> ><%= val.display_name %></option>
+            <% }) %>
+        </select>
+        <% } else { %>
+        <textarea class="json text" id="<%= valueUniqueId %>"><%= value %></textarea>
+        <% } %>
+
+        <span class="tip tip-stacked"><%= help %></span>
+    </div>
+
+    <% if (deprecated) { %>
+        <span class="status"><%= gettext("Deprecated") %></span>
+    <% } %>
 </li>
