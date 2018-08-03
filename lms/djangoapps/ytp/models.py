@@ -2,13 +2,14 @@ import os
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_init
 from django.dispatch import receiver
 
 from certificates.models import GeneratedCertificate
 
 
 @receiver(post_save, sender=GeneratedCertificate)
+@receiver(post_init, sender=GeneratedCertificate)
 def generate_pdf(sender, instance, **kwargs):
     """
     cd /tmp
