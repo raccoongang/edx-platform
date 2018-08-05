@@ -21,7 +21,7 @@ def set_national_id(request):
         form = SetNationalIdForm(request.POST, user=request.user.is_authenticated() and request.user or None)
         if form.is_valid():
             form.save()
-            messages.success(request, _('You National ID updated successfully. Now you can log in using it.'), extra_tags='set_national_id_success')
+            messages.success(request, _('Your National ID and Date of Birth updated successfully. Now you can log in using your National ID.'), extra_tags='set_national_id_success')
             return redirect(reverse('set_national_id'))
     elif request.method == 'GET':
         form = SetNationalIdForm(user=request.user.is_authenticated() and request.user or None)
