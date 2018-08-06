@@ -2899,6 +2899,7 @@ class LogoutView(TemplateView):
 
             logout_url = '{}?{}'.format(login_url, urllib.urlencode(params))
 
+            request.session.pop('ws_federation_idp_name', None)
             return redirect(logout_url)
 
         # Get the list of authorized clients before we clear the session.
