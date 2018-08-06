@@ -33,8 +33,8 @@ def generate_pdf(sender, instance, **kwargs):
         os.mkdir(pdf_dir)
 
     cmd = '''
-    xvfb-run -a --server-args="-screen 0, 1024x768x24" wkhtmltopdf --zoom 1.2887 --margin-top 5 --margin-bottom 5 \
-    --margin-left 5 --margin-right 5 -s A4 -O Portrait --print-media-type {} {}
+    xvfb-run -a --server-args="-screen 0, 1024x768x24" wkhtmltopdf --zoom 0.96 --margin-top 0 --margin-bottom 0 \
+    --margin-left 5 --margin-right 5 -s A4 -O Landscape --print-media-type {} {}
     '''
     cmd = cmd.format(html_cert_url, os.path.join(pdf_dir, pdf_filename))
     if os.path.exists(os.path.join(pdf_dir, pdf_filename)):
