@@ -2253,6 +2253,9 @@ INSTALLED_APPS = (
 
     # ALUx custom dashboard application
     'custom_dashboard',
+
+    # ALUx external content widget application
+    'alu_ec_widget',
 )
 
 ######################### CSRF #########################################
