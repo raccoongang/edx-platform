@@ -145,6 +145,8 @@ class SetNationalIdForm(ExtraInfoForm):
                 self.user = authenticate(username=user.username, password=cleaned_data['password'])
                 if not self.user:
                     self.add_error('password', forms.ValidationError(_('Wrong password'), code='invalid'))
+        self.validate_nic(cleaned_data)
+        return cleaned_data
 
     def save(self, commit=True):
         if self.user:
