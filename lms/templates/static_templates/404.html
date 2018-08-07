@@ -1,4 +1,4 @@
-<meta http-equiv="refresh" content="0; url=https://lms-staging.moe.gov.sa" />
+<meta http-equiv="refresh" content="0; url=https://etraining.moe.gov.sa" />
 
 
 <%page expression_filter="h"/>
@@ -16,8 +16,7 @@ from openedx.core.djangolib.markup import HTML, Text
     <h1>${_("Page not found")}</h1>
     <p>${Text(_('The page that you were looking for was not found. Go back to the {link_start}homepage{link_end}.')).format(
         link_start=HTML('<a href="/">'),
-        link_end=HTML('</a>'),
-        email=HTML('<a href="mailto:{email}">{email}</a>').format(email=Text(static.get_tech_support_email_address()))
+        link_end=HTML('</a>')
       )}</p>
     </section>
 </main>
