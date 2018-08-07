@@ -46,9 +46,6 @@ course_mode_class = course_mode if course_mode else ''
                             % for signatory in certificate_data.get('signatories', []):
                                 <div class="col-xs-6" style="width: 35%;">
                                     <div class="signatory" style="float: right;">
-                                        <img class="signatory-signature" src="${static.url(signatory['signature_image_path'])}"
-                                             alt="${signatory['name']}" style="width: 60%;">
-                                        <h4 class="signatory-name hd-5">التوقيع</h4>
                                     </div>
                                 </div>
                                 <div class="col-xs-6" style="width: 35%;">
@@ -59,7 +56,6 @@ course_mode_class = course_mode if course_mode else ''
                             % endfor
 
                             <div class="col-xs-6" style="width: 30%;">
-                                <img class="organization-logo" src="/static/certificates/images/star.png" alt="Your Platform Name Here" style="width: 150px;">
                             </div>
                         % endif
                     </div>

@@ -6172,6 +6172,9 @@ msgid ""
 "Check this box to receive an email digest once a day notifying you about "
 "new, unread activity from posts you are following."
 msgstr ""
+"<b>All Posts:</b> Check this box to receive an email digest "
+"once a day notifying you about <a>all new activity</a> from discussion posts, "
+"regardless of if you follow them or not."
 
 #: lms/djangoapps/discussion/static/discussion/templates/user-profile.underscore
 msgid "All Posts"

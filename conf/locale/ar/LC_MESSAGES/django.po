@@ -631,6 +631,10 @@ msgstr "رقم الهوية"
 msgid "Mobile Number"
 msgstr "رقم الجوال"
 
+#: common/djangoapps/custom_reg_form/views.py
+msgid "Your National ID and Date of Birth updated successfully. Now you can log in using your National ID."
+msgstr "تم تحديث رقم الهوية وتاريخ الميلاد بنجاح. الان يمكنك الدخول بإستخدام رقم الهوية"
+
 #: common/djangoapps/student/helpers.py
 #, python-brace-format
 msgid "An account with the Public Username '{username}' already exists."

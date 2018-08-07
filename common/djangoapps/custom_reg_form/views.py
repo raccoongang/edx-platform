@@ -4,13 +4,23 @@ from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 
 from edxmako.shortcuts import render_to_response
 
 from .forms import SetNationalIdForm
+from .models import ExtraInfo
 
-
+@login_required()
 def set_national_id(request):
+    msgs = messages.get_messages(request)
+    if (ExtraInfo.has_national_id(request.user)
+        and not filter(lambda m: 'set_national_id_success' in m.extra_tags, msgs)):
+        return redirect(reverse('dashboard'))
+
+    if request.session.get('ws_federation_idp_name'):
+        return redirect(reverse('dashboard'))
+
     if request.method == 'POST':
         form = SetNationalIdForm(request.POST, user=request.user.is_authenticated() and request.user or None)
         if form.is_valid():
@@ -19,7 +29,7 @@ def set_national_id(request):
             if fullname:
                 request.user.profile.name = fullname
                 request.user.profile.save()
-            messages.success(request, _('You National ID updated successfully. Now you can log in using it.'), extra_tags='set_national_id_success')
+            messages.success(request, _('Your National ID and Date of Birth updated successfully. Now you can log in using your National ID.'), extra_tags='set_national_id_success')
             return redirect(reverse('set_national_id'))
     elif request.method == 'GET':
         form = SetNationalIdForm(user=request.user.is_authenticated() and request.user or None)
