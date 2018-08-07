@@ -56,7 +56,13 @@
                 </span>
               </label>
             <span class="row-description">
-                <%- gettext("Check this box to receive an email digest once a day notifying you about new, unread activity from posts you are following.") %>
+                <%= HtmlUtils.interpolateHtml(
+                    gettext("Check this box to receive an email digest once a day notifying you about new, unread activity from posts you are following."),
+                    {
+                      boldStarts: HtmlUtils.HTML('<b>'),
+                      boldEnds: HtmlUtils.HTML('</b>')
+                    }
+                )%>
             </span>
           </div>
           <div class="broad-mode">
