@@ -6137,6 +6137,10 @@ msgid ""
 "Check this box to receive an email digest once a day notifying you about "
 "new, unread activity from posts you are following."
 msgstr ""
+"{boldStarts}All Posts:{boldEnds} Check this box to receive an email digest "
+"once a day notifying you about {boldStarts}all new activity{boldEnds} from discussion posts, "
+"regardless of if you follow them or not."
+
 
 #: lms/djangoapps/discussion/static/discussion/templates/user-profile.underscore
 msgid "All Posts"
@@ -9234,3 +9238,10 @@ msgstr ""
 #: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 msgid "Use Current Transcript"
 msgstr ""
+
+msgid ""
+"This checkbox enables notifications' \"broad mode\": an email digest will include "
+"extra section with {boldStarts}all unread activities{boldEnds}."
+msgstr ""
+"{boldStarts}Followed Posts:{boldEnds} Check this box to receive an email digest once a day "
+"notifying you about new, unread activity {boldStarts}from posts you are following{boldEnds}."
