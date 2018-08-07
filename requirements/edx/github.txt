@@ -101,6 +101,7 @@ git+https://github.com/Stanford-Online/xblock-in-video-quiz@release/v0.1.6#egg=i
 -e git+git@github.com:raccoongang/pcitool.git@master_rg#egg=pcitool
 -e git+git@github.com:raccoongang/alux_student_dashboard.git@dev_master_rg#egg=alux_student_dashboard
 -e git+git@github.com:raccoongang/alux_skills_map.git@dev_master_rg#egg=alux_skills_map
+-e git+git@github.com:raccoongang/external-content-widget.git@v.0.1.0-alpha#egg=alu_widget==v.0.1.0-alpha
 
 # alu-xblock-adapter
 -e git+git@github.com:raccoongang/xblock-adapter.git@dev_master#egg=xblock_adapter
