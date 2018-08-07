@@ -260,10 +260,7 @@ class ProviderConfig(ConfigurationModel):
 
         # Set the registration form to use the `fullname` detail for the `name` field.
         # ilearn: Give preferene to FirstName and FamilyName (last_name)
-        if details.get('first_name') and details.get('last_name'):
-            registration_form_data['name'] = details.get('first_name') + " " + details.get('last_name')
-        else:
-            registration_form_data['name'] = details.get('fullname', '')
+        registration_form_data['name'] = details.get('fullname', '')
 
         # Get the username separately to take advantage of the de-duping logic
         # built into the pipeline. The provider cannot de-dupe because it can't
