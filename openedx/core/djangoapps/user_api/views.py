@@ -1017,6 +1017,14 @@ class RegistrationView(APIView):
                                 field_name, default=field_overrides[field_name]
                             )
 
+                    # ilearn: Hide the name field, it will still store the value
+                    form_desc.override_field_properties(
+                       "name",
+                       label="",
+                       field_type="hidden",
+                       required=False
+                    )
+
                     # Hide the password field
                     form_desc.override_field_properties(
                         "password",
