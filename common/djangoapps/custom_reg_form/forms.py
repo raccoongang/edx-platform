@@ -128,6 +128,9 @@ class SetNationalIdForm(ExtraInfoForm):
         self.fields['date_of_birth_day'] = forms.ChoiceField(choices=tuple((x, x) for x in range(1, 31)), required=True)
         self.fields['date_of_birth_month'] = forms.ChoiceField(choices=tuple((x, x) for x in range(1, 13)))
         self.fields['date_of_birth_year'] = forms.ChoiceField(choices=((x, x) for x in self._years_range()))
+        self.fields['date_of_birth_day'].label = _('Date of birth (Hijri)')
+        self.fields['date_of_birth_month'].label = ''
+        self.fields['date_of_birth_year'].label = ''
 
         if self.user:
             self.fields.pop('email', None)
