@@ -632,9 +632,9 @@
                     that.el.trigger('contentChanged', [that.id, response.contents, response]);
                     that.render(response.contents, that.focus_on_submit_notification);
                     that.updateProgress(response);
-                    if (response.refresh_page) {
-                        window.location = window.location;
-                    }
+#                    if (response.refresh_page) {
+#                        window.location = window.location;
+#                    }
                     break;
                 default:
                     that.saveNotification.hide();
