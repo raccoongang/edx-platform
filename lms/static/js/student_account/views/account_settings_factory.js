@@ -79,14 +79,13 @@
                             })
                         },
                         {
-                            view: new AccountSettingsFieldViews.TextFieldView({
+                            view: new AccountSettingsFieldViews.ReadonlyFieldView({
                                 model: userAccountModel,
                                 title: gettext('Full Name'),
                                 valueAttribute: 'name',
                                 helpMessage: gettext(
-                                    'الإسم المستخدم للتأكّد من الهوية والذي سيظهر على الشهادات. لن يرى المتعلّمون الآخرون إسمك الكامل نهائيًّا. تأكّد من إدخال إسمك بشكل مطابق للإسم الظاهر على هويّتك الرسميّة التي تحمل صورة، بما فيه أي حروف غير لاتينية.'  // eslint-disable-line max-len
-                                ),
-                                persistChanges: true
+                                    'الإسم المستخدم للتأكّد من الهوية والذي سيظهر على الشهادات. لن يرى المتعلّمون الآخرون إسمك الكامل نهائيًّا.'  // eslint-disable-line max-len
+                                )
                             })
                         },
                         emailFieldView,
