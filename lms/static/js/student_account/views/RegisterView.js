@@ -65,11 +65,6 @@
                         }
                     }));
 
-                    if (this.isSSO) {
-                        $($(this.el).find('#register-username')[0]).attr('type', 'hidden');
-                        $($(this.el).find('label[for="register-username"]')[0]).css('cssText', 'display: none !important');
-                    }
-
                     this.postRender();
 
                     // Must be called after postRender, since postRender sets up $formFeedback.
