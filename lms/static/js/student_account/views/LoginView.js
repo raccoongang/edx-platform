@@ -95,10 +95,10 @@
                     this.renderErrors(formErrorsTitle, [this.errorMessage]);
                 } else if (this.currentProvider) {
                     /* If we're already authenticated with a third-party
-                     * provider, try logging in. The easiest way to do this
-                     * is to simply submit the form.
+                     * provider, redirect to register page as the SSO
+                     * account is not linked yet.
                      */
-                    this.model.save();
+                     window.location = "/register";
                 }
 
                 // Display account activation success or error messages.
