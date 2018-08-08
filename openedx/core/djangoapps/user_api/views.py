@@ -341,15 +341,6 @@ class RegistrationView(APIView):
                         required=self._is_field_required(field_name)
                     )
 
-        form_desc.add_field(
-            "captcha",
-            field_type="hidden",
-            required=True,
-            error_messages={
-                "required": _("Please verify reCAPTCHA.")
-            }
-        )
-
         return HttpResponse(form_desc.to_json(), content_type="application/json")
 
     @method_decorator(csrf_exempt)
@@ -488,6 +479,7 @@ class RegistrationView(APIView):
 
         form_desc.add_field(
             "confirm_email",
+            field_type="email",
             label=email_label,
             placeholder=email_placeholder,
             required=required,

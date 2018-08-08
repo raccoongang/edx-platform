@@ -48,7 +48,8 @@
     <% } %>
 
     <%= context.fields %>
-    <div class="g-recaptcha" data-callback="setRegisterRecaptcha"  data-expired-callback="resetRegisterRecaptcha" data-sitekey="<%- context.googleRecaptchaSiteKey %>"></div>
-
+    <% if (!context.currentProvider) { %>
+        <div class="g-recaptcha" data-callback="setRegisterRecaptcha"  data-expired-callback="resetRegisterRecaptcha" data-sitekey="<%- context.googleRecaptchaSiteKey %>"></div>
+    <% } %>
     <button type="submit" class="action action-primary action-update js-register register-button"><%- gettext("التسجيل") %></button>
 </form>
