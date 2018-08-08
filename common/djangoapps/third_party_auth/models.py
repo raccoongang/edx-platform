@@ -259,6 +259,7 @@ class ProviderConfig(ConfigurationModel):
         details = pipeline_kwargs.get('details').copy()
 
         # Set the registration form to use the `fullname` detail for the `name` field.
+        # ilearn: Give preferene to FirstName and FamilyName (last_name)
         registration_form_data['name'] = details.get('fullname', '')
 
         # Get the username separately to take advantage of the de-duping logic

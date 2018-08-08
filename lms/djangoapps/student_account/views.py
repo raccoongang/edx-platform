@@ -120,13 +120,6 @@ def login_and_registration_form(request, initial_mode="login"):
         and third_party_auth.pipeline.running(request)
     )
 
-    if is_sso:
-        reg_form_dict = json.loads(form_descriptions['registration'])
-        for i, f in enumerate(reg_form_dict['fields']):
-            if f['name'] in ('captcha', 'confirm_password', 'name'):
-                reg_form_dict['fields'].pop(i)
-        form_descriptions['registration'] = json.dumps(reg_form_dict)
-
     # Otherwise, render the combined login/registration page
     context = {
         'data': {
@@ -151,7 +144,7 @@ def login_and_registration_form(request, initial_mode="login"):
             'password_reset_form_desc': json.loads(form_descriptions['password_reset']),
             'account_creation_allowed': configuration_helpers.get_value(
                 'ALLOW_PUBLIC_ACCOUNT_CREATION', settings.FEATURES.get('ALLOW_PUBLIC_ACCOUNT_CREATION', True)),
-                'google_recaptcha_site_key': not is_sso and settings.GOOGLE_RECAPTCHA_DATA_SITE_KEY or '',
+                'google_recaptcha_site_key': settings.GOOGLE_RECAPTCHA_DATA_SITE_KEY,
                 'is_sso': is_sso,
                 'set_national_id_url': reverse('set_national_id')
         },

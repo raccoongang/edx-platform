@@ -189,6 +189,14 @@ class RegistrationView(APIView):
         "terms_of_service",
     ]
 
+    SSO_HIDDEN_FIELDS = [
+        "username",
+        "name",
+        "password",
+        "confirm_password",
+        "captcha"
+    ]
+
     # This end-point is available to anonymous users,
     # so do not require authentication.
     authentication_classes = []
@@ -311,6 +319,17 @@ class RegistrationView(APIView):
                         form_desc,
                         required=self._is_field_required(field_name)
                     )
+
+            # ilearn: No SSO, we can enforce captcha
+            form_desc.add_field(
+                "captcha",
+                field_type="hidden",
+                required=True,
+                error_messages={
+                    "required": _("Please verify reCAPTCHA.")
+                }
+            )
+
         else:
             # Go through the fields in the fields order and add them if they are required or visible
             for field_name in self.field_order:
@@ -321,15 +340,6 @@ class RegistrationView(APIView):
                         form_desc,
                         required=self._is_field_required(field_name)
                     )
-
-        form_desc.add_field(
-            "captcha",
-            field_type="hidden",
-            required=True,
-            error_messages={
-                "required": _("Please verify reCAPTCHA.")
-            }
-        )
 
         return HttpResponse(form_desc.to_json(), content_type="application/json")
 
@@ -469,6 +479,7 @@ class RegistrationView(APIView):
 
         form_desc.add_field(
             "confirm_email",
+            field_type="email",
             label=email_label,
             placeholder=email_placeholder,
             required=required,
@@ -1017,16 +1028,17 @@ class RegistrationView(APIView):
                                 field_name, default=field_overrides[field_name]
                             )
 
-                    # Hide the password field
-                    form_desc.override_field_properties(
-                        "password",
-                        default="",
-                        field_type="hidden",
-                        required=False,
-                        label="",
-                        instructions="",
-                        restrictions={}
-                    )
+                    # ilearn: Hide the fields which should not be filled by user in case of sso
+                    for field_name in self.SSO_HIDDEN_FIELDS:
+                        form_desc.override_field_properties(
+                            field_name,
+                            field_type="hidden",
+                            required=False,
+                            label="",
+                            instructions="",
+                            restrictions={}
+                        )
+
                     # used to identify that request is running third party social auth
                     form_desc.add_field(
                         "social_auth_provider",
