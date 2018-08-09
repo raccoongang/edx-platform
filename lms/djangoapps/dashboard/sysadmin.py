@@ -43,6 +43,7 @@ from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from search.search_engine_base import SearchEngine
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
+from django.db import transaction
 
 log = logging.getLogger(__name__)
 
@@ -195,11 +196,12 @@ class Users(SysadminDashboardView):
         user = User(username=uname, email=email, is_active=True)
         user.set_password(new_password)
         try:
-            user.save()
+            with transaction.atomic():
+                user.save()
         except IntegrityError:
             msg += _('Oops, failed to create user {user}, {error}').format(
                 user=user,
-                error="IntegrityError"
+                error="IntegrityError: please check whether such a username or email is already registered"
             )
             return msg
 
