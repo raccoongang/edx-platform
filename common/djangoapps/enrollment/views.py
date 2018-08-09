@@ -483,8 +483,13 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
         courses.
         """
         username = request.GET.get('user', request.user.username)
+        for_all_users = (
+            GlobalStaff().has_user(request.user)
+            and request.GET.get('all', '').lower() in ('1', 'true', 'ok')
+        )
+
         try:
-            enrollment_data = api.get_enrollments(username)
+            enrollment_data = api.get_enrollments(not for_all_users and username or None)
         except CourseEnrollmentError:
             return Response(
                 status=status.HTTP_400_BAD_REQUEST,

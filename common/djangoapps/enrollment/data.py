@@ -41,12 +41,12 @@ def get_course_enrollments(user_id):
         A serializable list of dictionaries of all aggregated enrollment data for a user.
 
     """
-    qset = CourseEnrollment.objects.filter(
-        user__username=user_id,
-        is_active=True
-    ).order_by('created')
+    qset = CourseEnrollment.objects.filter(is_active=True)
 
-    enrollments = CourseEnrollmentSerializer(qset, many=True).data
+    if user_id:
+        qset = qset.filter(user__username=user_id)
+
+    enrollments = CourseEnrollmentSerializer(qset.order_by('created'), many=True).data
 
     # Find deleted courses and filter them out of the results
     deleted = []

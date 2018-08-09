@@ -15359,7 +15359,10 @@ msgstr "هذا الرابط يفتح مستعرضًا في الويب لمشاه
 
 #: lms/templates/dashboard/_dashboard_certificate_information.html
 msgid "View {cert_name_short}"
-msgstr "معاينة {cert_name_short}"
+msgstr "عرض {cert_name_short}"
+
+msgid "Certificate"
+msgstr "الشهادات"
 
 #: lms/templates/dashboard/_dashboard_certificate_information.html
 msgid "This link will open/download a PDF document"
@@ -26330,16 +26333,41 @@ msgstr "مرفقات ويكي"
 msgid "A new revision of the article was successfully added."
 msgstr "تمت إضافة تنقيح جديد لهذا المقال بنجاح."
 
+msgid ""
+"The Al Ghurair Young Thinkers Program is an online university and career "
+"readiness platform developed to help Emirati and Arab youth achieve future "
+"success. The platform includes courses, live advising and the me3 Career "
+"Exploration Tool."
+msgstr ""
+"برنامج الغرير للمفكرين اليافعين هو برنامج عبر الإنترنت لغرض التحضير الجامعي"
+" والمهني تم تطويره لمساعدة الشباب الإماراتي والعربي لتحقيق النجاح في المستقبل."
+" يحتوي البرنامج على دورات دراسية، إستشارات أكاديمية مباشرة، ولعبة me3 للإستكشاف"
+
+msgid "About Young Thinkers Program Certificates"
+msgstr "عن شهادات برنامج المفكرين اليافعين"
+
+msgid ""
+"The Young Thinkers Program acknowledges progress through the platform by awarding "
+"certificates for each course that Young Thinkers complete."
+msgstr ""
+"يقر برنامج المفكرين اليافعين بالتقدم الذي"
+" يحرزه المشاركين على الموقع من خلال منحهم شهادات لكل دورة ينهيها المفكرين اليافعين."
+
+msgid "Learn more about the Young Thinkers Program"
+msgstr "تعرف على المزيد عن برنامج المفكرين اليافعين"
+
+msgid "About the Al Ghurair Young Thinkers Program"
+msgstr "عن برنامج الغرير للمفكرين اليافعين"
+
 #: lms/templates/emails/enroll_email_enrolledmessage.txt
 msgid ""
 "You have now been enrolled in {course_name} on {site_name} by the course staff. "
 "The course should be available in your My Courses list on {site_name}. "
 "To start viewing course materials, please visit the page below:"
 msgstr ""
-"لقد تم تسجيلك في دورة {course_name} على الموقع {site_name} من قبل أحد أعضاء طاقم الدورة."
-"يجب أن تكون الدورة متوفرة الآن على قائمة الدورات الخاصة بك على موقع {site_name}."
+"لقد تم تسجيلك في دورة {course_name} على الموقع {site_name} من قبل أحد أعضاء طاقم الدورة. "
+"يجب أن تكون الدورة متوفرة الآن على قائمة الدورات الخاصة بك على موقع {site_name}. "
 "للبدء بالاطلاع على مواد الدورة، يُرجى زيارة الصفحة"
-
 
 msgid "This email was sent automatically from: {site_name} to {to_email}"
 msgstr ""

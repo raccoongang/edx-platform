@@ -11235,3 +11235,9 @@ msgstr ""
 #: cms/templates/js/xblock-access-editor.underscore
 msgid "Set Access"
 msgstr "تعيين الوصول"
+
+msgid "Some of your answers were not correct."
+msgstr "بعض إجاباتك كانت خاطئة."
+
+msgid "Hints:"
+msgstr "تلميحات"

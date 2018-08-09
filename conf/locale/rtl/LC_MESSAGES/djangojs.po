@@ -26,8 +26,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2017-06-21 14:29+0000\n"
-"PO-Revision-Date: 2017-06-21 14:30:50.629384\n"
+"POT-Creation-Date: 2017-12-11 11:21+0000\n"
+"PO-Revision-Date: 2017-12-11 11:21:57.255528\n"
 "Last-Translator: \n"
 "Language-Team: openedx-translation <openedx-translation@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -4424,6 +4424,28 @@ msgstr ""
 "%(platformName)s."
 
 #: lms/static/js/student_account/views/account_settings_factory.js
+msgid "Email Address"
+msgstr "ثوشهم شييقثسس"
+
+#: lms/static/js/student_account/views/account_settings_factory.js
+msgid ""
+"The email address you use to sign in. Communications from {platform_name} "
+"and your courses are sent to this address."
+msgstr ""
+"فاث ثوشهم شييقثسس غخع عسث فخ سهلر هر. ذخووعرهذشفهخرس بقخو {platform_name} "
+"شري غخعق ذخعقسثس شقث سثرف فخ فاهس شييقثسس."
+
+#: lms/static/js/student_account/views/account_settings_factory.js
+msgid ""
+"The email address you use to sign in. Communications from {platform_name} "
+"and your courses are sent to this address.  To change the email address, "
+"please contact {contact_email}."
+msgstr ""
+"فاث ثوشهم شييقثسس غخع عسث فخ سهلر هر. ذخووعرهذشفهخرس بقخو {platform_name} "
+"شري غخعق ذخعقسثس شقث سثرف فخ فاهس شييقثسس.  فخ ذاشرلث فاث ثوشهم شييقثسس, "
+"حمثشسث ذخرفشذف {contact_email}."
+
+#: lms/static/js/student_account/views/account_settings_factory.js
 msgid "Basic Account Information"
 msgstr "زشسهذ شذذخعرف هربخقوشفهخر"
 
@@ -4460,18 +4482,6 @@ msgstr ""
 "خفاثق مثشقرثقس رثدثق سثث غخعق بعمم رشوث. وشنث سعقث فخ ثرفثق غخعق رشوث "
 "ثطشذفمغ شس هف شححثشقس خر غخعق لخدثقروثرف-هسسعثي حاخفخ هي, هرذمعيهرل شرغ رخر-"
 "قخوشر ذاشقشذفثقس."
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid "Email Address"
-msgstr "ثوشهم شييقثسس"
-
-#: lms/static/js/student_account/views/account_settings_factory.js
-msgid ""
-"The email address you use to sign in. Communications from {platform_name} "
-"and your courses are sent to this address."
-msgstr ""
-"فاث ثوشهم شييقثسس غخع عسث فخ سهلر هر. ذخووعرهذشفهخرس بقخو {platform_name} "
-"شري غخعق ذخعقسثس شقث سثرف فخ فاهس شييقثسس."
 
 #: lms/static/js/student_account/views/account_settings_factory.js
 #: lms/templates/student_account/account.underscore
