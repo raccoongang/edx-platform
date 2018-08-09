@@ -55,7 +55,8 @@ class ExtraInfoForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(ExtraInfoForm, self).clean()
-        self.validate_nic(cleaned_data)
+        if cleaned_data.get('nationality_id'):
+            self.validate_nic(cleaned_data)
         return cleaned_data
 
     def validate_nic(self, cleaned_data):
@@ -123,6 +124,7 @@ class SetNationalIdForm(ExtraInfoForm):
         super(ExtraInfoForm, self).__init__(*args, **kwargs)
         self.fields.pop('mobile', None)
         self.fields['nationality_id'].required = True
+        self.fields['nationality_id'].error_messages = {'required':'Please enter National ID'}
 
         # To Do ... // Add labels // #
         self.fields['date_of_birth_day'] = forms.ChoiceField(choices=tuple((x, x) for x in range(1, 31)), required=True)
@@ -148,7 +150,6 @@ class SetNationalIdForm(ExtraInfoForm):
                 self.user = authenticate(username=user.username, password=cleaned_data['password'])
                 if not self.user:
                     self.add_error('password', forms.ValidationError(_('Wrong password'), code='invalid'))
-        self.validate_nic(cleaned_data)
         return cleaned_data
 
     def save(self, commit=True):
