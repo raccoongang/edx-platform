@@ -10,12 +10,14 @@ class CheckNationalId(object):
         set_national_id_url = reverse('set_national_id')
         is_set_national_id = set_national_id_url in request.path
         is_admin =  '/admin/' in request.path
+        is_logout = (reverse('logout') == request.path)
         check_national_id_disabled = settings.FEATURES.get('DISABLE_CHECK_NATIONAL_ID', False)
 
         do_redirect = not (
             check_national_id_disabled
             or is_set_national_id
             or is_admin
+            or is_logout
             or not request.user.is_authenticated()
             or ExtraInfo.has_national_id(request.user)
             or request.session.get('ws_federation_idp_name')
