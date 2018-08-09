@@ -9,7 +9,7 @@ class CheckNationalId(object):
     def process_request(self, request):
         set_national_id_url = reverse('set_national_id')
         is_set_national_id = set_national_id_url in request.path
-        is_admin =  '/admin/' in request.path
+        is_admin =  request.user.is_superuser
         is_logout = (reverse('logout') == request.path)
         check_national_id_disabled = settings.FEATURES.get('DISABLE_CHECK_NATIONAL_ID', False)
 
