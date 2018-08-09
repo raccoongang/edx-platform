@@ -76,6 +76,11 @@ class ExtraInfoForm(forms.ModelForm):
             self.add_error('nationality_id', forms.ValidationError(error_msg, code='invalid'))
             return None
 
+        national_id = cleaned_data.get('nationality_id')
+        if not national_id:
+            self.add_error('nationality_id', forms.ValidationError(_("National ID is required"), code='invalid'))
+            return None
+
         date_of_birth = '{}{}{}'.format(
             cleaned_data['date_of_birth_year'],
             str(cleaned_data['date_of_birth_month']).rjust(2, '0'),
@@ -83,11 +88,11 @@ class ExtraInfoForm(forms.ModelForm):
             )
         methods = {
             'CitizenRecordInfoBrief': {
-                'nationalID': cleaned_data['nationality_id'],
+                'nationalID': national_id,
                 'dateOfBirth': date_of_birth
             },
             'ResidentRecordInfoBrief': {
-                'iqamaID': cleaned_data['nationality_id'],
+                'iqamaID': national_id,
                 'rsidentBirthDate': date_of_birth
             }
         }
