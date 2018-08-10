@@ -23,6 +23,7 @@ class ExtraInfoForm(forms.ModelForm):
 
         self.fields['nationality_id'].min_length = 10
         self.fields['nationality_id'].initial = _('Enter National ID')
+        self.fields['nationality_id'].error_messages = {'required': _('Please enter National ID')}
 
         self.fields['date_of_birth_day'].label = _('Date of birth (Hijri)')
         self.fields['date_of_birth_day'].choices = (('', _('Day')), ) + tuple((x, x) for x in range(1, 31))
@@ -30,6 +31,10 @@ class ExtraInfoForm(forms.ModelForm):
         self.fields['date_of_birth_month'].choices = (('', _('Month')), ) + tuple((x, x) for x in range(1, 13))
         self.fields['date_of_birth_year'].label = ''
         self.fields['date_of_birth_year'].choices = (('', _('Year')), ) + tuple((x, x) for x in self._years_range())
+
+        self.fields['date_of_birth_day'].error_messages = {'required': _('Please enter date of birth')}
+        self.fields['date_of_birth_month'].error_messages = {'required': _('Please enter date of birth')}
+        self.fields['date_of_birth_year'].error_messages = {'required': _('Please enter date of birth')}
 
     class Meta:
         model = ExtraInfo
@@ -129,7 +134,7 @@ class SetNationalIdForm(ExtraInfoForm):
         super(ExtraInfoForm, self).__init__(*args, **kwargs)
         self.fields.pop('mobile', None)
         self.fields['nationality_id'].required = True
-        self.fields['nationality_id'].error_messages = {'required':'Please enter National ID'}
+        self.fields['nationality_id'].error_messages = {'required': _('Please enter National ID')}
 
         # To Do ... // Add labels // #
         self.fields['date_of_birth_day'] = forms.ChoiceField(choices=tuple((x, x) for x in range(1, 31)), required=True)
