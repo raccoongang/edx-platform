@@ -12,9 +12,9 @@ ${_("This is to confirm that you changed the e-mail associated with "
 }
 
 % if is_secure:
-    https://${ site }${reverse('contact')}
+    https://${ site }${reverse('contact_form')}
 % else:
-    http://${ site }${reverse('contact')}
+    http://${ site }${reverse('contact_form')}
 % endif
 
 ${_("We keep a log of old e-mails, so if this request was unintentional, we can investigate.")}
