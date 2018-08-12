@@ -19,14 +19,14 @@ $cert-decorative-color-emphasized: palette(grayscale, accent);
     'Domine',
     '../../certificates/fonts/DINNextLTArabic-Light',
     400,
-    $file-formats: woff woff2 ttf
+    $file-formats: woff ttf
 );
 
 @include font-face(
     'Domine',
     '../../certificates/fonts/DINNextLTArabic-Light',
     700,
-    $file-formats: woff woff2 ttf
+    $file-formats: woff ttf
 );
 
 // typography: config - stacks
