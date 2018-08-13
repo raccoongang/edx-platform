@@ -7254,6 +7254,14 @@ msgstr ""
 " لعرض حالة التقرير ، راجع مهام قيد الانتظار أدناه"
 
 #: lms/djangoapps/instructor/views/api.py
+msgid ""
+"The grade report is being created."
+" To view the status of the report, see Pending Tasks below."
+msgstr ""
+"يتم إنشاء تقرير الدرجات."
+"لعرض حالة التقرير ، راجع مهام قيد الانتظار أدناه"
+
+#: lms/djangoapps/instructor/views/api.py
 #: lms/djangoapps/instructor_task/api_helper.py
 msgid "enrollment"
 msgstr "التسجيل"
