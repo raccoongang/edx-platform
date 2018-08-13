@@ -7234,6 +7234,26 @@ msgid "Country"
 msgstr "البلد"
 
 #: lms/djangoapps/instructor/views/api.py
+msgid ""
+"The enrolled learner profile report is being created."
+" To view the status of the report, see Pending Tasks below."
+msgstr ""
+"يتم إنشاء تقرير ملف التعريف الخاص بالمتعلم المسجل."
+" لعرض حالة التقرير ، راجع مهام قيد الانتظار أدناه"
+
+#: lms/djangoapps/instructor/views/api.py
+msgid "The ORA data report is being generated."
+msgstr "يتم إنشاء تقرير ملف بيانات ORA"
+
+#: lms/djangoapps/instructor/views/api.py
+msgid ""
+"The problem grade report is being created."
+" To view the status of the report, see Pending Tasks below."
+msgstr ""
+"يتم إنشاء تقرير درجات المسائل."
+" لعرض حالة التقرير ، راجع مهام قيد الانتظار أدناه"
+
+#: lms/djangoapps/instructor/views/api.py
 #: lms/djangoapps/instructor_task/api_helper.py
 msgid "enrollment"
 msgstr "التسجيل"
