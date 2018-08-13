@@ -797,7 +797,9 @@ def dashboard(request):
         enrollment.course_id for enrollment in course_enrollments if (
             BulkEmailFlag.feature_enabled(enrollment.course_id)
         )
-    )
+    ) if (
+        settings.FEATURES.get("SHOW_EMAIL_SETTINGS_ON_DASHBOARD")
+    ) else []
 
     # Verification Attempts
     # Used to generate the "you must reverify for course x" banner
