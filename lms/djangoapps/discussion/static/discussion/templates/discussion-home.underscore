@@ -32,7 +32,7 @@
       <tr class="helpgrid-row helpgrid-row-participation">
         <th scope="row" class="row-title"><%- gettext("Engage with posts") %></td>
         <td class="row-item">
-          <span class="icon fa fa-plus" aria-hidden="true"></span>
+          <span class="icon fa fa-thumbs-up" aria-hidden="true"></span>
           <span class="row-description"><%- gettext("Vote for good posts and responses") %></span>
         </td>
         <td class="row-item">
