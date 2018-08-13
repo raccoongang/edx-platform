@@ -1006,7 +1006,7 @@ msgstr ""
 "لتسجيل الدخول، يجب تنشيط حسابك.<br /><br />لقد قمنا للتو بإرسال رابط التنشيط"
 " إلى <strong>{email}</strong>. إذا لم تتلق رسالة إلكترونية تحقق من مجلدات "
 "الرسائل غير المرغوب فيها أو <a href=\"{support_url}\">اتصل بفريق الدعم ب"
-"  {platform}</a> ."
+"{platform}</a> ."
 
 #: common/djangoapps/student/views/login.py
 msgid "Too many failed login attempts. Try again later."
@@ -1014,7 +1014,7 @@ msgstr "محاولات فاشلة كثيرة لتسجيل الدخول. يُرج
 
 #: common/djangoapps/student/views/login.py lms/templates/provider_login.html
 msgid "Email or password is incorrect."
-msgstr "رقم الهوية / البريد الإلكتروني أو كلمة المرور خاطئين."
+msgstr "رقم الهوية / البريد الإلكتروني أو كلمة المرور غير صحيحة."
 
 #: common/djangoapps/student/views/login.py
 msgid "No inactive user with this e-mail exists"
