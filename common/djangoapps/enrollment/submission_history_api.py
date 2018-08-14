@@ -12,7 +12,6 @@ from student.models import CourseEnrollment
 from student.roles import GlobalStaff
 from util.disable_rate_limit import can_disable_rate_limit
 from opaque_keys.edx.locator import CourseLocator
-import re
 
 @can_disable_rate_limit
 class SubmissionHistoryView(APIView, ApiKeyPermissionMixIn):
@@ -23,7 +22,7 @@ class SubmissionHistoryView(APIView, ApiKeyPermissionMixIn):
         username = request.GET.get('user', request.user.username)
         data = []
         all_users = request.GET.get('all', '').lower() in ('1', 'true', 'ok') and GlobalStaff().has_user(request.user)
-        course_id = request.GET.get('course_id', None)
+        course_id = request.GET.get('course_id')
 
         if not (all_users or username == request.user.username or GlobalStaff().has_user(request.user) or
                 self.has_api_key_permissions(request)):
@@ -31,7 +30,7 @@ class SubmissionHistoryView(APIView, ApiKeyPermissionMixIn):
 
         course_enrollments = CourseEnrollment.objects.select_related('user').filter(is_active=True)
         if course_id:
-            if not re.match("course-v1:", course_id):
+            if not course_id.startswith("course-v1:", 0):
                 course_id = "course-v1:{}".format(course_id)
             try:
                 course_enrollments = course_enrollments.filter(
