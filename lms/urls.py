@@ -32,7 +32,7 @@ urlpatterns = (
     '',
 
     url(r'^$', 'branding.views.index', name="root"),   # Main marketing page, or redirect to courseware
-    url(r'^certificates/search$', SearchCertificatesView.as_view(), name="ytp_certificate_search"),   # Main marketing page, or redirect to courseware
+    url(r'^certificates/search$', SearchCertificatesView.as_view(), name="ytp_certificate_search"),
 
     url(r'', include('student.urls')),
     # TODO: Move lms specific student views out of common code
