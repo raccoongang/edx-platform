@@ -12,6 +12,7 @@ from student.models import CourseEnrollment
 from student.roles import GlobalStaff
 from util.disable_rate_limit import can_disable_rate_limit
 from opaque_keys.edx.locator import CourseLocator
+import re
 
 @can_disable_rate_limit
 class SubmissionHistoryView(APIView, ApiKeyPermissionMixIn):
@@ -30,9 +31,14 @@ class SubmissionHistoryView(APIView, ApiKeyPermissionMixIn):
 
         course_enrollments = CourseEnrollment.objects.select_related('user').filter(is_active=True)
         if course_id:
-            course_enrollments = course_enrollments.filter(
-                course_id=CourseLocator.from_string(course_id.replace(' ', '+'))
-            ).order_by('created')
+            if not re.match("course-v1:", course_id):
+                course_id = "course-v1:{}".format(course_id)
+            try:
+                course_enrollments = course_enrollments.filter(
+                    course_id=CourseLocator.from_string(course_id.replace(' ', '+'))
+                ).order_by('created')
+            except KeyError:
+                return Response(data)
 
         if not all_users:
             course_enrollments = course_enrollments.filter(user__username=username).order_by('created')
@@ -70,7 +76,7 @@ class SubmissionHistoryView(APIView, ApiKeyPermissionMixIn):
 
                                 csm = StudentModule.objects.filter(
                                     module_state_key=component.location,
-                                    student__username=username,
+                                    student__username=course_enrollment.user.username,
                                     course_id=course_enrollment.course_id)
 
                                 scores = BaseStudentModuleHistory.get_history(csm)
