@@ -11,7 +11,7 @@ from enrollment.views import ApiKeyPermissionMixIn, EnrollmentCrossDomainSession
 from student.models import CourseEnrollment
 from student.roles import GlobalStaff
 from util.disable_rate_limit import can_disable_rate_limit
-
+from opaque_keys.edx.locator import CourseLocator
 
 @can_disable_rate_limit
 class SubmissionHistoryView(APIView, ApiKeyPermissionMixIn):
@@ -22,12 +22,23 @@ class SubmissionHistoryView(APIView, ApiKeyPermissionMixIn):
         username = request.GET.get('user', request.user.username)
         data = []
         all_users = request.GET.get('all', '').lower() in ('1', 'true', 'ok') and GlobalStaff().has_user(request.user)
+        course_id = request.GET.get('course_id')
 
         if not (all_users or username == request.user.username or GlobalStaff().has_user(request.user) or
                 self.has_api_key_permissions(request)):
             return Response(data)
 
         course_enrollments = CourseEnrollment.objects.select_related('user').filter(is_active=True)
+        if course_id:
+            if not course_id.startswith("course-v1:"):
+                course_id = "course-v1:{}".format(course_id)
+            try:
+                course_enrollments = course_enrollments.filter(
+                    course_id=CourseLocator.from_string(course_id.replace(' ', '+'))
+                ).order_by('created')
+            except KeyError:
+                return Response(data)
+
         if not all_users:
             course_enrollments = course_enrollments.filter(user__username=username).order_by('created')
 
@@ -64,7 +75,7 @@ class SubmissionHistoryView(APIView, ApiKeyPermissionMixIn):
 
                                 csm = StudentModule.objects.filter(
                                     module_state_key=component.location,
-                                    student__username=username,
+                                    student__username=course_enrollment.user.username,
                                     course_id=course_enrollment.course_id)
 
                                 scores = BaseStudentModuleHistory.get_history(csm)
