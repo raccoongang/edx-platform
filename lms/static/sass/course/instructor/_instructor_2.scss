@@ -484,6 +484,12 @@
     margin: 0;
     padding: 0;
 
+    & li:last-child{
+      label {
+        pointer-events: none;
+      }
+    }
+
     .field {
       margin-bottom: $baseline;
       padding: 0;
