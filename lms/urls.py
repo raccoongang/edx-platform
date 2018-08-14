@@ -22,6 +22,8 @@ from openedx.features.enterprise_support.api import enterprise_enabled
 from openassessment.fileupload import views_filesystem
 
 # Uncomment the next two lines to enable the admin:
+from ytp.views import SearchCertificatesView
+
 if settings.DEBUG or settings.FEATURES.get('ENABLE_DJANGO_ADMIN_SITE'):
     admin.autodiscover()
 
@@ -30,6 +32,7 @@ urlpatterns = (
     '',
 
     url(r'^$', 'branding.views.index', name="root"),   # Main marketing page, or redirect to courseware
+    url(r'^certificates/search$', SearchCertificatesView.as_view(), name="ytp_certificate_search"),   # Main marketing page, or redirect to courseware
 
     url(r'', include('student.urls')),
     # TODO: Move lms specific student views out of common code
