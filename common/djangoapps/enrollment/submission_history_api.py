@@ -30,7 +30,7 @@ class SubmissionHistoryView(APIView, ApiKeyPermissionMixIn):
 
         course_enrollments = CourseEnrollment.objects.select_related('user').filter(is_active=True)
         if course_id:
-            if not course_id.startswith("course-v1:", 0):
+            if not course_id.startswith("course-v1:"):
                 course_id = "course-v1:{}".format(course_id)
             try:
                 course_enrollments = course_enrollments.filter(
