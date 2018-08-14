@@ -46,7 +46,7 @@ edx-lint==0.4.3
 # when upgrading edx-lint, we should try to remove this from the platform
 astroid==1.3.8
 edx-django-sites-extensions==2.3.0
-edx-enterprise==0.52.3
+edx-enterprise==0.36.5
 edx-oauth2-provider==1.2.2
 edx-opaque-keys==0.4.0
 git+https://github.com/proversity-org/edx-organizations.git#egg=edx-organizations
