@@ -49,8 +49,8 @@ urlpatterns = patterns(
         PreferencesDetailView.as_view(),
         name='preferences_detail_api'
     ),
-    url(r'create$', CreateUserAccountWithoutPasswordView.as_view()),
-    url(r'enrollment$', EnrollView.as_view()),
-    url(r'set/activate/status$', SetActivateUserStatus.as_view()),
+    url(r'^create$', CreateUserAccountWithoutPasswordView.as_view()),
+    url(r'^enrollment$', EnrollView.as_view()),
+    url(r'^set/activate/status$', SetActivateUserStatus.as_view()),
 
 )
