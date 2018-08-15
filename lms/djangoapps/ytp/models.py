@@ -6,7 +6,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from certificates.models import GeneratedCertificate
-
+from openedx.core.djangoapps.theming.helpers import get_current_site
 
 @receiver(post_save, sender=GeneratedCertificate)
 def generate_pdf(sender, instance, **kwargs):
@@ -22,9 +22,10 @@ def generate_pdf(sender, instance, **kwargs):
     pdf_dir = os.path.join(settings.MEDIA_ROOT, 'certs')
     pdf_url = os.path.join(settings.MEDIA_URL, 'certs', pdf_filename)
 
+    site = get_current_site()
     html_cert_url = (
-        'https://{}{}'.format(
-            settings.SITE_NAME,
+        'http://{}{}'.format(
+            site.domain,
             reverse('certificates:render_cert_by_uuid', args=[instance.verify_uuid])
         )
     )
