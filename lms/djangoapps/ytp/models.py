@@ -24,7 +24,7 @@ def generate_pdf(sender, instance, **kwargs):
 
     html_cert_url = (
         'http://{}{}'.format(
-            get_value_for_org(instance.course_id.org, 'site_domain'),  # settings.SITE_NAME,
+            get_value_for_org(instance.course_id.org, 'site_domain'),
             reverse('certificates:render_cert_by_uuid', args=[instance.verify_uuid])
         )
     )
