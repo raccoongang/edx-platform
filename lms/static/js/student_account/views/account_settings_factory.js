@@ -153,15 +153,6 @@
                             })
                         },
                         {
-                            view: new AccountSettingsFieldViews.DropdownFieldView({
-                                model: userAccountModel,
-                                title: gettext('Year of Birth'),
-                                valueAttribute: 'year_of_birth',
-                                options: fieldsData.year_of_birth.options,
-                                persistChanges: true
-                            })
-                        },
-                        {
                             view: new AccountSettingsFieldViews.LanguageProficienciesFieldView({
                                 model: userAccountModel,
                                 title: gettext('Preferred Language'),
