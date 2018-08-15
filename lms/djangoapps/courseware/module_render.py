@@ -60,6 +60,7 @@ from openedx.core.lib.xblock_utils import (
     replace_static_urls,
     wrap_xblock
 )
+from openedx.core.lib.gating import api as gating_api
 from student.models import anonymous_id_for_user, user_by_anonymous_id
 from student.roles import CourseBetaTesterRole
 from track import contexts
