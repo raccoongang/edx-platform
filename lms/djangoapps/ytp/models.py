@@ -23,7 +23,7 @@ def generate_pdf(sender, instance, **kwargs):
     pdf_url = os.path.join(settings.MEDIA_URL, 'certs', pdf_filename)
 
     html_cert_url = (
-        'http://{}{}'.format(
+        'https://{}{}'.format(
             get_value_for_org(instance.course_id.org, 'site_domain'),
             reverse('certificates:render_cert_by_uuid', args=[instance.verify_uuid])
         )
