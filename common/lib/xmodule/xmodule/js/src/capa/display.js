@@ -633,7 +633,8 @@
                     that.render(response.contents, that.focus_on_submit_notification);
                     that.updateProgress(response);
                     if (response.refresh_page) {
-                        window.location = window.location;
+                        $("body").addClass("answer-loading");
+                        setTimeout('window.location = window.location', 5000);
                     }
                     break;
                 default:
