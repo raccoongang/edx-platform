@@ -634,7 +634,7 @@
                     that.updateProgress(response);
                     if (response.refresh_page) {
                         $("body").addClass("answer-loading");
-                        setTimeout('window.location = window.location', 5000);
+                        setTimeout('window.location.reload()', 5000);
                     }
                     break;
                 default:
