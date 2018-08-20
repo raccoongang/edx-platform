@@ -22,9 +22,13 @@ def generate_pdf(sender, instance, **kwargs):
     pdf_dir = os.path.join(settings.MEDIA_ROOT, 'certs')
     pdf_url = os.path.join(settings.MEDIA_URL, 'certs', pdf_filename)
 
+    site_domain = get_value_for_org(instance.course_id.org, 'site_domain')
+    if not site_domain:
+        site_domain = settings.SITE_NAME
+
     html_cert_url = (
         'https://{}{}'.format(
-            get_value_for_org(instance.course_id.org, 'site_domain'),
+            site_domain,
             reverse('certificates:render_cert_by_uuid', args=[instance.verify_uuid])
         )
     )
@@ -33,10 +37,19 @@ def generate_pdf(sender, instance, **kwargs):
         os.mkdir(pdf_dir)
 
     cmd = '''
-    xvfb-run -a --server-args="-screen 0, 1024x768x24" wkhtmltopdf --zoom 1.182 --margin-top 5 --margin-bottom 5 \
-    --margin-left 5 --margin-right 5 -s A4 -O Landscape --print-media-type {} {}
+    xvfb-run -a --server-args="-screen 0, 1024x768x24" wkhtmltopdf  --margin-top 1 --margin-bottom 0 \
+    --margin-left 1 --margin-right 1 -s A4 -O Landscape --print-media-type  --run-script '{}' {} {}
     '''
-    cmd = cmd.format(html_cert_url, os.path.join(pdf_dir, pdf_filename))
+    script = '''
+    var x = document.getElementsByClassName("certificates"); 
+    var i; 
+    for (i = 0; i < x.length; i++) {
+      x[i].style.maxHeight = "100% !important";
+      x[i].style.maxWidth = "100% !important"; 
+      x[i].style.height = "768px !important"; 
+    }
+    '''
+    cmd = cmd.format(script, html_cert_url, os.path.join(pdf_dir, pdf_filename))
     if os.path.exists(os.path.join(pdf_dir, pdf_filename)):
         os.remove(os.path.join(pdf_dir, pdf_filename))
     os.system(cmd)
