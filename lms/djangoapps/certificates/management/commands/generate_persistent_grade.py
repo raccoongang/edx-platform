@@ -20,7 +20,7 @@ class Command(BaseCommand):
     """
 
     help = """
-    Update/generate persistent grades
+        Update/generate persistent grades
     """
 
     def handle(self, *args, **options):
