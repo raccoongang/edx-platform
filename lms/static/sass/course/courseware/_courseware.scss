@@ -716,3 +716,16 @@ body.answer-loading .modal-loader {
 body.answer-loading .modal-loader {
     display: block;
 }
+
+.ui-widget-header {
+    background: $blue;
+    border: darken($blue, 20%);
+}
+
+.ui-dialog {
+    .ui-dialog-titlebar-close {
+        span {
+            margin: -8px;
+        }
+    }
+}
