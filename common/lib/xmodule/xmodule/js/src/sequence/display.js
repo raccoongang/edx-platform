@@ -57,6 +57,7 @@
             this.ajaxUrl = this.el.data('ajax-url');
             this.nextUrl = this.el.data('next-url');
             this.prevUrl = this.el.data('prev-url');
+            this.courseId = this.el.parent().data('course-id');
             this.keydownHandler($(element).find('#sequence-list .tab'));
             this.base_page_title = ($('title').data('base-title') || '').trim();
             this.bind();
@@ -200,11 +201,11 @@
         };
 
         Sequence.prototype.updateButtonState = function(buttonClass, buttonAction, isAtBoundary, boundaryUrl) {
-            if (isAtBoundary && boundaryUrl === 'None') {
-                this.disableButton(buttonClass);
-            } else {
+            //if (isAtBoundary && boundaryUrl === 'None') {
+            //    this.disableButton(buttonClass);
+            //} else {
                 this.enableButton(buttonClass, buttonAction);
-            }
+            //}
         };
 
         Sequence.prototype.toggleArrows = function() {
@@ -350,40 +351,67 @@
                 widgetPlacement = 'top';
             }
 
+            var self = this;
+            var goToNextOrPrevious = function(url) {
+                // Formerly known as seq_next and seq_prev
+                Logger.log(analyticsEventName, {
+                    id: self.id,
+                    current_tab: self.position,
+                    tab_count: self.num_contents,
+                    widget_placement: widgetPlacement
+                }).always(function() {
+                    if (url) {
+                        // Wait to load the new page until we've attempted to log the event
+                        window.location.href = url;
+                    }
+                });
+
+                // If we're staying on the page, no need to wait for the event logging to finish
+                if (!url) {
+                    // If the bottom nav is used, scroll to the top of the page on change.
+                    if (isBottomNav) {
+                        $.scrollTo(0, 150);
+                    }
+
+                    offset = {
+                        next: 1,
+                        previous: -1
+                    };
+
+                    newPosition = self.position + offset[direction];
+                    self.render(newPosition);
+                }
+            };
+
             if ((direction === 'next') && (this.position >= this.contents.length)) {
-                targetUrl = this.nextUrl;
+                if(this.nextUrl === 'None') {
+                    $("body").addClass("answer-loading");
+                    $.ajax({
+                        url: '/courses/'+this.courseId+'/check_prerequisite/',
+                        data: {
+                            block_id: this.id
+                        },
+                        success: function(data) {
+                            if (data.next) {
+                                goToNextOrPrevious(data.url);
+                            } else {
+                                $('#next-dialog #msg').html(data.msg);
+                                $('#next-dialog').dialog({
+                                    width: 400
+                                });
+                            }
+                        },
+                        complete: function() {
+                            $("body").removeClass("answer-loading");
+                        }
+                    });
+                } else {
+                    goToNextOrPrevious(this.nextUrl);
+                }
             } else if ((direction === 'previous') && (this.position === 1)) {
-                targetUrl = this.prevUrl;
+                goToNextOrPrevious(this.prevUrl);
             }
-
-            // Formerly known as seq_next and seq_prev
-            Logger.log(analyticsEventName, {
-                id: this.id,
-                current_tab: this.position,
-                tab_count: this.num_contents,
-                widget_placement: widgetPlacement
-            }).always(function() {
-                if (targetUrl) {
-                    // Wait to load the new page until we've attempted to log the event
-                    window.location.href = targetUrl;
-                }
-            });
-
-            // If we're staying on the page, no need to wait for the event logging to finish
-            if (!targetUrl) {
-                // If the bottom nav is used, scroll to the top of the page on change.
-                if (isBottomNav) {
-                    $.scrollTo(0, 150);
-                }
-
-                offset = {
-                    next: 1,
-                    previous: -1
-                };
-
-                newPosition = this.position + offset[direction];
-                this.render(newPosition);
-            }
+            goToNextOrPrevious();
         };
 
         Sequence.prototype.link_for = function(position) {

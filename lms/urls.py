@@ -9,7 +9,7 @@ from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
 from ratelimitbackend import admin
 
-from courseware.views.index import CoursewareIndex
+from courseware.views.index import CoursewareIndex, check_prerequisite
 from courseware.views.views import CourseTabView, EnrollStaffView, StaticCourseTabView
 from django_comment_common.models import ForumsConfig
 from openedx.core.djangoapps.auth_exchange.views import LoginWithAccessTokenView
@@ -419,6 +419,13 @@ urlpatterns += (
         ),
         CoursewareIndex.as_view(),
         name='courseware_position',
+    ),
+    url(
+        r'^courses/{}/check_prerequisite/$'.format(
+            settings.COURSE_ID_PATTERN,
+        ),
+        check_prerequisite,
+        name='courseware_check_prerequisite',
     ),
 
     # progress page

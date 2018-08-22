@@ -5,6 +5,7 @@ import logging
 import urllib
 # pylint: disable=attribute-defined-outside-init
 from datetime import datetime
+from time import sleep
 
 import waffle
 from django.conf import settings
@@ -19,6 +20,7 @@ from django.utils.timezone import UTC
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic import View
+from django.utils.translation import ugettext as _
 from opaque_keys.edx.keys import CourseKey
 from web_fragments.fragment import Fragment
 
@@ -31,18 +33,20 @@ from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY
 from openedx.core.djangoapps.monitoring_utils import set_custom_metrics_for_course_key
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preference
 from openedx.core.djangoapps.waffle_utils import WaffleSwitchNamespace
+from openedx.core.lib.gating.api import get_required_content
 from openedx.features.course_experience import COURSE_OUTLINE_PAGE_FLAG, default_course_url_name
 from openedx.features.course_experience.views.course_sock import CourseSockFragmentView
 from openedx.features.enterprise_support.api import data_sharing_consent_required
 from shoppingcart.models import CourseRegistrationCode
 from student.views import is_course_blocked
 from util.views import ensure_valid_course_key
+from util.json_request import JsonResponse
 from xmodule.modulestore.django import modulestore
 from xmodule.x_module import STUDENT_VIEW
 
 from ..access import has_access
 from ..access_utils import in_preview_mode, is_course_open_for_learner
-from ..courses import get_course_with_access, get_current_child, get_studio_url
+from ..courses import get_course_with_access, get_current_child, get_studio_url, get_course
 from ..entrance_exams import (
     course_has_entrance_exam,
     get_entrance_exam_content,
@@ -515,3 +519,93 @@ def save_positions_recursively_up(user, request, field_data_cache, xmodule, cour
             save_child_position(parent, current_module.location.name)
 
         current_module = parent
+
+
+@login_required
+@ensure_valid_course_key
+def check_prerequisite(request, course_id):
+    block_id = request.GET.get('block_id')
+    if not block_id:
+        raise Http404()
+
+    block_hash = request.GET.get('block_hash', block_id[-32:])
+    course_key = CourseKey.from_string(course_id)
+    with modulestore().bulk_operations(course_key):
+        course = get_course(course_key)
+
+    next_item = None
+    chapters = course.get_children()
+    for c, chapter in enumerate(chapters):
+        sections = chapter.get_children()
+        for s, section in enumerate(sections):
+            if section.url_name == block_hash:
+                if s < (len(sections) - 1):
+                    next_item = sections[s+1]
+                elif c < (len(chapters) - 1):
+                    next_item = (chapters[c+1].get_children() or [None])[0]
+
+    if not next_item:
+        url = reverse(
+            'jump_to',
+            kwargs={
+                'course_id': course_id,
+                'location': block_id,
+            }
+        )
+        return JsonResponse({'next': False, 'msg': _('Is last subsection'), 'url': url})
+
+    prereq = get_required_content(course_key, next_item.location)
+    if not prereq:
+        return JsonResponse({'next': True, 'msg': _('Go to next subsection')})
+
+    for i in range(10):
+        field_data_cache = FieldDataCache.cache_for_descriptor_descendents(
+            course_key,
+            request.user,
+            course,
+            depth=CONTENT_DEPTH,
+            read_only=CrawlersConfig.is_crawler(request),
+        )
+
+        table_of_contents = toc_for_course(
+            request.user,
+            request,
+            course,
+            None,
+            None,
+            field_data_cache,
+        )
+
+        next_for_user = None
+        for c, chapter in enumerate(table_of_contents['chapters']):
+            for s, section in enumerate(chapter.get('sections', [])):
+                if section['url_name'] == block_hash:
+                    if s < len(chapter['sections']) - 1:
+                        next_for_user = chapter['sections'][s+1]
+                    elif c < len(table_of_contents['chapters']) - 1:
+                        next_for_user = (table_of_contents['chapters'][c+1].get('sections') or [None])[0]
+
+        if next_for_user and next_item.url_name == next_for_user['url_name']:
+            break
+
+        sleep(0.5)
+    else:
+        url = reverse(
+            'jump_to',
+            kwargs={
+                'course_id': course_id,
+                'location': prereq[0],
+            }
+        )
+        msg = _('Subsection blocked by <a href="{}">this</a> prerequisite.').format(url)
+        return JsonResponse({'next': False, 'msg': msg, 'url': url})
+
+    next_url = reverse(
+        'jump_to',
+        kwargs={
+            'course_id': course_id,
+            'location': next_item.location.to_deprecated_string(),
+        }
+    )
+
+    return JsonResponse({'next': True, 'url': next_url})

@@ -255,3 +255,32 @@ ${HTML(fragment.foot_html())}
 % endif
 <%include file="../modal/accessible_confirm.html" />
 <div class="modal-loader"><div>Please wait...</div></div>
+<div id="next-dialog">
+  <p id='msg'></p>
+</div>
+
+<script type="text/javascript">
+$(function() {
+    function copyToClipboard() {
+        var aux = document.createElement("input");
+        aux.setAttribute("value", "You can not use print screen");
+        document.body.appendChild(aux);
+        aux.select();
+        document.execCommand("copy");
+        document.body.removeChild(aux);
+        alert("Print screen disbled.");
+    }
+
+    $(window).keyup(function(e) {
+        if(e.keyCode == 44){
+            copyToClipboard();
+        }
+    });
+
+    $(window).focus(function() {
+        $("body").show();
+    }).blur(function() {
+        $("body").hide();
+    });
+});
+</script>
