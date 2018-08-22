@@ -31,8 +31,10 @@ class Command(BaseCommand):
                 course = courses.get_course_by_id(enrollment.course_id)
                 course_structure = get_course_blocks(user, course.location)
             except:
-                # Used for catch exceptions related to bad courses
-                pass
-            # Used for ignoring student that doesn't enrol in given course
+                log.warning(
+                    'persistent grade not generated for the user {} on the course {}'
+                    .format(user.username, enrollment.course_id)
+                )
+            # Used for ignoring student that doesn't enroll in given course
             if course_structure:
                 CourseGradeFactory().update(user, course, course_structure)
