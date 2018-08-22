@@ -587,6 +587,8 @@ def check_prerequisite(request, course_id):
 
         if next_for_user and next_item.url_name == next_for_user['url_name']:
             break
+
+        sleep(0.5)
     else:
         url = reverse(
             'jump_to',
@@ -598,7 +600,6 @@ def check_prerequisite(request, course_id):
         msg = _('Subsection blocked by <a href="{}">this</a> prerequisite.').format(url)
         return JsonResponse({'next': False, 'msg': msg, 'url': url})
 
-        sleep(0.5)
 
     next_url = reverse(
         'jump_to',
