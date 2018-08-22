@@ -632,10 +632,10 @@
                     that.el.trigger('contentChanged', [that.id, response.contents, response]);
                     that.render(response.contents, that.focus_on_submit_notification);
                     that.updateProgress(response);
-                    if (response.refresh_page) {
-                        $("body").addClass("answer-loading");
-                        setTimeout('window.location.href=window.location.href.replace(window.location.search, "")', 5000);
-                    }
+//                     if (response.refresh_page) {
+//                         $("body").addClass("answer-loading");
+//                         setTimeout('window.location.href=window.location.href.replace(window.location.search, "")', 5000);
+//                     }
                     break;
                 default:
                     that.saveNotification.hide();

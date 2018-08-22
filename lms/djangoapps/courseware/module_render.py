@@ -982,12 +982,12 @@ def _invoke_xblock_handler(request, course_id, usage_id, handler, suffix, course
             with tracker.get_tracker().context(tracking_context_name, tracking_context):
                 resp = instance.handle(handler, req, suffix)
 
-                if suffix == 'problem_check' and course:
-                    parent_block = instance._parent_block
-                    is_prereq = gating_api.is_prerequisite(course_id, parent_block.parent)
-                    r = json.loads(resp.app_iter[0])
-                    if is_prereq and r.get('current_score', 0) >= r.get('total_possible', 1):
-                        resp = append_data_to_webob_response(resp, {'refresh_page': True})
+                #if suffix == 'problem_check' and course:
+                    #parent_block = instance._parent_block
+                    #is_prereq = gating_api.is_prerequisite(course_id, parent_block.parent)
+                    #r = json.loads(resp.app_iter[0])
+                    #if is_prereq and r.get('current_score', 0) >= r.get('total_possible', 1):
+                        #resp = append_data_to_webob_response(resp, {'refresh_page': True})
 
                 if suffix == 'problem_check' \
                         and course \
