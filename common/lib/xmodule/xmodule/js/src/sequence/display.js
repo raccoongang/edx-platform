@@ -411,6 +411,7 @@
             } else if ((direction === 'previous') && (this.position === 1)) {
                 goToNextOrPrevious(this.prevUrl);
             }
+            goToNextOrPrevious();
         };
 
         Sequence.prototype.link_for = function(position) {
