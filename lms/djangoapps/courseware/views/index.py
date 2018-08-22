@@ -600,7 +600,6 @@ def check_prerequisite(request, course_id):
         msg = _('Subsection blocked by <a href="{}">this</a> prerequisite.').format(url)
         return JsonResponse({'next': False, 'msg': msg, 'url': url})
 
-
     next_url = reverse(
         'jump_to',
         kwargs={
