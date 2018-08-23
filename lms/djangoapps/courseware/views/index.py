@@ -558,7 +558,7 @@ def check_prerequisite(request, course_id):
     if not prereq:
         return JsonResponse({'next': True, 'msg': _('Go to next subsection')})
 
-    for i in range(10):
+    for i in range(30):
         field_data_cache = FieldDataCache.cache_for_descriptor_descendents(
             course_key,
             request.user,
