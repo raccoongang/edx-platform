@@ -42,6 +42,8 @@ urlpatterns = (
     # Performance endpoints
     url(r'', include('openedx.core.djangoapps.performance.urls')),
 
+    url(r'^contact$', 'branding.views.contact_form', name='contact_form'),
+
     # Static template view endpoints like blog, faq, etc.
     url(r'', include('static_template_view.urls')),
 
@@ -60,6 +62,7 @@ urlpatterns = (
 
     # Enrollment API RESTful endpoints
     url(r'^api/enrollment/v1/', include('enrollment.urls')),
+    url(r'^mpesa/', include('mpesa_api.urls')),
 
     # Courseware search endpoints
     url(r'^search/', include('search.urls')),

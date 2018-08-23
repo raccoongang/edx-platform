@@ -24,14 +24,6 @@
                     expanded: true
                 },
                 {
-                    name: 'accountsTabSections',
-                    id: 'accounts-tab',
-                    label: gettext('Linked Accounts'),
-                    tabindex: -1,
-                    selected: false,
-                    expanded: false
-                },
-                {
                     name: 'ordersTabSections',
                     id: 'orders-tab',
                     label: gettext('Order History'),

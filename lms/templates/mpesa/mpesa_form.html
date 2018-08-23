@@ -1,0 +1,105 @@
+<%inherit file="../main.html" />
+<%namespace name='static' file='/static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+from django.conf import settings
+%>
+<%block name="pagetitle">${_("Shopping cart")}</%block>
+
+ <%block name="custom_content">
+<%! from django.utils.translation import ugettext as _ %>
+<div class="mpesa_payment">
+    <h1>Mpesa Payment</h1>
+    <h3>For payment, enter the phone number and unlock the phone</h3>
+    <form action="${action}" method="post" id="mpesa_form">
+        % for pk, pv in params.iteritems():
+            <input type="hidden" name="${pk}" value="${pv}" />
+        % endfor
+
+        <input type="text" name="phone" id="phone" placeholder="${_('Your phone number')}" required="required" >
+        <button id="submit" type="submit" class="button postfix discovery-submit">
+            <div id="button_text">${_('Payment')}</div>
+            <div aria-live="polite" aria-relevant="all">
+                <div id="loading-indicator" class="loading-spinner hidden">
+                    <span class="icon fa fa-spinner fa-spin" aria-hidden="true"></span>
+                    <span class="sr">Loading</span>
+                </div>
+            </div>
+        </button>
+    </form>
+    <form action="/shoppingcart/postpay_callback/" method="post" id="check_form" >
+        <input type="hidden" name="order_id" id="check_form_name" value="${params['custom']}" />
+    </form>
+
+</section>
+
+
+<script>
+
+function validate_int(myEvento) {
+  var myCaja = document.getElementById("phone");
+  myText = myCaja.value;
+  if ((myEvento.charCode >= 48 && myEvento.charCode <= 57) && myText.length < 12) {
+    dato = true;
+  } else {
+    dato = false;
+  }
+  return dato;
+}
+
+document.getElementById("phone").onkeypress = validate_int;
+
+
+var checkStatus = {
+    notify: function(){
+       $("#check_form").submit()
+    },
+    sendResponse: function(url){
+        $.ajax({
+           type: "POST",
+           url: url,
+           data: "order_id=${params['custom']}",
+           success: function(data)
+           {
+               console.log("checking")
+               console.log(data)
+               if (data['key']==0){
+                    setTimeout(function(){ checkStatus.sendResponse(url); }, 3000);
+                    console.log("checking again")
+               } else {
+                    checkStatus.notify()
+               }
+           }
+         });
+         this.isSendRequest = 1
+    }
+
+}
+
+
+$("#mpesa_form").submit(function(e) {
+
+    var url = "${action}";
+    console.log('start submit form')
+    $.ajax({
+           type: "POST",
+           url: url,
+           data: $("#mpesa_form").serialize(),
+           success: function(data)
+           {
+               checkStatus.sendResponse(data['check_url'])
+               console.log(data['check_url'])
+           }
+         });
+    document.getElementById("submit").disabled = true;
+    document.getElementById("phone").disabled = true;
+    document.getElementById("loading-indicator").classList.remove("hidden");
+    document.getElementById("button_text").classList.add("hidden");
+
+    console.log('form is submited. Waiting.')
+    e.preventDefault();
+});
+
+</script>
+</div>
+</%block>
