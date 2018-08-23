@@ -47,7 +47,7 @@ def get_purchase_endpoint():
 
     Returns:
         unicode
-    """git
+    """
     return get_processor_config().get('PURCHASE_ENDPOINT', '')
 
 def get_signed_purchase_params(cart, callback_url=None, extra_data=None):
