@@ -21,7 +21,7 @@ from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic import View
 from django.utils.translation import ugettext as _
-from opaque_keys.edx.keys import CourseKey
+from opaque_keys.edx.keys import CourseKey, UsageKey
 from web_fragments.fragment import Fragment
 
 from edxmako.shortcuts import render_to_response, render_to_string
@@ -597,7 +597,9 @@ def check_prerequisite(request, course_id):
                 'location': prereq[0],
             }
         )
-        msg = _('Subsection blocked by <a href="{}">this</a> prerequisite.').format(url)
+        descriptor = modulestore().get_item(UsageKey.from_string(prereq[0]))
+        name = descriptor.display_name_with_default
+        msg = _('In order to proceed, you must successfully complete section "<a href="{}">{}</a>" first.').format(url, name)
         return JsonResponse({'next': False, 'msg': msg, 'url': url})
 
     next_url = reverse(
