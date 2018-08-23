@@ -47,7 +47,6 @@ def get_purchase_endpoint():
 
     Returns:
         unicode
-
     """
     return get_processor_config().get('PURCHASE_ENDPOINT', '')
 
@@ -68,7 +67,6 @@ def get_signed_purchase_params(cart, callback_url=None, extra_data=None):
 
     Returns:
         dict
-
     """
     total_cost = cart.total_cost
     amount = "{0:0.2f}".format(total_cost)
