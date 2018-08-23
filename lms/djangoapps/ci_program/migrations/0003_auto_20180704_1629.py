@@ -8,7 +8,7 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ci_program', '0005_merge'),
+        ('ci_program', '0002_auto_20180313_1318'),
     ]
 
     operations = [
