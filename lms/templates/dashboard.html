@@ -266,3 +266,8 @@ from openedx.core.djangolib.markup import HTML, Text
     </form>
   </div>
 </div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        window.webkit.messageHandlers.sendTokenToApplication.postMessage(${access_tokens | n, dump_js_escaped_json});
+    });
+</script>

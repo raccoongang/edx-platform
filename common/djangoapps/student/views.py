@@ -863,7 +863,18 @@ def dashboard(request):
     valid_verification_statuses = ['approved', 'must_reverify', 'pending', 'expired']
     display_sidebar_on_dashboard = len(order_history_list) or verification_status in valid_verification_statuses
 
+    tokens = [
+        {
+            'access_token': t.token,
+            'token_type': 'Bearer',
+            'expires_in': t.expires.isoformat(),
+            'scope': t.scope
+        }
+        for t in user.accesstoken_set.filter(expires__gt=datetime.datetime.now())
+    ]
+
     context = {
+        'access_tokens': tokens,
         'enterprise_message': enterprise_message,
         'enrollment_message': enrollment_message,
         'redirect_message': redirect_message,
