@@ -3,6 +3,7 @@ import json
 from student.models import Registration, UserProfile
 from social_core.backends.oauth import BaseOAuth2
 from django.contrib.auth.models import User
+from django.conf import settings
 import uuid
 import logging
 import social_django
@@ -26,15 +27,12 @@ class HarambeeOAuth2(BaseOAuth2):
     REDIRECT_STATE = False
     ID_KEY = 'username'
     STATE_PARAMETER = True
-    AUTHORIZATION_URL = \
-        'https://mvpdev.harambeecloud.com/identityserver/connect/authorize'
-    ACCESS_TOKEN_URL = \
-        'https://mvpdev.harambeecloud.com/identityserver/connect/token'
+    AUTHORIZATION_URL = settings.AUTHORIZATION_URL
+    ACCESS_TOKEN_URL = settings.ACCESS_TOKEN_URL
     ACCESS_TOKEN_METHOD = 'POST'
     RESPONSE_TYPE = 'code id_token'
     REDIRECT_IS_HTTPS = True
-    REVOKE_TOKEN_URL = \
-        'https://mvpdev.harambeecloud.com/identityserver/connect/endsession'
+    REVOKE_TOKEN_URL = settings.REVOKE_TOKEN_URL
     REVOKE_TOKEN_METHOD = 'GET'
 
     # The order of the default scope is important

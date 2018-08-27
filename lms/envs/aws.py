@@ -1099,3 +1099,8 @@ ACE_ROUTING_KEY = ENV_TOKENS.get('ACE_ROUTING_KEY', ACE_ROUTING_KEY)
 
 # Allow extra middleware classes to be added to the app through configuration.
 MIDDLEWARE_CLASSES.extend(ENV_TOKENS.get('EXTRA_MIDDLEWARE_CLASSES', []))
+
+AUTHORIZATION_URL = ENV_TOKENS.get('HARAMBEE_AUTHORIZATION_URL', 'https://mvpdev.harambeecloud.com/identityserver/connect/authorize')
+ACCESS_TOKEN_URL = ENV_TOKENS.get('HARAMBEE_ACCESS_TOKEN_URL', 'https://mvpdev.harambeecloud.com/identityserver/connect/token')
+REVOKE_TOKEN_URL = ENV_TOKENS.get('HARAMBEE_REVOKE_TOKEN_URL', 'https://mvpdev.harambeecloud.com/identityserver/connect/endsession')
+
