@@ -1038,6 +1038,9 @@ INSTALLED_APPS = (
 
     # Waffle related utilities
     'openedx.core.djangoapps.waffle_utils',
+
+    # Jupyter Notebook Graded XBlock
+    'xblock_jupyter_graded',
 )
 
 

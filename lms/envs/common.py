@@ -2247,6 +2247,9 @@ INSTALLED_APPS = (
     'openedx.features.enterprise_support',
 
     'experiments',
+
+    # Jupyter Notebook Graded XBlock
+    'xblock_jupyter_graded',
 )
 
 ######################### CSRF #########################################
