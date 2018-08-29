@@ -1,7 +1,10 @@
+import os
+import re
 import json
 import logging
 import math
 from functools import partial
+from tempfile import NamedTemporaryFile
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -204,6 +207,17 @@ def get_file_size(upload_file):
     return upload_file.size
 
 
+def parse_content_range(request):
+    r = re.compile(r'^bytes (?P<start>\d+)-(?P<end>\d+)/(?P<total>\d+)$')
+    content_range = request.META.get('HTTP_CONTENT_RANGE', '')
+    match = r.match(content_range)
+    if match:
+        start = int(match.group('start'))
+        end = int(match.group('end'))
+        total = int(match.group('total'))
+        return (start, end, total)
+    return (0, 0, 0)
+
 @require_POST
 @ensure_csrf_cookie
 @login_required
@@ -250,11 +264,36 @@ def _upload_asset(request, course_key):
             )
         }, status=413)
 
+    start, end, total = parse_content_range(request)
+
+    tmp_file = None
+    if end and total and not (start == 0 and end == (total - 1)):
+        if start == 0:
+            f = NamedTemporaryFile(delete=False, mode='w+b')
+            fname = f.name
+            request.session['{}_{}'.format(course_key.to_deprecated_string(), filename)] = fname
+        else:
+            fname = request.session['{}_{}'.format(course_key.to_deprecated_string(), filename)]
+            f = open(fname, 'ab')
+
+        for chunk in upload_file.chunks():
+            f.write(chunk)
+        f.close()
+
+        if end != (total - 1):
+            return JsonResponse({'status': 'processed'})
+
+        tmp_file = open(fname, 'rb')
+
     content_loc = StaticContent.compute_location(course_key, filename)
 
     chunked = upload_file.multiple_chunks()
     sc_partial = partial(StaticContent, content_loc, filename, mime_type)
-    if chunked:
+
+    if tmp_file:
+        content = sc_partial(iter(lambda: tmp_file.read(1024), ''))
+        tempfile_path = upload_file.temporary_file_path()
+    elif chunked:
         content = sc_partial(upload_file.chunks())
         tempfile_path = upload_file.temporary_file_path()
     else:
@@ -277,6 +316,10 @@ def _upload_asset(request, course_key):
     # then commit the content
     contentstore().save(content)
     del_cached_content(content.location)
+    if tmp_file:
+        name = tmp_file.name
+        tmp_file.close()
+        os.remove(name)
 
     # readback the saved content - we need the database timestamp
     readback = contentstore().find(content.location)
