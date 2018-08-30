@@ -23,6 +23,13 @@ def program_listing(request):
     return base_program_listing(request, request.user)
 
 
+def _courses_count(courses):
+    courses_count = 0
+    for course in courses:
+        courses_count += len(set(c['key'] for c in course['course_runs']))
+    return courses_count
+
+
 @login_required
 @require_GET
 def program_details(request, program_uuid):
@@ -41,7 +48,12 @@ def program_details(request, program_uuid):
     course_data = meter.progress(programs=[program_data], count_only=False)[0]
     certificate_data = get_certificates(request.user, program_data)
 
-    program_data.pop('courses')
+    total_courses_count = _courses_count(program_data.pop('courses'))
+
+    not_started_courses_count = _courses_count(course_data['not_started'])
+
+    if not_started_courses_count < total_courses_count:
+        program_data['price'] = '%.2f' % ((float(program_data['price']) / total_courses_count) * not_started_courses_count)
 
     urls = {
         'program_listing_url': reverse('program_listing_view'),
@@ -61,6 +73,7 @@ def program_details(request, program_uuid):
         'program_data': program_data,
         'course_data': course_data,
         'certificate_data': certificate_data,
+        'add_to_cart_url': reverse('add_programm_to_cart', kwargs={'uuid': program_data['uuid']}),
     }
 
     return render_to_response('learner_dashboard/program_details.html', context)

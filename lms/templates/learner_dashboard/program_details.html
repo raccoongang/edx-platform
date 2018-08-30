@@ -19,8 +19,14 @@ ProgramDetailsFactory({
     certificateData: ${certificate_data | n, dump_js_escaped_json},
     urls: ${urls | n, dump_js_escaped_json},
     userPreferences: ${user_preferences | n, dump_js_escaped_json},
+    addToCartUrl: "${add_to_cart_url | n}",
 });
 </%static:require_module>
+</%block>
+
+<%block name="headextra">
+  <%static:css group='style-course-vendor'/>
+  <%static:css group='style-course'/>
 </%block>
 
 <%block name="pagetitle">${_("Program Details")}</%block>
@@ -29,3 +35,6 @@ ProgramDetailsFactory({
 <main id="main" aria-label="Content" tabindex="-1">
     <div class="js-program-details-wrapper program-details-wrapper"></div>
 </main>
+<div id="shoppingcart-popup">
+  <p id='msg'></p>
+</div>

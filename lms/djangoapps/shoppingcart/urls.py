@@ -9,7 +9,7 @@ urlpatterns = patterns(
     url(r'^donation/$', 'donate', name='donation'),
     url(r'^csv_report/$', 'csv_report', name='payment_csv_report'),
     # These following URLs are only valid if the ENABLE_SHOPPING_CART feature flag is set
-    url(r'^$', 'show_cart'),
+    url(r'^$', 'show_cart', name='show_cart'),
     url(r'^clear/$', 'clear_cart'),
     url(r'^remove_item/$', 'remove_item'),
     url(r'^add/course/{}/$'.format(settings.COURSE_ID_PATTERN), 'add_course_to_cart', name='add_course_to_cart'),
@@ -19,6 +19,7 @@ urlpatterns = patterns(
     url(r'^reset_code_redemption/$', 'reset_code_redemption'),
     url(r'^billing_details/$', 'billing_details', name='billing_details'),
     url(r'^verify_cart/$', 'verify_cart'),
+    url(r'^add/program/(?P<uuid>[0-9a-f-]+)/', 'add_program_to_cart', name='add_programm_to_cart'),
 )
 
 if settings.FEATURES.get('ENABLE_PAYMENT_FAKE'):
