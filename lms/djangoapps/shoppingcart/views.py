@@ -75,6 +75,9 @@ from .processors import (
     render_purchase_form_html
 )
 
+from openedx.core.djangoapps.programs.models import ProgramsApiConfig
+from openedx.core.djangoapps.programs.utils import ProgramProgressMeter
+
 log = logging.getLogger("shoppingcart")
 AUDIT_LOG = logging.getLogger("audit")
 
@@ -133,6 +136,49 @@ def add_course_to_cart(request, course_id):
                 break  # Since only one code can be applied to the cart, we'll just take the first one and then break.
 
     return HttpResponse(_("Course added to cart."))
+
+
+@require_POST
+def add_program_to_cart(request, uuid):
+    if not request.user.is_authenticated():
+        return JsonResponse({'success': False, 'msg': _('You must be logged-in to add to a shopping cart')})
+
+    cart = Order.get_cart_for_user(request.user)
+
+    programs_config = ProgramsApiConfig.current()
+    if not programs_config.enabled:
+        raise JsonResponse({'success': False, 'msg': _('The program config you requested does not exist.')})
+
+    meter = ProgramProgressMeter(request.user, uuid=uuid)
+    program_data = meter.programs[0]
+
+    if not program_data:
+        return JsonResponse({'success': False, 'msg': _('The program you requested does not exist.')})
+
+    course_keys = []
+    for course in program_data['courses']:
+        for c in course['course_runs']:
+            course_key = SlashSeparatedCourseKey.from_deprecated_string(c['key'])
+            if course_key and course_key not in course_keys:
+                course_keys.append(course_key)
+
+    course_price = float(program_data['price']) / len(course_keys)
+
+    for course_key in course_keys:
+        try:
+            paid_course_item = PaidCourseRegistration.add_to_order(cart, course_key)
+        except CourseDoesNotExistException:
+            log.warning(u'A non-existent course "%s" is skipped.', course_key.to_deprecated_string())
+        except AlreadyEnrolledInCourseException:
+            log.info(u'Already enrolled course "%s" is skipped.', course_key.to_deprecated_string())
+        except ItemAlreadyInCartException:
+            paid_course_item = cart.orderitem_set.get(paidcourseregistration__course_id=course_key)
+
+        paid_course_item.unit_cost = course_price
+        paid_course_item.currency = program_data['currency']
+        paid_course_item.save()
+
+    return JsonResponse({'success': True, 'msg': 'Program added to cart.', 'redirect_url': reverse('show_cart')})
 
 
 @login_required

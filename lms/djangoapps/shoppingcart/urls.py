@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^reset_code_redemption/$', views.reset_code_redemption, name='shoppingcart.views.reset_code_redemption'),
     url(r'^billing_details/$', views.billing_details, name='billing_details'),
     url(r'^verify_cart/$', views.verify_cart, name='shoppingcart.views.verify_cart'),
+    url(r'^add/program/(?P<uuid>[0-9a-f-]+)/', views.add_program_to_cart, name='add_programm_to_cart'),
 ]
 
 if settings.FEATURES.get('ENABLE_PAYMENT_FAKE'):

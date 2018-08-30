@@ -18,6 +18,7 @@ class ProgramDetailsView extends Backbone.View {
       el: '.js-program-details-wrapper',
       events: {
         'click .complete-program': 'trackPurchase',
+        'click button.buy-program': 'addProgramToCart',
       },
     };
     super(Object.assign({}, defaults, options));
@@ -124,6 +125,22 @@ class ProgramDetailsView extends Backbone.View {
       uuid: data.uuid,
     });
   }
+
+  addProgramToCart() {
+   var addToCartUrl = this.options.addToCartUrl;
+   $.ajax({
+     url: addToCartUrl,
+     method: 'POST',
+     success: function(data) {
+       if (data.success) {
+         window.location = data.redirect_url;
+       } else {
+         $("#shoppingcart-popup #msg").html(data.msg);
+         $("#shoppingcart-popup").dialog({width: 400});
+       }
+     }
+  }
+ }
 }
 
 export default ProgramDetailsView;
