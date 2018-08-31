@@ -14,30 +14,20 @@ from openedx.core.djangoapps.programs.utils import (
     get_certificates,
     get_program_marketing_url
 )
+from openedx.core.djangoapps.programs.views import program_listing as base_program_listing
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preferences
 
 
 @login_required
-@require_GET
 def program_listing(request):
-    """View a list of programs in which the user is engaged."""
-    programs_config = ProgramsApiConfig.current()
-    if not programs_config.enabled:
-        raise Http404
+    return base_program_listing(request, request.user)
 
-    meter = ProgramProgressMeter(request.user)
 
-    context = {
-        'disable_courseware_js': True,
-        'marketing_url': get_program_marketing_url(programs_config),
-        'nav_hidden': True,
-        'programs': meter.engaged_programs,
-        'progress': meter.progress(),
-        'show_program_listing': programs_config.enabled,
-        'uses_pattern_library': True,
-    }
-
-    return render_to_response('learner_dashboard/programs.html', context)
+def _courses_count(courses):
+    courses_count = 0
+    for course in courses:
+        courses_count += len(set(c['key'] for c in course['course_runs']))
+    return courses_count
 
 
 @login_required
@@ -58,7 +48,12 @@ def program_details(request, program_uuid):
     course_data = meter.progress(programs=[program_data], count_only=False)[0]
     certificate_data = get_certificates(request.user, program_data)
 
-    program_data.pop('courses')
+    total_courses_count = _courses_count(program_data.pop('courses'))
+
+    not_started_courses_count = _courses_count(course_data['not_started'])
+
+    if not_started_courses_count < total_courses_count:
+        program_data['price'] = '%.2f' % ((float(program_data['price']) / total_courses_count) * not_started_courses_count)
 
     urls = {
         'program_listing_url': reverse('program_listing_view'),
@@ -78,6 +73,7 @@ def program_details(request, program_uuid):
         'program_data': program_data,
         'course_data': course_data,
         'certificate_data': certificate_data,
+        'add_to_cart_url': reverse('add_programm_to_cart', kwargs={'uuid': program_data['uuid']}),
     }
 
     return render_to_response('learner_dashboard/program_details.html', context)

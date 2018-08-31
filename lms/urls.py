@@ -454,6 +454,12 @@ urlpatterns += (
         name='program_marketing_view',
     ),
 
+    url(
+        r'^xseries$|^programs$',
+        'openedx.core.djangoapps.programs.views.program_listing',
+         name='programs',
+    ),
+
     # rest api for grades
     url(
         r'^api/grades/',

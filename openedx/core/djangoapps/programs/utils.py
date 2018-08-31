@@ -73,7 +73,10 @@ class ProgramProgressMeter(object):
     def __init__(self, user, enrollments=None, uuid=None):
         self.user = user
 
-        self.enrollments = enrollments or list(CourseEnrollment.enrollments_for_user(self.user))
+        enrolls = []
+        if user.is_authenticated():
+            enrolls = list(CourseEnrollment.enrollments_for_user(self.user))
+        self.enrollments = enrollments or enrolls
         self.enrollments.sort(key=lambda e: e.created, reverse=True)
 
         self.enrolled_run_modes = {}
