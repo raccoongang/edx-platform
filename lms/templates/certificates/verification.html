@@ -30,9 +30,9 @@ from openedx.core.djangolib.markup import HTML
                                     <div class="row">
                                         <div class="col-sm-7">
                                             <div class="form-field">
-                                                <label>معرف الشهادة <small>*</small></label>
+                                                <label>الرقم التعريفي للشهادة <small>*</small></label>
                                                 <input name="certificate_uuid" class="input-block" type="text"
-                                                       placeholder="معرف مدرج في الشهادة" value="${certificate_uuid if errors else ''}">
+                                                       placeholder="أدخل الرقم التعريفي للشهادة" value="${certificate_uuid if errors else ''}">
                                                 <ul class="errorlist"><li>${errors.get('uuid_error', '')}</li></ul>
                                             </div>
                                         </div>
@@ -52,10 +52,10 @@ from openedx.core.djangolib.markup import HTML
                             % if certificate_data:
                             <div class="col-md-6 certificate-column">
                               <p><strong>تفاصيل الشهادة</strong></p>
-                              <p><strong>الشهادة معرف</strong>: ${certificate_uuid[::-1]}</p>
-                              <p><strong>اسم الطالب</strong>: ${certificate_data.get('name')}</p>
-                              <p><strong>بالطبع بالطبع</strong>: ${certificate_data.get('course')}</p>
-                              <p><strong>في الصادر</strong>: ${certificate_data.get('date', '--')}</p>
+                              <p><strong>الرقم التعريفي للشهادة</strong>: ${certificate_uuid[::-1]}</p>
+                              <p><strong>إسم الطالب</strong>: ${certificate_data.get('name')}</p>
+                              <p><strong>إسم الدورة</strong>: ${certificate_data.get('course')}</p>
+                              <p><strong>التاريخ</strong>: ${certificate_data.get('date', '--')}</p>
                             </div>
                             %endif
                             <!-- /Certificate detais column -->
