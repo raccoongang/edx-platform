@@ -656,3 +656,4 @@ def render_html_view(request, user_id, course_id):
 
     # FINALLY, render appropriate certificate
     return _render_certificate_template(request, context, course, user_certificate)
+
