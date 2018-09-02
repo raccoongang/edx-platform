@@ -23,7 +23,7 @@ CATEGORY_CHOICES = (
 (_('Course Content Review'), (
    ('video_not_working', _('Video - does not work')),
    ('image_not_working', _('Images - Do not appear on the screen')),
-   ('question_no_answer', _('Questions - No answer')),
+   ('question_no_answer', _('Questions - Do not accept answers')),
    ('question_no_apper', _('Questions - Do not appear on the screen')),
    ('question_no_register', _('Questions - Do not register as a marker')),
    ('activity_no_interact', _('Activities - Do not interact with the user')),
@@ -33,7 +33,7 @@ CATEGORY_CHOICES = (
   )
 ),
 
-   ('other', _('Other')),
+   ('others', _('Others')),
 )
 
 class ContactForm(forms.Form):
@@ -41,7 +41,7 @@ class ContactForm(forms.Form):
     email = forms.EmailField(label=_('You e-mail'), max_length=255)
     subject = forms.CharField(label=_('Subject'), max_length=255)
     phone = forms.CharField(label=_('You phone'), max_length=16, required=False)
-    category = forms.CharField(label=_('Category'), widget=forms.Select(choices=CATEGORY_CHOICES, attrs={'class':'input-block'}), required=False)
+    category = forms.CharField(label=_("Problem's category"), widget=forms.Select(choices=CATEGORY_CHOICES, attrs={'class':'input-block'}), required=False)
     message = forms.CharField(label=_('Message'), widget=forms.Textarea, required=False)
 
     def save(self):

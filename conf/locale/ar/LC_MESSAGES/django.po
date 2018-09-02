@@ -5448,6 +5448,83 @@ msgstr "يُرجى تنزيل تطبيق الهاتف المحمول لمنصّ�
 msgid "This field is required."
 msgstr "هذا الحقل مطلوب."
 
+#: lms/djangoapps/branding/forms.py
+#: lms/templates/static_templates/contact.html
+msgid "Problem's category"
+msgstr "تصنيف المشكلة"
+
+#: lms/djangoapps/branding/forms.py
+msgid "Password could not be restored"
+msgstr "تعذر استعادة كلمة المرور"
+
+#: lms/djangoapps/branding/forms.py
+msgid "I can not login"
+msgstr "لا استطيع الدخول"
+
+#: lms/djangoapps/branding/forms.py
+msgid "Review of courses"
+msgstr "استعراض الدورات"
+
+#: lms/djangoapps/branding/forms.py
+msgid "Unable to register for courses"
+msgstr "عدم التمكن من التسجيل بالدورات"
+
+#: lms/djangoapps/branding/forms.py
+msgid "You can not start or cancel the registration of courses"
+msgstr "تعذر بدء أو  إلغاء التسجيل بالدورات"
+
+#: lms/djangoapps/branding/forms.py
+msgid "Unable to issue certificate"
+msgstr "تعذر اصدار الشهادة"
+
+#: lms/djangoapps/branding/forms.py
+msgid "The certificate does not match the course or the name is different"
+msgstr "الشهادة غير مطابقة للدورة او الاسم مختلف"
+
+#: lms/djangoapps/branding/forms.py
+msgid "Course Content Review"
+msgstr "استعراض محتوى الدورات"
+
+#: lms/djangoapps/branding/forms.py
+msgid "Video - does not work"
+msgstr "الفيديو -  لا يعمل"
+
+#: lms/djangoapps/branding/forms.py
+msgid "Images - Do not appear on the screen"
+msgstr "الصور - لاتظهر على الشاشة"
+
+#: lms/djangoapps/branding/forms.py
+msgid "Questions - Do not accept answers"
+msgstr "الاسئلة - لا تقبل إجابة"
+
+#: lms/djangoapps/branding/forms.py
+msgid "Questions - Do not appear on the screen"
+msgstr "الاسئلة - لا تظهر على الشاشة"
+
+#: lms/djangoapps/branding/forms.py
+msgid "Questions - Do not register as a marker"
+msgstr "الاسئلة - لا تسجل كعلامة"
+
+#: lms/djangoapps/branding/forms.py
+msgid "Activities - Do not interact with the user"
+msgstr "النشاطات - لا تتفاعل مع المستخدم"
+
+#: lms/djangoapps/branding/forms.py
+msgid "Examinations - Closed after the date of issuance"
+msgstr "الامتحانات - مغلقة بعد موعد صدورها"
+
+#: lms/djangoapps/branding/forms.py
+msgid "Exams - can not be submitted"
+msgstr "الامتحانات - لا يمكن تقديمها"
+
+#: lms/djangoapps/branding/forms.py
+msgid "Discussion Forum - Questions could not be asked or answered"
+msgstr "منتدى النقاش - تعذر طرح اسئلة او الاجابة عليها"
+
+#: lms/djangoapps/branding/forms.py
+msgid "Others"
+msgstr "أخرى"
+
 #. Translators: Bulk email from address e.g. ("Physics 101" Course Staff)
 #: lms/djangoapps/bulk_email/tasks.py
 #, python-brace-format
