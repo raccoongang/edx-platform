@@ -523,7 +523,7 @@ def verify_cert_by_uuid(request):
                 certificate_data = {
                     'name': certificate.user.profile.name or certificate.user.username,
                     'course': CourseOverview.get_from_id(certificate.course_id).display_name,
-                    'date': certificate.modified_date.strftime("%Y-%m-%d")
+                    'date': certificate.modified_date.strftime("%Y/%m/%d")
                 }
             else:
                 errors.update({
