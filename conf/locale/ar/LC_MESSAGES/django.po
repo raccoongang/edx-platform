@@ -961,6 +961,7 @@ msgstr ""
 "<strong>سجّل الآن</strong> في أعلى الصفحة."
 
 #: common/djangoapps/student/views/login.py common/djangoapps/student/views.py
+#: lms/djangoapps/certificates/views/webview.py
 msgid "Invalid reCAPTCHA. Please try again."
 msgstr ""
 "رمز الإختبار غير صالح. حاول مره ثانية."
@@ -5900,6 +5901,10 @@ msgstr ""
 #, python-brace-format
 msgid "More about {fullname}'s accomplishment"
 msgstr "المزيد من التفاصيل عن إنجازات {fullname}"
+
+#: lms/djangoapps/certificates/views/webview.py
+msgid "Invalid certificate ID."
+msgstr "الرقم التعريفي للشهادة غير صحيح"
 
 #: lms/djangoapps/class_dashboard/dashboard_data.py
 #: lms/djangoapps/instructor/views/api.py

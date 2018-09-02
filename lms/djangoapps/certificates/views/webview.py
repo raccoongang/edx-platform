@@ -18,6 +18,7 @@ from django.utils.translation import ugettext as _
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
 
 from badges.events.course_complete import get_completion_badge
 from badges.utils import badges_enabled
@@ -36,13 +37,16 @@ from certificates.models import (
     CertificateStatuses,
     GeneratedCertificate
 )
+from certificates.forms import CertVerificationForm
 from courseware.access import has_access
 from edxmako.shortcuts import render_to_response
 from edxmako.template import Template
 from eventtracking import tracker
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.lib.courses import course_image_url
 from student.models import LinkedInAddToProfileConfiguration
+from student.decorators import check_recaptcha
 from util import organizations_helpers as organization_api
 from util.views import handle_500
 from xmodule.modulestore.django import modulestore
@@ -488,6 +492,63 @@ def render_cert_by_uuid(request, certificate_uuid):
         raise Http404
 
 
+@require_http_methods(['GET', 'POST'])
+@check_recaptcha
+def verify_cert_by_uuid(request):
+    """
+    This public view verifies the certificate for the specified uuid
+    """
+    form = CertVerificationForm()
+    certificate_data = {}
+    errors = {}
+    certificate_uuid = ''
+
+    if request.method=='POST':
+        if settings.USE_GOOGLE_RECAPTCHA:
+            if not request.recaptcha_is_valid:
+                errors.update({
+                    'captcha_error': _('Invalid reCAPTCHA. Please try again.')
+                })
+
+        form = CertVerificationForm(request.POST)
+        if not form.is_valid():
+            errors.update({
+                'uuid_error': _('Invalid certificate ID.')
+            })
+        else:
+            data = form.cleaned_data
+            certificate_uuid = data.get('certificate_uuid')
+            certificate = get_cert_by_uuid(certificate_uuid)
+            if certificate:
+                certificate_data = {
+                    'name': certificate.user.profile.name or certificate.user.username,
+                    'course': CourseOverview.get_from_id(certificate.course_id).display_name,
+                    'date': certificate.modified_date.strftime("%Y-%m-%d")
+                }
+            else:
+                errors.update({
+                    'uuid_error': _('Invalid certificate ID.')
+                })
+
+    return render_to_response('certificates/verification.html', {
+        'form': form,
+        'google_recaptcha_site_key': settings.GOOGLE_RECAPTCHA_DATA_SITE_KEY,
+        'certificate_data': certificate_data if not errors else {},
+        'errors': errors,
+        'certificate_uuid': certificate_uuid
+    })
+
+
+def get_cert_by_uuid(certificate_uuid):
+    try:
+        certificate = GeneratedCertificate.eligible_certificates.get(
+            verify_uuid=certificate_uuid
+        )
+    except GeneratedCertificate.DoesNotExist:
+        certificate = None
+
+    return certificate
+
 @handle_500(
     template_path="certificates/server-error.html",
     test_func=lambda request: request.GET.get('preview', None)
@@ -595,3 +656,4 @@ def render_html_view(request, user_id, course_id):
 
     # FINALLY, render appropriate certificate
     return _render_certificate_template(request, context, course, user_certificate)
+

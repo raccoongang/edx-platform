@@ -30,4 +30,7 @@ urlpatterns = patterns(
     url(r'search', views.search_certificates, name="search"),
     url(r'regenerate', views.regenerate_certificate_for_user, name="regenerate_certificate_for_user"),
     url(r'generate', views.generate_certificate_for_user, name="generate_certificate_for_user"),
+
+    # Endpoint to validate the certificate from the given ID
+    url(r'verification', views.verify_cert_by_uuid, name="verification"),
 )

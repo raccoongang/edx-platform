@@ -1,0 +1,69 @@
+<%page expression_filter="h"/>
+<%!
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+from openedx.core.djangolib.markup import HTML
+%>
+<%inherit file="../main.html" />
+
+<%block name="pagetitle">التحقق</%block>
+
+<main id="main" aria-label="Content" tabindex="-1">
+    <section class="about contact">
+        <section>
+            <div class="bg section-header">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h1 class="title">تحقق من الشهادة</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <form id="verification_form" name="verification_form" class="" action="${reverse('certificates:verification')}" method="post">
+                                    <input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }">
+                                    <div class="row">
+                                        <div class="col-sm-7">
+                                            <div class="form-field">
+                                                <label>الرقم التعريفي للشهادة <small>*</small></label>
+                                                <input name="certificate_uuid" class="input-block" type="text"
+                                                       placeholder="أدخل الرقم التعريفي للشهادة" value="${certificate_uuid if errors else ''}">
+                                                <ul class="errorlist"><li>${errors.get('uuid_error', '')}</li></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-field">
+                                      <div class="g-recaptcha" data-sitekey="${google_recaptcha_site_key}"></div>
+                                      <ul class="errorlist"><li>${errors.get('captcha_error', '')}</li></ul>
+                                    </div>
+                                    <script src='https://www.google.com/recaptcha/api.js?hl=ar'></script>
+                                    <div class="form-field">
+                                        <button type="submit" class="btn btn-dark btn-flat" data-loading-text="التحقق">التحقق
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- Certificate details column -->
+                            % if certificate_data:
+                            <div class="col-md-6 certificate-column">
+                              <p><strong>تفاصيل الشهادة</strong></p>
+                              <p><strong>الرقم التعريفي للشهادة</strong>: ${certificate_uuid[::-1]}</p>
+                              <p><strong>إسم الطالب</strong>: ${certificate_data.get('name')}</p>
+                              <p><strong>إسم الدورة</strong>: ${certificate_data.get('course')}</p>
+                              <p><strong>التاريخ</strong>: ${certificate_data.get('date', '--')}</p>
+                            </div>
+                            %endif
+                            <!-- /Certificate detais column -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+</main>
+
