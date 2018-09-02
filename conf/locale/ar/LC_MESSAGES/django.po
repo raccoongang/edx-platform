@@ -5904,8 +5904,7 @@ msgstr "المزيد من التفاصيل عن إنجازات {fullname}"
 
 #: lms/djangoapps/certificates/views/webview.py
 msgid "Invalid certificate ID."
-msgstr ""
-"الرقم التعريفي للشهادة غير صحيح"
+msgstr "الرقم التعريفي للشهادة غير صحيح"
 
 #: lms/djangoapps/class_dashboard/dashboard_data.py
 #: lms/djangoapps/instructor/views/api.py
