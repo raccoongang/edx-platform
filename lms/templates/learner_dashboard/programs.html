@@ -23,6 +23,11 @@ ProgramListFactory({
 </%static:require_module>
 </%block>
 
+<%block name="headextra">
+<%static:css group='style-course-vendor'/>
+<%static:css group='style-course'/>
+</%block>
+
 <%block name="pagetitle">${_("Programs")}</%block>
 
 <%include file="_dashboard_navigation_programs.html"/>
