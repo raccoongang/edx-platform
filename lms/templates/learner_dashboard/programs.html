@@ -1,5 +1,6 @@
 ## Override the default styles_version to the Pattern Library version (version 2)
-<%! main_css = "style-learner-dashboard" %>
+
+<%! main_css = "style-main-v1" %>
 
 <%page expression_filter="h"/>
 <%inherit file="../main.html" />
@@ -21,11 +22,6 @@ ProgramListFactory({
     isMarketing: ${is_marketing | n, dump_js_escaped_json}
 });
 </%static:require_module>
-</%block>
-
-<%block name="headextra">
-<%static:css group='style-course-vendor'/>
-<%static:css group='style-course'/>
 </%block>
 
 <%block name="pagetitle">${_("Programs")}</%block>
