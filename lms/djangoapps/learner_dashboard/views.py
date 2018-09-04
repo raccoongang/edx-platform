@@ -23,7 +23,7 @@ def program_listing(request):
     return base_program_listing(request, request.user)
 
 
-def _courses_count(courses):
+def courses_count(courses):
     courses_count = 0
     for course in courses:
         courses_count += len(set(c['key'] for c in course['course_runs']))
@@ -48,9 +48,9 @@ def program_details(request, program_uuid):
     course_data = meter.progress(programs=[program_data], count_only=False)[0]
     certificate_data = get_certificates(request.user, program_data)
 
-    total_courses_count = _courses_count(program_data.pop('courses'))
+    total_courses_count = courses_count(program_data.pop('courses'))
 
-    not_started_courses_count = _courses_count(course_data['not_started'])
+    not_started_courses_count = courses_count(course_data['not_started'])
 
     if not_started_courses_count < total_courses_count:
         program_data['price'] = '%.2f' % ((float(program_data['price']) / total_courses_count) * not_started_courses_count)
