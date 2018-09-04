@@ -25,6 +25,7 @@ from django.views.decorators.http import require_http_methods, require_POST
 from ipware.ip import get_ip
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
+from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from opaque_keys.edx.locator import CourseLocator
 
 from course_modes.models import CourseMode

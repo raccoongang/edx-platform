@@ -82,7 +82,7 @@ from openedx.core.djangoapps.credit.api import (
 from openedx.core.djangoapps.models.course_details import CourseDetails
 from openedx.core.djangoapps.monitoring_utils import set_custom_metrics_for_course_key
 from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
-from openedx.core.djangoapps.programs.utils import ProgramMarketingDataExtender
+from openedx.core.djangoapps.programs.utils import ProgramMarketingDataExtender, ProgramProgressMeter
 from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.util.user_messages import PageLevelMessages
@@ -103,6 +103,7 @@ from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError, NoPathToItem
 from xmodule.tabs import CourseTabList
 from xmodule.x_module import STUDENT_VIEW
+from learner_dashboard.programs import courses_count
 
 from ..entrance_exams import user_can_skip_entrance_exam
 from ..module_render import get_module, get_module_by_usage_id, get_module_for_descriptor
@@ -897,6 +898,11 @@ def program_marketing(request, program_uuid):
 
     if not program_data:
         raise Http404
+
+    meter = ProgramProgressMeter(request.site, request.user, uuid=program_uuid)
+    course_data = meter.progress(programs=[program_data], count_only=False)[0]
+    total_courses_count = courses_count(program_data['courses'])
+    not_started_courses_count = courses_count(course_data['not_started'])
 
     program = ProgramMarketingDataExtender(program_data, request.user).extend()
     program['type_slug'] = slugify(program['type'])

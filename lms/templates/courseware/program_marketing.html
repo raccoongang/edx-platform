@@ -418,4 +418,90 @@ endorser_org = endorser_position.get('organization_name') or corporate_endorseme
     % endfor
   </div>
   % endif
+
+  <div class="container courses-in-program" id="courses">
+    <h3 class="hd">
+      ${Text(_('Courses in the {program_type}')).format(
+        program_type=program_type
+      )}
+    </h3>
+    % if (program['full_program_price'] and program['full_program_price'] != '0.00'):
+        <button class="btn buy-program" data-url="${add_to_cart_url}">
+            ${Text(_('Buy all courses for ${full_program_price}')).format(full_program_price=full_program_price)}
+        </button>
+    % endif
+    <div class="course-cards">
+      % for course in courses:
+        % if course.get('course_runs'):
+          <div class="course-card">
+            <div class="course-content">
+              <div class="col-full-sm">
+                <h4 class="hd title">
+                  <a href="/courses/${course['course_runs'][0]['key']}/about"> ${course['title']}</a>
+                  <small>
+                    <span>
+                      <i class="fa fa-clock-o" aria-hidden="true"></i>
+                      ${Text(_('Starts {course_start_datetime}')).format(
+                        course_start_datetime=datetime.strptime(course['course_runs'][0]['start'], '%Y-%m-%dT%H:%M:%SZ').strftime('%B %-d, %Y')
+                      )}
+                    </span>
+
+                    % if course['course_runs'][0]['pacing_type'] == "instructor_paced":
+                      <span>${_('Instructor - Paced')}</span>
+                    % else:
+                      <span>${_('Self - Paced')}</span>
+                    % endif
+                  </small>
+                </h4>
+                <p class="copy-meta">
+                  % if course['course_runs'][0]['short_description']:
+                    ${course['course_runs'][0]['short_description']}
+                  % endif
+                </p>
+                <p class="copy-meta-mobile">
+                  % if course['course_runs'][0]['short_description']:
+                    ${course['course_runs'][0]['short_description'][:description_max_length]}
+                    % if len(course['course_runs'][0]['short_description']) > description_max_length:
+                      ...
+                    % endif
+                  % endif
+                </p>
+              </div>
+            </div>
+          </div>
+        % endif
+      % endfor
+    </div>
+    <span class="pagingInfo"></span>
+  </div>
+
+  <section id="video-modal" class="modal modal-custom custom-video-modal">
+    <div class="inner-wrapper">
+      <iframe title="${_('YouTube Video')}" width="640" height="360"
+              src="${video_url}"
+              frameborder="0" allowfullscreen></iframe>
+    </div>
+  </section>
 </div>
+<div id="shoppingcart-popup">
+    <p id='msg'></p>
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('button.buy-program').click(function(e) {
+        var addToCartUrl = $(e.target).data('url');
+        $.ajax({
+            url: addToCartUrl,
+            method: 'POST',
+            success: function(data) {
+                if (data.success) {
+                    window.location = data.redirect_url;
+                } else {
+                    $("#shoppingcart-popup #msg").html(data.msg);
+                    $("#shoppingcart-popup").dialog({width: 400});
+                }
+            }
+        });
+    });
+});
+</script>
