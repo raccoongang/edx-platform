@@ -401,7 +401,7 @@ FEATURES = {
 }
 
 # Setting parameters which are required for the custom oauth backend
-CUSTOM_OAUTH_PARAMS = None
+CUSTOM_OAUTH_PARAMS = {}
 
 # Settings for the course reviews tool template and identification key, set either to None to disable course reviews
 COURSE_REVIEWS_TOOL_PROVIDER_FRAGMENT_NAME = 'coursetalk-reviews-fragment.html'
@@ -1249,6 +1249,9 @@ MIDDLEWARE_CLASSES = (
 
     # This must be last
     'openedx.core.djangoapps.site_configuration.middleware.SessionCookieDomainOverrideMiddleware',
+
+    # Elastic APM
+    'elasticapm.contrib.django.middleware.TracingMiddleware',
 )
 
 # Clickjacking protection can be enabled by setting this to 'DENY'
@@ -2253,6 +2256,9 @@ INSTALLED_APPS = (
     'openedx.features.enterprise_support',
 
     'experiments',
+
+    # Elastic APM
+    'elasticapm.contrib.django',
 )
 
 ######################### CSRF #########################################
