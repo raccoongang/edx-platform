@@ -45,6 +45,11 @@ description_max_length = 250
 <%static:css group='style-main-v2'/>
 <%static:css group='style-learner-dashboard'/>
 
+<%block name="headextra">
+    <%static:css group='style-course-vendor'/>
+    <%static:css group='style-course'/>
+</%block>
+
 <%block name="js_extra">
   <script src="${static.url('js/slick.min.js')}"></script>
   <script src="${static.url('js/leanModal.js')}"></script>
@@ -391,6 +396,11 @@ description_max_length = 250
         program_type=program_type
       )}
     </h3>
+    % if (program['full_program_price'] and program['full_program_price'] != '0.00'):
+        <button class="btn buy-program" data-url="${add_to_cart_url}">
+            ${Text(_('Buy all courses for ${full_program_price}')).format(full_program_price=full_program_price)}
+        </button>
+    % endif
     <div class="course-cards">
       % for course in courses:
         % if course.get('course_runs'):
@@ -444,3 +454,25 @@ description_max_length = 250
     </div>
   </section>
 </div>
+<div id="shoppingcart-popup">
+    <p id='msg'></p>
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('button.buy-program').click(function(e) {
+        var addToCartUrl = $(e.target).data('url');
+        $.ajax({
+            url: addToCartUrl,
+            method: 'POST',
+            success: function(data) {
+                if (data.success) {
+                    window.location = data.redirect_url;
+                } else {
+                    $("#shoppingcart-popup #msg").html(data.msg);
+                    $("#shoppingcart-popup").dialog({width: 400});
+                }
+            }
+        });
+    });
+});
+</script>
