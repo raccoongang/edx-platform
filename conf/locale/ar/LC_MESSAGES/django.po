@@ -5525,6 +5525,10 @@ msgstr "منتدى النقاش - تعذر طرح اسئلة او الاجابة
 msgid "Others"
 msgstr "أخرى"
 
+#: lms/djangoapps/branding/forms.py
+msgid "The phone number must be greater than 6 and less than 10 digits only."
+msgstr "رقم الهاتف يجب ان يكون اكبر من ٦ واقل من ١٠ ارقام فقط"
+
 #. Translators: Bulk email from address e.g. ("Physics 101" Course Staff)
 #: lms/djangoapps/bulk_email/tasks.py
 #, python-brace-format

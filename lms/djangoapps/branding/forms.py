@@ -1,6 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.core.mail import send_mail
+from django.core.validators import RegexValidator
 from django.utils.translation import ugettext as _
 
 
@@ -40,7 +41,9 @@ class ContactForm(forms.Form):
     name = forms.CharField(label=_('You name'), max_length=255)
     email = forms.EmailField(label=_('You e-mail'), max_length=255)
     subject = forms.CharField(label=_('Subject'), max_length=255)
-    phone = forms.CharField(label=_('You phone'), max_length=16, required=False)
+    phone = forms.CharField(label=_('You phone'), required=False,
+        validators=[RegexValidator(r'^\d{6,10}$', _("The phone number must be greater than 6 and less than 10 digits only."))]
+    )
     category = forms.CharField(label=_("Problem's category"), widget=forms.Select(choices=CATEGORY_CHOICES, attrs={'class':'input-block'}), required=False)
     message = forms.CharField(label=_('Message'), widget=forms.Textarea, required=False)
 
