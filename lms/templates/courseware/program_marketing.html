@@ -49,6 +49,11 @@ endorser_title = endorser_position.get('title', '')
 endorser_org = endorser_position.get('organization_name') or corporate_endorsement_name
 %>
 
+<%block name="headextra">
+    <%static:css group='style-course-vendor'/>
+    <%static:css group='style-course'/>
+</%block>
+
 <%block name="js_extra">
   <script src="${static.url('js/leanModal.js')}"></script>
   <script src="${static.url('js/program_marketing.js')}"></script>
