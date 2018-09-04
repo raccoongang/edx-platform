@@ -903,7 +903,16 @@ def program_marketing(request, program_uuid):
     skus = program.get('skus')
     ecommerce_service = EcommerceService()
 
-    context = {'program': program}
+    price = program.get('price', '0.00')
+    if price != '0.00' and not_started_courses_count < total_courses_count:
+        program['full_program_price'] = (float(price) / total_courses_count) * not_started_courses_count
+    elif price != '0.00':
+        program['full_program_price'] = float(price)
+
+    context = {
+        'program': program,
+        'add_to_cart_url': reverse('add_program_to_cart', kwargs={'uuid': program_data['uuid']})
+    }
 
     if program.get('is_learner_eligible_for_one_click_purchase') and skus:
         context['buy_button_href'] = ecommerce_service.get_checkout_page_url(*skus, program_uuid=program_uuid)
