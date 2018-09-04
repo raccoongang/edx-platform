@@ -474,7 +474,6 @@ class Courses(SysadminDashboardView):
         track.views.server_track(request, action, {},
                                  page='courses_sysdashboard')
 
-        courses = {course.id: course for course in self.get_courses()}
         if action == 'add_course':
             gitloc = request.POST.get('repo_location', '').strip().replace(' ', '').replace(';', '')
             branch = request.POST.get('repo_branch', '').strip().replace(' ', '').replace(';', '')
@@ -482,42 +481,39 @@ class Courses(SysadminDashboardView):
 
         elif action == 'del_course':
             course_id = request.POST.get('course_id', '').strip()
-            course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
-            course_found = False
-            if course_key in courses:
-                course_found = True
-                course = courses[course_key]
-            else:
-                try:
-                    course = get_course_by_id(course_key)
-                    course_found = True
-                except Exception, err:   # pylint: disable=broad-except
-                    self.msg += _(
-                        'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
-                    ).format(
-                        course_key,
-                        escape(str(err))
-                    )
+            try:
+                course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+                course = get_course_by_id(course_key)
 
-            if course_found:
-                # delete course that is stored with mongodb backend
-                self.def_ms.delete_course(course.id, request.user.id)
+                if course:
+                    # delete course that is stored with mongodb backend
+                    self.def_ms.delete_course(course.id, request.user.id)
 
-                # delete search index
-                try:
-                    response = self._searcher.search(doc_type="courseware_content", field_dictionary={'course': course_id})
-                    result_ids = [result["data"]["id"] for result in response["results"]]
-                    self._searcher.remove('courseware_content', result_ids)
-                    self._searcher.remove('course_info', [course_id])
-                except Exception as e: # pragma: no cover
-                    log.error(e.message)
+                    # delete search index
+                    try:
+                        response = self._searcher.search(doc_type="courseware_content",
+                                                         field_dictionary={'course': course_id})
+                        result_ids = [result["data"]["id"] for result in response["results"]]
+                        self._searcher.remove('courseware_content', result_ids)
+                        self._searcher.remove('course_info', [course_id])
+                    except Exception as e:  # pragma: no cover
+                        log.error(e.message)
 
-                CourseOverview.objects.filter(id=course.id).delete()
+                    CourseOverview.objects.filter(id=course.id).delete()
 
-                # don't delete user permission groups, though
-                self.msg += \
-                    u"<font color='red'>{0} {1} = {2} ({3})</font>".format(
-                        _('Deleted'), course.location.to_deprecated_string(), course.id.to_deprecated_string(), course.display_name)
+                    # don't delete user permission groups, though
+                    self.msg += \
+                        u"<font color='red'>{0} {1} = {2} ({3})</font>".format(
+                            _('Deleted'), course.location.to_deprecated_string(), course.id.to_deprecated_string(),
+                            course.display_name)
+
+            except Exception, err:   # pylint: disable=broad-except
+                self.msg += _(
+                    'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
+                ).format(
+                    course_id,
+                    escape(str(err))
+                )
 
         context = {
             'datatable': self.make_datatable(),
