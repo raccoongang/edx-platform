@@ -71,6 +71,7 @@ endorser_org = endorser_position.get('organization_name') or corporate_endorseme
     full_program_price_format = '{0:.0f}' if program['full_program_price'].is_integer() else '{0:.2f}'
     full_program_price = full_program_price_format.format(program['full_program_price'])
   %>
+<h1>${video_url}</h1>
   <div id="program-details-hero">
     <div class="main-banner"
       style="background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ), url(${banner_image});">
@@ -160,6 +161,15 @@ endorser_org = endorser_position.get('organization_name') or corporate_endorseme
       </div>
     </div>
   </div>
+  % if video_url:
+  <section id="video-modal" class="modal modal-custom custom-video-modal">
+    <div class="inner-wrapper">
+      <iframe title="${_('YouTube Video')}" width="640" height="360"
+              src="${video_url}"
+              frameborder="0" allowfullscreen></iframe>
+    </div>
+  </section>
+  % endif
 </%block>
 
 <div id="program-details-page" class="container">
@@ -475,13 +485,6 @@ endorser_org = endorser_position.get('organization_name') or corporate_endorseme
     <span class="pagingInfo"></span>
   </div>
 
-  <section id="video-modal" class="modal modal-custom custom-video-modal">
-    <div class="inner-wrapper">
-      <iframe title="${_('YouTube Video')}" width="640" height="360"
-              src="${video_url}"
-              frameborder="0" allowfullscreen></iframe>
-    </div>
-  </section>
 </div>
 <div id="shoppingcart-popup">
     <p id='msg'></p>

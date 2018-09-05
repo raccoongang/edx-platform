@@ -149,7 +149,7 @@ def add_program_to_cart(request, uuid):
     if not programs_config.enabled:
         raise JsonResponse({'success': False, 'msg': _('The program config you requested does not exist.')})
 
-    meter = ProgramProgressMeter(request.user, uuid=uuid)
+    meter = ProgramProgressMeter(request.site, request.user, uuid=uuid)
     program_data = meter.programs[0]
 
     if not program_data:
@@ -178,7 +178,11 @@ def add_program_to_cart(request, uuid):
         paid_course_item.currency = program_data['currency']
         paid_course_item.save()
 
-    return JsonResponse({'success': True, 'msg': 'Program added to cart.', 'redirect_url': reverse('show_cart')})
+    return JsonResponse({
+        'success': True,
+        'msg': 'Program added to cart.',
+        'redirect_url': reverse('shoppingcart.views.show_cart')
+    })
 
 
 @login_required

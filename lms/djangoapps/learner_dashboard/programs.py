@@ -22,13 +22,15 @@ from openedx.core.djangoapps.programs.utils import (
     get_program_marketing_url
 )
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preferences
+from opaque_keys.edx.keys import CourseKey
+from student.models import CourseEnrollment
 
 
-def courses_count(courses):
-    courses_count = 0
+def get_course_ids(courses):
+    course_ids = []
     for course in courses:
-        courses_count += len(set(c['key'] for c in course['course_runs']))
-    return courses_count
+        course_ids.extend([CourseKey.from_string(c['key']) for c in course['course_runs']])
+    return course_ids
 
 
 class ProgramsFragmentView(EdxFragmentView):
@@ -109,13 +111,17 @@ class ProgramDetailsFragmentView(EdxFragmentView):
         course_data = meter.progress(programs=[program_data], count_only=False)[0]
         certificate_data = get_certificates(request.user, program_data)
 
-        total_courses_count = courses_count(program_data.pop('courses'))
+        course_ids = get_course_ids(program_data.pop('courses'))
+        total_courses_count = len(course_ids)
 
-        not_started_courses_count = courses_count(course_data['not_started'])
+        started_courses_count = CourseEnrollment.enrollments_for_user(request.user).filter(
+            course_id__in=course_ids
+        ).count()
 
-        if not_started_courses_count < total_courses_count:
+        if started_courses_count:
             program_data['price'] = '%.2f' % (
-                        (float(program_data['price']) / total_courses_count) * not_started_courses_count)
+                (float(program_data['price']) / total_courses_count * (total_courses_count - started_courses_count))
+            )
 
         skus = program_data.get('skus')
         ecommerce_service = EcommerceService()
