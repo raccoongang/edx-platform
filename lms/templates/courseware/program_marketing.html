@@ -80,18 +80,20 @@ description_max_length = 250
             </a>
           % endif
         </div>
-        <div class="col col-12 md-col-4 lg-col-3" id="course-trailer">
-          <a href="#video-modal" class="media trailer-link visible-sm" rel="leanModal">
-            <i class="fa fa-play-circle-o" aria-hidden="true"></i>
-            <span>${_('View Program Trailer')}</span>
-          </a>
-          <div class="hidden-sm">
-            <button href="#video-modal" class="media btn-play" rel="leanModal">
-              <span class="sr">Play the ${title} program video</span>
-              <i class="icon fa fa-2x fa-play" alt="${_('Play')}"></i>
-            </button>
+        % if video_url:
+          <div class="col col-12 md-col-4 lg-col-3" id="course-trailer">
+            <a href="#video-modal" class="media trailer-link visible-sm" rel="leanModal">
+              <i class="fa fa-play-circle-o" aria-hidden="true"></i>
+              <span>${_('View Program Trailer')}</span>
+            </a>
+            <div class="hidden-sm">
+              <button href="#video-modal" class="media btn-play" rel="leanModal">
+                <span class="sr">Play the ${title} program video</span>
+                <i class="icon fa fa-2x fa-play" alt="${_('Play')}"></i>
+              </button>
+            </div>
           </div>
-        </div>
+        % endif
       </div>
     </div>
   </div>
