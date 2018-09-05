@@ -27,11 +27,6 @@
                 </select>
             </div>
         <% } %>
-        <div class="enroll-button">
-            <button type="button" class="btn-brand btn cta-primary">
-                <%- gettext('Enroll Now') %>
-            </button>
-        </div>
     <% } else if (upcoming_course_runs.length > 0) {%>
         <div class="no-action-message">
             <%- gettext('Coming Soon') %>

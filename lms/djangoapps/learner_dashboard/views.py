@@ -16,6 +16,8 @@ from openedx.core.djangoapps.programs.utils import (
 )
 from openedx.core.djangoapps.programs.views import program_listing as base_program_listing
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preferences
+from opaque_keys.edx.keys import CourseKey
+from student.models import CourseEnrollment
 
 
 @login_required
@@ -23,11 +25,11 @@ def program_listing(request):
     return base_program_listing(request, request.user)
 
 
-def courses_count(courses):
-    courses_count = 0
+def get_course_ids(courses):
+    course_ids = []
     for course in courses:
-        courses_count += len(set(c['key'] for c in course['course_runs']))
-    return courses_count
+        course_ids.extend([CourseKey.from_string(c['key']) for c in course['course_runs']])
+    return course_ids
 
 
 @login_required
@@ -48,12 +50,13 @@ def program_details(request, program_uuid):
     course_data = meter.progress(programs=[program_data], count_only=False)[0]
     certificate_data = get_certificates(request.user, program_data)
 
-    total_courses_count = courses_count(program_data.pop('courses'))
+    course_ids = get_course_ids(program_data.pop('courses'))
+    total_courses_count = len(course_ids)
 
-    not_started_courses_count = courses_count(course_data['not_started'])
+    started_courses_count = CourseEnrollment.enrollments_for_user(request.user).filter(course_id__in=course_ids).count()
 
-    if not_started_courses_count < total_courses_count:
-        program_data['price'] = '%.2f' % ((float(program_data['price']) / total_courses_count) * not_started_courses_count)
+    if started_courses_count:
+        program_data['price'] = '%.2f' % ((float(program_data['price']) / total_courses_count) * (total_courses_count - started_courses_count))
 
     urls = {
         'program_listing_url': reverse('program_listing_view'),
