@@ -100,6 +100,7 @@ from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError, NoPathToItem
 from xmodule.tabs import CourseTabList
 from xmodule.x_module import STUDENT_VIEW
+from learner_dashboard.views import get_course_ids
 
 from ..entrance_exams import user_can_skip_entrance_exam
 from ..module_render import get_module, get_module_by_usage_id, get_module_for_descriptor
@@ -836,12 +837,26 @@ def program_marketing(request, program_uuid):
     if not program_data:
         raise Http404
 
+    course_ids = get_course_ids(program_data['courses'])
+    total_courses_count = len(course_ids)
+
+    started_courses_count = CourseEnrollment.enrollments_for_user(request.user).filter(course_id__in=course_ids).count()
+
     program = ProgramMarketingDataExtender(program_data, request.user).extend()
     program['type_slug'] = slugify(program['type'])
     skus = program.get('skus')
     ecommerce_service = EcommerceService()
 
-    context = {'program': program}
+    price = program.get('price', '0.00')
+    if price != '0.00' and started_courses_count:
+        program['full_program_price'] = (float(price) / total_courses_count) * (total_courses_count - started_courses_count)
+    elif price != '0.00':
+        program['full_program_price'] = float(price)
+
+    context = {
+        'program': program,
+        'add_to_cart_url': reverse('add_programm_to_cart', kwargs={'uuid': program_data['uuid']})
+    }
 
     if program.get('is_learner_eligible_for_one_click_purchase') and skus:
         context['buy_button_href'] = ecommerce_service.get_checkout_page_url(*skus)

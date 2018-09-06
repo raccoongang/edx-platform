@@ -10,7 +10,8 @@
         'js/learner_dashboard/views/collection_list_view',
         'js/learner_dashboard/views/course_card_view',
         'js/learner_dashboard/views/program_details_sidebar_view',
-        'text!../../../templates/learner_dashboard/program_details_view.underscore'
+        'text!../../../templates/learner_dashboard/program_details_view.underscore',
+        'jquery.ui'
     ],
          function(
              Backbone,
@@ -29,6 +30,10 @@
                  el: '.js-program-details-wrapper',
 
                  tpl: HtmlUtils.template(pageTpl),
+
+                 events: {
+                     'click button.buy-program': 'addProgramToCart'
+                 },
 
                  initialize: function(options) {
                      this.options = options;
@@ -105,6 +110,21 @@
                          model: this.programModel,
                          courseModel: this.courseData,
                          certificateCollection: this.certificateCollection
+                     });
+                 },
+                 addProgramToCart: function() {
+                     var addToCartUrl = this.options.addToCartUrl;
+                     $.ajax({
+                         url: addToCartUrl,
+                         method: 'POST',
+                         success: function(data) {
+                             if (data.success) {
+                                 window.location = data.redirect_url;
+                             } else {
+                                 $("#shoppingcart-popup #msg").html(data.msg);
+                                 $("#shoppingcart-popup").dialog({width: 400});
+                            }
+                         }
                      });
                  }
              });

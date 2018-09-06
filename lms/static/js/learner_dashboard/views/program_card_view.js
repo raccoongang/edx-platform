@@ -36,6 +36,7 @@
                              uuid: this.model.get('uuid')
                          });
                      }
+                     this.isMarketing = data.context.isMarketing;
                      this.render();
                  },
 
@@ -44,6 +45,7 @@
                              return gettext(org.key);
                          }),
                          data = $.extend(
+                            {isMarketing: this.isMarketing},
                             this.model.toJSON(),
                             this.getProgramProgress(),
                             {orgList: orgList.join(' ')}

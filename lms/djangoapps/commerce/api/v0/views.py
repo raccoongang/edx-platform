@@ -84,6 +84,7 @@ class BasketsView(APIView):
         """
         Attempt to create the basket and enroll the user.
         """
+        return DetailResponse('Method not allowed', status=HTTP_406_NOT_ACCEPTABLE)
         user = request.user
         valid, course_key, error = self._is_data_valid(request)
         if not valid:
