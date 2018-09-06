@@ -7,34 +7,36 @@ need to import the Program model elsewhere.
 
     `get_program_by_program_code` will retreive a specific program object
         based on the `program_code`
-    
+
     `enroll_student_in_program` will enroll the provided `student` into the
         provided `program` (both the `program` and `student` are instances).
         Returns a True or False status to notify if the enrollment was
         successful
-    
+
     `get_enrolled_students` returns the number of students enrolled in a given
         program
-    
+
     `is_enrolled_in_program` will check to see if a student is enrolled in a
         given program
-    
+
     `number_of_enrolled_students` will return the number of students enrolled
         in a given program
-    
+
     `number_of_students_logged_into_access_program` will provide the total
         number of students in a program that have logged into the LMS
-    
+
     `get_courses_locators_for_program` will return a list of the course
         locators containing the locator for module contained within that
         program
 
     `get_all_programs` will return a Queryset containing every program object
         stored in the `ci_program` model
-    
+
     `student_has_logged_in` will check to see if a specific student has logged
         in
 """
+from django.http.response import Http404
+
 from ci_program.models import Program
 
 
@@ -73,7 +75,7 @@ def get_enrolled_students(program):
 
     `program` is an instance of the progam that we want to get the list
         of enrolled users from
-    
+
     Returns a list of `user` objects
     """
     return [user for user in program.enrolled_students.all()]
