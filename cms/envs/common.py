@@ -1041,6 +1041,7 @@ INSTALLED_APPS = (
 
     # Jupyter Notebook Graded XBlock
     'xblock_jupyter_graded',
+    'xblock_jupyter_viewer',
 )
 
 
