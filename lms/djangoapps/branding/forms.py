@@ -6,6 +6,7 @@ from django.utils.translation import ugettext as _
 
 
 CATEGORY_CHOICES = (
+('',_('(Select category)')),
 (_('Sign In'), (
    ('password', _('Password could not be restored')),
    ('cant_login', _('I can not login')),
@@ -44,7 +45,7 @@ class ContactForm(forms.Form):
     phone = forms.CharField(label=_('You phone'), required=False,
         validators=[RegexValidator(r'^\d{6,10}$', _("The phone number must be greater than 6 and less than 10 digits only."))]
     )
-    category = forms.CharField(label=_("Problem's category"), widget=forms.Select(choices=CATEGORY_CHOICES, attrs={'class':'input-block'}), required=False)
+    category = forms.CharField(label=_("Problem's category"), widget=forms.Select(choices=CATEGORY_CHOICES, attrs={'class':'input-block'}))
     message = forms.CharField(label=_('Message'), widget=forms.Textarea, required=False)
 
     def save(self):
