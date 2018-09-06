@@ -219,4 +219,5 @@ urlpatterns += (
 # Jupyter Graded XBlock Endpoints
 urlpatterns += (
     url(r'^api/jupyter_graded/', include('xblock_jupyter_graded.rest.urls')),
+    url(r'^api/jupyter/', include('xblock_jupyter_viewer.rest.urls')),
 )

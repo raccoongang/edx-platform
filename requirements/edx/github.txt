@@ -127,3 +127,6 @@ git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.18#egg=xblock-
 
 # Raccoongang fixed search for course visibility
 -e git+https://github.com/raccoongang/edx-search.git@1.1.0-rg#egg=edx-search
+
+-e git+https://github.com/ibleducation/jupyter-edx-grader-xblock.git@master#egg=jupyter-edx-grader-xblock
+-e git+https://github.com/ibleducation/jupyter-viewer-xblock.git@master#egg=jupyter-viewer-xblock
