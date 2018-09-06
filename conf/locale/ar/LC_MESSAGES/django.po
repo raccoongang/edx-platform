@@ -5454,6 +5454,10 @@ msgid "Problem's category"
 msgstr "تصنيف المشكلة"
 
 #: lms/djangoapps/branding/forms.py
+msgid "(Select category)"
+msgstr "اختر تصنيف للمشكلة"
+
+#: lms/djangoapps/branding/forms.py
 msgid "Password could not be restored"
 msgstr "تعذر استعادة كلمة المرور"
 
