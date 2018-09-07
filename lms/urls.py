@@ -115,6 +115,15 @@ urlpatterns = (
     url(r'^api/experiments/', include('experiments.urls', namespace='api_experiments')),
 
     url(r'^(?P<key>.+)/openassessment-filesystem-storage', views_filesystem.filesystem_storage, name='openassessment-filesystem-storage'),
+
+    # URLs for Staff HQ
+    url(r'^staff-hq/', include('alux_skills_map.urls', namespace="skills_map")),
+
+    # URLs for PCI tool
+    url(r'^pci/', include('pcitool.urls', namespace="pcitool")),
+
+    # URLs for custom dashboard
+    url(r'^student_custom_dashboard/', include('custom_dashboard.urls')),
 )
 
 # TODO: This needs to move to a separate urls.py once the student_account and
