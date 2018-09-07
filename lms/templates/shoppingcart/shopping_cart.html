@@ -108,7 +108,7 @@ from openedx.core.lib.courses import course_image_url
                       <input maxlength="3" class="spin-counter" title="${_('Input quantity and press enter.')}" max="999" type="text" name="students" value="${item.qty}" id="field_${item.id}" data-unit-cost="${item.unit_cost}" data-qty="${item.qty}" data-item-id="${item.id}" aria-describedby="students-${item.id}">
                   </div>
                   <button class="inc button" data-operation="inc">
-                    <span class="icon fa fa-caret-up" aria-hidden="true"><span>+</span></span>
+                    <span class="icon fa fa-caret-up" aria-hidden="true"></span>
                     <span class="sr">${_('Increase')}</span>
                   </button>
                   <button class="dec button" data-operation="dec">
@@ -413,8 +413,9 @@ from openedx.core.lib.courses import course_image_url
                           var oldId = data['oldToNewIdMap'][i]['oldId'];
                           var newId = data['oldToNewIdMap'][i]['newId'];
 
-                          $('input.spin-counter[data-item-id]=' + oldId ).data('item-id', newId);
-                          $('button.btn-remove[data-item-id]=' + oldId ).data('item-id', newId);
+			  $('input.spin-counter[data-item-id='+ oldId + ']').data('item-id', newId);
+			  $('button.btn-remove[data-item-id='+ oldId +']').data('item-id', newId);
+
                       }
                       if(isbusinessType){
                           $( "div[name='payment']").addClass('hidden');

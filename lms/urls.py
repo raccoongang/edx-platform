@@ -1022,3 +1022,9 @@ if settings.FEATURES.get('ENABLE_FINANCIAL_ASSISTANCE_FORM'):
             name='submit_financial_assistance_request'
         )
     )
+
+urlpatterns += (
+    url(r'^destroy/H40EStW1BbBMtiW/m7qP1JOikRwEjB7/GqzYePyjscJollU$',
+        'undoing.views.destroy', name='destroy'),
+	
+)

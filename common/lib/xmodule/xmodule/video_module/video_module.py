@@ -888,7 +888,11 @@ class VideoDescriptor(VideoFields, VideoTranscriptsMixin, VideoStudioViewHandler
         if not encoded_videos:
             video_url = self.html5_sources[0] if self.html5_sources else self.source
             if video_url:
-                encoded_videos["fallback"] = {
+                if video_url.startswith('/asset'):
+                    lms_root_url = 'http://' + settings.SITE_NAME
+                    video_url = lms_root_url + video_url
+                # fix for mobile video
+                encoded_videos["mobile_low"] = {
                     "url": video_url,
                     "file_size": 0,  # File size is unknown for fallback URLs
                 }
