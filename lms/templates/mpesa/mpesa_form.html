@@ -42,12 +42,11 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
 function validate_int(myEvento) {
   var myCaja = document.getElementById("phone");
   myText = myCaja.value;
-  if ((myEvento.charCode >= 48 && myEvento.charCode <= 57) && myText.length < 12) {
-    dato = true;
-  } else {
-    dato = false;
+  charCode = myEvento.charCode
+  if (charCode < 32 || (charCode >= 48 && charCode <= 57) && myText.length < 12){
+      return true;
   }
-  return dato;
+  return false;
 }
 
 document.getElementById("phone").onkeypress = validate_int;
