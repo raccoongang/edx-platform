@@ -14,8 +14,9 @@ from openedx.core.djangolib.markup import HTML, Text
       </h1>
       <p>
         ${Text(_("Our staff is currently working to get the site back up as soon as possible. "
-        "Please email us at {tech_support_email} to report any problems or downtime.")).format(
-            tech_support_email=HTML('<a href="mailto:{0}">{0}</a>').format(tech_support_email=Text(settings.TECH_SUPPORT_EMAIL))
+        "please fill out an ALUx Support form on {support_site} to log a ticket and our team will look let you know "
+        "once the site is back up.")).format(
+            support_site=HTML('<a href="https://support.alueducation.com/">support.alueducation.com</a>')
         )}
       </p>
     </section>
