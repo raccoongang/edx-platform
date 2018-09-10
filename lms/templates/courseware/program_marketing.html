@@ -101,157 +101,157 @@ description_max_length = 250
   <div class="grid-manual data-table">
     <div class="row">
       <div class="col col-12 md-col-7 lg-col-8 left-col">
-        <!--<ul class="list-divided program-desc-tbl">-->
-          <!--<li class="item">-->
-            <!--<span class="description">-->
-              <!--<span class="fa fa-book fa-lg" aria-hidden="true"></span>-->
-              <!--${_('Number of Courses')}-->
-            <!--</span>-->
-            <!--<a href="#courses">-->
-              <!--${Text(_('{number_of_courses} courses in program')).format(-->
-                <!--number_of_courses=len(courses)-->
-              <!--)}-->
-            <!--</a>-->
-          <!--</li>-->
-          <!--<li class="item">-->
-            <!--<span class="description">-->
-              <!--<span class="fa fa-clock-o fa-lg" aria-hidden="true"></span>-->
-              <!--${_('Average Length')}-->
-            <!--</span>-->
-            <!--<span>-->
-              <!--${Text(_('{weeks_to_complete} weeks per course')).format(-->
-                <!--weeks_to_complete=weeks_to_complete-->
-              <!--)}-->
-            <!--</span>-->
-          <!--</li>-->
-          <!--<li class="item">-->
-            <!--<span class="description">-->
-              <!--<span class="fa fa-tachometer fa-lg" aria-hidden="true"></span>-->
-              <!--${_('Effort')}-->
-            <!--</span>-->
-            <!--<span>-->
-              <!--${Text(_('{min_hours_effort_per_week}-{max_hours_effort_per_week} hours per week, per course')).format(-->
-                <!--max_hours_effort_per_week=max_hours_effort_per_week,-->
-                <!--min_hours_effort_per_week=min_hours_effort_per_week-->
-              <!--)}-->
-            <!--</span>-->
-          <!--</li>-->
-          <!--<li class="item">-->
-            <!--<span class="description">-->
-              <!--<span class="fa fa-tag fa-lg" aria-hidden="true"></span>-->
-              <!--${_('Price (USD)')}-->
-            <!--</span>-->
-            <!--% if program.get('discount_data') and program['discount_data']['is_discounted']:-->
-              <!--<span class="price">-->
-                <!--<span role="group" aria-label="${_('Original Price')}" class="original-price">-->
-                  <!--${Text(_('${oldPrice}')).format(-->
-                    <!--oldPrice=full_program_price_format.format(program['discount_data']['total_incl_tax_excl_discounts'])-->
-                  <!--)}-->
-                <!--</span>-->
-                <!--<span role="group" aria-label="${_('Discounted Price')}" class="discount green-highlight">-->
-                  <!--${Text(_('${newPrice}{htmlEnd} for entire program')).format(-->
-                    <!--newPrice=full_program_price,-->
-                    <!--htmlEnd=HTML('</span>')-->
-                  <!--)}-->
-                <!--<span class="savings green-highlight">-->
-                  <!--${Text(_('You save ${discount_value} {currency}')).format(-->
-                    <!--discount_value=full_program_price_format.format(program['discount_data']['discount_value']),-->
-                    <!--currency=program['discount_data']['currency']-->
-                  <!--)}-->
-                <!--</span>-->
-              <!--</span>-->
-            <!--% else:-->
-              <!--<span>-->
-                <!--${Text(_('${full_program_price} for entire program')).format(-->
-                  <!--full_program_price=full_program_price-->
-                <!--)}-->
-              <!--</span>-->
-            <!--% endif-->
-          <!--</li>-->
-        <!--</ul>-->
+        <ul class="list-divided program-desc-tbl">
+          <li class="item">
+            <span class="description">
+              <span class="fa fa-book fa-lg" aria-hidden="true"></span>
+              ${_('Number of Courses')}
+            </span>
+            <a href="#courses">
+              ${Text(_('{number_of_courses} courses in program')).format(
+                number_of_courses=len(courses)
+              )}
+            </a>
+          </li>
+          <li class="item">
+            <span class="description">
+              <span class="fa fa-clock-o fa-lg" aria-hidden="true"></span>
+              ${_('Average Length')}
+            </span>
+            <span>
+              ${Text(_('{weeks_to_complete} weeks per course')).format(
+                weeks_to_complete=weeks_to_complete
+              )}
+            </span>
+          </li>
+          <li class="item">
+            <span class="description">
+              <span class="fa fa-tachometer fa-lg" aria-hidden="true"></span>
+              ${_('Effort')}
+            </span>
+            <span>
+              ${Text(_('{min_hours_effort_per_week}-{max_hours_effort_per_week} hours per week, per course')).format(
+                max_hours_effort_per_week=max_hours_effort_per_week,
+                min_hours_effort_per_week=min_hours_effort_per_week
+              )}
+            </span>
+          </li>
+          <li class="item">
+            <span class="description">
+              <span class="fa fa-tag fa-lg" aria-hidden="true"></span>
+              ${_('Price (USD)')}
+            </span>
+            % if program.get('discount_data') and program['discount_data']['is_discounted']:
+              <span class="price">
+                <span role="group" aria-label="${_('Original Price')}" class="original-price">
+                  ${Text(_('${oldPrice}')).format(
+                    oldPrice=full_program_price_format.format(program['discount_data']['total_incl_tax_excl_discounts'])
+                  )}
+                </span>
+                <span role="group" aria-label="${_('Discounted Price')}" class="discount green-highlight">
+                  ${Text(_('${newPrice}{htmlEnd} for entire program')).format(
+                    newPrice=full_program_price,
+                    htmlEnd=HTML('</span>')
+                  )}
+                <span class="savings green-highlight">
+                  ${Text(_('You save ${discount_value} {currency}')).format(
+                    discount_value=full_program_price_format.format(program['discount_data']['discount_value']),
+                    currency=program['discount_data']['currency']
+                  )}
+                </span>
+              </span>
+            % else:
+              <span>
+                ${Text(_('${full_program_price} for entire program')).format(
+                  full_program_price=full_program_price
+                )}
+              </span>
+            % endif
+          </li>
+        </ul>
         <div id="accordion-group">
-          <!--<div class="accordion-item">-->
-            <!--<div class="accordion-head">${_('Overview')}</div>-->
-            <!--<div class="accordion-content">-->
-              <!--<p>${HTML(overview)}</p>-->
-            <!--</div>-->
-          <!--</div>-->
-          <!--% if job_outlook_items:-->
-              <!--<div class="accordion-item">-->
-                <!--<div class="accordion-head">${_('Job Outlook')}</div>-->
-                <!--<div class="accordion-content">-->
-                  <!--<ul class="list-bulleted list-disc no-indent">-->
-                    <!--% for item in job_outlook_items:-->
-                      <!--<li>${item}</li>-->
-                    <!--% endfor-->
-                  <!--</ul>-->
-                <!--</div>-->
-              <!--</div>-->
-          <!--% endif-->
-          <!--<div class="accordion-item">-->
-            <!--<div class="accordion-head">${_("What You'll Learn")}</div>-->
-            <!--<div class="accordion-content">-->
-              <!--<ul class="list-bulleted list-disc no-indent">-->
-                <!--% for item in expected_learning_items:-->
-                  <!--<li>${item}</li>-->
-                <!--% endfor-->
-              <!--</ul>-->
-            <!--</div>-->
-          <!--</div>-->
-          <!--<div class="accordion-item instructors-mobile-list">-->
-            <!--<div class="accordion-head">${_("Instructors")}</div>-->
-            <!--<div class="accordion-content">-->
-              <!--<div class="instructor-profiles">-->
-                <!--<% index = 0 %>-->
-                <!--% for instructor in instructors:-->
-                  <!--<% index += 1 %>-->
-                  <!--<div class="profile-item">-->
-                    <!--<div class="avatar">-->
-                      <!--<div class="img-holder">-->
-                        <!--<a href="#instructor-details-mobile-${index}" class="instructor-image">-->
-                          <!--<img src="${static.url(instructor.get('image'))}" alt="${instructor.get('name')}"/>-->
-                        <!--</a>-->
-                      <!--</div>-->
-                    <!--</div>-->
-                    <!--<div class="details">-->
-                      <!--<div class="name">-->
-                        <!--<a href="#instructor-details-mobile-${index}" class="instructor-label">${instructor.get('name')}</a>-->
-                      <!--</div>-->
-                      <!--% if instructor.get('position'):-->
-                        <!--<div class="dept">${instructor['position'].get('organization_name')}</div>-->
-                      <!--% endif-->
-                    <!--</div>-->
-                    <!--<div class="modal modal-custom" id="instructor-details-mobile-${index}">-->
-                      <!--<a href="#" class="focusKeeper"></a>-->
-                      <!--<div class="btn-close modal_close"><a href="#"><i class="fa fa-close"></i></a></div>-->
-                      <!--<div class="modal-body">-->
-                        <!--<div class="modal-header">-->
-                          <!--<div class="instructor-data">-->
-                            <!--<div class="thumbnail">-->
-                              <!--<img src="${instructor['image']}" alt="${instructor.get('name')}">-->
-                            <!--</div>-->
-                            <!--<h3>-->
-                              <!--<span class="instructor-name">${instructor.get('name')}</span>-->
-                              <!--% if instructor.get('position'):-->
-                                <!--<span>-->
-                                  <!--${Text(_('{position} at {organization}')).format(-->
-                                    <!--position=instructor['position'].get('title'),-->
-                                    <!--organization=instructor['position'].get('organization_name')-->
-                                  <!--)}-->
-                                <!--</span>-->
-                              <!--% endif-->
-                            <!--</h3>-->
-                          <!--</div>-->
-                        <!--</div>-->
-                        <!--<div class="instructor-bio">${HTML(instructor['bio'])}</div>-->
-                      <!--</div>-->
-                      <!--<a href="#" class="focusKeeper"></a>-->
-                    <!--</div>-->
-                  <!--</div>-->
-                <!--%endfor-->
-              <!--</div>-->
-            <!--</div>-->
-          <!--</div>-->
+          <div class="accordion-item">
+            <div class="accordion-head">${_('Overview')}</div>
+            <div class="accordion-content">
+              <p>${HTML(overview)}</p>
+            </div>
+          </div>
+          % if job_outlook_items:
+              <div class="accordion-item">
+                <div class="accordion-head">${_('Job Outlook')}</div>
+                <div class="accordion-content">
+                  <ul class="list-bulleted list-disc no-indent">
+                    % for item in job_outlook_items:
+                      <li>${item}</li>
+                    % endfor
+                  </ul>
+                </div>
+              </div>
+          % endif
+          <div class="accordion-item">
+            <div class="accordion-head">${_("What You'll Learn")}</div>
+            <div class="accordion-content">
+              <ul class="list-bulleted list-disc no-indent">
+                % for item in expected_learning_items:
+                  <li>${item}</li>
+                % endfor
+              </ul>
+            </div>
+          </div>
+          <div class="accordion-item instructors-mobile-list">
+            <div class="accordion-head">${_("Instructors")}</div>
+            <div class="accordion-content">
+              <div class="instructor-profiles">
+                <% index = 0 %>
+                % for instructor in instructors:
+                  <% index += 1 %>
+                  <div class="profile-item">
+                    <div class="avatar">
+                      <div class="img-holder">
+                        <a href="#instructor-details-mobile-${index}" class="instructor-image">
+                          <img src="${static.url(instructor.get('image'))}" alt="${instructor.get('name')}"/>
+                        </a>
+                      </div>
+                    </div>
+                    <div class="details">
+                      <div class="name">
+                        <a href="#instructor-details-mobile-${index}" class="instructor-label">${instructor.get('name')}</a>
+                      </div>
+                      % if instructor.get('position'):
+                        <div class="dept">${instructor['position'].get('organization_name')}</div>
+                      % endif
+                    </div>
+                    <div class="modal modal-custom" id="instructor-details-mobile-${index}">
+                      <a href="#" class="focusKeeper"></a>
+                      <div class="btn-close modal_close"><a href="#"><i class="fa fa-close"></i></a></div>
+                      <div class="modal-body">
+                        <div class="modal-header">
+                          <div class="instructor-data">
+                            <div class="thumbnail">
+                              <img src="${instructor['image']}" alt="${instructor.get('name')}">
+                            </div>
+                            <h3>
+                              <span class="instructor-name">${instructor.get('name')}</span>
+                              % if instructor.get('position'):
+                                <span>
+                                  ${Text(_('{position} at {organization}')).format(
+                                    position=instructor['position'].get('title'),
+                                    organization=instructor['position'].get('organization_name')
+                                  )}
+                                </span>
+                              % endif
+                            </h3>
+                          </div>
+                        </div>
+                        <div class="instructor-bio">${HTML(instructor['bio'])}</div>
+                      </div>
+                      <a href="#" class="focusKeeper"></a>
+                    </div>
+                  </div>
+                %endfor
+              </div>
+            </div>
+          </div>
 
           % try:
             <%include file="_${program_type_slug}_faq.html" args="program_type=program_type" />
