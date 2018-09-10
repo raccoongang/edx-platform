@@ -44,9 +44,9 @@ function validate_int(myEvento) {
   myText = myCaja.value;
   charCode = myEvento.charCode
   // The statement allows writing only numbers.
-  // Firefox needs 'charCode == 0'  for work delete numbers.
+  // Firefox required 'charCode == 0'  for available to delete symbols.
   if (charCode == 0  || (charCode >= 48 && charCode <= 57) && myText.length < 12){
-      return true;
+      return true
   }
   return false;
 }
