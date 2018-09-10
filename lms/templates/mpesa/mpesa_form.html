@@ -43,8 +43,8 @@ function validate_int(myEvento) {
   var myCaja = document.getElementById("phone");
   myText = myCaja.value;
   charCode = myEvento.charCode
-  // The statement allows writing only numbers.
-  // Firefox required 'charCode == 0'  for available to delete symbols.
+  // The statement allows write only numbers.
+  // Firefox required 'charCode == 0' for DELETE availability.
   if (charCode == 0  || (charCode >= 48 && charCode <= 57) && myText.length < 12){
       return true
   }
