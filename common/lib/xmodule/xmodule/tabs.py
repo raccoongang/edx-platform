@@ -464,6 +464,10 @@ class CourseTabList(List):
                 tabs[0]['name'] = _('Home')
                 tabs[1]['name'] = _('Course')
 
+        for tab in tabs:
+            if tab.get('type') == 'courseware':
+                tab['name'] = _('Begin Course')
+
         return tabs
 
     @classmethod
