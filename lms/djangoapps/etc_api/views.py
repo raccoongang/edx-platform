@@ -40,7 +40,16 @@ class CreateUserAccountWithoutPasswordView(APIView):
         data['name'] = request.data.get('prename')
         email = request.data.get('email')
         username = request.data.get('username')
-        validate_slug(username)
+        try:
+            validate_slug(username)
+        except ValidationError as err:
+            return Response(
+                data={
+                    "user_message": "Enter a valid 'username' consisting of letters, numbers, underscores or hyphens."
+                },
+                status=400
+            )
+
         if check_account_exists(username=username, email=email):
             return Response(data={"user_message": "User already exists"}, status=409)
 
