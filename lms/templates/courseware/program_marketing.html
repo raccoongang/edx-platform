@@ -170,12 +170,12 @@ description_max_length = 250
         ##   </li>
         ## </ul>
         <div id="accordion-group">
-          ## <div class="accordion-item">
-          ##   <div class="accordion-head">${_('Overview')}</div>
-          ##   <div class="accordion-content">
-          ##     <p>${HTML(overview)}</p>
-          ##   </div>
-          ## </div>
+          <div class="accordion-item">
+            <div class="accordion-head">${_('Overview')}</div>
+            <div class="accordion-content">
+              <p>${HTML(overview)}</p>
+            </div>
+          </div>
           ## % if job_outlook_items:
           ##     <div class="accordion-item">
           ##       <div class="accordion-head">${_('Job Outlook')}</div>
@@ -253,25 +253,25 @@ description_max_length = 250
           ##   </div>
           ## </div>
 
-          % try:
-            <%include file="_${program_type_slug}_faq.html" args="program_type=program_type" />
-          % except exceptions.TemplateLookupException:
-            ## pass
-          % endtry
+          ## % try:
+          ##   <%include file="_${program_type_slug}_faq.html" args="program_type=program_type" />
+          ## % except exceptions.TemplateLookupException:
+          ##   ## pass
+          ## % endtry
 
-          <div class="accordion-item">
-            <div class="accordion-head">${_("FAQ")}</div>
-            <div class="accordion-content">
-              <ul class="list-unstyled faq-links-list">
-                % for item in faq:
-                  <li class="item">
-                    <a href="#!">${item['question']}</a>
-                    <div class="answer hidden">${item['answer']}</div>
-                  </li>
-                % endfor
-              </ul>
-            </div>
-          </div>
+          ## <div class="accordion-item">
+          ##   <div class="accordion-head">${_("FAQ")}</div>
+          ##   <div class="accordion-content">
+          ##     <ul class="list-unstyled faq-links-list">
+          ##       % for item in faq:
+          ##         <li class="item">
+          ##           <a href="#!">${item['question']}</a>
+          ##           <div class="answer hidden">${item['answer']}</div>
+          ##         </li>
+          ##       % endfor
+          ##     </ul>
+          ##   </div>
+          ## </div>
         </div>
         <blockquote class="program-quote visible-sm">
           <div class="quote">
