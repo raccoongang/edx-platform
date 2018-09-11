@@ -96,3 +96,4 @@ git+https://github.com/raccoongang/edx-search.git@1.1.0-rg#egg=edx-search==1.1.0
 # Third Party XBlocks
 git+https://github.com/open-craft/xblock-poll@v1.2.7#egg=xblock-poll==1.2.7
 git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.18#egg=xblock-drag-and-drop-v2==2.0.18
+git+https://github.com/open-craft/problem-builder@v2.10.3
