@@ -40,8 +40,8 @@ class CreateUserAccountWithoutPasswordView(APIView):
         data['terms_of_service'] = "True"
         email = request.data.get('email')
         username = request.data.get('username')
-        prename = request.data.get('prename')
-        surname = request.data.get('surname')
+        prename = request.data.get('prename', '')
+        surname = request.data.get('surname', '')
         if not username:
             return Response(data={"user_message": "'username' is required parameter."}, status=400)
 
@@ -58,9 +58,8 @@ class CreateUserAccountWithoutPasswordView(APIView):
                 status=400
             )
 
-        data['name'] = prename
-        data['name'] =  "{} {}".format(data['name'], surname) if data['name'] and surname else data['name']
-        data['name'] = data['name'] if data['name'] else username
+        data['name'] =  "{} {}".format(prename, surname).strip() if prename or surname else username
+
         if check_account_exists(username=username, email=email):
             return Response(data={"user_message": "User already exists"}, status=409)
 
