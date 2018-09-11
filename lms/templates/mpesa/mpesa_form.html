@@ -3,6 +3,7 @@
 <%!
 from django.utils.translation import ugettext as _
 from django.conf import settings
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 %>
 <%block name="pagetitle">${_("Shopping cart")}</%block>
 
@@ -15,8 +16,10 @@ from django.conf import settings
         % for pk, pv in params.iteritems():
             <input type="hidden" name="${pk}" value="${pv}" />
         % endfor
-
-        <input type="text" name="phone" id="phone" placeholder="${_('Your phone number')}" required="required" >
+        <%
+            placeholder = configuration_helpers.get_value('PLACEHOLDER', _('Your phone number') )
+        %>
+        <input type="text" name="phone" id="phone" placeholder="${placeholder}" required="required" >
         <button id="submit" type="submit" class="button postfix discovery-submit">
             <div id="button_text">${_('Payment')}</div>
             <div aria-live="polite" aria-relevant="all">
@@ -39,12 +42,13 @@ from django.conf import settings
 function validate_int(myEvento) {
   var myCaja = document.getElementById("phone");
   myText = myCaja.value;
-  if ((myEvento.charCode >= 48 && myEvento.charCode <= 57) && myText.length < 12) {
-    dato = true;
-  } else {
-    dato = false;
+  charCode = myEvento.charCode
+  // The statement allows write only numbers.
+  // Firefox required 'charCode == 0' for DELETE availability.
+  if (charCode == 0  || (charCode >= 48 && charCode <= 57) && myText.length < 12){
+      return true
   }
-  return dato;
+  return false;
 }
 
 document.getElementById("phone").onkeypress = validate_int;
