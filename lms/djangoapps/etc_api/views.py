@@ -43,10 +43,16 @@ class CreateUserAccountWithoutPasswordView(APIView):
         prename = request.data.get('prename', '')
         surname = request.data.get('surname', '')
         if not username:
-            return Response(data={"user_message": "'username' is required parameter."}, status=400)
+            return Response(
+                data={"user_message": "'username' is required parameter."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         if not email:
-            return Response(data={"user_message": "'email' is required parameter."}, status=400)
+            return Response(
+                data={"user_message": "'email' is required parameter."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             validate_slug(username)
@@ -55,13 +61,13 @@ class CreateUserAccountWithoutPasswordView(APIView):
                 data={
                     "user_message": "Enter a valid 'username' consisting of letters, numbers, underscores or hyphens."
                 },
-                status=400
+                status=status.HTTP_400_BAD_REQUEST
             )
 
         data['name'] =  "{} {}".format(prename, surname).strip() if prename or surname else username
 
         if check_account_exists(username=username, email=email):
-            return Response(data={"user_message": "User already exists"}, status=409)
+            return Response(data={"user_message": "User already exists"}, status=status.HTTP_409_CONFLICT)
 
         try:
             data['password'] = uuid4().hex
@@ -72,9 +78,9 @@ class CreateUserAccountWithoutPasswordView(APIView):
             user.save()
             self.send_activation_email(request)
         except ValidationError:
-            return Response(data={"user_message": "Wrong email format"}, status=400)
+            return Response(data={"user_message": "Wrong email format"}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(data={'user_id': user.id}, status=200)
+        return Response(data={'user_id': user.id}, status=status.HTTP_200_OK)
 
     @staticmethod
     def send_activation_email(request):
@@ -100,16 +106,22 @@ class SetActivateUserStatus(APIView):
         data = request.data
         user_id = data.get('user_id')
         if not user_id:
-            return Response(data={"user_message": "'user_id' is required parameter."}, status=400)
+            return Response(
+                data={"user_message": "'user_id' is required parameter."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             user = User.objects.get(id=user_id)
             user.is_active = string_to_boolean(data.get('is_active'))
             user.save()
         except  User.DoesNotExist:
-            return Response(data={"user_message": "Wrong 'user_id'. User does not exist"}, status=400)
+            return Response(
+                data={"user_message": "Wrong 'user_id'. User does not exist"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        return Response(data={'user_id': data['user_id'], 'is_active': user.is_active}, status=200)
+        return Response(data={'user_id': data['user_id'], 'is_active': user.is_active}, status=status.HTTP_200_OK)
 
 
 
@@ -128,15 +140,24 @@ class EnrollView(APIView, ApiKeyPermissionMixIn):
         user_id = data.get('user_id')
         course_id = data.get('course_id')
         if not user_id:
-            return Response(data={"user_message": "'user_id' is required parameter."}, status=400)
+            return Response(
+                data={"user_message": "'user_id' is required parameter."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         if not course_id:
-            return Response(data={"user_message": "'course_id' is required parameter."}, status=400)
+            return Response(
+                data={"user_message": "'course_id' is required parameter."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             user = User.objects.get(id=user_id)
         except  User.DoesNotExist:
-            return Response(data={"user_message": "Wrong 'user_id'. User does not exist"}, status=400)
+            return Response(
+                data={"user_message": "Wrong 'user_id'. User does not exist"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             course_id = SlashSeparatedCourseKey.from_deprecated_string(course_id)
@@ -149,6 +170,9 @@ class EnrollView(APIView, ApiKeyPermissionMixIn):
                 }
             )
         except InvalidKeyError:
-            return Response(data={"user_message": "Wrong 'course_id'. Course does not exist"}, status=400)
+            return Response(
+                data={"user_message": "Wrong 'course_id'. Course does not exist"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         return Response(data={'enrollment_id': enrollment_obj.id}, status=status.HTTP_200_OK)
