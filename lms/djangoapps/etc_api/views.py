@@ -12,6 +12,7 @@ from student.models import CourseEnrollment, EnrollmentClosedError, CourseFullEr
 from enrollment.views import EnrollmentCrossDomainSessionAuth, EnrollmentUserThrottle, ApiKeyPermissionMixIn
 from django.core.validators import validate_slug
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
+from opaque_keys import InvalidKeyError
 from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from student.forms import PasswordResetFormNoActive
@@ -20,7 +21,7 @@ from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiv
 log = logging.getLogger(__name__)
 
 def string_to_boolean(string):
-    return str(string).lower() in ['true',]
+    return bool(string) and str(string).lower() == 'true'
 
 
 class CreateUserAccountWithoutPasswordView(APIView):
@@ -37,39 +38,49 @@ class CreateUserAccountWithoutPasswordView(APIView):
         data = request.data
         data['honor_code'] = "True"
         data['terms_of_service'] = "True"
-        data['name'] = request.data.get('prename')
         email = request.data.get('email')
         username = request.data.get('username')
+        prename = request.data.get('prename', '')
+        surname = request.data.get('surname', '')
+        if not username:
+            return Response(
+                data={"user_message": "'username' is required parameter."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not email:
+            return Response(
+                data={"user_message": "'email' is required parameter."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         try:
             validate_slug(username)
-        except ValidationError as err:
+        except ValidationError:
             return Response(
                 data={
                     "user_message": "Enter a valid 'username' consisting of letters, numbers, underscores or hyphens."
                 },
-                status=400
+                status=status.HTTP_400_BAD_REQUEST
             )
 
+        data['name'] =  "{} {}".format(prename, surname).strip() if prename or surname else username
+
         if check_account_exists(username=username, email=email):
-            return Response(data={"user_message": "User already exists"}, status=409)
+            return Response(data={"user_message": "User already exists"}, status=status.HTTP_409_CONFLICT)
 
         try:
             data['password'] = uuid4().hex
             user = create_account_with_params(request, data)
             user.is_active = True
-            user.first_name = request.data.get('prename')
-            user.last_name = request.data.get('surname')
+            user.first_name = prename
+            user.last_name = surname
             user.save()
             self.send_activation_email(request)
-        except ValidationError as err:
-            # Should only get non-field errors from this function
-            assert NON_FIELD_ERRORS not in err.message_dict
-            # Only return first error for each field
-            return Response(data={"user_message": "Wrong parameters on user creation"}, status=400)
-        except ValueError as err:
-            return Response(data={"user_message": "Wrong email format"}, status=400)
+        except ValidationError:
+            return Response(data={"user_message": "Wrong email format"}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(data={'user_id': user.id}, status=200)
+        return Response(data={'user_id': user.id}, status=status.HTTP_200_OK)
 
     @staticmethod
     def send_activation_email(request):
@@ -93,14 +104,24 @@ class SetActivateUserStatus(APIView):
         Enable or disable user by user id.
         """
         data = request.data
+        user_id = data.get('user_id')
+        if not user_id:
+            return Response(
+                data={"user_message": "'user_id' is required parameter."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         try:
-            user = User.objects.get(id=data['user_id'])
-            user.is_active = string_to_boolean(data['is_active'])
+            user = User.objects.get(id=user_id)
+            user.is_active = string_to_boolean(data.get('is_active'))
             user.save()
         except  User.DoesNotExist:
-            return Response(data={"user_message": "Wrong id User does not exist"}, status=400)
+            return Response(
+                data={"user_message": "Wrong 'user_id'. User does not exist"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        return Response(data={'user_id': data['user_id'], 'is_active': user.is_active}, status=200)
+        return Response(data={'user_id': data['user_id'], 'is_active': user.is_active}, status=status.HTTP_200_OK)
 
 
 
@@ -116,17 +137,42 @@ class EnrollView(APIView, ApiKeyPermissionMixIn):
         or activate enroll with use 'is_active' param.
         """
         data = request.data
+        user_id = data.get('user_id')
+        course_id = data.get('course_id')
+        if not user_id:
+            return Response(
+                data={"user_message": "'user_id' is required parameter."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not course_id:
+            return Response(
+                data={"user_message": "'course_id' is required parameter."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         try:
-            user = User.objects.get(id=data['user_id'])
+            user = User.objects.get(id=user_id)
         except  User.DoesNotExist:
-            return Response(data={"user_message": "Wrong id User does not exist"}, status=400)
-        course_id = SlashSeparatedCourseKey.from_deprecated_string(data['course_id'])
-        enrollment_obj, __ = CourseEnrollment.objects.update_or_create(
-            user=user,
-            course_id=course_id,
-            defaults={
-                'mode': data['mode'],
-                'is_active': string_to_boolean(data['is_active'])
-            }
-        )
+            return Response(
+                data={"user_message": "Wrong 'user_id'. User does not exist"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            course_id = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+            enrollment_obj, __ = CourseEnrollment.objects.update_or_create(
+                user=user,
+                course_id=course_id,
+                defaults={
+                    'mode': data.get('mode', 'honor'),
+                    'is_active': string_to_boolean(data.get('is_active'))
+                }
+            )
+        except InvalidKeyError:
+            return Response(
+                data={"user_message": "Wrong 'course_id'. Course does not exist"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         return Response(data={'enrollment_id': enrollment_obj.id}, status=status.HTTP_200_OK)
