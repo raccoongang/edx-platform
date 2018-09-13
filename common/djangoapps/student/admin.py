@@ -181,9 +181,25 @@ class UserAdmin(BaseUserAdmin):
         The username is marked read-only regardless of `ENABLE_UNICODE_USERNAME`, to simplify the bokchoy tests.
         """
         django_readonly = super(UserAdmin, self).get_readonly_fields(request, obj)
+
+        if obj and not request.user.is_superuser:
+            return django_readonly + ('username', 'email')
+
         if obj:
             return django_readonly + ('username',)
+
         return django_readonly
+
+    def get_fieldsets(self, request, obj=None):
+        if obj and not request.user.is_superuser:
+            fieldsets = (
+                (None, {
+                    'classes': ('wide',),
+                    'fields': ('username', 'email', 'is_active'),
+                }),
+            )
+            return fieldsets
+        return super(UserAdmin, self).get_fieldsets(request, obj)
 
 
 @admin.register(UserAttribute)
