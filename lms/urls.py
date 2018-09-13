@@ -743,6 +743,17 @@ if settings.FEATURES.get('ENABLE_DISCUSSION_SERVICE'):
         ),
     )
 
+
+# Add RG analytics tab
+if settings.FEATURES.get("ENABLE_RG_INSTRUCTOR_ANALYTICS"):
+    urlpatterns += (
+        url(
+            r'^courses/{}/tab/instructor_analytics/'.format(settings.COURSE_ID_PATTERN),
+            include('rg_instructor_analytics.urls'),
+            name='instructor_analytics_endpoint',
+        ),
+    )
+
 urlpatterns += (
     url(
         r'^courses/{}/tab/(?P<tab_type>[^/]+)/$'.format(
