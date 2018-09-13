@@ -978,6 +978,16 @@ if settings.FEATURES.get("ENABLE_LTI_PROVIDER"):
         url(r'^lti_provider/', include('lti_provider.urls')),
     )
 
+# Add RG analytics tab
+if settings.FEATURES.get("ENABLE_RG_INSTRUCTOR_ANALYTICS"):
+    urlpatterns += (
+        url(
+            r'^courses/{}/tab/instructor_analytics/'.format(settings.COURSE_ID_PATTERN),
+            include('rg_instructor_analytics.urls'),
+            name='instructor_analytics_endpoint',
+        ),
+    )
+
 urlpatterns += (
     url(r'config/self_paced', ConfigurationModelCurrentAPIView.as_view(model=SelfPacedConfiguration)),
     url(r'config/programs', ConfigurationModelCurrentAPIView.as_view(model=ProgramsApiConfig)),

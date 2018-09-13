@@ -119,6 +119,9 @@ FEATURES = {
     # See jquey-xblock: https://github.com/edx-solutions/jquery-xblock
     'ENABLE_XBLOCK_VIEW_ENDPOINT': False,
 
+    # Allow RG Instructor Analytics
+    'ENABLE_RG_INSTRUCTOR_ANALYTICS': False,
+
     # Allows to configure the LMS to provide CORS headers to serve requests from other domains
     'ENABLE_CORS_HEADERS': False,
 
