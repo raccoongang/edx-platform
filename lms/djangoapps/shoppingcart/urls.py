@@ -19,6 +19,8 @@ urlpatterns = patterns(
     url(r'^reset_code_redemption/$', 'reset_code_redemption'),
     url(r'^billing_details/$', 'billing_details', name='billing_details'),
     url(r'^verify_cart/$', 'verify_cart'),
+    url(r'^create_payment/$', 'create_payment'),
+    url(r'^execute_payment/$', 'execute_payment'),
 )
 
 if settings.FEATURES.get('ENABLE_PAYMENT_FAKE'):

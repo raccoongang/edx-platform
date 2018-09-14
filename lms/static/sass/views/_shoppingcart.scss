@@ -463,6 +463,7 @@ $light-border: 1px solid $gray-l5;
                 @extend %no-outline;
                 top: ($baseline*0.45);
                 width: auto;
+                color: $blue2;
               }
 
               //CASE: has class dec
@@ -471,6 +472,7 @@ $light-border: 1px solid $gray-l5;
                 top: ($baseline*1.5);
                 width: auto;
                 height: ($baseline*1.1);
+                color: $blue2;
               }
             }
 
@@ -527,7 +529,6 @@ $light-border: 1px solid $gray-l5;
             opacity: 0.8;
             box-shadow: none;
             border: none;
-            background: none;
             width: auto;
             height: auto;
             text-shadow: none;

@@ -5,6 +5,7 @@ from hashlib import md5
 
 from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
+from django.conf import settings
 from opaque_keys.edx.keys import CourseKey
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.request import Request
@@ -74,16 +75,24 @@ class TestGetCourseDetail(CourseDetailTestMixin, SharedModuleStoreTestCase):
             self._make_api_call(self.honor_user, self.honor_user, course_key)
 
     def test_hidden_course_for_honor(self):
-        with self.assertRaises(Http404):
-            self._make_api_call(self.honor_user, self.honor_user, self.hidden_course.id)
+        if settings.COURSE_ABOUT_VISIBILITY_PERMISSION == 'see_exists':
+            with self.assertRaises(Http404):
+                self._make_api_call(self.honor_user, self.honor_user, self.hidden_course.id)
+        else:
+            course = self._make_api_call(self.honor_user, self.honor_user, self.hidden_course.id)
+            self.verify_course(course, course_id=u'edX/hidden/2012_Fall')
 
     def test_hidden_course_for_staff(self):
         course = self._make_api_call(self.staff_user, self.staff_user, self.hidden_course.id)
         self.verify_course(course, course_id=u'edX/hidden/2012_Fall')
 
     def test_hidden_course_for_staff_as_honor(self):
-        with self.assertRaises(Http404):
-            self._make_api_call(self.staff_user, self.honor_user, self.hidden_course.id)
+        if settings.COURSE_ABOUT_VISIBILITY_PERMISSION == 'see_exists':
+            with self.assertRaises(Http404):
+                self._make_api_call(self.staff_user, self.honor_user, self.hidden_course.id)
+        else:
+            course = self._make_api_call(self.staff_user, self.honor_user, self.hidden_course.id)
+            self.verify_course(course, course_id=u'edX/hidden/2012_Fall')
 
 
 class CourseListTestMixin(CourseApiTestMixin):
@@ -225,9 +234,13 @@ class TestGetCourseListExtras(CourseListTestMixin, ModuleStoreTestCase):
         self.assertEqual(len(courses), 0)
 
     def test_hidden_course_for_honor(self):
+        """
+        Currently visible for honor.
+        """
         self.create_course(visible_to_staff_only=True)
         courses = self._make_api_call(self.honor_user, self.honor_user)
-        self.assertEqual(len(courses), 0)
+        self.assertEqual(len(courses), 1)
+        self.verify_courses(courses)
 
     def test_hidden_course_for_staff(self):
         self.create_course(visible_to_staff_only=True)

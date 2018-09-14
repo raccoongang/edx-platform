@@ -74,6 +74,11 @@ from .processors import (
     process_postpay_callback,
     render_purchase_form_html
 )
+from .processors.PayPal import (
+    paypal_create_payment, paypal_execute_payment, _get_processor_exception_html,
+    _record_purchase
+)
+
 
 log = logging.getLogger("shoppingcart")
 AUDIT_LOG = logging.getLogger("audit")
@@ -169,8 +174,10 @@ def update_user_cart(request):
             reverse("shoppingcart.views.postpay_callback")
         )
         cart = Order.get_cart_for_user(request.user)
-        form_html = render_purchase_form_html(cart, callback_url=callback_url)
-
+        create_payment_url = request.build_absolute_uri(
+            reverse("shoppingcart.views.create_payment")
+        )
+        form_html = render_purchase_form_html(cart, callback_url=callback_url, create_payment_url=create_payment_url)
         return JsonResponse(
             {
                 "total_cost": total_cost,
@@ -201,7 +208,10 @@ def show_cart(request):
     callback_url = request.build_absolute_uri(
         reverse("shoppingcart.views.postpay_callback")
     )
-    form_html = render_purchase_form_html(cart, callback_url=callback_url)
+    create_payment_url = request.build_absolute_uri(
+        reverse("shoppingcart.views.create_payment")
+    )
+    form_html = render_purchase_form_html(cart, callback_url=callback_url, create_payment_url=create_payment_url)
     context = {
         'order': cart,
         'shoppingcart_items': valid_cart_item_tuples,
@@ -733,7 +743,10 @@ def billing_details(request):
         callback_url = request.build_absolute_uri(
             reverse("shoppingcart.views.postpay_callback")
         )
-        form_html = render_purchase_form_html(cart, callback_url=callback_url)
+        create_payment_url = request.build_absolute_uri(
+            reverse("shoppingcart.views.create_payment")
+        )
+        form_html = render_purchase_form_html(cart, callback_url=callback_url, create_payment_url=create_payment_url)
         total_cost = cart.total_cost
         context = {
             'shoppingcart_items': cart_items,
@@ -1030,3 +1043,43 @@ def csv_report(request):
 
     else:
         return HttpResponseBadRequest("HTTP Method Not Supported")
+
+
+@csrf_exempt
+@require_POST
+def create_payment(request):
+    """
+    Creates Paypal Payment and redirects to PayPal.
+    """
+    cart = Order.get_cart_for_user(request.user)
+
+    # Checks if the cart's amount is zero then redirects to postpay_callback
+    if cart.total_cost == 0:
+        return postpay_callback(request)
+
+    is_any_course_expired, expired_cart_items, expired_cart_item_names, shoppingcart_items = \
+        verify_for_closed_enrollment(request.user, cart)
+
+    execute_url = request.build_absolute_uri(
+            reverse("shoppingcart.views.execute_payment")
+        )
+
+    result = paypal_create_payment(cart, shoppingcart_items, execute_url)
+
+    if result['success']:
+        return redirect(result['link'])
+    else:
+        return postpay_callback(request,result)
+
+@csrf_exempt
+def execute_payment(request):
+    """
+    Handles Execution of the payment. Redirects execution result to postpay_callback..
+    """
+    params = request.GET.dict()
+    execution_result = paypal_execute_payment(params)
+
+    if execution_result['success']:
+        return postpay_callback(request, execution_result)
+    else:
+        return postpay_callback(request, execution_result)
