@@ -28,6 +28,9 @@ define(['jquery', 'underscore', 'gettext', 'js/views/pages/base_page', 'js/views
                 this.$('.button.button-reindex').click(function(event) {
                     self.handleReIndexEvent(event);
                 });
+                this.$('#button-make-programs').click(function(event) {
+                    self.handleMakeProgramsEvent(event);
+                });
                 this.model.on('change', this.setCollapseExpandVisibility, this);
                 $('.dismiss-button').bind('click', ViewUtils.deleteNotificationHandler(function() {
                     $('.wrapper-alert-announcement').removeClass('is-shown').addClass('is-hidden');
@@ -138,6 +141,43 @@ define(['jquery', 'underscore', 'gettext', 'js/views/pages/base_page', 'js/views
             onIndexError: function(data) {
                 var msg = new NoteView.Error({
                     title: gettext('There were errors reindexing course.'),
+                    message: data.user_message
+                });
+                msg.show();
+            },
+
+            handleMakeProgramsEvent: function(event) {
+                var self = this;
+                event.preventDefault();
+                var target = $(event.currentTarget);
+                target.css('cursor', 'wait');
+                this.startMakePrograms(target.attr('href'))
+                    .done(function(data) { self.onMakeProgramsSuccess(data); })
+                    .fail(function(data) { self.onMakeProgramsError(data); })
+                    .always(function() { target.css('cursor', 'pointer'); });
+            },
+
+            startMakePrograms: function(makeProgramsHandlerUrl) {
+                return $.ajax({
+                    url: makeProgramsHandlerUrl,
+                    method: 'GET',
+                    global: false,
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json'
+                });
+            },
+
+            onMakeProgramsSuccess: function(data) {
+                var msg = new AlertView.Announcement({
+                    title: gettext('Programs Generator'),
+                    message: data.user_message
+                });
+                msg.show();
+            },
+
+            onMakeProgramsError: function(data) {
+                var msg = new NoteView.Error({
+                    title: gettext('There were errors initiating programs regeneration.'),
                     message: data.user_message
                 });
                 msg.show();
