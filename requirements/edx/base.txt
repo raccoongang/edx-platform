@@ -221,3 +221,6 @@ edx-sga==0.6.2
 
 # Elastic APM
 elastic-apm==2.2.1
+
+# PayPal
+paypalrestsdk==1.13.1
