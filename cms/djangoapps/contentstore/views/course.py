@@ -335,10 +335,8 @@ def make_programs_handler(request):
     """
     The restful handler for initiating programs automated generation.
     GET
-        html: return status of indexing task
-        json: return status of indexing task
+        json: return feedback message about automated programs generation procedure
     """
-    new_programs_created = 0
     content_type = request.META.get('CONTENT_TYPE', None)
     if content_type is None:
         content_type = "application/json; charset=utf-8"
