@@ -12,6 +12,7 @@ import six
 from ccx_keys.locator import CCXLocator
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
@@ -22,6 +23,9 @@ from django.views.decorators.http import require_GET, require_http_methods
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from opaque_keys.edx.locations import Location
+
+from openedx.core.djangoapps.catalog.models import CatalogIntegration
+from openedx.core.djangoapps.catalog.utils import create_catalog_api_client
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.waffle_utils import WaffleSwitchNamespace
 
@@ -93,7 +97,7 @@ from .library import LIBRARIES_ENABLED, get_library_creator_status
 log = logging.getLogger(__name__)
 
 __all__ = ['course_info_handler', 'course_handler', 'course_listing',
-           'course_info_update_handler', 'course_search_index_handler',
+           'course_info_update_handler', 'course_search_index_handler', 'make_programs_handler',
            'course_rerun_handler',
            'settings_handler',
            'grading_handler',
@@ -322,6 +326,62 @@ def course_search_index_handler(request, course_key_string):
         return HttpResponse(dump_js_escaped_json({
             "user_message": _("Course has been successfully reindexed.")
         }), content_type=content_type, status=200)
+
+
+@login_required
+@ensure_csrf_cookie
+@require_GET
+def make_programs_handler(request):
+    """
+    The restful handler for initiating programs automated generation.
+    GET
+        json: return feedback message about automated programs generation procedure
+    """
+    content_type = request.META.get('CONTENT_TYPE', None)
+    if content_type is None:
+        content_type = "application/json; charset=utf-8"
+
+    try:
+        catalog_integration = CatalogIntegration.current()
+        username = catalog_integration.service_username
+        User = get_user_model()
+
+        try:
+            user = User.objects.get(username=username)
+            client = create_catalog_api_client(user)
+        except User.DoesNotExist:
+            log.error(
+                'Failed to create API client. Service user {username} does not exist.'.format(username)
+            )
+            raise
+
+        try:
+            log.info('Requesting program UUIDs.')
+            new_programs_created = client.make_programs.post()
+        except:  # pylint: disable=bare-except
+            log.error('Failed to initiate programs regeneration.')
+            raise
+
+    except IOError as exc:
+        return HttpResponse(dump_js_escaped_json({
+            "user_message": exc.message
+        }), content_type=content_type, status=500)
+
+    if new_programs_created:
+        user_message = _(
+            """Regeneration successful.
+            New {} programs were created.
+            Usually it takes up to 10 minutes before new programs are available on LMS.""".format(
+                new_programs_created
+            )
+        )
+    else:
+        user_message = _(
+            "Generation was successfully initiated, but no new programs were created."
+        )
+    return HttpResponse(dump_js_escaped_json({
+        "user_message": user_message
+    }), content_type=content_type, status=200)
 
 
 def _course_outline_json(request, course_module):
@@ -626,6 +686,8 @@ def course_index(request, course_key):
                     'action_state_id': current_action.id,
                 },
             ) if current_action else None,
+            'show_make_programs_button': bool(CourseOverview.get_from_id(course_key).effort),
+            'make_programs_link': reverse('make-programs-handler'),
         })
 
 

@@ -513,9 +513,10 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
               <ol class="list-input">
                 % if about_page_editable:
                 <li class="field text" id="field-course-effort">
-                  <label for="course-effort">${_("Hours of Effort per Week")}</label>
-                  <input type="text" class="short time" id="course-effort" placeholder="HH:MM" />
-                  <span class="tip tip-inline">${_("Time spent on all course work")}</span>
+                  <label for="course-effort">${_("Programs generation indicator")}</label>
+                  <input type="text" class="short time" id="course-effort" placeholder="examples: 7 or 7:uspup" />
+                  <span class="tip">${_("Informs Programs Auto Generator how to apply generation rules to the course.")}</span>
+                  <span class="tip italic">${_("For example: `7:uspap` indicates about 7 hours duration and `uspap` special type to explicitly in/exclude course from the program.")}</span>
                 </li>
                 % endif
                 % if is_prerequisite_courses_enabled:
