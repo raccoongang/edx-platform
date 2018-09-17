@@ -232,6 +232,9 @@ FEATURES = {
     # if you enable this; we don't create tables by default.
     'ENABLE_THIRD_PARTY_AUTH': False,
 
+    # Turn on custom oauth backend
+    'ENABLE_CUSTOM_OAUTH_BACKEND': False,
+
     # Toggle to enable alternate urls for marketing links
     'ENABLE_MKTG_SITE': False,
 
@@ -392,7 +395,13 @@ FEATURES = {
     # Whether to check the "Notify users by email" checkbox in the batch enrollment form
     # in the instructor dashboard.
     'BATCH_ENROLLMENT_NOTIFY_USERS_DEFAULT': True,
+
+    # Disable bulk email send from random different addresses when 'False'
+    'BULK_EMAIL_FROM_DIFFERENT_ADDRESSES': False,
 }
+
+# Setting parameters which are required for the custom oauth backend
+CUSTOM_OAUTH_PARAMS = {}
 
 # Settings for the course reviews tool template and identification key, set either to None to disable course reviews
 COURSE_REVIEWS_TOOL_PROVIDER_FRAGMENT_NAME = 'coursetalk-reviews-fragment.html'
@@ -1212,6 +1221,9 @@ MIDDLEWARE_CLASSES = (
     # Must be after DarkLangMiddleware.
     'django.middleware.locale.LocaleMiddleware',
 
+    #
+    'openedx.core.djangoapps.dark_lang.middleware.DarkLangMiddlewareSetLocaleAdditional',
+
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 
     'django_comment_client.utils.ViewNameMiddleware',
@@ -1237,6 +1249,9 @@ MIDDLEWARE_CLASSES = (
 
     # This must be last
     'openedx.core.djangoapps.site_configuration.middleware.SessionCookieDomainOverrideMiddleware',
+
+    # Elastic APM
+    'elasticapm.contrib.django.middleware.TracingMiddleware',
 )
 
 # Clickjacking protection can be enabled by setting this to 'DENY'
@@ -2041,6 +2056,9 @@ INSTALLED_APPS = (
 
     'third_party_auth',
 
+    # Custom Edx Oauth Client which supports an abstract SSO identity Provider
+    'edx_oauth_client',
+
     # We don't use this directly (since we use OAuth2), but we need to install it anyway.
     # When a user is deleted, Django queries all tables with a FK to the auth_user table,
     # and since django-rest-framework-oauth imports this, it will try to access tables
@@ -2242,7 +2260,10 @@ INSTALLED_APPS = (
     # CI-specific apps
     'ci_program',
     'lms.djangoapps.student_enrollment',
-    'lms.djangoapps.learning_success'
+    'lms.djangoapps.learning_success',
+
+    # Elastic APM
+    'elasticapm.contrib.django',
 )
 
 ######################### CSRF #########################################

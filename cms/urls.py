@@ -6,6 +6,8 @@ from ratelimitbackend import admin
 
 from cms.djangoapps.contentstore.views.organization import OrganizationListView
 
+from openassessment.fileupload import views_filesystem
+
 admin.autodiscover()
 
 # Pattern to match a course key or a library key
@@ -66,6 +68,8 @@ urlpatterns = patterns(
 
     # For redirecting to help pages.
     url(r'^help_token/', include('help_tokens.urls')),
+
+    url(r'^(?P<key>.+)/openassessment-filesystem-storage', views_filesystem.filesystem_storage, name='openassessment-filesystem-storage'),
 )
 
 # restful api
@@ -99,6 +103,11 @@ urlpatterns += patterns(
     url(r'^assets/{}/{}?$'.format(settings.COURSE_KEY_PATTERN, settings.ASSET_KEY_PATTERN), 'assets_handler'),
     url(r'^import/{}$'.format(COURSELIKE_KEY_PATTERN), 'import_handler'),
     url(r'^import_status/{}/(?P<filename>.+)$'.format(COURSELIKE_KEY_PATTERN), 'import_status_handler'),
+    # rest api for course import/export
+    url(
+        r'^api/courses/',
+        include('cms.djangoapps.contentstore.api.urls', namespace='courses_api')
+    ),
     url(r'^export/{}$'.format(COURSELIKE_KEY_PATTERN), 'export_handler'),
     url(r'^export_output/{}$'.format(COURSELIKE_KEY_PATTERN), 'export_output_handler'),
     url(r'^export_status/{}$'.format(COURSELIKE_KEY_PATTERN), 'export_status_handler'),
@@ -213,3 +222,4 @@ urlpatterns += (
     url(r'^404$', handler404),
     url(r'^500$', handler500),
 )
+

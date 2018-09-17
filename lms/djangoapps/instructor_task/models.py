@@ -192,15 +192,38 @@ class ReportStore(object):
         config = getattr(settings, config_name, {})
         storage_type = config.get('STORAGE_TYPE', '').lower()
         if storage_type == 's3':
+            if (
+                hasattr(settings, 'S3_HOST') and settings.S3_HOST and hasattr(settings,'S3_USE_SIGV4') and settings.S3_USE_SIGV4
+            ):
+                return DjangoStorageReportStore(
+                    storage_class='openedx.core.storage.S3ReportStorage',
+                    storage_kwargs={
+                        'bucket': config['BUCKET'],
+                        'location': config['ROOT_PATH'],
+                        'custom_domain': config.get("CUSTOM_DOMAIN", '%s/%s' % (settings.S3_HOST, config['BUCKET'])),
+                        'querystring_expire': 300,
+                        'gzip': True,
+                        'host': settings.S3_HOST
+                    },
+                )
+            else:
+                return DjangoStorageReportStore(
+                    storage_class='openedx.core.storage.S3ReportStorage',
+                    storage_kwargs={
+                        'bucket': config['BUCKET'],
+                        'location': config['ROOT_PATH'],
+                        'custom_domain': config.get("CUSTOM_DOMAIN", None),
+                        'querystring_expire': 300,
+                        'gzip': True,
+                    },
+                )
+        if storage_type == 'azure':
             return DjangoStorageReportStore(
-                storage_class='openedx.core.storage.S3ReportStorage',
+                storage_class='openedx.core.storage.AzureStorageExtended',
                 storage_kwargs={
-                    'bucket': config['BUCKET'],
-                    'location': config['ROOT_PATH'],
-                    'custom_domain': config.get("CUSTOM_DOMAIN", None),
-                    'querystring_expire': 300,
-                    'gzip': True,
-                },
+                    'container': config['CONTAINER'],
+                    'url_expiry_secs': config.get('URL_EXPIRY_SECS', 300)
+                }
             )
         elif storage_type == 'localfs':
             return DjangoStorageReportStore(
@@ -285,10 +308,17 @@ class DjangoStorageReportStore(ReportStore):
             return []
         files = [(filename, os.path.join(course_dir, filename)) for filename in filenames]
         files.sort(key=lambda f: self.storage.modified_time(f[1]), reverse=True)
-        return [
+
+        if (settings.GRADES_DOWNLOAD['STORAGE_TYPE']=='azure' or settings.GRADES_DOWNLOAD['STORAGE_TYPE']=='s3'):
+            return [
             (filename, self.storage.url(full_path))
-            for filename, full_path in files
-        ]
+                for filename, full_path in files
+            ]
+        else:
+            return [
+                (filename, self.storage.url(os.path.join('grades', full_path)))
+                for filename, full_path in files
+            ]
 
     def path_to(self, course_id, filename=''):
         """

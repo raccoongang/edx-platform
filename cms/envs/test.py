@@ -323,6 +323,9 @@ SEARCH_ENGINE = "search.tests.mock_search_engine.MockSearchEngine"
 
 FEATURES['ENABLE_ENROLLMENT_TRACK_USER_PARTITION'] = True
 
+########################## AUTHOR PERMISSION #######################
+FEATURES['ENABLE_CREATOR_GROUP'] = False
+
 # teams feature
 FEATURES['ENABLE_TEAMS'] = True
 
@@ -347,3 +350,11 @@ VIDEO_IMAGE_SETTINGS = dict(
     DIRECTORY_PREFIX='video-images/',
 )
 VIDEO_IMAGE_DEFAULT_FILENAME = 'default_video_image.png'
+
+STATIC_ROOT_BASE = REPO_ROOT / "static_test"
+EDX_PLATFORM_STATIC_ROOT_BASE = REPO_ROOT / "static_edxplatform_test"
+STATIC_COLLECTOR_ROOT = REPO_ROOT / "static_collection_test"
+
+MOCK_SEARCH_BACKING_FILE = (
+    REPO_ROOT / "test_root" / "index_file.dat"
+).abspath()

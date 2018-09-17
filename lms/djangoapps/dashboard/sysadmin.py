@@ -43,6 +43,9 @@ from student.models import CourseEnrollment, Registration, UserProfile
 from student.roles import CourseInstructorRole, CourseStaffRole
 from xmodule.modulestore.django import modulestore
 from ci_program.models import Program
+from search.search_engine_base import SearchEngine
+from opaque_keys.edx.locations import SlashSeparatedCourseKey
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 ENROLL_ENDPOINT = 'https://courses.codeinstitute.net/enrollment/enroll/'
 LEGAL_CHARACTERS = string.ascii_letters + string.digits + ' @_.'
@@ -195,6 +198,12 @@ class Users(SysadminDashboardView):
                 return msg
             new_password = password
 
+        if User.objects.filter(username=uname).exists():
+            return _('This username already taken')
+
+        if User.objects.filter(email=email).exists():
+            return _('This email already taken')
+
         user = User(username=uname, email=email, is_active=True)
         user.set_password(new_password)
         try:
@@ -339,6 +348,7 @@ class Courses(SysadminDashboardView):
     This manages adding/updating courses from git, deleting courses, and
     provides course listing information.
     """
+    _searcher = SearchEngine.get_search_engine(getattr(settings, "COURSEWARE_INDEX_NAME", "courseware_index"))
 
     def git_info_for_course(self, cdir):
         """This pulls out some git info like the last commit"""
@@ -498,6 +508,18 @@ class Courses(SysadminDashboardView):
             if course_found:
                 # delete course that is stored with mongodb backend
                 self.def_ms.delete_course(course.id, request.user.id)
+
+                # delete search index
+                try:
+                    response = self._searcher.search(doc_type="courseware_content", field_dictionary={'course': course_id})
+                    result_ids = [result["data"]["id"] for result in response["results"]]
+                    self._searcher.remove('courseware_content', result_ids)
+                    self._searcher.remove('course_info', [course_id])
+                except Exception as e: # pragma: no cover
+                    log.error(e.message)
+
+                CourseOverview.objects.filter(id=course.id).delete()
+
                 # don't delete user permission groups, though
                 self.msg += \
                     u"<font color='red'>{0} {1} = {2} ({3})</font>".format(
@@ -674,7 +696,7 @@ class Enrollment(SysadminDashboardView):
     will also allow Student Care to manually initiate the Zoho
     enrollment process.
     """
-    
+
     @classmethod
     def enroll_in_program(cls, input_data):
         email = input_data['email']
@@ -682,26 +704,26 @@ class Enrollment(SysadminDashboardView):
         username = email
         manual_override = input_data['manual_override']
         full_name = input_data['full_name']
-            
+
         resp = requests.post(ENROLL_ENDPOINT, data={
             'email': email,
             'course_code': program_code,
             'manual_override': manual_override,
             'full_name': full_name
         }, verify=False)
-            
+
         return resp
-    
+
     @method_decorator(login_required)
     def get(self, request):
         """
         This page will contain a form so we just need to provide
         the name of the template that the view will require, as
-        well as a list of programs programs to populate a 
+        well as a list of programs programs to populate a
         dropdown list
         """
         programs = Program.objects.all()
-        
+
         context = {
             'programs': programs,
             'djangopid': os.getpid(),
@@ -710,26 +732,26 @@ class Enrollment(SysadminDashboardView):
                 settings, 'EDX_PLATFORM_VERSION_STRING', ''),
         }
         return render_to_response(self.template_name, context)
-    
+
     @method_decorator(login_required)
     def post(self, request):
         email = request.POST.get("student_email", "")
         program_code = request.POST.get("program_code", "")
         full_name = request.POST.get("full_name", "")
         manual_override = True
-        
+
         enrollment_dict = {
             "email": email,
             "program_code": program_code,
             "manual_override": manual_override,
             "full_name": full_name
         }
-        
+
         response = self.enroll_in_program(enrollment_dict)
         print(response.status_code)
-        
+
         programs = Program.objects.all()
-        
+
         context = {
             'programs': programs,
             'djangopid': os.getpid(),
@@ -741,19 +763,19 @@ class Enrollment(SysadminDashboardView):
 
 
 class FiveDay(SysadminDashboardView):
-    
+
     @method_decorator(login_required)
     def get(self, request):
         program = Program.objects.get(program_code="5DCC")
-        
+
         number_of_enrolled_students = len(
             program.enrolled_students.all())
-        
+
         number_of_students_not_logged_in = len(
             program.enrolled_students.filter(last_login=None))
         number_of_students_logged_in = (
             number_of_enrolled_students - number_of_students_not_logged_in)
-        
+
         context = {
             'number_of_enrolled_students': number_of_enrolled_students,
             'number_of_students_not_logged_in': number_of_students_not_logged_in,

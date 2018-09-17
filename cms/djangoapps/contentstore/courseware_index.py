@@ -13,7 +13,7 @@ from django.utils.translation import ugettext_lazy
 from search.search_engine_base import SearchEngine
 from six import add_metaclass
 
-from contentstore.course_group_config import GroupConfiguration
+from cms.djangoapps.contentstore.course_group_config import GroupConfiguration
 from course_modes.models import CourseMode
 from eventtracking import tracker
 from openedx.core.lib.courses import course_image_url
@@ -593,6 +593,7 @@ class CourseAboutSearchIndexer(object):
             'course': course_id,
             'content': {},
             'image_url': course_image_url(course),
+            'catalog_visibility': course.catalog_visibility
         }
 
         # load data for all of the 'about' modules for this course into a dictionary

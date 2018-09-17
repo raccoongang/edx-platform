@@ -1,5 +1,4 @@
 """ Django admin pages for student app """
-from config_models.admin import ConfigurationModelAdmin
 from django import forms
 from django.contrib.admin.sites import NotRegistered
 from django.contrib.auth import get_user_model
@@ -8,24 +7,20 @@ from django.utils.translation import ugettext_lazy as _
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from ratelimitbackend import admin
-
-from student.models import (
-    CourseAccessRole,
-    CourseEnrollment,
-    CourseEnrollmentAllowed,
-    DashboardConfiguration,
-    LinkedInAddToProfileConfiguration,
-    LogoutViewConfiguration,
-    PendingNameChange,
-    Registration,
-    RegistrationCookieConfiguration,
-    UserAttribute,
-    UserProfile,
-    UserTestGroup
-)
-from student.roles import REGISTERED_ACCESS_ROLES
 from xmodule.modulestore.django import modulestore
 
+from config_models.admin import ConfigurationModelAdmin
+from student.models import (
+    UserProfile, UserTestGroup, CourseEnrollmentAllowed, DashboardConfiguration, CourseEnrollment, Registration,
+    PendingNameChange, CourseAccessRole, LinkedInAddToProfileConfiguration, UserAttribute, LogoutViewConfiguration,
+    RegistrationCookieConfiguration
+)
+from student.roles import REGISTERED_ACCESS_ROLES
+
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django import forms
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 User = get_user_model()  # pylint:disable=invalid-name
 
 
@@ -172,18 +167,51 @@ class UserProfileInline(admin.StackedInline):
     verbose_name_plural = _('User profile')
 
 
+def validate_unique_email(value, user_id=None):
+    if User.objects.filter(email=value).exclude(id=user_id).exists():
+        raise ValidationError(
+            _('Email "%(value)s" is already taken.'),
+            params={'value': value}
+        )
+
+
+class UserCreationFormExtended(UserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super(UserCreationFormExtended, self).__init__(*args, **kwargs)
+        self.fields['email'] = forms.EmailField(
+            label=_("E-mail"),
+            max_length=75,
+            validators=[validate_email, validate_unique_email]
+        )
+
+
+class UserChangeFormExtended(UserChangeForm):
+    def __init__(self, *args, **kwargs):
+        super(UserChangeFormExtended, self).__init__(*args, **kwargs)
+        self.fields['email'] = forms.EmailField(
+            label=_("E-mail"),
+            max_length=75,
+            validators=[validate_email]
+        )
+
+    def clean_email(self):
+        value = self.cleaned_data['email']
+        validate_unique_email(value, user_id=self.instance.id)
+        return value
+
 class UserAdmin(BaseUserAdmin):
     """ Admin interface for the User model. """
     inlines = (UserProfileInline,)
 
-    def get_readonly_fields(self, *args, **kwargs):
+    def get_readonly_fields(self, request, obj=None):
         """
         Allows editing the users while skipping the username check, so we can have Unicode username with no problems.
         The username is marked read-only regardless of `ENABLE_UNICODE_USERNAME`, to simplify the bokchoy tests.
         """
-
-        django_readonly = super(UserAdmin, self).get_readonly_fields(*args, **kwargs)
-        return django_readonly + ('username',)
+        django_readonly = super(UserAdmin, self).get_readonly_fields(request, obj)
+        if obj:
+            return django_readonly + ('username',)
+        return django_readonly
 
 
 @admin.register(UserAttribute)
@@ -196,6 +224,25 @@ class UserAttributeAdmin(admin.ModelAdmin):
 
     class Meta(object):
         model = UserAttribute
+
+
+UserAdmin.add_form = UserCreationFormExtended
+UserAdmin.add_fieldsets = (
+    (None, {
+        'classes': ('wide',),
+        'fields': ('email', 'username', 'password1', 'password2',)
+    }),
+)
+
+
+UserAdmin.form = UserChangeFormExtended
+UserAdmin.fieldsets = (
+    (None, {'fields': ('email', 'username', 'password')}),
+    (_('Personal info'), {'fields': ('first_name', 'last_name')}),
+    (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
+                                   'groups', 'user_permissions')}),
+    (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+)
 
 
 admin.site.register(UserTestGroup)
