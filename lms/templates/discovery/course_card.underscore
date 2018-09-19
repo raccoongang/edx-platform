@@ -8,15 +8,17 @@
         </header>
         <section class="course-info" aria-hidden="true">
             <h2 class="course-name">
-                <span class="course-organization"><%- org %></span>
                 <span class="course-code"><%- content.number %></span>
                 <span class="course-title"><%- content.display_name %></span>
             </h2>
-            <div class="course-date" aria-hidden="true">
-                <%- interpolate(
-                      gettext("Starts: %(start_date)s"),
-                      { start_date: start }, true
-                    ) %>
+            <div class="course-bottom">
+                <span class="course-organization"><%- org %></span>
+                <div class="course-date" aria-hidden="true">
+                    <%- interpolate(
+                          gettext("Starts: %(start_date)s"),
+                          { start_date: start }, true
+                        ) %>
+                </div>
             </div>
         </section>
         <div class="sr">
