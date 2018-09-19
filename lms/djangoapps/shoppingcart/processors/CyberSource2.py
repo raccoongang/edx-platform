@@ -218,7 +218,7 @@ def sign(params):
     return params
 
 
-def render_purchase_form_html(cart, callback_url=None, extra_data=None):
+def render_purchase_form_html(cart, callback_url=None, extra_data=None, **kwargs):
     """
     Renders the HTML of the hidden POST form that must be used to initiate a purchase with CyberSource
 

@@ -5,6 +5,7 @@ from hashlib import md5
 
 from django.core.urlresolvers import reverse
 from django.test import RequestFactory
+from django.conf import settings
 from nose.plugins.attrib import attr
 
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase, SharedModuleStoreTestCase
@@ -199,9 +200,10 @@ class CourseDetailViewTestCase(CourseApiTestViewMixin, SharedModuleStoreTestCase
         self.verify_response(params={'username': inactive_user.username})
 
     def test_hidden_course_as_honor(self):
+        expected_status_code = 404 if settings.COURSE_ABOUT_VISIBILITY_PERMISSION == 'see_exists' else 200
         self.setup_user(self.honor_user)
         self.verify_response(
-            expected_status_code=404, url=self.hidden_url, params={'username': self.honor_user.username}
+            expected_status_code=expected_status_code, url=self.hidden_url, params={'username': self.honor_user.username}
         )
 
     def test_hidden_course_as_staff(self):
