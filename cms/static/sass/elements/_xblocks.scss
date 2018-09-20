@@ -530,7 +530,8 @@
     }
 
     .download-setting {
-      @extend %ui-btn-non;
+      //@extend %ui-btn-non;
+      @extend %ui-btn-flat-outline;
       @extend %t-action4;
       @extend %t-strong;
       @include box-sizing(border-box);
@@ -538,11 +539,6 @@
       padding: ($baseline/2);
       width: 49%;
       text-align: center;
-      color: $blue;
-
-      &:hover {
-        background-color: $blue;
-      }
     }
 
     .wrapper-uploader-actions {
