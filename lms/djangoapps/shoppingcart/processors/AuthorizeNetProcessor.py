@@ -81,7 +81,8 @@ def render_purchase_form_html(cart, callback_url=None, extra_data=None):
         settings.setting.append(setting)
 
     add_settings('hostedPaymentBillingAddressOptions', {
-        'show': False,
+        'show': True,
+        'required': True
     })
     add_settings('hostedPaymentIFrameCommunicatorUrl', {
         'url': urljoin(callback_url, static('IFrameCommunicator.html')),
@@ -144,7 +145,8 @@ def process_postpay_callback(params, **kwargs):
         'currency': 'USD',
         'decision': int(params['responseCode']),
         'card_number': params['accountNumber'],
-        'processor_reply_dump': json.dumps(params)
+        'processor_reply_dump': json.dumps(params),
+        'card_type': params.get('accountType', ''),
     }
 
     try:
@@ -222,6 +224,25 @@ def _record_purchase(params, order):
     # If we can't find any digits, use placeholder values instead.
     ccnum_str = params.get('card_number', 'xxxx')
     ccnum = '{}{}'.format('####', ccnum_str[-4:])
+
+    if 'transId' in params:
+        transactionDetailsRequest = apicontractsv1.getTransactionDetailsRequest()
+        transactionDetailsRequest.merchantAuthentication = get_merchant_auth()
+        transactionDetailsRequest.transId = params['transId']
+        transactionDetailsController = getTransactionDetailsController(transactionDetailsRequest)
+        transactionDetailsController.execute()
+        response = transactionDetailsController.getresponse()
+        if str(response.messages.resultCode).lower() == 'ok' and hasattr(response.transaction, 'billTo'):
+            bt = response.transaction.billTo
+            params.update({
+                'bill_first_name': str(getattr(bt, 'firstName', '')),
+                'bill_last_name': str(getattr(bt, 'lastName', '')),
+                'bill_address_line1': str(getattr(bt, 'address', '')),
+                'bill_city': str(getattr(bt, 'city', '')),
+                'bill_state': str(getattr(bt, 'state', '')),
+                'bill_country': str(getattr(bt, 'country', '')),
+                'bill_postal_code': str(getattr(bt, 'zip', '')),
+            })
 
     if settings.FEATURES.get("LOG_POSTPAY_CALLBACKS"):
         log.info(
