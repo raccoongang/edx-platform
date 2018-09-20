@@ -217,6 +217,12 @@
   .modal-med {
     width: 40%;
     min-width: ($baseline*18);
+    position: fixed;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%,-50%);
+    max-height: 98vh;
+    overflow: auto;
 
     .modal-content {
       padding: 4%;
@@ -232,6 +238,10 @@
 
     .modal-content {
       padding: $baseline;
+
+      .upload-dialog {
+        padding: 5px 10px;
+      }
     }
 
     &.modal-editor {
@@ -278,6 +288,12 @@
         overflow-y: auto;
         overflow-x: hidden;
         padding: 0;
+      }
+
+      .wrapper-modal-window-assetupload {
+        .modal-content {
+          height: auto;
+        }
       }
     }
   }
