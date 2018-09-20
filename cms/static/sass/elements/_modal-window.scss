@@ -284,10 +284,16 @@
       }
 
       .modal-content {
-        height: auto;
+        height: 435px;
         overflow-y: auto;
         overflow-x: hidden;
         padding: 0;
+      }
+
+      .wrapper-modal-window-assetupload {
+        .modal-content {
+          height: auto;
+        }
       }
     }
   }
