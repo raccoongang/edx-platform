@@ -578,7 +578,11 @@
         border-top: 0;
       }
 
-
+      &:after {
+        content: '';
+        display: table;
+        clear: both;
+      }
 
       // STATE: hover & focus
       &:hover, &:focus {
