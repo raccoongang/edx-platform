@@ -22,4 +22,10 @@ urlpatterns = [
         ),
         CourseGradingPolicy.as_view(), name='course_grading_policy'
     ),
+    url(
+        r'^extension/courses/{course_id}/$'.format(
+            course_id=settings.COURSE_ID_PATTERN,
+        ),
+        views.CourseExtendedGradesView.as_view(), name='course_extended_grades'
+    ),
 ]

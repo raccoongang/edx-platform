@@ -18,6 +18,7 @@ from openedx.core.lib.api.authentication import (
     OAuth2AuthenticationAllowInactiveUser,
     SessionAuthenticationAllowInactiveUser
 )
+from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
 from openedx.core.lib.api.view_utils import DeveloperErrorViewMixin
 from student.models import CourseEnrollment
 
@@ -213,3 +214,11 @@ class CourseGradesView(GradeViewMixin, GenericAPIView):
         else:
             # If no username passed, get paginated list of grades for all users in course
             return self._get_user_grades(course_key)
+
+
+class CourseExtendedGradesView(CourseGradesView):
+
+    permission_classes = (ApiKeyHeaderPermission,)
+
+    def perform_authentication(self, request):
+        return True
