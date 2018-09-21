@@ -726,7 +726,8 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
                     unicode(course_id),
                     mode=mode,
                     is_active=is_active,
-                    enrollment_attributes=enrollment_attributes
+                    enrollment_attributes=enrollment_attributes,
+                    check_access=False
                 )
 
             email_opt_in = request.data.get('email_opt_in', None)
