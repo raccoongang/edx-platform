@@ -9,6 +9,7 @@ from ..profile_images.views import ProfileImageView
 from .accounts.views import AccountDeactivationView, AccountViewSet
 from .preferences.views import PreferencesDetailView, PreferencesView
 from .verification_api.views import PhotoVerificationStatusView
+from lms.djangoapps.sga_api.views import CreateUserAccountWithoutPasswordView, BulkEnrollView
 
 ME = AccountViewSet.as_view({
     'get': 'get',
@@ -53,4 +54,6 @@ urlpatterns = patterns(
         PreferencesDetailView.as_view(),
         name='preferences_detail_api'
     ),
+    url(r'^create$', CreateUserAccountWithoutPasswordView.as_view()),
+    url(r'^bulkenrollment', BulkEnrollView.as_view()),
 )
