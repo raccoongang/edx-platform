@@ -124,7 +124,7 @@ site_status_msg = get_site_status_msg(course_id)
 
       <%include file="user_dropdown.html"/>
 
-      <a href="${get_online_help_info(online_help_token)['doc_url']}" 
+      <a href="${get_online_help_info(online_help_token)['doc_url']}"
          target="_blank"
          class="doc-link">${_("Help")}</a>
 
@@ -176,8 +176,20 @@ site_status_msg = get_site_status_msg(course_id)
       </ol>
 
       <ol class="right nav-courseware list-inline">
-        <%block name="navigation_sign_in">
+	    % if not settings.FEATURES['DISABLE_LOGIN_BUTTON']:
+          % if course and settings.FEATURES.get('RESTRICT_ENROLL_BY_REG_METHOD') and course.enrollment_domain:
           <li class="item nav-courseware-01">
+            <a class="btn btn-register" href="${reverse('course-specific-register', args=[course.id.to_deprecated_string()])}">${_("Register")}</a>
+          </li>
+          % else:
+          <li class="nav-courseware-01">
+            <a class="btn btn-register" href="/register">${_("Register")}</a>
+          </li>
+          % endif
+        % endif
+
+        <%block name="navigation_sign_in">
+          <li class="item nav-courseware-02">
             % if not settings.FEATURES['DISABLE_LOGIN_BUTTON']:
               % if course and settings.FEATURES.get('RESTRICT_ENROLL_BY_REG_METHOD') and course.enrollment_domain:
                 <a class="btn btn-login" href="${reverse('course-specific-login', args=[course.id.to_deprecated_string()])}${login_query()}">${_("Sign in")}</a>
