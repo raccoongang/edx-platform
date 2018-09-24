@@ -119,6 +119,11 @@ define(['js/views/validation',
                             modelVal = self.model.get('us_state');
                             modelVal.value[key]['provider'] = JSONValue;
                             self.model.set('us_state', modelVal);
+                        } else if (/-approved/.test(key)) {
+                            key = key.replace("-approved", "");
+                            modelVal = self.model.get('us_state');
+                            modelVal.value[key]['approved'] = JSONValue;
+                            self.model.set('us_state', modelVal);
                         } else {
                             var modelVal = self.model.get(key);
                             modelVal.value = JSONValue;
@@ -200,12 +205,14 @@ define(['js/views/validation',
             renderUsState: function(listEle$) {
                 var newKeyIdNumber,
                     newKeyIdProvider,
+                    newKeyIdApproved,
                     newEle,
                     self = this,
                     usStateValues = this.model.get('us_state').value,
                     template = HtmlUtils.template(
                         $('#advanced_entry_us_state-tpl').text()
-                    );
+                    ),
+                    approvedVal;
 
                 _.each(
                     _.sortBy(
@@ -216,21 +223,28 @@ define(['js/views/validation',
                     function(key) {
                         newKeyIdNumber = _.uniqueId('policy_key_');
                         newKeyIdProvider = _.uniqueId('policy_key_');
+                        newKeyIdApproved = _.uniqueId('policy_key_');
+                        approvedVal = usStateValues[key].approved;
                         newEle = template({
                             key: key,
                             display_name: self.usStateDict[key] || key,
                             valueNumber: JSON.stringify(usStateValues[key].number, null, 4),
                             valueProvider: JSON.stringify(usStateValues[key].provider, null, 4),
+                            valueApproved: (approvedVal === '' || approvedVal === null || typeof(approvedVal) === 'undefined') ? true: approvedVal,
                             keyIdNumber: newKeyIdNumber,
                             keyIdProvider: newKeyIdProvider,
+                            keyIdApproved: newKeyIdApproved,
                             valueIdNumber: _.uniqueId('policy_value_'),
                             valueIdProvider: _.uniqueId('policy_value_'),
+                            valueIdApproved: _.uniqueId('policy_value_'),
                         });
 
                         self.fieldToSelectorMap[key + '-number'] = newKeyIdNumber;
                         self.fieldToSelectorMap[key + '-provider'] = newKeyIdProvider;
+                        self.fieldToSelectorMap[key + '-approved'] = newKeyIdApproved;
                         self.selectorToField[newKeyIdNumber] = key + '-number';
                         self.selectorToField[newKeyIdProvider] = key + '-provider';
+                        self.selectorToField[newKeyIdApproved] = key + '-approved';
                         HtmlUtils.append(listEle$, newEle);
                     });
 

@@ -923,7 +923,7 @@ class CourseFields(object):
     us_state = Dict(
         scope=Scope.settings,
         help='',
-        default={key: {'number': '', 'provider': DEFAULT_PROVIDER.get(key, '')}
+        default={key: {'number': '', 'provider': DEFAULT_PROVIDER.get(key, ''), 'approved': True}
                  for key, value in US_STATE_CHOICES}
     )
 
