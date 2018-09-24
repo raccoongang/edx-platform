@@ -133,7 +133,8 @@
                         The track selection page would allow the user to select the course mode
                         ("verified", "honor", etc.) -- or, if the only course mode was "honor",
                         it would redirect the user to the dashboard. */
-                        redirectUrl = this.appendPurchaseWorkflow(this.urls.trackSelection + courseId + '/');
+                        // redirectUrl = this.appendPurchaseWorkflow(this.urls.trackSelection + courseId + '/');
+			redirectUrl = "/courses/" + courseId;
                     } else if (this.courseMode === 'honor' || this.courseMode === 'audit') {
                         /* The newer version of the course details page allows the user
                         to specify which course mode to enroll as.  If the student has
