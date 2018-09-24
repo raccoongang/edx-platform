@@ -17,4 +17,11 @@
         <textarea class="json text" id="<%= valueIdProvider %>"><%= valueProvider %></textarea>
     </div>
 
+    <div class="field is-not-editable text key" id="<%= key %>-approved">
+		<h3 class="title" id="<%= keyIdApproved %>"><%= gettext('Approved') %></h3>
+    </div>
+    <div class="field text value">
+        <label class="sr" for="<%= valueIdApproved %>"><%= gettext('Approved') %></label>
+        <textarea class="json text" class="json text" id="<%= valueIdApproved %>"><%= valueApproved %></textarea>
+    </div>
 </li>
