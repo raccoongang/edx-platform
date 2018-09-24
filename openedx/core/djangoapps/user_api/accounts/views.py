@@ -245,9 +245,9 @@ class AccountViewSet(ViewSet):
 
         try:
             with transaction.atomic():
-                activation_key = create_account(username[0], password[0], email[0])
-                user = User.objects.get(username=username[0], email=email[0])
-                update_account_settings(user, data, username=username[0])
+                activation_key = create_account(username, password, email)
+                user = User.objects.get(username=username, email=email)
+                update_account_settings(user, data, username=username)
                 activate_account(activation_key)
         except AccountValidationError as err:
             return Response({"field_errors": err.field_errors}, status=status.HTTP_400_BAD_REQUEST)
