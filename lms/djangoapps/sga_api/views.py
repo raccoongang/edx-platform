@@ -64,6 +64,10 @@ class CreateUserAccountWithoutPasswordView(APIView):
                 "Country is wrong or absent: {country}. For checking: Visit https://www.iso.org/obp . "
                 "Click the Country Codes radio option and click the search button."
             ).format(country=request.data.get('country', ''))
+        elif language not in ['en', 'pt']:
+            error_msg = (
+                "language is wrong or absent: {language}. It must be:  pt (Portuguese) or en (English)"
+            ).format(language=language)
         else:
             error_msg = None
 
@@ -215,7 +219,7 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
                     result_list.append(
                         self._make_result_dict_for_identifier(
                             users_email=users_email,
-                            error='User with {} users_email has not valid email'.format(users_email),
+                            error='User with {} email does not exist'.format(users_email),
                             after={}, before={}
                         )
                     )
