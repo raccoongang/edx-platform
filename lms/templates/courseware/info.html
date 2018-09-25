@@ -22,6 +22,21 @@ from openedx.features.course_experience import SHOW_REVIEWS_TOOL_FLAG
 <%static:css group='style-course'/>
 </%block>
 
+<%block name="js_extra">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function () {
+        var domain_address = document.location.origin;
+        $.post(domain_address + "/api/get_referral_hash_key/", {'course_id': '${str(course_id)}'},
+            function (data) {
+                $(".referral-btn").attr('data-clipboard-text', (domain_address + data.hashkey));
+        });
+        new ClipboardJS('.referral-btn');
+    });
+</script>
+</%block>
+
+
 % if show_enroll_banner:
 <div class="wrapper-msg urgency-low" id="failed-verification-banner">
   <div class="msg msg-reverify is-dismissable">
@@ -69,9 +84,9 @@ from openedx.features.course_experience import SHOW_REVIEWS_TOOL_FLAG
           </div>
         % endif
         <div class="page-header-secondary">
-        <a href="#" class="referral-btn last-accessed-link" data-clipboard-text="Just because you can doesn't mean you should — clipboard.js">
+        <a class="referral-btn last-accessed-link" data-clipboard-action="copy" data-clipboard-text="Just because you can doesn't mean you should — clipboard.js">
             Copy referral link
-        </a>
+        </a>  
         </div>
       </div>
       <div class="info-wrapper">
