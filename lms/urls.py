@@ -41,6 +41,9 @@ urlpatterns = (
 
     # Performance endpoints
     url(r'', include('openedx.core.djangoapps.performance.urls')),
+    
+    # Provisioning API
+    url(r'', include('lms.djangoapps.sga_api.urls')),
 
     # Static template view endpoints like blog, faq, etc.
     url(r'', include('static_template_view.urls')),
