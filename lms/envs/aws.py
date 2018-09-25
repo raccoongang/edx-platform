@@ -1039,3 +1039,17 @@ USE_GOOGLE_RECAPTCHA = ENV_TOKENS.get('USE_GOOGLE_RECAPTCHA', False)
 REGISTRATION_EXTENSION_FORM = "custom_reg_form.forms.ExtraInfoForm"
 
 PROXY_HTTP = AUTH_TOKENS.get('PROXY_HTTP', '')
+
+if FEATURES.get("ENABLE_RG_INSTRUCTOR_ANALYTICS", False):
+    INSTALLED_APPS += ('rg_instructor_analytics', 'rg_instructor_analytics_log_collector')
+
+    if 'web_fragments' not in INSTALLED_APPS:
+         INSTALLED_APPS += ('web_fragments',)
+
+    RG_ANALYTICS_GRADE_STAT_UPDATE = FEATURES.get("RG_ANALYTICS_GRADE_STAT_UPDATE", {
+        'minute': '*',
+        'hour': '*/6',
+        'day_of_week': '*',
+        'day_of_month': '*',
+        'month_of_year': '*',
+    })
