@@ -1038,3 +1038,22 @@ ELASTIC_APM = {
     'SECRET_TOKEN': AUTH_TOKENS.get('APM_SECRET_TOKEN', ''),
     'SERVER_URL': ENV_TOKENS.get('APM_SERVER_URL', '')
 }
+if FEATURES.get("ENABLE_RG_INSTRUCTOR_ANALYTICS", False):
+    INSTALLED_APPS += ('rg_instructor_analytics',)
+    if 'web_fragments' not in INSTALLED_APPS:
+         INSTALLED_APPS += ('web_fragments',)
+
+    RG_ANALYTICS_ENROLLMENT_STAT_UPDATE = FEATURES.get("RG_ANALYTICS_ENROLLMENT_STAT_UPDATE", {
+        'minute': '*',
+        'hour': '*/6',
+        'day_of_week': '*',
+        'day_of_month': '*',
+        'month_of_year': '*',
+    })
+    RG_ANALYTICS_GRADE_STAT_UPDATE = FEATURES.get("RG_ANALYTICS_GRADE_STAT_UPDATE", {
+        'minute': '*',
+        'hour': '*/6',
+        'day_of_week': '*',
+        'day_of_month': '*',
+        'month_of_year': '*',
+    })
