@@ -919,3 +919,16 @@ ORA2_FILEUPLOAD_ROOT = ENV_TOKENS.get('ORA2_FILEUPLOAD_ROOT', ORA2_FILEUPLOAD_RO
 SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING = FEATURES.get("SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING", True)
 #### RaccoonGang ####
 
+if FEATURES.get("ENABLE_RG_INSTRUCTOR_ANALYTICS", False):
+    INSTALLED_APPS += ('rg_instructor_analytics', 'rg_instructor_analytics_log_collector')
+
+    if 'web_fragments' not in INSTALLED_APPS:
+         INSTALLED_APPS += ('web_fragments',)
+
+    RG_ANALYTICS_GRADE_STAT_UPDATE = FEATURES.get("RG_ANALYTICS_GRADE_STAT_UPDATE", {
+        'minute': '*/15',
+        'hour': '*',
+        'day_of_week': '*',
+        'day_of_month': '*',
+        'month_of_year': '*',
+    })

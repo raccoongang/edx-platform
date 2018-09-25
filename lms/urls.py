@@ -690,6 +690,19 @@ if settings.FEATURES.get('ENABLE_DISCUSSION_SERVICE'):
             name='resubscribe_forum_update',
         ),
     )
+
+# Raccoongang rg_instructor_analytics
+if settings.FEATURES.get('ENABLE_XBLOCK_VIEW_ENDPOINT') and settings.FEATURES.get('ENABLE_RG_INSTRUCTOR_ANALYTICS'):
+    urlpatterns += (
+        url(
+                r'^courses/{}/tab/instructor_analytics/'.format(
+                    settings.COURSE_ID_PATTERN,
+                ),
+                include('rg_instructor_analytics.urls'),
+                name='instructor_analytics_endpoint',
+            ),
+    )
+
 urlpatterns += (
     # This MUST be the last view in the courseware--it's a catch-all for custom tabs.
     url(
