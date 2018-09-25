@@ -38,6 +38,8 @@ class HidePages(object):
         '/login',
         '/u/[\w.@+-]+',
         '/account/settings',
+        '/account/finish_auth',
+        '/course_modes/choose/{}/'.format(_course_id_pattern),
         '/logout',
         '/register',
         '/activate/[0-9a-f]{32}',
