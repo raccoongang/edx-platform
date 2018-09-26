@@ -124,6 +124,9 @@ urlpatterns = (
 
     # URLs for custom dashboard
     url(r'^student_custom_dashboard/', include('custom_dashboard.urls')),
+
+    # URLs for external-content-widget
+    url(r'^', include('alu_ec_widget.urls', namespace="widget")),
 )
 
 # TODO: This needs to move to a separate urls.py once the student_account and
