@@ -177,8 +177,7 @@ site_status_msg = get_site_status_msg(course_id)
       </ol>
 
       <%
-        query_params = urlencode(request.GET)
-        query_params = "?%s" % query_params
+        query_params = "?%s" % urlencode(request.GET)
       %>
 
       <ol class="right nav-courseware list-inline">
