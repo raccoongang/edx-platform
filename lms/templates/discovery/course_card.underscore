@@ -23,12 +23,13 @@
             </div>
         </li>
         <% } %>
+        <% if ( modes == 'audit' || modes == 'verified' ) { %>
         <li class="short-info-list__item">
             <img class="short-info-list__img" src="<%- defaultThemeURL %>/images/certificate-icon.svg">
             <div class="short-info-list__text">
                 <strong class="custom-param-name"><%- gettext('Verified Certificate Available') %></strong>
                 <span class="custom-param-value">
-                <% if ( modes == 'audit' || modes == 'verified' || modes == 'honor') { %>
+                <% if ( modes == 'audit' || modes == 'verified' ) { %>
                   <%- gettext('Yes') %>
                 <% } else  {%>
                   <%- gettext('No') %>
@@ -36,5 +37,6 @@
                 </span>
             </div>
         </li>
+        <% } %>
     </ol>
 </div>

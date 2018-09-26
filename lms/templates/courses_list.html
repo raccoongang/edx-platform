@@ -23,7 +23,7 @@ from course_modes.models import CourseMode
                   course.vendor = course_vendor
                   # add `certified` bool attr to course:
                   mode_slugs = [mode.slug for mode in CourseMode.modes_for_course(course.id)]
-                  certified = bool(set(mode_slugs) & {CourseMode.AUDIT, CourseMode.HONOR, CourseMode.VERIFIED})
+                  certified = bool(set(mode_slugs) & {CourseMode.AUDIT, CourseMode.VERIFIED})
                   course.certified = certified
 
                   visible_courses.append(course)
