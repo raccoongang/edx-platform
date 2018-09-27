@@ -51,7 +51,7 @@ class CreateUserAccountWithoutPasswordView(APIView):
         email = request.data.get('email')
         username = request.data.get('username')
         # countries.by_name return country code or '' for else cases
-        country = countries.by_name(request.data.get('country', ''))
+        country = countries.by_name(request.data.get('country'))
         first_name = request.data.get('first_name', '')
         last_name = request.data.get('last_name', '')
         language = request.data.get('language')
@@ -61,7 +61,7 @@ class CreateUserAccountWithoutPasswordView(APIView):
             error_msg =  "email is required parameter."
         elif not country:
             error_msg = (
-                "Country is wrong or absent: {country}. For checking: Visit https://www.iso.org/obp . "
+                "Country is incorrect or missed: {country}. For checking: Visit https://www.iso.org/obp . "
                 "Click the Country Codes radio option and click the search button."
             ).format(country=request.data.get('country', ''))
         elif language not in ['en', 'pt']:
@@ -97,14 +97,14 @@ class CreateUserAccountWithoutPasswordView(APIView):
             data['country'] = country
             user = create_account_with_params(request, data)
             user.is_active = True
-            user.save()
-            user_profile, _ = UserProfile.objects.get_or_create(user=user)
+            user_profile = user.profile
             user_profile.phone = request.data.get('phone', '')
             user_profile.save()
+            user.save()
             # dict to setup language
             update = {u'pref-lang': language}
             # setup language for user
-            update_user_preferences(user, update, username)
+            update_user_preferences(user, update)
             self.send_activation_email(request)
         except ValidationError:
             return Response(data={"error_message": "Wrong email format"}, status=status.HTTP_400_BAD_REQUEST)
@@ -148,22 +148,15 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
         action = data.get('action', 'enroll')
         email_students = data.get('email_students', False)
         auto_enroll = data.get('auto_enroll', False)
-
         if action not in ['enroll', 'unenroll']:
-            error_msg = "action must be enroll or unenroll"
-        elif not isinstance(courses, (list, tuple)):
-            error_msg = "courses must be a list of courses id "
-        elif not isinstance(users, (list, tuple)):
-            error_msg =  "users must be a list of identifiers(username or email)"
-        else:
-            error_msg = None
-
-        if error_msg:
             return Response(
-                data={"error_message": error_msg},
+                data={"error_message": "action must be enroll or unenroll"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
+        if isinstance(courses, str):
+            courses = [courses,]
+        if isinstance(users, str):
+            users = [users,]
         try:
             result = self._enroll_unenrol_users_for_courses(
                 courses, users, request, action, email_students, auto_enroll
@@ -205,21 +198,21 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
             action='enroll', email_students=False, auto_enroll=False
     ):
         result_list = []
-        for users_email in list_of_users_email:
+        for user_email in list_of_users_email:
     
             try:
-                user = get_student_from_identifier(users_email)
+                user = get_student_from_identifier(user_email)
                 email = user.email
                 language = get_user_email_language(user)
             except User.DoesNotExist:
                 if auto_enroll and action == 'enroll':
-                    email = users_email
+                    email = user_email
                     language = None
                 else:
                     result_list.append(
                         self._make_result_dict_for_identifier(
-                            users_email=users_email,
-                            error='User with {} email does not exist'.format(users_email),
+                            users_email=user_email,
+                            error='User with {} email does not exist'.format(user_email),
                             after={}, before={}
                         )
                     )
@@ -246,41 +239,38 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
 
                 result_list.append(
                     self._make_result_dict_for_identifier(
-                        users_email=users_email, after=after.to_dict(), before=before.to_dict(),
+                        users_email=user_email, after=after.to_dict(), before=before.to_dict(),
                     )
                 )
             except ValidationError:
                 result_list.append(
                     self._make_result_dict_for_identifier(
-                        users_email=users_email,
-                        error='User with {} users_email has not valid email'.format(users_email),
-                        after={}, before={}
+                        users_email=user_email,
+                        error='User with {} user_email has not valid email'.format(user_email)
                     )
                 )
             except InvalidKeyError:
                 result_list.append(
                     self._make_result_dict_for_identifier(
-                        users_email=users_email,
-                        error='Wrong course_id: {}. Course does not exist'.format(course_id),
-                        after={}, before={}
+                        users_email=user_email,
+                        error='Wrong course_id: {}. Course does not exist'.format(course_id)
                     )
                 )
             except Exception as exc:
                 result_list.append(
                     self._make_result_dict_for_identifier(
-                        users_email=users_email, error='Problem winth {}ing user. Error: {}'.format(action, exc),
-                        after={}, before={}
+                        users_email=user_email, error='Problem winth {}ing user. Error: {}'.format(action, exc)
                     )
                 )
                 log.error(exc)
         return result_list
 
     @staticmethod
-    def _make_result_dict_for_identifier(users_email, after, before, error=''):
+    def _make_result_dict_for_identifier(users_email, after=None, before=None, error=''):
         return {
             'identifier': users_email,
-            'after': after,
-            'before': before,
+            'after': after if after else {},
+            'before': before if after else {},
             'error': error,
         }
 
