@@ -7,7 +7,6 @@ from uuid import uuid4
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.core.validators import validate_email, validate_slug
 from django_countries import countries
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
@@ -24,7 +23,6 @@ from openedx.core.djangoapps.user_api.preferences.api import update_user_prefere
 from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiveUser
 from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
 from student.forms import PasswordResetFormNoActive
-from student.models import UserProfile
 from student.views import create_account_with_params
 from xmodule.modulestore.django import modulestore
 
@@ -33,72 +31,49 @@ log = logging.getLogger(__name__)
 
 class CreateUserAccountWithoutPasswordView(APIView):
     """
-    Create user account without password
+    Create user account without password.
     """
     authentication_classes = (OAuth2AuthenticationAllowInactiveUser,)
     permission_classes = (ApiKeyHeaderPermission,)
+    
+    _error_dict = {
+        "username": "username is required parameter.",
+        "email": "email is required parameter.",
+        "country": (
+            "Country is incorrect or missed: {value}. For checking: Visit https://www.iso.org/obp . "
+            "Click the Country Codes radio option and click the search button."
+        ),
+        "language": "language is incorrect or missed: {value}. It must be:  pt (Portuguese) or en (English)"
+    }
 
     def post(self, request):
         """
-        Create user account without password
+        Creates a user using email, login, country and language.
 
-        Creates a user using mail, login and also name and surname.
-        Sets a random password and sends a user a message to change it.
+        Sets a random password and sends a user a message to change it. Method set up first_name, last_name and phone.
         """
         data = request.data
         data['honor_code'] = "True"
         data['terms_of_service'] = "True"
-        email = request.data.get('email')
-        username = request.data.get('username')
-        # countries.by_name return country code or '' for else cases
-        country = countries.by_name(request.data.get('country'))
         first_name = request.data.get('first_name', '')
         last_name = request.data.get('last_name', '')
-        language = request.data.get('language')
-        if not username:
-            error_msg = "username is required parameter."
-        elif not email:
-            error_msg =  "email is required parameter."
-        elif not country:
-            error_msg = (
-                "Country is incorrect or missed: {country}. For checking: Visit https://www.iso.org/obp . "
-                "Click the Country Codes radio option and click the search button."
-            ).format(country=request.data.get('country', ''))
-        elif language not in ['en', 'pt']:
-            error_msg = (
-                "language is wrong or absent: {language}. It must be:  pt (Portuguese) or en (English)"
-            ).format(language=language)
-        else:
-            error_msg = None
-
-        if error_msg:
-            return Response(
-                data={"error_message": error_msg},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
+        
         try:
-            validate_slug(username)
-        except ValidationError:
-            return Response(
-                data={
-                    "error_message": "Enter a valid 'username' consisting of letters, numbers, underscores or hyphens."
-                },
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            email = self._check_available_required_params(request.data.get('email'), "email")
+            username = self._check_available_required_params(request.data.get('username'), "username")
+            # countries.by_name return country code or '' for else cases
+            country = self._check_available_required_params(countries.by_name(request.data.get('country')), "country")
+            language = self._check_available_required_params(request.data.get('language'), 'language', ['en', 'pt'])
+            data['name'] = "{} {}".format(first_name, last_name).strip() if first_name or last_name else username
+            if check_account_exists(username=username, email=email):
+                return Response(data={"error_message": "User already exists"}, status=status.HTTP_409_CONFLICT)
 
-        data['name'] = "{} {}".format(first_name, last_name).strip() if first_name or last_name else username
-
-        if check_account_exists(username=username, email=email):
-            return Response(data={"error_message": "User already exists"}, status=status.HTTP_409_CONFLICT)
-
-        try:
             data['password'] = uuid4().hex
             data['country'] = country
             user = create_account_with_params(request, data)
             user.is_active = True
             user_profile = user.profile
-            user_profile.phone = request.data.get('phone', '')
+            user_profile.phone = request.data.get('phone')
             user_profile.save()
             user.save()
             # dict to setup language
@@ -106,15 +81,36 @@ class CreateUserAccountWithoutPasswordView(APIView):
             # setup language for user
             update_user_preferences(user, update)
             self.send_activation_email(request)
-        except ValidationError:
-            return Response(data={"error_message": "Wrong email format"}, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            log.error(e.message)
+            return Response(
+                data={"error_message": e.message},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except ValidationError as e:
+            return Response(data={"error_message": e.messages[0]}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(data={'user_id': user.id, 'username': username}, status=status.HTTP_200_OK)
+    
+    def _check_available_required_params(self, parameter, parameter_name, is_in=None):
+        """
+        Raise ValueError if param not available or not in list. Also return param.
+        
+        :param parameter: object
+        :param parameter_name: string. It's name of parameter
+        :param is_in: List of values
+        
+        :return: param
+        """
+        if not parameter or is_in and isinstance(is_in, list) and parameter not in is_in:
+            raise ValueError(self._error_dict[parameter_name].format(value=parameter))
+        return parameter
+        
 
     @staticmethod
     def send_activation_email(request):
         """
-        Send activation email with reset password.
+        Send email to activation and reset password.
         """
         form = PasswordResetFormNoActive(request.data)
         if form.is_valid():
@@ -147,77 +143,51 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
         courses = data.get('courses')
         action = data.get('action', 'enroll')
         email_students = data.get('email_students', False)
-        auto_enroll = data.get('auto_enroll', False)
         if action not in ['enroll', 'unenroll']:
             return Response(
                 data={"error_message": "action must be enroll or unenroll"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        if isinstance(courses, str):
-            courses = [courses,]
-        if isinstance(users, str):
-            users = [users,]
         try:
-            result = self._enroll_unenrol_users_for_courses(
-                courses, users, request, action, email_students, auto_enroll
+            courses = self._make_list_from_str_or_tuple(courses, "courses")
+            users = self._make_list_from_str_or_tuple(users, "users")
+            result = self._enroll_unenroll_users_for_courses(
+                courses, users, request, action, email_students
             )
-
             return Response(
                 data={
                     'action': action,
                     'courses': result,
                     'email_students':email_students,
-                    'auto_enroll': auto_enroll,
                 },
                 status=status.HTTP_200_OK
             )
-        except Exception as e:
+        except ValueError as e:
             log.error(e.message)
             return Response(
                 data={"error_message": e.message},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-    def _enroll_unenrol_users_for_courses(
-        self, list_of_courses_id, list_of_users_email,
-        request, action='enroll', email_students=False, auto_enroll=False
+    def _enroll_unenroll_users_for_courses(
+        self, list_of_courses_id, list_of_users_email, request, action='enroll', email_students=False,
     ):
         courses = {}
         for course_id in list_of_courses_id:
             results = self._enroll_unenrol_users_for_course(
-                course_id, list_of_users_email, request,
-                action, email_students, auto_enroll
+                course_id, list_of_users_email, request, action, email_students
             )
-            courses[course_id] = self._make_result_dict_for_course(
-                 results, action, auto_enroll
-            )
+            courses[course_id] = self._make_result_dict_for_course(results, action)
         return courses
 
     def _enroll_unenrol_users_for_course(
-            self, course_id, list_of_users_email, request,
-            action='enroll', email_students=False, auto_enroll=False
+            self, course_id, list_of_users_email, request, action='enroll', email_students=False, auto_enroll=False
     ):
         result_list = []
         for user_email in list_of_users_email:
-    
             try:
                 user = get_student_from_identifier(user_email)
-                email = user.email
                 language = get_user_email_language(user)
-            except User.DoesNotExist:
-                if auto_enroll and action == 'enroll':
-                    email = user_email
-                    language = None
-                else:
-                    result_list.append(
-                        self._make_result_dict_for_identifier(
-                            users_email=user_email,
-                            error='User with {} email does not exist'.format(user_email),
-                            after={}, before={}
-                        )
-                    )
-                    continue
-            try:
                 course_id_obj = SlashSeparatedCourseKey.from_deprecated_string(course_id)
                 course = modulestore().get_course(course_id_obj)
                 if not course:
@@ -227,57 +197,85 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
                     email_params = get_email_params(course, auto_enroll, secure=request.is_secure())
                 else:
                     email_params = None
-                validate_email(email)
+
                 if action == 'enroll':
                     before, after, _ = enroll_email(
-                        course_id_obj, email, auto_enroll, email_students, email_params, language=language
+                        course_id_obj, user_email, auto_enroll, email_students, email_params, language=language
                     )
                 else:
                     before, after = unenroll_email(
-                        course_id_obj, email, email_students, email_params, language=language
+                        course_id_obj, user_email, email_students, email_params, language=language
                     )
 
                 result_list.append(
                     self._make_result_dict_for_identifier(
-                        users_email=user_email, after=after.to_dict(), before=before.to_dict(),
+                        user_email, after=after.to_dict(), before=before.to_dict(),
+                    )
+                )
+            except User.DoesNotExist:
+                result_list.append(
+                    self._make_result_dict_for_identifier(
+                        user_email,
+                        error='User with {} user_email does not exist'.format(user_email),
                     )
                 )
             except ValidationError:
                 result_list.append(
                     self._make_result_dict_for_identifier(
-                        users_email=user_email,
-                        error='User with {} user_email has not valid email'.format(user_email)
+                        user_email,
+                        error='User with {} user_email has not valid user_email'.format(user_email)
                     )
                 )
             except InvalidKeyError:
                 result_list.append(
                     self._make_result_dict_for_identifier(
-                        users_email=user_email,
+                        user_email,
                         error='Wrong course_id: {}. Course does not exist'.format(course_id)
                     )
                 )
             except Exception as exc:
                 result_list.append(
                     self._make_result_dict_for_identifier(
-                        users_email=user_email, error='Problem winth {}ing user. Error: {}'.format(action, exc)
+                        user_email, error='Problem winth {}ing user. Error: {}'.format(action, exc)
                     )
                 )
                 log.error(exc)
         return result_list
 
     @staticmethod
-    def _make_result_dict_for_identifier(users_email, after=None, before=None, error=''):
+    def _make_result_dict_for_identifier(user_email, after=None, before=None, error=''):
         return {
-            'identifier': users_email,
-            'after': after if after else {},
-            'before': before if after else {},
+            'identifier': user_email,
+            'after': after or {},
+            'before': before or {},
             'error': error,
         }
 
     @staticmethod
-    def _make_result_dict_for_course(results_list, action='enroll', auto_enroll=False):
+    def _make_result_dict_for_course(results_list, action='enroll'):
         return {
             "action": action,
             'results': results_list,
-            'auto_enroll': auto_enroll,
         }
+    
+    @staticmethod
+    def _make_list_from_str_or_tuple(str_or_tuple, name_in_msg = "Variable"):
+        """
+        Return List or raise ValueError.
+        
+        If method make list from str or tuple. If value is not list, str or tuple then raise ValueError.
+        :params
+            str_or_list: list, tuple or string
+            name_in_msg: Name variable in error message.
+        :return: list
+        
+        """
+        if isinstance(str_or_tuple, list):
+            return str_or_tuple
+        elif isinstance(str_or_tuple,  tuple):
+            return list(str_or_tuple)
+        elif isinstance(str_or_tuple, str):
+            return [str_or_tuple]
+        else:
+            raise ValueError("{name_in_msg} must be a list.".format(name_in_msg=name_in_msg))
+    
