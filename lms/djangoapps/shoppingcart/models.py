@@ -139,6 +139,7 @@ class Order(models.Model):
     recipient_email = models.CharField(max_length=255, null=True, blank=True)
     customer_reference_number = models.CharField(max_length=63, null=True, blank=True)
     order_type = models.CharField(max_length=32, default='personal', choices=OrderTypes.ORDER_TYPES)
+    program_uuid = models.CharField(max_length=64, null=True, blank=True)
 
     @classmethod
     def get_cart_for_user(cls, user):
@@ -292,7 +293,7 @@ class Order(models.Model):
                     old_to_new_id_map.append({"oldId": cart_item.id, "newId": paid_course_registration.id})
 
         for item in items_to_delete:
-            item.delete()
+            item.delete(check_program=False)
 
         self.order_type = OrderTypes.BUSINESS if is_order_type_business else OrderTypes.PERSONAL
         self.save()
@@ -807,6 +808,13 @@ class OrderItem(TimeStampedModel):
         """
         self.status = ORDER_STATUS_MAP[self.status]
         self.save()
+
+    def delete(self, check_program=True, *args, **kwargs):
+        if check_program and self.order.program_uuid:
+            self.order.reset_cart_items_prices()
+            self.order.program_uuid = None
+            self.order.save()
+        super(OrderItem, self).delete(*args, **kwargs)
 
 
 class Invoice(TimeStampedModel):
