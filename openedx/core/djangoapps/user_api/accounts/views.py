@@ -17,7 +17,7 @@ from openedx.core.lib.api.authentication import (
 )
 from openedx.core.lib.api.parsers import MergePatchParser
 from .api import get_account_settings, update_account_settings, create_account, activate_account
-from ..errors import UserNotFound, UserNotAuthorized, AccountUpdateError, AccountValidationError
+from ..errors import UserNotFound, UserNotAuthorized, AccountUpdateError, AccountValidationError, AccountUserAlreadyExists
 from student.models import User
 
 
@@ -259,7 +259,11 @@ class AccountViewSet(ViewSet):
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
-        except Exception:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except AccountUserAlreadyExists:
+            return Response({'err': 'Account already exists'}, status=status.HTTP_400_BAD_REQUEST)
+        except UserNotAuthorized:
+            return Response({'err': 'Something went wrong during account activation process'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response({'err': e.__unicode__()}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'success': True, 'user_id': user.id})
