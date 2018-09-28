@@ -64,22 +64,19 @@ class CreateUserAccountWithoutPasswordView(APIView):
             # countries.by_name return country code or '' for else cases
             country = self._check_available_required_params(countries.by_name(request.data.get('country')), "country")
             language = self._check_available_required_params(request.data.get('language'), 'language', ['en', 'pt'])
-            data['name'] = "{} {}".format(first_name, last_name).strip() if first_name or last_name else username
             if check_account_exists(username=username, email=email):
                 return Response(data={"error_message": "User already exists"}, status=status.HTTP_409_CONFLICT)
 
+            data['name'] = "{} {}".format(first_name, last_name).strip() if first_name or last_name else username
             data['password'] = uuid4().hex
             data['country'] = country
             user = create_account_with_params(request, data)
             user.is_active = True
-            user_profile = user.profile
-            user_profile.phone = request.data.get('phone')
-            user_profile.save()
+            user.profile.phone = request.data.get('phone')
+            user.profile.save()
             user.save()
-            # dict to setup language
-            update = {u'pref-lang': language}
             # setup language for user
-            update_user_preferences(user, update)
+            update_user_preferences(user, {u'pref-lang': language})
             self.send_activation_email(request)
         except ValueError as e:
             log.error(e.message)
@@ -172,17 +169,37 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
     def _enroll_unenroll_users_for_courses(
         self, list_of_courses_id, list_of_users_email, request, action='enroll', email_students=False,
     ):
+        """
+        Enroll/Unenroll users for courses.
+        
+        :param list_of_courses_id:  list of courses id/
+        :param list_of_users_email: list of user's email
+        :param request: request for Api endpoint
+        :param action:  string 'enroll' or 'unenroll'. 'enroll' is default value.
+        :param email_students: boolean. send email after enroll. False is default value.
+        :return:
+        """
         courses = {}
         for course_id in list_of_courses_id:
-            results = self._enroll_unenrol_users_for_course(
+            results = self._enroll_unenroll_users_for_course(
                 course_id, list_of_users_email, request, action, email_students
             )
             courses[course_id] = self._make_result_dict_for_course(results, action)
         return courses
 
-    def _enroll_unenrol_users_for_course(
-            self, course_id, list_of_users_email, request, action='enroll', email_students=False, auto_enroll=False
+    def _enroll_unenroll_users_for_course(
+            self, course_id, list_of_users_email, request, action='enroll', email_students=False
     ):
+        """
+        Enroll/unenroll users for one course.
+        
+        :param course_id: Course id. string
+        :param list_of_users_email: List of user's email
+        :param request: request for Api endpoint
+        :param action: string 'enroll' or 'unenroll'. 'enroll' is default value.
+        :param email_students: boolean. send email after enroll. False is default value.
+        :return:  list of dict
+        """
         result_list = []
         for user_email in list_of_users_email:
             try:
@@ -194,13 +211,17 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
                     raise InvalidKeyError('course', 'Wrong course_id')
                     
                 if email_students:
-                    email_params = get_email_params(course, auto_enroll, secure=request.is_secure())
+                    email_params = get_email_params(course, False, secure=request.is_secure())
                 else:
                     email_params = None
 
                 if action == 'enroll':
                     before, after, _ = enroll_email(
-                        course_id_obj, user_email, auto_enroll, email_students, email_params, language=language
+                        course_id_obj,
+                        user_email,
+                        email_students=email_students,
+                        email_params = email_params,
+                        language=language
                     )
                 else:
                     before, after = unenroll_email(
@@ -216,27 +237,27 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
                 result_list.append(
                     self._make_result_dict_for_identifier(
                         user_email,
-                        error='User with {} user_email does not exist'.format(user_email),
+                        error='User with {user_email} user_email does not exist'.format(user_email=user_email),
                     )
                 )
             except ValidationError:
                 result_list.append(
                     self._make_result_dict_for_identifier(
                         user_email,
-                        error='User with {} user_email has not valid user_email'.format(user_email)
+                        error='User with {user_email} user_email has not valid user_email'.format(user_email=user_email)
                     )
                 )
             except InvalidKeyError:
                 result_list.append(
                     self._make_result_dict_for_identifier(
                         user_email,
-                        error='Wrong course_id: {}. Course does not exist'.format(course_id)
+                        error='Wrong course_id: {course_id}. Course does not exist'.format(course_id=course_id)
                     )
                 )
             except Exception as exc:
                 result_list.append(
                     self._make_result_dict_for_identifier(
-                        user_email, error='Problem winth {}ing user. Error: {}'.format(action, exc)
+                        user_email, error='Problem with {action}ing user. Error: {exc}'.format(action=action, exc=exc)
                     )
                 )
                 log.error(exc)
@@ -244,6 +265,15 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
 
     @staticmethod
     def _make_result_dict_for_identifier(user_email, after=None, before=None, error=''):
+        """
+        Make a dictionary that show result enroll/unenroll for user
+        
+        :param user_email: string. User email
+        :param after: dict with enroll information or empty dict
+        :param before: dict with enroll information or empty dict
+        :param error: string with error message or empty string
+        :return: dict
+        """
         return {
             'identifier': user_email,
             'after': after or {},
@@ -253,6 +283,13 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
 
     @staticmethod
     def _make_result_dict_for_course(results_list, action='enroll'):
+        """
+        Make a dictionary that show result enroll/unenroll for all user for one course
+        
+        :param results_list: list of dict
+        :param action: string 'enroll' or 'unenroll'. 'enroll' is default value.
+        :return: dict
+        """
         return {
             "action": action,
             'results': results_list,
@@ -278,4 +315,3 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
             return [str_or_tuple]
         else:
             raise ValueError("{name_in_msg} must be a list.".format(name_in_msg=name_in_msg))
-    
