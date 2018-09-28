@@ -118,7 +118,13 @@ def check_course_access(course, user, action, check_if_enrolled=False):
     """
     access_response = has_access(user, action, course, course.id)
 
-    if not access_response:
+    user_states = []
+    if hasattr(user, 'extrainfo'):
+        user_states = user.extrainfo.stateextrainfo_set.all().values_list('state', flat=True)
+
+    ca = hasattr(course, 'us_state') and any(k in user_states for k, v in course.us_state.iteritems() if v.get('approved', True) is not False)
+
+    if not access_response or not ca:
         # Deliberately return a non-specific error message to avoid
         # leaking info about access control settings
         raise CoursewareAccessException(access_response)

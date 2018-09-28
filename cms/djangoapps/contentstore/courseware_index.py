@@ -594,6 +594,7 @@ class CourseAboutSearchIndexer(object):
             'content': {},
             'image_url': course_image_url(course),
             'catalog_visibility': course.catalog_visibility,
+            'approved_states': [k for k, v in course.us_state.iteritems() if v.get('approved', True) is not False],
         }
 
         # load data for all of the 'about' modules for this course into a dictionary

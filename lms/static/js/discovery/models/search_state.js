@@ -17,7 +17,8 @@
             jqhxr: null,
             catalog_visibility: 'both',
 
-            initialize: function() {
+            initialize: function(userStates) {
+                this.userStates = userStates;
                 this.discovery = new CourseDiscovery();
                 this.listenTo(this.discovery, 'sync', this.onSync, this);
                 this.listenTo(this.discovery, 'error', this.onError, this);
@@ -65,7 +66,8 @@
                     search_string: this.searchTerm,
                     page_size: this.pageSize,
                     page_index: pageIndex,
-                    catalog_visibility: this.catalog_visibility
+                    catalog_visibility: this.catalog_visibility,
+                    approved_states: this.userStates
                 };
                 _.extend(data, this.terms);
                 return data;
@@ -134,7 +136,8 @@
                             search_string: '',
                             page_size: this.pageSize,
                             page_index: 0,
-                            catalog_visibility: this.catalog_visibility
+                            catalog_visibility: this.catalog_visibility,
+                            approved_states: this.userStates
                         },
                         success: function(model, response, options) {
                             deferred.resolveWith(self, [model]);
