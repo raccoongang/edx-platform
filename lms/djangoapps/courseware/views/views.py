@@ -83,6 +83,7 @@ from openedx.core.djangoapps.models.course_details import CourseDetails
 from openedx.core.djangoapps.monitoring_utils import set_custom_metrics_for_course_key
 from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
 from openedx.core.djangoapps.programs.utils import ProgramMarketingDataExtender
+from openedx.core.djangoapps.programs.views import get_program_filter
 from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.features.course_experience import UNIFIED_COURSE_TAB_FLAG, course_home_url_name
@@ -834,7 +835,13 @@ def program_marketing(request, program_uuid):
     """
     program_data = get_programs(uuid=program_uuid)
 
-    if not program_data:
+    user_states = []
+    if hasattr(request.user, 'extrainfo'):
+        user_states = request.user.extrainfo.stateextrainfo_set.all().values_list('state', flat=True)
+
+    _filter = get_program_filter(user_states)
+
+    if not program_data or not _filter(program_data):
         raise Http404
 
     course_ids = get_course_ids(program_data['courses'])

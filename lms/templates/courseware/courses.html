@@ -22,7 +22,12 @@
       ${course_discovery_meanings | n, dump_js_escaped_json},
       getParameterByName('search_query'),
       "${user_language}",
-      "${user_timezone}"
+      "${user_timezone}",
+     % if hasattr(request.user, 'extrainfo'):
+       ${list(request.user.extrainfo.stateextrainfo_set.all().values_list('state', flat=True)) or ['FAKE_STATE'] | n, dump_js_escaped_json},
+     % else:
+       'all'
+     % endif
     );
   </%static:require_module>
 </%block>
