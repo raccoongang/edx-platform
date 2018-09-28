@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='userprofile',
             name='phone',
-            field=models.CharField(db_index=True, max_length=50, blank=True),
+            field=models.CharField(max_length=50, blank=True),
         ),
     ]
