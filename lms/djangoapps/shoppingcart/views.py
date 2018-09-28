@@ -184,10 +184,13 @@ def add_program_to_cart(request, uuid):
             log.info(u'Already enrolled course "%s" is skipped.', course_key.to_deprecated_string())
         except ItemAlreadyInCartException:
             paid_course_item = cart.orderitem_set.get(paidcourseregistration__course_id=course_key)
-
-        paid_course_item.unit_cost = course_price
-        paid_course_item.currency = program_data['currency']
-        paid_course_item.save()
+            paid_course_item.unit_cost = course_price
+            paid_course_item.currency = program_data['currency']
+            paid_course_item.save()
+        else:
+            paid_course_item.unit_cost = course_price
+            paid_course_item.currency = program_data['currency']
+            paid_course_item.save()
 
     cart.program_uuid = uuid
     cart.save()
