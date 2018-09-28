@@ -37,20 +37,20 @@ class CreateUserAccountWithoutPasswordView(APIView):
     permission_classes = (ApiKeyHeaderPermission,)
     
     _error_dict = {
-        "username": "username is required parameter.",
-        "email": "email is required parameter.",
+        "username": "Username is required parameter.",
+        "email": "Email is required parameter.",
         "country": (
             "Country is incorrect or missed: {value}. For checking: Visit https://www.iso.org/obp . "
             "Click the Country Codes radio option and click the search button."
         ),
-        "language": "language is incorrect or missed: {value}. It must be:  pt (Portuguese) or en (English)"
+        "language": "Language is incorrect or missed: {value}. It must be:  pt (Portuguese) or en (English)"
     }
 
     def post(self, request):
         """
-        Creates a user using email, login, country and language.
+        Create a user by email, login, country, and language.
 
-        Sets a random password and sends a user a message to change it. Method set up first_name, last_name and phone.
+        Create user account and send activation email to the user.
         """
         data = request.data
         data['honor_code'] = "True"
@@ -61,7 +61,7 @@ class CreateUserAccountWithoutPasswordView(APIView):
         try:
             email = self._check_available_required_params(request.data.get('email'), "email")
             username = self._check_available_required_params(request.data.get('username'), "username")
-            # countries.by_name return country code or '' for else cases
+            # NOTE(AndreyLykhoman): countries.by_name function returns country code or '' if country isn't found.
             country = self._check_available_required_params(countries.by_name(request.data.get('country')), "country")
             language = self._check_available_required_params(request.data.get('language'), 'language', ['en', 'pt'])
             if check_account_exists(username=username, email=email):
@@ -89,17 +89,17 @@ class CreateUserAccountWithoutPasswordView(APIView):
 
         return Response(data={'user_id': user.id, 'username': username}, status=status.HTTP_200_OK)
     
-    def _check_available_required_params(self, parameter, parameter_name, is_in=None):
+    def _check_available_required_params(self, parameter, parameter_name, values_list=None):
         """
         Raise ValueError if param not available or not in list. Also return param.
         
         :param parameter: object
-        :param parameter_name: string. It's name of parameter
-        :param is_in: List of values
+        :param parameter_name: string. Parameter's name
+        :param values_list: List of values
         
-        :return: param
+        :return: parameter
         """
-        if not parameter or is_in and isinstance(is_in, list) and parameter not in is_in:
+        if not parameter or (values_list and isinstance(values_list, list) and parameter not in values_list):
             raise ValueError(self._error_dict[parameter_name].format(value=parameter))
         return parameter
         
@@ -142,20 +142,18 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
         email_students = data.get('email_students', False)
         if action not in ['enroll', 'unenroll']:
             return Response(
-                data={"error_message": "action must be enroll or unenroll"},
+                data={"error_message": "Action must be enroll or unenroll"},
                 status=status.HTTP_400_BAD_REQUEST
             )
         try:
-            courses = self._make_list_from_str_or_tuple(courses, "courses")
-            users = self._make_list_from_str_or_tuple(users, "users")
+            courses = self._make_list_from_str_or_tuple(courses, "Courses")
+            users = self._make_list_from_str_or_tuple(users, "Users")
             result = self._enroll_unenroll_users_for_courses(
                 courses, users, request, action, email_students
             )
             return Response(
                 data={
-                    'action': action,
-                    'courses': result,
-                    'email_students':email_students,
+                    'action': action, 'courses': result, 'email_students':email_students,
                 },
                 status=status.HTTP_200_OK
             )
@@ -177,7 +175,7 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
         :param request: request for Api endpoint
         :param action:  string 'enroll' or 'unenroll'. 'enroll' is default value.
         :param email_students: boolean. send email after enroll. False is default value.
-        :return:
+        :return: dictionary with enroll/unenroll results
         """
         courses = {}
         for course_id in list_of_courses_id:
@@ -198,7 +196,7 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
         :param request: request for Api endpoint
         :param action: string 'enroll' or 'unenroll'. 'enroll' is default value.
         :param email_students: boolean. send email after enroll. False is default value.
-        :return:  list of dict
+        :return:  list of dicts
         """
         result_list = []
         for user_email in list_of_users_email:
@@ -225,7 +223,7 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
                     )
                 else:
                     before, after = unenroll_email(
-                        course_id_obj, user_email, email_students, email_params, language=language
+                        course_id_obj, user_email, email_students, email_params, language
                     )
 
                 result_list.append(
@@ -304,13 +302,11 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
         :params
             str_or_list: list, tuple or string
             name_in_msg: Name variable in error message.
-        :return: list
+        :return: list or tuple
         
         """
-        if isinstance(str_or_tuple, list):
+        if isinstance(str_or_tuple, (list, tuple)):
             return str_or_tuple
-        elif isinstance(str_or_tuple,  tuple):
-            return list(str_or_tuple)
         elif isinstance(str_or_tuple, str):
             return [str_or_tuple]
         else:

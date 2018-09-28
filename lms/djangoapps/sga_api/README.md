@@ -1,8 +1,8 @@
 The application has two endpoints for creating and bulk enrolling users.
 
-Configuration instructions: Code need next additional settings:
+Configuration instructions: Code needs next additional settings:
 
-'EDX_API_KEY' - It is token for checking authorized api calls. lms.auth.json must have this token.
+'EDX_API_KEY' - It is a token for checking authorized api calls. lms.auth.json must contain this token.
 The following token should be available in the python code:
 'HTTP_X_EDX_API_KEY,
 
@@ -49,5 +49,4 @@ curl -X POST \
 	],
 	"action": "enroll",
 	"email_students": false,
-	"auto_enroll": false
 }'
