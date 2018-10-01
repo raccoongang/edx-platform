@@ -5,6 +5,7 @@ import re
 import logging
 
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 from xmodule.fields import Date
 from xmodule.modulestore.exceptions import ItemNotFoundError
@@ -28,6 +29,7 @@ ABOUT_ATTRIBUTES = [
     'entrance_exam_id',
     'entrance_exam_minimum_score_pct',
     'about_sidebar_html',
+    'rubric',
 ]
 
 
@@ -35,6 +37,23 @@ class CourseDetails(object):
     """
     An interface for extracting course information from the modulestore.
     """
+
+    BUSINESS_EDUCATION = 'business_education'
+    TRANSPORT_EDUCATION = 'transort_education'
+    FOREIGN_LANGUAGES = 'foreign_languages'
+    PERSONAL_DEVELOPMENT = 'personal_development'
+    PSYCHOLOGY = 'psychology'
+    INFORMATION_TECHNOLOGY = 'information_technology'
+
+    RUBRIC_OPTIONS = (
+        (BUSINESS_EDUCATION, _('Business Education')),
+        (TRANSPORT_EDUCATION, _('Transport Education')),
+        (FOREIGN_LANGUAGES, _('Foreign languages')),
+        (PERSONAL_DEVELOPMENT, _('Personal Development')),
+        (PSYCHOLOGY, _('Psychology')),
+        (INFORMATION_TECHNOLOGY, _('Information Technology')),
+    )
+
     def __init__(self, org, course_id, run):
         # still need these for now b/c the client's screen shows these 3
         # fields
@@ -73,6 +92,7 @@ class CourseDetails(object):
         self.self_paced = None
         self.learning_info = []
         self.instructor_info = []
+        self.rubric = ''
 
     @classmethod
     def fetch_about_attribute(cls, course_key, attribute):
