@@ -147,6 +147,11 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
                 data={"error_message": "Action must be enroll or unenroll"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        if type(email_students) is not bool and str(email_students).lower() not in ['false', 'true']:
+            return Response(
+                data={"error_message": "Email_students must be True or False"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         try:
             courses = self._make_list_from_str_or_tuple(courses, "Courses")
             users = self._make_list_from_str_or_tuple(users, "Users")
