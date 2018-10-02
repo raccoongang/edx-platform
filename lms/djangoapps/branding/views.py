@@ -49,7 +49,6 @@ def index(request):
     '''
     Redirects to main page -- info page if user authenticated, or marketing if not
     '''
-
     if request.user.is_authenticated():
         # Only redirect to dashboard if user has
         # courses in his/her dashboard. Otherwise UX is a bit cryptic.
@@ -59,7 +58,6 @@ def index(request):
                 'ALWAYS_REDIRECT_HOMEPAGE_TO_DASHBOARD_FOR_AUTHENTICATED_USER',
                 settings.FEATURES.get('ALWAYS_REDIRECT_HOMEPAGE_TO_DASHBOARD_FOR_AUTHENTICATED_USER', True)):
             return redirect(reverse('dashboard'))
-
     if settings.FEATURES.get('AUTH_USE_CERTIFICATES'):
         from openedx.core.djangoapps.external_auth.views import ssl_login
         # Set next URL to dashboard if it isn't set to avoid
