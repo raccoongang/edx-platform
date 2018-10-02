@@ -6,7 +6,7 @@ import logging
 import uuid
 import json
 import warnings
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from urlparse import urljoin, urlsplit, parse_qs, urlunsplit
 
 from django.views.generic import TemplateView
@@ -82,6 +82,7 @@ from courseware.access import has_access
 from django_comment_common.models import Role
 
 from openedx.core.djangoapps.external_auth.models import ExternalAuthMap
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 import openedx.core.djangoapps.external_auth.views
 from openedx.core.djangoapps.external_auth.login_and_register import (
     login as external_auth_login,
@@ -207,6 +208,21 @@ def index(request, extra_context=None, user=AnonymousUser()):
 
     # Insert additional context for use in the template
     context.update(extra_context)
+
+    courses_data = {}
+    for category, data in configuration_helpers.get_value("CATEGORIES", {}).items():
+        # TODO validate categories
+        # data == {'description': '', 'data': ['key1', 'key2', ...]}
+        courses_data[category] = {'description': data.get('description', ''), 'courses': []}
+        for key in data.get('courses_key', ()):
+            try:
+                course_key = CourseKey.from_string(key)
+                courses_data[category]['courses'].append(CourseOverview.get_from_id(course_key))
+            except InvalidKeyError:
+                log.warning(u"SiteConfiguration contains invalid course key: %s", key)
+            except CourseOverview.DoesNotExist:
+                log.warning(u"Course with key %s doesn't exist", key)
+    context['courses_data'] = OrderedDict(sorted(courses_data.items(), key=lambda t: t[0]))
 
     # Getting all the programs from course-catalog service. The programs_list is being added to the context but it's
     # not being used currently in lms/templates/index.html. To use this list, you need to create a custom theme that
