@@ -147,7 +147,7 @@ class BulkEnrollView(APIView, ApiKeyPermissionMixIn):
                 data={"error_message": "Action must be enroll or unenroll"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        if type(email_students) is not bool:
+        if not isinstance(email_students, bool):
             return Response(
                 data={"error_message": "Email_students must be boolean value: true or false"},
                 status=status.HTTP_400_BAD_REQUEST
