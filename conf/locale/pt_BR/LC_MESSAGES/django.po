@@ -1045,7 +1045,7 @@ msgstr "O código de acesso fornecido não é válido."
 #: openedx/core/djangoapps/user_api/accounts/api.py
 #: openedx/core/djangoapps/user_api/views.py
 msgid "Account creation not allowed."
-msgstr ""
+msgstr "Criação de conta não permitida."
 
 #: common/djangoapps/student/views.py
 #, python-brace-format
@@ -10454,17 +10454,17 @@ msgstr ""
 #. below a field meant to hold the user's email address.
 #: openedx/core/djangoapps/user_api/views.py
 msgid "This is what you will use to login."
-msgstr ""
+msgstr "Isto é o que você usará para entrar."
 
 #. Translators: This label appears above a field on the registration form
 #. meant to confirm the user's email address.
 #: openedx/core/djangoapps/user_api/views.py
 msgid "Confirm Email"
-msgstr ""
+msgstr "Confirmar e-mail"
 
 #: openedx/core/djangoapps/user_api/views.py
 msgid "The email addresses do not match."
-msgstr ""
+msgstr "Os endereços de email não correspondem."
 
 #. Translators: This example name is used as a placeholder in
 #. a field on the registration form meant to hold the user's name.
@@ -10477,7 +10477,7 @@ msgstr ""
 #. below a field meant to hold the user's full name.
 #: openedx/core/djangoapps/user_api/views.py
 msgid "This name will be used on any certificates that you earn."
-msgstr ""
+msgstr "Esse nome será usado em todos os certificados que você ganhar."
 
 #: cms/templates/register.html lms/templates/register-form.html
 #: lms/templates/register-shib.html lms/templates/signup_modal.html
@@ -10492,7 +10492,7 @@ msgstr "Nome de usuário público"
 #: openedx/core/djangoapps/user_api/views.py
 msgid ""
 "The name that will identify you in your courses. It cannot be changed later."
-msgstr ""
+msgstr "O nome que irá identificá-lo em seus cursos. Não pode ser alterado mais tarde."
 
 #. Translators: This example username is used as a placeholder in
 #. a field on the registration form meant to hold the user's username.
@@ -10532,13 +10532,13 @@ msgstr "Diga-nos por que está interessado em {platform_name}"
 #. live.
 #: openedx/core/djangoapps/user_api/views.py
 msgid "State/Province/Region"
-msgstr ""
+msgstr "Estado/Província/Região"
 
 #. Translators: This label appears above a field on the registration form
 #. which allows the user to input the Company
 #: openedx/core/djangoapps/user_api/views.py
 msgid "Company"
-msgstr ""
+msgstr "Empresa"
 
 #: openedx/core/djangoapps/user_api/views.py
 msgid "Please select your Country."
@@ -10546,7 +10546,7 @@ msgstr "Por favor, selecione seu País."
 
 #: openedx/core/djangoapps/user_api/views.py
 msgid "Review the Honor Code"
-msgstr ""
+msgstr "Revise o Código de Honra"
 
 #. Translators: This is a legal document users must agree to
 #. in order to register a new account.
@@ -10556,7 +10556,7 @@ msgstr "Termos do Serviço e Código de Honra"
 
 #: openedx/core/djangoapps/user_api/views.py
 msgid "Review the Terms of Service and Honor Code"
-msgstr ""
+msgstr "Revise os Termos de Serviço e o Código de Honra"
 
 #. Translators: "Terms of Service" is a legal document users must agree to
 #. in order to register a new account.
@@ -10565,7 +10565,7 @@ msgstr ""
 #: openedx/core/djangoapps/user_api/views.py
 #, python-brace-format
 msgid "I agree to the {platform_name} {terms_of_service}"
-msgstr ""
+msgstr "Eu concordo com a {platform_name} {terms_of_service}"
 
 #. Translators: "Terms of Service" is a legal document users must agree to
 #. in order to register a new account.
@@ -10574,11 +10574,11 @@ msgstr ""
 #: openedx/core/djangoapps/user_api/views.py
 #, python-brace-format
 msgid "You must agree to the {platform_name} {terms_of_service}"
-msgstr ""
+msgstr "Você deve concordar com o {platform_name} {terms_of_service}"
 
 #: openedx/core/djangoapps/user_api/views.py
 msgid "Review the Terms of Service"
-msgstr ""
+msgstr "Revise os Termos de Serviço"
 
 #: openedx/core/djangoapps/verified_track_content/models.py
 msgid "The course key for the course we would like to be auto-cohorted."
