@@ -1,6 +1,6 @@
-The application has endpoint for creating user.
+The application has endpoint for user creating.
 
-Configuration instructions: Code needs next additional settings:
+Configuration instructions: feature needs next settings:
 
 1) 'EDX_API_KEY' - It is a token for checking authorized api calls. lms.auth.json must contain this token.
                 The following token should be available in the python code: 'HTTP_X_EDX_API_KEY,
@@ -8,14 +8,8 @@ Configuration instructions: Code needs next additional settings:
 
 2) FEATURES['SKIP_EMAIL_VALIDATION'] = True
 
-3) 'REGISTRATION_EXTRA_FIELDS': {
-        ...
-        "country": "optional"
-        ...
-    }
+Testing instructions:
 
-
- Testing instructions:
  1. create user
  curl -X POST \
   http://localhost:9000/api/user/create \

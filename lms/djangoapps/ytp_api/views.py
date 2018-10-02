@@ -1,12 +1,14 @@
 """
-APIView endpoints for creating user
+APIView endpoints for user creating
 """
 import logging
 from uuid import uuid4
+
 from django.core.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 from openedx.core.djangoapps.user_api.accounts.api import check_account_exists
 from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiveUser
 from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
@@ -17,7 +19,7 @@ log = logging.getLogger(__name__)
 
 class CreateUserAccountWithoutPasswordView(APIView):
     """
-    Create user account without password.
+    Create user account.
     """
     authentication_classes = (OAuth2AuthenticationAllowInactiveUser,)
     permission_classes = (ApiKeyHeaderPermission,)
@@ -30,7 +32,7 @@ class CreateUserAccountWithoutPasswordView(APIView):
     
     def post(self, request):
         """
-        Create a user by email, login
+        Create a user by  the email and the username.
         """
         data = request.data
         data['honor_code'] = "True"
@@ -63,11 +65,12 @@ class CreateUserAccountWithoutPasswordView(APIView):
             return Response(data={"error_message": e.messages[0]}, status=status.HTTP_400_BAD_REQUEST)
         return Response(data={'user_id': user.id, 'username': username}, status=status.HTTP_200_OK)
 
-
     def _check_available_required_params(self, parameter, parameter_name, values_list=None):
         """
-        Raise ValueError if param not available or not in list. Also return param.
-    
+        Check required parameter is correct.
+
+        If parameter isn't correct ValueError is raised.
+
         :param parameter: object
         :param parameter_name: string. Parameter's name
         :param values_list: List of values
