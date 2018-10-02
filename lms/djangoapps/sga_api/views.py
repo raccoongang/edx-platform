@@ -72,6 +72,8 @@ class CreateUserAccountWithoutPasswordView(APIView):
             data['country'] = country
             user = create_account_with_params(request, data)
             user.is_active = True
+            user.first_name = first_name
+            user.last_name = last_name
             user.profile.phone = request.data.get('phone')
             user.profile.save()
             user.save()
