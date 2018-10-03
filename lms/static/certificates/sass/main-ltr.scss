@@ -13,3 +13,8 @@ $pattern-library-path: '../../edx-pattern-library' !default;
 
 // Load the shared build
 @import 'build';
+
+.layout-accomplishment.certificate-honor .accomplishment-rendering .accomplishment-signatories .signatory-signature,
+.layout-accomplishment.certificate-honor .accomplishment-rendering .accomplishment-type-symbol {
+  display: none;
+}
