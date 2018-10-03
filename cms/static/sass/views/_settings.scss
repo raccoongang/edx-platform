@@ -614,6 +614,12 @@
       }
     }
 
+    &.course_details {
+      .input-number {
+        width: flex-grid(3, 9);
+      }
+    }
+
     // specific fields - grading range (artifact styling)
     &.grade-range {
       margin-bottom: ($baseline*3);

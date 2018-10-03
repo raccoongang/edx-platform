@@ -75,6 +75,9 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
     hidden = serializers.SerializerMethodField()
     invitation_only = serializers.BooleanField()
     rubric = serializers.SerializerMethodField()
+    min_price = serializers.SerializerMethodField()
+    average_price = serializers.SerializerMethodField()
+    max_price = serializers.SerializerMethodField()
 
     # 'course_id' is a deprecated field, please use 'id' instead.
     course_id = serializers.CharField(source='id', read_only=True)
@@ -102,6 +105,15 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
             CourseDetails.fetch_about_attribute(course_overview.id, 'rubric'),
             ''
         )
+
+    def get_min_price(self, course_overview):
+        return CourseDetails.fetch_about_attribute(course_overview.id, 'min_price')
+
+    def get_average_price(self, course_overview):
+        return CourseDetails.fetch_about_attribute(course_overview.id, 'average_price')
+
+    def get_max_price(self, course_overview):
+        return CourseDetails.fetch_about_attribute(course_overview.id, 'max_price')
 
 
 class CourseDetailSerializer(CourseSerializer):  # pylint: disable=abstract-method

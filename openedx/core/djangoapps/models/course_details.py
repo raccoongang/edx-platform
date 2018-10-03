@@ -30,6 +30,9 @@ ABOUT_ATTRIBUTES = [
     'entrance_exam_minimum_score_pct',
     'about_sidebar_html',
     'rubric',
+    'min_price',
+    'average_price',
+    'max_price',
 ]
 
 
@@ -93,6 +96,9 @@ class CourseDetails(object):
         self.learning_info = []
         self.instructor_info = []
         self.rubric = ''
+        self.min_price = None
+        self.average_price = None
+        self.max_price = None
 
     @classmethod
     def fetch_about_attribute(cls, course_key, attribute):

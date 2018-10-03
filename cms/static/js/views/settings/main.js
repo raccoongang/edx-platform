@@ -112,6 +112,10 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
 
                    this.$el.find('#' + this.fieldToSelectorMap.effort).val(this.model.get('effort'));
 
+                   this.$el.find('#' + this.fieldToSelectorMap.min_price).val(this.model.get('min_price'));
+                   this.$el.find('#' + this.fieldToSelectorMap.average_price).val(this.model.get('average_price'));
+                   this.$el.find('#' + this.fieldToSelectorMap.max_price).val(this.model.get('max_price'));
+
                    var courseImageURL = this.model.get('course_image_asset_path');
                    this.$el.find('#course-image-url').val(courseImageURL);
                    this.$el.find('#course-image').attr('src', courseImageURL);
@@ -174,6 +178,9 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    short_description: 'course-short-description',
                    intro_video: 'course-introduction-video',
                    effort: 'course-effort',
+                   min_price: 'course-min-price',
+                   average_price: 'course-average-price',
+                   max_price: 'course-max-price',
                    course_image_asset_path: 'course-image-url',
                    banner_image_asset_path: 'banner-image-url',
                    video_thumbnail_image_asset_path: 'video-thumbnail-image-url',
@@ -305,6 +312,9 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    case 'course-language':
                    case 'course-rubric':
                    case 'course-effort':
+                   case 'course-min-price':
+                   case 'course-average-price':
+                   case 'course-max-price':
                    case 'course-title':
                    case 'course-subtitle':
                    case 'course-duration':
