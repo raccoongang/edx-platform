@@ -10454,7 +10454,7 @@ msgstr ""
 #. below a field meant to hold the user's email address.
 #: openedx/core/djangoapps/user_api/views.py
 msgid "This is what you will use to login."
-msgstr ""
+msgstr "Isto é o que você usará para logar."
 
 #. Translators: This label appears above a field on the registration form
 #. meant to confirm the user's email address.
@@ -10477,7 +10477,7 @@ msgstr ""
 #. below a field meant to hold the user's full name.
 #: openedx/core/djangoapps/user_api/views.py
 msgid "This name will be used on any certificates that you earn."
-msgstr ""
+msgstr "Este nome será usado em todos os certificados que você receber."
 
 #: cms/templates/register.html lms/templates/register-form.html
 #: lms/templates/register-shib.html lms/templates/signup_modal.html
@@ -10492,7 +10492,7 @@ msgstr "Nome de usuário público"
 #: openedx/core/djangoapps/user_api/views.py
 msgid ""
 "The name that will identify you in your courses. It cannot be changed later."
-msgstr ""
+msgstr "O nome que irá identificá-lo nos seus cursos. Não poderá ser alterado."
 
 #. Translators: This example username is used as a placeholder in
 #. a field on the registration form meant to hold the user's username.
