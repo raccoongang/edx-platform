@@ -32,7 +32,11 @@ define(['backbone', 'underscore', 'gettext', 'js/models/validation_helpers', 'js
                 entrance_exam_minimum_score_pct: '50',
                 learning_info: [],
                 instructor_info: {},
-                self_paced: null
+                self_paced: null,
+                rubric: '',
+                min_price: null,
+                average_price: null,
+                max_price: null,
             },
 
             validate: function(newattrs) {
@@ -81,6 +85,18 @@ define(['backbone', 'underscore', 'gettext', 'js/models/validation_helpers', 'js
                         errors.entrance_exam_minimum_score_pct = interpolate(gettext('Please enter an integer between %(min)s and %(max)s.'), range, true);
                     }
                 }
+
+                var rePrice = /^\d+\.?\d{0,2}?$/;
+                if (newattrs.min_price && !rePrice.test(newattrs.min_price)) {
+                    errors.min_price = gettext("Enter the number in the format '0.00'");
+                }
+                if (newattrs.average_price && !rePrice.test(newattrs.average_price)) {
+                    errors.average_price = gettext("Enter the number in the format '0.00'");
+                }
+                if (newattrs.max_price && !rePrice.test(newattrs.max_price)) {
+                    errors.max_price = gettext("Enter the number in the format '0.00'");
+                }
+
                 if (!_.isEmpty(errors)) return errors;
         // NOTE don't return empty errors as that will be interpreted as an error state
             },

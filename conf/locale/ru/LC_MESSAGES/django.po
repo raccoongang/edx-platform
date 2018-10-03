@@ -26119,3 +26119,43 @@ msgid ""
 "A new revision was created: Merge between Revision #%(r1)d and Revision "
 "#%(r2)d"
 msgstr "Создана новая версия: слияние версий #%(r1)d и #%(r2)d"
+
+#: openedx/core/djangoapps/models/course_details.py:49
+msgid "Business Education"
+msgstr "Бизнес образование"
+
+#: openedx/core/djangoapps/models/course_details.py:50
+msgid "Transport Education"
+msgstr "Транспортное образование"
+
+#: openedx/core/djangoapps/models/course_details.py:51
+msgid "Foreign languages"
+msgstr "Иностранные языки"
+
+#: openedx/core/djangoapps/models/course_details.py:52
+msgid "Personal Development"
+msgstr "Личностное развитие"
+
+#: openedx/core/djangoapps/models/course_details.py:53
+msgid "Psychology"
+msgstr "Психология"
+
+#: openedx/core/djangoapps/models/course_details.py:54
+msgid "Information Technology"
+msgstr "Информационные технологии"
+
+#: cms/templates/settings.html
+msgid "Rubric"
+msgstr "Рубрика"
+
+#: cms/templates/settings.html
+msgid "Minimum price"
+msgstr "Минимальная цена"
+
+#: cms/templates/settings.html
+msgid "Average price"
+msgstr "Средняя цена"
+
+#: cms/templates/settings.html
+msgid "Maximum price"
+msgstr "Максимальная цена"

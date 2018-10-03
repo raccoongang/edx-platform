@@ -11948,3 +11948,7 @@ msgstr ""
 #: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 msgid "Use Current Transcript"
 msgstr "Использовать субтитры"
+
+#: cms/static/js/models/settings/course_details.js
+msgid "Enter the number in the format '0.00'"
+msgstr "Введите число в формате '0.00'"

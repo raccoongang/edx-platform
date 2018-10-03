@@ -310,6 +310,27 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
               </select>
               <span class="tip tip-stacked">${_("Identify the course language here. This is used to assist users find courses that are taught in a specific language. It is also used to localize the 'From:' field in bulk emails.")}</span>
             </li>
+            <li class="field" id="field-course-rubric">
+              <label for="course-rubric">${_("Rubric")}</label>
+              <select id="course-rubric" name="rubric">
+                <option value="" selected> - </option>
+                % for rubric_value, rubric_label in rubric_options:
+                  <option value="${rubric_value}">${rubric_label}</option>
+                % endfor
+              </select>
+            </li>
+            <li class="field text input-number" id="field-course-min-price">
+              <label for="course-min-price">${_("Minimum price")}</label>
+              <input type="number" id="course-min-price" placeholder="0.00" min="0"/>
+            </li>
+            <li class="field text input-number" id="field-course-average-price">
+              <label for="course-average-price">${_("Average price")}</label>
+              <input type="number" id="course-average-price" placeholder="0.00" min="0"/>
+            </li>
+            <li class="field text input-number" id="field-course-max-price">
+              <label for="course-max-price">${_("Maximum price")}</label>
+              <input type="number" id="course-max-price" placeholder="0.00" min="0"/>
+            </li>
           </ol>
         </div>
         % endif
