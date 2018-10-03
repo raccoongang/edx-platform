@@ -63,7 +63,7 @@ class CreateUserAccountWithoutPasswordView(APIView):
             username = self._check_available_required_params(request.data.get('username'), "username")
             # NOTE(AndreyLykhoman): countries.by_name function returns country code or '' if country isn't found.
             country = self._check_available_required_params(countries.by_name(request.data.get('country')), "country")
-            language = self._check_available_required_params(request.data.get('language'), 'language', ['en', 'pt'])
+            language = self._check_available_required_params(request.data.get('language'), 'language', ['en', 'pt-br'])
             if check_account_exists(username=username, email=email):
                 return Response(data={"error_message": "User already exists"}, status=status.HTTP_409_CONFLICT)
 
