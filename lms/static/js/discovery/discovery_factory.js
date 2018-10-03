@@ -5,9 +5,9 @@
         'js/discovery/views/search_form', 'js/discovery/views/courses_listing',
         'js/discovery/views/filter_bar', 'js/discovery/views/refine_sidebar'],
         function(Backbone, SearchState, Filters, SearchForm, CoursesListing, FilterBar, RefineSidebar) {
-            return function(meanings, searchQuery, userLanguage, userTimezone) {
+            return function(meanings, searchQuery, userLanguage, userTimezone, userStates) {
                 var dispatcher = _.extend({}, Backbone.Events);
-                var search = new SearchState();
+                var search = new SearchState(userStates);
                 var filters = new Filters();
                 var form = new SearchForm();
                 var filterBar = new FilterBar({collection: filters});

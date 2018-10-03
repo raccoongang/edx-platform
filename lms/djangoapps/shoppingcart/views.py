@@ -113,6 +113,10 @@ def add_course_to_cart(request, course_id):
         log.info(u"Anon user trying to add course %s to cart", course_id)
         return HttpResponseForbidden(_('You must be logged-in to add to a shopping cart'))
     cart = Order.get_cart_for_user(request.user)
+
+    if cart.program_uuid and cart.has_items():
+        return HttpResponseBadRequest(_('Some program is already in the cart. Complete your previous purchase first...'))
+
     course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
     # All logging from here handled by the model
     try:
@@ -155,6 +159,13 @@ def add_program_to_cart(request, uuid):
     if not program_data:
         return JsonResponse({'success': False, 'msg': _('The program you requested does not exist.')})
 
+    if cart.has_items():
+        if cart.program_uuid and cart.program_uuid == uuid:
+            return JsonResponse({'success': False, 'msg': _('This program is already in the cart. Complete your previous purchase first...')})
+        elif cart.program_uuid:
+            return JsonResponse({'success': False, 'msg': _('Another program is already in the cart. Complete your previous purchase first...')})
+        return JsonResponse({'success': False, 'msg': _('Cart is not empty. Complete your previous purchase first...')})
+
     course_keys = []
     for course in program_data['courses']:
         for c in course['course_runs']:
@@ -173,10 +184,16 @@ def add_program_to_cart(request, uuid):
             log.info(u'Already enrolled course "%s" is skipped.', course_key.to_deprecated_string())
         except ItemAlreadyInCartException:
             paid_course_item = cart.orderitem_set.get(paidcourseregistration__course_id=course_key)
+            paid_course_item.unit_cost = course_price
+            paid_course_item.currency = program_data['currency']
+            paid_course_item.save()
+        else:
+            paid_course_item.unit_cost = course_price
+            paid_course_item.currency = program_data['currency']
+            paid_course_item.save()
 
-        paid_course_item.unit_cost = course_price
-        paid_course_item.currency = program_data['currency']
-        paid_course_item.save()
+    cart.program_uuid = uuid
+    cart.save()
 
     return JsonResponse({'success': True, 'msg': 'Program added to cart.', 'redirect_url': reverse('show_cart')})
 
@@ -198,16 +215,18 @@ def update_user_cart(request):
         log.warning('Quantity must be between 1 and 1000.')
         return HttpResponseBadRequest('Quantity must be between 1 and 1000.')
 
-    item_id = request.POST.get('ItemId', None)
-    if item_id:
-        try:
-            item = OrderItem.objects.get(id=item_id, status='cart')
-        except OrderItem.DoesNotExist:
-            log.exception(u'Cart OrderItem id=%s DoesNotExist', item_id)
-            return HttpResponseNotFound('Order item does not exist.')
+    item_ids = request.POST.get('ItemId', None)
+    if item_ids:
+        item_ids = item_ids.split(',')
+        items = OrderItem.objects.filter(id__in=item_ids, status='cart')
+        if not items:
+            log.exception(u'Cart OrderItems ids=%s DoesNotExist', str(item_ids))
+            return HttpResponseNotFound('Order items does not exists.')
 
-        item.qty = qty
-        item.save()
+        for item in items:
+            item.qty = qty
+            item.save()
+
         old_to_new_id_map = item.order.update_order_type()
         total_cost = item.order.total_cost
 

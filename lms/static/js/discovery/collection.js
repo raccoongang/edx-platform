@@ -17,7 +17,7 @@
             page: 0,
             url: '/search/course_discovery/',
             fetchXhr: null,
-            catalog_visibility: 'both',
+            catalog_visibility: 'both'
 
             performSearch: function(searchTerm, facets) {
                 this.fetchXhr && this.fetchXhr.abort();

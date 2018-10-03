@@ -132,6 +132,13 @@ from openedx.core.djangolib.markup import HTML, Text
                         </a>
                     </li>
                 %endif
+                %if show_make_programs_button:
+                    <li class="nav-item">
+                        <a href="${make_programs_link}" class="button" data-category="programs" title="${_('Regenerate programs')}" id="button-make-programs">
+                            <span class="icon-arrow-right" aria-hidden="true"></span>${_('Make Programs')}
+                        </a>
+                    </li>
+                %endif
                 <li class="nav-item">
                     <a href="#" class="button button-toggle button-toggle-expand-collapse collapse-all is-hidden">
                         <span class="collapse-all"><span class="icon fa fa-arrow-up" aria-hidden="true"></span> <span class="label">${_("Collapse All Sections")}</span></span>
