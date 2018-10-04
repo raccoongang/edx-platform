@@ -43,7 +43,9 @@ class CreateUserAccountWithoutPasswordView(APIView):
             "Country is incorrect or missed: {value}. For checking: Visit https://www.iso.org/obp . "
             "Click the Country Codes radio option and click the search button."
         ),
-        "language": "Language is incorrect or missed: {value}. It must be:  pt (Portuguese) or en (English)"
+        "language": (
+            "Language is incorrect or missed: {value}. It must be:  pt-br (Portuguese (Brazilian)) or en (English)"
+        )
     }
 
     def post(self, request):
@@ -63,7 +65,7 @@ class CreateUserAccountWithoutPasswordView(APIView):
             username = self._check_available_required_params(request.data.get('username'), "username")
             # NOTE(AndreyLykhoman): countries.by_name function returns country code or '' if country isn't found.
             country = self._check_available_required_params(countries.by_name(request.data.get('country')), "country")
-            language = self._check_available_required_params(request.data.get('language'), 'language', ['en', 'pt'])
+            language = self._check_available_required_params(request.data.get('language'), 'language', ['en', 'pt-br'])
             if check_account_exists(username=username, email=email):
                 return Response(data={"error_message": "User already exists"}, status=status.HTTP_409_CONFLICT)
 
