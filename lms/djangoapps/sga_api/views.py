@@ -43,7 +43,9 @@ class CreateUserAccountWithoutPasswordView(APIView):
             "Country is incorrect or missed: {value}. For checking: Visit https://www.iso.org/obp . "
             "Click the Country Codes radio option and click the search button."
         ),
-        "language": "Language is incorrect or missed: {value}. It must be:  pt (Portuguese) or en (English)"
+        "language": (
+            "Language is incorrect or missed: {value}. It must be:  pt-br (Portuguese (Brazilian)) or en (English)"
+        )
     }
 
     def post(self, request):
