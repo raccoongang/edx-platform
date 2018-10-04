@@ -3,6 +3,7 @@
 <%namespace name='static' file='static_content.html'/>
 <%namespace file='main.html' import="login_query"/>
 <%!
+from urllib import urlencode
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
@@ -175,16 +176,20 @@ site_status_msg = get_site_status_msg(course_id)
         </%block>
       </ol>
 
+      <%
+        query_params = "?%s" % urlencode(request.GET)
+      %>
+
       <ol class="right nav-courseware list-inline">
-	    % if not settings.FEATURES['DISABLE_LOGIN_BUTTON']:
+	  % if not settings.FEATURES['DISABLE_LOGIN_BUTTON']:
           % if course and settings.FEATURES.get('RESTRICT_ENROLL_BY_REG_METHOD') and course.enrollment_domain:
-          <li class="item nav-courseware-01">
-            <a class="btn btn-register" href="${reverse('course-specific-register', args=[course.id.to_deprecated_string()])}">${_("Register")}</a>
-          </li>
+            <li class="item nav-courseware-01">
+              <a class="btn btn-register" href="${reverse('course-specific-register', args=[course.id.to_deprecated_string()])}">${_("Register")}</a>
+            </li>
           % else:
-          <li class="nav-courseware-01">
-            <a class="btn btn-register" href="/register">${_("Register")}</a>
-          </li>
+            <li class="nav-courseware-01">
+              <a class="btn btn-register" href="/register${query_params}">${_("Register")}</a>
+            </li>
           % endif
         % endif
 
