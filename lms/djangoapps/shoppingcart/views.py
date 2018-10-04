@@ -682,7 +682,6 @@ def _get_verify_flow_redirect(order):
 
 
 @csrf_exempt
-@require_POST
 def postpay_callback(request):
     """
     Receives the POST-back from processor.
@@ -693,7 +692,11 @@ def postpay_callback(request):
     If unsuccessful the order will be left untouched and HTML messages giving more detailed error info will be
     returned.
     """
-    params = request.POST.dict()
+    params = request.POST.dict() if request.POST else request.GET.dict()
+    cart = Order.get_cart_for_user(request.user)
+    params.update({
+        'order_id': cart.id
+    })
     result = process_postpay_callback(params)
 
     if result['success']:
@@ -1080,6 +1083,6 @@ def execute_payment(request):
     execution_result = paypal_execute_payment(params)
 
     if execution_result['success']:
-        return postpay_callback(request, execution_result)
+        return postpay_callback(request)
     else:
-        return postpay_callback(request, execution_result)
+        return postpay_callback(request)
