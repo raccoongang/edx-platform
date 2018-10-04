@@ -729,6 +729,12 @@ def course_about(request, course_id):
             ) or settings.FEATURES.get('ENABLE_LMS_MIGRATION')
         )
 
+        has_allowed_states = False
+        if request.user.is_authenticated() and hasattr(request.user, 'extrainfo'):
+            user_states = request.user.extrainfo.stateextrainfo_set.all().values_list('state', flat=True)
+            has_allowed_states = (hasattr(course, 'us_state')
+                                  and any(k in user_states for k, v in course.us_state.iteritems() if v.get('approved', True) is not False))
+
         # Note: this is a flow for payment for course registration, not the Verified Certificate flow.
         in_cart = False
         reg_then_add_to_cart_link = ""
@@ -764,18 +770,20 @@ def course_about(request, course_id):
         registration_price, course_price = get_course_prices(course)
 
         # Determine which checkout workflow to use -- LMS shoppingcart or Otto basket
-        can_add_course_to_cart = _is_shopping_cart_enabled and registration_price and not ecommerce_checkout_link
+        can_add_course_to_cart = _is_shopping_cart_enabled and registration_price and not ecommerce_checkout_link and has_allowed_states
 
         # Used to provide context to message to student if enrollment not allowed
         can_enroll = bool(has_access(request.user, 'enroll', course))
         invitation_only = course.invitation_only
         is_course_full = CourseEnrollment.objects.is_course_full(course)
 
+
         # Register button should be disabled if one of the following is true:
         # - Student is already registered for course
         # - Course is already full
         # - Student cannot enroll in course
-        active_reg_button = not (registered or is_course_full or not can_enroll)
+        # - Student does not have the required state
+        active_reg_button = not (registered or is_course_full or not can_enroll or not has_allowed_states)
 
         is_shib_course = uses_shib(course)
 
@@ -792,6 +800,8 @@ def course_about(request, course_id):
 
         # Embed the course reviews tool
         reviews_fragment_view = CourseReviewsModuleFragmentView().render_to_fragment(request, course=course)
+
+
 
         context = {
             'course': course,
@@ -822,6 +832,7 @@ def course_about(request, course_id):
             'pre_requisite_courses': pre_requisite_courses,
             'course_image_urls': overview.image_urls,
             'reviews_fragment_view': reviews_fragment_view,
+            'has_allowed_states': has_allowed_states,
         }
 
         return render_to_response('courseware/course_about.html', context)
