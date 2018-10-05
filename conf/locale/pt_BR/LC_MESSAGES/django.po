@@ -883,7 +883,7 @@ msgstr ""
 "Para iniciar sessão, você precisa ativar sua conta. <br /><br />Enviamos um "
 "link de ativação para <strong>{email}</strong>. Se você não receber um "
 "e-mail, verifique suas pastas de spam ou <a href=\"{support_url}\">contact "
-"{plataforma} Suporte</a>."
+"{platform} Suporte</a>."
 
 #: common/djangoapps/student/views.py
 #, python-brace-format
