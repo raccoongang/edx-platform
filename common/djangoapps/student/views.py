@@ -2666,8 +2666,6 @@ class LogoutView(TemplateView):
     target = reverse_lazy('cas-logout') if settings.FEATURES.get('AUTH_USE_CAS') else '/'
 
     def dispatch(self, request, *args, **kwargs):  # pylint: disable=missing-docstring
-        edx_url = request.META.get('HTTP_REFERER', '{HTTP_X_FORWARDED_PROTO}://{HTTP_HOST}'.format(**request.META))
-        self.target = redirect_url = '{}/login.aspx?returnUrl={}'.format(settings.FEATURES['PORTAL_URL'], edx_url)
         # We do not log here, because we have a handler registered to perform logging on successful logouts.
         request.is_from_logout = True
 
