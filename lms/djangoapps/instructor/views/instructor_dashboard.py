@@ -124,11 +124,13 @@ def instructor_dashboard_2(request, course_id):
     sections = [
         _section_course_info(course, access),
         _section_membership(course, access, is_white_label),
-        _section_cohort_management(course, access),
         _section_discussions_management(course, access),
         _section_student_admin(course, access),
         _section_data_download(course, access),
     ]
+
+    if request.user.is_superuser:
+        sections.insert(2, _section_cohort_management(course, access))
 
     analytics_dashboard_message = None
     if show_analytics_dashboard_message(course_key):
