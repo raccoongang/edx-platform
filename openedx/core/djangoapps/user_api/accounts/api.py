@@ -611,18 +611,13 @@ def create_state_settings(request):
     data = request.data
     state = data.get('state')
     license = data.get('license')
-    try:
-        user_state_extra = request.user.extrainfo.stateextrainfo_set.all()
-    except AttributeError:
-        raise AccountValidationError(
-            field_errors={
-                "state": {
-                    "developer_message": u"There is a problem with the creation of state. Please contact the admin.",
-                    "user_message": u"There is a problem with the adding of State Information. Please contact the admin."
-                }
-            }
-        )
 
+    try:
+        extra_info = request.user.extrainfo
+    except AttributeError:
+        extra_info = ExtraInfo.objects.create(user=request.user)
+
+    user_state_extra = extra_info.stateextrainfo_set.all()
     if state and license:
         if state not in list(user_state_extra.values_list('state', flat=True)):
             StateExtraInfo.objects.create(

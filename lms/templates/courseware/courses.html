@@ -24,7 +24,7 @@
       "${user_language}",
       "${user_timezone}",
      % if hasattr(request.user, 'extrainfo'):
-       ${list(request.user.extrainfo.stateextrainfo_set.all().values_list('state', flat=True)) or ['FAKE_STATE'] | n, dump_js_escaped_json},
+       ${list(request.user.extrainfo.stateextrainfo_set.all().values_list('state', flat=True)) or 'all' | n, dump_js_escaped_json},
      % else:
        'all'
      % endif
