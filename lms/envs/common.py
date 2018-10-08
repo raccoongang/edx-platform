@@ -3287,3 +3287,13 @@ COURSES_API_CACHE_TIMEOUT = 3600  # Value is in seconds
 
 ############## Settings for CourseGraph ############################
 COURSEGRAPH_JOB_QUEUE = LOW_PRIORITY_QUEUE
+
+PROGRAMS_FILTER = (
+    ('14', '14 hour bundle'),
+    ('14:uspap', '14 hour USPAP bundle'),
+    ('21', '21 hour bundle'),
+    ('20', '20 hour bundle'),
+    ('28', '28 hour bundle'),
+    ('30', '30 hour bundle'),
+    ('50', '50 hour bundle'),
+)
