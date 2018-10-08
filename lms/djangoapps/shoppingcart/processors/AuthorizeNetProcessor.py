@@ -84,6 +84,10 @@ def render_purchase_form_html(cart, callback_url=None, extra_data=None):
         'show': True,
         'required': True
     })
+    add_settings('hostedPaymentCustomerOptions', {
+        'showEmail': True,
+        'requiredEmail': True,
+    })
     add_settings('hostedPaymentIFrameCommunicatorUrl', {
         'url': urljoin(callback_url, static('IFrameCommunicator.html')),
     })
