@@ -3,6 +3,7 @@ from django.conf import settings
 %>
 
 <%page expression_filter="h"/>
+% if is_marketing:
 <div class="programs-filter">
   <form methot="GET" id="programs-filter">
   <ul class="type">
@@ -45,4 +46,5 @@ from django.conf import settings
         });
     });
 </script>
+% endif
 ## This file is left intentionally blank and can be overridden using theming
