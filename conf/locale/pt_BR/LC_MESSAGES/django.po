@@ -3212,7 +3212,7 @@ msgstr ""
 #: lms/templates/courseware/info.html
 #: openedx/features/course_experience/templates/course_experience/course-home-fragment.html
 msgid "Course Handouts"
-msgstr "Apostilas do curso"
+msgstr "Folheto do curso"
 
 #: common/lib/xmodule/xmodule/course_module.py
 msgid ""
@@ -13027,7 +13027,7 @@ msgstr ""
 #: lms/templates/navigation/bootstrap/navbar-authenticated.html
 #: themes/edx.org/lms/templates/dashboard.html
 msgid "Explore courses"
-msgstr ""
+msgstr "Explore cursos"
 
 #: lms/templates/dashboard.html
 #: lms/templates/registration/account_activation_sidebar_notice.html
@@ -13627,7 +13627,7 @@ msgstr "Visualização do Curso"
 
 #: lms/templates/preview_menu.html
 msgid "View this course as:"
-msgstr "Visualizar o curso como:"
+msgstr "Veja este curso como:"
 
 #: lms/templates/preview_menu.html
 msgid "Learner"
@@ -15963,7 +15963,7 @@ msgstr ""
 #: lms/templates/dashboard/_dashboard_course_listing.html
 #: openedx/features/course_experience/templates/course_experience/course-home-fragment.html
 msgid "Resume Course"
-msgstr ""
+msgstr "Retomar o curso"
 
 #: lms/templates/courseware/info.html
 msgid "View Updates in Studio"
@@ -15971,7 +15971,7 @@ msgstr "Visualizar atualizações no Studio"
 
 #: lms/templates/courseware/info.html
 msgid "Course Updates and News"
-msgstr ""
+msgstr "Atualizações e notícias do curso"
 
 #: lms/templates/courseware/info.html
 msgid "Handout Navigation"
@@ -19455,7 +19455,7 @@ msgid "Adjust a learner's grade for a specific problem"
 msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
-msgid "Location of problem in course"
+msgid "Location of problem in course *"
 msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
@@ -20726,7 +20726,7 @@ msgstr ""
 
 #: openedx/features/course_experience/templates/course_experience/course-dates-fragment.html
 msgid "Important Course Dates"
-msgstr ""
+msgstr "Datas importantes do curso"
 
 #: openedx/features/course_experience/templates/course_experience/course-home-fragment.html
 msgid "Goal: "
@@ -20838,7 +20838,7 @@ msgstr ""
 
 #: openedx/features/course_experience/templates/course_experience/dates-summary.html
 msgid "Today is {date}"
-msgstr ""
+msgstr "Hoje é"
 
 #: openedx/features/course_experience/templates/course_experience/latest-update-fragment.html
 msgid "Latest Update"
@@ -25785,3 +25785,12 @@ msgid ""
 msgstr ""
 "Uma nova revisão foi criada: combinar entre Revisão #%(r1)d e Revisão "
 "#%(r2)d"
+
+msgid "help"
+msgstr "ajuda"
+
+msgid "Inicio"
+msgstr "inicio"
+
+msgid "Welcome to {org}'s {course_name}!"
+msgstr "Bem-vindo ao {course_name} de {org}"
