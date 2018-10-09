@@ -3308,7 +3308,7 @@ msgstr ""
 #: lms/templates/courseware/info.html
 #: openedx/features/course_experience/templates/course_experience/course-home-fragment.html
 msgid "Course Handouts"
-msgstr "Materiales del curso"
+msgstr "Folleto del curs"
 
 #: common/lib/xmodule/xmodule/course_module.py
 msgid ""
@@ -16899,7 +16899,7 @@ msgstr "¡ Bienvenido a  {course_title}!"
 #: lms/templates/dashboard/_dashboard_course_listing.html
 #: openedx/features/course_experience/templates/course_experience/course-home-fragment.html
 msgid "Resume Course"
-msgstr "Continuar con el curso"
+msgstr "Retomar el curso"
 
 #: lms/templates/courseware/info.html
 msgid "View Updates in Studio"
@@ -20550,7 +20550,7 @@ msgid "Adjust a learner's grade for a specific problem"
 msgstr "Ajustar la calificación del estudiante para un problema específico"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
-msgid "Location of problem in course"
+msgid "Location of problem in course *"
 msgstr "Ubicación del problema en el curso"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
@@ -27198,3 +27198,12 @@ msgid ""
 msgstr ""
 "Una nueva revisión ha sido creada: Fusión entre la revisión #%(r1)d y la "
 "revisión #%(r2)d"
+
+msgid "help"
+msgstr "ayuda"
+
+msgid "Inicio"
+msgstr "inicio"
+
+msgid "Welcome to {org}'s {course_name}!"
+msgstr "Bienvenido al {course_name} de {org}"
