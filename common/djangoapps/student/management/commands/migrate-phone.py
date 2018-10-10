@@ -1,5 +1,5 @@
 """
-Script for migrate phone from custom table to UserProfile
+Script for migrating phone field from custom table to UserProfile.
 """
 
 from django.core.management.base import BaseCommand, CommandError
@@ -12,7 +12,7 @@ class Command(BaseCommand):
     """
     Update a UserProfile's phone field from custom_reg_form_extrainfo table.
     """
-    help = 'Update userprofile phone field from custom_reg_form_extrainfo table by country code'
+    help = 'Update userprofile phone field from custom_reg_form_extrainfo'
  
     def handle(self, *args, **options):
        """
