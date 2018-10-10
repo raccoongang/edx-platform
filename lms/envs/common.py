@@ -2246,6 +2246,10 @@ INSTALLED_APPS = (
     # Unusual migrations
     'database_fixups',
 
+    # Gamification
+    'gamification_metric',
+    'referrals',
+
     # Waffle related utilities
     'openedx.core.djangoapps.waffle_utils',
 

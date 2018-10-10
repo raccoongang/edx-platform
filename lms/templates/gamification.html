@@ -1,0 +1,345 @@
+<%page expression_filter="h"/>
+<%inherit file="main.html" />
+<%namespace name='static' file='static_content.html'/>
+<%!
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
+from openedx.core.djangolib.js_utils import js_escaped_string
+%>
+
+
+<%block name="pagetitle">${_("Gamification")}</%block>
+<%block name="bodyclass">view-dashboard is-authenticated</%block>
+
+<%block name="js_extra">
+  <script src="${static.url('js/commerce/credit.js')}"></script>
+  <%static:js group='dashboard'/>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      edx.dashboard.legacy.init({
+        dashboard: "${reverse('dashboard') | n, js_escaped_string}",
+        signInUser: "${reverse('signin_user') | n, js_escaped_string}",
+        changeEmailSettings: "${reverse('change_email_settings') | n, js_escaped_string}"
+      });
+    });
+  </script>
+
+
+  <style>
+#container-chart .highcharts-subtitle {
+  font-size: 3em;
+}
+</style>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<script>
+Highcharts.setOptions({
+     colors: [
+         '#4599C3',
+         '#84BD00',
+         '#FFCD00',
+         '#E87722',
+         '#00B5E2',
+         '#6244BB',
+         '#888B8D',
+         '#FF0000',
+     ],
+     chart: {
+        style: {
+            fontFamily: "'Open Sans', sans-serif"
+        }
+    }
+});
+$(function() {
+    $.get(
+        "${api_url}"+"points/",
+        data={"username": "${ user.username | h }"},
+        function( points ) {
+            $.get(
+                "${api_url}"+"chart/",
+                data={"username": "${ user.username | h }"},
+                function( data ) {
+                    var events = [];
+                    for (var key in data) {
+                        events.splice(data[key][0], 0, {name: key, y : data[key][1]});
+                    }
+                    $('#container-chart').highcharts({
+                        chart: {
+                            plotBackgroundColor: null,
+                            plotBorderWidth: 0,
+                            plotShadow: false
+                        },
+                        title: {
+                            text: '<h1>Your Enlightenment Points</h1>',
+                            align: 'center'
+                        },
+                        subtitle: {
+                            text: '<h1><b>'+points.points+'</b></h1>',
+                            verticalAlign: 'middle',
+                            align: 'center',
+                            y: 50
+                        },
+                        tooltip: {
+                            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                        },
+                        plotOptions: {
+                            pie: {
+                                dataLabels: {
+                                    enabled: true,
+                                    distance: -50,
+                                    style: {
+                                        fontWeight: 'bold',
+                                        color: 'white',
+                                        textShadow: 'unset'
+                                    }
+                                },
+                                startAngle: -90,
+                                endAngle: 90,
+                                center: ['50%', '75%'],
+                                showInLegend: true
+                            }
+                        },
+                        series: [{
+                            type: 'pie',
+                            name: 'Points share',
+                            innerSize: '50%',
+                            data: events
+                        }]
+                    });
+                }
+            );
+            $.get(
+                "${api_url}"+"badges/",
+                data={"username": "${ user.username | h }"},
+                function( data ) {
+                    for (i in data) {
+                        $('#container-badges').append(
+                            '<img src="'+data[i].url+'" alt="'+data[i].description+'" title="'+data[i].description+'"'+'" height="200" width="200">'
+                        );
+                    }
+                }
+            );
+            $.get(
+                "${api_url}"+"statuses/",
+                function( data ) {
+                    var status_lines = [];
+                    var left = [];
+                    var right = [];
+                    for (i in data) {
+                        if (data[i].status_points <= points.points) {
+                            left.push(data[i].status_points);
+                        }
+                        else if (data[i].status_points > points.points) {
+                            right.push(data[i].status_points);
+                        }
+                        status_lines.push({
+                          color: data[i].status_color,
+                          dashStyle: 'longdashdot',
+                          value: data[i].status_points,
+                          width: 5,
+                          label: {text: data[i].title, rotation: 0}
+                        });
+                    }
+                    if (left.length == 0) {
+                        var min_value = points.points - 40;
+                    }
+                    else {
+                        var min_value = Math.max(...left) - 40;
+                    }
+                    if (right.length == 0) {
+                        var max_value = points.points + 20;
+                    }
+                    else {
+                        var max_value = Math.min(...right) + 20;
+                        var points_to_status = max_value - points.points - 20;
+                    }
+                    if (min_value < 0) {
+                        min_value = 0;
+                    }
+                    $('#container-progress').highcharts({
+                        chart: {
+                            type: 'bar'
+                        },
+                        title: {
+                            text: 'Points to the Next Level'
+                        },
+                        subtitle: {
+                            text: ''
+                        },
+                        xAxis: {
+                        categories: [''],
+                            title: {
+                                text: null
+                            }
+                        },
+                        yAxis: {
+                            min: min_value,
+                            max: max_value,
+                            title: {
+                                text: 'Points',
+                                align: 'high'
+                            },
+                            labels: {
+                                overflow: 'justify'
+                            },
+                            plotLines: status_lines,
+                        },
+                        tooltip: {
+                            shared: true,
+                            useHTML: true,
+                            formatter: function() {
+                                tooltip_html = 'Points to next status: '+'<b>'+points_to_status+'</b>';
+                                tooltip_html += "<table>";
+
+                                this.points.forEach(function(entry) {
+                                    tooltip_html += '<tr><td style="font-weight:bold; color:'+ entry.series.color +'">'+ entry.series.name +':</td><td style="text-align: right"> '+entry.y+'</td></tr>';
+                                });
+
+                                tooltip_html += "</table>";
+
+                                return tooltip_html;
+                            },
+                        },
+                        plotOptions: {
+                            bar: {
+                                dataLabels: {
+                                    enabled: true
+                                }
+                            }
+                        },
+                        credits: {
+                            enabled: false
+                        },
+                        series: [{
+                            name: 'Progress',
+                            data: [points.points]
+                        }]
+                    });
+                }
+            );
+        }
+    );
+});
+</script>
+<script>
+$(function () {
+    $.get(
+        "${api_url}"+"progress/",
+        data={"username": "${ user.username | h }"},
+        function( data ) {
+            var points_by_day = [];
+            var accumulative_data = [];
+            for (var i in data) {
+                points_by_day.push([Date.parse(data[i].date), data[i].points]);
+                var accum = 0;
+                if (accumulative_data.length != 0) {
+                    accum = accumulative_data[accumulative_data.length-1][1] + data[i].points;
+                }
+                else {
+                    accum = data[i].points;
+                }
+                accumulative_data.push([Date.parse(data[i].date), accum]);
+            }
+
+            $('#container-progress-accumulated').highcharts({
+                chart: {
+                    type: 'spline'
+                },
+                title: {
+                    text: 'Your progress'
+                },
+                xAxis: {
+                    type: 'datetime',
+                    dateTimeLabelFormats: {
+                        month: '%e. %b',
+                        year: '%b'
+                    },
+                    title: {
+                        text: 'Date'
+                    }
+                },
+                yAxis: [{
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        align: 'left',
+                        x: 3,
+                        y: 16,
+                        format: '{value:.,0f}'
+                    },
+                    showFirstLabel: false
+                }, {
+                    gridLineWidth: 0,
+                    opposite: true,
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        align: 'right',
+                        x: -3,
+                        y: 16,
+                        format: '{value:.,0f}'
+                    },
+                    showFirstLabel: false
+                }],
+                tooltip: {
+                    headerFormat: '<b>{series.name}</b><br>',
+                    pointFormat: '{point.x:%e. %b}: {point.y:.2f}'
+                },
+
+                plotOptions: {
+                    spline: {
+                        marker: {
+                            enabled: true
+                         }
+                     }
+                },
+
+                series: [{
+                    name: 'Points',
+                    type: 'column',
+                    data: points_by_day
+                },
+                {
+                    name: 'Progress',
+                    type: 'area',
+                    yAxis: 1,
+                    data: accumulative_data
+                }]
+            });
+        }
+    );
+});
+</script>
+</%block>
+
+<div class="dashboard-notifications" tabindex="-1">
+    %if message:
+        <div class="dashboard-banner">
+            ${message | n, decode.utf8}
+        </div>
+    %endif
+
+    %if enrollment_message:
+        <div class="dashboard-banner">
+            ${enrollment_message | n,  decode.utf8}
+        </div>
+    %endif
+</div>
+
+<div class="chart-holder" style="max-width:1180px; margin:0 auto; padding: 20px 0 0;">
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <div class="chart-holder_row" style="display:flex;">
+      <div id="container-chart" style="width: 35%; height: 400px;"></div>
+      <div id="container-progress" style="width: 65%; height: 400px;"></div>
+    </div>
+    <div id="container-badges" style="padding: 20px 0 0;">
+    <header style="text-align: center">
+      <text style="color:#333333;font-size:18px;fill:#333333;width:265px;">
+          Your Badge Pack
+      </text>
+    </header>
+    </div>
+    <div id="container-progress-accumulated"></div>
+</div>
