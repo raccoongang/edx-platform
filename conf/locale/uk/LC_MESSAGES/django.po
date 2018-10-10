@@ -3582,7 +3582,7 @@ msgstr "Загальне"
 #: common/lib/xmodule/xmodule/graders.py
 #, python-brace-format
 msgid "{assignment_type} = {weighted_percent:.2%} of a possible {weight:.2%}"
-msgstr ""
+msgstr "{assignment_type} = {weighted_percent:.2%} з можливих {weight:.2%}"
 
 #: common/lib/xmodule/xmodule/html_module.py
 msgid "Text"
@@ -25801,3 +25801,10 @@ msgstr ""
 
 msgid "audit not passing states"
 msgstr ""
+
+#: common/lib/xmodule/xmodule/graders.py
+msgid "{short_label} Avg"
+msgstr "{short_label} Сер."
+
+msgid "{section_type} Average = {percent:.0%}"
+msgstr "{section_type} Середня оцінка = {percent:.0%}"
