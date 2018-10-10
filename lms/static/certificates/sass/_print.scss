@@ -75,6 +75,25 @@
         height: auto;
         margin: spacing-vertical(mid-large) spacing-vertical(mid-small) 0 spacing-vertical(mid-small) !important;
         padding: 0;
+        &.certificate {
+            margin: 0 !important;
+        }
+    }
+
+    .certificates {
+        padding: 30px 0;
+    }
+
+    .certificates_wrapper {
+        padding: 40px 40px 40px 80px !important;
+    }
+
+    .certificates_main-right {
+        padding-top: 0;
+    }
+
+    .certificates_stamp {
+        width: 220px;
     }
 
     .wrapper-view {
