@@ -16,7 +16,7 @@ from openedx.core.djangolib.markup import HTML, Text
                 <th scope="row">${_("Verified")}</th><td>${modes['verified']}</td>
             </tr>
             <tr>
-                <th scope="row">${_("Audit")}</th><td>${modes['audit']}</td>
+                <th scope="row">${_("Audit") | n}</th><td>${modes['audit']}</td>
             </tr>
             <tr>
                 <th scope="row">${_("Honor")}</th><td>${modes['honor']}</td>

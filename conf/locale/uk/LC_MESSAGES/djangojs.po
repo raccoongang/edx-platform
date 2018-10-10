@@ -2160,12 +2160,12 @@ msgstr "Не вдалося додати когорту"
 
 #: lms/static/js/groups/views/cohorts.js
 msgid "You currently have no cohorts configured"
-msgstr "Зараз у вас немає налаштованих когорт"
+msgstr "Зараз у вас немає цільових груп"
 
 #: lms/static/js/groups/views/cohorts.js
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid "Add Cohort"
-msgstr "Додати когорти"
+msgstr "Додати цільові групи"
 
 #: lms/static/js/groups/views/cohorts.js
 msgid ""
@@ -2177,7 +2177,7 @@ msgstr ""
 
 #: lms/static/js/groups/views/cohorts.js
 msgid "Assign students to cohorts by uploading a CSV file."
-msgstr "Призначити студентів до когорти шляхом завантаження файлу CSV."
+msgstr "Призначити користувачів до цільової групи шляхом завантаження файлу CSV."
 
 #: lms/static/js/groups/views/cohorts.js
 msgid "Choose a .csv file"
@@ -6178,14 +6178,14 @@ msgid ""
 "second comma separated field."
 msgstr ""
 "Завантажте файл зі значеннями, розділеними комами (.csv), який містить імена "
-"користувачів або адреси електронної пошти тих студентів, яким надано "
+"або адреси електронної пошти тих користувачів, яким надано "
 "виняток. Першим введіть ім'я користувача або адресу електронної пошти та "
 "відокремте комою. За бажанням Ви можете додати примітку, яка б описувала "
 "причину винятку. Вона буде відображатися у другому полі."
 
 #: lms/templates/instructor/instructor_dashboard_2/certificate-bulk-white-list.underscore
 msgid "Upload a CSV file"
-msgstr ""
+msgstr "Завантажити CSV-файл"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificate-bulk-white-list.underscore
 #: lms/templates/instructor/instructor_dashboard_2/certificate-white-list-editor.underscore
@@ -6196,11 +6196,12 @@ msgstr "Додати до списку винятків"
 msgid ""
 "To invalidate a certificate for a particular learner, add the username or "
 "email address below."
-msgstr ""
+msgstr "Щоб скасувати сертифікат певного користувача, додайте нижче його "
+"ім'я або адресу електронної пошти."
 
 #: lms/templates/instructor/instructor_dashboard_2/certificate-invalidation.underscore
 msgid "Add notes about this learner"
-msgstr ""
+msgstr "Додайте примітки про цього користувача"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificate-invalidation.underscore
 msgid "Invalidate Certificate"
@@ -6236,12 +6237,12 @@ msgid ""
 "Enter the username or email address of each learner that you want to add as "
 "an exception."
 msgstr ""
-"Введіть ім'я користувача або електронну пошту кожного студента, якого ви "
+"Введіть ім'я користувача або електронну пошту кожного користувача, якого ви "
 "хочете додати як виняток."
 
 #: lms/templates/instructor/instructor_dashboard_2/certificate-white-list-editor.underscore
 msgid "Student email or username"
-msgstr ""
+msgstr "Адреса електронної пошти  або ім'я користувача"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificate-white-list-editor.underscore
 msgid "Free text notes"
@@ -6253,11 +6254,11 @@ msgstr "Генерація сертифікатів для винятків"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificate-white-list.underscore
 msgid "All users on the Exception list who do not yet have a certificate"
-msgstr ""
+msgstr "Генерування сертифікатів для всіх нових доповнень зі списку винятків"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificate-white-list.underscore
 msgid "All users on the Exception list"
-msgstr ""
+msgstr "Генерування сертифікатів для всіх користувачів у списку винятків"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificate-white-list.underscore
 msgid "User Email"
@@ -6297,7 +6298,8 @@ msgstr ""
 msgid ""
 "Enter email addresses and/or usernames, separated by new lines or commas, "
 "for the learners you want to add. *"
-msgstr ""
+msgstr "Введіть адреси електронної пошти та/або імена користувачів, "
+"яких ви хочете додати, розділені лініями або комами"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 #: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
@@ -6312,7 +6314,8 @@ msgstr "наприклад: johndoe@example.com, JaneDoe, joeydoe@example.com"
 msgid ""
 "You will not receive notification for emails that bounce, so double-check "
 "your spelling."
-msgstr ""
+msgstr "Ви не отримаєте повідомлення на електронну пошту про відхилені листи, "
+"тому, будь ласка, двічі перевірте правильність написання."
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 msgid "Add Learners"
@@ -6320,7 +6323,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
 msgid "Add a New Cohort"
-msgstr "Створити нову когорту"
+msgstr "Створити нову цільову групу"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
 msgid "Enter the name of the cohort"
@@ -6398,9 +6401,9 @@ msgstr "Створити контентну групу "
 #, python-format
 msgid "(contains %(student_count)s student)"
 msgid_plural "(contains %(student_count)s students)"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "налічує %(student_count)s користувача"
+msgstr[1] "налічує %(student_count)s користувача"
+msgstr[2] "налічує %(student_count)s користувачів"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-group-header.underscore
 msgid ""
@@ -6414,11 +6417,11 @@ msgstr "Що це означає?"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-group-header.underscore
 msgid "Learners are added to this cohort automatically."
-msgstr ""
+msgstr "Користувачі додаються до цієї цільової групи автоматично."
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-selector.underscore
 msgid "Select a cohort"
-msgstr ""
+msgstr "Обрати цільову группу"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-selector.underscore
 #, python-format
@@ -6427,7 +6430,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid "Enable Cohorts"
-msgstr "Увімкнути когорти"
+msgstr "Увімкнути цільові групи"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid "Select a cohort to manage"
@@ -6454,7 +6457,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/divided-discussions-course-wide.underscore
 msgid "Course-Wide Discussion Topics"
-msgstr ""
+msgstr "Загальні теми обговорення в рамках всього курсу"
 
 #: lms/templates/instructor/instructor_dashboard_2/divided-discussions-course-wide.underscore
 msgid "Select the course-wide discussion topics that you want to divide."
@@ -6462,7 +6465,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/divided-discussions-inline.underscore
 msgid "Content-Specific Discussion Topics"
-msgstr ""
+msgstr "Тематичні обговорення"
 
 #: lms/templates/instructor/instructor_dashboard_2/divided-discussions-inline.underscore
 msgid "Specify whether content-specific discussion topics are divided."
@@ -6478,7 +6481,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/divided-discussions-inline.underscore
 msgid "No content-specific discussion topics exist."
-msgstr ""
+msgstr "Не існує жодного тематичного обговорення."
 
 #: lms/templates/instructor/instructor_dashboard_2/enrollment-code-lookup-links.underscore
 msgid "Code"
@@ -7729,7 +7732,7 @@ msgid ""
 "changes you will change the student experience."
 msgstr ""
 "Застереження: Остання опублікована версія цього блоку вже доступна "
-"студентам. Будьте обережні, публікуючи нові зміни."
+"користувачам. Будьте обережні, публікуючи нові зміни."
 
 #: cms/templates/js/content-group-editor.underscore
 msgid "Content Group Name"
@@ -8470,7 +8473,7 @@ msgstr ""
 
 #: cms/templates/js/publish-xblock.underscore
 msgid "Published and Live"
-msgstr "Опубліковане та доступне студентам"
+msgstr "Опубліковане та доступне користувачам"
 
 #: cms/templates/js/publish-xblock.underscore
 msgid "Published (not yet released)"
@@ -8650,7 +8653,7 @@ msgid ""
 "Titles more than 100 characters may prevent students from printing their "
 "certificate on a single page."
 msgstr ""
-"Заголовки більше 100 символів можуть ускладнити студентам друкування "
+"Заголовки більше 100 символів можуть ускладнити користувачам друкування "
 "сертифікату на одній сторінці."
 
 #: cms/templates/js/signatory-editor.underscore
@@ -10429,25 +10432,25 @@ msgstr ""
 #: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-course-wide.underscore
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid "Specify whether discussion topics are divided by cohort"
-msgstr ""
+msgstr "Вкажіть чи обговорювані теми розподіляються між цільовими групами"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-course-wide.underscore
 msgid ""
 "Select the course-wide discussion topics that you want to divide by cohort."
-msgstr ""
+msgstr "Оберіть загальні теми обговорення в рамках всього курсу, які Ви бажаєте розподілити між цільовими групами"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-inline.underscore
 msgid ""
 "Specify whether content-specific discussion topics are divided by cohort."
-msgstr ""
+msgstr "Вкажіть чи розподіляються тематичні обговорення між цільовими групами."
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-inline.underscore
 msgid "Always cohort content-specific discussion topics"
-msgstr ""
+msgstr "Завжди розподіляти тематичні обговорення між цільовими групами"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-inline.underscore
 msgid "Cohort selected content-specific discussion topics"
-msgstr ""
+msgstr "Розподіляти обрані тематичні обговорення між цільовими групами"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-subcategory.underscore
 msgid "Cohorted"
@@ -10455,17 +10458,18 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 msgid "Manage Students"
-msgstr ""
+msgstr "Управління користувачами"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 msgid "Add students to this cohort"
-msgstr ""
+msgstr "Додати користувачів до цієї цільової групи"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 msgid ""
 "Note: Students can be in only one cohort. Adding students to this group "
 "overrides any previous group assignment."
-msgstr ""
+msgstr "Примітка: користувачі можуть перебувати лише в одній цільовій групі. "
+"Додавання користувачів до цієї цільової групи перевизначає будь-які попередні призначення групи."
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 msgid ""
@@ -10486,7 +10490,9 @@ msgid ""
 "To review student cohort assignments or see the results of uploading a CSV "
 "file, download course profile information or cohort results on the "
 "{link_start}Data Download{link_end} page."
-msgstr ""
+msgstr "Щоб переглянути завдання цільової групи користувачів або переглянути результати завантаження файлу CSV, "
+"завантажте інформацію про профіль курсу або результати цільової групи на сторінці "
+"{link_start}завантаження даних{link_end}."
 
 #: lms/templates/learner_dashboard/certificate.underscore
 msgid "Program Certificates"

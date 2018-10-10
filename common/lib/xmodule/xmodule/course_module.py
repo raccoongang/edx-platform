@@ -243,7 +243,7 @@ class CourseFields(object):
                 }
             ],
             "GRADE_CUTOFFS": {
-                "Pass": 0.5,
+                _("Pass"): 0.5,
             },
         },
         scope=Scope.content
