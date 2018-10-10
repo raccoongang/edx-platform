@@ -1,39 +1,39 @@
 # #-#-#-#-#  django-partial.po (0.1a)  #-#-#-#-#
 # edX translation file.
-# Copyright (C) 2018 EdX
+# Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2018.
+# EdX Team <info@edx.org>, 2017.
 # 
 # #-#-#-#-#  django-studio.po (0.1a)  #-#-#-#-#
 # edX translation file.
-# Copyright (C) 2018 EdX
+# Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2018.
+# EdX Team <info@edx.org>, 2017.
 # 
 # #-#-#-#-#  mako.po (0.1a)  #-#-#-#-#
 # edX translation file
-# Copyright (C) 2018 edX
+# Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2018.
+# EdX Team <info@edx.org>, 2017.
 # 
 # #-#-#-#-#  mako-studio.po (0.1a)  #-#-#-#-#
 # edX translation file
-# Copyright (C) 2018 edX
+# Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2018.
+# EdX Team <info@edx.org>, 2017.
 # 
 # #-#-#-#-#  wiki.po (0.1a)  #-#-#-#-#
 # edX translation file
-# Copyright (C) 2018 edX
+# Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2018.
+# EdX Team <info@edx.org>, 2017.
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2018-01-17 17:44-0500\n"
-"PO-Revision-Date: 2018-01-17 22:44:08.968000\n"
+"POT-Creation-Date: 2017-10-09 10:41+0000\n"
+"PO-Revision-Date: 2017-10-09 10:41:09.942251\n"
 "Last-Translator: \n"
 "Language-Team: openedx-translation <openedx-translation@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -3847,16 +3847,6 @@ msgstr ""
 "α∂ мιηιм νєηιαм, qυιѕ ησѕ#"
 
 #: common/lib/xmodule/xmodule/course_module.py
-#: lms/djangoapps/instructor/views/instructor_dashboard.py
-#: cms/templates/settings.html
-msgid "Course Info"
-msgstr "Çöürsé Ìnfö Ⱡ'σяєм ιρѕυм ∂σłσя #"
-
-#: common/lib/xmodule/xmodule/course_module.py
-msgid "Specify the course info."
-msgstr "Spéçïfý thé çöürsé ïnfö. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢ση#"
-
-#: common/lib/xmodule/xmodule/course_module.py
 msgid "General"
 msgstr "Généräl Ⱡ'σяєм ιρѕυм #"
 
@@ -6010,6 +6000,12 @@ msgstr ""
 "¢σηѕєqυαт. ∂υιѕ αυтє ιяυяє ∂σłσя ιη яєρяєнєη∂єяιт ιη νσłυρтαтє νєłιт єѕѕє "
 "¢ιłłυм ∂σłσяє єυ ƒυgιαт ηυłłα ραяιαтυя. єχ¢єρтєυя ѕιηт σ¢¢αє¢αт ¢υρι∂αтαт "
 "ηση ρяσι∂єηт, ѕυηт ιη ¢υłρα qυι σƒƒι¢ια ∂єѕєяυηт мσłłιт αηιм ι∂ єѕт łαвσяυ#"
+
+#. Translators:  The format of the date includes the full name of the month
+#: lms/djangoapps/certificates/views/webview.py
+#, python-brace-format
+msgid "{month} {day}, {year}"
+msgstr "{month} {day}, {year} Ⱡ'σяєм ιρѕυм ∂σłσя ѕ#"
 
 #. Translators:  This text represents the verification of the certificate
 #: lms/djangoapps/certificates/views/webview.py
@@ -8180,6 +8176,10 @@ msgid "CourseMode price updated successfully"
 msgstr ""
 "ÇöürséMödé prïçé üpdätéd süççéssfüllý Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
 "¢σηѕє¢тєтυ#"
+
+#: lms/djangoapps/instructor/views/instructor_dashboard.py
+msgid "Course Info"
+msgstr "Çöürsé Ìnfö Ⱡ'σяєм ιρѕυм ∂σłσя #"
 
 #: lms/djangoapps/instructor/views/instructor_dashboard.py
 #, python-brace-format
@@ -12181,6 +12181,38 @@ msgstr ""
 "Täké thé spéçïfïéd çöürsé änd ättémpt tö éxpört ït tö ä gït répösïtörý\n"
 ". Çöürsé dïréçtörý müst älréädý ßé ä gït répösïtörý. Ûsägé:  gït_éxpört <course_loc> <git_url> Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя α∂ιριѕι¢ιηg єłιт, ѕє∂ ∂σ єιυѕмσ∂ тємρσя ιη¢ι∂ι∂υηт υт łαвσяє єт ∂σłσяє мαgηα αłιqυα. υт єηιм α∂ мιηιм νєηιαм, qυιѕ ησѕтяυ∂ єχєя¢ιтαтιση υłłαм¢σ łαвσяιѕ ηιѕι υт αłιqυιρ єχ єα ¢σммσ∂σ ¢σηѕєqυαт. ∂υιѕ αυтє ιяυяє ∂σłσя ιη яєρяєнєη∂єяιт ιη νσłυρтαтє νєłιт єѕѕє ¢ιłłυм ∂σłσяє єυ ƒυgιαт ηυłłα ραяιαтυя. єχ¢єρтєυя ѕιηт σ¢¢αє¢αт ¢υρι∂αтαт ηση ρяσι∂єηт, ѕυηт ιη ¢υłρα qυι σƒƒι¢ια ∂єѕєяυηт мσłłιт αη#"
 
+#: cms/djangoapps/contentstore/tasks.py
+#, python-brace-format
+msgid "Unknown User ID: {0}"
+msgstr "Ûnknöwn Ûsér ÌD: {0} Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, #"
+
+#: cms/djangoapps/contentstore/tasks.py
+msgid "Permission denied"
+msgstr "Pérmïssïön dénïéd Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмє#"
+
+#: cms/djangoapps/contentstore/tasks.py
+#: cms/djangoapps/contentstore/views/import_export.py
+msgid "We only support uploading a .tar.gz file."
+msgstr ""
+"Wé önlý süppört üplöädïng ä .tär.gz fïlé. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєтυя #"
+
+#: cms/djangoapps/contentstore/tasks.py
+msgid "Tar file not found"
+msgstr "Tär fïlé nöt föünd Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт#"
+
+#: cms/djangoapps/contentstore/tasks.py
+msgid "Unsafe tar file. Aborting import."
+msgstr ""
+"Ûnsäfé tär fïlé. Àßörtïng ïmpört. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тє#"
+
+#: cms/djangoapps/contentstore/tasks.py
+#, python-brace-format
+msgid "Could not find the {0} file in the package."
+msgstr ""
+"Çöüld nöt fïnd thé {0} fïlé ïn thé päçkägé. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
+"¢σηѕє¢тєтυя #"
+
 #: cms/djangoapps/contentstore/utils.py
 msgid "Deleted group"
 msgstr "Délétéd gröüp Ⱡ'σяєм ιρѕυм ∂σłσя ѕι#"
@@ -12350,23 +12382,10 @@ msgid "Empty"
 msgstr "Émptý Ⱡ'σяєм ιρѕ#"
 
 #: cms/djangoapps/contentstore/views/import_export.py
-msgid "We only support uploading a .tar.gz file."
-msgstr ""
-"Wé önlý süppört üplöädïng ä .tär.gz fïlé. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
-"¢σηѕє¢тєтυя #"
-
-#: cms/djangoapps/contentstore/views/import_export.py
 msgid "File upload corrupted. Please try again"
 msgstr ""
 "Fïlé üplöäd çörrüptéd. Pléäsé trý ägäïn Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
 "¢σηѕє¢тєтυя#"
-
-#: cms/djangoapps/contentstore/views/import_export.py
-#, python-brace-format
-msgid "Could not find the {0} file in the package."
-msgstr ""
-"Çöüld nöt fïnd thé {0} fïlé ïn thé päçkägé. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
-"¢σηѕє¢тєтυя #"
 
 #: cms/djangoapps/contentstore/views/item.py
 msgid "Invalid data"
@@ -12741,6 +12760,7 @@ msgstr "Çöürsés Ⱡ'σяєм ιρѕυм #"
 
 #: cms/templates/index.html cms/templates/widgets/header.html
 #: lms/templates/navigation.html lms/templates/learner_dashboard/programs.html
+#: lms/templates/program_marketing/explore_programs.html
 #: themes/edx.org/lms/templates/header.html
 #: themes/red-theme/lms/templates/header.html
 msgid "Programs"
@@ -12878,10 +12898,6 @@ msgstr ""
 #: cms/templates/widgets/header.html lms/templates/navigation.html
 msgid "Choose Language"
 msgstr "Çhöösé Längüägé Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт α#"
-
-#: cms/templates/widgets/header.html lms/templates/user_dropdown.html
-msgid "Account"
-msgstr "Àççöünt Ⱡ'σяєм ιρѕυм #"
 
 #: cms/templates/widgets/header.html lms/templates/navigation.html
 #: lms/templates/static_templates/help.html
@@ -14630,10 +14646,6 @@ msgstr ""
 #: lms/templates/user_dropdown.html themes/red-theme/lms/templates/header.html
 msgid "Dashboard for:"
 msgstr "Däshßöärd för: Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт#"
-
-#: lms/templates/user_dropdown.html
-msgid "Profile"
-msgstr "Pröfïlé Ⱡ'σяєм ιρѕυм #"
 
 #: lms/templates/user_dropdown.html themes/red-theme/lms/templates/header.html
 msgid "More options dropdown"
@@ -16444,6 +16456,10 @@ msgid "Add {course_name} to Cart <span>({price} USD)</span>"
 msgstr ""
 "Àdd {course_name} tö Çärt <span>({price} ÛSD)</span> Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт "
 "αмєт, ¢σηѕє¢т#"
+
+#: lms/templates/courseware/course_about.html
+msgid "Enroll in {course_name}"
+msgstr "Énröll ïn {course_name} Ⱡ'σяєм ιρѕυм ∂σłσя ѕι#"
 
 #: lms/templates/courseware/course_about.html
 msgid "View About Page in studio"
@@ -25309,10 +25325,6 @@ msgstr ""
 "¢σηѕє¢тєтυя #"
 
 #: cms/templates/settings.html
-msgid "Course info for certificate"
-msgstr "Çöürsé ïnfö för çértïfïçäté Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє#"
-
-#: cms/templates/settings.html
 msgid ""
 "Identify the course language here. This is used to assist users find courses"
 " that are taught in a specific language."
@@ -26298,6 +26310,10 @@ msgstr "Çürrént Lïßrärý: Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αм#
 #: cms/templates/widgets/header.html
 msgid "Language preference"
 msgstr "Längüägé préférénçé Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт,#"
+
+#: cms/templates/widgets/header.html
+msgid "Account"
+msgstr "Àççöünt Ⱡ'σяєм ιρѕυм #"
 
 #: cms/templates/widgets/header.html
 msgid "Account Navigation"

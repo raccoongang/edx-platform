@@ -1,39 +1,39 @@
 # #-#-#-#-#  django-partial.po (0.1a)  #-#-#-#-#
 # edX translation file.
-# Copyright (C) 2018 EdX
+# Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2018.
+# EdX Team <info@edx.org>, 2017.
 # 
 # #-#-#-#-#  django-studio.po (0.1a)  #-#-#-#-#
 # edX translation file.
-# Copyright (C) 2018 EdX
+# Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2018.
+# EdX Team <info@edx.org>, 2017.
 # 
 # #-#-#-#-#  mako.po (0.1a)  #-#-#-#-#
 # edX translation file
-# Copyright (C) 2018 edX
+# Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2018.
+# EdX Team <info@edx.org>, 2017.
 # 
 # #-#-#-#-#  mako-studio.po (0.1a)  #-#-#-#-#
 # edX translation file
-# Copyright (C) 2018 edX
+# Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2018.
+# EdX Team <info@edx.org>, 2017.
 # 
 # #-#-#-#-#  wiki.po (0.1a)  #-#-#-#-#
 # edX translation file
-# Copyright (C) 2018 edX
+# Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2018.
+# EdX Team <info@edx.org>, 2017.
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2018-01-17 17:44-0500\n"
-"PO-Revision-Date: 2018-01-17 22:44:08.968000\n"
+"POT-Creation-Date: 2017-10-09 10:41+0000\n"
+"PO-Revision-Date: 2017-10-09 10:41:09.942251\n"
 "Last-Translator: \n"
 "Language-Team: openedx-translation <openedx-translation@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -3318,16 +3318,6 @@ msgstr ""
 "يخذعوثرفشفهخر."
 
 #: common/lib/xmodule/xmodule/course_module.py
-#: lms/djangoapps/instructor/views/instructor_dashboard.py
-#: cms/templates/settings.html
-msgid "Course Info"
-msgstr "ذخعقسث هربخ"
-
-#: common/lib/xmodule/xmodule/course_module.py
-msgid "Specify the course info."
-msgstr "سحثذهبغ فاث ذخعقسث هربخ."
-
-#: common/lib/xmodule/xmodule/course_module.py
 msgid "General"
 msgstr "لثرثقشم"
 
@@ -5143,6 +5133,12 @@ msgid ""
 msgstr ""
 "شر {cert_type} ذثقفهبهذشفث يثوخرسفقشفثس ش اهلا مثدثم خب شذاهثدثوثرف هر ش "
 "حقخلقشو خب سفعيغ, شري هرذمعيثس دثقهبهذشفهخر خب فاث سفعيثرف'س هيثرفهفغ."
+
+#. Translators:  The format of the date includes the full name of the month
+#: lms/djangoapps/certificates/views/webview.py
+#, python-brace-format
+msgid "{month} {day}, {year}"
+msgstr "{month} {day}, {year}"
 
 #. Translators:  This text represents the verification of the certificate
 #: lms/djangoapps/certificates/views/webview.py
@@ -7004,6 +7000,10 @@ msgstr "ذخعقسثوخيث صهفا فاث وخيث سمعل({mode_slug}) يخ
 #: lms/djangoapps/instructor/views/instructor_dashboard.py
 msgid "CourseMode price updated successfully"
 msgstr "ذخعقسثوخيث حقهذث عحيشفثي سعذذثسسبعممغ"
+
+#: lms/djangoapps/instructor/views/instructor_dashboard.py
+msgid "Course Info"
+msgstr "ذخعقسث هربخ"
 
 #: lms/djangoapps/instructor/views/instructor_dashboard.py
 #, python-brace-format
@@ -10535,6 +10535,33 @@ msgstr ""
 "فشنث فاث سحثذهبهثي ذخعقسث شري شففثوحف فخ ثطحخقف هف فخ ش لهف قثحخسهفخقغ\n"
 ". ذخعقسث يهقثذفخقغ وعسف شمقثشيغ زث ش لهف قثحخسهفخقغ. عسشلث:  لهف_ثطحخقف <course_loc> <git_url>"
 
+#: cms/djangoapps/contentstore/tasks.py
+#, python-brace-format
+msgid "Unknown User ID: {0}"
+msgstr "عرنرخصر عسثق هي: {0}"
+
+#: cms/djangoapps/contentstore/tasks.py
+msgid "Permission denied"
+msgstr "حثقوهسسهخر يثرهثي"
+
+#: cms/djangoapps/contentstore/tasks.py
+#: cms/djangoapps/contentstore/views/import_export.py
+msgid "We only support uploading a .tar.gz file."
+msgstr "صث خرمغ سعححخقف عحمخشيهرل ش .فشق.لظ بهمث."
+
+#: cms/djangoapps/contentstore/tasks.py
+msgid "Tar file not found"
+msgstr "فشق بهمث رخف بخعري"
+
+#: cms/djangoapps/contentstore/tasks.py
+msgid "Unsafe tar file. Aborting import."
+msgstr "عرسشبث فشق بهمث. شزخقفهرل هوحخقف."
+
+#: cms/djangoapps/contentstore/tasks.py
+#, python-brace-format
+msgid "Could not find the {0} file in the package."
+msgstr "ذخعمي رخف بهري فاث {0} بهمث هر فاث حشذنشلث."
+
 #: cms/djangoapps/contentstore/utils.py
 msgid "Deleted group"
 msgstr "يثمثفثي لقخعح"
@@ -10677,17 +10704,8 @@ msgid "Empty"
 msgstr "ثوحفغ"
 
 #: cms/djangoapps/contentstore/views/import_export.py
-msgid "We only support uploading a .tar.gz file."
-msgstr "صث خرمغ سعححخقف عحمخشيهرل ش .فشق.لظ بهمث."
-
-#: cms/djangoapps/contentstore/views/import_export.py
 msgid "File upload corrupted. Please try again"
 msgstr "بهمث عحمخشي ذخققعحفثي. حمثشسث فقغ شلشهر"
-
-#: cms/djangoapps/contentstore/views/import_export.py
-#, python-brace-format
-msgid "Could not find the {0} file in the package."
-msgstr "ذخعمي رخف بهري فاث {0} بهمث هر فاث حشذنشلث."
 
 #: cms/djangoapps/contentstore/views/item.py
 msgid "Invalid data"
@@ -11034,6 +11052,7 @@ msgstr "ذخعقسثس"
 
 #: cms/templates/index.html cms/templates/widgets/header.html
 #: lms/templates/navigation.html lms/templates/learner_dashboard/programs.html
+#: lms/templates/program_marketing/explore_programs.html
 #: themes/edx.org/lms/templates/header.html
 #: themes/red-theme/lms/templates/header.html
 msgid "Programs"
@@ -11160,10 +11179,6 @@ msgstr "غخع ذشر رخص {link_start}سهلر هر{link_end}."
 #: cms/templates/widgets/header.html lms/templates/navigation.html
 msgid "Choose Language"
 msgstr "ذاخخسث مشرلعشلث"
-
-#: cms/templates/widgets/header.html lms/templates/user_dropdown.html
-msgid "Account"
-msgstr "شذذخعرف"
 
 #: cms/templates/widgets/header.html lms/templates/navigation.html
 #: lms/templates/static_templates/help.html
@@ -12719,10 +12734,6 @@ msgstr ""
 #: lms/templates/user_dropdown.html themes/red-theme/lms/templates/header.html
 msgid "Dashboard for:"
 msgstr "يشسازخشقي بخق:"
-
-#: lms/templates/user_dropdown.html
-msgid "Profile"
-msgstr "حقخبهمث"
 
 #: lms/templates/user_dropdown.html themes/red-theme/lms/templates/header.html
 msgid "More options dropdown"
@@ -14362,6 +14373,10 @@ msgstr "ثرقخمموثرف هس ذمخسثي"
 #: lms/templates/courseware/course_about.html
 msgid "Add {course_name} to Cart <span>({price} USD)</span>"
 msgstr "شيي {course_name} فخ ذشقف <span>({price} عسي)</span>"
+
+#: lms/templates/courseware/course_about.html
+msgid "Enroll in {course_name}"
+msgstr "ثرقخمم هر {course_name}"
 
 #: lms/templates/courseware/course_about.html
 msgid "View About Page in studio"
@@ -21962,10 +21977,6 @@ msgid "Provide useful information about your course"
 msgstr "حقخدهيث عسثبعم هربخقوشفهخر شزخعف غخعق ذخعقسث"
 
 #: cms/templates/settings.html
-msgid "Course info for certificate"
-msgstr "ذخعقسث هربخ بخق ذثقفهبهذشفث"
-
-#: cms/templates/settings.html
 msgid ""
 "Identify the course language here. This is used to assist users find courses"
 " that are taught in a specific language."
@@ -22803,6 +22814,10 @@ msgstr "ذعققثرف مهزقشقغ:"
 #: cms/templates/widgets/header.html
 msgid "Language preference"
 msgstr "مشرلعشلث حقثبثقثرذث"
+
+#: cms/templates/widgets/header.html
+msgid "Account"
+msgstr "شذذخعرف"
 
 #: cms/templates/widgets/header.html
 msgid "Account Navigation"

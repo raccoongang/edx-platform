@@ -1,33 +1,33 @@
 # #-#-#-#-#  djangojs-partial.po (0.1a)  #-#-#-#-#
 # edX translation file.
-# Copyright (C) 2018 EdX
+# Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2018.
+# EdX Team <info@edx.org>, 2017.
 # 
 # #-#-#-#-#  djangojs-studio.po (0.1a)  #-#-#-#-#
 # edX translation file.
-# Copyright (C) 2018 EdX
+# Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2018.
+# EdX Team <info@edx.org>, 2017.
 # 
 # #-#-#-#-#  underscore.po (0.1a)  #-#-#-#-#
 # edX translation file
-# Copyright (C) 2018 edX
+# Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2018.
+# EdX Team <info@edx.org>, 2017.
 # 
 # #-#-#-#-#  underscore-studio.po (0.1a)  #-#-#-#-#
 # edX translation file
-# Copyright (C) 2018 edX
+# Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2018.
+# EdX Team <info@edx.org>, 2017.
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2018-01-17 17:43-0500\n"
-"PO-Revision-Date: 2018-01-17 22:44:09.259297\n"
+"POT-Creation-Date: 2017-10-09 10:40+0000\n"
+"PO-Revision-Date: 2017-10-09 10:41:10.333201\n"
 "Last-Translator: \n"
 "Language-Team: openedx-translation <openedx-translation@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -8446,8 +8446,13 @@ msgstr ""
 "ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя #"
 
 #: lms/templates/student_account/login.underscore
-msgid "or sign in with"
-msgstr "ör sïgn ïn wïth Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт α#"
+msgid "Get signed in with Young Thinkers"
+msgstr ""
+"Gét sïgnéd ïn wïth Ýöüng Thïnkérs Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тє#"
+
+#: lms/templates/student_account/login.underscore
+msgid "Sign in now"
+msgstr "Sïgn ïn nöw Ⱡ'σяєм ιρѕυм ∂σłσя #"
 
 #: lms/templates/student_account/login.underscore
 #, python-format
@@ -8460,6 +8465,15 @@ msgid "Use my institution/campus credentials"
 msgstr ""
 "Ûsé mý ïnstïtütïön/çämpüs çrédéntïäls Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, "
 "¢σηѕє¢тєтυ#"
+
+#: lms/templates/student_account/login.underscore
+#, python-format
+msgid "New to %(platformName)s?"
+msgstr "Néw tö %(platformName)s? Ⱡ'σяєм ιρѕυм ∂σłσя #"
+
+#: lms/templates/student_account/login.underscore
+msgid "Create an account"
+msgstr "Çréäté än äççöünt Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмє#"
 
 #: lms/templates/student_account/password_reset.underscore
 msgid "Password assistance"

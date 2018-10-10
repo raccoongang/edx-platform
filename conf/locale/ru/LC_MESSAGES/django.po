@@ -5836,7 +5836,9 @@ msgstr "Подтвердите этот сертификат самостоят�
 #: lms/djangoapps/certificates/views/webview.py
 #, python-brace-format
 msgid "{platform_name} offers interactive online classes and MOOCs."
-msgstr "{platform_name} предоставляет интерактивные онлайн-курсы."
+msgstr ""
+"<!-- {platform_name} -->Неформальная система обучения на протяжении жизни, "
+"которая объединяет лучшие элементы очного и онлайн-образования"
 
 #: lms/djangoapps/certificates/views/webview.py
 #, python-brace-format
@@ -25940,4 +25942,7 @@ msgstr "http://desk.ua/ru/etichniy-kodeks"
 
 msgid "http://desk.ua/en/contact"
 msgstr "http://desk.ua/ru/contact"
+
+msgid "All courses"
+msgstr "Все курсы"
 
