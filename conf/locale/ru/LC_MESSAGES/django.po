@@ -2,7 +2,7 @@
 # edX community translations have been downloaded from Russian (http://www.transifex.com/open-edx/edx-platform/language/ru/).
 # Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# 
+#
 # Translators:
 # Alexandr Kosharny <acosarnii@gmail.com>, 2016
 # Andrey Bochkarev <abocha@ya.ru>, 2015
@@ -73,7 +73,7 @@
 # edX translation file.
 # Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# 
+#
 # Translators:
 # AndyZ <Andrey.Zakhvatov@gmail.com>, 2014
 # AndyZ <Andrey.Zakhvatov@gmail.com>, 2014
@@ -101,7 +101,7 @@
 # edX community translations have been downloaded from Russian (http://www.transifex.com/open-edx/edx-platform/language/ru/)
 # Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# 
+#
 # Translators:
 # Alexandr Kosharny <acosarnii@gmail.com>, 2016
 # Andrey Bochkarev <abocha@ya.ru>, 2015
@@ -184,7 +184,7 @@
 # edX translation file
 # Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# 
+#
 # Translators:
 # Alena Koneva <alenakoneva@ya.ru>, 2014
 # Alexander Averyanov <olexandr.averyanov@gmail.com>, 2015
@@ -230,7 +230,7 @@
 # edX translation file
 # Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# 
+#
 # Translators:
 # AndyZ <Andrey.Zakhvatov@gmail.com>, 2014
 # AndyZ <Andrey.Zakhvatov@gmail.com>, 2014
@@ -379,7 +379,7 @@ msgstr "Вы зачислены на курс, ваша личность под�
 #: common/djangoapps/course_modes/helpers.py
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Verified"
-msgstr "Подтверждённые"
+msgstr "Верификация"
 
 #: common/djangoapps/course_modes/helpers.py
 msgid "ID Verified Ribbon/Badge"
@@ -463,7 +463,7 @@ msgstr ""
 #: common/djangoapps/course_modes/models.py
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Honor"
-msgstr "Сертификат Кодекса чести"
+msgstr "Сертификация"
 
 #: common/djangoapps/course_modes/models.py
 msgid ""
@@ -5752,8 +5752,8 @@ msgid ""
 "{platform_name} acknowledges achievements through certificates, which are "
 "awarded for course activities that {platform_name} students complete."
 msgstr ""
-"{platform_name} признаёт достижения посредством сертификатов, которые "
-"присуждаются за выполнение учебных заданий курса {platform_name}."
+"{platform_name} признаёт достижения с помощью сертификатов, "
+"присуждаемых за выполнение учебных задач курса {platform_name}."
 
 #. Translators:  'All rights reserved' is a legal term used in copyrighting to
 #. protect published content
@@ -5788,7 +5788,7 @@ msgstr "Проверка сертификата"
 #: lms/djangoapps/certificates/views/webview.py
 #, python-brace-format
 msgid "About {platform_name} Accomplishments"
-msgstr "О достижениях на {platform_name}"
+msgstr "О достижениях в {platform_name}"
 
 #. Translators:  This line appears on the page just before the generation date
 #. for the certificate
@@ -5838,7 +5838,7 @@ msgstr "Подтвердите этот сертификат самостоят�
 msgid "{platform_name} offers interactive online classes and MOOCs."
 msgstr ""
 "<!-- {platform_name} -->Неформальная система обучения на протяжении жизни, "
-"которая объединяет лучшие элементы очного и онлайн-образования"
+"которая сочетает лучшие элементы очного и онлайн-образования."
 
 #: lms/djangoapps/certificates/views/webview.py
 #, python-brace-format
@@ -5848,7 +5848,7 @@ msgstr "О платформе {platform_name}"
 #: lms/djangoapps/certificates/views/webview.py
 #, python-brace-format
 msgid "Learn more about {platform_name}"
-msgstr "Узнать больше {platform_name}"
+msgstr "Узнайте больше о {platform_name}"
 
 #: lms/djangoapps/certificates/views/webview.py
 #, python-brace-format
@@ -5870,7 +5870,7 @@ msgstr "Контакты {platform_name}"
 #: lms/djangoapps/certificates/views/webview.py
 #, python-brace-format
 msgid "{platform_name} acknowledges the following student accomplishment"
-msgstr "{platform_name} признаёт следующие достижения обучающегося"
+msgstr "{platform_name} признаёт такие достижения слушателя"
 
 #. Translators:  This text represents the description of course
 #: lms/djangoapps/certificates/views/webview.py
@@ -5908,7 +5908,7 @@ msgstr "Дополнительная информация о сертифика�
 #: lms/djangoapps/certificates/views/webview.py
 #, python-brace-format
 msgid "{fullname}, you earned a certificate!"
-msgstr "{fullname}, вы получили сертификат!"
+msgstr "{fullname}, Вы получили сертификат!"
 
 #. Translators: This line congratulates the user and instructs them to share
 #. their accomplishment on social networks
@@ -5917,8 +5917,8 @@ msgid ""
 "Congratulations! This page summarizes what you accomplished. Show it off to "
 "family, friends, and colleagues in your social and professional networks."
 msgstr ""
-"Поздравляем!  Эта страница содержит все ваши достижения.  Поделитесь ею с "
-"семьёй, друзьями и коллегами в своих социальных и профессиональных сетях."
+"Поздравляем! Эта страница содержит все Ваши достижения. Поделитесь ею с "
+"семьей, друзьями и коллегами в своих социальных и профессиональных сетях."
 
 #. Translators: This line leads the reader to understand more about the
 #. certificate that a student has been awarded
@@ -8525,7 +8525,7 @@ msgstr "Сумма"
 #: lms/templates/shoppingcart/billing_details.html
 #: lms/templates/shoppingcart/receipt.html
 msgid "Total"
-msgstr "Итого"
+msgstr "Общий уровень"
 
 #: lms/djangoapps/shoppingcart/pdf.py
 msgid "Payment Received"
@@ -9581,7 +9581,7 @@ msgstr "Просмотреть и обновить информацию о ре�
 #: lms/djangoapps/support/views/refund.py
 #: lms/templates/shoppingcart/billing_details.html
 msgid "Email Address"
-msgstr "Адрес электронной почты"
+msgstr "Почтовый ящик"
 
 #: lms/djangoapps/support/views/refund.py
 #: openedx/core/djangoapps/schedules/admin.py
@@ -9795,7 +9795,7 @@ msgstr "Описание вашей платформы"
 #: lms/envs/common.py
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Audit"
-msgstr "Бесплатный курс"
+msgstr "Бесплатное прослушивание"
 
 #. Translators: This is the website name of www.facebook.com.  Please
 #. translate this the way that Facebook advertises in your language.
@@ -17180,6 +17180,12 @@ msgstr "Показать все темы"
 msgid "Unread posts"
 msgstr "Непрочитанные сообщения"
 
+msgid "Unread"
+msgstr "Непрочитанные"
+
+msgid "Unanswered"
+msgstr "Без ответа"
+
 #. Translators: This is a menu option for showing only unanswered forum
 #. question threads
 #: lms/templates/discussion/_thread_list_template.html
@@ -18382,7 +18388,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Professional"
-msgstr "Профессиональный"
+msgstr "Специализация"
 
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Basic Course Information"
@@ -19706,7 +19712,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/send_email.html
 msgid "Show Email Task History"
-msgstr "Показать историю отправленных сообщений"
+msgstr "Показать отправленные сообщения"
 
 #: lms/templates/instructor/instructor_dashboard_2/set_course_mode_price_modal.html
 msgid "Set Course Mode Price"
@@ -25945,4 +25951,41 @@ msgstr "http://desk.ua/ru/contact"
 
 msgid "All courses"
 msgstr "Все курсы"
+
+msgid "Pass"
+msgstr "Проходной уровень"
+
+msgid "pass"
+msgstr "проходной уровень"
+
+#: lms/templates/instructor/instructor_dashboard_2/student_admin.html
+msgid "Learner's {platform_name} email address or username *"
+msgstr "Электронная почта или имя пользователя <!-- {platform_name} -->"
+
+#: lms/templates/instructor/instructor_dashboard_2/student_admin.html
+msgid "Location of problem in course *"
+msgstr "Местонахождение задачи в рамках курса"
+
+#: lms/djangoapps/certificates/models.py
+msgid "already received"
+msgstr "уже получено"
+
+msgid "didn't receive"
+msgstr "не получено"
+
+msgid "error states"
+msgstr ""
+
+msgid "audit passing states"
+msgstr ""
+
+msgid "audit not passing states"
+msgstr ""
+
+#: common/lib/xmodule/xmodule/graders.py
+msgid "{short_label} Avg"
+msgstr "{short_label} средн."
+
+msgid "{section_type} Average = {percent:.0%}"
+msgstr "{section_type} Средняя оценка = {percent:.0%}"
 
