@@ -1033,11 +1033,6 @@ ORA2_FILEUPLOAD_CACHE_NAME = ENV_TOKENS.get('ORA2_FILEUPLOAD_CACHE_NAME', 'defau
 ############## Settings for CourseGraph ############################
 COURSEGRAPH_JOB_QUEUE = ENV_TOKENS.get('COURSEGRAPH_JOB_QUEUE', LOW_PRIORITY_QUEUE)
 
-ELASTIC_APM = {
-    'SERVICE_NAME': ENV_TOKENS.get('APM_SERVICE_NAME', ''),
-    'SECRET_TOKEN': AUTH_TOKENS.get('APM_SECRET_TOKEN', ''),
-    'SERVER_URL': ENV_TOKENS.get('APM_SERVER_URL', '')
-}
 if FEATURES.get("ENABLE_RG_INSTRUCTOR_ANALYTICS", False):
     INSTALLED_APPS += ('rg_instructor_analytics',)
     if 'web_fragments' not in INSTALLED_APPS:
