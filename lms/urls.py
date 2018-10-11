@@ -18,6 +18,7 @@ from openedx.core.djangoapps.programs.models import ProgramsApiConfig
 from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.features.enterprise_support.api import enterprise_enabled
+from student_enrollment.api import StudentEnrollment
 
 from openassessment.fileupload import views_filesystem
 
@@ -26,11 +27,7 @@ if settings.DEBUG or settings.FEATURES.get('ENABLE_DJANGO_ADMIN_SITE'):
     admin.autodiscover()
 
 # Use urlpatterns formatted as within the Django docs with first parameter "stuck" to the open parenthesis
-urlpatterns = (
-    '',
-
-    
-
+urlpatterns = [
     url(r'^$', 'branding.views.index', name="root"),   # Main marketing page, or redirect to courseware
 
     url(r'', include('student.urls')),
@@ -117,6 +114,11 @@ urlpatterns = (
     url(r'^api/experiments/', include('experiments.urls', namespace='api_experiments')),
 
     url(r'^(?P<key>.+)/openassessment-filesystem-storage', views_filesystem.filesystem_storage, name='openassessment-filesystem-storage'),
+]
+
+# Student Enrollment
+urlpatterns += (
+    url(r'^enrollment/enroll/', StudentEnrollment.as_view(), name='student_enrollment'),
 )
 
 # TODO: This needs to move to a separate urls.py once the student_account and
@@ -194,8 +196,7 @@ if settings.WIKI_ENABLED:
         url(r'^courses/{}/wiki/'.format(settings.COURSE_KEY_REGEX), include(wiki_pattern())),
     )
 
-COURSE_URLS = patterns(
-    '',
+COURSE_URLS = [
     url(
         r'^look_up_registration_code$',
         'lms.djangoapps.instructor.views.registration_codes.look_up_registration_code',
@@ -206,7 +207,7 @@ COURSE_URLS = patterns(
         'lms.djangoapps.instructor.views.registration_codes.registration_code_details',
         name='registration_code_details',
     ),
-)
+]
 urlpatterns += (
     # jump_to URLs for direct access to a location in the course
     url(
@@ -829,12 +830,6 @@ urlpatterns += (
     url(r'^program/', include('ci_program.urls')),
 )
 
-# Student Enrollment
-from student_enrollment.api import StudentEnrollment
-urlpatterns += (
-    url(r'^enrollment/enroll/', StudentEnrollment.as_view()),
-)
-
 # Embargo
 if settings.FEATURES.get('EMBARGO'):
     urlpatterns += (
@@ -998,8 +993,6 @@ urlpatterns += (
     url(r'config/catalog', ConfigurationModelCurrentAPIView.as_view(model=CatalogIntegration)),
     url(r'config/forums', ConfigurationModelCurrentAPIView.as_view(model=ForumsConfig)),
 )
-
-urlpatterns = patterns(*urlpatterns)
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

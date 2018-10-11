@@ -2,6 +2,7 @@
 This module creates a sysadmin dashboard for managing and viewing
 courses.
 """
+from django.core.urlresolvers import reverse
 import unicodecsv as csv
 import json
 import logging
@@ -47,7 +48,7 @@ from search.search_engine_base import SearchEngine
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
-ENROLL_ENDPOINT = 'https://courses.codeinstitute.net/enrollment/enroll/'
+ENROLL_ENDPOINT = settings.LMS_ROOT_URL + reverse('student_enrollment')
 LEGAL_CHARACTERS = string.ascii_letters + string.digits + ' @_.'
 
 log = logging.getLogger(__name__)
