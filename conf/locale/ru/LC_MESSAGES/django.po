@@ -5597,7 +5597,7 @@ msgid ""
 "successfully completed, received a passing grade, and was awarded this "
 "{platform_name} {certificate_type} Certificate of Completion in "
 msgstr ""
-"Успешно завершил(а) онлайн-курс "
+"Успешно завершил(а) онлайн-курс"
 
 #. Translators: This text describes the purpose (and therefore, value) of a
 #. course certificate
