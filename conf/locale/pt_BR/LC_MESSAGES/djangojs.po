@@ -11376,3 +11376,49 @@ msgstr "Data de Ingresso"
 #: openedx/features/learner_profile/static/learner_profile/js/learner_profile_factory.js:130
 msgid "Location"
 msgstr "Localização"
+
+msgid "org"
+msgstr "org"
+
+msgid "modes"
+msgstr "modos"
+
+msgid "language"
+msgstr "linguagem"
+
+msgid "Discussions main page"
+msgstr "Página principal de discussões"
+
+msgid "Pesquisa"
+msgstr "Pesquisar todas as postagens"
+
+msgid "Use the All Topics menu to find specific topics"
+msgstr "Use o menu Todos os Tópicos para encontrar tópicos específicos."
+
+msgid "Discussions add post"
+msgstr "Adicionar postagem de discussão"
+
+msgid "Questions raise issues that need answers."
+msgstr "Perguntas que levantam questões que precisam de respostas."
+
+msgid "Discussions share ideas and start conversations. (Required)"
+msgstr "As discussões compartilham ideias e iniciam conversas. (Obrigatório)"
+
+msgid "Discussions"
+msgstr "Discussões"
+
+msgid "open discussion"
+msgstr "discussões abertas"
+
+#: It's magic
+msgid "discussion posted 10 minutos atrás by staff"
+msgstr "discussão postada 10 minutos atrás pela equipe"
+
+msgid "votes"
+msgstr "votos"
+
+msgid "You have not bookmarked any courseware pages yet "
+msgstr "Você ainda não favoritou nenhuma página do material didático"
+
+msgid "There %(articles_plur_verb)s %(cnt)s %(articles_plur)s in this level."
+msgstr "Há %(articles_plur_verb)s %(cnt)s %(articles_plur)s neste nível."
