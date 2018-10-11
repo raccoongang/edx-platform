@@ -16469,7 +16469,7 @@ msgstr "Непрочитані"
 #. question threads
 #: lms/templates/discussion/_thread_list_template.html
 msgid "Unanswered posts"
-msgstr "повідолення без відповіді"
+msgstr "повідомлення без відповіді"
 
 msgid "Unanswered"
 msgstr "Без відповіді"
