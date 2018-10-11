@@ -81,19 +81,19 @@
     }
 
     .certificates {
-        padding: 30px 0;
-    }
+        padding: 30px 0 !important;
 
-    .certificates_wrapper {
-        padding: 40px 40px 40px 80px !important;
-    }
+        .certificates_wrapper {
+            padding: 40px 40px 40px 80px !important;
+        }
 
-    .certificates_main-right {
-        padding-top: 0;
-    }
+        .certificates_main-right {
+            padding-top: 10px;
+        }
 
-    .certificates_stamp {
-        width: 220px;
+        .certificates_stamp {
+            width: 240px;
+        }
     }
 
     .wrapper-view {
