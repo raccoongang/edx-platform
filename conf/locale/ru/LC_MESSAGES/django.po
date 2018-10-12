@@ -26119,3 +26119,11 @@ msgid ""
 "A new revision was created: Merge between Revision #%(r1)d and Revision "
 "#%(r2)d"
 msgstr "Создана новая версия: слияние версий #%(r1)d и #%(r2)d"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "c e r t i f i c a t e"
+msgstr "с е р т и ф и к а т"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "THIS CERTIFICATE IS PROUDLY PRESENTED TO"
+msgstr "Сертификат об успешном прохождении курса"
