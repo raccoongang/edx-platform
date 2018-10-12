@@ -58,3 +58,32 @@
     margin-bottom: $baseline;
   }
 }
+
+.modal-loader {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(255, 255, 255, .7)
+                url('/static/images/loader.gif')
+                50% 50%
+                no-repeat;
+    div {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, 30px);
+    }
+}
+
+body.answer-loading .modal-loader {
+    overflow: hidden;
+}
+
+body.answer-loading .modal-loader {
+    display: block;
+}
