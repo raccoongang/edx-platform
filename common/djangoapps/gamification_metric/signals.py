@@ -17,11 +17,12 @@ from referrals.models import ActivatedLinks
 def send_achievement(sender, instance, **kwargs):
     # Remove check for GAMMA_ALLOWED_USERS after release
     if instance.module_type in ('video', 'problem'):
-        if (
-            instance.module_type == 'video' and
-            (instance.modified - instance.created).total_seconds() <= 1
-        ):
-            return None
+        ## TODO: resolve this when find out how to 
+        #if (
+        #    instance.module_type == 'video' and
+        #    (instance.modified - instance.created).total_seconds() <= 1
+        #):
+        #    return None
         if (
             instance.module_type == 'problem' and
             (not instance.grade or type(instance.grade) != float)
@@ -40,7 +41,7 @@ def send_achievement(sender, instance, **kwargs):
 @receiver(post_save, sender='student.CourseEnrollment')
 def send_enroll_achievement(sender, instance, created, **kwargs):
     # Remove check for GAMMA_ALLOWED_USERS after release
-    if created and instance.is_active:
+    if created:
         org = instance.course_id.org
         course_id = unicode(instance.course_id)
         data = {
