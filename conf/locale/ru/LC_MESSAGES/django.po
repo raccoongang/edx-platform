@@ -26159,3 +26159,11 @@ msgstr "Средняя цена"
 #: cms/templates/settings.html
 msgid "Maximum price"
 msgstr "Максимальная цена"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "c e r t i f i c a t e"
+msgstr "с е р т и ф и к а т"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "THIS CERTIFICATE IS PROUDLY PRESENTED TO"
+msgstr "Сертификат об успешном прохождении курса"
