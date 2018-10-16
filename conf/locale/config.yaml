@@ -4,7 +4,7 @@ locales:
     - en  # English - Source Language
     # - am  # Amharic
     - ar  # Arabic
-    # - az  # Azerbaijani
+    - az  # Azerbaijani
     # - bg_BG  # Bulgarian (Bulgaria)
     # - bn_BD  # Bengali (Bangladesh)
     # - bn_IN  # Bengali (India)
