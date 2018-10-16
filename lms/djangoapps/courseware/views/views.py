@@ -851,6 +851,8 @@ def program_marketing(request, program_uuid):
     user_states = []
     if hasattr(request.user, 'extrainfo'):
         user_states = request.user.extrainfo.stateextrainfo_set.all().values_list('state', flat=True)
+    elif not request.user.is_authenticated():
+        user_states = dict(settings.US_STATE_CHOICES).keys()
 
     _filter = get_program_filter(user_states)
 
@@ -860,7 +862,9 @@ def program_marketing(request, program_uuid):
     course_ids = get_course_ids(program_data['courses'])
     total_courses_count = len(course_ids)
 
-    started_courses_count = CourseEnrollment.enrollments_for_user(request.user).filter(course_id__in=course_ids).count()
+    started_courses_count = 0
+    if request.user.is_authenticated():
+        started_courses_count = CourseEnrollment.enrollments_for_user(request.user).filter(course_id__in=course_ids).count()
 
     program = ProgramMarketingDataExtender(program_data, request.user).extend()
     program['type_slug'] = slugify(program['type'])
