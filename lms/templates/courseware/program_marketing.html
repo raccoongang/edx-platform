@@ -399,9 +399,15 @@ description_max_length = 250
       )}
     </h3>
     % if (program['full_program_price'] and program['full_program_price'] != '0.00'):
-        <button class="btn buy-program" data-url="${add_to_cart_url}">
-            ${Text(_('Buy all courses for ${full_program_price}')).format(full_program_price=full_program_price)}
-        </button>
+      % if (user.is_authenticated()):
+      <button class="btn buy-program" data-url="${add_to_cart_url}">
+        ${Text(_('Buy all courses for ${full_program_price}')).format(full_program_price=full_program_price)}
+      </button>
+      % else:
+      <h3 class="hd">
+        ${Text(_('Bundle Price ${full_program_price}')).format(full_program_price=full_program_price)}
+      </h3>
+      % endif
     % endif
     <div class="course-cards">
       % for course in courses:
