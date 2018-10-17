@@ -1,8 +1,10 @@
 from django.http import Http404
 from django.views.decorators.http import require_GET
+from django.conf import settings
 from django.core.urlresolvers import reverse
 
 from edxmako.shortcuts import render_to_response
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.programs.models import ProgramsApiConfig
 from openedx.core.djangoapps.programs.utils import (
     ProgramProgressMeter,
@@ -51,6 +53,8 @@ def program_listing(request, user=None):
         user_states = []
         if hasattr(request.user, 'extrainfo'):
             user_states = request.user.extrainfo.stateextrainfo_set.all().values_list('state', flat=True)
+        elif not request.user.is_authenticated():
+            user_states = dict(settings.US_STATE_CHOICES).keys()
 
         filters = [get_program_filter(user_states, courses=courses)]
 
@@ -72,7 +76,7 @@ def program_listing(request, user=None):
         p.update({'marketing_page_url': mktg_url(p)})
         active_courses.extend(get_program_courses(p))
 
-    _cf = lambda c: any(s in user_states for s in approved_states(c))
+    _cf = lambda c: bool(CourseOverview.get_from_id(c.id).effort) and any(s in user_states for s in approved_states(c))
     courses = filter(_cf, courses)
 
     context = {
