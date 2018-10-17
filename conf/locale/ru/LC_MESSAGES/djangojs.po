@@ -2,7 +2,7 @@
 # edX community translations have been downloaded from Russian (http://www.transifex.com/open-edx/edx-platform/language/ru/).
 # Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# 
+#
 # Translators:
 # dfxedx <ah532@ya.ru>, 2014
 # Alena Koneva <alenakoneva@ya.ru>, 2014
@@ -65,7 +65,7 @@
 # edX translation file.
 # Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# 
+#
 # Translators:
 # Alexander Dyumin <a.dyumin@gmail.com>, 2015
 # Alexandr Kosharny <acosarnii@gmail.com>, 2016
@@ -101,7 +101,7 @@
 # edX translation file
 # Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# 
+#
 # Translators:
 # Alexandr Kosharny <acosarnii@gmail.com>, 2016
 # Andrey Bochkarev <abocha@ya.ru>, 2015
@@ -129,7 +129,7 @@
 # edX translation file
 # Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# 
+#
 # Translators:
 # Alexandr Kosharny <acosarnii@gmail.com>, 2016
 # ovoschee <all.spam.there@gmail.com>, 2014
@@ -763,11 +763,11 @@ msgstr ""
 
 #: common/static/common/js/components/views/paging_header.js
 msgid "Showing {firstIndex} out of {numItems} total"
-msgstr "Показывать совокупность {firstIndex} к {numItems} "
+msgstr "Отображается {firstIndex} из {numItems} "
 
 #: common/static/common/js/components/views/paging_header.js
 msgid "Showing {firstIndex}-{lastIndex} out of {numItems} total"
-msgstr "Показывать совокупность {firstIndex}-{lastIndex} к {numItems} "
+msgstr "Отображается {firstIndex}-{lastIndex} из {numItems} "
 
 #: common/static/common/js/discussion/utils.js
 msgid "Loading content"
@@ -3583,6 +3583,14 @@ msgstr ""
 "поддержки{anchorEnd}."
 
 #: lms/static/js/student_account/views/account_settings_fields.js
+msgid ""
+"We've sent a message to {email_address}. Click the link in the message to "
+"reset your password."
+msgstr ""
+"Мы выслали сообщение на {email_address}. Перейдите по ссылке в письме для "
+"того, чтобы обновить пароль."
+
+#: lms/static/js/student_account/views/account_settings_fields.js
 msgid "Link your {accountName} account"
 msgstr "Подключите свою учётную запись {accountName}"
 
@@ -5634,9 +5642,16 @@ msgstr ""
 "Добавьте чётко сформулированный, содержательный заголовок, чтобы побудить "
 "других к участию (обязательно)."
 
+msgid ""
+"Add a clear and descriptive title to encourage participation."
+msgstr "Добавьте понятное и исчерпывающее название."
+
 #: common/static/common/templates/discussion/new-post.underscore
 msgid "Your question or idea (required)"
 msgstr "Ваш вопрос или предложение (обязательно)"
+
+msgid "Your question or idea"
+msgstr "Введите Ваш вопрос или комментарий"
 
 #: common/static/common/templates/discussion/new-post.underscore
 msgid "follow this post"
@@ -5829,6 +5844,13 @@ msgstr ""
 "В вопросах поднимаются проблемы, требующие ответа. Обсуждения позволяют "
 "делиться идеями и участвовать в дискуссиях (обязательно)."
 
+msgid ""
+"Questions raise issues that need answers. Discussions share ideas and start "
+"conversations."
+msgstr ""
+"Вопросы используются тогда, когда Вам нужны конкретные ответы. Обсуждения "
+"используются для того, чтобы делиться идеями и вести дискуссии."
+
 #: common/static/common/templates/discussion/thread-type.underscore
 msgid "Question"
 msgstr "Вопрос"
@@ -5854,6 +5876,11 @@ msgid "Add your post to a relevant topic to help others find it. (Required)"
 msgstr ""
 "Поместите Ваше сообщение в подходящую тему, чтобы упростить другим "
 "пользователям его поиск (обязательно)."
+
+msgid "Add your post to a relevant topic to help others find it."
+msgstr ""
+"Добавьте Ваше сообщение в соответствующую тему, чтобы помочь другим найти "
+"его."
 
 #: lms/djangoapps/discussion/static/discussion/templates/discussion-home.underscore
 msgid "Discussion Home"
@@ -6608,8 +6635,8 @@ msgid ""
 "You will not receive notification for emails that bounce, so double-check "
 "your spelling."
 msgstr ""
-"Вы не получите уведомлений о неполученных сообщениях, поэтому ещё раз "
-"проверьте адрес."
+"Вы не получите уведомление на электронную почту об отклоненных письмах, "
+"поэтому, пожалуйста, дважды проверьте правильность написания."
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 msgid "Add Learners"
@@ -6718,7 +6745,7 @@ msgstr "Что это значит?"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-group-header.underscore
 msgid "Learners are added to this cohort automatically."
-msgstr "Слушатели добавляются в эту группу автоматически."
+msgstr "Пользователи добавляются к этой целевой группы автоматически."
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-selector.underscore
 msgid "Select a cohort"
@@ -6770,7 +6797,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/divided-discussions-inline.underscore
 msgid "Content-Specific Discussion Topics"
-msgstr "Темы для обсуждения, связанные с конкретными материалами курса"
+msgstr "Тематические обсуждения"
 
 #: lms/templates/instructor/instructor_dashboard_2/divided-discussions-inline.underscore
 msgid "Specify whether content-specific discussion topics are divided."
@@ -9560,3 +9587,120 @@ msgstr ""
 #: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 msgid "Use Current Transcript"
 msgstr "Использовать субтитры"
+
+#: lms/templates/bookmarks/bookmarks-list.underscore
+msgid "My Bookmarks"
+msgstr "Мои Закладки"
+
+#: lms/static/js/student_profile/views/learner_profile_factory.js
+msgid "{platform_name} learners can see my:"
+msgstr "Пользователи {platform_name} могут видеть мой:"
+
+#: lms/static/js/student_account/views/account_settings_factory.js
+msgid ""
+"These settings include basic information about your account. You can also "
+"specify additional information and see your linked social accounts on this "
+"page."
+msgstr ""
+"Эти параметры включают в себя основную информацию о Вашей учетной записи. "
+"На этой странице Вы можете предоставить дополнительную информацию и увидеть "
+"Ваши учетные записи в социальных сетях."
+
+#: lms/static/js/student_account/views/account_settings_factory.js
+msgid ""
+"The name that identifies you throughout {platform_name}. You cannot change "
+"your username."
+msgstr ""
+"Имя для идентификации на {platform_name}. Вы не сможете изменить имя "
+"пользователя."
+
+#: lms/static/js/student_account/views/account_settings_factory.js
+msgid ""
+"The name that is used for ID verification and appears on your certificates. "
+"Other learners never see your full name. Make sure to enter your name "
+"exactly as it appears on your government-issued photo ID, including any non-"
+"Roman characters."
+msgstr ""
+"ФИО, используются при подтверждении личности и будут указаны на Ваших "
+"сертификатах. Обязательно убедитесь в правильности ввода Ваших ФИО. Они "
+"должны быть написаны именно так, как указано в Вашем удостоверении личности. "
+"Указывайте только достоверную информацию."
+
+#: lms/static/js/student_account/views/account_settings_factory.js
+msgid ""
+"The email address you use to sign in. Communications from {platform_name} "
+"and your courses are sent to this address."
+msgstr ""
+"Адрес электронной почты, которую Вы используете, чтобы войти на сайт. "
+"Сообщения от DESK и с Ваших курсов будут отправляться на этот адрес."
+
+#: lms/static/js/student_account/views/account_settings_factory.js
+msgid ""
+"When you select \"Reset Your Password\", a message will be sent to the email "
+"address for your {platform_name} account. Click the link in the message to "
+"reset your password."
+msgstr ""
+"Когда Вы нажмете \"Сбросить пароль\", будет отправлено сообщение на email "
+"Вашего аккаунта на {platform_name}. Перейдите по ссылке в сообщении для "
+"того, чтобы обновить старый пароль и установить новый."
+
+#: lms/static/js/student_account/views/account_settings_factory.js
+msgid "Country or Region"
+msgstr "Страна или Регион"
+
+#: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
+msgid ""
+"To review student cohort assignments or see the results of uploading a CSV "
+"file, download course profile information or cohort results on the "
+"{link_start}Data Download{link_end} page."
+msgstr ""
+"Для просмотра задания целевой группы пользователей или просмотра результатов "
+"подгрузки файла CSV, загрузите информацию о профиле курса или результаты "
+"целевой группы на странице загрузки данных."
+
+#: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-course-wide.underscore
+#: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
+msgid "Specify whether discussion topics are divided by cohort"
+msgstr "Укажите распределяются ли обсуждаемые темы между целевыми группами"
+
+#: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-course-wide.underscore
+msgid ""
+"Select the course-wide discussion topics that you want to divide by cohort."
+msgstr ""
+"Выберите общие темы обсуждения в рамках всего курса, которые Вы хотите "
+"распределить между целевыми группами"
+
+#: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-inline.underscore
+msgid ""
+"Specify whether content-specific discussion topics are divided by cohort."
+msgstr "Укажите распределяются ли тематические обсуждения между целевыми группами"
+
+#: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-inline.underscore
+msgid "Always cohort content-specific discussion topics"
+msgstr "Всегда распределять тематические обсуждения между целевыми группами"
+
+#: lms/templates/instructor/instructor_dashboard_2/cohort-discussions-inline.underscore
+msgid "Cohort selected content-specific discussion topics"
+msgstr "Распределять выбранные тематические обсуждения между целевыми группами"
+
+#: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
+msgid "Manage Students"
+msgstr "Управление пользователями"
+
+msgid "Add students to this cohort"
+msgstr "Добавить пользователей к этой целевой группы"
+
+msgid ""
+"Note: Students can be in only one cohort. Adding students to this group "
+"overrides any previous group assignment."
+msgstr ""
+"Примечание: пользователи могут находиться только в одной целевой группе. "
+"Добавление пользователей к этой целевой группы переопределяет любые "
+"предыдущие назначения группы."
+
+msgid ""
+"Enter email addresses and/or usernames, separated by new lines or commas, "
+"for the students you want to add. *"
+msgstr ""
+"Введите адрес электронной почты и / или имена пользователей, которых вы "
+"хотите добавить, разделенные линиями или запятыми"
