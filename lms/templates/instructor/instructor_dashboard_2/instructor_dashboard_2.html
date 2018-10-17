@@ -118,7 +118,7 @@ from django.core.urlresolvers import reverse
 
         % for section_data in sections:
           <section id="${ section_data['section_key'] }" class="idash-section" aria-labelledby="header-${section_data['section_key']}">
-              <h2 class="hd hd-2" id="header-${ section_data['section_key'] }">${ section_data['section_display_name'] }</h2>
+              <!--<h2 class="hd hd-2" id="header-${ section_data['section_key'] }">${ section_data['section_display_name'] }</h2>-->
               <%include file="${ section_data['section_key'] }.html" args="section_data=section_data" />
           </section>
           % endfor

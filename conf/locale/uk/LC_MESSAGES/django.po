@@ -227,7 +227,7 @@ msgstr "Ви підписані як верифікований студент"
 #: common/djangoapps/course_modes/helpers.py
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Verified"
-msgstr "Перевірений"
+msgstr "Верифікація"
 
 #: common/djangoapps/course_modes/helpers.py
 msgid "ID Verified Ribbon/Badge"
@@ -311,7 +311,7 @@ msgstr ""
 #: common/djangoapps/course_modes/models.py
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Honor"
-msgstr "Честь"
+msgstr "Сертифікація"
 
 #: common/djangoapps/course_modes/models.py
 msgid ""
@@ -2266,7 +2266,7 @@ msgstr "Дані, пов'язані із завданням, у форматі X
 
 #: common/lib/xmodule/xmodule/capa_base.py
 msgid "Dictionary with the correctness of current student answers"
-msgstr "Словник, що визначає правильність поточних відповідей студентів"
+msgstr "Словник, що визначає правильність поточних відповідей користувачів"
 
 #: common/lib/xmodule/xmodule/capa_base.py
 msgid "Dictionary for maintaining the state of inputtypes"
@@ -2274,7 +2274,7 @@ msgstr "Словник для збереження станів введених
 
 #: common/lib/xmodule/xmodule/capa_base.py
 msgid "Dictionary with the current student responses"
-msgstr "Словник, що містить поточні відповіді студентів"
+msgstr "Словник, що містить поточні відповіді користувачів"
 
 #: common/lib/xmodule/xmodule/capa_base.py
 msgid "Dictionary with the current student score"
@@ -2979,7 +2979,7 @@ msgid ""
 "course staff."
 msgstr ""
 "Введіть true чи false. Якщо true, студенти можуть створювати обговорення, "
-"які відображаються для інших студентів, як анонімні. Це налаштування не "
+"які відображаються для інших користувачів, як анонімні. Це налаштування не "
 "дозволяє робити пости анонімними для персоналу курсу."
 
 #: common/lib/xmodule/xmodule/course_module.py
@@ -3078,7 +3078,7 @@ msgstr ""
 "сертифікат будe доступнa усім студентам тільки після дати закінчення курсу. "
 "Щоб відобразити інформацію про сертифікат усім студентам відразу після його "
 "створення, введіть early_with_info. Щоб відобразити лише посилання  для тих "
-"студентів, які пройшли курс відразу після створення сертифікатів, введіть "
+"користувачів, які пройшли курс відразу після створення сертифікатів, введіть "
 "early_no_info."
 
 #: common/lib/xmodule/xmodule/course_module.py
@@ -3257,15 +3257,15 @@ msgstr ""
 
 #: common/lib/xmodule/xmodule/course_module.py
 msgid "Course Maximum Student Enrollment"
-msgstr "Максимальна кількість студентів курсу"
+msgstr "Максимальна кількість користувачів курсу"
 
 #: common/lib/xmodule/xmodule/course_module.py
 msgid ""
 "Enter the maximum number of students that can enroll in the course. To allow "
 "an unlimited number of students, enter null."
 msgstr ""
-"Введіть максимальну кількість студентів, які можуть зареєструватися на курс. "
-"Щоб дозволити необмежену кількість студентів, введіть null."
+"Введіть максимальну кількість користувачів, які можуть зареєструватися на курс. "
+"Щоб дозволити необмежену кількість користувачів, введіть null."
 
 #: common/lib/xmodule/xmodule/course_module.py
 msgid "Allow Public Wiki Access"
@@ -3582,7 +3582,7 @@ msgstr "Загальне"
 #: common/lib/xmodule/xmodule/graders.py
 #, python-brace-format
 msgid "{assignment_type} = {weighted_percent:.2%} of a possible {weight:.2%}"
-msgstr ""
+msgstr "{assignment_type} = {weighted_percent:.2%} з можливих {weight:.2%}"
 
 #: common/lib/xmodule/xmodule/html_module.py
 msgid "Text"
@@ -3929,7 +3929,7 @@ msgid ""
 "in the current page. This setting is only used when Hide External Tool is "
 "set to False.  "
 msgstr ""
-"Оберіть \"True\", якщо ви хочете, щоб при переході студентів за посиланням "
+"Оберіть \"True\", якщо ви хочете, щоб при переході користувачів за посиланням "
 "інструмент LTI відкривався в новому вікні. Виберіть \"False\" для відкриття "
 "LTI в тому ж вікні. Це налаштування може бути використане тільки в тому "
 "разі, якщо встановлено значення \"False\" для \"Приховати Зовнішні "
@@ -4480,9 +4480,9 @@ msgid ""
 "Caution: Changing the group configuration of a student-visible experiment "
 "will impact the experiment data."
 msgstr ""
-"Конфігурація визначає, як формуються групи студентів для вивчення цих "
+"Конфігурація визначає, як формуються групи користувачів для вивчення цих "
 "експериментальних матеріалів. Попередження: зміна конфігурації групи, коли "
-"експериментальні матеріали видимі для студентів, вплине на дані експерименту."
+"експериментальні матеріали видимі для користувачів, вплине на дані експерименту."
 
 #: common/lib/xmodule/xmodule/split_test_module.py
 msgid "Group Configuration"
@@ -4807,7 +4807,7 @@ msgid ""
 "If you want to provide the transcript for download in a different format, "
 "upload a file by using the Upload Handout field."
 msgstr ""
-"Зробити скачування субтитрів доступним для студентів. Посилання для "
+"Зробити скачування субтитрів доступним для користувачів. Посилання для "
 "скачування файлу з'явиться під відео. За замовчуванням формат файлу "
 "субтитрів може бути .srt або .txt. Якщо ви хочете зробити доступним "
 "скачування субтитрів в іншому форматі, завантажте файл, користуючись полем "
@@ -5711,7 +5711,7 @@ msgstr "В процентах"
 
 #: lms/djangoapps/class_dashboard/dashboard_data.py
 msgid "Opened by this number of students"
-msgstr "Кількість студентів, що відкривали"
+msgstr "Кількість користувачів, що відкривали"
 
 #: lms/djangoapps/class_dashboard/dashboard_data.py
 msgid "subsections"
@@ -5723,7 +5723,7 @@ msgstr "Кількість Студентів"
 
 #: lms/djangoapps/class_dashboard/dashboard_data.py
 msgid "Percent of Students"
-msgstr "Процент студентів"
+msgstr "Процент користувачів"
 
 #: lms/djangoapps/class_dashboard/dashboard_data.py
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
@@ -7436,7 +7436,7 @@ msgstr "Членство"
 
 #: lms/djangoapps/instructor/views/instructor_dashboard.py
 msgid "Cohorts"
-msgstr "Когорти"
+msgstr "Цільові групи"
 
 #: lms/djangoapps/instructor/views/instructor_dashboard.py
 #: lms/djangoapps/discussion/templates/discussion/discussion_board_fragment.html
@@ -7446,7 +7446,7 @@ msgstr "Обговорення"
 #: lms/djangoapps/instructor/views/instructor_dashboard.py
 #: lms/templates/ccx/coach_dashboard.html
 msgid "Student Admin"
-msgstr "Управління студентами"
+msgstr "Управління користувачами"
 
 #: lms/djangoapps/instructor/views/instructor_dashboard.py
 msgid "Extensions"
@@ -7847,7 +7847,7 @@ msgstr "Неможливо знайти жодного студента із п�
 #: lms/djangoapps/instructor_task/views.py
 #, python-brace-format
 msgid "Problem failed to be {action} for any of {attempted} students"
-msgstr "Проблема не була {action} для всіх з {attempted} студентів"
+msgstr "Проблема не була {action} для всіх з {attempted} користувачів"
 
 #. Translators: {action} is a past-tense verb that is localized separately.
 #. {attempted} is a count.
@@ -7861,7 +7861,7 @@ msgstr "Проблема успішно {action} для {attempted} студен
 #: lms/djangoapps/instructor_task/views.py
 #, python-brace-format
 msgid "Problem {action} for {succeeded} of {attempted} students"
-msgstr "Проблема {action} для {succeeded} з {attempted} студентів"
+msgstr "Проблема {action} для {succeeded} з {attempted} користувачів"
 
 #. Translators: {action} is a past-tense verb that is localized separately.
 #: lms/djangoapps/instructor_task/views.py
@@ -9112,7 +9112,7 @@ msgstr "Валовий прибуток по мінімуму"
 
 #: lms/djangoapps/shoppingcart/reports.py
 msgid "Number of Verified Students Contributing More than the Minimum"
-msgstr "Кількість перевірених студентів, які роблять більше за мінімум"
+msgstr "Кількість перевірених користувачів, які роблять більше за мінімум"
 
 #: lms/djangoapps/shoppingcart/reports.py
 msgid "Number of Refunds"
@@ -9499,7 +9499,7 @@ msgstr ""
 #: lms/envs/common.py
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Audit"
-msgstr "Безкоштовне прослуховування"
+msgstr "Безкоштовне<br>прослуховування"
 
 #. Translators: This is the website name of www.facebook.com.  Please
 #. translate this the way that Facebook advertises in your language.
@@ -12705,7 +12705,7 @@ msgstr ""
 
 #: lms/templates/enroll_students.html
 msgid "Student Enrollment Form"
-msgstr "Форма для зарахування студентів"
+msgstr "Форма для зарахування користувачів"
 
 #: lms/templates/enroll_students.html
 msgid "Course: "
@@ -12713,7 +12713,7 @@ msgstr "Курс:"
 
 #: lms/templates/enroll_students.html
 msgid "Add new students"
-msgstr "Додати нових студентів"
+msgstr "Додати нових користувачів"
 
 #: lms/templates/enroll_students.html
 msgid "Existing students:"
@@ -13123,7 +13123,7 @@ msgstr "Натисніть, щоб запустити"
 
 #: lms/templates/manage_user_standing.html
 msgid "Manage student accounts"
-msgstr "Управляння обліковими записами студентів"
+msgstr "Управляння обліковими записами користувачів"
 
 #: lms/templates/manage_user_standing.html
 msgid "Username:"
@@ -13675,17 +13675,17 @@ msgstr ""
 #: lms/templates/staff_problem_info.html
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Delete Learner's State"
-msgstr ""
+msgstr "Видалити результати виконання завдання"
 
 #: lms/templates/staff_problem_info.html
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Rescore Learner's Submission"
-msgstr "Видалити спроби студента"
+msgstr "Повторне оцінювання"
 
 #: lms/templates/staff_problem_info.html
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Rescore Only If Score Improves"
-msgstr "Видалити спроби тільки, якщо бал підвищиться"
+msgstr "Повторне оцінювання тільки за умови кращого результату користувача"
 
 #: lms/templates/staff_problem_info.html
 msgid "Override Score"
@@ -14846,7 +14846,7 @@ msgstr ""
 
 #: lms/templates/ccx/enrollment.html
 msgid "Student List Management"
-msgstr "Управління списком студентів"
+msgstr "Управління списком користувачів"
 
 #: lms/templates/ccx/enrollment.html
 msgid "CCX student list management response message"
@@ -14969,7 +14969,7 @@ msgstr "Усі розділи були додані"
 
 #: lms/templates/ccx/student_admin.html
 msgid "View gradebook"
-msgstr "Переглянути журнал оцінок"
+msgstr "Переглянути прогрес в рамках курсу"
 
 #: lms/templates/ccx/student_admin.html
 msgid "Download student grades"
@@ -15470,7 +15470,7 @@ msgstr "Журнал оцінок"
 
 #: lms/templates/courseware/gradebook.html
 msgid "Search students"
-msgstr "Пошук студентів"
+msgstr "Пошук користувачів"
 
 #: lms/templates/courseware/gradebook.html
 msgid "previous page"
@@ -16469,7 +16469,7 @@ msgstr "Непрочитані"
 #. question threads
 #: lms/templates/discussion/_thread_list_template.html
 msgid "Unanswered posts"
-msgstr "повідолення без відповіді"
+msgstr "повідомлення без відповіді"
 
 msgid "Unanswered"
 msgstr "Без відповіді"
@@ -17561,15 +17561,15 @@ msgstr "Стан усіх активних процесів відображає
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Regenerate Certificates"
-msgstr "Відновлення сертифікатів"
+msgstr "Повторно видати сертифікати"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid ""
 "To regenerate certificates for your course, choose the learners who will "
 "receive regenerated certificates and click Regenerate Certificates."
 msgstr ""
-"Щоб відновити сертифікати для вашого курсу, оберіть студентів, які отримають "
-"відновлені сертифікати та натисніть \"Відновити сертифікати\"."
+"Щоб відновити сертифікати для вашого курсу, оберіть користувачів, які мають "
+"отримати сертифікати та натисніть \"Повторно видати сертифікати\"."
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Choose learner types for regeneration"
@@ -17578,23 +17578,27 @@ msgstr ""
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid ""
 "Regenerate for learners who have already received certificates. ({count})"
-msgstr "Відновити для студентів, які вже отримали сертифікати. ({count})"
+msgstr "Відновити для користувачів, які вже отримали сертифікати. ({count})"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Regenerate for learners who have not received certificates. ({count})"
-msgstr "Відновити для студентів, які ще не отримали сертифікатів. ({count})"
+msgstr "Відновити для користувачів, які ще не отримали сертифікатів. ({count})"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Regenerate for learners with audit passing state. ({count})"
 msgstr ""
+"Створити повторно безкоштовні сертифікати для слухачів, які набрали "
+"прохідний бал. {{count}}"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Regenerate for learners with audit not passing state. ({count})"
 msgstr ""
+"Створити повторно безкоштовні сертифікати для слухачів, які НЕ "
+"набрали прохідний бал. {{count}}"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Regenerate for learners in an error state. ({count})"
-msgstr "Відновити для студентів у стані помилки. ({count})"
+msgstr "Відновити для користувачів у стані помилки. ({count})"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Certificate Generation History"
@@ -17602,11 +17606,11 @@ msgstr "Історія генерування сертифікатів"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Task name"
-msgstr ""
+msgstr "Назва завдання"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "SET CERTIFICATE EXCEPTIONS"
-msgstr "ВСТАНОВЛЕННЯ ВІНЯТКІВ ДЛЯ СЕРТИФІКАТІВ"
+msgstr "ВСТАНОВЛЕННЯ ВИНЯТКІВ ДЛЯ СЕРТИФІКАТІВ"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid ""
@@ -17617,12 +17621,12 @@ msgid ""
 msgstr ""
 "Встановіть винятки у генеруванні сертифікатів для тих, хто не є "
 "кваліфікованим для сертифікату, але отримав виняток від команди курсу. Після "
-"того як ви додасте студентів до списку винятків, натисніть кнопку \"Створити "
-"виняток для сертифікатів\" нижче."
+"того як ви додасте користувачів до списку винятків, натисніть кнопку "
+"\"Створити виняток для сертифікатів\" нижче."
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Invalidate Certificates"
-msgstr ""
+msgstr "Скасувати сертифікат"
 
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Enrollment Information"
@@ -17631,12 +17635,12 @@ msgstr "Інформація про запис на курс"
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Number of enrollees (admins, staff, and students) by track"
 msgstr ""
-"Кількість зареєстрованних учасників (адміністраторів, персоналу і студентів) "
+"Кількість зареєстрованних учасників (адміністраторів, персоналу і користувачів) "
 "на курсі "
 
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Professional"
-msgstr "Професійний"
+msgstr "Спеціалізація"
 
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Basic Course Information"
@@ -17718,12 +17722,12 @@ msgstr "Конфігурація оцінювання"
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Click to download a CSV of anonymized student IDs:"
 msgstr ""
-"Натисніть, щоб завантажити список анонімних ідентифікаторів студентів у "
+"Натисніть, щоб завантажити список анонімних ідентифікаторів користувачів у "
 "форматі CSV:"
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Get Student Anonymized IDs CSV"
-msgstr "Отримати список анонімних ID студетів в CSV"
+msgstr "Отримати список анонімних ID користувачів в CSV"
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 #: lms/templates/instructor/instructor_dashboard_2/e-commerce.html
@@ -17756,9 +17760,9 @@ msgid ""
 "Click to generate a CSV file of all students enrolled in this course, along "
 "with profile information such as email address and username:"
 msgstr ""
-"Натисніть для створення CSV-файлу зі списком студентів, які записані на цей "
-"курс, включно з інформацією профілів, як електронні пошти та імена "
-"користувачів:"
+"Натисніть для створення CSV-файлу зі списком користувачів, які записані на "
+"цей курс, включно з інформацією їх профілів, такою як електронна пошта, "
+"імена користувачів тощо:"
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Download profile information as a CSV"
@@ -17769,13 +17773,13 @@ msgid ""
 "Click to generate a CSV file that lists learners who can enroll in the "
 "course but have not yet done so."
 msgstr ""
-"Натисніть, щоб створити CSV-файл зі списком учнів, які можуть записатися на "
+"Натисніть, щоб створити CSV-файл зі списком користувачів, які можуть записатися на "
 "курс, але ще не зробили цього."
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Download a CSV of learners who can enroll"
 msgstr ""
-"Завантажити CSV-файл зі списком студентів, які можуть записатися на курс"
+"Завантажити CSV-файл зі списком користувачів, які можуть записатися на курс"
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid ""
@@ -17803,7 +17807,7 @@ msgid ""
 "To generate a CSV file that lists all student answers to a given problem, "
 "enter the location of the problem (from its Staff Debug Info)."
 msgstr ""
-"Щоб створити CSV-файл з усіма відповідями студента на певне завдання, "
+"Щоб створити CSV-файл з усіма відповідями користувача на певне завдання, "
 "вкажіть точне місцезнаходження завдання (з вікна налаштування)."
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
@@ -17833,17 +17837,17 @@ msgid ""
 "directly on this page:"
 msgstr ""
 "Для невеликих курсів: натисніть, щоб показати особисті дані зареєстрованих "
-"студентів прямо на цій сторінці."
+"користувачів прямо на цій сторінці."
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "List enrolled students' profile information"
-msgstr "Створити список зареєстрованих студентів і їхніх особистих даних"
+msgstr "Створити список зареєстрованих користувачів і їхніх особистих даних"
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid ""
 "Click to generate a CSV grade report for all currently enrolled students."
 msgstr ""
-"Натисніть, щоб створити звіт успішності для всіх зарахованих студентів."
+"Натисніть, щоб створити звіт успішності для всіх зарахованих користувачів."
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Generate Grade Report"
@@ -17855,7 +17859,7 @@ msgstr "Створити звіт успішності по завданням, 
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Generate ORA Data Report"
-msgstr ""
+msgstr "Створити звіт успішності по відкритим завданням"
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Reports Available for Download"
@@ -17868,8 +17872,8 @@ msgid ""
 "generation. Reports are not deleted, so you will always be able to access "
 "previously generated reports from this page."
 msgstr ""
-"Список звітів доступний для завантаження. Посилання на кожний звіт "
-"залишаються доступними на цій сторінці, визначеній за датою та часом "
+"Список звітів, доступних для завантаження. Посилання на кожний звіт "
+"залишаються доступними на цій сторінці, визначені за датою та часом "
 "генерації UTC. Звіти не видаляються, тому ви завжди зможете переглянути "
 "створені раніше звіти з цієї сторінки."
 
@@ -17891,7 +17895,7 @@ msgid ""
 "or email these links for direct access. Copies of links expire within 5 "
 "minutes."
 msgstr ""
-"{strong_start}Примітка{strong_end}: щоб захистити дані студентів, ви "
+"{strong_start}Примітка{strong_end}: щоб захистити дані користувачів, ви "
 "зобов'язані не зберігати і не надсилати ці посилання електронною поштою. "
 "Копії посилань дійсні протягом 5 хвилин."
 
@@ -18291,7 +18295,7 @@ msgid ""
 "student."
 msgstr ""
 "У цьому розділі Ви можете продовжити терміни здачі з конкретних тем для "
-"окремих студентів. Будь ласка, майте на увазі, що завжди застосовується "
+"окремих користувачів. Будь ласка, майте на увазі, що завжди застосовується "
 "остання зазначена дата; Ви не можете використовувати цей метод для "
 "призначення даному студенту більш раннього терміну здачі завдання."
 
@@ -18304,7 +18308,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/extensions.html
 msgid "Student Email or Username"
-msgstr "Електронна пошта студента або ім'я користувача"
+msgstr "Адреса електронної пошти  або ім'я користувача"
 
 #: lms/templates/instructor/instructor_dashboard_2/extensions.html
 msgid "Choose the graded unit:"
@@ -18342,11 +18346,11 @@ msgid ""
 "who have extensions for the given unit."
 msgstr ""
 "Оберіть оцінюваний модуль і клацніть на кнопці для отримання списку все "
-"студентів, у яких є продовження для обраного модуля."
+"користувачів, у яких є продовження для обраного модуля."
 
 #: lms/templates/instructor/instructor_dashboard_2/extensions.html
 msgid "List all students with due date extensions"
-msgstr "Список всіх студентів з продовженими термінами здачі"
+msgstr "Список всіх користувачів з продовженими термінами здачі"
 
 #: lms/templates/instructor/instructor_dashboard_2/extensions.html
 msgid "Specify a student to see all of that student's extensions."
@@ -18527,7 +18531,7 @@ msgstr "Причина"
 
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
 msgid "Register/Enroll Students"
-msgstr "Реєстрація студентів"
+msgstr "Реєстрація користувачів"
 
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
 msgid ""
@@ -18660,7 +18664,7 @@ msgid ""
 "give course team roles to enrolled users."
 msgstr ""
 "Бета-тестери отримують доступ до навчальних матеріалів курсу раніше за інших "
-"учнів. Вони перевіряють, чи все працює, але не мають інших привілеїв. "
+"користувачів. Вони перевіряють, чи все працює, але не мають інших привілеїв. "
 "Призначати бета-тестерами можна тільки зареєстрованих користувачів."
 
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
@@ -18768,15 +18772,16 @@ msgstr "Дані по підрозділу"
 
 #: lms/templates/instructor/instructor_dashboard_2/metrics.html
 msgid "Each bar shows the number of students that opened the subsection."
-msgstr "Кожен стовпчик показує кількість студентів, які відкривали підрозділ."
+msgstr ""
+"Кожен стовпчик показує кількість користувачів, які відкривали підрозділ."
 
 #: lms/templates/instructor/instructor_dashboard_2/metrics.html
 msgid ""
 "You can click on any of the bars to list the students that opened the "
 "subsection."
 msgstr ""
-"Ви можете клацнути по будь-якому стовпчику, щоб отримати список студентів, "
-"які відкривали підрозділ."
+"Ви можете клацнути по будь-якому стовпчику, щоб отримати список "
+"користувачів, які відкривали підрозділ."
 
 #: lms/templates/instructor/instructor_dashboard_2/metrics.html
 msgid "You can also download this data as a CSV file."
@@ -18800,7 +18805,7 @@ msgid ""
 "problem, along with the grades they received."
 msgstr ""
 "Ви можете клацнути по будь-якому з стовпчиків, щоб отримати список "
-"студентів, які виконали завдання, а також отриманих ними оцінок."
+"користувачів, які виконали завдання, а також отриманих ними оцінок."
 
 #: lms/templates/instructor/instructor_dashboard_2/metrics.html
 msgid "Download Problem Data for all Problems as a CSV"
@@ -18821,7 +18826,7 @@ msgstr "Завантажити Оцінки Студента у форматі C
 #: lms/templates/instructor/instructor_dashboard_2/metrics.html
 msgid "This is a partial list, to view all students download as a csv."
 msgstr ""
-"Це частковий список; щоб переглянути дані всіх студентів, скачайте їх у "
+"Це частковий список; щоб переглянути дані всіх користувачів, скачайте їх у "
 "форматі CSV."
 
 #: lms/templates/instructor/instructor_dashboard_2/metrics.html
@@ -18838,11 +18843,11 @@ msgstr "Собі"
 
 #: lms/templates/instructor/instructor_dashboard_2/send_email.html
 msgid "Staff and Administrators"
-msgstr ""
+msgstr "Персонал та Адміністратори"
 
 #: lms/templates/instructor/instructor_dashboard_2/send_email.html
 msgid "All Learners"
-msgstr ""
+msgstr "Всі користувачі"
 
 #: lms/templates/instructor/instructor_dashboard_2/send_email.html
 msgid "Cohort: "
@@ -18850,7 +18855,7 @@ msgstr "Когорта:"
 
 #: lms/templates/instructor/instructor_dashboard_2/send_email.html
 msgid "(Learners not explicitly assigned to a cohort)"
-msgstr ""
+msgstr "(Учні не призначені у цільову групу)"
 
 #: lms/templates/instructor/instructor_dashboard_2/send_email.html
 msgid "Learners in the {track_name} Track"
@@ -18875,7 +18880,7 @@ msgid ""
 "yourself first, so that you can preview the formatting and make sure "
 "embedded images and links work correctly."
 msgstr ""
-"Радимо надсилати студентам листи електронною поштою не частіше, ніж раз на "
+"Радимо надсилати користувачам листи електронною поштою не частіше, ніж раз на "
 "тиждень. Перед відправленням повідомлення уважно перегляньте текст і спершу "
 "надішліть його собі для попереднього перегляду та переконайтеся, що додані "
 "посилання та зображення відображаються коректно. "
@@ -18913,6 +18918,8 @@ msgstr "Надіслані повідомлення"
 #: lms/templates/instructor/instructor_dashboard_2/send_email.html
 msgid "To see the content of previously sent emails, click this button:"
 msgstr ""
+"Щоб переглянути вміст усіх надісланих електронних листів, натисніть "
+"цю кнопку:"
 
 #: lms/templates/instructor/instructor_dashboard_2/send_email.html
 msgid "Show Sent Email History"
@@ -18956,13 +18963,15 @@ msgstr "Спроби здачі контрольних випробувань"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "View gradebook for enrolled learners"
-msgstr ""
+msgstr "Загальні досягнення користувачів в рамках курсу"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid ""
 "Note: This feature is available only to courses with a small number of "
 "enrolled learners."
 msgstr ""
+"Примітка: ця опція доступна лише для курсів з невеликою "
+"кількістю користувачів"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "View Gradebook"
@@ -18970,7 +18979,7 @@ msgstr "Переглянути журнал оцінок"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "View a specific learner's grades and progress"
-msgstr "Перегляд оцінок і прогресу окремих студентів "
+msgstr "Досягнення конкретного користувача"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Learner's {platform_name} email address or username"
@@ -18982,11 +18991,11 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "View Progress Page"
-msgstr "Переглянути сторінку прогресу"
+msgstr "Переглянути прогрес користувача"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Adjust a learner's grade for a specific problem"
-msgstr "Коригувати оцінку окремого студента для певного завдання"
+msgstr "Коригування оцінок конкретного  користувача"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Location of problem in course"
@@ -18994,7 +19003,7 @@ msgstr "Місцезнаходження завдання на курсі"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Example"
-msgstr ""
+msgstr "Приклад"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Problem location"
@@ -19002,20 +19011,22 @@ msgstr "Місцезнаходження завдання"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Attempts"
-msgstr ""
+msgstr "Спроби"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid ""
 "Allow a learner who has used up all attempts to work on the problem again."
 msgstr ""
+"Дозвольте користувачу, який використав всі свої спроби, знову попрацювати "
+"над завданням."
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Reset Attempts to Zero"
-msgstr ""
+msgstr "Обнулити спроби"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Rescore"
-msgstr ""
+msgstr "Повторне оцінювання"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid ""
@@ -19023,6 +19034,9 @@ msgid ""
 "Only If Score Improves' option updates the learner's score only if it "
 "improves in the learner's favor."
 msgstr ""
+"Для певного завдання запустіть повторне оцінювання відповідей користувача. "
+"Параметр 'Повторне оцінювання тільки за умови кращого результату' оновлює оцінку "
+"користувача лише в тому випадку, якщо результат покращується на його користь."
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Score Override"
@@ -19043,15 +19057,15 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Problem History"
-msgstr ""
+msgstr "Результати виконання завдання"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid ""
 "For the specified problem, permanently and completely delete the learner's "
 "answers and scores from the database."
 msgstr ""
-"Ви можете повністю видалити відповіді та бали певного завдання, виконаного "
-"студентом."
+"Ви можете повністю видалити відповіді та бали за певне завдання, "
+"виконане користувачем."
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Task Status"
@@ -19062,10 +19076,12 @@ msgid ""
 "Show the status for the rescoring tasks that you submitted for this learner "
 "and problem."
 msgstr ""
+"Переглянути статус всіх задач, пов’язаних з цим завданням та "
+"користувачем"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Show Task Status"
-msgstr "Показати статус задачі"
+msgstr "Показати статус завдання"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Adjust a learner's entrance exam results"
@@ -19120,17 +19136,21 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Adjust all enrolled learners' grades for a specific problem"
-msgstr "Коригувати усі оцінки студентів до конкретного курсу"
+msgstr "Коригування оцінок всіх користувачів в рамках конкретного курсу"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Allows all learners to work on the problem again."
-msgstr ""
+msgstr "Дозвольте всім користувачам знову попрацювати над завданням."
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid ""
 "Rescore submitted responses. The 'Rescore Only If Scores Improve' option "
 "updates a learner's score only if it improves in the learner's favor."
 msgstr ""
+"Для певного завдання запустіть повторне оцінювання відповідей "
+"користувачів. Параметр 'Повторне оцінювання тільки за умови кращого "
+"результату' оновлює оцінку користувача лише в тому випадку, якщо результат "
+"покращується на його користь."
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Rescore All Learners' Submissions"
@@ -19142,7 +19162,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Show the status for the tasks that you submitted for this problem."
-msgstr "Показати статуси відправлених на перевірку задач в цьому завданні."
+msgstr "Переглянути статус всіх задач, пов’язаних з цим завданням."
 
 #: lms/templates/learner_dashboard/_dashboard_navigation_courses.html
 #: themes/edx.org/lms/templates/dashboard.html
@@ -19220,7 +19240,7 @@ msgstr ""
 "перевірці. {end_li_tag}  \n"
 "{li_tag} Викладач повинен оцінити роботи, що допомагають краще зрозуміти "
 "критерії оцінки. {end_li_tag}  \n"
-"{li_tag} Повинні бути здані на перевірку роботи інших студентів. "
+"{li_tag} Повинні бути здані на перевірку роботи інших користувачів. "
 "{end_li_tag}  \n"
 "{end_ul_tag}  \n"
 "{end_p_tag}\n"
@@ -19337,7 +19357,7 @@ msgid ""
 "to grade your peers."
 msgstr ""
 "Як тільки Ви зможете проставляти бали подібно викладачеві, Ви будете готові "
-"оцінювати інших студентів."
+"оцінювати інших користувачів."
 
 #: lms/templates/peer_grading/peer_grading_problem.html
 msgid "Start learning to grade"
@@ -20005,11 +20025,11 @@ msgstr "Увійдіть або зареєструйтесь"
 
 #: lms/templates/support/certificates.html lms/templates/support/index.html
 msgid "Student Support"
-msgstr "Підтримка студентів"
+msgstr "Підтримка користувачів"
 
 #: lms/templates/support/certificates.html
 msgid "Student Support: Certificates"
-msgstr "Підтримка студентів: сертифікати"
+msgstr "Підтримка користувачів: сертифікати"
 
 #: lms/templates/support/contact_us.html
 msgid "Contact {platform_name} Support"
@@ -20098,7 +20118,7 @@ msgid ""
 "we can make your course experience."
 msgstr ""
 "Ми використовуємо інформацію, яку Ви надали, для покращення курсу як для "
-"поточних так і для майбутніх студентів. Чим більше ми знаємо про Ваші "
+"поточних так і для майбутніх користувачів. Чим більше ми знаємо про Ваші "
 "специфічні вимоги, тим краще ми можемо зробити цей курс."
 
 #: lms/templates/survey/survey.html
@@ -21211,7 +21231,7 @@ msgid ""
 "particular discussions in the forums, announce schedule changes, and respond "
 "to student questions. You add or edit updates in HTML."
 msgstr ""
-"Використовуйте новини курсу, щоб повідомити студентів про важливі дати чи "
+"Використовуйте новини курсу, щоб повідомити користувачів про важливі дати чи "
 "іспити, привернути увагу до певних дискусій на форумах, оголосити про зміни "
 "в розкладі та відповісти на питання студента. Додавання чи редагування "
 "оновлень у форматі HTML."
@@ -21458,13 +21478,13 @@ msgid ""
 "course content. For example, you can create pages for the grading policy, "
 "course slides, and a course calendar. "
 msgstr ""
-"Ви можете створювати та редагувати власні сторінки, щоб надати студентам "
+"Ви можете створювати та редагувати власні сторінки, щоб надати користувачам "
 "додатковий контент курсу. Наприклад, ви можете створити сторінки для "
 "політики оцінювання, слайдів курсу та календаря курсу."
 
 #: cms/templates/edit-tabs.html
 msgid "How do pages look to students in my course?"
-msgstr "Як виглядають сторінки для студентів мого курсу?"
+msgstr "Як виглядають сторінки для користувачів мого курсу?"
 
 #: cms/templates/edit-tabs.html
 msgid ""
@@ -21879,7 +21899,7 @@ msgid ""
 "groups see the additional content."
 msgstr ""
 "Кожна контентна група, яку ви створюєте, може бути пов'язана з однією чи "
-"кількома когортами. Окрім контенту курсу, призначеного для всіх студентів, "
+"кількома когортами. Окрім контенту курсу, призначеного для всіх користувачів, "
 "ви можете визначити певний контент, який відображатиметься тільки певним "
 "контентним групам. Лише студент у когорті, пов'язаній із зазначеними "
 "контентними групами, бачить додатковий контент."
@@ -22388,7 +22408,7 @@ msgstr ""
 "Якщо ви здійснюєте імпорт, коли курс вже запущено, та змінюєте URL-адреси "
 "(або url_name вузли) будь-яких компонентів завдань, дані студента, пов'язані "
 "з компонентами завдань, можуть бути втрачені. Ці дані містять у собі оцінки "
-"студентів за проходження завдань."
+"користувачів за проходження завдань."
 
 #: cms/templates/import.html
 msgid "Learn more about importing a course"
@@ -23081,7 +23101,7 @@ msgstr ""
 
 #: cms/templates/settings.html
 msgid "Invite your students"
-msgstr "Запросити студентів"
+msgstr "Запросити користувачів"
 
 #: cms/templates/settings.html
 msgid "Promoting Your Course with {platform_name}"
@@ -23223,7 +23243,7 @@ msgstr "Розкажіть про ваш курс"
 
 #: cms/templates/settings.html
 msgid "Information for prospective students"
-msgstr "Інформація для майбутніх студентів"
+msgstr "Інформація для майбутніх користувачів"
 
 #: cms/templates/settings.html
 msgid "Course Title"
@@ -23411,7 +23431,7 @@ msgstr "Додати викладача"
 
 #: cms/templates/settings.html
 msgid "Expectations of the students taking this course"
-msgstr "Що очікувати студентам, які обирають ваш курс"
+msgstr "Що очікувати користувачам, які обирають ваш курс"
 
 #: cms/templates/settings.html
 msgid "Hours of Effort per Week"
@@ -23572,7 +23592,7 @@ msgstr "Загальний діапазон оцінок"
 
 #: cms/templates/settings_graders.html
 msgid "Your overall grading scale for student final grades"
-msgstr "Ваша загальна шкала оцінювання для фінальних оцінок студентів"
+msgstr "Ваша загальна шкала оцінювання для фінальних оцінок користувачів"
 
 #: cms/templates/settings_graders.html
 msgid "Add grade"
@@ -23600,7 +23620,7 @@ msgstr "Політика та правила оцінювання"
 
 #: cms/templates/settings_graders.html
 msgid "Deadlines, requirements, and logistics around grading student work"
-msgstr "Терміни, вимоги та логістика щодо оцінювання роботи студентів"
+msgstr "Терміни, вимоги та логістика щодо оцінювання роботи користувачів"
 
 #: cms/templates/settings_graders.html
 msgid "Grace Period on Deadline:"
@@ -23687,7 +23707,7 @@ msgid ""
 "information."
 msgstr ""
 "Поділ вашого підручника на кілька розділів зменшує час завантаження для "
-"студентів, особливо тих, хто має повільне інтернет-з'єднання. Поділ "
+"користувачів, особливо тих, хто має повільне інтернет-з'єднання. Поділ "
 "підручників на розділи також може допомогти учням швидше знаходити "
 "інформацію, пов’язану з певною темою."
 
@@ -25415,11 +25435,11 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Learner's {platform_name} email address or username *"
-msgstr ""
+msgstr "Адреса електронної пошти  або ім'я користувача {platform_name}"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Location of problem in course *"
-msgstr ""
+msgstr "Місцезнаходження завдання в рамках курсу"
 
 #: lms/templates/modal/accessible_confirm.html
 msgid "Confirm"
@@ -25776,3 +25796,25 @@ msgstr "http://desk.ua/etichniy-kodeks"
 msgid "http://desk.ua/en/contact"
 msgstr "http://desk.ua/contact"
 
+#: lms/djangoapps/certificates/models.py
+msgid "already received"
+msgstr "вже отримано"
+
+msgid "didn't receive"
+msgstr "не отримано"
+
+msgid "error states"
+msgstr ""
+
+msgid "audit passing states"
+msgstr ""
+
+msgid "audit not passing states"
+msgstr ""
+
+#: common/lib/xmodule/xmodule/graders.py
+msgid "{short_label} Avg"
+msgstr "{short_label} сер."
+
+msgid "{section_type} Average = {percent:.0%}"
+msgstr "{section_type} Середня оцінка = {percent:.0%}"
