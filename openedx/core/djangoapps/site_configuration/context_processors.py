@@ -12,5 +12,6 @@ def configuration_context(request):  # pylint: disable=unused-argument
     Configuration context for django templates.
     """
     return {
-        'platform_name': configuration_helpers.get_value('platform_name', settings.PLATFORM_NAME)
+        'platform_name': configuration_helpers.get_value('platform_name', settings.PLATFORM_NAME),
+        'DEFAULT_SITE_THEME': settings.DEFAULT_SITE_THEME
     }
