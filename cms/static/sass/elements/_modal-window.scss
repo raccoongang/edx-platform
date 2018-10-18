@@ -276,6 +276,11 @@
         overflow-y: hidden;
         overflow-x: hidden;
         padding: 0;
+
+        .xblock-studio_view-drag-and-drop-v2 {
+          height: 435px;
+          overflow-y: auto;
+        }
       }
     }
   }
