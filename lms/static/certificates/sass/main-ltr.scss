@@ -13,3 +13,39 @@ $pattern-library-path: '../../edx-pattern-library' !default;
 
 // Load the shared build
 @import 'build';
+
+
+@media print {
+  body.certificate {
+    margin-top: 1.875rem !important;
+
+    .hd-1 {
+      line-height: normal;
+      margin-bottom: 1rem;
+    }
+
+    .accomplishment-rendering {
+      .accomplishment-statement,
+      .accomplishment-signatories,
+      .accomplishment-orgs {
+        margin-bottom: 1rem;
+        margin-top: 1rem;
+      }
+
+      .accomplishment-type {
+        margin-bottom: 1rem;
+      }
+
+      .accomplishment-orgs {
+        .wrapper-organization {
+          margin-top: 1rem !important;
+          margin-bottom: 1rem !important;
+        }
+      }
+    }
+
+    &.layout-accomplishment .accomplishment-signatories .signatory {
+      width: calc(25% - 1rem);
+    }
+  }
+}
