@@ -9704,3 +9704,16 @@ msgid ""
 msgstr ""
 "Введите адрес электронной почты и / или имена пользователей, которых вы "
 "хотите добавить, разделенные линиями или запятыми"
+
+msgid "Pass"
+msgstr "Проходной уровень"
+
+msgid "pass"
+msgstr "проходной уровень"
+
+#: common/lib/xmodule/xmodule/graders.py
+msgid "{short_label} Avg"
+msgstr "{short_label} средн."
+
+msgid "{section_type} Average = {percent:.0%}"
+msgstr "{section_type} Средняя оценка = {percent:.0%}"
