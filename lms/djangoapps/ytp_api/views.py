@@ -52,7 +52,7 @@ class CreateUserAccountWithoutPasswordView(APIView):
             )
             if check_account_exists(username=username, email=email):
                 return Response(data={"error_message": "User already exists"}, status=status.HTTP_409_CONFLICT)
-            if UserSocialAuth.objects.filter(uid=uid).count():
+            if UserSocialAuth.objects.filter(uid=uid).exists():
                 return Response(data={"error_message": "Parameter 'uid' isn't unique."}, status=status.HTTP_409_CONFLICT)
             
             data['name'] = "{} {}".format(first_name, last_name).strip() if first_name or last_name else username
