@@ -26167,3 +26167,47 @@ msgstr "с е р т и ф и к а т"
 #: lms/templates/certificates/_accomplishment-rendering.html
 msgid "THIS CERTIFICATE IS PROUDLY PRESENTED TO"
 msgstr "Сертификат об успешном прохождении курса"
+
+#: lms/templates/footer.html
+msgid "COURSES CATALOG"
+msgstr "КАТАЛОГ КУРСОВ"
+
+#: lms/templates/footer.html
+msgid "Business education"
+msgstr "Бизнес образование"
+
+#: lms/templates/footer.html
+msgid "Transport education"
+msgstr "Транспортное образование"
+
+#: lms/templates/footer.html
+msgid "Personal development"
+msgstr "Личностное развитие"
+
+#: lms/templates/footer.html
+msgid "GENERAL INFORMATION"
+msgstr "ОБЩАЯ ИНФОРМАЦИЯ"
+
+#: lms/templates/footer.html
+msgid "About project"
+msgstr "О проекте"
+
+#: lms/templates/footer.html
+msgid "Cooperation"
+msgstr "Сотрудничество"
+
+#: lms/templates/footer.html
+msgid "Terms of use"
+msgstr "Пользовательское соглашение"
+
+#: lms/templates/footer.html
+msgid "Protection of personal information"
+msgstr "Защита персональных данных"
+
+#: lms/templates/footer.html
+msgid "Technical support"
+msgstr "Техническая поддержка"
+
+#: lms/templates/footer.html
+msgid "CONTACT INFORMATION"
+msgstr "КОНТАКТНАЯ ИНФОРМАЦИЯ"
