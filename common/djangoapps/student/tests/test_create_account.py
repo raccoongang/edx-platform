@@ -22,9 +22,28 @@ import student
 from student.models import UserAttribute
 from student.views import REGISTRATION_AFFILIATE_ID, REGISTRATION_UTM_PARAMETERS, REGISTRATION_UTM_CREATED_AT
 from django_comment_common.models import ForumsConfig
-
+from student.admin import UserCreationFormExtended, UserChangeFormExtended
+from django.core.exceptions import ValidationError
+from mock import patch, Mock, MagicMock
 TEST_CS_URL = 'https://comments.service.test:123/'
 
+def create_mock_object_for_email_uniqueness(is_avaliable):
+    """
+    This method build Mock object. Object has three methods:
+    filter and exlude: return self (Mock object)
+    exist: return value of is_avaliable parametr
+
+    :param is_avaliable: Bool
+    :return: mock.Mock
+    """
+    mock_object = Mock()
+    attrs = {
+        'filter.return_value': mock_object,
+        'exclude.return_value': mock_object,
+        'exists.return_value': is_avaliable,
+    }
+    mock_object.configure_mock(**attrs)
+    return mock_object
 
 @ddt.ddt
 @override_settings(
@@ -252,7 +271,7 @@ class TestCreateAccount(TestCase):
         self.base_extauth_bypass_sending_activation_email(True)
 
     @unittest.skipUnless(settings.FEATURES.get('AUTH_USE_SHIB'), "AUTH_USE_SHIB not set")
-    @mock.patch.dict(settings.FEATURES, {'BYPASS_ACTIVATION_EMAIL_FOR_EXTAUTH': False, 'AUTOMATIC_AUTH_FOR_TESTING': False})
+    @mock.patch.dict(settings.FEATURES, {'BYPASS_ACTIVATION_EMAIL_FOR_EXTAUTH': False, 'AUTOMATIC_AUTH_FOR_TESTING': False, 'SKIP_EMAIL_VALIDATION': False, 'REROUTE_ACTIVATION_EMAIL': True})
     def test_extauth_bypass_sending_activation_email_without_bypass_1(self):
         """
         Tests user creation without sending activation email when
@@ -542,6 +561,54 @@ class TestCreateAccountValidation(TestCase):
             self.assert_success(params)
         else:
             self.assert_error(params, "email", "Unauthorized email address.")
+
+    @ddt.data(
+        ('false.result@sorry.bad', True, False),
+        ('true.result@its.good', False, True),
+    )
+    @ddt.unpack
+    def test_email_uniqueness_create_form(self, email, is_avaliable, expect_success):
+        """
+        Testing uniqueness email in creation user in admin page.
+        You can't create user with certain email address if another user has this email address.
+        If you will try that you must have validation error.
+        """
+        with patch(
+                'student.admin.User.objects',
+                create_mock_object_for_email_uniqueness(is_avaliable)
+        ):
+            # Testing email uniqueness in creation user
+            creation_form = UserCreationFormExtended({'email': email})
+            errors = creation_form.errors.as_data()
+            result_creation_form = True
+            if 'email' in errors:
+                result_creation_form = False
+            self.assertEqual(result_creation_form, expect_success)
+
+    @ddt.data(
+        ('false.result@sorry.bad', True, False),
+        ('true.result@its.good', False, True),
+    )
+    @ddt.unpack
+    def test_email_uniqueness_change_form(self, email, is_avaliable, expect_success):
+        """
+        Testing uniqueness email in change user in admin page.
+        You can't change user's email write certain email address if another user has this email address.
+        If you will try that you must have validation error.
+        """
+        with patch(
+                'student.admin.User.objects',
+                create_mock_object_for_email_uniqueness(is_avaliable)
+        ):
+            # Testing email uniqueness in creation user
+            change_form = UserChangeFormExtended()
+            change_form.initial = {'password': 'testpass'}
+            change_form.cleaned_data = {'email': email}
+            try:
+                change_form.clean_email()
+                self.assertEqual(True, expect_success)
+            except ValidationError:
+                self.assertEqual(False, expect_success)
 
     def test_password(self):
         params = dict(self.minimal_params)

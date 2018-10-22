@@ -4,8 +4,13 @@
 <head>
   {% stylesheet 'course' %}
   {% javascript 'main_vendor' %}
+  <style type="text/css">
+    body.lang_ar {
+      direction: rtl;
+    }
+  </style>
 </head>
-<body class="modal-preview">
+<body class="modal-preview lang_{{LANGUAGE_CODE}}">
   <section class="container wiki view">
     <div class="main-article">
       {% if revision %}

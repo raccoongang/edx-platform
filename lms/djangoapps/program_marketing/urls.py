@@ -12,9 +12,4 @@ urlpatterns = patterns(
         'program_marketing.views.explore_programs',
         name='explore_programs'
     ),
-    url(
-        r'^(?P<program_id>\d+)/[\w\-]*/?$',
-        'program_marketing.views.marketing',
-        name='program_marketing'
-    ),
 )

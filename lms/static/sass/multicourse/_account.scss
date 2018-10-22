@@ -658,7 +658,8 @@
 .view-passwordreset {
 
   .header-global .nav-courseware .btn-login {
-    display: none;
+    display: inline-block;
+    vertical-align: middle;
   }
 
   .introduction {
