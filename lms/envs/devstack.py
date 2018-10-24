@@ -91,7 +91,7 @@ DEBUG_TOOLBAR_CONFIG = {
 
 
 def should_show_debug_toolbar(_):
-    return True  # We always want the toolbar on devstack regardless of IP, auth, etc.
+    return False  # We always want the toolbar on devstack regardless of IP, auth, etc.
 
 
 ########################### PIPELINE #################################

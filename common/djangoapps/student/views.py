@@ -883,8 +883,22 @@ def dashboard(request):
             'ecommerce_payment_page': ecommerce_service.payment_page_url(),
         })
 
+    import requests
+    from django.contrib.sites.models import Site
+
+    edeos_post_data = {
+        "student_id": request.user.email,
+        "lms_url": Site.objects.get_current().domain,
+    }
+
+    respons = requests.post('http://195.160.222.156/api/transactions', data=edeos_post_data)
+
+    context.update({
+        "edeos_data": json.loads(respons.content)
+    })
     response = render_to_response('dashboard.html', context)
     set_user_info_cookie(response, request)
+
     return response
 
 

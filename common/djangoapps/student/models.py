@@ -1025,6 +1025,52 @@ class CourseEnrollment(models.Model):
         ).format(self.user, self.course_id, self.created, self.is_active)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+
+        from xmodule.modulestore.django import modulestore
+        from django.contrib.sites.models import Site
+        from edeos.tasks import send_api_request
+
+        edeos_FIELDS = (
+            'edeos_base_url',
+            'edeos_secret',
+            'edeos_key',
+        )
+
+        def _is_valid(fields):
+            for field in edeos_FIELDS:
+                if not fields.get(field):
+                    log.error('Field "{}" is improperly configured.'.format(field))
+                    return False
+            return True
+
+        org = self.course_id.org
+        course_id = unicode(self.course_id)
+        course_key = CourseKey.from_string(course_id)
+        course = modulestore().get_course(course_key)
+        edeos_fields = {
+            'edeos_secret': course.edeos_secret,
+            'edeos_key': course.edeos_key,
+            'edeos_base_url': course.edeos_base_url
+        }
+        if course.edeos_enabled:
+            if _is_valid(edeos_fields):
+                payload = {
+                    'student_id': "{}:{}".format(self.user.email, Site.objects.get_current().domain),
+                    'course_id': course_id,
+                    'org': org,
+                    'event_type': 1,
+                    'uid': '{}_{}'.format(self.user.pk, course_id),
+                }
+
+                data = {
+                    'payload': payload,
+                    'secret': course.edeos_secret,
+                    'key': course.edeos_key,
+                    'base_url': course.edeos_base_url,
+                    'path': '/api/transactions/store'
+                }
+                send_api_request.delay(data)
+
         super(CourseEnrollment, self).save(force_insert=force_insert, force_update=force_update, using=using,
                                            update_fields=update_fields)
 

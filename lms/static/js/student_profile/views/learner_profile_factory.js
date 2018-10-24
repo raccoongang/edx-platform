@@ -25,6 +25,7 @@
 
             var accountSettingsModel = new AccountSettingsModel(
                 _.extend(
+                    options.edeos_balance,
                     options.account_settings_data,
                     {'default_public_account_fields': options.default_public_account_fields}
                 ),

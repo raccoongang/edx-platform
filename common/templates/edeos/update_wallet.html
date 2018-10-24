@@ -1,0 +1,36 @@
+<%!
+from django.core.urlresolvers import reverse
+%>
+
+<div style="margin: 20px 0;">
+    <h3>Add existing wallet</h3>
+    <span id="edeos_response"></span>
+    <form action="" id="edeos_form" style="padding: 10px;">
+        <label for="wallet_name" style="display: inline;">Wallet name</label>
+        <input type="text" name="wallet_name" id="wallet_name">
+        <input type="submit" id="submit" value="Add">
+    </form>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#edeos_form").submit(function(e) {
+                e.preventDefault();
+            });
+            $('#submit').on("click", function(event){
+                $.ajax({
+                    url: "${reverse('edeos:update')}",
+                    method: 'post',
+                    data: {
+                        wallet_name: $('#wallet_name').val()
+                    },
+                    success: function(data) {
+                        let stringData = "API response - ";
+                        Object.keys(data).forEach((key) => {
+                            stringData += key + " " + data[key];
+                        });
+                        $('#edeos_response').text(stringData);
+                    }
+                });
+            });
+        });
+    </script>
+</div>

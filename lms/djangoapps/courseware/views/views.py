@@ -345,6 +345,20 @@ def course_info(request, course_id):
             # ENDTODO
         }
 
+        import requests
+        from django.contrib.sites.models import Site
+        edeos_post_data = {
+            "student_id": request.user.email,
+            "lms_url": Site.objects.get_current().domain,
+            "course_id": course.id.to_deprecated_string()
+        }
+
+        respons = requests.post('http://195.160.222.156/api/transactions', data=edeos_post_data)
+
+        context.update({
+            "edeos_data": json.loads(respons.content)
+        })
+
         # Get the URL of the user's last position in order to display the 'where you were last' message
         context['resume_course_url'] = None
         if SelfPacedConfiguration.current().enable_course_home_improvements:

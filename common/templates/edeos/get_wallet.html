@@ -1,0 +1,25 @@
+<%!
+from django.core.urlresolvers import reverse
+%>
+<div style="margin: 20px 0;">
+    <span id="generate-wallet-response"></span>
+    <input type="submit" value="Generate new wallet" id="generate-wallet">
+
+    <script type="text/javascript">
+        function showResponse(data) {
+            let respText = "Response is - ";
+            Object.keys(data).forEach((key) => {
+               respText += key + ': ' + data[key] + ', ';
+            });
+            $('#generate-wallet-response').text(respText);
+        }
+        $('#generate-wallet').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                url: "${reverse('edeos:generate-wallet')}",
+                type: "post",
+                success: showResponse
+            })
+        })
+    </script>
+</div>

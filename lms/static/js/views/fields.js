@@ -298,7 +298,8 @@
                     title: this.options.title,
                     screenReaderTitle: this.options.screenReaderTitle || this.options.title,
                     value: this.modelValue(),
-                    message: this.helpMessage
+                    message: this.helpMessage,
+                    balance: this.options.balance
                 }));
                 this.delegateEvents();
                 return this;

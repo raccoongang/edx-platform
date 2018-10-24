@@ -70,8 +70,18 @@ def learner_profile_context(request, profile_username, user_is_staff):
 
     preferences_data = get_user_preferences(profile_user, profile_username)
 
+    import requests
+    import json
+    from django.contrib.sites.models import Site
+
+    d = {
+        'student_id': request.user.email,
+        'lms_url': Site.objects.get_current().domain
+    }
+    edeos_resp = requests.post('http://195.160.222.156/api/wallet/balance', data=d)
     context = {
         'data': {
+            'edeos_balance': json.loads(edeos_resp.content),
             'profile_user_id': profile_user.id,
             'default_public_account_fields': settings.ACCOUNT_VISIBILITY_CONFIGURATION['public_fields'],
             'default_visibility': settings.ACCOUNT_VISIBILITY_CONFIGURATION['default_visibility'],

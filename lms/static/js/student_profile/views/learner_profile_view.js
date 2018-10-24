@@ -50,6 +50,7 @@
 
                     HtmlUtils.setHtml(this.$el, HtmlUtils.template(learnerProfileTemplate)({
                         username: self.options.accountSettingsModel.get('username'),
+                        balance: self.options.accountSettingsModel.get('balance'),
                         ownProfile: self.options.ownProfile,
                         showFullProfile: self.showFullProfile()
                     }));
