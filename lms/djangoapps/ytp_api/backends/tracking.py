@@ -74,6 +74,7 @@ class SubmissionStaticsProcessor(StatisticProcessor):
         data = event['event']
         result['course_id'] = self.get_event_course_id(event)
         result['time'] = self.get_event_timestamp_as_string(event)
+        result['username'] = self.get_event_user(event)
         result.update({k: v for k, v in data.iteritems() if k in self.PAYLOAD_KEYS})
         log.debug("Result payload: %s", result)
 
