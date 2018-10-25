@@ -21,7 +21,8 @@ Testing instructions:
   -F username=sga_test191 \
   -F first_name=sga191 \
   -F last_name=test191 \
-  -F gender=m
+  -F gender=m \
+  -F uid=100
 
 
   Gender param can contain: 'm'(male), 'f'(female), 'o'(other, default value)

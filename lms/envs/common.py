@@ -2248,7 +2248,9 @@ INSTALLED_APPS = (
 
     'experiments',
 
+    # YTP related modules
     'ytp',
+    'ytp_api',
 )
 
 ######################### CSRF #########################################
@@ -3224,3 +3226,12 @@ COURSES_API_CACHE_TIMEOUT = 3600  # Value is in seconds
 
 ############## Settings for CourseGraph ############################
 COURSEGRAPH_JOB_QUEUE = LOW_PRIORITY_QUEUE
+
+# For enabling tracking
+TRACKING_BACKENDS['ytp_tracking'] = {
+    'ENGINE': 'ytp_api.backends.tracking.TrackingBackend'
+}
+
+EVENT_TRACKING_BACKENDS['ytp_tracking'] = {
+    'ENGINE': 'ytp_api.backends.tracking.TrackingBackend'
+}
