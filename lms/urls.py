@@ -1048,10 +1048,11 @@ if settings.FEATURES.get('ENABLE_FINANCIAL_ASSISTANCE_FORM'):
 
 if settings.FEATURES["ENABLE_RG_INSTRUCTOR_ANALYTICS"]:
     urlpatterns += (
-        r'^courses/{}/tab/instructor_analytics/'.format(
-            settings.COURSE_ID_PATTERN,
+        url(
+                r'^courses/{}/tab/instructor_analytics/'.format(
+                    settings.COURSE_ID_PATTERN,
+                ),
+                include('rg_instructor_analytics.urls'),
+                name='instructor_analytics_endpoint',
         ),
-        include('rg_instructor_analytics.urls'),
-        name='instructor_analytics_endpoint',
     )
-
