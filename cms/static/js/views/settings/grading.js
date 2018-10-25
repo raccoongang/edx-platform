@@ -2,6 +2,7 @@ define(['js/views/validation',
         'underscore',
         'jquery',
         'jquery.ui',
+        'gettext',
         'js/views/settings/grader',
         'edx-ui-toolkit/js/utils/string-utils',
         'edx-ui-toolkit/js/utils/html-utils'
@@ -259,7 +260,7 @@ define(['js/views/validation',
         // When a grade is removed, keep the remaining grades consistent.
                 var _this = this;
                 if (_this.descendingCutoffs.length === 1 && _this.descendingCutoffs[0]['designation'] === _this.GRADES[0]) {
-                    _this.descendingCutoffs[0]['designation'] = 'Pass';
+                    _this.descendingCutoffs[0]['designation'] = gettext('Pass');
                     _this.setTopGradeLabel();
                 } else {
                     _.each(_this.descendingCutoffs, function(cutoff, index) {
@@ -320,7 +321,7 @@ define(['js/views/validation',
 
         // Munge existing grade labels?
         // If going from Pass/Fail to 3 levels, change to Pass to A
-                if (gradeLength === 1 && this.descendingCutoffs[0].designation === 'Pass') {
+                if (gradeLength === 1 && this.descendingCutoffs[0].designation === gettext('Pass')) {
                     this.descendingCutoffs[0].designation = this.GRADES[0];
                     this.setTopGradeLabel();
                 }

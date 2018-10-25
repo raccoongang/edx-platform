@@ -11,6 +11,7 @@ import logging
 import random
 import sys
 
+from django.utils.translation import ugettext as _
 
 log = logging.getLogger("edx.courseware")
 
@@ -389,11 +390,11 @@ class AssignmentFormatGrader(CourseGrader):
             breakdown = [{'percent': total_percent, 'label': total_label,
                           'detail': total_detail, 'category': self.category, 'prominent': True}, ]
         else:
-            total_detail = u"{section_type} Average = {percent:.0%}".format(
+            total_detail = _(u"{section_type} Average = {percent:.0%}").format(
                 percent=total_percent,
                 section_type=self.section_type
             )
-            total_label = u"{short_label} Avg".format(short_label=self.short_label)
+            total_label = _(u"{short_label} Avg").format(short_label=self.short_label)
 
             if self.show_only_average:
                 breakdown = []

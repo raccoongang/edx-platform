@@ -19809,7 +19809,7 @@ msgid ""
 msgstr ""
 "Повторно запустите оценивание ответов слушателя по конкретной задаче. Если "
 "вы нажмёте «Перепроверить, только если оценка повысится», то оценка "
-"учащегося изменится, только если она улучшится в пользу ученика."
+"учащегося изменится, только если она улучшится в пользу слушателя."
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Score Override"
@@ -19887,7 +19887,7 @@ msgstr ""
 "Повторно запустите оценивание всех ответов слушателя на вступительном "
 "испытании. Если вы нажмёте «Перепроверить всё, только если оценка "
 "повысится», то оценка учащегося изменится, только если она улучшится в "
-"пользу ученика."
+"пользу слушателя."
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Rescore All Problems"
@@ -25960,7 +25960,7 @@ msgstr "проходной уровень"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Learner's {platform_name} email address or username *"
-msgstr "Электронная почта или имя пользователя <!-- {platform_name} -->"
+msgstr "Электронная почта или имя пользователя {platform_name}"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Location of problem in course *"

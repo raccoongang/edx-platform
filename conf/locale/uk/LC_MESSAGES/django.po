@@ -4442,6 +4442,8 @@ msgid ""
 "This subsection is unlocked for learners when they meet the prerequisite "
 "requirements."
 msgstr ""
+"Цей підрозділ доступний для слухачів, які виконали попередні умови його "
+"вивчення."
 
 #: common/lib/xmodule/xmodule/seq_module.py
 msgid ""
@@ -6978,7 +6980,7 @@ msgstr "Статус перевірки"
 
 #: lms/djangoapps/instructor/views/api.py
 msgid "Cohort"
-msgstr "Когорта"
+msgstr "Цільова група"
 
 #: lms/djangoapps/instructor/views/api.py
 msgid "Team"
@@ -13851,7 +13853,7 @@ msgstr "Останні git завантаження для курсу {course_id
 #: lms/templates/ccx/schedule.html
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Date"
-msgstr "Дата:"
+msgstr "Дата"
 
 #. Translators: Git is a version-control system; see http://git-scm.com/about
 #: lms/templates/sysadmin_dashboard_gitlogs.html
@@ -17568,8 +17570,8 @@ msgid ""
 "To regenerate certificates for your course, choose the learners who will "
 "receive regenerated certificates and click Regenerate Certificates."
 msgstr ""
-"Щоб відновити сертифікати для вашого курсу, оберіть користувачів, які мають "
-"отримати сертифікати та натисніть \"Повторно видати сертифікати\"."
+"Щоб повторно видати сертифікати для вашого курсу, оберіть користувачів, "
+"які мають отримати сертифікати та натисніть \"Повторно видати сертифікати\"."
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Choose learner types for regeneration"
@@ -17578,27 +17580,31 @@ msgstr ""
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid ""
 "Regenerate for learners who have already received certificates. ({count})"
-msgstr "Відновити для користувачів, які вже отримали сертифікати. ({count})"
+msgstr ""
+"Повторно видати сертифікати для користувачів, які вже отримали "
+"сертифікати. ({count})"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Regenerate for learners who have not received certificates. ({count})"
-msgstr "Відновити для користувачів, які ще не отримали сертифікатів. ({count})"
+msgstr ""
+"Повторно видати сертифікати для користувачів, які щповтороное не отримали "
+"сертифікатів. ({count})"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Regenerate for learners with audit passing state. ({count})"
 msgstr ""
 "Створити повторно безкоштовні сертифікати для слухачів, які набрали "
-"прохідний бал. {{count}}"
+"прохідний бал. ({count})"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Regenerate for learners with audit not passing state. ({count})"
 msgstr ""
 "Створити повторно безкоштовні сертифікати для слухачів, які НЕ "
-"набрали прохідний бал. {{count}}"
+"набрали прохідний бал. ({count})"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Regenerate for learners in an error state. ({count})"
-msgstr "Відновити для користувачів у стані помилки. ({count})"
+msgstr "Повторно видати сертифікати для користувачів у стані помилки. ({count})"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Certificate Generation History"
@@ -18308,7 +18314,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/extensions.html
 msgid "Student Email or Username"
-msgstr "Адреса електронної пошти  або ім'я користувача"
+msgstr "Адреса електронної пошти або ім'я користувача"
 
 #: lms/templates/instructor/instructor_dashboard_2/extensions.html
 msgid "Choose the graded unit:"
@@ -18851,11 +18857,11 @@ msgstr "Всі користувачі"
 
 #: lms/templates/instructor/instructor_dashboard_2/send_email.html
 msgid "Cohort: "
-msgstr "Когорта:"
+msgstr "Цільова група:"
 
 #: lms/templates/instructor/instructor_dashboard_2/send_email.html
 msgid "(Learners not explicitly assigned to a cohort)"
-msgstr "(Учні не призначені у цільову групу)"
+msgstr "(Користувачі не призначені у цільову групу)"
 
 #: lms/templates/instructor/instructor_dashboard_2/send_email.html
 msgid "Learners in the {track_name} Track"
@@ -18975,7 +18981,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "View Gradebook"
-msgstr "Переглянути журнал оцінок"
+msgstr "Переглянути прогрес в рамках курсу"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "View a specific learner's grades and progress"
@@ -18987,7 +18993,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Learner email address or username"
-msgstr ""
+msgstr "Адреса електронної пошти або ім'я користувача"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "View Progress Page"
