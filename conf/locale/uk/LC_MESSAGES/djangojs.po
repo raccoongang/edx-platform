@@ -6413,6 +6413,8 @@ msgid ""
 "Learners are added to this cohort only when you provide their email "
 "addresses or usernames on this page."
 msgstr ""
+"Користувачі будуть додані до групи, коли ви введете їх адреси електронної "
+"пошти або імена користувачів на цій сторінці."
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-group-header.underscore
 msgid "What does this mean?"
@@ -10500,7 +10502,7 @@ msgstr ""
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid ""
 "To review student cohort assignments or see the results of uploading a CSV "
-"file, download course profile information or cohoresults on the "
+"file, download course profile information or cohort results on the "
 "{link_start}Data Download{link_end} page."
 msgstr ""
 "Щоб переглянути завдання цільової групи користувачів або переглянути "
