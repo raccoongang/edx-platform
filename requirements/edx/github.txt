@@ -107,3 +107,8 @@ git+https://github.com/Stanford-Online/xblock-in-video-quiz@release/v0.1.6#egg=i
 
 # alu-xblock-adapter
 -e git+git@github.com:aludeveloper/xblock-adapter.git@master#egg=xblock_adapter
+
+# Raccoongang rg_instructor_analytics
+-e git+https://github.com/raccoongang/rg_instructor_analytics@release-0.3.0#egg=rg_instructor_analytics
+# Raccoongang rg_instructor_analytics_log_collector
+-e git+https://github.com/raccoongang/rg_instructor_analytics_log_collector@release-0.1.0#egg=rg_instructor_analytics_log_collector
