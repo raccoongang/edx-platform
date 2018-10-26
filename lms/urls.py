@@ -142,7 +142,7 @@ urlpatterns = [
     url(r'^api/experiments/', include('experiments.urls', namespace='api_experiments')),
 ]
 
-if settings.FEATURES["ENABLE_RG_INSTRUCTOR_ANALYTICS"]:
+if settings.FEATURES.get("ENABLE_RG_INSTRUCTOR_ANALYTICS"):
     urlpatterns += [
         url(
             r'^courses/{}/tab/instructor_analytics/'.format(
