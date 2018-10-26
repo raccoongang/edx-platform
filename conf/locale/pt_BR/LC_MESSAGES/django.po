@@ -20838,7 +20838,7 @@ msgstr ""
 
 #: openedx/features/course_experience/templates/course_experience/dates-summary.html
 msgid "Today is {date}"
-msgstr "Hoje é"
+msgstr "Hoje é {date}"
 
 #: openedx/features/course_experience/templates/course_experience/latest-update-fragment.html
 msgid "Latest Update"
