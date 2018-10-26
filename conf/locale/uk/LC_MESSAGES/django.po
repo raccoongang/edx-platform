@@ -17587,7 +17587,7 @@ msgstr ""
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Regenerate for learners who have not received certificates. ({count})"
 msgstr ""
-"Повторно видати сертифікати для користувачів, які щповтороное не отримали "
+"Повторно видати сертифікати для користувачів, які повтороно не отримали "
 "сертифікатів. ({count})"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
