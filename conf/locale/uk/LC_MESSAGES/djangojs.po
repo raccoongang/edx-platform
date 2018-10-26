@@ -6206,7 +6206,7 @@ msgstr "Додайте примітки про цього користувача
 
 #: lms/templates/instructor/instructor_dashboard_2/certificate-invalidation.underscore
 msgid "Invalidate Certificate"
-msgstr ""
+msgstr "Скасувати сертифікат"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificate-invalidation.underscore
 msgid "Student"
@@ -6243,7 +6243,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/certificate-white-list-editor.underscore
 msgid "Student email or username"
-msgstr "Адреса електронної пошти  або ім'я користувача"
+msgstr "Адреса електронної пошти або ім'я користувача"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificate-white-list-editor.underscore
 msgid "Free text notes"
@@ -6413,6 +6413,8 @@ msgid ""
 "Learners are added to this cohort only when you provide their email "
 "addresses or usernames on this page."
 msgstr ""
+"Користувачі будуть додані до групи, коли ви введете їх адреси електронної "
+"пошти або імена користувачів на цій сторінці."
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-group-header.underscore
 msgid "What does this mean?"
@@ -10484,6 +10486,8 @@ msgid ""
 "Enter email addresses and/or usernames, separated by new lines or commas, "
 "for the students you want to add. *"
 msgstr ""
+"Введіть адреси електронної пошти та / або імена користувачів, яких ви "
+"хочете додати, розділені лініями або комами"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 msgid "Add Students"
@@ -10492,6 +10496,8 @@ msgstr "Додати користувачів"
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid "Assign students to cohorts by uploading a CSV file"
 msgstr ""
+"Призначити користувачів до цільової групи шляхом завантаження файлу "
+"CSV."
 
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid ""
