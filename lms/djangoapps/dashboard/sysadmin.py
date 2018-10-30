@@ -16,6 +16,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import IntegrityError
+from django.db import transaction
 from django.http import HttpResponse, Http404
 from django.utils.decorators import method_decorator
 from django.utils.html import escape
@@ -42,8 +43,6 @@ from xmodule.modulestore.django import modulestore
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from search.search_engine_base import SearchEngine
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-
-from django.db import transaction
 
 log = logging.getLogger(__name__)
 
@@ -201,7 +200,7 @@ class Users(SysadminDashboardView):
         except IntegrityError:
             msg += _('Oops, failed to create user {user}, {error}').format(
                 user=user,
-                error="IntegrityError: please check whether such a username or email is already registered"
+                error="IntegrityError: one of the provided parameters: username or email, is already registered"
             )
             return msg
 
