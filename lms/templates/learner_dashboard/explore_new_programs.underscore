@@ -4,6 +4,6 @@
 <div class="ad-link">
     <a href="<%- marketingUrl %>" class="btn new-programs-btn">
         <span class="icon fa fa-search" aria-hidden="true"></span>
-        <span><%- gettext('Explore New Programs') %></span>
+        <span><%- gettext('Explore Bundles') %></span>
     </a>
 </div>
