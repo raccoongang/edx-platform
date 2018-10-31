@@ -2,6 +2,11 @@
 
 from social_django.middleware import SocialAuthExceptionMiddleware
 
+from django.conf import settings
+from django.http import HttpResponsePermanentRedirect
+
+from third_party_auth.pipeline import AUTH_REDIRECT_KEY
+
 from . import pipeline
 
 
@@ -52,3 +57,17 @@ class PipelineQuarantineMiddleware(object):
         quarantined_modules = request.session.get('third_party_auth_quarantined_modules')
         if quarantined_modules is not None and not any(view_module.startswith(mod) for mod in quarantined_modules):
             request.session.flush()
+
+
+class ForceSSOAuthenticationMiddleware(object):
+    """
+    Middleware redirects not authenticated users to SSO provider.
+    """
+    def process_request(self, request):
+        """
+        Redirects not authenticated users to SSO provider. If user is already logged in with provider,
+        user will be redirected to dashboard.
+        """
+        if not request.user.is_authenticated():
+            uri = "%s&%s=/dashboard" % (settings.LOGIN_REDIRECT_URL, AUTH_REDIRECT_KEY)
+            return HttpResponsePermanentRedirect(uri)
