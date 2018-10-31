@@ -235,7 +235,7 @@ class WeightedSubsectionsGrader(CourseGrader):
             subgrade_result = subgrader.grade(grade_sheet, generate_random_scores)
 
             weighted_percent = subgrade_result['percent'] * weight
-            section_detail = u"{0} = {1:.2%} of a possible {2:.2%}".format(assignment_type, weighted_percent, weight)
+            section_detail = _(u"{0} = {1:.2%} of a possible {2:.2%}").format(assignment_type, weighted_percent, weight)
 
             total_percent += weighted_percent
             section_breakdown += subgrade_result['section_breakdown']
@@ -356,7 +356,7 @@ class AssignmentFormatGrader(CourseGrader):
                 )
             else:
                 percentage = 0.0
-                summary = u"{section_type} {index} Unreleased - 0% (?/?)".format(
+                summary = _(u"{section_type} {index} Unreleased - 0% (?/?)").format(
                     index=i + self.starting_index,
                     section_type=self.section_type
                 )

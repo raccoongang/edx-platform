@@ -3792,6 +3792,12 @@ msgstr "Общее"
 msgid "{assignment_type} = {weighted_percent:.2%} of a possible {weight:.2%}"
 msgstr "{assignment_type} = {weighted_percent:.2%} из {weight:.2%} возможных"
 
+msgid "{0} = {1:.2%} of a possible {2:.2%}"
+msgstr "{0} = {1:.2%} из {2:.2%} возможных"
+
+msgid "{section_type} {index} Unreleased - 0% (?/?)"
+msgstr "{section_type} {index} не опубликовано - 0% (?/?)"
+
 #: common/lib/xmodule/xmodule/html_module.py
 msgid "Text"
 msgstr "Текст"
@@ -25988,4 +25994,3 @@ msgstr "{short_label} средн."
 
 msgid "{section_type} Average = {percent:.0%}"
 msgstr "{section_type} Средняя оценка = {percent:.0%}"
-
