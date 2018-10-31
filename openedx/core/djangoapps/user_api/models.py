@@ -1,6 +1,8 @@
 """
 Django ORM model specifications for the User API application
 """
+from time import time
+
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db import models
@@ -291,14 +293,15 @@ class UserRetirementStatus(TimeStampedModel):
         retired_email = get_retired_email_by_email(user.email)
 
         UserRetirementRequest.create_retirement_request(user)
+        timestamp = int(time())
 
         return cls.objects.create(
             user=user,
             original_username=user.username,
             original_email=user.email,
             original_name=user.profile.name,
-            retired_username=retired_username,
-            retired_email=retired_email,
+            retired_username='#rg-delete-{}-{}'.format(timestamp, retired_username),
+            retired_email='#rg-delete-{}-{}'.format(timestamp, retired_email),
             current_state=pending,
             last_state=pending,
             responses='Created in state {} by create_retirement'.format(pending)
