@@ -388,6 +388,7 @@
                     $("body").addClass("answer-loading");
                     $.ajax({
                         url: '/courses/'+this.courseId+'/check_prerequisite/',
+                        cache: false,
                         data: {
                             block_id: this.id
                         },
