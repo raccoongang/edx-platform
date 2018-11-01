@@ -68,9 +68,11 @@ class Command(BaseCommand):
                                        social_auth_user.user.save()
                                        self.stdout.write("User {} updated".format(full_name))
                                    else:
-                                       self.stdout.write("Server return empty response for user:id={}, uid={}".format(
-                                           social_auth_user.user.id, social_auth_user.uid
-                                       ))
+                                       self.stdout.write(
+                                           "Remote service returned empty response for user:id={}, uid={}".format(
+                                               social_auth_user.user.id, social_auth_user.uid
+                                           )
+                                       )
                            except Exception as e:
                                self.stdout.write("User with id {} not updated. Exception  %s", e)
                self.stdout.write("Done")
