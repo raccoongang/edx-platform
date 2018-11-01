@@ -11,8 +11,6 @@ from django.db import transaction
 from django.db.models import Q
 from social_django.models import UserSocialAuth
 
-log = getLogger(__name__)
-
 
 class Command(BaseCommand):
     """
@@ -22,11 +20,11 @@ class Command(BaseCommand):
  
     def handle(self, *args, **options):
        """
-       Realisation the command to update User's first name, last name  and the name field in UserProfile.
+       Realization of the command to update User's first name, last name, and UserProfile's name.
        """
-       self.stdout.write("Start to update User's first name and last name  and the name field in UserProfile")
+       self.stdout.write("Start to update User's first name, last name, and UserProfile's name field.")
        user_social_auth_list = UserSocialAuth.objects.filter(
-           Q(user__first_name__icontains='') | Q(user__last_name__icontains='') | Q(user__profile__name__icontains='')
+           Q(user__first_name='') | Q(user__last_name='') | Q(user__profile__name='')
        ).select_related("user", "user__profile")
        
        if user_social_auth_list.exists():
@@ -41,11 +39,11 @@ class Command(BaseCommand):
                r = session.post(token_url)
                csrf_token = None
                if r.ok:
-                   log.info('Get the API token')
+                   self.stdout.write('Get the API token')
                    csrf_token = r.json().get('token')
         
                if csrf_token:
-                   log.info('Post API auth data')
+                   self.stdout.write('Post API auth data')
                    session.headers['X-CSRF-Token'] = csrf_token
                    r = session.post(auth_url, data=json.dumps({
                        'username': settings.FEATURES['DRUPAL_API_USER'],
@@ -53,21 +51,28 @@ class Command(BaseCommand):
                    }))
             
                    if r.ok:
+                       self.stdout.write('Update users')
                        for social_auth_user in user_social_auth_list:
-                           with transaction.atomic():
-                               r = session.get(user_info_url.format(social_auth_user.uid))
-                               api_data = r.ok and r.json() or {}
-                               full_name = (api_data.get('field_full_name', {}) or {}).get('und', [{}])[0].get('value', '')
-                               social_auth_user.user.profile.name = full_name
-                               social_auth_user.user.profile.save()
-                               full_name_list = full_name.split()
-                               fname, lname = full_name_list and (full_name_list[0], ' '.join(full_name_list[1:])) or ('', '')
-                               social_auth_user.user.first_name = fname
-                               social_auth_user.user.last_name = lname
-                               social_auth_user.user.save()
-                               self.stdout.write("User {} updated".format(full_name))
+                           try:
+                               with transaction.atomic():
+                                   r = session.get(user_info_url.format(social_auth_user.uid))
+                                   api_data = r.ok and r.json() or {}
+                                   if api_data:
+                                       full_name = (api_data.get('field_full_name', {}) or {}).get('und', [{}])[0].get('value', '')
+                                       social_auth_user.user.profile.name = full_name
+                                       social_auth_user.user.profile.save()
+                                       full_name_list = full_name.split()
+                                       fname, lname = full_name_list and (full_name_list[0], ' '.join(full_name_list[1:])) or ('', '')
+                                       social_auth_user.user.first_name = fname
+                                       social_auth_user.user.last_name = lname
+                                       social_auth_user.user.save()
+                                       self.stdout.write("User {} updated".format(full_name))
+                                   else:
+                                       self.stdout.write("Server return empty response for user:id={}, uid={}".format(
+                                           social_auth_user.user.id, social_auth_user.uid
+                                       ))
+                           except Exception as e:
+                               self.stdout.write("User with id {} not updated. Exception  %s", e)
+               self.stdout.write("Done")
            except Exception as e:
-               log.error('Exception %s', e)
-               raise e
-        
-       self.stdout.write("Done")
+               self.stdout.write('Exception %s', e)
