@@ -3584,6 +3584,12 @@ msgstr "Загальне"
 msgid "{assignment_type} = {weighted_percent:.2%} of a possible {weight:.2%}"
 msgstr "{assignment_type} = {weighted_percent:.2%} з можливих {weight:.2%}"
 
+msgid "{0} = {1:.2%} of a possible {2:.2%}"
+msgstr "{0} = {1:.2%} з можливих {2:.2%}"
+
+msgid "{section_type} {index} Unreleased - 0% (?/?)"
+msgstr "{section_type} {index} не опубліковано - 0% (?/?)"
+
 #: common/lib/xmodule/xmodule/html_module.py
 msgid "Text"
 msgstr "Текст"
@@ -17587,7 +17593,7 @@ msgstr ""
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Regenerate for learners who have not received certificates. ({count})"
 msgstr ""
-"Повторно видати сертифікати для користувачів, які повтороно не отримали "
+"Повторно видати сертифікати для користувачів, які не отримали "
 "сертифікатів. ({count})"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
