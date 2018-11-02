@@ -383,28 +383,44 @@
                 }
             };
 
-            if ((direction === 'next') && (this.position >= this.contents.length)) {
-                if(this.nextUrl === 'None') {
-                    $("body").addClass("answer-loading");
-                    $.ajax({
-                        url: '/courses/'+this.courseId+'/check_prerequisite/',
-                        data: {
-                            block_id: this.id
-                        },
-                        success: function(data) {
-                            if (data.next) {
-                                goToNextOrPrevious(data.url);
+            var checkPrerequisite = function (numberAttempts) {
+                var that = this;
+                $.ajax({
+                    url: '/courses/'+this.courseId+'/check_prerequisite/',
+                    cache: false,
+                    data: {
+                        block_id: this.id
+                    },
+                    success: function(data) {
+                        if (data.next) {
+                            goToNextOrPrevious(data.url);
+                            $("body").removeClass("answer-loading");
+                        } else {
+                            if (numberAttempts < 3) {
+                                numberAttempts++;
+                                setTimeout(function () {
+                                    checkPrerequisite.call(that, numberAttempts);
+                                 }, 2000);
                             } else {
                                 $('#next-dialog #msg').html(data.msg);
                                 $('#next-dialog').dialog({
                                     width: 400
                                 });
+                                $("body").removeClass("answer-loading");
                             }
-                        },
-                        complete: function() {
-                            $("body").removeClass("answer-loading");
                         }
-                    });
+                    }
+                });
+            };
+
+            if ((direction === 'next') && (this.position >= this.contents.length)) {
+                if(this.nextUrl === 'None') {
+                    $("body").addClass("answer-loading");
+                    var that = this;
+                    setTimeout(function () {
+                        var numberAttempts = 1;
+                        checkPrerequisite.call(that, numberAttempts);
+                    }, 2000);
                 } else {
                     goToNextOrPrevious(this.nextUrl);
                 }
