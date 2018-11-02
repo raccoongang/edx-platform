@@ -558,37 +558,40 @@ def check_prerequisite(request, course_id):
     if not prereq:
         return JsonResponse({'next': True, 'msg': _('Go to next subsection')})
 
-    for i in range(30):
-        field_data_cache = FieldDataCache.cache_for_descriptor_descendents(
-            course_key,
-            request.user,
-            course,
-            depth=CONTENT_DEPTH,
-            read_only=CrawlersConfig.is_crawler(request),
+    field_data_cache = FieldDataCache.cache_for_descriptor_descendents(
+        course_key,
+        request.user,
+        course,
+        depth=CONTENT_DEPTH,
+        read_only=CrawlersConfig.is_crawler(request),
+    )
+
+    table_of_contents = toc_for_course(
+        request.user,
+        request,
+        course,
+        None,
+        None,
+        field_data_cache,
+    )
+
+    next_for_user = None
+    for c, chapter in enumerate(table_of_contents['chapters']):
+        for s, section in enumerate(chapter.get('sections', [])):
+            if section['url_name'] == block_hash:
+                if s < len(chapter['sections']) - 1:
+                    next_for_user = chapter['sections'][s+1]
+                elif c < len(table_of_contents['chapters']) - 1:
+                    next_for_user = (table_of_contents['chapters'][c+1].get('sections') or [None])[0]
+
+    if next_for_user and next_item.url_name == next_for_user['url_name']:
+        next_url = reverse(
+            'jump_to',
+            kwargs={
+                'course_id': course_id,
+                'location': next_item.location.to_deprecated_string(),
+            }
         )
-
-        table_of_contents = toc_for_course(
-            request.user,
-            request,
-            course,
-            None,
-            None,
-            field_data_cache,
-        )
-
-        next_for_user = None
-        for c, chapter in enumerate(table_of_contents['chapters']):
-            for s, section in enumerate(chapter.get('sections', [])):
-                if section['url_name'] == block_hash:
-                    if s < len(chapter['sections']) - 1:
-                        next_for_user = chapter['sections'][s+1]
-                    elif c < len(table_of_contents['chapters']) - 1:
-                        next_for_user = (table_of_contents['chapters'][c+1].get('sections') or [None])[0]
-
-        if next_for_user and next_item.url_name == next_for_user['url_name']:
-            break
-
-        sleep(0.5)
     else:
         url = reverse(
             'jump_to',
@@ -599,15 +602,8 @@ def check_prerequisite(request, course_id):
         )
         descriptor = modulestore().get_item(UsageKey.from_string(prereq[0]))
         name = descriptor.display_name_with_default
-        msg = _('In order to proceed, you must successfully complete section "<a href="{}">{}</a>" first.').format(url, name)
+        msg = _('In order to proceed, you must successfully complete section "<a href="{}">{}</a>" first.').format(url,
+                                                                                                                   name)
         return JsonResponse({'next': False, 'msg': msg, 'url': url})
-
-    next_url = reverse(
-        'jump_to',
-        kwargs={
-            'course_id': course_id,
-            'location': next_item.location.to_deprecated_string(),
-        }
-    )
 
     return JsonResponse({'next': True, 'url': next_url})
