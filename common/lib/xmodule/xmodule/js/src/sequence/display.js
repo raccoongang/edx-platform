@@ -396,9 +396,11 @@
                             goToNextOrPrevious(data.url);
                             $("body").removeClass("answer-loading");
                         } else {
-                            if (numberAttempts < 4) {
+                            if (numberAttempts < 3) {
                                 numberAttempts++;
-                                checkPrerequisite.call(that, numberAttempts);
+                                setTimeout(function () {
+                                    checkPrerequisite.call(that, numberAttempts);
+                                 }, 2000);
                             } else {
                                 $('#next-dialog #msg').html(data.msg);
                                 $('#next-dialog').dialog({
