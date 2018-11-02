@@ -409,9 +409,6 @@
                                 $("body").removeClass("answer-loading");
                             }
                         }
-                    },
-                    complete: function() {
-
                     }
                 });
             };
