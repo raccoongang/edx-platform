@@ -97,5 +97,4 @@ git+https://github.com/raccoongang/xblock-pdf.git@v1.0.2-rg#egg=xblock-pdf==v1.0
 git+https://github.com/edx-solutions/xblock-image-explorer@v0.9.0#egg=xblock-image-explorer
 
 #SSO Client for Drupal.
--e git+https://github.com/raccoongang/edx-oauth-client.git@asu-drupal#egg=edx_oauth_client
-
+-e git+https://github.com/raccoongang/edx-oauth-client.git@ytp-v.1.0.1#egg=edx_oauth_client==1.0.1-rg
