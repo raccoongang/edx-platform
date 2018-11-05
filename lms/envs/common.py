@@ -2180,7 +2180,6 @@ INSTALLED_APPS = (
 
     'xblock_django',
 
-<<<<<<< HEAD
     # Bookmarks
     'openedx.core.djangoapps.bookmarks',
 
