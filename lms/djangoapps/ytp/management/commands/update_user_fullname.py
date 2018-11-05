@@ -59,12 +59,19 @@ class Command(BaseCommand):
                                    api_data = r.ok and r.json() or {}
                                    if api_data:
                                        full_name = (api_data.get('field_full_name', {}) or {}).get('und', [{}])[0].get('value', '')
+                                       first_name = (api_data.get('field_first_name', {}) or {}).get('und', [{}])[0].get('value', '')
+                                       last_name = (api_data.get('field_last_name', {}) or {}).get('und', [{}])[0].get('value', '')
+                                       if not full_name and (first_name or last_name ):
+                                           full_name = "{} {}".format(first_name, last_name).strip()
                                        social_auth_user.user.profile.name = full_name
                                        social_auth_user.user.profile.save()
-                                       full_name_list = full_name.split()
-                                       fname, lname = full_name_list and (full_name_list[0], ' '.join(full_name_list[1:])) or ('', '')
-                                       social_auth_user.user.first_name = fname
-                                       social_auth_user.user.last_name = lname
+                                       if not (first_name and last_name) and full_name:
+                                           full_name_list = full_name.split()
+                                           fname, lname = full_name_list and (full_name_list[0], ' '.join(full_name_list[1:])) or ('', '')
+                                           first_name = first_name or fname
+                                           last_name = last_name or lname
+                                       social_auth_user.user.first_name = first_name
+                                       social_auth_user.user.last_name = last_name
                                        social_auth_user.user.save()
                                        self.stdout.write("User {} updated".format(full_name))
                                    else:
