@@ -819,7 +819,7 @@ class CourseFields(object):
             "Defines the proctoring Service for this Course. Choose on of this"
             " services {}".format(get_proctoring_list())
         ),
-        # default=,
+        default="",
         scope=Scope.settings,
     )
 
