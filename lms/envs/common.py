@@ -48,8 +48,6 @@ from lms.djangoapps.lms_xblock.mixin import LmsBlockMixin
 # The display name of the platform to be used in templates/emails/etc.
 PLATFORM_NAME = "Your Platform Name Here"
 CC_MERCHANT_NAME = PLATFORM_NAME
-# Shows up in the platform footer, eg "(c) COPYRIGHT_YEAR"
-COPYRIGHT_YEAR = "2017"
 
 PLATFORM_FACEBOOK_ACCOUNT = "http://www.facebook.com/YourPlatformFacebookAccount"
 PLATFORM_TWITTER_ACCOUNT = "@YourPlatformTwitterAccount"
@@ -1168,6 +1166,9 @@ MIDDLEWARE_CLASSES = (
     # Must be after DarkLangMiddleware.
     'django.middleware.locale.LocaleMiddleware',
 
+    #
+    'openedx.core.djangoapps.dark_lang.middleware.DarkLangMiddlewareSetLocaleAdditional',
+
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 
     'django_comment_client.utils.ViewNameMiddleware',
@@ -2169,11 +2170,6 @@ INSTALLED_APPS = (
     'program_marketing',
 )
 
-# Migrations which are not in the standard module "migrations"
-MIGRATION_MODULES = {
-    'social.apps.django_app.default': 'social.apps.django_app.default.south_migrations'
-}
-
 ######################### CSRF #########################################
 
 # Forwards-compatibility with Django 1.7
@@ -3052,3 +3048,4 @@ DOC_LINK_BASE_URL = None
 ############## Settings for the Enterprise App ######################
 
 ENTERPRISE_ENROLLMENT_API_URL = LMS_ROOT_URL + "/api/enrollment/v1/"
+

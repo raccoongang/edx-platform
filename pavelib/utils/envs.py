@@ -8,6 +8,9 @@ import json
 from lazy import lazy
 from path import Path as path
 import memcache
+from paver.easy import sh
+
+from pavelib.utils.cmd import django_cmd
 
 
 class Env(object):
@@ -27,6 +30,8 @@ class Env(object):
 
     # Python unittest dirs
     PYTHON_COVERAGERC = REPO_ROOT / ".coveragerc"
+
+    STATIC_COLLECTOR_ROOT_TEST = REPO_ROOT / "static_collector"
 
     # Bok_choy dirs
     BOK_CHOY_DIR = REPO_ROOT / "common" / "test" / "acceptance"
@@ -175,6 +180,29 @@ class Env(object):
             SERVICE_VARIANT = 'cms'
         else:
             SERVICE_VARIANT = 'lms'
+
+    @classmethod
+    def get_django_setting(self, django_setting, system, settings=None):
+        """
+        Interrogate Django environment for specific settings values
+        :param django_setting: the django setting to get
+        :param system: the django app to use when asking for the setting (lms | cms)
+        :param settings: the settings file to use when asking for the value
+        :return: unicode value of the django setting
+        """
+        if not settings:
+            settings = os.environ.get("EDX_PLATFORM_SETTINGS", "aws")
+        value = sh(
+            django_cmd(
+                system,
+                settings,
+                "print_settings {django_setting} --format=value 2>/dev/null".format(
+                    django_setting=django_setting
+                )
+            ),
+            capture=True
+        )
+        return unicode(value).strip()
 
     @lazy
     def env_tokens(self):

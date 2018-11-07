@@ -15,7 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.http import HttpResponse, Http404
 from django.utils.decorators import method_decorator
 from django.utils.html import escape
@@ -40,6 +40,8 @@ from student.models import CourseEnrollment, UserProfile, Registration
 import track.views
 from xmodule.modulestore.django import modulestore
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
+from search.search_engine_base import SearchEngine
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 
 log = logging.getLogger(__name__)
@@ -193,7 +195,8 @@ class Users(SysadminDashboardView):
         user = User(username=uname, email=email, is_active=True)
         user.set_password(new_password)
         try:
-            user.save()
+            with transaction.atomic():
+                user.save()
         except IntegrityError:
             msg += _('Oops, failed to create user {user}, {error}').format(
                 user=user,
@@ -334,6 +337,7 @@ class Courses(SysadminDashboardView):
     This manages adding/updating courses from git, deleting courses, and
     provides course listing information.
     """
+    _searcher = SearchEngine.get_search_engine(getattr(settings, "COURSEWARE_INDEX_NAME", "courseware_index"))
 
     def git_info_for_course(self, cdir):
         """This pulls out some git info like the last commit"""
@@ -493,6 +497,17 @@ class Courses(SysadminDashboardView):
             if course_found:
                 # delete course that is stored with mongodb backend
                 self.def_ms.delete_course(course.id, request.user.id)
+
+                try:
+                    response = self._searcher.search(doc_type="courseware_content", field_dictionary={'course': course_id})
+                    result_ids = [result["data"]["id"] for result in response["results"]]
+                    self._searcher.remove('courseware_content', result_ids)
+                    self._searcher.remove('course_info', [course_id])
+                except Exception as e: # pragma: no cover
+                    log.error(e.message)
+
+                CourseOverview.objects.filter(id=course.id).delete()
+
                 # don't delete user permission groups, though
                 self.msg += \
                     u"<font color='red'>{0} {1} = {2} ({3})</font>".format(
