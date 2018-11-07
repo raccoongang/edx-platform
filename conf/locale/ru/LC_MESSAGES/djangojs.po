@@ -9713,7 +9713,7 @@ msgid "Pass"
 msgstr "Проходной уровень"
 
 msgid "Total "
-msgstr "Общий уровень"
+msgstr "Общий уровень "
 
 msgid "pass"
 msgstr "проходной уровень"
