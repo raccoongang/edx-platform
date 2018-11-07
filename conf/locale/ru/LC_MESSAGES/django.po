@@ -25994,3 +25994,6 @@ msgstr "{short_label} средн."
 
 msgid "{section_type} Average = {percent:.0%}"
 msgstr "{section_type} Средняя оценка = {percent:.0%}"
+
+msgid "Total "
+msgstr "Общий уровень"
