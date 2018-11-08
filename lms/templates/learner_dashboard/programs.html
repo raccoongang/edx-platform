@@ -12,6 +12,9 @@ from openedx.core.djangolib.js_utils import (
 )
 %>
 
+<%static:css group='style-main-v1'/>
+
+
 <%block name="js_extra">
 <%static:require_module module_name="js/learner_dashboard/program_list_factory" class_name="ProgramListFactory">
 ProgramListFactory({
