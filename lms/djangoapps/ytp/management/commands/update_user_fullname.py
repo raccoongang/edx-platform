@@ -79,7 +79,11 @@ class Command(BaseCommand):
                                        social_auth_user.user.first_name = first_name
                                        social_auth_user.user.last_name = last_name
                                        social_auth_user.user.save()
-                                       self.stdout.write("User {} updated".format(full_name))
+                                       self.stdout.write(
+                                           "User with id {} updated: full_name {}, first_name {}, last_name {}".format(
+                                               social_auth_user.user.id, full_name, first_name, last_name
+                                           )
+                                       )
                                    else:
                                        self.stdout.write(
                                            "Remote service returned empty response for user:id={}, uid={}".format(
@@ -87,7 +91,19 @@ class Command(BaseCommand):
                                            )
                                        )
                            except Exception as e:
-                               self.stdout.write("User with id {} not updated. Exception  %s", e)
+                               if hasattr(e, 'message'):
+                                   error_string = e.message
+                               else:
+                                   error_string = str(e)
+                               self.stdout.write(
+                                   "User with id {} not updated. Exception {}".format(
+                                       social_auth_user.user.id, error_string
+                                   )
+                               )
                self.stdout.write("Done")
            except Exception as e:
-               self.stdout.write('Exception %s', e)
+               if hasattr(e, 'message'):
+                   error_string = e.message
+               else:
+                   error_string = str(e)
+               self.stdout.write('Exception {}'.format(error_string))
