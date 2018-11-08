@@ -910,6 +910,7 @@ class CourseFields(object):
         },
         scope=Scope.settings
     )
+
     allow_unsupported_xblocks = Boolean(
         display_name=_("Add Unsupported Problems and Tools"),
         help=_(
@@ -925,6 +926,15 @@ class CourseFields(object):
         help='',
         default={key: {'number': '', 'provider': DEFAULT_PROVIDER.get(key, ''), 'approved': True}
                  for key, value in US_STATE_CHOICES}
+    )
+
+    appraiser_board_course_number = String(
+        help=_(
+            "This field will be displayed on Oklahoma's Certificate"
+        ),
+        display_name=_("Appraiser Board Course Number"),
+        scope=Scope.settings,
+        default=""
     )
 
 
