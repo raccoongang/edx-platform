@@ -73,7 +73,7 @@ class Command(BaseCommand):
                                            last_name = last_name or lname
                                            
                                        if not full_name and (first_name or last_name ):
-                                           full_name = "{} {}".format(first_name, last_name).strip()
+                                           full_name = u'{} {}'.format(first_name, last_name).strip()
                                        social_auth_user.user.profile.name = full_name
                                        social_auth_user.user.profile.save()
                                        social_auth_user.user.first_name = first_name
@@ -91,7 +91,7 @@ class Command(BaseCommand):
                                            )
                                        )
                            except Exception as e:
-                               if hasattr(e, 'message'):
+                               if hasattr(e, 'message') and e.message:
                                    error_string = e.message
                                else:
                                    error_string = str(e)
@@ -102,7 +102,7 @@ class Command(BaseCommand):
                                )
                self.stdout.write("Done")
            except Exception as e:
-               if hasattr(e, 'message'):
+               if hasattr(e, 'message') and e.message:
                    error_string = e.message
                else:
                    error_string = str(e)
