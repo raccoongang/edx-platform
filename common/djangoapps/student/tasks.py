@@ -1,13 +1,20 @@
 """
 This file contains celery tasks for sending email
 """
+import StringIO
 import logging
 
 from boto.exception import NoAuthHandlerFound
+from celery.decorators import periodic_task
 from celery.exceptions import MaxRetriesExceededError
+from celery.schedules import crontab
 from celery.task import task  # pylint: disable=no-name-in-module, import-error
 from django.conf import settings
 from django.core import mail
+
+from django.utils.translation import ugettext as _
+
+from student.reports import csv_course_report
 
 log = logging.getLogger('edx.celery.task')
 
@@ -48,3 +55,17 @@ def send_activation_email(self, subject, message, from_address, dest_addr):
             exc_info=True
         )
         raise Exception
+
+
+@periodic_task(ignore_result=True, run_every=crontab(hour=settings.FEATURES.get('COURSE_REPORT_HOUR', '*')))
+def send_courses_report():
+    f = StringIO.StringIO()
+    csv_course_report(f)
+    email = mail.EmailMessage(
+        _('Course report'),
+        _('Course report in attachment...'),
+        settings.DEFAULT_FROM_EMAIL,
+        settings.FEATURES.get('USER_REPORT_EMAILS', [settings.CONTACT_EMAIL])
+    )
+    email.attach('course_report.csv', f.getvalue(), 'text/csv')
+    email.send(fail_silently=False)
