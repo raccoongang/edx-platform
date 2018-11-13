@@ -3,6 +3,7 @@ Script for update User's first name, last name  and the name field in UserProfil
 """
 import json
 import sys
+import traceback
 
 import requests
 from django.conf import settings
@@ -101,7 +102,8 @@ class Command(BaseCommand):
                                        social_auth_user.user.id, error_string
                                    )
                                )
-                               sys.exc_info()
+                               exc_type, exc_value, exc_traceback = sys.exc_info()
+                               traceback.print_exception(exc_type, exc_value, exc_traceback, limit=10, file=sys.stdout)
 
                self.stdout.write("Done")
            except Exception as e:
@@ -110,4 +112,5 @@ class Command(BaseCommand):
                else:
                    error_string = str(e)
                self.stdout.write('Exception {}'.format(error_string))
-               sys.exc_info()
+               exc_type, exc_value, exc_traceback = sys.exc_info()
+               traceback.print_exception(exc_type, exc_value, exc_traceback, limit=10, file=sys.stdout)
