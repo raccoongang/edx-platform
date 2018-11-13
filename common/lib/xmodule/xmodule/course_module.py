@@ -937,6 +937,17 @@ class CourseFields(object):
         default=""
     )
 
+    certificate_type = String(
+        display_name=_("Certificate type"),
+        help="",
+        default="",
+        scope=Scope.settings,
+        values=[
+            {"display_name": "----------", "value": ""},
+            {"display_name": _("Vermont Realtors Real Estate Education"), "value": "vermont_realtors"},
+        ]
+    )
+
 
 class CourseModule(CourseFields, SequenceModule):  # pylint: disable=abstract-method
     """
