@@ -2,6 +2,8 @@
 Script for update User's first name, last name  and the name field in UserProfile
 """
 import json
+import sys
+import traceback
 
 import requests
 from django.conf import settings
@@ -73,7 +75,7 @@ class Command(BaseCommand):
                                            last_name = last_name or lname
                                            
                                        if not full_name and (first_name or last_name ):
-                                           full_name = "{} {}".format(first_name, last_name).strip()
+                                           full_name = u'{} {}'.format(first_name, last_name).strip()
                                        social_auth_user.user.profile.name = full_name
                                        social_auth_user.user.profile.save()
                                        social_auth_user.user.first_name = first_name
@@ -91,7 +93,7 @@ class Command(BaseCommand):
                                            )
                                        )
                            except Exception as e:
-                               if hasattr(e, 'message'):
+                               if hasattr(e, 'message') and e.message:
                                    error_string = e.message
                                else:
                                    error_string = str(e)
@@ -100,10 +102,15 @@ class Command(BaseCommand):
                                        social_auth_user.user.id, error_string
                                    )
                                )
+                               exc_type, exc_value, exc_traceback = sys.exc_info()
+                               traceback.print_exception(exc_type, exc_value, exc_traceback, limit=10, file=sys.stdout)
+
                self.stdout.write("Done")
            except Exception as e:
-               if hasattr(e, 'message'):
+               if hasattr(e, 'message') and e.message:
                    error_string = e.message
                else:
                    error_string = str(e)
                self.stdout.write('Exception {}'.format(error_string))
+               exc_type, exc_value, exc_traceback = sys.exc_info()
+               traceback.print_exception(exc_type, exc_value, exc_traceback, limit=10, file=sys.stdout)
