@@ -1,4 +1,4 @@
-import csv
+import unicodecsv as csv
 
 from django.utils import timezone
 
@@ -37,7 +37,7 @@ def csv_course_report(f):
                 row_values.append(grade.percent_grade * 100)
                 row_values.append(timezone.localtime(grade.passed_timestamp))
                 row_values.append(grade.passed_timestamp - enrollment.created)
-            except PersistentCourseGrade.DoesNotExist:
+            except:
                 row_values.extend([''] * (len(field_names) - len(row_values)))
 
             writer.writerow(dict(zip(field_names, row_values)))
