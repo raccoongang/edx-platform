@@ -5635,6 +5635,14 @@ msgstr ""
 "группу."
 
 #: common/static/common/templates/discussion/new-post.underscore
+msgid ""
+"Discussion admins, moderators, and TAs can make their posts visible to all "
+"students or specify a single cohort."
+msgstr ""
+"Администраторы обсуждений, модераторы и ТА могут сделать свои сообщения "
+"видимыми для всех учащихся или указать определенную целевую группу."
+
+#: common/static/common/templates/discussion/new-post.underscore
 msgid "All Groups"
 msgstr "Все группы"
 
