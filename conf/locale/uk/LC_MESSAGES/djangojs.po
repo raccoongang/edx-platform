@@ -5346,7 +5346,7 @@ msgstr "Додати повідомлення"
 
 #: common/static/common/templates/discussion/new-post.underscore
 msgid "Visible to"
-msgstr ""
+msgstr "Видимий для:"
 
 #: common/static/common/templates/discussion/new-post.underscore
 msgid ""
@@ -10395,6 +10395,8 @@ msgid ""
 "Discussion admins, moderators, and TAs can make their posts visible to all "
 "students or specify a single cohort."
 msgstr ""
+"Адміністратори обговорень, модератори та ТА можуть зробити свої публікації "
+"видимими для всіх користувачів або вказати певну цільову групу."
 
 msgid "Add a clear and descriptive title to encourage participation."
 msgstr "Додайте зрозумілу та вичерпну назву."
