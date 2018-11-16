@@ -19,8 +19,10 @@ Common traits:
 import datetime
 import json
 import warnings
+import pytz
 
 import dateutil
+from datetime import datetime
 
 from .common import *
 from openedx.core.lib.logsettings import get_logger_config
@@ -28,7 +30,6 @@ import os
 
 from path import Path as path
 from xmodule.modulestore.modulestore_settings import convert_module_store_setting_if_needed
-
 from django.utils.encoding import force_str
 
 # SERVICE_VARIANT specifies name of the variant used, which decides what JSON
@@ -290,7 +291,8 @@ MOBILE_STORE_URLS = ENV_TOKENS.get('MOBILE_STORE_URLS', MOBILE_STORE_URLS)
 
 # Timezone overrides
 TIME_ZONE = ENV_TOKENS.get('TIME_ZONE', TIME_ZONE)
-
+# COPYRIGHT_YEAR overrides
+COPYRIGHT_YEAR = "{year}".format(year=datetime.now(pytz.timezone(TIME_ZONE)).year)
 # Translation overrides
 LANGUAGES = ENV_TOKENS.get('LANGUAGES', LANGUAGES)
 LANGUAGE_DICT = dict(LANGUAGES)
