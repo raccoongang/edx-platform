@@ -976,6 +976,13 @@ class SplitMongoModuleStore(SplitBulkWriteMixin, ModuleStoreWriteBase):
         # get the blocks for each course index (s/b the root)
         return self._get_structures_for_branch_and_locator(branch, self._create_course_locator, **kwargs)
 
+
+    @autoretry_read()
+    def get_featured_course_ids(self):
+        courses = self.db_connection.get_featured_courses()
+        return [self.make_course_key(c['org'], c['course'], c['run']) for c in courses]
+
+
     @autoretry_read()
     def get_course_summaries(self, branch, **kwargs):
         """

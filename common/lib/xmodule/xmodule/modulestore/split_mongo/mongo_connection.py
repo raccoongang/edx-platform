@@ -381,6 +381,18 @@ class MongoConnection(object):
             tagger.measure("structures", len(docs))
             return docs
 
+
+    @autoretry_read()
+    def get_featured_courses(self, course_context=None):
+        with TIMER.timer("get_featured_courses", course_context) as tagger:
+            _ids = self.structures.find(
+                {'blocks.fields.featured': {'$in': ['true', True, 1]}},
+                {'blocks': {'$elemMatch': {'block_type': 'course'}}, 'root': 1}
+            ).distinct('_id')
+            tagger.measure("structures", len(_ids))
+            return self.course_index.find({'versions.published-branch': {'$in': _ids}})
+
+
     @autoretry_read()
     def find_structures_derived_from(self, ids, course_context=None):
         """
