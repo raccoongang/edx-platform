@@ -869,6 +869,10 @@ class DraftModuleStore(MongoModuleStore):
                 actual_setting=actual_branch_setting
             )
 
+    def get_featured_course_ids(self):
+        '''No need for old courses'''
+        return []
+
 
 def _verify_revision_is_published(location):
     """
