@@ -117,6 +117,17 @@ urlpatterns = (
     url(r'^(?P<key>.+)/openassessment-filesystem-storage', views_filesystem.filesystem_storage, name='openassessment-filesystem-storage'),
 )
 
+if settings.FEATURES.get('ENABLE_RG_INSTRUCTOR_ANALYTICS'):
+    urlpatterns += (
+        url(
+            r'^courses/{}/tab/instructor_analytics/'.format(
+                settings.COURSE_ID_PATTERN,
+            ),
+            include('rg_instructor_analytics.urls'),
+            name='instructor_analytics_endpoint',
+        ),
+    )
+
 # TODO: This needs to move to a separate urls.py once the student_account and
 # student views below find a home together
 if settings.FEATURES["ENABLE_COMBINED_LOGIN_REGISTRATION"]:
