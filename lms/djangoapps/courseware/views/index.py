@@ -26,6 +26,7 @@ from web_fragments.fragment import Fragment
 
 from edxmako.shortcuts import render_to_response, render_to_string
 from lms.djangoapps.courseware.exceptions import CourseAccessRedirect
+from lms.djangoapps.instructor.enrollment import reset_student_attempts
 from lms.djangoapps.gating.api import get_entrance_exam_score_ratio, get_entrance_exam_usage_key
 from lms.djangoapps.grades.new.course_grade_factory import CourseGradeFactory
 from openedx.core.djangoapps.crawlers.models import CrawlersConfig
@@ -525,6 +526,7 @@ def save_positions_recursively_up(user, request, field_data_cache, xmodule, cour
 @ensure_valid_course_key
 def check_prerequisite(request, course_id):
     block_id = request.GET.get('block_id')
+    number_attempts = request.GET.get('number_attempts')
     if not block_id:
         raise Http404()
 
@@ -600,10 +602,20 @@ def check_prerequisite(request, course_id):
                 'location': prereq[0],
             }
         )
-        descriptor = modulestore().get_item(UsageKey.from_string(prereq[0]))
+        descriptor = modulestore().get_item(UsageKey.from_string(prereq[0]), depth=2)
         name = descriptor.display_name_with_default
         msg = _('In order to proceed, you must successfully complete section "<a href="{}">{}</a>" first.').format(url,
                                                                                                                    name)
+        if number_attempts == '3':  # last request
+            reset_library_content(descriptor, request.user)
+
         return JsonResponse({'next': False, 'msg': msg, 'url': url})
 
     return JsonResponse({'next': True, 'url': next_url})
+
+
+def reset_library_content(sequential, user):
+    for vertical in sequential.get_children():
+        for children in vertical.get_children():
+            if children.location.block_type == u'library_content':
+                reset_student_attempts(children.location.course_key, user, children.location, user, delete_module=True)
