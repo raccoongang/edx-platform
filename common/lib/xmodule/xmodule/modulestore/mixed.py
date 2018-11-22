@@ -325,6 +325,12 @@ class MixedModuleStore(ModuleStoreDraftAndPublished, ModuleStoreWriteBase):
                     courses[course_id] = course
         return courses.values()
 
+    def get_featured_course_ids(self):
+        ids = []
+        for store in self.modulestores:
+            ids.extend(store.get_featured_course_ids())
+        return ids
+
     @strip_key
     def get_libraries(self, **kwargs):
         """
