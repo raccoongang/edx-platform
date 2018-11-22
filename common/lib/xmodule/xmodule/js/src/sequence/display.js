@@ -389,12 +389,13 @@
                     url: '/courses/'+this.courseId+'/check_prerequisite/',
                     cache: false,
                     data: {
-                        block_id: this.id
+                        block_id: this.id,
+                        number_attempts: numberAttempts
                     },
                     success: function(data) {
                         if (data.next) {
                             goToNextOrPrevious(data.url);
-                            $("body").removeClass("answer-loading");
+                            // $("body").removeClass("answer-loading");
                         } else {
                             if (numberAttempts < 3) {
                                 numberAttempts++;
@@ -404,9 +405,11 @@
                             } else {
                                 $('#next-dialog #msg').html(data.msg);
                                 $('#next-dialog').dialog({
-                                    width: 400
+                                    width: 400,
+                                    resizable   : false,
+                                    draggable: false,
                                 });
-                                $("body").removeClass("answer-loading");
+                                $("body").removeClass("answer-loading").addClass('dialog-modal-open');
                             }
                         }
                     }
