@@ -745,6 +745,16 @@ if settings.FEATURES.get('ENABLE_DISCUSSION_SERVICE'):
 
 urlpatterns += (
     url(
+        r'^courses/{}/tab/instructor_analytics/'.format(
+            settings.COURSE_ID_PATTERN,
+        ),
+        include('rg_instructor_analytics.urls'),
+        name='instructor_analytics_endpoint',
+    ),
+)
+
+urlpatterns += (
+    url(
         r'^courses/{}/tab/(?P<tab_type>[^/]+)/$'.format(
             settings.COURSE_ID_PATTERN,
         ),

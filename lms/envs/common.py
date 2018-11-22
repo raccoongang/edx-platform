@@ -3228,3 +3228,5 @@ COURSES_API_CACHE_TIMEOUT = 3600  # Value is in seconds
 
 ############## Settings for CourseGraph ############################
 COURSEGRAPH_JOB_QUEUE = LOW_PRIORITY_QUEUE
+
+INSTALLED_APPS += ('rg_instructor_analytics', 'rg_instructor_analytics_log_collector',)
