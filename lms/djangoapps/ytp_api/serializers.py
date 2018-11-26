@@ -99,6 +99,6 @@ class ProfileSerializer(HyperlinkedModelSerializer, ReadOnlyFieldsSerializerMixi
         for field_name in validated_data:
             default = getattr(instance, field_name)
             field_value = validated_data.get(field_name, default)
-            setattr(instance, field_name,field_value)
+            setattr(instance, field_name, field_value)
         instance.save()
         return instance
