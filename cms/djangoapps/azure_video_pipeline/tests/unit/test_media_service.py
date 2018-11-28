@@ -33,7 +33,9 @@ class MediaServiceClientTests(unittest.TestCase):
                 return_value=mock.Mock(status_code=400, raise_for_status=mock.Mock(side_effect=HTTPError)))
     @mock.patch('azure_video_pipeline.media_service.requests.post',
                 return_value=mock.Mock(status_code=400, raise_for_status=mock.Mock(side_effect=HTTPError)))
-    def raise_for_status(self, requests_post, requests_get, headers, func, func_args=None):
+    @mock.patch('azure_video_pipeline.media_service.requests.put',
+                return_value=mock.Mock(status_code=400, raise_for_status=mock.Mock(side_effect=HTTPError)))
+    def raise_for_status(self, requests_put, requests_post, requests_get, headers, func, func_args=None):
         media_services = self.make_one()
         with self.assertRaises(HTTPError):
             if func_args:
@@ -41,9 +43,14 @@ class MediaServiceClientTests(unittest.TestCase):
             else:
                 getattr(media_services, func)()
 
+        headers.assert_called_once_with()
+
     def test_get_headers(self):
+        # arrange
         media_services = self.make_one()
+        # act
         headers = media_services.get_headers()
+        # assert
         expected_headers = {
             'Content-Type': 'application/json',
             'DataServiceVersion': '1.0',
@@ -71,13 +78,15 @@ class MediaServiceClientTests(unittest.TestCase):
                 return_value=mock.Mock(generate_url=mock.Mock(
                     return_value='sas_url')))
     def test_generate_url(self, blob_service_client, create_locator, create_access_policy, create_asset_file):
+        # arrange
         media_services = self.make_one()
         media_services.client_video_id = 'file_name.mp4'
         media_services.asset = {
             'Id': 'asset_id'
         }
+        # act
         sas_url = media_services.generate_url(expires_in=123456789)
-
+        # assert
         create_asset_file.assert_called_once_with(
             'asset_id', 'file_name.mp4', 'video/mp4'
         )
@@ -106,10 +115,14 @@ class MediaServiceClientTests(unittest.TestCase):
     @mock.patch('azure_video_pipeline.media_service.requests.get',
                 return_value=mock.Mock(status_code=200,
                                        json=mock.Mock(return_value={'value': ['locator']})))
-    def test_get_asset_locators(self, requests_get_mock, get_headers_mock):
+    def test_get_asset_locators(self, requests_get_mock, headers_mock):
+        # arrange
         media_services = self.make_one()
         asset_id = 'asset_id'
+        # act
         locator = media_services.get_asset_locators(asset_id, LocatorTypes.SAS)
+        # assert
+        headers_mock.assert_called_once_with()
         requests_get_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/Assets('{}')/Locators".format(asset_id),
             headers={},
@@ -126,10 +139,14 @@ class MediaServiceClientTests(unittest.TestCase):
                 return_value=mock.Mock(status_code=201,
                                        json=mock.Mock(return_value={'asset_id': 'asset_id',
                                                                     'asset_name': 'asset_name'})))
-    def test_create_asset(self, requests_post, headers):
+    def test_create_asset(self, requests_post, headers_mock):
+        # arrange
         media_services = self.make_one()
         asset_name = 'asset_name'
+        # act
         asset = media_services.create_asset(asset_name)
+        # assert
+        headers_mock.assert_called_once_with()
         requests_post.assert_called_once_with(
             "https://rest_api_endpoint/api/Assets",
             headers={},
@@ -146,12 +163,16 @@ class MediaServiceClientTests(unittest.TestCase):
                 return_value=mock.Mock(status_code=201,
                                        json=mock.Mock(return_value={'file_id': 'file_id',
                                                                     'file_name': 'file_name'})))
-    def test_create_asset_file(self, requests_post, headers):
+    def test_create_asset_file(self, requests_post, headers_mock):
+        # arrange
         media_services = self.make_one()
         asset_id = 'asset_id'
         file_name = 'file_name'
         mime_type = 'mime_type'
+        # act
         asset = media_services.create_asset_file(asset_id, file_name, mime_type)
+        # assert
+        headers_mock.assert_called_once_with()
         expected_data = {
             "IsEncrypted": "false",
             "IsPrimary": "false",
@@ -175,10 +196,14 @@ class MediaServiceClientTests(unittest.TestCase):
                 return_value=mock.Mock(status_code=201,
                                        json=mock.Mock(return_value={'policy_id': 'policy_id',
                                                                     'policy_name': 'policy_name'})))
-    def test_create_access_policy(self, requests_post, headers):
+    def test_create_access_policy(self, requests_post, headers_mock):
+        # arrange
         media_services = self.make_one()
         policy_name = 'policy_name'
+        # act
         asset = media_services.create_access_policy(policy_name)
+        # assert
+        headers_mock.assert_called_once_with()
         expected_data = {
             "Name": policy_name,
             "DurationInMinutes": 120,
@@ -201,12 +226,16 @@ class MediaServiceClientTests(unittest.TestCase):
                                        json=mock.Mock(return_value={'locator_id': 'locator_id',
                                                                     'locator_name': 'locator_name'})))
     @freeze_time("2017-11-01")
-    def test_create_locator(self, requests_post, headers):
+    def test_create_locator(self, requests_post, headers_mock):
+        # arrange
         media_services = self.make_one()
         access_policy_id = 'access_policy_id'
         asset_id = 'asset_id'
         locator_type = 'locator_type'
+        # act
         asset = media_services.create_locator(access_policy_id, asset_id, locator_type)
+        # assert
+        headers_mock.assert_called_once_with()
         expected_data = {
             "AccessPolicyId": access_policy_id,
             "AssetId": asset_id,
@@ -227,13 +256,14 @@ class MediaServiceClientTests(unittest.TestCase):
     @mock.patch('azure_video_pipeline.media_service.requests.get', return_value=mock.Mock(
         status_code=200, json=mock.Mock(return_value={'value': [{'id', 'asset_id'}]})
     ))
-    def test_get_input_asset_by_video_id(self, requests_get_mock, _get_headers_mock):
+    def test_get_input_asset_by_video_id(self, requests_get_mock, headers_mock):
         # arrange
         media_services = self.make_one()
         video_id = 'test:video:id'
         # act
         asset = media_services.get_input_asset_by_video_id(video_id)
         # assert
+        headers_mock.assert_called_once_with()
         requests_get_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/Assets",
             headers={},
@@ -241,17 +271,24 @@ class MediaServiceClientTests(unittest.TestCase):
         )
         self.assertEqual(asset, {'id', 'asset_id'})
 
+    def test_raise_for_status_get_input_asset_by_video_id(self):
+        self.raise_for_status(
+            func='get_input_asset_by_video_id',
+            func_args=['video_id']
+        )
+
     @mock.patch('azure_video_pipeline.media_service.MediaServiceClient.get_headers', return_value={})
     @mock.patch('azure_video_pipeline.media_service.requests.get', return_value=mock.Mock(
         status_code=200, json=mock.Mock(return_value={'value': 'protection_key_id'})
     ))
-    def test_get_protection_key_id(self, requests_get_mock, _get_headers_mock):
+    def test_get_protection_key_id(self, requests_get_mock, headers_mock):
         # arrange
         media_services = self.make_one()
         content_key_type = 'content_key_type'
         # act
         protection_key_id = media_services.get_protection_key_id(content_key_type)
         # assert
+        headers_mock.assert_called_once_with()
         requests_get_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/GetProtectionKeyId",
             headers={},
@@ -259,17 +296,24 @@ class MediaServiceClientTests(unittest.TestCase):
         )
         self.assertEqual(protection_key_id, 'protection_key_id')
 
+    def test_raise_for_status_get_protection_key_id(self):
+        self.raise_for_status(
+            func='get_protection_key_id',
+            func_args=['content_key_type']
+        )
+
     @mock.patch('azure_video_pipeline.media_service.MediaServiceClient.get_headers', return_value={})
     @mock.patch('azure_video_pipeline.media_service.requests.get', return_value=mock.Mock(
         status_code=200, json=mock.Mock(return_value={'value': 'protection_key'})
     ))
-    def test_get_protection_key(self, requests_get_mock, _get_headers_mock):
+    def test_get_protection_key(self, requests_get_mock, headers_mock):
         # arrange
         media_services = self.make_one()
         protection_key_id = 'protection_key_id'
         # act
         protection_key = media_services.get_protection_key(protection_key_id)
         # assert
+        headers_mock.assert_called_once_with()
         requests_get_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/GetProtectionKey",
             headers={},
@@ -277,11 +321,17 @@ class MediaServiceClientTests(unittest.TestCase):
         )
         self.assertEqual(protection_key, 'protection_key')
 
+    def test_raise_for_status_get_protection_key(self):
+        self.raise_for_status(
+            func='get_protection_key',
+            func_args=['protection_key_id']
+        )
+
     @mock.patch('azure_video_pipeline.media_service.MediaServiceClient.get_headers', return_value={})
     @mock.patch('azure_video_pipeline.media_service.requests.post', return_value=mock.Mock(
         status_code=201, json=mock.Mock(return_value={'Id': 'content_key_id'})
     ))
-    def test_create_content_key(self, requests_post_mock, _get_headers_mock):
+    def test_create_content_key(self, requests_post_mock, headers_mock):
         # arrange
         media_services = self.make_one()
         name = 'name content_key'
@@ -292,6 +342,7 @@ class MediaServiceClientTests(unittest.TestCase):
         content_key = media_services.create_content_key(name, protection_key_id,
                                                         content_key_type, encrypted_content_key)
         # assert
+        headers_mock.assert_called_once_with()
         requests_post_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/ContentKeys",
             headers={},
@@ -305,11 +356,18 @@ class MediaServiceClientTests(unittest.TestCase):
         )
         self.assertEqual(content_key, {'Id': 'content_key_id'})
 
+    def test_raise_for_status_create_content_key(self):
+        self.raise_for_status(
+            func='create_content_key',
+            func_args=['name', 'protection_key_id', 'content_key_type', 'encrypted_content_key']
+        )
+
+
     @mock.patch('azure_video_pipeline.media_service.MediaServiceClient.get_headers', return_value={})
     @mock.patch('azure_video_pipeline.media_service.requests.put', return_value=mock.Mock(
         status_code=204, json=mock.Mock()
     ))
-    def test_update_content_key(self, requests_put_mock, _get_headers_mock):
+    def test_update_content_key(self, requests_put_mock, headers_mock):
         # arrange
         media_services = self.make_one()
         content_key_id = 'content_key_id'
@@ -317,6 +375,7 @@ class MediaServiceClientTests(unittest.TestCase):
         # act
         content_key = media_services.update_content_key(content_key_id, data)
         # assert
+        headers_mock.assert_called_once_with()
         requests_put_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/ContentKeys('{}')".format(content_key_id),
             headers={},
@@ -324,11 +383,17 @@ class MediaServiceClientTests(unittest.TestCase):
         )
         self.assertIsNone(content_key)
 
+    def test_raise_for_status_update_content_key(self):
+        self.raise_for_status(
+            func='update_content_key',
+            func_args=['content_key_id', 'data']
+        )
+
     @mock.patch('azure_video_pipeline.media_service.MediaServiceClient.get_headers', return_value={})
     @mock.patch('azure_video_pipeline.media_service.requests.post', return_value=mock.Mock(
         status_code=204, json=mock.Mock()
     ))
-    def test_associate_content_key_with_asset(self, requests_post_mock, _get_headers_mock):
+    def test_associate_content_key_with_asset(self, requests_post_mock, headers_mock):
         # arrange
         media_services = self.make_one()
         asset_id = 'asset_id'
@@ -339,6 +404,7 @@ class MediaServiceClientTests(unittest.TestCase):
         # act
         response = media_services.associate_content_key_with_asset(asset_id, content_key_id)
         # assert
+        headers_mock.assert_called_once_with()
         requests_post_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/Assets('{}')/$links/ContentKeys".format(asset_id),
             headers={},
@@ -346,17 +412,24 @@ class MediaServiceClientTests(unittest.TestCase):
         )
         self.assertIsNone(response)
 
+    def test_raise_for_status_associate_content_key_with_asset(self):
+        self.raise_for_status(
+            func='associate_content_key_with_asset',
+            func_args=['asset_id', 'content_key_id']
+        )
+
     @mock.patch('azure_video_pipeline.media_service.MediaServiceClient.get_headers', return_value={})
     @mock.patch('azure_video_pipeline.media_service.requests.post', return_value=mock.Mock(
         status_code=201, json=mock.Mock(return_value={'Id': 'content_key_authorization_policy_id'})
     ))
-    def test_create_content_key_authorization_policy(self, requests_post_mock, _get_headers_mock):
+    def test_create_content_key_authorization_policy(self, requests_post_mock, headers_mock):
         # arrange
         media_services = self.make_one()
         name = 'content_key_authorization_policy name '
         # act
         response = media_services.create_content_key_authorization_policy(name)
         # assert
+        headers_mock.assert_called_once_with()
         requests_post_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/ContentKeyAuthorizationPolicies",
             headers={},
@@ -364,11 +437,17 @@ class MediaServiceClientTests(unittest.TestCase):
         )
         self.assertEqual(response, {'Id': 'content_key_authorization_policy_id'})
 
+    def test_raise_for_status_create_content_key_authorization_policys(self):
+        self.raise_for_status(
+            func='create_content_key_authorization_policy',
+            func_args=['name']
+        )
+
     @mock.patch('azure_video_pipeline.media_service.MediaServiceClient.get_headers', return_value={})
     @mock.patch('azure_video_pipeline.media_service.requests.post', return_value=mock.Mock(
         status_code=201, json=mock.Mock(return_value={'Id': 'create_content_key_open_authorization_policy_options'})
     ))
-    def test_create_content_key_open_authorization_policy_options(self, requests_post_mock, _get_headers_mock):
+    def test_create_content_key_open_authorization_policy_options(self, requests_post_mock, headers_mock):
         # arrange
         media_services = self.make_one()
         name = 'name'
@@ -376,6 +455,7 @@ class MediaServiceClientTests(unittest.TestCase):
         # act
         response = media_services.create_content_key_open_authorization_policy_options(name, key_delivery_type)
         # assert
+        headers_mock.assert_called_once_with()
         requests_post_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/ContentKeyAuthorizationPolicyOptions",
             headers={"DataServiceVersion": "3.0"},
@@ -392,11 +472,17 @@ class MediaServiceClientTests(unittest.TestCase):
         )
         self.assertEqual(response, {'Id': 'create_content_key_open_authorization_policy_options'})
 
+    def test_raise_for_status_create_content_key_open_authorization_policy_options(self):
+        self.raise_for_status(
+            func='create_content_key_open_authorization_policy_options',
+            func_args=['name', 'key_delivery_type']
+        )
+
     @mock.patch('azure_video_pipeline.media_service.MediaServiceClient.get_headers', return_value={})
     @mock.patch('azure_video_pipeline.media_service.requests.post', return_value=mock.Mock(
         status_code=204, json=mock.Mock()
     ))
-    def test_associate_authorization_policy_with_option(self, requests_post_mock, _get_headers_mock):
+    def test_associate_authorization_policy_with_option(self, requests_post_mock, headers_mock):
         # arrange
         media_services = self.make_one()
         authorization_policy_id = 'authorization_policy_id'
@@ -412,6 +498,7 @@ class MediaServiceClientTests(unittest.TestCase):
             authorization_policy_option_id
         )
         # assert
+        headers_mock.assert_called_once_with()
         requests_post_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/ContentKeyAuthorizationPolicies('{}')/$links/Options".format(
                 authorization_policy_id
@@ -421,11 +508,17 @@ class MediaServiceClientTests(unittest.TestCase):
         )
         self.assertIsNone(response)
 
+    def test_raise_for_status_associate_authorization_policy_with_option(self):
+        self.raise_for_status(
+            func='associate_authorization_policy_with_option',
+            func_args=['authorization_policy_id', 'authorization_policy_option_id']
+        )
+
     @mock.patch('azure_video_pipeline.media_service.MediaServiceClient.get_headers', return_value={})
     @mock.patch('azure_video_pipeline.media_service.requests.post', return_value=mock.Mock(
         status_code=200, json=mock.Mock(return_value={'value': 'key_delivery_url'})
     ))
-    def test_get_key_delivery_url(self, requests_post_mock, _get_headers_mock):
+    def test_get_key_delivery_url(self, requests_post_mock, headers_mock):
         # arrange
         media_services = self.make_one()
         content_key_id = 'content_key_id'
@@ -433,6 +526,7 @@ class MediaServiceClientTests(unittest.TestCase):
         # act
         response = media_services.get_key_delivery_url(content_key_id, key_delivery_type)
         # assert
+        headers_mock.assert_called_once_with()
         requests_post_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/ContentKeys('{}')/GetKeyDeliveryUrl".format(content_key_id),
             headers={"DataServiceVersion": "3.0"},
@@ -440,11 +534,17 @@ class MediaServiceClientTests(unittest.TestCase):
         )
         self.assertEqual(response, 'key_delivery_url')
 
+    def test_raise_for_status_get_key_delivery_url(self):
+        self.raise_for_status(
+            func='get_key_delivery_url',
+            func_args=['content_key_id', 'key_delivery_type']
+        )
+
     @mock.patch('azure_video_pipeline.media_service.MediaServiceClient.get_headers', return_value={})
     @mock.patch('azure_video_pipeline.media_service.requests.post', return_value=mock.Mock(
         status_code=201, json=mock.Mock(return_value={'Id': 'asset_delivery_policy'})
     ))
-    def test_create_asset_delivery_policy(self, requests_post_mock, _get_headers_mock):
+    def test_create_asset_delivery_policy(self, requests_post_mock, headers_mock):
         # arrange
         media_services = self.make_one()
         name = 'name'
@@ -457,6 +557,7 @@ class MediaServiceClientTests(unittest.TestCase):
                                                                asset_delivery_policy_type,
                                                                asset_delivery_configuration)
         # assert
+        headers_mock.assert_called_once_with()
         requests_post_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/AssetDeliveryPolicies",
             headers={},
@@ -469,11 +570,17 @@ class MediaServiceClientTests(unittest.TestCase):
         )
         self.assertEqual(response, {'Id': 'asset_delivery_policy'})
 
+    def test_raise_for_status_create_asset_delivery_policy(self):
+        self.raise_for_status(
+            func='create_asset_delivery_policy',
+            func_args=['name', 'asset_delivery_protocol', 'asset_delivery_policy_type', 'asset_delivery_configuration']
+        )
+
     @mock.patch('azure_video_pipeline.media_service.MediaServiceClient.get_headers', return_value={})
     @mock.patch('azure_video_pipeline.media_service.requests.post', return_value=mock.Mock(
         status_code=204, json=mock.Mock()
     ))
-    def test_associate_delivery_polic_with_asset(self, requests_post_mock, _get_headers_mock):
+    def test_associate_delivery_polic_with_asset(self, requests_post_mock, headers_mock):
         # arrange
         media_services = self.make_one()
         asset_id = 'asset_id'
@@ -489,6 +596,7 @@ class MediaServiceClientTests(unittest.TestCase):
             delivery_policy_id
         )
         # assert
+        headers_mock.assert_called_once_with()
         requests_post_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/Assets('{}')/$links/DeliveryPolicies".format(
                 asset_id
@@ -498,26 +606,33 @@ class MediaServiceClientTests(unittest.TestCase):
         )
         self.assertIsNone(response)
 
+    def test_raise_for_status_associate_delivery_polic_with_asset(self):
+        self.raise_for_status(func='associate_delivery_polic_with_asset', func_args=['asset_id', 'delivery_policy_id'])
+
     @mock.patch('azure_video_pipeline.media_service.MediaServiceClient.get_headers', return_value={})
     @mock.patch('azure_video_pipeline.media_service.requests.get', return_value=mock.Mock(
         status_code=200, json=mock.Mock(return_value={'value': 'asset_delivery_policies'})
     ))
-    def test_get_asset_delivery_policies(self, requests_get_mock, _get_headers_mock):
+    def test_get_asset_delivery_policies(self, requests_get_mock, headers_mock):
         # arrange
         media_services = self.make_one()
         asset_id = 'asset_id'
         # act
         response = media_services.get_asset_delivery_policies(asset_id)
         # assert
+        headers_mock.assert_called_once_with()
         requests_get_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/Assets('{}')/DeliveryPolicies".format(asset_id),
             headers={}
         )
         self.assertEqual(response, 'asset_delivery_policies')
 
+    def test_raise_for_status_get_asset_delivery_policies(self):
+        self.raise_for_status(func='get_asset_delivery_policies', func_args=['asset_id'])
+
     @mock.patch('azure_video_pipeline.media_service.MediaServiceClient.get_headers', return_value={})
     @mock.patch('azure_video_pipeline.media_service.requests.delete')
-    def test_delete_delivery_policy_link_from_asset(self, requests_delete_mock, _get_headers_mock):
+    def test_delete_delivery_policy_link_from_asset(self, requests_delete_mock, headers_mock):
         # arrange
         media_services = self.make_one()
         asset_id = 'asset_id'
@@ -525,6 +640,7 @@ class MediaServiceClientTests(unittest.TestCase):
         # act
         media_services.delete_delivery_policy_link_from_asset(asset_id, delivery_policy_id)
         # assert
+        headers_mock.assert_called_once_with()
         requests_delete_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/Assets('{}')/$links/DeliveryPolicies('{}')".format(
                 asset_id,
@@ -535,13 +651,14 @@ class MediaServiceClientTests(unittest.TestCase):
 
     @mock.patch('azure_video_pipeline.media_service.MediaServiceClient.get_headers', return_value={})
     @mock.patch('azure_video_pipeline.media_service.requests.delete')
-    def test_delete_delivery_policy(self, requests_delete_mock, _get_headers_mock):
+    def test_delete_delivery_policy(self, requests_delete_mock, headers_mock):
         # arrange
         media_services = self.make_one()
         delivery_policy_id = 'delivery_policy_id'
         # act
         media_services.delete_delivery_policy(delivery_policy_id)
         # assert
+        headers_mock.assert_called_once_with()
         requests_delete_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/DeliveryPolicies('{}')".format(delivery_policy_id),
             headers={}
@@ -551,7 +668,7 @@ class MediaServiceClientTests(unittest.TestCase):
     @mock.patch('azure_video_pipeline.media_service.requests.get', return_value=mock.Mock(
         status_code=200, json=mock.Mock(return_value={'value': ['content_key']})
     ))
-    def test_get_asset_delivery_policies(self, requests_get_mock, _get_headers_mock):
+    def test_get_asset_delivery_policies(self, requests_get_mock, headers_mock):
         # arrange
         media_services = self.make_one()
         asset_id = 'asset_id'
@@ -559,6 +676,7 @@ class MediaServiceClientTests(unittest.TestCase):
         # act
         response = media_services.get_asset_content_keys(asset_id, content_key_type)
         # assert
+        headers_mock.assert_called_once_with()
         requests_get_mock.assert_called_once_with(
             "https://rest_api_endpoint/api/Assets('{}')/ContentKeys".format(asset_id),
             headers={},
@@ -566,15 +684,22 @@ class MediaServiceClientTests(unittest.TestCase):
         )
         self.assertEqual(response, 'content_key')
 
+    def test_raise_for_status_get_asset_content_keys(self):
+        self.raise_for_status(func='get_asset_content_keys', func_args=['asset_id'])
+
     @mock.patch('azure_video_pipeline.media_service.MediaServiceClient.get_headers',
                 return_value={})
     @mock.patch('azure_video_pipeline.media_service.requests.get',
                 return_value=mock.Mock(status_code=200,
                                        json=mock.Mock(return_value={'value': ['file1', 'file2']})))
-    def test_get_asset_files(self, requests_get, headers):
+    def test_get_asset_files(self, requests_get, headers_mock):
+        # arrange
         media_services = self.make_one()
         asset_id = 'asset_id'
+        # act
         files = media_services.get_asset_files(asset_id)
+        # assert
+        headers_mock.assert_called_once_with()
         requests_get.assert_called_once_with(
             "https://rest_api_endpoint/api/Assets('{}')/Files".format(asset_id),
             headers={}

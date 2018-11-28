@@ -51,8 +51,8 @@ from azure_video_pipeline.utils import (
     get_media_service_client,
     encrypt_file,
     remove_encryption,
-    ALL_LANGUAGES_FOR_MICROSOFT,
-    AZURE_TRANSCRIPT_FILE_FORMAT
+    AMS_TRANSCRIPT_LANGUAGES,
+    AMS_VIDEO_TRANSCRIPT_FILE_FORMAT
 )
 
 from .course import get_course_and_check_access
@@ -78,11 +78,12 @@ VIDEO_IMAGE_UPLOAD_ENABLED = 'video_image_upload_enabled'
 # Default expiration, in seconds, of one-time URLs used for uploading videos.
 KEY_EXPIRATION_IN_SECONDS = 86400
 
-VIDEO_UPLOAD_MAX_FILE_SIZE_GB = 5
-VIDEO_MAX_LENGTH_FILE_NAME = 36
+VIDEO_UPLOAD_MAX_FILE_SIZE_GB = settings.VIDEO_UPLOAD_PIPELINE.get('VIDEO_UPLOAD_MAX_FILE_SIZE_GB', 5)
+# 'Magic' number 36 was evaluated empirically - due to AMS Asset object name length limitation.
+VIDEO_MAX_LENGTH_FILE_NAME = settings.VIDEO_UPLOAD_PIPELINE.get('VIDEO_MAX_LENGTH_FILE_NAME', 36)
 
 # maximum time for video to remain in upload state
-MAX_UPLOAD_HOURS = 24
+MAX_UPLOAD_HOURS = settings.VIDEO_UPLOAD_PIPELINE.get('MAX_UPLOAD_HOURS', 24)
 
 
 def get_storage_service():
@@ -639,7 +640,7 @@ def get_all_transcript_languages():
     Returns all possible languages for transcript.
     """
     if get_storage_service() == 'azure':
-        all_languages_dict = dict(ALL_LANGUAGES_FOR_MICROSOFT)
+        all_languages_dict = dict(AMS_TRANSCRIPT_LANGUAGES)
     else:
         third_party_transcription_languages = {}
         transcription_plans = get_3rd_party_transcription_plans()
@@ -695,7 +696,7 @@ def videos_index_html(course):
             'transcript_download_handler_url': reverse('transcript_download_handler'),
             'transcript_upload_handler_url': reverse('transcript_upload_handler'),
             'transcript_delete_handler_url': reverse_course_url('transcript_delete_handler', unicode(course.id)),
-            'trancript_download_file_format': Transcript.SRT if get_storage_service() != 'azure' else AZURE_TRANSCRIPT_FILE_FORMAT
+            'trancript_download_file_format': Transcript.SRT if get_storage_service() != 'azure' else AMS_VIDEO_TRANSCRIPT_FILE_FORMAT
         },
         'available_storage_service': get_storage_service()
     }

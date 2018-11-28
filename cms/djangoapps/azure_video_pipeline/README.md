@@ -39,7 +39,10 @@ FEATURES: {
 }
 
 "VIDEO_UPLOAD_PIPELINE": {
-    "CLOUD": "azure"        # <-- it is "aws" as default alternative
+    "CLOUD": "azure",                    # <-- this is "aws" as default alternative
+    "VIDEO_UPLOAD_MAX_FILE_SIZE_GB": 2,  # <-- this is 5 as default alternative
+    "MAX_UPLOAD_HOURS": 10,              # <-- this is 24 as default alternative
+    "VIDEO_MAX_LENGTH_FILE_NAME": 24,    # <-- this is 36 as default alternative
 },
 ```
 

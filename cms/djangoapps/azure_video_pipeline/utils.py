@@ -25,7 +25,7 @@ from .models import AzureOrgProfile
 LOGGER = logging.getLogger(__name__)
 
 
-AZURE_TRANSCRIPT_FILE_FORMAT = 'vtt'
+AMS_VIDEO_TRANSCRIPT_FILE_FORMAT = 'vtt'
 
 
 def get_azure_config(organization):
@@ -217,7 +217,7 @@ def get_transcript_file_name(video, language_code):
     return "{}_{}.{}".format(
         video.client_video_id.split('.')[0][:20],
         language_code,
-        AZURE_TRANSCRIPT_FILE_FORMAT
+        AMS_VIDEO_TRANSCRIPT_FILE_FORMAT
     )
 
 
@@ -231,7 +231,7 @@ def get_captions_info(video, path_locator_sas):
                 'download_url': '/{}?'.format(file_name).join(path_locator_sas.split('?')),
                 'file_name': file_name,
                 'language': language_code,
-                'language_title': dict(ALL_LANGUAGES_FOR_MICROSOFT).get(language_code, language_code),
+                'language_title': dict(AMS_TRANSCRIPT_LANGUAGES).get(language_code, language_code),
                 'id': transcript.id
             })
     return data
@@ -316,7 +316,7 @@ def get_captions_and_video_info(edx_video_id, organization):
             'captions': captions}
 
 
-ALL_LANGUAGES_FOR_MICROSOFT = (
+AMS_TRANSCRIPT_LANGUAGES = (
     [u"aa", u"Afar"],
     [u"af", u"Afrikaans"],
     [u"agq", u"Aghem"],
