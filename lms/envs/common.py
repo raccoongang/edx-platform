@@ -2167,10 +2167,6 @@ INSTALLED_APPS = (
 
     # global-statistics application
     'openedx.core.djangoapps.edx_global_analytics',
-   
-   # Raccoongang rg_instructor_analytics
-   'rg_instructor_analytics', 
-   'web_fragments',
 )
 
 # Migrations which are not in the standard module "migrations"
