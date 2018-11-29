@@ -107,5 +107,3 @@
 # Raccoongang Instructor analytics
 -e git+https://github.com/raccoongang/rg_instructor_analytics@release-0.3.0#egg=rg_instructor_analytics
 -e git+https://github.com/raccoongang/rg_instructor_analytics_log_collector@release-0.1.0#egg=rg_instructor_analytics_log_collector
-
--r raccoongang.in
