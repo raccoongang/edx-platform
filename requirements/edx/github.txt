@@ -94,6 +94,7 @@ git+https://github.com/edx/edx-proctoring.git@0.17.0#egg=edx-proctoring==0.17.0
 
 # Base RG modules
 git+https://github.com/raccoongang/edx-search.git@0.1.2-rg#egg=edx-search==0.1.2.1
+git+https://github.com/raccoongang/edx_xblock_scorm@v1.0.1#egg=edx-xblock-scorm==1.0.1
 
 # Third Party XBlocks
 -e git+https://github.com/mitodl/edx-sga@172a90fd2738f8142c10478356b2d9ed3e55334a#egg=edx-sga
