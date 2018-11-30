@@ -11,20 +11,11 @@
 # Firechat xblock
 -e git+https://github.com/raccoongang/edx_xblock_firechat.git@v0.0.2#egg=xblock-firechat==0.0.2
 
-# Google Drive xblock
--e git+https://github.com/edx-solutions/xblock-google-drive.git@master#egg=xblock-google-drive==master
-
-# LTI consumer xblock
--e git+https://github.com/edx/xblock-lti-consumer.git@v1.1.8#egg=xblock-lti-consumer==1.1.8
-
 # Charts xblock
 -e git+https://github.com/TinMarkovic/ChartsXBlock.git@1.0.0#egg=xblock-charts==1.0.0
 
 # Flash xblock
 -e git+https://github.com/MarCnu/flashXBlock.git@master#egg=xblock-flash==master
-
-# Recommender xblock
--e git+https://github.com/pmitros/RecommenderXBlock.git#v1.2#egg=xblock-recommender==1.2
 
 # Problem Builder xblock
 # Run migrations required
