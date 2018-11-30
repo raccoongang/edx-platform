@@ -215,8 +215,7 @@ class CapaDescriptor(CapaFields, RawDescriptor):
             CapaDescriptor.graceperiod,
             CapaDescriptor.force_save_button,
             CapaDescriptor.markdown,
-            CapaDescriptor.use_latex_compiler,
-            CapaDescriptor.show_correctness,
+            CapaDescriptor.use_latex_compiler
         ])
         return non_editable_fields
 
