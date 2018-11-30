@@ -16,6 +16,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import IntegrityError
+from django.db import transaction
 from django.http import HttpResponse, Http404
 from django.utils.decorators import method_decorator
 from django.utils.html import escape
@@ -42,7 +43,6 @@ from xmodule.modulestore.django import modulestore
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from search.search_engine_base import SearchEngine
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-
 
 log = logging.getLogger(__name__)
 
@@ -195,11 +195,12 @@ class Users(SysadminDashboardView):
         user = User(username=uname, email=email, is_active=True)
         user.set_password(new_password)
         try:
-            user.save()
+            with transaction.atomic():
+                user.save()
         except IntegrityError:
             msg += _('Oops, failed to create user {user}, {error}').format(
                 user=user,
-                error="IntegrityError"
+                error="IntegrityError: one of the provided parameters: username or email, is already registered"
             )
             return msg
 
