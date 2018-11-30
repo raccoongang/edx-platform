@@ -33,6 +33,8 @@ from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from rest_framework import status
+
+from lms.djangoapps.courseware.masquerade import MASQUERADE_SETTINGS_KEY, CourseMasquerade
 from lms.djangoapps.instructor.views.api import require_global_staff
 from lms.djangoapps.ccx.utils import prep_course_for_grading
 from lms.djangoapps.grades.new.course_grade import CourseGradeFactory
@@ -305,6 +307,17 @@ def course_info(request, course_id):
             raise Http404("Course not found.")
 
         staff_access = has_access(request.user, 'staff', course)
+
+        if staff_access:
+            masquerade_settings = request.session.get(MASQUERADE_SETTINGS_KEY, {})
+            if masquerade_settings.get(course_key) is None:
+                # initialize masquerade session with current staff
+                masquerade_settings[course_key] = CourseMasquerade(
+                    course_key,
+                    role='staff',
+                    user_name=request.user.username,
+                )
+                request.session[MASQUERADE_SETTINGS_KEY] = masquerade_settings
         masquerade, user = setup_masquerade(request, course_key, staff_access, reset_masquerade_data=True)
 
         # if user is not enrolled in a course then app will show enroll/get register link inside course info page.
