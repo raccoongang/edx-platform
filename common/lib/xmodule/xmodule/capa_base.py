@@ -390,12 +390,25 @@ class CapaMixin(CapaFields):
                 return None
         return None
 
+    def get_display_progress(self):
+        """
+        Return (score, total) to be displayed to the learner.
+        """
+        progress = self.get_progress()
+        score, total = (progress.frac() if progress else (0, 0))
+
+        # Withhold the score if hiding correctness
+        if not self.correctness_available():
+            score = None
+
+        return score, total
+
     def get_html(self):
         """
         Return some html with data about the module
         """
-        progress = self.get_progress()
-        curr_score, total_possible = (progress.frac() if progress else (0, 0))
+        curr_score, total_possible = self.get_display_progress()
+
         return self.runtime.render_template('problem_ajax.html', {
             'element_id': self.location.html_id(),
             'id': self.location.to_deprecated_string(),
@@ -738,7 +751,11 @@ class CapaMixin(CapaFields):
         if render_notifications:
             progress = self.get_progress()
             id_list = self.lcp.correct_map.keys()
-            if len(id_list) == 1:
+
+            # Show only a generic message if hiding correctness
+            if not self.correctness_available():
+                answer_notification_type = 'submitted'
+            elif len(id_list) == 1:
                 # Only one answer available
                 answer_notification_type = self.lcp.correct_map.get_correctness(id_list[0])
             elif len(id_list) > 1:
@@ -781,6 +798,8 @@ class CapaMixin(CapaFields):
                     ).format(progress=str(progress))
                 else:
                     answer_notification_message = _('Partially Correct')
+            elif answer_notification_type == 'submitted':
+                answer_notification_message = _("Answer submitted.")
 
         return answer_notification_type, answer_notification_message
 
@@ -854,7 +873,10 @@ class CapaMixin(CapaFields):
         """
         Is the user allowed to see an answer?
         """
-        if self.showanswer == '':
+        if not self.correctness_available():
+            # If correctness is being withheld, then don't show answers either.
+            return False
+        elif self.showanswer == '':
             return False
         elif self.showanswer == SHOWANSWER.NEVER:
             return False
@@ -881,6 +903,17 @@ class CapaMixin(CapaFields):
             return True
 
         return False
+
+    def correctness_available(self):
+        """
+        Hard skills QA hack.
+        """
+        if self.runtime.user_is_staff:
+            # This is after the 'never' check because admins can see correctness
+            # unless the problem explicitly prevents it
+            return True
+        else:
+            return False
 
     def update_score(self, data):
         """
@@ -1220,6 +1253,10 @@ class CapaMixin(CapaFields):
 
         # render problem into HTML
         html = self.get_problem_html(encapsulate=False, submit_notification=True)
+
+        # Withhold success indicator if hiding correctness
+        if not self.correctness_available():
+            success = 'submitted'
 
         return {
             'success': success,

@@ -1,3 +1,4 @@
+
 <%page expression_filter="h"/>
 <%!
 from django.utils.translation import ungettext, ugettext as _
@@ -91,6 +92,15 @@ from openedx.core.djangolib.markup import HTML
             <%include file="problem_notifications.html" args="
                 notification_type='success',
                 notification_icon='fa-asterisk',
+                notification_name='submit',
+                is_hidden=False,
+                notification_message=answer_notification_message"
+            />
+        % endif
+        % if 'submitted' == answer_notification_type:
+            <%include file="problem_notifications.html" args="
+                notification_type='general',
+                notification_icon='fa-info-circle',
                 notification_name='submit',
                 is_hidden=False,
                 notification_message=answer_notification_message"
