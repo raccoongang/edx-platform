@@ -85,15 +85,15 @@ class CreateUserAccountWithoutPasswordView(APIView):
         """
         data = request.data
         try:
-            uid = self._check_available_required_params(request.data.get('uid'), "uid")
+            uid = self._check_available_required_params(data.get('uid'), "uid")
             user_social_auth = UserSocialAuth.objects.select_related("user").filter(uid=uid).first()
             if not user_social_auth:
                 raise ValueError("User does not exist with uid = {uid}".format(uid=uid))
             full_name = data.get("full_name")
             if full_name:
-                request.data["name"] = full_name
-            user = ytp_serializer.UserSerializer().update(user_social_auth.user, request.data)
-            ytp_serializer.ProfileSerializer().update(user.profile, request.data)
+                data["name"] = full_name
+            user = ytp_serializer.UserSerializer().update(user_social_auth.user, data)
+            ytp_serializer.ProfileSerializer().update(user.profile, data)
         except (ValueError, ValidationError) as e:
             log.exception(e.message)
             return Response(

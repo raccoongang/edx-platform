@@ -30,22 +30,21 @@ class UserSerializer(HyperlinkedModelSerializer):
         Method updates User instance if data is correct.
         :param instance: User instance.
         :param data: Dictionary with user's data.
-        :return:
+        :return: User instance.
         """
         if not isinstance(instance, User):
             raise ValidationError("The instance must be the User type.")
 
-        if isinstance(data,dict):
+        if isinstance(data, dict):
             username = data.get("username")
             if username and (instance.username != username):
                 instance.username = self._validate_username(data)
             email = data.get("email")
             if email and (instance.email != email):
-                self._check_email_unique(data.get("email"))
+                self._check_email_unique(email)
 
             validated_data = self.run_validation(data)
-            for field_name in validated_data:
-                field_value = validated_data.get(field_name, getattr(instance, field_name))
+            for field_name, field_value in validated_data.items():
                 setattr(instance, field_name, field_value)
             instance.save()
         else:
@@ -97,10 +96,9 @@ class ProfileSerializer(HyperlinkedModelSerializer, ReadOnlyFieldsSerializerMixi
     def update(self, instance, data):
         if not isinstance(instance, UserProfile):
             raise ValidationError("The instance must be the UserProfile type.")
-        if isinstance(data,dict):
+        if isinstance(data, dict):
             validated_data = self.run_validation(data)
-            for field_name in validated_data:
-                field_value = validated_data.get(field_name, getattr(instance, field_name))
+            for field_name,field_value in validated_data.items():
                 setattr(instance, field_name, field_value)
             instance.save()
         else:
