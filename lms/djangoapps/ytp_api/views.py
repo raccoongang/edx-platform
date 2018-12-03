@@ -71,14 +71,12 @@ class CreateUserAccountWithoutPasswordView(APIView):
             UserSocialAuth.objects.create(user=user, provider=idp_name, uid=uid)
             user = ytp_serializer.UserSerializer().update(user, data)
             ytp_serializer.ProfileSerializer().update(user.profile, data)
-        except ValueError as e:
+        except (ValueError, ValidationError) as e:
             log.error(e.message)
             return Response(
                 data={"error_message": e.message},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        except ValidationError as e:
-            return Response(data={"error_message": e.messages[0]}, status=status.HTTP_400_BAD_REQUEST)
         return Response(data={'user_id': user.id, 'username': username}, status=status.HTTP_200_OK)
 
     def patch(self, request):
@@ -96,14 +94,12 @@ class CreateUserAccountWithoutPasswordView(APIView):
                 request.data["name"] = full_name
             user = ytp_serializer.UserSerializer().update(user_social_auth.user, request.data)
             ytp_serializer.ProfileSerializer().update(user.profile, request.data)
-        except ValueError as e:
+        except (ValueError, ValidationError) as e:
             log.exception(e.message)
             return Response(
                 data={"error_message": e.message},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        except ValidationError as e:
-            return Response(data={"error_message": e.messages[0]}, status=status.HTTP_400_BAD_REQUEST)
         return Response(data={"user_id": user.id, "username": user.username}, status=status.HTTP_200_OK)
 
     def _check_available_required_params(self, parameter, parameter_name, values_list=None):
