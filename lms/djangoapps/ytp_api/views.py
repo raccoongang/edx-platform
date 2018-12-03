@@ -85,19 +85,19 @@ class CreateUserAccountWithoutPasswordView(APIView):
         """
         Update user information by uid.
         """
+        data = request.data
         try:
             uid = self._check_available_required_params(request.data.get('uid'), "uid")
-            user_social_auth = UserSocialAuth.objects.select_related("user").filter(uid=uid)
-            if not user_social_auth.count():
+            user_social_auth = UserSocialAuth.objects.select_related("user").filter(uid=uid).first()
+            if not user_social_auth:
                 raise ValueError("User does not exist with uid = {uid}".format(uid=uid))
-            full_name = request.data.get("full_name")
+            full_name = data.get("full_name")
             if full_name:
                 request.data["name"] = full_name
-            user_social_auth = user_social_auth[0]
             user = ytp_serializer.UserSerializer().update(user_social_auth.user, request.data)
             ytp_serializer.ProfileSerializer().update(user.profile, request.data)
         except ValueError as e:
-            log.error(e.message)
+            log.exception(e.message)
             return Response(
                 data={"error_message": e.message},
                 status=status.HTTP_400_BAD_REQUEST,

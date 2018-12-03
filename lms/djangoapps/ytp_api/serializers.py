@@ -25,28 +25,31 @@ class UserSerializer(HyperlinkedModelSerializer):
 
     def update(self, instance, data):
         """
-        Update User instance for date dictionary.
+        Update User instance by the data dictionary.
 
-        Method can update User instance if data is correct.
-        :param instance:
-        :param data:
+        Method updates User instance if data is correct.
+        :param instance: User instance.
+        :param data: Dictionary with user's data.
         :return:
         """
         if not isinstance(instance, User):
             raise ValidationError("The instance must be the User type.")
-        username = data.get("username")
-        if isinstance(data, dict) and username and (instance.username != username):
-            instance.username = self._validate_username(data)
-        email = data.get("email")
-        if isinstance(data, dict) and email and (instance.email != email):
-            self._check_email_unique(data.get("email"))
 
-        validated_data = self.run_validation(data)
-        for field_name in validated_data:
-            default = getattr(instance, field_name)
-            field_value = validated_data.get(field_name, default)
-            setattr(instance, field_name, field_value)
-        instance.save()
+        if isinstance(data,dict):
+            username = data.get("username")
+            if username and (instance.username != username):
+                instance.username = self._validate_username(data)
+            email = data.get("email")
+            if email and (instance.email != email):
+                self._check_email_unique(data.get("email"))
+
+            validated_data = self.run_validation(data)
+            for field_name in validated_data:
+                field_value = validated_data.get(field_name, getattr(instance, field_name))
+                setattr(instance, field_name, field_value)
+            instance.save()
+        else:
+            raise ValidationError("The data must be the Dictionary type.")
         return instance
 
     @staticmethod
@@ -94,11 +97,12 @@ class ProfileSerializer(HyperlinkedModelSerializer, ReadOnlyFieldsSerializerMixi
     def update(self, instance, data):
         if not isinstance(instance, UserProfile):
             raise ValidationError("The instance must be the UserProfile type.")
-
-        validated_data = self.run_validation(data)
-        for field_name in validated_data:
-            default = getattr(instance, field_name)
-            field_value = validated_data.get(field_name, default)
-            setattr(instance, field_name, field_value)
-        instance.save()
+        if isinstance(data,dict):
+            validated_data = self.run_validation(data)
+            for field_name in validated_data:
+                field_value = validated_data.get(field_name, getattr(instance, field_name))
+                setattr(instance, field_name, field_value)
+            instance.save()
+        else:
+            raise ValidationError("The data must be the Dictionary type.")
         return instance
