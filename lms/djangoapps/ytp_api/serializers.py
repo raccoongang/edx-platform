@@ -98,7 +98,7 @@ class ProfileSerializer(HyperlinkedModelSerializer, ReadOnlyFieldsSerializerMixi
             raise ValidationError("The instance must be the UserProfile type.")
         if isinstance(data, dict):
             validated_data = self.run_validation(data)
-            for field_name,field_value in validated_data.items():
+            for field_name, field_value in validated_data.items():
                 setattr(instance, field_name, field_value)
             instance.save()
         else:
