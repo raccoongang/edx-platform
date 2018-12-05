@@ -38,6 +38,7 @@ from django.views.decorators.http import require_GET, require_POST
 from eventtracking import tracker
 from ipware.ip import get_ip
 # Note that this lives in LMS, so this dependency should be refactored.
+from custom_settings.models import HomepageSlider, HomepageVideo
 from notification_prefs.views import enable_notifications
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
@@ -175,6 +176,9 @@ def index(request, extra_context=None, user=AnonymousUser()):
             visible_courses.append(course_module)
 
     context['visible_courses'] = visible_courses
+
+    context['custom_slider'] = HomepageSlider.objects.filter(is_published=True)
+    context['custom_video'] = HomepageVideo.objects.last()
 
     context['homepage_overlay_html'] = configuration_helpers.get_value('homepage_overlay_html')
 
