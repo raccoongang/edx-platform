@@ -28,6 +28,8 @@ from django.views.decorators.http import condition
 from django.views.decorators.csrf import ensure_csrf_cookie
 from edxmako.shortcuts import render_to_response
 import mongoengine
+from opaque_keys import InvalidKeyError
+from opaque_keys.edx.locator import CourseLocator
 from path import Path as path
 
 from courseware.courses import get_course_by_id
@@ -477,24 +479,15 @@ class Courses(SysadminDashboardView):
 
         elif action == 'del_course':
             course_id = request.POST.get('course_id', '').strip()
-            course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
-            course_found = False
-            if course_key in courses:
-                course_found = True
-                course = courses[course_key]
-            else:
-                try:
-                    course = get_course_by_id(course_key)
-                    course_found = True
-                except Exception, err:   # pylint: disable=broad-except
-                    self.msg += _(
-                        'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
-                    ).format(
-                        course_key,
-                        escape(str(err))
-                    )
 
-            if course_found:
+            try:
+                course_key = CourseLocator.from_string(course_id)
+                course = courses[course_key] if course_key in courses else get_course_by_id(course_key)
+            except (InvalidKeyError, Http404):
+                self.msg += _('Error - cannot get course with ID {0}').format(course_id)
+                course = None
+
+            if course:
                 # delete course that is stored with mongodb backend
                 self.def_ms.delete_course(course.id, request.user.id)
 
