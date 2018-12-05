@@ -3121,6 +3121,9 @@ PROFILE_IMAGE_SIZES_MAP = {
 # If set to None, all courses will be listed on the homepage
 HOMEPAGE_COURSE_MAX = None
 
+# Sets the maximum number of custom courses listed on the homepage
+HOMEPAGE_CUSTOM_COURSE_MAX = 3
+
 ################################ Settings for Credit Courses ################################
 # Initial delay used for retrying tasks.
 # Additional retries use longer delays.

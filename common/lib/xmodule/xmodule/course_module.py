@@ -886,6 +886,13 @@ class CourseFields(object):
         ),
         scope=Scope.settings, default=False
     )
+    course_visibility_on_homepage = Boolean(
+        display_name=_("Courses Visibility on Homepage"),
+        help=_(
+            "Enter true or false. If true, course is shown on the homepage."
+        ),
+        scope=Scope.settings, default=False
+    )
 
 
 class CourseModule(CourseFields, SequenceModule):  # pylint: disable=abstract-method

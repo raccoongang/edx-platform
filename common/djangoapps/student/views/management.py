@@ -166,6 +166,16 @@ def index(request, extra_context=None, user=AnonymousUser()):
 
     context = {'courses': courses}
 
+    visible_courses = []
+    for course in courses:
+        if len(visible_courses) == settings.HOMEPAGE_CUSTOM_COURSE_MAX:
+            break
+        course_module = modulestore().get_course(course.id)
+        if course_module.course_visibility_on_homepage and len(visible_courses) < settings.HOMEPAGE_CUSTOM_COURSE_MAX:
+            visible_courses.append(course_module)
+
+    context['visible_courses'] = visible_courses
+
     context['homepage_overlay_html'] = configuration_helpers.get_value('homepage_overlay_html')
 
     # This appears to be an unused context parameter, at least for the master templates...
