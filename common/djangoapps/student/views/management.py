@@ -171,7 +171,7 @@ def index(request, extra_context=None, user=AnonymousUser()):
         if len(visible_courses) == settings.HOMEPAGE_CUSTOM_COURSE_MAX:
             break
         course_module = modulestore().get_course(course.id)
-        if course_module.course_visibility_on_homepage and len(visible_courses) < settings.HOMEPAGE_CUSTOM_COURSE_MAX:
+        if course_module.course_visibility_on_homepage:
             visible_courses.append(course_module)
 
     context['visible_courses'] = visible_courses
