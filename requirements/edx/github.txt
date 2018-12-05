@@ -101,5 +101,4 @@ git+https://github.com/raccoongang/edx_xblock_scorm@v1.0.1#egg=edx-xblock-scorm=
 -e git+https://github.com/open-craft/xblock-poll@v1.2.3#egg=xblock-poll==1.2.3
 git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.15#egg=xblock-drag-and-drop-v2==2.0.15
 
--e git+https://github.com/raccoongang/rg_instructor_analytics@release-0.3.0#egg=rg_instructor_analytics
--e git+https://github.com/raccoongang/rg_instructor_analytics_log_collector@release-0.1.0#egg=rg_instructor_analytics_log_collector
+-e git+https://github.com/raccoongang/rg_instructor_analytics@release-0.2.7#egg=rg_instructor_analytics
