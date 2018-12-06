@@ -4,7 +4,7 @@ Django module for Course Metadata class -- manages advanced settings and related
 from django.conf import settings
 from django.utils.translation import ugettext as _
 from six import text_type
-from xblock.fields import Scope
+from xblock.fields import Scope, String
 
 from xblock_django.models import XBlockStudioConfigurationFlag
 from xmodule.modulestore.django import modulestore
@@ -148,8 +148,16 @@ class CourseMetadata(object):
                 'value': field.read_json(descriptor),
                 'display_name': _(field.display_name),    # pylint: disable=translation-of-non-string
                 'help': field_help,
-                'deprecated': field.runtime_options.get('deprecated', False)
+                'deprecated': field.runtime_options.get('deprecated', False),
+                'values': field.values or [],
+                'editor_type': ''
             }
+
+            if field.name in ('course_category'):
+                result[field.name].update({
+                    'editor_type': 'select'
+                })
+
         return result
 
     @classmethod
