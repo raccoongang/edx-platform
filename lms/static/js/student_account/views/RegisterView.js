@@ -55,7 +55,8 @@
                             currentProvider: this.currentProvider,
                             providers: this.providers,
                             hasSecondaryProviders: this.hasSecondaryProviders,
-                            platformName: this.platformName
+                            platformName: this.platformName,
+                            googleRecaptchaSiteKey: this.googleRecaptchaSiteKey
                         }
                     }));
 

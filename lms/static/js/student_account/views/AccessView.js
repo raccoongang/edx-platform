@@ -170,7 +170,8 @@
                             model: model,
                             thirdPartyAuth: this.thirdPartyAuth,
                             platformName: this.platformName,
-                            hideAuthWarnings: this.hideAuthWarnings
+                            hideAuthWarnings: this.hideAuthWarnings,
+                            googleRecaptchaSiteKey: this.googleRecaptchaSiteKey
                         });
 
                     // Listen for 'auth-complete' event so we can enroll/redirect the user appropriately.

@@ -34,6 +34,9 @@
         <script type="text/template" id="${template_name}-tpl">
             <%static:include path="student_account/${template_name}.underscore" />
         </script>
+        % if template_name == 'register':
+            <script src='https://www.google.com/recaptcha/api.js'></script>
+        % endif
     % endfor
 </%block>
 <div class="section-bkg-wrapper">

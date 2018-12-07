@@ -42,7 +42,7 @@ from .helpers import FormDescription, require_post_params, shim_student_view
 from .models import UserPreference, UserProfile
 from .preferences.api import get_country_time_zones, update_email_opt_in
 from .serializers import CountryTimeZoneSerializer, UserPreferenceSerializer, UserSerializer
-
+from student.decorators import check_recaptcha
 
 class LoginSessionView(APIView):
     """HTTP end-points for logging in users. """
@@ -306,6 +306,7 @@ class RegistrationView(APIView):
         return HttpResponse(form_desc.to_json(), content_type="application/json")
 
     @method_decorator(csrf_exempt)
+    @method_decorator(check_recaptcha)
     def post(self, request):
         """Create the user's account.
 
@@ -328,6 +329,12 @@ class RegistrationView(APIView):
 
         email = data.get('email')
         username = data.get('username')
+        if settings.USE_GOOGLE_RECAPTCHA:
+            if not request.recaptcha_is_valid:
+                errors = {
+                    "captcha": [{"user_message": _('Invalid reCAPTCHA. Please try again.')}],
+                }
+                return JsonResponse(errors, status=400)
 
         # Handle duplicate email/username
         conflicts = check_account_exists(email=email, username=username)

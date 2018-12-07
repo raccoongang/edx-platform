@@ -122,6 +122,7 @@ from student.models import (
     unique_id_for_user
 )
 from student.tasks import send_activation_email
+from student.decorators import check_recaptcha
 from third_party_auth import pipeline, provider
 from util.bad_request_rate_limiter import BadRequestRateLimiter
 from util.db import outer_atomic
@@ -490,6 +491,7 @@ def register_user(request, extra_context=None):
         ),
         'selected_provider': '',
         'username': '',
+        'google_recaptcha_site_key': settings.GOOGLE_RECAPTCHA_DATA_SITE_KEY,
     }
 
     if extra_context is not None:
