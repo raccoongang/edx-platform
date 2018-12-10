@@ -1156,6 +1156,9 @@ INSTALLED_APPS = [
 
     # API Documentation
     'rest_framework_swagger',
+
+    # Custom Settings
+    'custom_settings',
 ]
 
 
