@@ -1,11 +1,12 @@
 """
-Decorators for help checking data
+Decorators to help checking data
 """
 import urllib
 import urllib2
 import json
 from functools import wraps
 from django.conf import settings
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 
 
 def check_recaptcha(view_func):
@@ -29,12 +30,18 @@ def check_recaptcha(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
         request.recaptcha_is_valid = None
-        if request.method == 'POST' and settings.USE_GOOGLE_RECAPTCHA:
+        if (
+                request.method == 'POST'
+                and configuration_helpers.get_value('USE_GOOGLE_RECAPTCHA', settings.USE_GOOGLE_RECAPTCHA)
+        ):
             # Begin reCAPTCHA validation
             recaptcha_response = request.POST.get('g-recaptcha-response')
             url = 'https://www.google.com/recaptcha/api/siteverify'
             values = {
-                'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+                'secret': configuration_helpers.get_value(
+                    'GOOGLE_RECAPTCHA_SECRET_KEY',
+                    settings.GOOGLE_RECAPTCHA_SECRET_KEY
+                ),
                 'response': recaptcha_response
             }
             data = urllib.urlencode(values)
@@ -42,7 +49,7 @@ def check_recaptcha(view_func):
             response = urllib2.urlopen(req)
             result = json.load(response)
             # End reCAPTCHA validation
-            if result['success']:
+            if result.get('success'):
                 request.recaptcha_is_valid = True
             else:
                 request.recaptcha_is_valid = False

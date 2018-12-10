@@ -329,7 +329,7 @@ class RegistrationView(APIView):
 
         email = data.get('email')
         username = data.get('username')
-        if settings.USE_GOOGLE_RECAPTCHA:
+        if configuration_helpers.get_value('USE_GOOGLE_RECAPTCHA', settings.USE_GOOGLE_RECAPTCHA):
             if not request.recaptcha_is_valid:
                 errors = {
                     "captcha": [{"user_message": _('Invalid reCAPTCHA. Please try again.')}],
