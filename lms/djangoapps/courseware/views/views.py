@@ -94,6 +94,7 @@ from openedx.features.course_experience.waffle import waffle as course_experienc
 from openedx.features.course_experience.waffle import ENABLE_COURSE_ABOUT_SIDEBAR_HTML
 from openedx.features.enterprise_support.api import data_sharing_consent_required
 from shoppingcart.utils import is_shopping_cart_enabled
+from student.helpers import translate_course_discovery_meanings
 from student.models import CourseEnrollment, UserTestGroup
 from util.cache import cache, cache_if_anonymous
 from util.db import outer_atomic
@@ -213,7 +214,7 @@ def courses(request):
     Render "find courses" page.  The course selection work is done in courseware.courses.
     """
     courses_list = []
-    course_discovery_meanings = getattr(settings, 'COURSE_DISCOVERY_MEANINGS', {})
+    course_discovery_meanings = translate_course_discovery_meanings(settings.COURSE_DISCOVERY_MEANINGS)
     if not settings.FEATURES.get('ENABLE_COURSE_DISCOVERY'):
         courses_list = get_courses(request.user)
 
@@ -227,7 +228,7 @@ def courses(request):
     programs_list = get_programs_with_type(request.site, include_hidden=False)
 
     return render_to_response(
-        "courseware/courses.html",
+        "courseware/index_and_courses.html",
         {
             'courses': courses_list,
             'course_discovery_meanings': course_discovery_meanings,

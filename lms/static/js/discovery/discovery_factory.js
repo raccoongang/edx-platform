@@ -39,6 +39,34 @@
                     }
                 });
 
+                $('.js-custom-filter a').on('click', function(event) {
+                    event.preventDefault();
+
+                    var $target = $(event.currentTarget);
+
+                    var type = $target.data('facet');
+                    var query = $target.data('value');
+                    var name = $target.data('text');
+                    var filterModel = filters.get(type);
+
+                    if ($target.hasClass("active")) {
+                        $target.removeClass("active");
+                    } else {
+                        $target.parents('.js-custom-filter').find(".active").removeClass("active");
+                        $target.addClass("active");
+                    }
+
+                    if (filterModel && filterModel.get('query') === query) {
+                        removeFilter(type);
+                        return
+                    } else if (filterModel) {
+                        filters.remove(type);
+                    }
+
+                    filters.add({type: type, query: query, name: name});
+                    search.refineSearch(filters.getTerms());
+                });
+
                 dispatcher.listenTo(filterBar, 'clearFilter', removeFilter);
 
                 dispatcher.listenTo(filterBar, 'clearAll', function() {
@@ -54,6 +82,7 @@
                 });
 
                 dispatcher.listenTo(search, 'search', function(query, total) {
+                    listing.$list.removeClass('hidden');
                     if (total > 0) {
                         form.showFoundMessage(total);
                         if (query) {
@@ -65,6 +94,11 @@
                     } else {
                         form.showNotFoundMessage(query);
                         filters.reset();
+                        if ($('.js-wrapper-index-page').length > 0) {
+                            if ($('.js-custom-filter a').hasClass('active')){
+                                listing.$list.addClass('hidden');
+                            }
+                        }
                     }
                     form.hideLoadingIndicator();
                     listing.render();

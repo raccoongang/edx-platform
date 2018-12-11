@@ -893,6 +893,18 @@ class CourseFields(object):
         ),
         scope=Scope.settings, default=False
     )
+    course_category = String(
+        display_name=_("Course Category"),
+        help=_("Please choose the subject this course relates to."),
+        scope=Scope.settings,
+        values=[
+            {"display_name": "----------", "value": ""},
+            {"display_name": _("Technology and Society"), "value": "technology_society"},
+            {"display_name": _("School and Education"), "value": "school_education"},
+            {"display_name": _("Health and Care"), "value": "health_care"},
+            {"display_name": _("Economy and Leadership"), "value": "economy_leadership"},
+        ]
+    )
 
 
 class CourseModule(CourseFields, SequenceModule):  # pylint: disable=abstract-method

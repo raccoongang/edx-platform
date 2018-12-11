@@ -83,8 +83,8 @@ from student.helpers import (
     destroy_oauth_tokens,
     do_create_account,
     generate_activation_email_context,
-    get_next_url_for_login_page
-)
+    get_next_url_for_login_page,
+    translate_course_discovery_meanings)
 from student.models import (
     CourseEnrollment,
     PasswordHistory,
@@ -155,20 +155,22 @@ def index(request, extra_context=None, user=AnonymousUser()):
     if extra_context is None:
         extra_context = {}
 
-    courses = get_courses(user)
+    courses_list = get_courses(user)
 
-    if configuration_helpers.get_value(
+    if settings.FEATURES.get('ENABLE_COURSE_DISCOVERY'):
+        courses = []
+    elif configuration_helpers.get_value(
             "ENABLE_COURSE_SORTING_BY_START_DATE",
             settings.FEATURES["ENABLE_COURSE_SORTING_BY_START_DATE"],
     ):
-        courses = sort_by_start_date(courses)
+        courses = sort_by_start_date(courses_list)
     else:
-        courses = sort_by_announcement(courses)
+        courses = sort_by_announcement(courses_list)
 
     context = {'courses': courses}
 
     visible_courses = []
-    for course in courses:
+    for course in courses_list:
         if len(visible_courses) == settings.HOMEPAGE_CUSTOM_COURSE_MAX:
             break
         course_module = modulestore().get_course(course.id)
@@ -179,7 +181,7 @@ def index(request, extra_context=None, user=AnonymousUser()):
 
     context['custom_slider'] = HomepageSlider.objects.filter(is_published=True)
     context['custom_video'] = HomepageVideo.objects.last()
-
+    context['course_discovery_meanings'] = translate_course_discovery_meanings(settings.COURSE_DISCOVERY_MEANINGS)
     context['homepage_overlay_html'] = configuration_helpers.get_value('homepage_overlay_html')
 
     # This appears to be an unused context parameter, at least for the master templates...
@@ -208,8 +210,9 @@ def index(request, extra_context=None, user=AnonymousUser()):
 
     # Add marketable programs to the context.
     context['programs_list'] = get_programs_with_type(request.site, include_hidden=False)
+    context['is_index_page'] = True
 
-    return render_to_response('index.html', context)
+    return render_to_response("courseware/index_and_courses.html", context)
 
 
 @ensure_csrf_cookie
