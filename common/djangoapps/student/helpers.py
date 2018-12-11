@@ -680,3 +680,28 @@ def do_create_account(form, custom_form=None):
         raise
 
     return user, profile, registration
+
+
+def translate_course_discovery_meanings(course_settings):
+    """
+    Apply translations for COURSE_DISCOVERY_MEANINGS settings.
+    """
+    course_discovery_meanings = {}
+
+    for key, value in course_settings.items():
+        course_discovery_item = {}
+        course_discovery_item['name'] = _(value.get("name"))
+
+        if value.get('terms'):
+            terms = {}
+
+            for inner_key, inner_value in value['terms'].items():
+                if key == 'language':
+                    terms[inner_key] = value['terms'].get(inner_key)
+                else:
+                    terms[inner_key] = _(value['terms'].get(inner_key))
+
+            course_discovery_item['terms'] = terms
+        course_discovery_meanings[key] = course_discovery_item
+
+    return course_discovery_meanings

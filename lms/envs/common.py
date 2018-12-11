@@ -3407,6 +3407,30 @@ COURSE_ENROLLMENT_MODES = {
     "honor": 6,
 }
 
+COURSE_DISCOVERY_MEANINGS = {
+    'org': {
+         'name': 'Organization',
+    },
+    'modes': {
+        'name': 'Course Type',
+        'terms': {
+            'honor': 'Honor',
+            'verified': 'Verified',
+        },
+    },
+    'course_category': {
+        'name': 'Course Category',
+        'terms': {
+            'technology_society': 'Technology and Society',
+            'school_education': 'School and Education',
+            'health_care': 'Health and Care',
+            'economy_leadership': 'Economy and Leadership',
+        },
+    }
+}
+
+COURSE_DISCOVERY_FILTERS = ["org", "modes", "course_category"]
+
 ############## Settings for the Discovery App ######################
 
 COURSES_API_CACHE_TIMEOUT = 3600  # Value is in seconds
