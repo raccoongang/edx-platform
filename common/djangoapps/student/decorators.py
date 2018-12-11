@@ -11,15 +11,15 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
 
 def check_recaptcha(view_func):
     """
-    Check recaptcha.
+    Check re-captcha.
     Forms shoud contain the following:
     <script src='https://www.google.com/recaptcha/api.js'></script>
     <div class="g-recaptcha" data-sitekey="{GOOGLE_RECAPTCHA_DATA_SITE_KEY}"></div>
     This decorator use settings.GOOGLE_RECAPTCHA_SECRET_KEY, settings.USE_GOOGLE_RECAPTCHA (True/false) and Post parameter 'g-recaptcha-response'
     for check recaptcha and write to request next parameter:
     'recaptcha_is_valid = True/False'
-    If reCapcha is False write messages.error.
-    For use add decorator to view function and write check parameters 'request.recaptcha_is_valid'
+    If re-capcha is False write messages.error.
+    For use add the decorator to view function and write check parameters 'request.recaptcha_is_valid'
     More:
     https://developers.google.com/recaptcha/
     https://developers.google.com/recaptcha/docs/verify
@@ -34,7 +34,7 @@ def check_recaptcha(view_func):
                 request.method == 'POST'
                 and configuration_helpers.get_value('USE_GOOGLE_RECAPTCHA', settings.USE_GOOGLE_RECAPTCHA)
         ):
-            # Begin reCAPTCHA validation
+            # Begin re-captcha validation
             recaptcha_response = request.POST.get('g-recaptcha-response')
             url = 'https://www.google.com/recaptcha/api/siteverify'
             values = {
@@ -45,7 +45,7 @@ def check_recaptcha(view_func):
             req = urllib2.Request(url, data)
             response = urllib2.urlopen(req)
             result = json.load(response)
-            # End reCAPTCHA validation
+            # End re-captcha validation
             if result.get('success'):
                 request.recaptcha_is_valid = True
             else:
