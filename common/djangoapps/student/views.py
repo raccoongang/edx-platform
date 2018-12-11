@@ -90,6 +90,7 @@ from openedx.features.enterprise_support.api import get_dashboard_consent_notifi
 from shoppingcart.api import order_history
 from shoppingcart.models import CourseRegistrationCode, DonationConfiguration
 from student.cookies import delete_logged_in_cookies, set_logged_in_cookies, set_user_info_cookie
+from student.decorators import check_recaptcha
 from student.forms import AccountCreationForm, PasswordResetFormNoActive, get_registration_extension_form
 from student.helpers import (
     DISABLE_UNENROLL_CERT_STATES,
@@ -122,15 +123,14 @@ from student.models import (
     unique_id_for_user
 )
 from student.tasks import send_activation_email
-from student.decorators import check_recaptcha
 from third_party_auth import pipeline, provider
 from util.bad_request_rate_limiter import BadRequestRateLimiter
+from util.course_utils import country_filter
 from util.db import outer_atomic
 from util.json_request import JsonResponse
 from util.milestones_helpers import get_pre_requisite_courses_not_completed
 from util.password_policy_validators import validate_password_strength
 from xmodule.modulestore.django import modulestore
-from util.course_utils import country_filter
 
 log = logging.getLogger("edx.student")
 AUDIT_LOG = logging.getLogger("audit")

@@ -24,6 +24,7 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
 from openedx.core.lib.api.authentication import SessionAuthenticationAllowInactiveUser
 from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
 from student.cookies import set_logged_in_cookies
+from student.decorators import check_recaptcha
 from student.forms import get_registration_extension_form
 from student.views import create_account_with_params
 from util.json_request import JsonResponse
@@ -42,7 +43,7 @@ from .helpers import FormDescription, require_post_params, shim_student_view
 from .models import UserPreference, UserProfile
 from .preferences.api import get_country_time_zones, update_email_opt_in
 from .serializers import CountryTimeZoneSerializer, UserPreferenceSerializer, UserSerializer
-from student.decorators import check_recaptcha
+
 
 class LoginSessionView(APIView):
     """HTTP end-points for logging in users. """

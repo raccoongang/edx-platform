@@ -48,8 +48,8 @@
     <% } %>
 
     <%= context.fields %>
-    <% if(context.googleRecaptchaSiteKey) { %>
-        <div class="g-recaptcha" data-sitekey='<%- context.googleRecaptchaSiteKey %>'></div>
+    <% if (context.googleRecaptchaSiteKey) { %>
+        <div class="g-recaptcha" data-sitekey="<%- context.googleRecaptchaSiteKey %>""></div>
     <% } %>
 
 
