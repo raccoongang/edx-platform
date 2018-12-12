@@ -30,7 +30,9 @@ class HomepageSlider(models.Model):
     Contains a slider's content for the homepage.
     """
     title = models.CharField(max_length=255)
-    image = models.ImageField()
+    image = models.ImageField(
+        help_text=_("Size of images must be at least 800 pixels horizontally and 450 pixels vertically and all images must be the same size")
+    )
     description = models.TextField()
     link = models.URLField(
         max_length=255,
