@@ -554,7 +554,7 @@ def check_prerequisite(request, course_id):
                 'location': block_id,
             }
         )
-        return JsonResponse({'next': False, 'msg': _('Is last subsection'), 'url': url})
+        return JsonResponse({'next': False, 'last_subsection': True, 'msg': _('Is last subsection'), 'url': url})
 
     prereq = get_required_content(course_key, next_item.location)
     if not prereq:
@@ -586,6 +586,7 @@ def check_prerequisite(request, course_id):
                 elif c < len(table_of_contents['chapters']) - 1:
                     next_for_user = (table_of_contents['chapters'][c+1].get('sections') or [None])[0]
 
+    descriptor = modulestore().get_item(UsageKey.from_string(prereq[0]), depth=2)
     if next_for_user and next_item.url_name == next_for_user['url_name']:
         next_url = reverse(
             'jump_to',
@@ -602,16 +603,18 @@ def check_prerequisite(request, course_id):
                 'location': prereq[0],
             }
         )
-        descriptor = modulestore().get_item(UsageKey.from_string(prereq[0]), depth=2)
-        name = descriptor.display_name_with_default
-        msg = _('In order to proceed, you must successfully complete section "<a href="{}">{}</a>" first.').format(url,
-                                                                                                                   name)
+
+        msg = _("Sorry, you've failed the quiz. In order to go Next, you should complete it first")
         if number_attempts == '3':  # last request
             reset_library_content(descriptor, request.user)
 
         return JsonResponse({'next': False, 'msg': msg, 'url': url})
 
-    return JsonResponse({'next': True, 'url': next_url})
+    msg = ''
+    if has_library_content(descriptor):
+        msg = _("Congratulations, you've passed the quiz")
+
+    return JsonResponse({'next': True, 'msg': msg, 'url': next_url})
 
 
 def reset_library_content(sequential, user):
@@ -619,3 +622,11 @@ def reset_library_content(sequential, user):
         for children in vertical.get_children():
             if children.location.block_type == u'library_content':
                 reset_student_attempts(children.location.course_key, user, children.location, user, delete_module=True)
+
+
+def has_library_content(sequential):
+    for vertical in sequential.get_children():
+        for children in vertical.get_children():
+            if children.location.block_type == u'library_content':
+                return True
+    return False
