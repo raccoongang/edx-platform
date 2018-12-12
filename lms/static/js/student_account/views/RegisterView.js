@@ -38,6 +38,7 @@
                     this.platformName = data.platformName;
                     this.autoSubmit = data.thirdPartyAuth.autoSubmitRegForm;
                     this.hideAuthWarnings = data.hideAuthWarnings;
+                    this.googleRecaptchaSiteKey = data.googleRecaptchaSiteKey;
 
                     this.listenTo(this.model, 'sync', this.saveSuccess);
                 },
@@ -55,7 +56,8 @@
                             currentProvider: this.currentProvider,
                             providers: this.providers,
                             hasSecondaryProviders: this.hasSecondaryProviders,
-                            platformName: this.platformName
+                            platformName: this.platformName,
+                            googleRecaptchaSiteKey: this.googleRecaptchaSiteKey
                         }
                     }));
 

@@ -33,6 +33,9 @@
     % for template_name in ["account", "access", "form_field", "login", "register", "institution_login", "institution_register", "password_reset", "hinted_login"]:
         <script type="text/template" id="${template_name}-tpl">
             <%static:include path="student_account/${template_name}.underscore" />
+            %if template_name == "register":
+                <script src='https://www.google.com/recaptcha/api.js'></script>
+            %endif
         </script>
     % endfor
 </%block>
