@@ -394,10 +394,37 @@
                     },
                     success: function(data) {
                         if (data.next) {
-                            goToNextOrPrevious(data.url);
-                            // $("body").removeClass("answer-loading");
+                            if (data.msg) {
+                                $('#next-dialog #msg').html(data.msg);
+                                $('#next-dialog').dialog({
+                                    width: 400,
+                                    resizable: false,
+                                    draggable: false,
+                                    buttons: [
+                                        {
+                                            text: gettext("OK"),
+                                            click: function() {
+                                                $(this).dialog("close");
+                                                that.nextUrl = data.url;
+                                                $("body").removeClass('dialog-modal-open');
+                                            }
+                                        },
+                                        {
+                                            text: gettext("Next"),
+                                            click: function() {
+                                                goToNextOrPrevious(data.url);
+                                                $(this).dialog("close");
+                                                $("body").removeClass('dialog-modal-open').addClass("answer-loading");
+                                            }
+                                        }
+                                    ],
+                                });
+                                $("body").removeClass("answer-loading").addClass('dialog-modal-open');
+                            } else {
+                                goToNextOrPrevious(data.url);
+                            }
                         } else {
-                            if (numberAttempts < 3) {
+                            if (numberAttempts < 3 && !data.last_subsection) {
                                 numberAttempts++;
                                 setTimeout(function () {
                                     checkPrerequisite.call(that, numberAttempts);
@@ -406,8 +433,21 @@
                                 $('#next-dialog #msg').html(data.msg);
                                 $('#next-dialog').dialog({
                                     width: 400,
-                                    resizable   : false,
+                                    resizable: false,
                                     draggable: false,
+                                    buttons: [
+                                        {
+                                            text: gettext("OK"),
+                                            click: function() {
+                                                if (!data.last_subsection) {
+                                                   window.location.href = data.url;
+                                                   $("body").addClass("answer-loading");
+                                                }
+                                                $(this).dialog("close");
+                                                $("body").removeClass('dialog-modal-open');
+                                            }
+                                        }
+                                    ],
                                 });
                                 $("body").removeClass("answer-loading").addClass('dialog-modal-open');
                             }
@@ -419,18 +459,16 @@
             if ((direction === 'next') && (this.position >= this.contents.length)) {
                 if(this.nextUrl === 'None') {
                     $("body").addClass("answer-loading");
-                    var that = this;
-                    setTimeout(function () {
-                        var numberAttempts = 1;
-                        checkPrerequisite.call(that, numberAttempts);
-                    }, 2000);
+                    var numberAttempts = 1;
+                    checkPrerequisite.call(this, numberAttempts);
                 } else {
                     goToNextOrPrevious(this.nextUrl);
                 }
             } else if ((direction === 'previous') && (this.position === 1)) {
                 goToNextOrPrevious(this.prevUrl);
+            } else {
+                goToNextOrPrevious();
             }
-            goToNextOrPrevious();
         };
 
         Sequence.prototype.link_for = function(position) {
