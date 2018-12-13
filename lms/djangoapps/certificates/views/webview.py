@@ -7,6 +7,7 @@ import pytz
 from uuid import uuid4
 import logging
 import urllib
+from decimal import Decimal
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -31,6 +32,7 @@ from util import organizations_helpers as organization_api
 from util.views import handle_500
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError
+from lms.djangoapps.grades.new.course_grade import CourseGradeFactory
 
 from certificates.api import (
     get_active_web_certificate,
@@ -417,7 +419,6 @@ def _render_certificate_template(request, context, course, user_certificate):
             )
             context = RequestContext(request, context)
             return HttpResponse(template.render(context))
-
     return render_to_response("certificates/valid.html", context)
 
 
@@ -502,6 +503,7 @@ def render_html_view(request, user_id, course_id):
     except ValueError:
         raise Http404
 
+    student = User.objects.get(id=user_id)
     preview_mode = request.GET.get('preview', None)
     platform_name = configuration_helpers.get_value("platform_name", settings.PLATFORM_NAME)
     configuration = CertificateHtmlViewConfiguration.get_config()
@@ -557,6 +559,8 @@ def render_html_view(request, user_id, course_id):
         return render_to_response(invalid_template_path, context)
 
     context['certificate_data'] = active_configuration
+    course_grade = CourseGradeFactory().create(student, course)
+    context['percent'] = Decimal(course_grade.percent * 100).to_integral_value()
 
     # Append/Override the existing view context values with any mode-specific ConfigurationModel values
     context.update(configuration.get(user_certificate.mode, {}))
