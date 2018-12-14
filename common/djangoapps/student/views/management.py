@@ -175,7 +175,7 @@ def index(request, extra_context=None, user=AnonymousUser()):
             break
         course_module = modulestore().get_course(course.id)
         if course_module.course_visibility_on_homepage:
-            visible_courses.append(course_module)
+            visible_courses.append(course)
 
     context['visible_courses'] = visible_courses
 
