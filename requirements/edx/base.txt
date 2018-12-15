@@ -42,7 +42,6 @@ git+https://github.com/open-craft/xblock-poll@add89e14558c30f3c8dc7431e5cd6536ff
 git+https://github.com/edx/xblock-utils.git@v1.1.1#egg=xblock-utils==1.1.1
 -e git+https://github.com/raccoongang/rg_instructor_analytics@release-0.3.0#egg=rg_instructor_analytics
 -e git+https://github.com/raccoongang/rg_instructor_analytics_log_collector@release-0.1.0#egg=rg_instructor_analytics_log_collector
--e git+https://github.com/raccoongang/edx_xblock_scorm.git@v1.0.1#egg=xblock-scorm==1.0.1
 -e git+https://github.com/raccoongang/pycaption.git@1.0.1#egg=pycaption==1.0.1
 -e git+https://github.com/raccoongang/xblock-video.git@v0.10.3#egg=xblock-video==0.10.3
 -e git+https://github.com/raccoongang/edx_xblock_firepad.git@v0.0.1#egg=xblock-firepad==0.0.1

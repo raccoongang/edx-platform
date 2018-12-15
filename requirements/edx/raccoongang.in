@@ -1,6 +1,3 @@
-# Scorm xblock
--e git+https://github.com/raccoongang/edx_xblock_scorm.git@v1.0.1#egg=xblock-scorm==1.0.1
-
 # Video xblock
 -e git+https://github.com/raccoongang/pycaption.git@1.0.1#egg=pycaption==1.0.1
 -e git+https://github.com/raccoongang/xblock-video.git@v0.10.3#egg=xblock-video==0.10.3
