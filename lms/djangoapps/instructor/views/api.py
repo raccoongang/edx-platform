@@ -30,6 +30,7 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods, require_POST
+from lms.djangoapps.instructor.views.tools import DashboardError
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
@@ -3419,6 +3420,34 @@ def all_courses_certificates_report(request, course_id):
         return JsonResponse({"status": success_status})
     except AlreadyRunningError:
         already_running_status = _("The courses certificates report is currently being created."
+                                   " To view the status of the report, see Pending Tasks below."
+                                   " You will be able to download the report when it is complete.")
+        return JsonResponse({"status": already_running_status})
+
+
+@transaction.non_atomic_requests
+@ensure_csrf_cookie
+@cache_control(no_cache=True, no_store=True, must_revalidate=True)
+@require_level('staff')
+def student_transcript_report(request, course_id):
+    course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+
+    student_info = request.POST.get('student_info')
+    if not student_info:
+        return JsonResponseBadRequest(_("'Username or email' required field"))
+
+    try:
+        student = require_student_from_identifier(student_info)
+    except DashboardError as er:
+        return JsonResponseBadRequest(er.message)
+
+    try:
+        lms.djangoapps.instructor_task.api.submit_student_transcript_report_csv(request, course_key, student.id)
+        success_status = _("The Student Progress Transcript is being created."
+                           " To view the status of the report, see Pending Tasks below.")
+        return JsonResponse({"status": success_status})
+    except AlreadyRunningError:
+        already_running_status = _("The Student Progress Transcript is currently being created."
                                    " To view the status of the report, see Pending Tasks below."
                                    " You will be able to download the report when it is complete.")
         return JsonResponse({"status": already_running_status})

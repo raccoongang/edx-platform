@@ -88,6 +88,18 @@ from openedx.core.djangolib.markup import HTML, Text
       <input type="button" name="all-courses-certificates-report-csv" class="async-report-btn" value="${_("Generate CSV All Courses Report")}" data-endpoint="${ section_data['all_courses_certificates_report_url'] }"/>
     </p>
 
+    <p>${_("To generate a CSV file Student Progress Transcript")}</p>
+
+    <p>
+      <label>
+        <span>${_("Paste Student's Username or E-mail:")}</span>
+        <input type="text" name="student_info" />
+      </label>
+    </p>
+    <p>
+      <input type="button" name="student-transcript-responses-csv" value="${_("Download a CSV of Student Progress Transcript")}" data-endpoint="${ section_data['student_transcript_responses_url'] }" data-csv="true">
+    </p>
+
     <div class="request-response msg msg-confirm copy" id="report-request-response"></div>
     <div class="request-response-error msg msg-error copy" id="report-request-response-error"></div>
     <br>

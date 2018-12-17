@@ -101,6 +101,8 @@
             this.$survey_results_csv_btn = this.$section.find("input[name='survey-results-report']");
             this.$list_may_enroll_csv_btn = this.$section.find("input[name='list-may-enroll-csv']");
             this.$list_problem_responses_csv_input = this.$section.find("input[name='problem-location']");
+            this.$student_transcript_responses_csv_btn = this.$section.find("input[name='student-transcript-responses-csv']");
+            this.$student_transcript_input = this.$section.find("input[name='student_info']");
             this.$list_problem_responses_csv_btn = this.$section.find("input[name='list-problem-responses-csv']");
             this.$list_anon_btn = this.$section.find("input[name='list-anon-ids']");
             this.$grade_config_btn = this.$section.find("input[name='dump-gradeconf']");
@@ -330,6 +332,33 @@
                             display: 'block'
                         });
                     }),
+                    success: function(data) {
+                        dataDownloadObj.$reports_request_response.text(data.status);
+                        return $('.msg-confirm').css({
+                            display: 'block'
+                        });
+                    }
+                });
+            });
+
+            this.$student_transcript_responses_csv_btn.click(function() {
+                var url = dataDownloadObj.$student_transcript_responses_csv_btn.data('endpoint');
+                dataDownloadObj.clear_display();
+                return $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: url,
+                    data: {
+                        student_info: dataDownloadObj.$student_transcript_input.val()
+                    },
+                    error: function(error) {
+                        dataDownloadObj.$reports_request_response_error.text(
+                            JSON.parse(error.responseText)
+                        );
+                        return $('.msg-error').css({
+                            display: 'block'
+                        });
+                    },
                     success: function(data) {
                         dataDownloadObj.$reports_request_response.text(data.status);
                         return $('.msg-confirm').css({
