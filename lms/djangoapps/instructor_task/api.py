@@ -39,7 +39,8 @@ from lms.djangoapps.instructor_task.tasks import (
     reset_problem_attempts,
     send_bulk_course_email,
     course_certificates_report_csv,
-    all_courses_certificates_report_csv
+    all_courses_certificates_report_csv,
+    student_transcript_report_csv
 )
 from util import milestones_helpers
 from xmodule.modulestore.django import modulestore
@@ -468,6 +469,15 @@ def submit_all_courses_certificates_report_csv(request, course_key):
     task_type = 'all_courses_certificates_report_csv'
     task_class = all_courses_certificates_report_csv
     task_input = {}
+    task_key = ""
+
+    return submit_task(request, task_type, task_class, course_key, task_input, task_key)
+
+
+def submit_student_transcript_report_csv(request, course_key, user_id):
+    task_type = 'student_transcript_report_csv'
+    task_class = student_transcript_report_csv
+    task_input = {'user_id': user_id}
     task_key = ""
 
     return submit_task(request, task_type, task_class, course_key, task_input, task_key)
