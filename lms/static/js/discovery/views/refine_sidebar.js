@@ -52,6 +52,7 @@
 
             render: function() {
                 var grouped = this.collection.groupBy('facet');
+                grouped = this.reorderedFacet(grouped);
                 var htmlSnippet = HtmlUtils.joinHtml.apply(
                 this, _.map(grouped, function(options, facetKey) {
                     if (options.length > 0) {
@@ -90,8 +91,43 @@
                 $target.data('value'),
                 $target.data('text')
             );
-            }
+            },
 
+            reorderedFacet: function(grouped){
+                 var orderedFacetKeys = [
+                     'availability',
+                     'course_type',
+                     'org',
+                     'audience',
+                     'level',
+                     'modes',
+                     'language'
+                 ];
+                 var orderedTermKeys = [
+                     'introductory',
+                     'intermediate',
+                     'advanced',
+                     'undergraduate',
+                     'graduate',
+                     'undergraduate_graduate'
+                 ];
+                 var reorderedFacets = {};
+
+                 for (var facetIndex = 0; facetIndex < orderedFacetKeys.length; facetIndex++) {
+                     var facetKey = orderedFacetKeys[facetIndex];
+                     var facetGroup = grouped[facetKey];
+
+                     if (facetGroup && facetKey === 'level') {
+                         reorderedFacets[facetKey] = _.sortBy(facetGroup, function(facet){
+                             return _.indexOf(orderedTermKeys, facet.get('term'));
+                         });
+                     } else if (facetGroup) {
+                         reorderedFacets[facetKey] = facetGroup;
+                     }
+                 }
+
+                 return reorderedFacets
+            }
         });
     });
 })(define || RequireJS.define);
