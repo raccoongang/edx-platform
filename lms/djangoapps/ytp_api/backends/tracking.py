@@ -62,6 +62,10 @@ class StatisticProcessor(object):
     def get_event_course_id(event):
         return event.get('context', {}).get('course_id')
 
+    @staticmethod
+    def get_event_quiz_name(event):
+        return event.get('context', {}).get('module', {}).get('display_name')
+
 
 class SubmissionStaticsProcessor(StatisticProcessor):
     PAYLOAD_KEYS = ['success', 'grade', 'state', 'attempts', 'max_grade']
@@ -75,9 +79,9 @@ class SubmissionStaticsProcessor(StatisticProcessor):
         result['course_id'] = self.get_event_course_id(event)
         result['time'] = self.get_event_timestamp_as_string(event)
         result['username'] = self.get_event_user(event)
+        result['quiz_name'] = self.get_event_quiz_name(event)
         result.update({k: v for k, v in data.iteritems() if k in self.PAYLOAD_KEYS})
         log.debug("Result payload: %s", result)
-
         return result
 
 
