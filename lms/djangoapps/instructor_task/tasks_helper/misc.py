@@ -8,22 +8,28 @@ from collections import OrderedDict
 from datetime import datetime, timedelta
 from time import time
 
+import json
 import unicodecsv
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files.storage import DefaultStorage
 from django.db.models import Q
+from lms.djangoapps.grades.new.course_grade_factory import CourseGradeFactory
 from openassessment.data import OraAggregateData
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.lib.gating.api import get_required_content
 from pytz import UTC
+from xmodule.modulestore.django import modulestore
 
 from certificates.models import GeneratedCertificate, CertificateStatuses
+from courseware.courses import get_course_by_id
+from courseware.models import StudentModule
 from instructor_analytics.basic import get_proctored_exam_results
 from instructor_analytics.csvs import format_dictlist
 from openedx.core.djangoapps.course_groups.cohorts import add_user_to_cohort
 from openedx.core.djangoapps.course_groups.models import CourseUserGroup
 from survey.models import SurveyAnswer
-from util.file import UniversalNewlineIterator, course_filename_prefix_generator
+from util.file import UniversalNewlineIterator
 
 from .runner import TaskProgress
 from .utils import UPDATE_STATUS_FAILED, UPDATE_STATUS_SUCCEEDED, upload_csv_to_report_store
@@ -328,7 +334,7 @@ def upload_all_courses_certificates_report(_xmodule_instance_args, _entry_id, co
     num_reports = 1
     task_progress = TaskProgress(action_name, num_reports, start_time)
 
-    current_step = {'step': 'Gathering acourse certificates report information'}
+    current_step = {'step': 'Gathering course certificates report information'}
     task_progress.update_task_state(extra_meta=current_step)
 
     courses = CourseOverview.objects.filter(Q(end__gte=start_date-timedelta(days=365)) | Q(end__isnull=True))
@@ -395,5 +401,101 @@ def get_certificates_report(courses):
 
             if not state_extra_infos:
                 csv_rows.append(row)
+
+    return header, csv_rows
+
+
+def upload_student_transcript_report(_xmodule_instance_args, _entry_id, course_id, _task_input, action_name):
+    start_time = time()
+    start_date = datetime.now(UTC)
+    num_reports = 1
+    task_progress = TaskProgress(action_name, num_reports, start_time)
+
+    current_step = {'step': 'Gathering student progress report information'}
+    task_progress.update_task_state(extra_meta=current_step)
+
+    course = get_course_by_id(course_id, depth=4)
+    user = User.objects.get(id=_task_input.get('user_id'))
+
+    header, csv_rows = get_student_transcript_report(course, user)
+
+    task_progress.attempted = task_progress.succeeded = len(csv_rows)
+    task_progress.skipped = task_progress.total - task_progress.attempted
+
+    csv_rows.insert(0, header)
+
+    current_step = {'step': 'Uploading CSV'}
+    task_progress.update_task_state(extra_meta=current_step)
+
+    # Perform the upload
+    upload_csv_to_report_store(csv_rows, 'student_transcript_report', course_id, start_date)
+
+    return task_progress.update_task_state(extra_meta=current_step)
+
+
+def get_student_transcript_report(course, user):
+    header = ['Subsection', 'Question', 'Date', 'Attempts', 'Status', 'Percent']
+    csv_rows = []
+    required_contents = {}
+
+    course_grade = CourseGradeFactory().create(user, course)
+    courseware_summary = course_grade.chapter_grades.values()
+
+    for chapter in courseware_summary:
+        if not chapter['display_name'] == "hidden":
+            for section in chapter['sections']:
+                required_content, min_score = get_required_content(course.id, section.location)
+                if required_content:
+                    required_contents[required_content] = int(min_score) if min_score else 0
+
+    for chapter in courseware_summary:
+        if not chapter['display_name'] == "hidden":
+            for section in chapter['sections']:
+                row_sequential = [section.display_name, '', '', '']
+                earned = section.all_total.earned
+                total = section.all_total.possible
+                percentage = int(float(earned) / total * 100) if earned > 0 and total > 0 else 0
+
+                min_score = required_contents.get(section.location.to_deprecated_string())
+                if min_score is not None:
+                    row_sequential.append('{}'.format('passed' if percentage >= min_score else 'failed'))
+                    row_sequential.append('{}% (min score {}%)'.format(percentage, min_score))
+                else:
+                    row_sequential.append('')
+                    row_sequential.append('{}%'.format(percentage))
+
+                row_vertical = []
+                for problem, score in section.problem_scores.items():
+                    possible = float(score.possible)
+                    earned = float(score.earned)
+                    problem_name = modulestore().get_item(problem).display_name
+
+                    student_module = StudentModule.objects.filter(
+                        module_state_key=problem,
+                        student_id=user.id
+                    ).first()
+                    if student_module:
+                        state = json.loads(student_module.state)
+                        row_xblock = [
+                            '',
+                            problem_name,
+                            student_module.modified,
+                            state.get('attempts', 1),
+                            '{}'.format('passed' if possible == earned else 'failed'),
+                            '{0:.0%}'.format(earned/possible)
+                        ]
+                    else:
+                        row_xblock = [
+                            '',
+                            problem_name,
+                            '',
+                            0,
+                            '',
+                            '0%'
+                        ]
+                    row_vertical.append(row_xblock)
+
+                csv_rows.append(row_sequential)
+                csv_rows += row_vertical
 
     return header, csv_rows
