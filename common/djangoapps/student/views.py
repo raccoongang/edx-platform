@@ -526,7 +526,10 @@ def register_user(request, extra_context=None):
             overrides['running_pipeline'] = running_pipeline
             overrides['selected_provider'] = current_provider.name
             context.update(overrides)
-
+    context.update({
+        'REGISTRATION_EXTRA_FIELDS': configuration_helpers.get_value(
+            'REGISTRATION_EXTRA_FIELDS', settings.REGISTRATION_EXTRA_FIELDS)
+    })
     return render_to_response('register.html', context)
 
 
