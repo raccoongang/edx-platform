@@ -925,6 +925,16 @@ class CourseFields(object):
         ]
     )
 
+    hiding_verification_msg = Boolean(
+        display_name=_("Hiding Course Verification Messages"),
+        help=_(
+            "Enter true or false. If true, the 'Course Verification' message  that appears on the Student Dashboard "
+            "will be hidden. The 'Course Verification' message appears on the dashboard for 'Credit (paid)' courses."
+        ),
+        scope=Scope.settings, default=False
+    )
+
+
 class CourseModule(CourseFields, SequenceModule):  # pylint: disable=abstract-method
     """
     The CourseDescriptor needs its module_class to be a SequenceModule, but some code that
