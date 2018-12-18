@@ -19,6 +19,7 @@ from student.helpers import (
   VERIFY_STATUS_NEED_TO_REVERIFY,
   DISABLE_UNENROLL_CERT_STATES,
 )
+from xmodule.modulestore.django import modulestore
 %>
 
 <%
@@ -31,6 +32,7 @@ from student.helpers import (
   if cert_name_long == "":
     cert_name_long = settings.CERT_NAME_LONG
   billing_email = settings.PAYMENT_SUPPORT_EMAIL
+  is_verified_msg_hidden = modulestore().get_course(course_overview.id).hiding_verification_msg
 %>
 
 <%namespace name='static' file='../static_content.html'/>
@@ -362,7 +364,7 @@ from student.helpers import (
         </div>
         % endif
 
-        % if course_mode_info['show_upsell'] and not is_course_blocked:
+        % if course_mode_info['show_upsell'] and not is_course_blocked and not is_verified_msg_hidden:
           <div class="message message-upsell has-actions is-shown">
 
             <div class="wrapper-extended">
