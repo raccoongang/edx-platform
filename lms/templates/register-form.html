@@ -222,7 +222,7 @@ from student.models import UserProfile
     % endif
 
     % if REGISTRATION_EXTRA_FIELDS.get('goals', 'optional') != 'hidden':
-    <li class="field ${REGISTRATION_EXTRA_FIELDS.get('goals', 'optional')]} text" id="field-goals">
+    <li class="field ${REGISTRATION_EXTRA_FIELDS.get('goals', 'optional')} text" id="field-goals">
       <label for="goals">${_("Please share with us your reasons for registering with {platform_name}").format(platform_name=platform_name)}</label>
       <textarea id="goals" name="goals" value="" ${'required aria-required="true"' if REGISTRATION_EXTRA_FIELDS.get('goals', 'optional') == 'required' else ''}></textarea>
     </li>
