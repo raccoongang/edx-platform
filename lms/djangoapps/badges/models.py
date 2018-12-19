@@ -24,6 +24,9 @@ def validate_badge_image(image):
     """
     Validates that a particular image is small enough to be a badge and square.
     """
+    image_format = image.name.split('.')[-1]
+    if image_format != 'png':
+        raise ValidationError(_(u"The badge image must be png format."))
     if image.width != image.height:
         raise ValidationError(_(u"The badge image must be square."))
     if not image.size < (250 * 1024):
@@ -49,6 +52,7 @@ class BadgeClass(models.Model):
     Specifies a badge class to be registered with a backend.
     """
     slug = models.SlugField(max_length=255, validators=[validate_lowercase])
+    slug_badgr = models.SlugField(max_length=255, default='', blank=True)
     issuing_component = models.SlugField(max_length=50, default='', blank=True, validators=[validate_lowercase])
     display_name = models.CharField(max_length=255)
     course_id = CourseKeyField(max_length=255, blank=True, default=None)
