@@ -3463,6 +3463,11 @@ RETIREMENT_STATES = [
     'COMPLETE',
 ]
 
+
+############## WEB SCIENSE SETTINGS #########################
+INSTALLED_APPS.append('web_science')
+
+
 ############### Settings for django-fernet-fields ##################
 FERNET_KEYS = [
     'DUMMY KEY CHANGE BEFORE GOING TO PRODUCTION',

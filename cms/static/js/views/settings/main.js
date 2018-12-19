@@ -115,6 +115,12 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    this.$el.find('#course-image-url').val(courseImageURL);
                    this.$el.find('#course-image').attr('src', courseImageURL);
 
+                   this.$el.find('#web-science-color').val(this.model.get('web_science_color'));
+
+                   var webScienseImageURL = this.model.get('web_science_image');
+                   this.$el.find('#web-science-image-url').val(webScienseImageURL);
+                   this.$el.find('#web-science-image').attr('src', webScienseImageURL);
+
                    var bannerImageURL = this.model.get('banner_image_asset_path');
                    this.$el.find('#banner-image-url').val(bannerImageURL);
                    this.$el.find('#banner-image').attr('src', bannerImageURL);
@@ -181,7 +187,9 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    course_settings_learning_fields: 'course-settings-learning-fields',
                    add_course_learning_info: 'add-course-learning-info',
                    add_course_instructor_info: 'add-course-instructor-info',
-                   course_learning_info: 'course-learning-info'
+                   course_learning_info: 'course-learning-info',
+                   web_science_color: 'web-science-color',
+                   web_science_image: 'web-science-image'
                },
 
                addLearningFields: function() {
@@ -250,6 +258,9 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        this.showNotificationBar();
                        this.updateImagePreview(event.currentTarget, '#course-instructor-image-preview-' + index);
                        break;
+                   case 'web-science-image-url':
+                       this.updateImageField(event, 'web_science_image_name', '#web-science-image');
+                       break;
                    case 'course-image-url':
                        this.updateImageField(event, 'course_image_name', '#course-image');
                        break;
@@ -307,6 +318,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    case 'course-duration':
                    case 'course-description':
                    case 'course-short-description':
+                   case 'web-science-color':
                        this.setField(event);
                        break;
                    default: // Everything else is handled by datepickers and CodeMirror.
@@ -418,6 +430,12 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        image_key = '',
                        image_path_key = '';
                    switch (event.currentTarget.id) {
+                   case 'upload-web-science-image':
+                       title = gettext('Upload your course image.');
+                       selector = '#web-science-image';
+                       image_key = 'web_science_image_name';
+                       image_path_key = 'web_science_image';
+                       break;
                    case 'upload-course-image':
                        title = gettext('Upload your course image.');
                        selector = '#course-image';

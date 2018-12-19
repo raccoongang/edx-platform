@@ -203,9 +203,9 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
             </ol>
           </fieldset>
         </div>
-        
+
         <hr class="divide" />
-        
+
         <div id="schedule" class="group-settings schedule">
           <header>
             <h2 class="title-2">${_('Course Schedule')}</h2>
@@ -310,6 +310,39 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
               </select>
               <span class="tip tip-stacked">${_("Identify the course language here. This is used to assist users find courses that are taught in a specific language. It is also used to localize the 'From:' field in bulk emails.")}</span>
             </li>
+          </ol>
+          <ol class="list-input">
+              <li class="field" id="field-web-science-color">
+                  <label for="web-science-color">${_("WebScience course color")}</label>
+                  <input id="web-science-color" type="color" style="height: 30px" />
+              </li>
+              <li class="field image" id="field-web-science-image">
+                  <label for="course-web-science-url">${_("Web Science course Image")}</label>
+                  <div class="current current-web-science-image">
+                    <span class="wrapper-course-image">
+                      <img class="web-science-image" id="web-science-image" src="${web_science_image_url}" alt="${_('Web Science course Image')}"/>
+                    </span>
+                    % if web_science_image:
+                        <span class="msg msg-help">
+                        ${Text(_("You can manage this image along with all of your other {a_link_start}files and uploads{a_link_end}")).format(
+                          a_link_start=HTML("<a href='{upload_asset_url}'>").format(upload_asset_url=upload_asset_url),
+                          a_link_end=HTML("</a>")
+                          )}
+                        </span>
+                    % else:
+                        <span class="msg msg-empty">${_("Your course currently does not have an image. Please upload one (JPEG or PNG format, and minimum suggested dimensions are 375px wide by 200px tall)")}</span>
+                    % endif
+                  </div>
+
+                  <div class="wrapper-input">
+                    <div class="input">
+                      ## Translators: This is the placeholder text for a field that requests the URL for a course image
+                      <input type="text" dir="ltr" class="long new-web-science-image-url" id="web-science-image-url" value="" placeholder="${_("Your Web Science course image URL")}" autocomplete="off" />
+                      <span class="tip tip-stacked">${_("Please provide a valid path and name to your course image (Note: only JPEG or PNG format supported)")}</span>
+                    </div>
+                    <button type="button" class="action action-upload-image" id="upload-web-science-image">${_("Upload Web Science Course Card Image")}</button>
+                  </div>
+                </li>
           </ol>
         </div>
         % endif
