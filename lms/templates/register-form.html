@@ -151,17 +151,17 @@ from student.models import UserProfile
   <h2 class="sr">${_("Additional Personal Information")}</h2>
 
   <ol class="list-input">
-    % if settings.REGISTRATION_EXTRA_FIELDS['city'] != 'hidden':
-    <li class="field ${settings.REGISTRATION_EXTRA_FIELDS['city']} text" id="field-city">
+    % if REGISTRATION_EXTRA_FIELDS.get('city', 'hidden') != 'hidden':
+    <li class="field ${REGISTRATION_EXTRA_FIELDS.get('city', 'hidden')} text" id="field-city">
       <label for="city">${_('City')}</label>
-      <input id="city" type="text" name="city" value="" placeholder="${_('example: New York')}" aria-describedby="city-tip" ${'required aria-required="true"' if settings.REGISTRATION_EXTRA_FIELDS['city'] == 'required' else ''} />
+      <input id="city" type="text" name="city" value="" placeholder="${_('example: New York')}" aria-describedby="city-tip" ${'required aria-required="true"' if REGISTRATION_EXTRA_FIELDS.get('city', 'hidden') == 'required' else ''} />
     </li>
     % endif
-    % if settings.REGISTRATION_EXTRA_FIELDS['country'] != 'hidden':
+    % if REGISTRATION_EXTRA_FIELDS.get('country', 'hidden') != 'hidden':
     <li class="field-group">
-    <div class="field ${settings.REGISTRATION_EXTRA_FIELDS['country']} select" id="field-country">
+    <div class="field ${REGISTRATION_EXTRA_FIELDS.get('country', 'hidden')} select" id="field-country">
         <label for="country">${_("Country")}</label>
-        <select id="country" name="country" ${'required aria-required="true"' if settings.REGISTRATION_EXTRA_FIELDS['country'] == 'required' else ''}>
+        <select id="country" name="country" ${'required aria-required="true"' if REGISTRATION_EXTRA_FIELDS.get('country', 'hidden') == 'required' else ''}>
           <option value="">--</option>
           %for code, country_name in countries:
           <option value="${code}">${ unicode(country_name) }</option>
@@ -170,11 +170,11 @@ from student.models import UserProfile
       </div>
     </li>
     % endif
-    % if settings.REGISTRATION_EXTRA_FIELDS['level_of_education'] != 'hidden':
+    % if REGISTRATION_EXTRA_FIELDS.get('level_of_education', 'optional') != 'hidden':
     <li class="field-group field-education-level">
-    <div class="field ${settings.REGISTRATION_EXTRA_FIELDS['level_of_education']} select" id="field-education-level">
+    <div class="field ${REGISTRATION_EXTRA_FIELDS.get('level_of_education', 'optional')} select" id="field-education-level">
         <label for="education-level">${_("Highest Level of Education Completed")}</label>
-        <select id="education-level" name="level_of_education" ${'required aria-required="true"' if settings.REGISTRATION_EXTRA_FIELDS['level_of_education'] == 'required' else ''}>
+        <select id="education-level" name="level_of_education" ${'required aria-required="true"' if REGISTRATION_EXTRA_FIELDS.get('level_of_education', 'optional') == 'required' else ''}>
           <option value="">--</option>
           %for code, ed_level in UserProfile.LEVEL_OF_EDUCATION_CHOICES:
           <option value="${code}">${_(ed_level)}</option>
@@ -183,11 +183,11 @@ from student.models import UserProfile
       </div>
     </li>
     % endif
-    % if settings.REGISTRATION_EXTRA_FIELDS['gender'] != 'hidden':
+    % if REGISTRATION_EXTRA_FIELDS.get('gender', 'optional') != 'hidden':
     <li class="field-group field-gender">
-      <div class="field ${settings.REGISTRATION_EXTRA_FIELDS['gender']} select" id="field-gender">
+      <div class="field ${REGISTRATION_EXTRA_FIELDS.get('gender', 'optional')} select" id="field-gender">
         <label for="gender">${_("Gender")}</label>
-        <select id="gender" name="gender" ${'required aria-required="true"' if settings.REGISTRATION_EXTRA_FIELDS['gender'] == 'required' else ''}>
+        <select id="gender" name="gender" ${'required aria-required="true"' if REGISTRATION_EXTRA_FIELDS.get('gender', 'optional') == 'required' else ''}>
           <option value="">--</option>
           %for code, gender in UserProfile.GENDER_CHOICES:
           <option value="${code}">${_(gender)}</option>
@@ -196,11 +196,11 @@ from student.models import UserProfile
       </div>
     </li>
     % endif
-    % if settings.REGISTRATION_EXTRA_FIELDS['year_of_birth'] != 'hidden':
+    % if REGISTRATION_EXTRA_FIELDS.get('year_of_birth', 'optional') != 'hidden':
     <li class="field-group field-yob">
-      <div class="field ${settings.REGISTRATION_EXTRA_FIELDS['year_of_birth']} select" id="field-yob">
+      <div class="field ${REGISTRATION_EXTRA_FIELDS.get('year_of_birth', 'optional')} select" id="field-yob">
         <label for="yob">${_("Year of Birth")}</label>
-        <select id="yob" name="year_of_birth" ${'required aria-required="true"' if settings.REGISTRATION_EXTRA_FIELDS['year_of_birth'] == 'required' else ''}>
+        <select id="yob" name="year_of_birth" ${'required aria-required="true"' if REGISTRATION_EXTRA_FIELDS.get('year_of_birth', 'optional') == 'required' else ''}>
           <option value="">--</option>
           %for year in UserProfile.VALID_YEARS:
           <option value="${year}">${year}</option>
@@ -214,17 +214,17 @@ from student.models import UserProfile
 
 <div class="group group-form group-form-personalinformation2">
   <ol class="list-input">
-    % if settings.REGISTRATION_EXTRA_FIELDS['mailing_address'] != 'hidden':
-    <li class="field ${settings.REGISTRATION_EXTRA_FIELDS['mailing_address']} text" id="field-address-mailing">
+    % if REGISTRATION_EXTRA_FIELDS.get('mailing_address', 'optional') != 'hidden':
+    <li class="field ${REGISTRATION_EXTRA_FIELDS.get('mailing_address', 'optional')} text" id="field-address-mailing">
       <label for="address-mailing">${_("Mailing Address")}</label>
-      <textarea id="address-mailing" name="mailing_address" value="" ${'required aria-required="true"' if settings.REGISTRATION_EXTRA_FIELDS['mailing_address'] == 'required' else ''}></textarea>
+      <textarea id="address-mailing" name="mailing_address" value="" ${'required aria-required="true"' if REGISTRATION_EXTRA_FIELDS.get('mailing_address', 'optional') == 'required' else ''}></textarea>
     </li>
     % endif
 
-    % if settings.REGISTRATION_EXTRA_FIELDS['goals'] != 'hidden':
-    <li class="field ${settings.REGISTRATION_EXTRA_FIELDS['goals']} text" id="field-goals">
+    % if REGISTRATION_EXTRA_FIELDS.get('goals', 'optional') != 'hidden':
+    <li class="field ${REGISTRATION_EXTRA_FIELDS.get('goals', 'optional')} text" id="field-goals">
       <label for="goals">${_("Please share with us your reasons for registering with {platform_name}").format(platform_name=platform_name)}</label>
-      <textarea id="goals" name="goals" value="" ${'required aria-required="true"' if settings.REGISTRATION_EXTRA_FIELDS['goals'] == 'required' else ''}></textarea>
+      <textarea id="goals" name="goals" value="" ${'required aria-required="true"' if REGISTRATION_EXTRA_FIELDS.get('goals', 'optional') == 'required' else ''}></textarea>
     </li>
     % endif
   </ol>
@@ -236,19 +236,21 @@ from student.models import UserProfile
   <ol class="list-input">
     <li class="field-group">
 
-      % if has_extauth_info is UNDEFINED or ask_for_tos :
-      <div class="field required checkbox" id="field-tos">
-        <input id="tos-yes" type="checkbox" name="terms_of_service" value="true" required aria-required="true" />
-        <label for="tos-yes">${_('I agree to the {link_start}Terms of Service{link_end}').format(
-          link_start='<a href="{url}" class="new-vp" tabindex="-1">'.format(url=marketing_link('TOS')),
-          link_end='</a>')}</label>
-      </div>
+      % if REGISTRATION_EXTRA_FIELDS.get('terms_of_service', 'hidden') != 'hidden':
+          % if has_extauth_info is UNDEFINED or ask_for_tos :
+          <div class="field ${REGISTRATION_EXTRA_FIELDS.get('terms_of_service', 'hidden')} checkbox" id="field-tos">
+            <input id="tos-yes" type="checkbox" name="terms_of_service" value="" ${'required aria-required="true"' if REGISTRATION_EXTRA_FIELDS.get('terms_of_service', 'hidden') == 'required' else ''} />
+            <label for="tos-yes">${_('I agree to the {link_start}Terms of Service{link_end}').format(
+              link_start='<a href="{url}" class="new-vp" tabindex="-1">'.format(url=marketing_link('TOS')),
+              link_end='</a>')}</label>
+          </div>
+          % endif
       % endif
 
-      % if settings.REGISTRATION_EXTRA_FIELDS['honor_code'] != 'hidden':
+      % if REGISTRATION_EXTRA_FIELDS.get('honor_code', 'required') != 'hidden':
       ## check if we have an Honor Code link in our marketing map
       % if marketing_link('HONOR') and marketing_link('HONOR') != '#':
-      <div class="field ${settings.REGISTRATION_EXTRA_FIELDS['honor_code']} checkbox" id="field-honorcode">
+      <div class="field ${REGISTRATION_EXTRA_FIELDS.get('honor_code', 'required')} checkbox" id="field-honorcode">
         <input id="honorcode-yes" type="checkbox" name="honor_code" value="true" />
         <%
           honor_code_path = marketing_link('HONOR')

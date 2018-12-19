@@ -526,7 +526,10 @@ def register_user(request, extra_context=None):
             overrides['running_pipeline'] = running_pipeline
             overrides['selected_provider'] = current_provider.name
             context.update(overrides)
-
+    context.update({
+        'REGISTRATION_EXTRA_FIELDS': configuration_helpers.get_value(
+            'REGISTRATION_EXTRA_FIELDS', settings.REGISTRATION_EXTRA_FIELDS)
+    })
     return render_to_response('register.html', context)
 
 
@@ -1699,25 +1702,25 @@ def create_account_with_params(request, params):
         settings.FEATURES.get("ENFORCE_PASSWORD_POLICY", False) and
         not do_external_auth
     )
+    registration_fields = configuration_helpers.get_value('REGISTRATION_EXTRA_FIELDS', getattr(settings, 'REGISTRATION_EXTRA_FIELDS', {}))
+    # No needed so far
     # Can't have terms of service for certain SHIB users, like at Stanford
-    registration_fields = getattr(settings, 'REGISTRATION_EXTRA_FIELDS', {})
-    tos_required = (
-        registration_fields.get('terms_of_service') != 'hidden' or
-        registration_fields.get('honor_code') != 'hidden'
-    ) and (
-        not settings.FEATURES.get("AUTH_USE_SHIB") or
-        not settings.FEATURES.get("SHIB_DISABLE_TOS") or
-        not do_external_auth or
-        not eamap.external_domain.startswith(openedx.core.djangoapps.external_auth.views.SHIBBOLETH_DOMAIN_PREFIX)
-    )
-
+    # tos_required = (
+    #     registration_fields.get('terms_of_service') != 'hidden' or
+    #     registration_fields.get('honor_code') != 'hidden'
+    # ) and (
+    #     not settings.FEATURES.get("AUTH_USE_SHIB") or
+    #     not settings.FEATURES.get("SHIB_DISABLE_TOS") or
+    #     not do_external_auth or
+    #     not eamap.external_domain.startswith(openedx.core.djangoapps.external_auth.views.SHIBBOLETH_DOMAIN_PREFIX)
+    # )
     form = AccountCreationForm(
         data=params,
         extra_fields=extra_fields,
         extended_profile_fields=extended_profile_fields,
         enforce_username_neq_password=True,
         enforce_password_policy=enforce_password_policy,
-        tos_required=tos_required,
+        tos_required=registration_fields.get('terms_of_service') != 'hidden',
     )
     custom_form = get_registration_extension_form(data=params)
 
