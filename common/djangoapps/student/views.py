@@ -1720,7 +1720,7 @@ def create_account_with_params(request, params):
         extended_profile_fields=extended_profile_fields,
         enforce_username_neq_password=True,
         enforce_password_policy=enforce_password_policy,
-        tos_required=registration_fields.get('terms_of_service') != 'hidden',
+        tos_required=registration_fields.get('terms_of_service', 'hidden') != 'hidden',
     )
     custom_form = get_registration_extension_form(data=params)
 
