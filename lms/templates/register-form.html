@@ -264,8 +264,7 @@ from student.models import UserProfile
 </div>
 
 %if google_recaptcha_site_key:
-    <div class="g-recaptcha" data-sitekey="${google_recaptcha_site_key}"></div>
-    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <div class="g-recaptcha" id="g-recaptcha" data-sitekey="${google_recaptcha_site_key}"></div>
 %endif
 
 <div class="form-actions">
