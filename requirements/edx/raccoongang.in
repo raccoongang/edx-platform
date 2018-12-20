@@ -23,3 +23,6 @@
 
 # Flow Control xblock
 -e git+https://github.com/eduNEXT/flow-control-xblock.git@v0.2.0#egg=xblock-flow-control==0.2.0
+
+# SSO
+ -e git+https://github.com/raccoongang/edx-oauth-client.git@hawthorn-master#egg=edx_oauth_client

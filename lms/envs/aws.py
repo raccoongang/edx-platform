@@ -1093,6 +1093,10 @@ RETIREMENT_SERVICE_WORKER_USERNAME = ENV_TOKENS.get(
 )
 RETIREMENT_STATES = ENV_TOKENS.get('RETIREMENT_STATES', RETIREMENT_STATES)
 
+############################### Settings for custom oauth2 ###############################
+if FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
+    CUSTOM_OAUTH_PARAMS = ENV_TOKENS.get('CUSTOM_OAUTH_PARAMS', {})
+
 ############################### Plugin Settings ###############################
 
 from openedx.core.djangoapps.plugins import plugin_settings, constants as plugin_constants
