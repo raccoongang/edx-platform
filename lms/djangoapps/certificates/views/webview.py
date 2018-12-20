@@ -233,7 +233,11 @@ def _update_course_context(request, context, course, platform_name):
     context['accomplishment_copy_course_name'] = accomplishment_copy_course_name
     course_number = course.display_coursenumber if course.display_coursenumber else course.number
     context['course_number'] = course_number
-    context['us_state'] = course.us_state
+    context['us_state'] = course.us_state.copy()
+
+    for key in settings.STATES_EXCLUDED_FROM_CERTIFICATE:
+        if key in context['us_state']:
+            del context['us_state'][key]
 
     if context['organization_long_name']:
         # Translators:  This text represents the description of course
