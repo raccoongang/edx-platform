@@ -17,17 +17,14 @@ import calendar
 
 <%block name="bodyclass">view-register</%block>
 
-
 <%block name="js_extra">
   <script type="text/javascript">
-
     var recaptcha_widget;
     var onloadCallback = function() {
         recaptcha_widget = grecaptcha.render(document.getElementById('g-recaptcha'), {
           'sitekey' : '${google_recaptcha_site_key}'
         });
     };
-
     $(function() {
 
       // adding js class for styling with accessibility in mind
