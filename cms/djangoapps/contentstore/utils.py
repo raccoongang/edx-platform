@@ -13,6 +13,7 @@ from pytz import UTC
 
 from django_comment_common.models import assign_default_role
 from django_comment_common.utils import seed_permissions_roles
+from openedx.core.djangoapps.bookmarks.models import Bookmark
 from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.djangoapps.site_configuration.models import SiteConfiguration
 from student import auth
@@ -504,3 +505,28 @@ def is_self_paced(course):
     Returns True if course is self-paced, False otherwise.
     """
     return course and course.self_paced and SelfPacedConfiguration.current().enabled
+
+
+def delete_bookmarks_for_related_item(course_key):
+    """
+    Delete bookmarks if they are corresponded to already deleted units.
+
+    Arguments:
+        course_key (str): Course key of item course
+
+    Returns: None
+    """
+    units_names = []
+
+    # NOTE(arsentur) Get all units in the course
+    course = modulestore().get_course(course_key)
+    sections = course.get_children() if course.has_children else []
+    for section in sections:
+        sub_section = section.get_children() if section.has_children else []
+        for unit in sub_section:
+            units_names += [u.display_name for u in unit.get_children()]
+
+    bookmarks = Bookmark.objects.filter(
+        course_key=course_key
+    ).exclude(xblock_cache__display_name__in=units_names)
+    bookmarks.delete()
