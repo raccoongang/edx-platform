@@ -19,6 +19,12 @@ import calendar
 
 <%block name="js_extra">
   <script type="text/javascript">
+    var recaptcha_widget;
+    var onloadCallback = function() {
+        recaptcha_widget = grecaptcha.render(document.getElementById('g-recaptcha'), {
+          'sitekey' : '${google_recaptcha_site_key}'
+        });
+    };
     $(function() {
 
       // adding js class for styling with accessibility in mind
@@ -70,7 +76,8 @@ import calendar
         $('.status.message.submission-error').addClass('is-shown').focus();
         $('.status.message.submission-error .message-copy').html(json.value).stop().css("display", "block");
         $(".field-error").removeClass('field-error');
-        $("[data-field='"+json.field+"']").addClass('field-error')
+        $("[data-field='"+json.field+"']").addClass('field-error');
+        grecaptcha.reset(recaptcha_widget);
       });
     })(this);
 
@@ -98,6 +105,7 @@ import calendar
       }
     }
   </script>
+  <script src='https://www.google.com/recaptcha/api.js?onload=onloadCallback'></script>
 </%block>
 
 <section class="introduction">
