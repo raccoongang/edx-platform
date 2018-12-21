@@ -626,6 +626,7 @@ def _section_data_download(course, access):
         'problem_grade_report_url': reverse('problem_grade_report', kwargs={'course_id': unicode(course_key)}),
         'course_certificates_report_url': reverse('course_certificates_report', kwargs={'course_id': unicode(course_key)}),
         'all_courses_certificates_report_url': reverse('all_courses_certificates_report', kwargs={'course_id': unicode(course_key)}),
+        'student_transcript_responses_url': reverse('student_transcript_report', kwargs={'course_id': unicode(course_key)}),
         'course_has_survey': True if course.course_survey_name else False,
         'course_survey_results_url': reverse('get_course_survey_results', kwargs={'course_id': unicode(course_key)}),
         'export_ora2_data_url': reverse('export_ora2_data', kwargs={'course_id': unicode(course_key)}),
