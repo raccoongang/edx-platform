@@ -1009,6 +1009,12 @@ class CourseDescriptor(CourseFields, SequenceDescriptor, LicenseMixin):
             raise type(err)('{msg} For course: {course_id}'.format(msg=err.message, course_id=unicode(self.id)))
 
         self.set_default_certificate_available_date()
+        self.check_us_state()
+
+    def check_us_state(self):
+        for key, value in US_STATE_CHOICES:
+            if not key in self.us_state:
+                self.us_state[key] = {'number': '', 'provider': DEFAULT_PROVIDER.get(key, ''), 'approved': True}
 
     def set_grading_policy(self, course_policy):
         """
