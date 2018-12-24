@@ -6,9 +6,12 @@ from django.test import TestCase
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from pytz import UTC
 
+from openedx.core.djangoapps.bookmarks.tests.factories import BookmarkFactory
+from openedx.core.djangoapps.bookmarks.models import Bookmark, XBlockCache
 from contentstore import utils
-from contentstore.tests.utils import CourseTestCase
+from contentstore.tests.utils import CourseTestCase, get_url
 from openedx.core.djangoapps.site_configuration.tests.test_util import with_site_configuration_context
+from student.tests.factories import UserFactory
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase, SharedModuleStoreTestCase
@@ -588,3 +591,105 @@ class GetUserPartitionInfoTest(ModuleStoreTestCase):
     def _get_partition_info(self, schemes=None):
         """Retrieve partition info and selected groups. """
         return utils.get_user_partition_info(self.block, schemes=schemes)
+
+
+class BookamrksDeleteTestCase(ModuleStoreTestCase):
+    """Test for bookmarks if they are corresponded to already deleted units"""
+
+    STORE_TYPE = ModuleStoreEnum.Type.mongo
+
+    def setUp(self):
+        super(BookamrksDeleteTestCase, self).setUp()
+
+        self.user = UserFactory.create(password='test')
+        self.setup_data(self.STORE_TYPE)
+
+    def setup_data(self, store_type=ModuleStoreEnum.Type.mongo):
+        """Create course, add some test blocks and create test bookmarks."""
+
+        with self.store.default_store(store_type):
+
+            self.course = CourseFactory.create(
+                display_name='An Introduction to API Testing'
+            )
+            self.course_id = unicode(self.course.id)
+
+            with self.store.bulk_operations(self.course.id):
+
+                self.chapter_1 = ItemFactory.create(
+                    parent_location=self.course.location,
+                    category='chapter',
+                    display_name='Week 1'
+                )
+                self.chapter_2 = ItemFactory.create(
+                    parent_location=self.course.location,
+                    category='chapter',
+                    display_name='Week 2'
+                )
+
+                self.sequential_1 = ItemFactory.create(
+                    parent_location=self.chapter_1.location,
+                    category='sequential',
+                    display_name='Lesson 1'
+                )
+                self.sequential_2 = ItemFactory.create(
+                    parent_location=self.chapter_1.location,
+                    category='sequential',
+                    display_name='Lesson 2'
+                )
+
+                self.vertical_1 = ItemFactory.create(
+                    parent_location=self.sequential_1.location,
+                    category='vertical',
+                    display_name='Subsection 1'
+                )
+                self.vertical_2 = ItemFactory.create(
+                    parent_location=self.sequential_2.location,
+                    category='vertical',
+                    display_name='Subsection 2'
+                )
+
+        self.bookmark_1 = BookmarkFactory.create(
+            user=self.user,
+            course_key=self.course_id,
+            usage_key=self.vertical_1.location,
+            xblock_cache=XBlockCache.create({
+                'display_name': self.vertical_1.display_name,
+                'usage_key': self.vertical_1.location,
+            }),
+        )
+        self.bookmark_2 = BookmarkFactory.create(
+            user=self.user,
+            course_key=self.course_id,
+            usage_key=self.vertical_2.location,
+            xblock_cache=XBlockCache.create({
+                'display_name': self.vertical_2.display_name,
+                'usage_key': self.vertical_2.location,
+            }),
+        )
+
+    def delete_item(self, store, item_location):
+        """Delete the item at the given location """
+        with store.branch_setting(ModuleStoreEnum.Branch.draft_preferred):
+            store.delete_item(item_location, ModuleStoreEnum.UserID.test)
+
+    def test_deleting_bookmarks(self):
+        """Tests deleting bookmarks after deleting course. """
+
+        bookmarks = Bookmark.objects
+
+        # Check the bookmarks exsist before run the function
+        self.assertTrue(bookmarks.filter(id=self.bookmark_1.id).exists())
+        self.assertTrue(bookmarks.filter(id=self.bookmark_2.id).exists())
+
+        # Delete a component
+        self.delete_item(self.store, self.vertical_1.location)
+
+        # Delete bookmarks if they are corresponded to already deleted units
+        utils.delete_bookmarks_for_related_item(self.vertical_1.location.course_key)
+
+        # Check existence bookmarks if they are corresponded to deleted units
+        self.assertFalse(bookmarks.filter(id=self.bookmark_1.id).exists())
+
+        # Check the existence of bookmarks for the other course items
+        self.assertTrue(bookmarks.filter(id=self.bookmark_2.id).exists())
