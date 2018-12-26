@@ -482,7 +482,15 @@ class Courses(SysadminDashboardView):
 
         elif action == 'del_course':
             course_id = request.POST.get('course_id', '').strip()
-            course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+
+            try:
+                course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+            except Exception, err:
+                course_key = course_id
+                self.msg += _(
+                    'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
+                ).format(course_key, escape(str(err)))
+
             course_found = False
             if course_key in courses:
                 course_found = True
