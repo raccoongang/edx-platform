@@ -485,7 +485,7 @@ class Courses(SysadminDashboardView):
 
             try:
                 course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
-            except Exception, err:
+            except Exception as err:
                 course_key = course_id
                 self.msg += _(
                     'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
