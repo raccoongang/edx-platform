@@ -72,8 +72,8 @@ class BadgeClass(models.Model):
 
     @classmethod
     def get_badge_class(
-            cls, slug, issuing_component, slug_badgr='', display_name=None, description=None, criteria=None,
-            image_file_handle=None, mode='', course_id=None, create=True
+            cls, slug, issuing_component, display_name=None, description=None, criteria=None,
+            image_file_handle=None, mode='', course_id=None, create=True, slug_badgr=''
     ):
         """
         Looks up a badge class by its slug, issuing component, and course_id and returns it should it exist.
@@ -97,8 +97,8 @@ class BadgeClass(models.Model):
                 return None
         badge_class = cls(
             slug=slug,
-            issuing_component=issuing_component,
             slug_badgr=slug_badgr,
+            issuing_component=issuing_component,
             display_name=display_name,
             course_id=course_id,
             mode=mode,
