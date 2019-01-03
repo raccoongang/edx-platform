@@ -7,7 +7,6 @@ define(['js/views/baseview', 'underscore', 'jquery', 'js/views/edit_chapter', 'c
                     var chapters = this.model.get('chapters');
                     this.listenTo(chapters, 'add', this.addOne);
                     this.listenTo(chapters, 'reset', this.addAll);
-                    this.listenTo(chapters, 'all', this.render);
                 },
                 tagName: 'section',
                 className: 'textbook',
@@ -63,16 +62,13 @@ define(['js/views/baseview', 'underscore', 'jquery', 'js/views/edit_chapter', 'c
                         title: gettext('Saving')
                     }).show();
                     var that = this;
-                    this.model.customSave({
+                    this.model.save({}, {
                         success: function() {
                             that.model.setOriginalAttributes();
                             that.close();
                         },
-                        complete: function(model, object, method) {
+                        complete: function() {
                             saving.hide();
-                            if (method == 'POST') {
-                                  that.model.trigger('add_textbook', model);
-                            }
                         }
                     });
                 },
