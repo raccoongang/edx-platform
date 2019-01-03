@@ -81,6 +81,7 @@ from util.milestones_helpers import (
 )
 from util.organizations_helpers import add_organization_course, get_organization_by_short_name, organizations_enabled
 from util.string_utils import _has_non_ascii_characters
+from web_science.models import WebScienceCourseOverview
 from xblock_django.api import deprecated_xblocks
 from xmodule.contentstore.content import StaticContent
 from xmodule.course_module import DEFAULT_START_DATE, CourseFields
@@ -1030,6 +1031,8 @@ def settings_handler(request, course_key_string):
     """
     course_key = CourseKey.from_string(course_key_string)
     credit_eligibility_enabled = settings.FEATURES.get('ENABLE_CREDIT_ELIGIBILITY', False)
+    web_science_settings = WebScienceCourseOverview.get_from_key(course_key)
+
     with modulestore().bulk_operations(course_key):
         course_module = get_course_and_check_access(course_key, request.user)
         if 'text/html' in request.META.get('HTTP_ACCEPT', '') and request.method == 'GET':
@@ -1062,6 +1065,7 @@ def settings_handler(request, course_key_string):
                 'context_course': course_module,
                 'course_locator': course_key,
                 'lms_link_for_about_page': get_link_for_about_page(course_module),
+                'web_science_image_url': web_science_settings.image,
                 'course_image_url': course_image_url(course_module, 'course_image'),
                 'banner_image_url': course_image_url(course_module, 'banner_image'),
                 'video_thumbnail_image_url': course_image_url(course_module, 'video_thumbnail_image'),
@@ -1113,6 +1117,8 @@ def settings_handler(request, course_key_string):
         elif 'application/json' in request.META.get('HTTP_ACCEPT', ''):
             if request.method == 'GET':
                 course_details = CourseDetails.fetch(course_key)
+                # extend course details with web_science data
+                course_details = web_science_settings.apply_to(course_details)
                 return JsonResponse(
                     course_details,
                     # encoder serializes dates, old locations, and instances
@@ -1165,8 +1171,13 @@ def settings_handler(request, course_key_string):
                         delete_entrance_exam(request, course_key)
 
                 # Perform the normal update workflow for the CourseDetails model
+                course_details = CourseDetails.update_from_json(course_key, request.json, request.user)
+
+                web_science_settings.update_from_json(request.json)
+                course_details = web_science_settings.apply_to(course_details)
+
                 return JsonResponse(
-                    CourseDetails.update_from_json(course_key, request.json, request.user),
+                    course_details,
                     encoder=CourseSettingsEncoder
                 )
 

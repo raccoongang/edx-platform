@@ -1,0 +1,5 @@
+{% load web_science_tags %}
+{% load cache %}
+{% cache 600 web_science_generate_css %}
+    {% web_science_generate_css %}
+{% endcache %}
