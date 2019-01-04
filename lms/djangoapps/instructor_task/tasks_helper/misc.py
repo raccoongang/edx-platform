@@ -474,7 +474,7 @@ def get_student_transcript_report(course, user):
                         module_state_key=problem,
                         student_id=user.id
                     ).first()
-                    if student_module:
+                    if student_module and possible:
                         state = json.loads(student_module.state)
                         row_xblock = [
                             '',
