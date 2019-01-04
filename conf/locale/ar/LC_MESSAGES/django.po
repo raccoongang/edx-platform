@@ -24201,8 +24201,8 @@ msgid "https://youngthinker.org/en/code-of-conduct"
 msgstr "https://youngthinker.org/ar/code-of-conduct"
 
 #: ../themes/asu-ficus/lms/templates/navigation.html
-msgid "Back to YTP Dashboard"
-msgstr "العودة إلى لوحة التحكم في الصفحة الرئيسية"
+msgid "Back to Courses Dashboard"
+msgstr "الرجوع إلى الصفحة الرئيسية للدورات"
 
 msgid "Certificate of Achievement"
 msgstr "شهادة إنجاز"
