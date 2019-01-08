@@ -5,6 +5,7 @@ import logging
 
 import markupsafe
 from config_models.models import ConfigurationModel
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from opaque_keys.edx.django.models import CourseKeyField
@@ -230,12 +231,14 @@ class CourseEmail(Email):
     class Meta(object):
         app_label = "bulk_email"
 
+    DEFAULT_FROM_EMAIL = None if settings.FEATURES.get('BULK_EMAIL_FROM_DIFFERENT_ADDRESSES') else getattr(settings, 'BULK_EMAIL_DEFAULT_FROM_EMAIL', None)
+
     course_id = CourseKeyField(max_length=255, db_index=True)
     # to_option is deprecated and unused, but dropping db columns is hard so it's still here for legacy reasons
     to_option = models.CharField(max_length=64, choices=[("deprecated", "deprecated")])
     targets = models.ManyToManyField(Target)
     template_name = models.CharField(null=True, max_length=255)
-    from_addr = models.CharField(null=True, max_length=255)
+    from_addr = models.CharField(null=True, max_length=255, default=DEFAULT_FROM_EMAIL)
 
     def __unicode__(self):
         return self.subject
@@ -284,7 +287,7 @@ class CourseEmail(Email):
             html_message=html_message,
             text_message=text_message,
             template_name=template_name,
-            from_addr=from_addr,
+            from_addr=from_addr or cls.DEFAULT_FROM_EMAIL,
         )
         course_email.save()  # Must exist in db before setting M2M relationship values
         course_email.targets.add(*new_targets)
