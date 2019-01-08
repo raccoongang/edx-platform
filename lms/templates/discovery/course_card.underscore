@@ -18,7 +18,13 @@
                       { start_date: start }, true
                     ) %>
             </div>
+                <div class="cost"><%- price %></div>
         </section>
+        <div class="course-hover">
+          <p class="course-hover_duration">Training Duration - 50 Hrs</p>
+          <p class="course-hover_video">Self Pace Videos - 70 Hrs</p>
+          <p class="course-hover_work">Excercise & Project Work - 90 Hrs</p>
+        </div>
         <div class="sr">
             <ul>
                 <li><%- org %></li>

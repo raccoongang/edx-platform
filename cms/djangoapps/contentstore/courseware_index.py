@@ -12,6 +12,7 @@ from django.core.urlresolvers import resolve
 
 from contentstore.course_group_config import GroupConfiguration
 from course_modes.models import CourseMode
+from shoppingcart.utils import is_shopping_cart_enabled
 from eventtracking import tracker
 from openedx.core.lib.courses import course_image_url
 from search.search_engine_base import SearchEngine
@@ -234,6 +235,7 @@ class SearchIndexerBase(object):
                 item_index.update(location_info)
                 item_index.update(item_index_dictionary)
                 item_index['id'] = item_id
+
                 if item.start:
                     item_index['start_date'] = item.start
                 item_index['content_groups'] = item_content_groups if item_content_groups else None
@@ -586,8 +588,18 @@ class CourseAboutSearchIndexer(object):
             return
 
         course_id = unicode(course.id)
+
+        registration_price = CourseMode.min_course_price_for_currency(
+            course.id,
+            settings.PAID_COURSE_REGISTRATION_CURRENCY[0]
+        )
+        can_add_course_to_cart = is_shopping_cart_enabled() and registration_price
+        price = '$ {}'.format(can_add_course_to_cart and registration_price or 'FREE')
+
+
         course_info = {
             'id': course_id,
+            'price': price,
             'course': course_id,
             'content': {},
             'image_url': course_image_url(course),
