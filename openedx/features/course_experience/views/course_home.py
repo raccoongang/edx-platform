@@ -5,6 +5,7 @@ Views for the course home page.
 from django.urls import reverse
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -14,6 +15,7 @@ from web_fragments.fragment import Fragment
 from course_modes.models import get_cosmetic_verified_display_price
 from courseware.access import has_access
 from courseware.courses import can_self_enroll_in_course, get_course_info_section, get_course_with_access
+from courseware.models import StudentModule
 from lms.djangoapps.commerce.utils import EcommerceService
 from lms.djangoapps.course_goals.api import (
     get_course_goal,
@@ -199,6 +201,21 @@ class CourseHomeFragmentView(EdxFragmentView):
             'uses_pattern_library': True,
             'upgrade_price': upgrade_price,
             'upgrade_url': upgrade_url,
+            'counter_delta': None,
+            'end_counter_number': None
         }
+        if request.user and request.user.is_authenticated:
+            # first StudentModule object is created when student clicks by "Start Course" button and never changes
+            first_student_module = StudentModule.objects.filter(
+                student=request.user, course_id=course_key).order_by('created').first()
+            if first_student_module:
+                start_counter_date = first_student_module.created  # date we count delta from
+                counter_delta = (timezone.now() - start_counter_date).days
+                end_counter_number = 365  # static number, doesn't depend on anything
+                context.update({
+                    'counter_delta': counter_delta if counter_delta <= end_counter_number else end_counter_number,
+                    'end_counter_number': end_counter_number
+                })
+
         html = render_to_string('course_experience/course-home-fragment.html', context)
         return Fragment(html)
