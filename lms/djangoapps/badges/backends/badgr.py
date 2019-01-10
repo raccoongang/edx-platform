@@ -117,11 +117,11 @@ class BadgrBackend(BadgeBackend):
             timeout=settings.BADGR_TIMEOUT
         )
 
+        self._log_if_raised(result, data)
+
         if not badge_class.slug_badgr:
             badge_class.slug_badgr = json.loads(result.content)['slug']
             badge_class.save()
-
-        self._log_if_raised(result, data)
 
     def _send_assertion_created_event(self, user, assertion):
         """

@@ -35,7 +35,7 @@ STUDENT_FEATURES = ('id', 'username', 'first_name', 'last_name', 'is_staff', 'em
 PROFILE_FEATURES = ('name', 'language', 'location', 'year_of_birth', 'gender',
                     'level_of_education', 'mailing_address', 'goals', 'meta',
                     'city', 'country', 'prefix', 'city_of_residence', 'country_of_residence',
-                    'nationality', 'hear', 'hear_details', 'interested_topic')
+                    'nationality', 'hear', 'hear_details', 'interested_topic', 'join_to_mailing_list')
 ORDER_ITEM_FEATURES = ('list_price', 'unit_cost', 'status')
 ORDER_FEATURES = ('purchase_time',)
 

@@ -1608,10 +1608,10 @@ def _do_create_account(form, custom_form=None):
     profile_fields = [
         "name", "level_of_education", "gender", "mailing_address", "city", "country", "goals",
         "year_of_birth", "prefix", "city_of_residence", "country_of_residence", "nationality",
-        "hear", "hear_details", "interested_topic"
+        "hear", "hear_details", "interested_topic", "join_to_mailing_list"
     ]
     try:
-        profile, _created = UserProfile.objects.get_or_create(
+        profile, _created = UserProfile.objects.update_or_create(
             user=user,
             defaults={key: form.cleaned_data.get(key) for key in profile_fields}
         )

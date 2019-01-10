@@ -197,6 +197,7 @@ class RegistrationView(APIView):
         "hear_details",
         "goals",
         "interested_topic",
+        "join_to_mailing_list",
         "honor_code",
         "terms_of_service",
     ]
@@ -469,6 +470,17 @@ class RegistrationView(APIView):
         form_desc.add_field(
             "interested_topic",
             label=label,
+            required=required
+        )
+
+    def _add_join_to_mailing_list_field(self, form_desc, required=False):
+        label = _(u"Click here to opt in to the ICNC mailing list")
+
+        form_desc.add_field(
+            "join_to_mailing_list",
+            label=label,
+            field_type="checkbox",
+            default=False,
             required=required
         )
 

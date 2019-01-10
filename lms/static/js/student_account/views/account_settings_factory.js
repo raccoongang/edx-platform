@@ -246,6 +246,16 @@
                                 options: fieldsData.preferred_language.options,
                                 persistChanges: true
                             })
+                        },
+                        {
+                            view: new AccountSettingsFieldViews.DropdownFieldView({
+                                model: userAccountModel,
+                                required: true,
+                                title: gettext('ICNC mailing list subscription'),
+                                valueAttribute: 'join_to_mailing_list',
+                                options: fieldsData.join_to_mailing_list.options,
+                                persistChanges: true
+                            })
                         }
                     ]
                 }
