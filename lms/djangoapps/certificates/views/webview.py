@@ -311,7 +311,7 @@ def _update_context_with_user_info(context, user, user_certificate):
     context['accomplishment_user_id'] = user.id
     context['accomplishment_copy_name'] = user_fullname
     context['accomplishment_copy_username'] = user.username
-    context['user_certificate_create'] = user_certificate.created_date
+    context['user_certificate_create'] = user_certificate.created_date.astimezone(pytz.timezone(settings.TIME_ZONE))
     context['user_phone'] = ''
     context['user_address'] = ''
     context['user_city'] = user.profile.city
