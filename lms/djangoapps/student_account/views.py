@@ -463,7 +463,9 @@ def account_settings_context(request):
                 'options': TIME_ZONE_CHOICES,
             }, 'hear': {
                 'options': [(choice[0], _(choice[1])) for choice in UserProfile.HEAR_CHOICES],
-            }
+            }, 'join_to_mailing_list': {
+                'options': [(True, _('Yes')), (False, _('No'))],
+            },
         },
         'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
         'user_accounts_api_url': reverse("accounts_api", kwargs={'username': user.username}),

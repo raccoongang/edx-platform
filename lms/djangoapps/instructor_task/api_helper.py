@@ -99,6 +99,7 @@ def _get_xmodule_instance_args(request, task_id):
                         'hear',
                         'hear_details',
                         'interested_topic',
+                        'join_to_mailing_list',
                         'date_joined'
                     ]}
 

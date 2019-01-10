@@ -1208,6 +1208,7 @@ def get_students_features(request, course_id, csv=False):  # pylint: disable=red
         'hear',
         'hear_details',
         'interested_topic',
+        'join_to_mailing_list',
         'date_joined'
     )
 
@@ -1255,6 +1256,7 @@ def get_students_features(request, course_id, csv=False):  # pylint: disable=red
         'hear': _('How Did You Hear About ICNC Online Courses?'),
         'hear_details': _('How did you hear about ICNC online courses?(details)'),
         'interested_topic': _('Interested Topic'),
+        'join_to_mailing_list': _('Join to Mailing List'),
         'date_joined': _('Date Of Registration')
     }
 
