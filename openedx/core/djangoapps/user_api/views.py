@@ -279,7 +279,15 @@ class RegistrationView(APIView):
                     form_desc,
                     required=self._is_field_required(field_name)
                 )
-
+        # to leave all checkboxes in the end of registration form
+        other_fields = []
+        checkboxes = []
+        for field in form_desc.fields:
+            if field['type'] == 'checkbox':
+                checkboxes.append(field)
+            else:
+                other_fields.append(field)
+        form_desc.fields = other_fields + checkboxes
         # Add any Enterprise fields if the app is enabled
         insert_enterprise_fields(request, form_desc)
 
