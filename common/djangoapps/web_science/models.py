@@ -17,6 +17,7 @@ class WebScienceCourseOverview(models.Model):
     )
     color = models.CharField(max_length=7)
     image = models.CharField(max_length=254)
+    main_image = models.CharField(max_length=254)
 
     @staticmethod
     def get_from_key(course_key):
@@ -26,11 +27,13 @@ class WebScienceCourseOverview(models.Model):
     def apply_to(self, obj):
         obj.web_science_color = self.color
         obj.web_science_image = self.image
+        obj.web_science_main_image = self.main_image
         return obj
 
     def update_from_json(self, data):
         self.color = data['web_science_color']
         self.image = data['web_science_image']
+        self.main_image = data['web_science_main_image']
         self.save()
 
     @property
