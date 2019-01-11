@@ -2161,6 +2161,8 @@ INSTALLED_APPS = (
 
     # Unusual migrations
     'database_fixups',
+
+    'registration_extra_form',
 )
 
 ######################### CSRF #########################################
@@ -2972,7 +2974,7 @@ MAX_BOOKMARKS_PER_COURSE = 100
 # need to add the model's app to the ADDL_INSTALLED_APPS array in your
 # lms.env.json file.
 
-REGISTRATION_EXTENSION_FORM = None
+REGISTRATION_EXTENSION_FORM = 'registration_extra_form.forms.ExtraInfoForm'
 
 # Identifier included in the User Agent from open edX mobile apps.
 MOBILE_APP_USER_AGENT_REGEXES = [

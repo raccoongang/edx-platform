@@ -244,8 +244,9 @@
             &.error {
                 color: $red;
             }
-            
+
             &[for="register-data_sharing_consent"],
+            &[for="register-accepted_to_be_contacted"],
             &[for="register-honor_code"],
             &[for="register-terms_of_service"] {
                 display: inline-block;
@@ -275,7 +276,7 @@
             text-decoration: none;
             text-shadow: none;
             font-family: $sans-serif;
-            
+
             &:hover,
             &:focus {
                 text-decoration: underline;
