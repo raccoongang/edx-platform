@@ -749,6 +749,10 @@ def course_about(request, course_id):
     """
     Display the course's about page.
     """
+    redirect_url = marketing_link('COURSES')
+    if redirect_url != '#':
+        return redirect(redirect_url, permanent=True)
+
     course_key = CourseKey.from_string(course_id)
 
     # If a user is not able to enroll in a course then redirect
