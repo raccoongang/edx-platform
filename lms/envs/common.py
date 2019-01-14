@@ -664,8 +664,8 @@ DEV_CONTENT = True
 
 EDX_ROOT_URL = ''
 
-LOGIN_REDIRECT_URL = EDX_ROOT_URL + '/login'
-LOGIN_URL = EDX_ROOT_URL + '/login'
+LOGIN_REDIRECT_URL = EDX_ROOT_URL + '/auth/login/smarted-oauth2/?auth_entry=login'
+LOGIN_URL = EDX_ROOT_URL + '/auth/login/smarted-oauth2/?auth_entry=login'
 
 ### Dark code. Should be enabled in local settings for devel.
 
