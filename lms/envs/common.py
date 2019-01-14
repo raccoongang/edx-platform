@@ -2161,9 +2161,11 @@ INSTALLED_APPS = (
     # Unusual migrations
     'database_fixups',
    
-   # rg_instructor_analytics
-   'rg_instructor_analytics',
-   'web_fragments',
+    # rg_instructor_analytics
+    'rg_instructor_analytics',
+    'rg_instructor_analytics_log_collector',
+    'web_fragments',
+
 )
 
 # Migrations which are not in the standard module "migrations"

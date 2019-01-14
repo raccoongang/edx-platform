@@ -238,6 +238,12 @@ LOGGING = get_logger_config(LOG_DIR,
                             debug=False,
                             service_variant=SERVICE_VARIANT)
 
+# Badgr API
+BADGR_API_TOKEN = ENV_TOKENS.get('BADGR_API_TOKEN')
+BADGR_BASE_URL = ENV_TOKENS.get('BADGR_BASE_URL')
+BADGR_ISSUER_SLUG = ENV_TOKENS.get('BADGR_ISSUER_SLUG')
+BADGR_TIMEOUT = ENV_TOKENS.get('BADGR_TIMEOUT')
+
 #theming start:
 PLATFORM_NAME = ENV_TOKENS.get('PLATFORM_NAME', 'edX')
 STUDIO_NAME = ENV_TOKENS.get('STUDIO_NAME', 'edX Studio')

@@ -331,6 +331,7 @@ class UserProfile(models.Model):
     hear = models.CharField(blank=True, null=True, max_length=32, choices=HEAR_CHOICES)
     hear_details = models.CharField(blank=True, null=True, max_length=255)
     interested_topic = models.CharField(blank=True, null=True, max_length=255)
+    join_to_mailing_list = models.BooleanField(default=False)
 
     @property
     def has_profile_image(self):

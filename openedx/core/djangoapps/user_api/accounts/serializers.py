@@ -106,6 +106,7 @@ class UserReadOnlySerializer(serializers.Serializer):
             "hear": profile.hear,
             "hear_details": profile.hear_details,
             "interested_topic": profile.interested_topic,
+            "join_to_mailing_list": "true" if profile.join_to_mailing_list else "false",
         }
 
         if self.custom_fields:
@@ -125,7 +126,7 @@ class UserReadOnlySerializer(serializers.Serializer):
         visible_serialized_account = {}
 
         add_fields = ["prefix", "city_of_residence", "country_of_residence",
-                      "nationality", "hear", "hear_details", "interested_topic"]
+                      "nationality", "hear", "hear_details", "interested_topic", "join_to_mailing_list"]
 
         for field_name in field_whitelist + add_fields:
             visible_serialized_account[field_name] = serialized_account.get(field_name, None)
@@ -158,7 +159,7 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
             "name", "gender", "goals", "year_of_birth", "level_of_education", "country",
             "mailing_address", "bio", "profile_image", "requires_parental_consent", "language_proficiencies",
             "tfa_enabled", "prefix", "city_of_residence", "country_of_residence", "nationality", "hear",
-            "hear_details", "interested_topic"
+            "hear_details", "interested_topic", "join_to_mailing_list"
         )
         # Currently no read-only field, but keep this so view code doesn't need to know.
         read_only_fields = ()
