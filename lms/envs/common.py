@@ -3472,6 +3472,7 @@ FERNET_KEYS = [
 # Maximum number of rows to fetch in XBlockUserStateClient calls. Adjust for performance
 USER_STATE_BATCH_SIZE = 5000
 
+SOCIAL_AUTH_EXCLUDE_URL_PATTERN = r'^/admin'
 
 ############## Plugin Django Apps #########################
 
