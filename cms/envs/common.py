@@ -1531,6 +1531,10 @@ ZENDESK_CUSTOM_FIELDS = {}
 COMPLETION_VIDEO_COMPLETE_PERCENTAGE = 0.95
 
 
+############## WEB SCIENSE SETTINGS #########################
+INSTALLED_APPS.append('web_science')
+
+
 ############## Installed Django Apps #########################
 
 from openedx.core.djangoapps.plugins import plugin_apps, plugin_settings, constants as plugin_constants
