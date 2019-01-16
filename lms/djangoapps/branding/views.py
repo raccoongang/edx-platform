@@ -20,14 +20,15 @@ import student.views
 from edxmako.shortcuts import marketing_link, render_to_response
 from openedx.core.djangoapps.lang_pref.api import released_languages
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
-from util.cache import cache_if_anonymous
+
 from util.json_request import JsonResponse
 from .forms import ContactForm
 
 from django.core.mail import send_mail
 from edxmako.shortcuts import render_to_string
 from django.contrib.auth.models import User
-from django.middleware.csrf import CsrfViewMiddleware
+from student.decorators import check_recaptcha
+
 log = logging.getLogger(__name__)
 
 
@@ -313,13 +314,24 @@ def footer(request):
     else:
         return HttpResponse(status=406)
 
+
 @require_http_methods(['GET', 'POST'])
+@check_recaptcha
 def contact_form(request):
+    """
+    Render 'contact' page.
+    """
     sent_mail = False
     form = ContactForm()
+    is_use_google_recaptcha = configuration_helpers.get_value('USE_GOOGLE_RECAPTCHA', settings.USE_GOOGLE_RECAPTCHA)
+    # This parameter contains 'True' as the default value.
+    # It needs for correct working form validation when USE_GOOGLE_RECAPTCHA isn't enabled.
+    # Also it is used in the template for show error in captcha (if we use it).
+    recaptcha_is_valid = True
     if request.method == 'POST':
+        recaptcha_is_valid = request.recaptcha_is_valid if is_use_google_recaptcha else recaptcha_is_valid
         form = ContactForm(request.POST)
-        if form.is_valid():
+        if form.is_valid() and recaptcha_is_valid:
             form_params = form.get_data
             subject, message = get_subject_and_message(
                 "emails/contact_form_email_subject.txt", "emails/contact_form_email_message.txt", form_params
@@ -336,15 +348,23 @@ def contact_form(request):
             if sent_mail:
                 form = ContactForm()
 
-    data = {'sent_mail':sent_mail, 'form': form}
-    return render_to_response('static_templates/contact.html', data )
+    data = {'sent_mail': sent_mail, 'form': form}
+    if is_use_google_recaptcha:
+        data['google_recaptcha_site_key'] = settings.GOOGLE_RECAPTCHA_DATA_SITE_KEY
+        data['recaptcha_is_valid'] = recaptcha_is_valid
+    return render_to_response('static_templates/contact.html', data)
+
 
 def get_honor_mail():
+    """
+    Return the list of staff's emails
+    """
     email_list = []
     users = User.objects.all().filter(is_staff=True)
     for user in users:
         email_list.append(user.email)
     return email_list
+
 
 def get_subject_and_message(subject_template, message_template, param_dict):
     """
