@@ -365,7 +365,7 @@ def _get_user_certificate(request, user, course_key, course, preview_mode=None):
                 mode=preview_mode,
                 verify_uuid=unicode(uuid4().hex),
                 modified_date=datetime.now().date(),
-                created_date=datetime.now()
+                created_date=datetime.now(pytz.timezone(settings.TIME_ZONE))
 
             )
     else:
