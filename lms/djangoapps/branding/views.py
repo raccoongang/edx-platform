@@ -3,8 +3,10 @@ import logging
 import urllib
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.cache import cache
+from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
@@ -17,17 +19,13 @@ from django.views.decorators.http import require_http_methods
 import branding.api as branding_api
 import courseware.views.views
 import student.views
-from edxmako.shortcuts import marketing_link, render_to_response
+from edxmako.shortcuts import marketing_link, render_to_response, render_to_string
 from openedx.core.djangoapps.lang_pref.api import released_languages
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
-
-from util.json_request import JsonResponse
-from .forms import ContactForm
-
-from django.core.mail import send_mail
-from edxmako.shortcuts import render_to_string
-from django.contrib.auth.models import User
 from student.decorators import check_recaptcha
+from util.json_request import JsonResponse
+
+from .forms import ContactForm
 
 log = logging.getLogger(__name__)
 
