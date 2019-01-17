@@ -2253,6 +2253,8 @@ INSTALLED_APPS = (
     'openedx.features.enterprise_support',
 
     'experiments',
+
+    'migrate_users',
 )
 
 ######################### CSRF #########################################
