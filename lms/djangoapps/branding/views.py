@@ -322,9 +322,9 @@ def contact_form(request):
     sent_mail = False
     form = ContactForm()
     is_use_google_recaptcha = configuration_helpers.get_value('USE_GOOGLE_RECAPTCHA', settings.USE_GOOGLE_RECAPTCHA)
-    # This parameter contains 'True' as the default value.
-    # It needs for correct working form validation when USE_GOOGLE_RECAPTCHA isn't enabled.
-    # Also it is used in the template for show error in captcha (if we use it).
+    # NOTE(AndreyLykhoman) This parameter contains 'True' as the default value.
+    #    It needs for correct working form validation when USE_GOOGLE_RECAPTCHA isn't enabled.
+    #    Also it is used in the template for show error in captcha (if we use it).
     recaptcha_is_valid = True
     if request.method == 'POST':
         recaptcha_is_valid = request.recaptcha_is_valid if is_use_google_recaptcha else recaptcha_is_valid
