@@ -516,17 +516,17 @@ def delete_bookmarks_for_related_item(course_key):
 
     Returns: None
     """
-    units_names = []
+    units_keys = []
 
     # NOTE(arsentur) Get all units in the course
     course = modulestore().get_course(course_key)
-    sections = course.get_children() if course.has_children else []
-    for section in sections:
-        sub_section = section.get_children() if section.has_children else []
-        for unit in sub_section:
-            units_names += [u.display_name for u in unit.get_children()]
+    for section in course.get_children():
+        for sub_section in section.get_children():
 
-    bookmarks = Bookmark.objects.filter(
-        course_key=course_key
-    ).exclude(xblock_cache__display_name__in=units_names)
+            units_keys += [
+                course.location.course_key.make_usage_key(unit.location.block_type, unit.location.name)
+                for unit in sub_section.get_children()
+            ]
+
+    bookmarks = Bookmark.objects.filter(course_key=course_key).exclude(usage_key__in=units_keys)
     bookmarks.delete()
