@@ -476,12 +476,17 @@ class RegistrationView(APIView):
     def _add_join_to_mailing_list_field(self, form_desc, required=False):
         label = _(u"Click here to opt in to the ICNC mailing list")
 
+        mailinglist_link = '{}#icncmailinglist'.format(marketing_link("TOS"))
+        mailinglist_text = _(u"Review ICNC's mailing list policies")
+
         form_desc.add_field(
             "join_to_mailing_list",
             label=label,
             field_type="checkbox",
             default=False,
-            required=required
+            required=required,
+            supplementalLink=mailinglist_link,
+            supplementalText=mailinglist_text
         )
 
     def _add_email_field(self, form_desc, required=True):
