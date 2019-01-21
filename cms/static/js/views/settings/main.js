@@ -117,13 +117,9 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
 
                    this.$el.find('#web-science-color').val(this.model.get('web_science_color'));
 
-                   var webScienceImageURL = this.model.get('web_science_image');
-                   this.$el.find('#web-science-image-url').val(webScienceImageURL);
-                   this.$el.find('#web-science-image').attr('src', webScienceImageURL);
-
-                   var webScienceMainImageURL = this.model.get('web_science_main_image');
-                   this.$el.find('#web-science-main-image-url').val(webScienceMainImageURL);
-                   this.$el.find('#web-science-main-image').attr('src', webScienceMainImageURL);
+                   var webScienseImageURL = this.model.get('web_science_image');
+                   this.$el.find('#web-science-image-url').val(webScienseImageURL);
+                   this.$el.find('#web-science-image').attr('src', webScienseImageURL);
 
                    var bannerImageURL = this.model.get('banner_image_asset_path');
                    this.$el.find('#banner-image-url').val(bannerImageURL);
@@ -193,8 +189,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    add_course_instructor_info: 'add-course-instructor-info',
                    course_learning_info: 'course-learning-info',
                    web_science_color: 'web-science-color',
-                   web_science_image: 'web-science-image',
-                   web_science_main_image: 'web-science-main-image'
+                   web_science_image: 'web-science-image'
                },
 
                addLearningFields: function() {
@@ -265,9 +260,6 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        break;
                    case 'web-science-image-url':
                        this.updateImageField(event, 'web_science_image_name', '#web-science-image');
-                       break;
-                   case 'web-science-main-image-url':
-                       this.updateImageField(event, 'web_science_main_image_name', '#web-science-main-image');
                        break;
                    case 'course-image-url':
                        this.updateImageField(event, 'course_image_name', '#course-image');
@@ -443,12 +435,6 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        selector = '#web-science-image';
                        image_key = 'web_science_image_name';
                        image_path_key = 'web_science_image';
-                       break;
-                   case 'upload-web-science-main-image':
-                       title = gettext('Upload your course main image.');
-                       selector = '#web-science-main-image';
-                       image_key = 'web_science_main_image_name';
-                       image_path_key = 'web_science_main_image';
                        break;
                    case 'upload-course-image':
                        title = gettext('Upload your course image.');
