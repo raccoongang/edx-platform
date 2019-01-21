@@ -1,38 +1,40 @@
 # #-#-#-#-#  djangojs-partial.po (edx-platform)  #-#-#-#-#
 # edX translation file.
-# Copyright (C) 2018 EdX
+# Copyright (C) 2019 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # 
 # Translators:
 # Adil Aliyev <adilaliev@gmail.com>, 2018
-# Laman Mammadli <laman@edumedia.az>, 2018
+# Laman Mammadli <laman@edumedia.az>, 2018-2019
 # #-#-#-#-#  djangojs-studio.po (edx-platform)  #-#-#-#-#
 # edX translation file.
-# Copyright (C) 2018 EdX
+# Copyright (C) 2019 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # 
 # Translators:
 # Adil Aliyev <adilaliev@gmail.com>, 2018
+# Laman Mammadli <laman@edumedia.az>, 2018
 # #-#-#-#-#  underscore.po (edx-platform)  #-#-#-#-#
 # edX translation file
-# Copyright (C) 2018 edX
+# Copyright (C) 2019 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # 
 # Translators:
-# Laman Mammadli <laman@edumedia.az>, 2018
+# Laman Mammadli <laman@edumedia.az>, 2018-2019
 # #-#-#-#-#  underscore-studio.po (edx-platform)  #-#-#-#-#
 # edX translation file
-# Copyright (C) 2018 edX
+# Copyright (C) 2019 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # 
 # Translators:
+# Laman Mammadli <laman@edumedia.az>, 2018-2019
 msgid ""
 msgstr ""
 "Project-Id-Version: edx-platform\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2018-11-18 20:42+0000\n"
-"PO-Revision-Date: 2018-11-04 08:57+0000\n"
-"Last-Translator: idraktt <idraktt@gmail.com>\n"
+"POT-Creation-Date: 2019-01-20 20:42+0000\n"
+"PO-Revision-Date: 2019-01-21 05:59+0000\n"
+"Last-Translator: Laman Mammadli <laman@edumedia.az>\n"
 "Language-Team: Azerbaijani (http://www.transifex.com/open-edx/edx-platform/language/az/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -92,7 +94,7 @@ msgstr "Silin"
 #: cms/static/js/views/validation.js
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
 #: common/static/common/js/components/utils/view_utils.js
-#: lms/static/js/Markdown.Editor.js lms/static/js/writable_gradebook.js
+#: lms/static/js/Markdown.Editor.js
 #: cms/templates/js/add-xblock-component-menu-problem.underscore
 #: cms/templates/js/add-xblock-component-menu.underscore
 #: cms/templates/js/certificate-editor.underscore
@@ -219,7 +221,6 @@ msgstr "Fayl yükləyin"
 #: cms/static/js/views/modals/base_modal.js
 #: cms/static/js/views/modals/course_outline_modals.js
 #: common/lib/xmodule/xmodule/js/src/html/edit.js
-#: lms/static/js/writable_gradebook.js
 #: cms/templates/js/certificate-editor.underscore
 #: cms/templates/js/content-group-editor.underscore
 #: cms/templates/js/course_info_handouts.underscore
@@ -3859,7 +3860,6 @@ msgstr "Qeydiyyat kodunu istifadə edilməmiş olaraq qeyd edin"
 
 #: lms/static/js/instructor_dashboard/membership.js
 #: lms/static/js/student_account/views/account_settings_factory.js
-#: lms/static/js/writable_gradebook.js
 #: openedx/features/learner_profile/static/learner_profile/js/learner_profile_factory.js
 #: cms/templates/js/transcript-organization-credentials.underscore
 #: lms/djangoapps/support/static/support/templates/manage_user.underscore
@@ -4909,6 +4909,14 @@ msgstr ""
 "email ünvanına alırsınız. "
 
 #: lms/static/js/student_account/views/account_settings_factory.js
+msgid "Secondary Email Address"
+msgstr "İkinci e-mail ünvanı "
+
+#: lms/static/js/student_account/views/account_settings_factory.js
+msgid "You may access your account when single-sign on is not available."
+msgstr "Tək giriş mümkün olmadığı halda siz hesabınıza daxil ola bilərsiniz. "
+
+#: lms/static/js/student_account/views/account_settings_factory.js
 #: openedx/features/learner_profile/static/learner_profile/js/learner_profile_factory.js
 msgid "Full Name"
 msgstr "Ad/Soyad"
@@ -5010,6 +5018,15 @@ msgid "Preferred Language"
 msgstr "Tərcih edilən dil"
 
 #: lms/static/js/student_account/views/account_settings_factory.js
+msgid ""
+"We've sent a confirmation message to {new_secondary_email_address}. Click "
+"the link in the message to update your secondary email address."
+msgstr ""
+"Biz {new_secondary_email_address} e-mail ünvanına təsdiq məktubu "
+"göndərmişik. İkinci e-mail ünvanınızı yeniləmək üçün məktubdakı linkə "
+"klikləyin."
+
+#: lms/static/js/student_account/views/account_settings_factory.js
 msgid "Social Media Links"
 msgstr "Sosial media linkləri"
 
@@ -5075,8 +5092,8 @@ msgid ""
 "We've sent a confirmation message to {new_email_address}. Click the link in "
 "the message to update your email address."
 msgstr ""
-"Biz {new_email_address} email adresinə təsdiq məktubu göndərmişik. Email "
-"adresinizi yeniləmək üçün məktubdakı linkə klikləyin. "
+"Biz {new_email_address} e-mail ünvanına təsdiq məktubu göndərmişik. E-mail "
+"ünvanınızı yeniləmək üçün məktubdakı linkə klikləyin. "
 
 #: lms/static/js/student_account/views/account_settings_fields.js
 msgid ""
@@ -5346,33 +5363,6 @@ msgstr "KB"
 msgid "MB"
 msgstr "MB"
 
-#: lms/static/js/writable_gradebook.js
-#: lms/templates/commerce/receipt.underscore
-#: lms/templates/verify_student/make_payment_step_ab_testing.underscore
-#: lms/templates/verify_student/payment_confirmation_step.underscore
-msgid "Total"
-msgstr "Ümumi"
-
-#: lms/static/js/writable_gradebook.js
-msgid "The Assignment name is:"
-msgstr "Tapşırığın adı:"
-
-#: lms/static/js/writable_gradebook.js
-msgid "Publish grades"
-msgstr "Qiymətləri dərc edin. "
-
-#: lms/static/js/writable_gradebook.js
-msgid "No matching records found"
-msgstr "Uyğun məlumat tapılmadı"
-
-#: lms/static/js/writable_gradebook.js
-msgid "Student Name"
-msgstr "Şagirdin adı"
-
-#: lms/static/js/writable_gradebook.js
-msgid "Update in progress, please wait..."
-msgstr "Yenilənmə icra olunur, zəhmət olmasa, gözləyin..."
-
 #: lms/static/lms/js/preview/preview_factory.js
 msgid "Course is not yet visible to students."
 msgstr "Kurs hələ şagirdlərə açıq deyil. "
@@ -5549,10 +5539,6 @@ msgstr "Bu keçid yeni brauzer pəncərəsində açılacaqdır."
 #: cms/static/js/base.js
 msgid "This link will open in a modal window"
 msgstr "Bu keçid yeni dialoq pəncərəsində açılacaq."
-
-#: cms/static/js/certificates/collections/certificates.js
-msgid "Could not parse certificate JSON. %(message)s"
-msgstr "Sertifikat üçün JSON faylını parselləmək alınmadı. %(message)s"
 
 #: cms/static/js/certificates/models/certificate.js
 msgid "Certificate name is required."
@@ -6369,8 +6355,12 @@ msgid "Visibility"
 msgstr "Görünmə"
 
 #: cms/static/js/views/modals/edit_xblock.js
-msgid "Editing: %(title)s"
-msgstr "Dəyişiklik olunur: %(title)s"
+msgid "Editing: {title}"
+msgstr "Redaktə edir: {title}"
+
+#: cms/static/js/views/modals/edit_xblock.js
+msgid "Plugins"
+msgstr "Qoşmalar "
 
 #: cms/static/js/views/modals/edit_xblock.js
 #: lms/templates/ccx/schedule.underscore
@@ -7793,6 +7783,12 @@ msgid "Amount"
 msgstr "Məbləğ"
 
 #: lms/templates/commerce/receipt.underscore
+#: lms/templates/verify_student/make_payment_step_ab_testing.underscore
+#: lms/templates/verify_student/payment_confirmation_step.underscore
+msgid "Total"
+msgstr "Ümumi"
+
+#: lms/templates/commerce/receipt.underscore
 #: lms/templates/verify_student/payment_confirmation_step.underscore
 msgid "Please Note"
 msgstr "Zəhmət olmasa qeydə alın"
@@ -8572,6 +8568,23 @@ msgstr "E-poçt ünvanımı dəyişin"
 #: lms/templates/student_account/account.underscore
 msgid "Reset Password"
 msgstr "Parolu sıfırla"
+
+#: lms/templates/student_account/account_recovery.underscore
+msgid "Account Recovery"
+msgstr "Hesabın bərpası"
+
+#: lms/templates/student_account/account_recovery.underscore
+msgid ""
+"Please enter your secondary email address below and we will send you "
+"instructions for recovering your account and setting a new password."
+msgstr ""
+"Zəhmət olmasa, aşağıda ikinci e-mail ünvanınızı daxil edin və biz sizə öz "
+"hesabınızı bərpa etməyiniz və yeni şifrə qoymağınız üçün təlimat "
+"göndərəcəyik. "
+
+#: lms/templates/student_account/account_recovery.underscore
+msgid "Recover my account"
+msgstr "Mənim hesabımı bərpa edin"
 
 #: lms/templates/student_account/account_settings.underscore
 msgid "Account Settings"
@@ -9429,7 +9442,7 @@ msgstr ""
 
 #: cms/templates/js/access-editor.underscore
 msgid "Limit Access"
-msgstr "Girişi limitlə"
+msgstr "Girişi limitləyin"
 
 #: cms/templates/js/access-editor.underscore
 msgid ""
@@ -9442,11 +9455,11 @@ msgstr ""
 
 #: cms/templates/js/access-editor.underscore
 msgid "Prerequisite:"
-msgstr "Müqəddimə:"
+msgstr "Ön şərtlər:"
 
 #: cms/templates/js/access-editor.underscore
 msgid "No prerequisite"
-msgstr "Müqəddiməsiz"
+msgstr "Ön şərtlər yoxdur"
 
 #: cms/templates/js/access-editor.underscore
 msgid "Minimum Score:"
@@ -9922,6 +9935,10 @@ msgstr "Yığ/Aç 1%(xblock_type)s"
 #: cms/templates/js/course-outline.underscore
 msgid "Display Name"
 msgstr "Ad göstərin"
+
+#: cms/templates/js/course-outline.underscore
+msgid "Proctoring Settings"
+msgstr "Nəzarət parametrləri"
 
 #: cms/templates/js/course-outline.underscore
 msgid "Configure"
@@ -10648,6 +10665,10 @@ msgid ""
 msgstr ""
 "Əgər altbölmənin bitmə tarixi yoxdursa, tələbələr qiymətləndirmənin "
 "cavablarını daxil etdikdən sonra öz ballarını görəcəklər."
+
+#: cms/templates/js/show-textbook.underscore
+msgid "PDF Chapters"
+msgstr "PDF fəsillər"
 
 #: cms/templates/js/show-textbook.underscore
 msgid "View Live"
