@@ -25,6 +25,7 @@ from lms.djangoapps.course_goals.api import (
 )
 from lms.djangoapps.courseware.exceptions import CourseAccessRedirect
 from lms.djangoapps.courseware.views.views import CourseTabView
+from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
 from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
 from openedx.core.djangoapps.util.maintenance_banner import add_maintenance_banner
 from openedx.features.course_experience.course_tools import CourseToolsPluginManager
@@ -205,6 +206,11 @@ class CourseHomeFragmentView(EdxFragmentView):
             'end_counter_number': None
         }
         if request.user and request.user.is_authenticated:
+            course_grade = CourseGradeFactory().read(request.user, course)
+            context.update({
+                'grade_summary': course_grade.summary,
+            })
+
             # first StudentModule object is created when student clicks by "Start Course" button and never changes
             first_student_module = StudentModule.objects.filter(
                 student=request.user, course_id=course_key).order_by('created').first()
