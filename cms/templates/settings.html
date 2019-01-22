@@ -343,33 +343,6 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
                     <button type="button" class="action action-upload-image" id="upload-web-science-image">${_("Upload {platform_name} Course Card Image").format(platform_name=settings.PLATFORM_NAME)}</button>
                   </div>
                 </li>
-                <li class="field image" id="field-web-science-main-image">
-                  <label for="course-web-science-url">${_("{platform_name} course main Image").format(platform_name=settings.PLATFORM_NAME)}</label>
-                  <div class="current current-web-science-main-image">
-                    <span class="wrapper-course-main-image">
-                      <img class="web-science-main-image" id="web-science-main-image" src="${web_science_main_image_url}" alt="${_('{platform_name} main course Image').format(platform_name=settings.PLATFORM_NAME)}"/>
-                    </span>
-                    % if web_science_main_image:
-                        <span class="msg msg-help">
-                        ${Text(_("You can manage this image along with all of your other {a_link_start}files and uploads{a_link_end}")).format(
-                          a_link_start=HTML("<a href='{upload_asset_url}'>").format(upload_asset_url=upload_asset_url),
-                          a_link_end=HTML("</a>")
-                          )}
-                        </span>
-                    % else:
-                        <span class="msg msg-empty">${_("Your course currently does not have an image. Please upload one (JPEG or PNG format, and minimum suggested dimensions are 375px wide by 200px tall)")}</span>
-                    % endif
-                  </div>
-
-                  <div class="wrapper-input">
-                    <div class="input">
-                      ## Translators: This is the placeholder text for a field that requests the URL for a course image
-                      <input type="text" dir="ltr" class="long new-web-science-main-image-url" id="web-science-main-image-url" value="" placeholder="${_("Your {platform_name} course main image URL").format(platform_name=settings.PLATFORM_NAME)}" autocomplete="off" />
-                      <span class="tip tip-stacked">${_("Please provide a valid path and name to your course image (Note: only JPEG or PNG format supported)")}</span>
-                    </div>
-                    <button type="button" class="action action-upload-image" id="upload-web-science-main-image">${_("Upload {platform_name} Main Image").format(platform_name=settings.PLATFORM_NAME)}</button>
-                  </div>
-                </li>
           </ol>
         </div>
         % endif
