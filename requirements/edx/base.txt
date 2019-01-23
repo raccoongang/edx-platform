@@ -216,3 +216,6 @@ xblock==1.0.0
 
 # Third Party XBlocks
 # edx-sga==0.6.2
+
+# Usages: ALU widget
+django-notifications-hq==1.5.0
