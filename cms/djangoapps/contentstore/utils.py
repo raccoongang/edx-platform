@@ -522,11 +522,7 @@ def delete_bookmarks_for_related_item(course_key):
     course = modulestore().get_course(course_key)
     for section in course.get_children():
         for sub_section in section.get_children():
-
-            units_keys += [
-                course.location.course_key.make_usage_key(unit.location.block_type, unit.location.name)
-                for unit in sub_section.get_children()
-            ]
+            units_keys += [unit.location for unit in sub_section.get_children()]
 
     bookmarks = Bookmark.objects.filter(course_key=course_key).exclude(usage_key__in=units_keys)
     bookmarks.delete()
