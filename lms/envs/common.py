@@ -2255,6 +2255,7 @@ INSTALLED_APPS = (
     'custom_dashboard',
 
     # ALUx external content widget application
+    'notifications',
     'alu_ec_widget',
 )
 
