@@ -8,6 +8,7 @@ from pytz import UTC
 
 from contentstore.courseware_index import CoursewareSearchIndexer, LibrarySearchIndexer
 from contentstore.proctoring import register_special_exams
+from contentstore.utils import delete_bookmarks_for_related_item
 from lms.djangoapps.grades.tasks import compute_all_grades_for_course
 from openedx.core.djangoapps.credit.signals import on_course_publish
 from openedx.core.lib.gating import api as gating_api
@@ -81,6 +82,8 @@ def handle_item_deleted(**kwargs):
         # Strip branch info
         usage_key = usage_key.for_branch(None)
         course_key = usage_key.course_key
+
+        delete_bookmarks_for_related_item(course_key)
         deleted_module = modulestore().get_item(usage_key)
         for module in yield_dynamic_descriptor_descendants(deleted_module, kwargs.get('user_id')):
             # Remove prerequisite milestone data
