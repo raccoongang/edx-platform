@@ -208,7 +208,7 @@ class CourseHomeFragmentView(EdxFragmentView):
         if request.user and request.user.is_authenticated:
             course_grade = CourseGradeFactory().read(request.user, course)
             context.update({
-                'grade_summary': course_grade.summary,
+                'grade_percent': int(round(course_grade.percent * 100)),
             })
 
             # first StudentModule object is created when student clicks by "Start Course" button and never changes
