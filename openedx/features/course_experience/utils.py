@@ -99,7 +99,7 @@ def get_course_outline_block_tree(request, course_id):
                         pass
 
             block['last_visited_at'] = last_visited_at.strftime('%d/%m/%Y') if last_visited_at else None
-            block['completed_at'] = completed_at.strftime('%d/%m/%Y') if last_visited_at else None
+            block['completed_at'] = completed_at.strftime('%d/%m/%Y') if completed_at else None
 
         elif block.get('children'):
             for i in range(len(block['children'])):
