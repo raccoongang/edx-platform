@@ -493,7 +493,7 @@ class Courses(SysadminDashboardView):
                     course_found = True
                 except Exception, err:   # pylint: disable=broad-except
                     self.msg += _(
-                        'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
+                        '<p>Error - cannot get course with ID {0}<br/><pre>{1}</pre></p>'
                     ).format(
                         course_key,
                         escape(str(err))
