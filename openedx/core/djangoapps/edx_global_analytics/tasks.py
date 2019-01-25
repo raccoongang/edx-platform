@@ -118,8 +118,9 @@ def collect_stats():
         platform_url = "https://" + settings.SITE_NAME
         platform_name = settings.PLATFORM_NAME or Site.objects.get_current()
         platform_city_name = olga_settings.get("PLATFORM_CITY_NAME")
+        google_maps_api_key = olga_settings.get("GOOGLE_MAPS_API_KEY")
 
-        latitude, longitude = platform_coordinates(platform_city_name)
+        latitude, longitude = platform_coordinates(platform_city_name, google_maps_api_key)
 
         students_per_country = enthusiast_level_statistics_bunch()
 

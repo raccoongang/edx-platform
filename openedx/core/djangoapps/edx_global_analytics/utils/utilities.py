@@ -79,34 +79,43 @@ def get_previous_month_start_and_end_dates():
 
 def get_coordinates_by_ip():
     """
-    Gather coordinates by server IP address with FreeGeoIP service.
+    Gather coordinates by server IP address with ip-api service.
     """
-    try:
-        ip_data = requests.get('https://freegeoip.net/json')
-        latitude, longitude = ip_data.json()['latitude'], ip_data.json()['longitude']
-        return latitude, longitude
+    latitude, longitude = '', ''
 
-    except requests.RequestException as error:
-        logger.exception(error.message)
-        return '', ''
+    ip_data = requests.get('http://ip-api.com/json')
+
+    if ip_data.status_code == 200:
+        latitude, longitude = ip_data.json().get('lat'), ip_data.json().get('lon')
+
+    return latitude, longitude
 
 
-def get_coordinates_by_platform_city_name(city_name):
+def get_coordinates_by_platform_city_name(city_name, google_maps_api_key):
     """
     Gather coordinates by platform city name with Google API.
     """
     google_api_request = requests.get(
-        'https://maps.googleapis.com/maps/api/geocode/json', params={'address': city_name}
+        'https://maps.googleapis.com/maps/api/geocode/json',
+        params={'address': city_name, 'key': google_maps_api_key}
     )
+    response = google_api_request.json()
 
-    coordinates_result = google_api_request.json()['results']
+    if response['status'] != 'OK' and not response['results']:
+        logger.info(
+            'GOOGLE API status: {status}, message: {message}'.format(
+                status=response['status'],
+                message=response['error_message']
+            )
+        )
+        return '', ''
 
-    if coordinates_result:
-        location = coordinates_result[0]['geometry']['location']
-        return location['lat'], location['lng']
+    location = response[0]['geometry']['location']
+
+    return location['lat'], location['lng']
 
 
-def platform_coordinates(city_name):
+def platform_coordinates(city_name, google_maps_api_key):
     """
     Get platform city latitude and longitude.
 
@@ -118,7 +127,7 @@ def platform_coordinates(city_name):
 
     Module `pytz` also has list of cities with `pytz.all_timezones`.
     """
-    return get_coordinates_by_platform_city_name(city_name) or get_coordinates_by_ip()
+    return get_coordinates_by_platform_city_name(city_name, google_maps_api_key) or get_coordinates_by_ip()
 
 
 def request_exception_handler_with_logger(function):
