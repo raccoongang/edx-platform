@@ -488,7 +488,7 @@ class Courses(SysadminDashboardView):
             except InvalidKeyError as err:
                 course_key = course_id
                 self.msg += _(
-                    'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
+                    '<p>Error - cannot get course with ID {0}<br/><pre>{1}</pre></p>'
                 ).format(course_key, escape(str(err)))
 
             course_found = False
