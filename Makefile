@@ -1,5 +1,5 @@
 # Do things in edx-platform
-
+#
 # Careful with mktemp syntax: it has to work on Mac and Ubuntu, which have differences.
 PRIVATE_FILES := $(shell mktemp -u /tmp/private_files.XXXXXX)
 
