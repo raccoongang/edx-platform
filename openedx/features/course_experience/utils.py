@@ -57,7 +57,7 @@ def get_course_outline_block_tree(request, course_id):
             completed_at = None
             last_visited_at = None
 
-            for children in block['children']:
+            for children in block.get('children', []):
                 # don't set completed_at for html and video blocks
                 if children['type'] in ['html', 'video']:
                     deny_completed_at = True
