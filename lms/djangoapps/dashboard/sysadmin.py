@@ -26,6 +26,7 @@ from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import condition
 from django.views.generic.base import TemplateView
+from opaque_keys import InvalidKeyError
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from path import Path as path
 
@@ -41,7 +42,6 @@ from student.models import CourseEnrollment, Registration, UserProfile
 from student.roles import CourseInstructorRole, CourseStaffRole
 from xmodule.modulestore.django import modulestore
 from search.search_engine_base import SearchEngine
-from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 log = logging.getLogger(__name__)
@@ -482,7 +482,15 @@ class Courses(SysadminDashboardView):
 
         elif action == 'del_course':
             course_id = request.POST.get('course_id', '').strip()
-            course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+
+            try:
+                course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+            except InvalidKeyError as err:
+                course_key = course_id
+                self.msg += _(
+                    '<p>Error - cannot get course with ID {0}<br/><pre>{1}</pre></p>'
+                ).format(course_key, escape(str(err)))
+
             course_found = False
             if course_key in courses:
                 course_found = True

@@ -17,6 +17,7 @@ from django.test.client import Client
 from django.test.utils import override_settings
 from django.utils.timezone import utc as UTC
 from nose.plugins.attrib import attr
+from opaque_keys import InvalidKeyError
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
@@ -176,6 +177,34 @@ class TestSysAdminMongoCourseImport(SysadminBaseTestCase):
         self._rm_edx4edx()
         course = def_ms.get_course(SlashSeparatedCourseKey('MITx', 'edx4edx', 'edx4edx'))
         self.assertIsNone(course)
+
+    def test_rm_course_with_wrong_id(self):
+        """
+        Test deleting course with wrong id.
+        """
+
+        self._setstaff_login()
+
+        wrong_course_id = 'Not a Course ID'
+
+        # Try to find course with wrong ID
+        try:
+            def_ms = modulestore()
+            course = def_ms.get_course(SlashSeparatedCourseKey.from_deprecated_string(wrong_course_id))
+        except InvalidKeyError:
+            course = None
+
+        self.assertIsNone(course)
+
+        response = self.client.post(
+            reverse('sysadmin_courses'),
+            {
+                'course_id': wrong_course_id,
+                'action': 'del_course',
+            }
+        )
+
+        self.assertEqual(200, response.status_code)
 
     def test_course_info(self):
         """
