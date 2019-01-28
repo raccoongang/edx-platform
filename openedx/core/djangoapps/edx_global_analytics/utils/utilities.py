@@ -80,6 +80,7 @@ def get_previous_month_start_and_end_dates():
 def get_coordinates_by_ip():
     """
     Gather coordinates by server IP address with ip-api service.
+    This endpoint is limited to 150 requests per minute from an IP address.
     """
     latitude, longitude = '', ''
 
@@ -89,45 +90,6 @@ def get_coordinates_by_ip():
         latitude, longitude = ip_data.json().get('lat'), ip_data.json().get('lon')
 
     return latitude, longitude
-
-
-def get_coordinates_by_platform_city_name(city_name, google_maps_api_key):
-    """
-    Gather coordinates by platform city name with Google API.
-    """
-    google_api_request = requests.get(
-        'https://maps.googleapis.com/maps/api/geocode/json',
-        params={'address': city_name, 'key': google_maps_api_key}
-    )
-    response = google_api_request.json()
-
-    if response['status'] != 'OK' and not response['results']:
-        logger.info(
-            'GOOGLE API status: {status}, message: {message}'.format(
-                status=response['status'],
-                message=response['error_message']
-            )
-        )
-        return '', ''
-
-    location = response[0]['geometry']['location']
-
-    return location['lat'], location['lng']
-
-
-def platform_coordinates(city_name, google_maps_api_key):
-    """
-    Get platform city latitude and longitude.
-
-    If `city_platform_located_in` (name of city) exists in OLGA setting (lms.env.json) as manual parameter
-    Google API helps to get city latitude and longitude. Else FreeGeoIP gathers latitude and longitude by IP address.
-
-    All correct city names are available from Wikipedia -
-    https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-
-    Module `pytz` also has list of cities with `pytz.all_timezones`.
-    """
-    return get_coordinates_by_platform_city_name(city_name, google_maps_api_key) or get_coordinates_by_ip()
 
 
 def request_exception_handler_with_logger(function):

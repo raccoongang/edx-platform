@@ -15,10 +15,10 @@ from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import get_c
 from openedx.core.djangoapps.edx_global_analytics.utils.token_utils import get_acceptor_api_access_token
 from openedx.core.djangoapps.edx_global_analytics.utils.utilities import (
     fetch_instance_information,
+    get_coordinates_by_ip,
     get_previous_day_start_and_end_dates,
     get_previous_week_start_and_end_dates,
     get_previous_month_start_and_end_dates,
-    platform_coordinates,
     send_instance_statistics_to_acceptor,
 )
 
@@ -117,10 +117,9 @@ def collect_stats():
     if statistics_level == 'enthusiast':
         platform_url = "https://" + settings.SITE_NAME
         platform_name = settings.PLATFORM_NAME or Site.objects.get_current()
-        platform_city_name = olga_settings.get("PLATFORM_CITY_NAME")
-        google_maps_api_key = olga_settings.get("GOOGLE_MAPS_API_KEY")
+        platform_city_name = olga_settings.get("PLATFORM_CITY_NAME", '')
 
-        latitude, longitude = platform_coordinates(platform_city_name, google_maps_api_key)
+        latitude, longitude = get_coordinates_by_ip()
 
         students_per_country = enthusiast_level_statistics_bunch()
 
@@ -128,6 +127,7 @@ def collect_stats():
             'latitude': latitude,
             'longitude': longitude,
             'platform_name': platform_name,
+            'platform_cty_name': platform_city_name,
             'platform_url': platform_url,
             'statistics_level': 'enthusiast',
             'students_per_country': json.dumps(students_per_country),
