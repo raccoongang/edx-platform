@@ -771,6 +771,8 @@ class RegistrationView(APIView):
             terms_link = marketing_link("HONOR")
             terms_text = _(u"Review the Terms of Service and Honor Code")
 
+        # Customize Registration form(change /honor link to https://www.fastlaneus.com/cos)
+        terms_link = "https://www.fastlaneus.com/cos"
         # Translators: "Terms of Service" is a legal document users must agree to
         # in order to register a new account.
         label = _(u"I agree to the {platform_name} {terms_of_service}").format(
