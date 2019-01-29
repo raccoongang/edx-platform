@@ -127,7 +127,7 @@ def collect_stats():
             'latitude': latitude,
             'longitude': longitude,
             'platform_name': platform_name,
-            'platform_cty_name': platform_city_name,
+            'platform_city_name': platform_city_name,
             'platform_url': platform_url,
             'statistics_level': 'enthusiast',
             'students_per_country': json.dumps(students_per_country),

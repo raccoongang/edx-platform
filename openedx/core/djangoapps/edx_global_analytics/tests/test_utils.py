@@ -10,10 +10,10 @@ from django.utils import timezone
 from django.db.models import Q
 from django_countries.fields import Country
 
+from openedx.core.djangoapps.edx_global_analytics.utils import fetch_instance_information, cache_instance_data
+
 from student.models import UserProfile
 from student.tests.factories import UserFactory
-
-from ..utils import fetch_instance_information, cache_instance_data
 
 
 class TestStudentsAmountPerParticularPeriod(TestCase):

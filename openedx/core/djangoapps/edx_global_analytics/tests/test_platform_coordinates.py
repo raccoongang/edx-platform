@@ -3,8 +3,8 @@ Tests for edx global analytics application tasks and helper functions.
 """
 
 import unittest
-
 import requests
+import mock
 from mock import patch, call
 
 from openedx.core.djangoapps.edx_global_analytics.utils.utilities import get_coordinates_by_ip
@@ -13,43 +13,28 @@ from openedx.core.djangoapps.edx_global_analytics.utils.utilities import get_coo
 @patch('openedx.core.djangoapps.edx_global_analytics.utils.utilities.requests.get')
 class TestPlatformCoordinates(unittest.TestCase):
     """
-    Tests for platform coordinates methods, that gather latitude and longitude.
+    Tests for platform coordinates method, that gather latitude and longitude.
     """
 
     def tests_sending_requests(self, mock_request):
         """
-        Tests to prove that methods send request to needed corresponding URLs.
+        Test to prove that method send request to needed corresponding URL.
         """
 
         # Verify that get_coordinates_by_ip sends request to FreeGeoIP API.
         get_coordinates_by_ip()
 
         expected_calls = [
-            call('https://freegeoip.net/json'),
+            call('http://ip-api.com/json'),
         ]
 
         self.assertEqual(mock_request.call_args_list, expected_calls)
-
-    def test_get_coordinates_by_ip_result(self, mock_request):
-        """
-        Verify that get_coordinates_by_ip returns city latitude and longitude as expected.
-        """
-        mock_request.return_value.json.return_value = {
-            'lat': 49.9942,
-            'lon': 36.2339
-        }
-
-        latitude, longitude = get_coordinates_by_ip()
-        self.assertEqual(
-            (49.9942, 36.2339), (latitude, longitude)
-        )
 
     def test_get_coordinates_by_ip_if_exception(self, mock_request):
         """
         Verify that get_coordinates_by_ip returns empty latitude and longitude after request exception.
         """
-        mock_request.side_effect = requests.RequestException()
+        mock_request.return_value.ok = False
+
         latitude, longitude = get_coordinates_by_ip()
-        self.assertEqual(
-            ('', ''), (latitude, longitude)
-        )
+        self.assertEqual(('', ''), (latitude, longitude))

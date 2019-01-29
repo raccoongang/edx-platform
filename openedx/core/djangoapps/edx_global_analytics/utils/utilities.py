@@ -80,6 +80,7 @@ def get_previous_month_start_and_end_dates():
 def get_coordinates_by_ip():
     """
     Gather coordinates by server IP address with ip-api service.
+
     This endpoint is limited to 150 requests per minute from an IP address.
     """
     latitude, longitude = '', ''
@@ -87,7 +88,7 @@ def get_coordinates_by_ip():
     ip_data = requests.get('http://ip-api.com/json')
 
     if ip_data.status_code == 200:
-        latitude, longitude = ip_data.json().get('lat'), ip_data.json().get('lon')
+        latitude, longitude = ip_data.json().get('lat', ''), ip_data.json().get('lon', '')
 
     return latitude, longitude
 
