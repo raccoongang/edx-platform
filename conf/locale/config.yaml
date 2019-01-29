@@ -58,7 +58,7 @@ locales:
     # - mn  # Mongolian
     # - mr  # Marathi
     # - ms  # Malay
-    # - nb  # Norwegian Bokmål
+    - nb  # Norwegian Bokmål
     # - ne  # Nepali
     # - nl_NL  # Dutch (Netherlands)
     # - or  # Oriya
