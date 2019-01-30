@@ -3,8 +3,6 @@ Tests for edx global analytics application tasks and helper functions.
 """
 
 import unittest
-import requests
-import mock
 from mock import patch, call
 
 from openedx.core.djangoapps.edx_global_analytics.utils.utilities import get_coordinates_by_ip
@@ -18,7 +16,7 @@ class TestPlatformCoordinates(unittest.TestCase):
 
     def tests_sending_requests(self, mock_request):
         """
-        Test to prove that method send request to needed corresponding URL.
+        Test to prove that method sends request to needed corresponding URL.
         """
 
         # Verify that get_coordinates_by_ip sends request to FreeGeoIP API.

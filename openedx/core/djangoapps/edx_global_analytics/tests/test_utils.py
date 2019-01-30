@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.db.models import Q
 from django_countries.fields import Country
 
-from openedx.core.djangoapps.edx_global_analytics.utils import fetch_instance_information, cache_instance_data
+from openedx.core.djangoapps.edx_global_analytics.utils import cache_instance_data, fetch_instance_information
 
 from student.models import UserProfile
 from student.tests.factories import UserFactory
