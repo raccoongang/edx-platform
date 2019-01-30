@@ -52,6 +52,7 @@ from util.date_utils import get_default_time_display
 from util.testing import UrlResetMixin
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase, SharedModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory
+from xmodule.modulestore.django import modulestore
 
 
 def mock_render_purchase_form_html(*args, **kwargs):
@@ -1486,6 +1487,30 @@ class ShoppingCartViewsTests(SharedModuleStoreTestCase, XssTestMixin):
             resp = self.client.get(reverse('courseware', kwargs={'course_id': unicode(self.course.id)}))
             self.assertEqual(resp.status_code, 200)
             self.assertNotIn('<a class="shopping-cart"', resp.content)
+
+    @patch('shoppingcart.views.render_to_response', render_mock)
+    def test_add_course_to_cart_and_delete_this_course(self):
+        """
+        Testing shopping cart work with course that added to cart and deleted.
+        """
+        course = CourseFactory.create(org='MITxx', number='9999', display_name='Robot Super Puper Course')
+        course_key = course.id
+        self.login_user()
+
+        resp = self.client.post(
+            reverse('shoppingcart.views.add_course_to_cart', args=[course_key.to_deprecated_string()]))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(PaidCourseRegistration.contained_in_order(self.cart, course_key))
+
+        module_store = modulestore()
+        with module_store.bulk_operations(course_key):
+            module_store.delete_course(course_key, self.user)
+
+        resp = self.client.get(reverse('shoppingcart.views.show_cart', args=[]))
+        self.assertEqual(resp.status_code, 200)
+        (template, context), _tmp = render_mock.call_args
+        self.assertEqual(context['shoppingcart_items'], [])
+        self.assertFalse(PaidCourseRegistration.contained_in_order(self.cart, course_key))
 
 
 class ReceiptRedirectTest(SharedModuleStoreTestCase):
