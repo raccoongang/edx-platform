@@ -1,4 +1,4 @@
-""""
+"""
 Common utility functions useful throughout the contentstore
 """
 
