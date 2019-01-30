@@ -79,46 +79,18 @@ def get_previous_month_start_and_end_dates():
 
 def get_coordinates_by_ip():
     """
-    Gather coordinates by server IP address with FreeGeoIP service.
+    Gather coordinates by server IP address with ip-api service.
+
+    This endpoint is limited to 150 requests per minute from an IP address.
     """
-    try:
-        ip_data = requests.get('https://freegeoip.net/json')
-        latitude, longitude = ip_data.json()['latitude'], ip_data.json()['longitude']
-        return latitude, longitude
+    latitude, longitude = '', ''
 
-    except requests.RequestException as error:
-        logger.exception(error.message)
-        return '', ''
+    ip_data = requests.get('http://ip-api.com/json')
 
+    if ip_data.status_code == 200:
+        latitude, longitude = ip_data.json().get('lat', ''), ip_data.json().get('lon', '')
 
-def get_coordinates_by_platform_city_name(city_name):
-    """
-    Gather coordinates by platform city name with Google API.
-    """
-    google_api_request = requests.get(
-        'https://maps.googleapis.com/maps/api/geocode/json', params={'address': city_name}
-    )
-
-    coordinates_result = google_api_request.json()['results']
-
-    if coordinates_result:
-        location = coordinates_result[0]['geometry']['location']
-        return location['lat'], location['lng']
-
-
-def platform_coordinates(city_name):
-    """
-    Get platform city latitude and longitude.
-
-    If `city_platform_located_in` (name of city) exists in OLGA setting (lms.env.json) as manual parameter
-    Google API helps to get city latitude and longitude. Else FreeGeoIP gathers latitude and longitude by IP address.
-
-    All correct city names are available from Wikipedia -
-    https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-
-    Module `pytz` also has list of cities with `pytz.all_timezones`.
-    """
-    return get_coordinates_by_platform_city_name(city_name) or get_coordinates_by_ip()
+    return latitude, longitude
 
 
 def request_exception_handler_with_logger(function):
