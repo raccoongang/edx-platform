@@ -31,8 +31,11 @@ def inactive_user_view(request):
     # 'next' may be set to '/account/finish_auth/.../' if this user needs to be auto-enrolled
     # in a course. Otherwise, just redirect them to the dashboard, which displays a message
     # about activating their account.
-    profile = UserProfile.objects.get(user=request.user)
-    compose_and_send_activation_email(request.user, profile)
+    # NOTE(AndreyLykhoman): Disable sending activation email when 'SKIP_EMAIL_VALIDATION' is True. Because EDX has SSO
+    #  with remote portal and doesn't have registaration and login pages.
+    if not settings.FEATURES.get('SKIP_EMAIL_VALIDATION', None):
+        profile = UserProfile.objects.get(user=request.user)
+        compose_and_send_activation_email(request.user, profile)
     return redirect(request.GET.get('next', 'dashboard'))
 
 
