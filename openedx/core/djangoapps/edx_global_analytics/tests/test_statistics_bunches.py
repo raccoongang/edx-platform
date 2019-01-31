@@ -44,7 +44,7 @@ class TestStatisticsLevelBunches(unittest.TestCase):
 
         enthusiast_level_statistics_bunch()
 
-        mock_fetch_instance_information.assert_called_once_with(
+        mock_fetch_instance_information.assert_any_call(
             'students_per_country', get_previous_day_start_and_end_dates(), name_to_cache=None
         )
 

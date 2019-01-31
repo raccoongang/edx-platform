@@ -8,6 +8,7 @@ from django.core.cache import cache
 from django.db.models import Count
 from django.db.models import Q
 
+from certificates.models import GeneratedCertificate
 from student.models import UserProfile
 
 
@@ -51,6 +52,13 @@ def get_query_result(query_type, activity_period):
                 'country'
             ).annotate(count=Count('country')).values_list('country', 'count')
         )
+
+    if query_type == 'generated_certificates':
+        generated_certificates = GeneratedCertificate.objects.extra(select={'date': 'date( created_date )'}).values(
+            'date'
+        ).annotate(count=Count('pk'))
+
+        return {str(c.get('date', '')): c.get('count', 0) for c in generated_certificates}
 
 
 def get_cache_week_key():

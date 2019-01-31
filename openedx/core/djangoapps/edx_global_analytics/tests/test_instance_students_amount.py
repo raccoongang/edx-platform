@@ -81,3 +81,15 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
         result = fetch_instance_information('students_per_country', activity_period, name_to_cache=None)
 
         self.assertEqual({None: 0}, result)
+
+    def test_generated_certificates_if_no_certificates(self):
+        """
+        Verify that the no errors in get generated certificates method if no certificates
+        """
+        test_result = {}
+
+        activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
+
+        result = fetch_instance_information('generated_certificates', activity_period, name_to_cache=None)
+
+        self.assertEqual(test_result, result)
