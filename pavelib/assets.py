@@ -4,6 +4,7 @@ Asset compilation and collection.
 
 from __future__ import print_function
 
+import hashlib
 import argparse
 import glob
 import os
@@ -28,6 +29,7 @@ from .utils.timer import timed
 from pwd import getpwnam
 from django.core.wsgi import get_wsgi_application
 from django.conf import settings as django_settings
+from django.core.files import File
 
 # setup baseline paths
 
@@ -969,6 +971,17 @@ def update_assets(args):
         )
 
 
+def file_hash(file_name):
+    with open(file_name, 'rb') as f:
+        content = File(f)
+
+        md5 = hashlib.md5()
+        for chunk in content.chunks():
+            md5.update(chunk)
+
+        return md5.hexdigest()[:12]
+
+
 def _update_assets(sys, args, is_devstack=True):
     collect_log_args = {}
 
@@ -1007,3 +1020,30 @@ def _update_assets(sys, args, is_devstack=True):
             collect_log_args.update({COLLECTSTATIC_LOG_DIR_ARG: args.collect_log_dir})
 
         collect_assets([sys], args.settings, **collect_log_args)
+
+    if sys == CMS:
+        prev_dir = os.getcwd()
+        static_root_cms = Env.get_django_setting("STATIC_ROOT", "cms", settings=args.settings)
+        cms_js_langs_dir = path(static_root_cms) / 'js' / 'i18n'
+
+        for lang in os.listdir(cms_js_langs_dir):
+            _hash = None
+            lms_file = path(LMS) / 'static' / 'js' / 'i18n' / lang / 'djangojs.js'
+
+            try:
+                _hash = file_hash(lms_file)
+            except Exception:
+                print("\t\tFile '{file}' could not be read.".format(file=lms_file))
+
+            if _hash:
+                os.chdir(cms_js_langs_dir / lang)
+
+                src_file = 'djangojs.js'
+                dst_file = 'djangojs.{hash}.js'.format(hash=_hash)
+
+                try:
+                    os.symlink(src_file, dst_file)
+                except OSError:
+                    print("\t\tSymbolic link or file '{file}' is exists.".format(file=dst_file))
+
+                os.chdir(prev_dir)
