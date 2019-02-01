@@ -11,6 +11,7 @@ from lms.djangoapps.course_api.blocks.api import get_blocks
 from lms.djangoapps.course_blocks.utils import get_student_module_as_dict
 from opaque_keys.edx.keys import CourseKey, UsageKey
 from openedx.core.djangoapps.request_cache.middleware import request_cached
+from web_science.models import WebScienceUnitLog
 from xmodule.modulestore.django import modulestore
 
 
@@ -50,53 +51,40 @@ def get_course_outline_block_tree(request, course_id):
     def set_last_visited_at(block, user, course_key):
         """
         Mark blocks with last_visited_at and completed_at dates
-        requires enable_completion_tracking switch enabled:
-        `/admin/waffle/switch/` -> add a new switch -> name 'completion.enable_completion_tracking' + check 'Active'
         """
         if block['type'] == 'vertical':
-            completed_at = None
             last_visited_at = None
+            completed_at = None
+
+            try:
+                log = WebScienceUnitLog.objects.get(student=user, block_id=UsageKey.from_string(block['id']))
+                last_visited_at = log.updated_at
+            except WebScienceUnitLog.DoesNotExist:
+                pass
 
             for children in block.get('children', []):
                 # don't set completed_at for html and video blocks
                 if children['type'] in ['html', 'video']:
                     deny_completed_at = True
                 else:
+                    if children['type'] == 'problem':
+                        block['graded'] = True
                     deny_completed_at = False
 
                 try:
-                    # set last visited/completed dates from subunit StudentModule
+                    # set last completed dates from subunit StudentModule
                     student_module = StudentModule.objects.get(
                         student=user,
                         course_id=course_key,
                         module_state_key=UsageKey.from_string(children['id']),
                     )
-
-                    if last_visited_at is None or (student_module.modified > last_visited_at):
-                        last_visited_at = student_module.modified
-
                     state = json.loads(student_module.state)
                     if not deny_completed_at and state and state.get('done'):
                         last_submission_time = parser.parse(state.get('last_submission_time'))
                         if completed_at is None or (last_submission_time > completed_at):
                             completed_at = parser.parse(state.get('last_submission_time'))
                 except StudentModule.DoesNotExist:
-                    try:
-                        # check completion track record if StudentModule doesn't exists
-                        completion = BlockCompletion.objects.get(
-                            user=user,
-                            course_key=course_key,
-                            block_key=UsageKey.from_string(children['id']),
-                        )
-
-                        if last_visited_at is None or (completion.modified > last_visited_at):
-                            last_visited_at = completion.modified
-
-                        if not deny_completed_at and children['complete'] and \
-                                (completed_at is None or (completion.modified > completed_at)):
-                            completed_at = completion.modified
-                    except BlockCompletion.DoesNotExist:
-                        pass
+                    pass
 
             block['last_visited_at'] = last_visited_at.strftime('%d/%m/%Y') if last_visited_at else None
             block['completed_at'] = completed_at.strftime('%d/%m/%Y') if completed_at else None
