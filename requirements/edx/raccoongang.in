@@ -48,3 +48,10 @@
 # Provides utilities used by the Discussion XBlock
 # Replace latest `xblock-utils` from base.in
 -e git+https://github.com/edx/xblock-utils.git@v1.1.1#egg=xblock-utils==1.1.1
+
+# Recommender xblock
+-e git+https://github.com/raccoongang/RecommenderXBlock.git@v1.4.1#egg=recommender-xblock==1.4.1
+
+# Info pages requirements
+django-tinymce==2.8.0
+django-hvad==1.8.0
