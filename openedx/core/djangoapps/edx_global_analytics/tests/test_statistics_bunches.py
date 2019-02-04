@@ -52,9 +52,9 @@ class TestStatisticsLevelBunches(unittest.TestCase):
         """
         Verify that enthusiast_level_statistics_bunch_method return students per country statistics.
         """
-        mock_students_per_country = {'US': 1, 'CA': 1}
+        mock_students_per_country = {'US': 5, 'CA': 10}
         mock_fetch_instance_information.return_value = mock_students_per_country
 
-        result = enthusiast_level_statistics_bunch()
+        result = enthusiast_level_statistics_bunch()[0]
 
-        self.assertEqual(mock_students_per_country, result[0])
+        self.assertEqual(mock_students_per_country, result)
