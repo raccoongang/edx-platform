@@ -58,7 +58,15 @@ def enthusiast_level_statistics_bunch():
         'generated_certificates', get_previous_day_start_and_end_dates(), name_to_cache=None,
     )
 
-    return students_per_country, generated_certificates
+    registered_students = fetch_instance_information(
+        'registered_students', get_previous_day_start_and_end_dates(), name_to_cache=None,
+    )
+
+    enthusiastic_students = fetch_instance_information(
+        'enthusiastic_students', get_previous_day_start_and_end_dates(), name_to_cache=None,
+    )
+
+    return students_per_country, generated_certificates, registered_students, enthusiastic_students
 
 
 def get_olga_acceptor_url(olga_settings):
@@ -125,7 +133,8 @@ def collect_stats():
 
         latitude, longitude = get_coordinates_by_ip()
 
-        students_per_country, generated_certificates = enthusiast_level_statistics_bunch()
+        students_per_country, generated_certificates, registered_students, enthusiastic_students = \
+            enthusiast_level_statistics_bunch()
 
         data.update({
             'latitude': latitude,
@@ -136,6 +145,8 @@ def collect_stats():
             'statistics_level': 'enthusiast',
             'students_per_country': json.dumps(students_per_country),
             'generated_certificates': json.dumps(generated_certificates),
+            'registered_students': json.dumps(registered_students),
+            'enthusiastic_students': json.dumps(enthusiastic_students),
         })
 
     send_instance_statistics_to_acceptor(olga_acceptor_url, data)
