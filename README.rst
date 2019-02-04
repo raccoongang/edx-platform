@@ -28,7 +28,6 @@ unless otherwise noted. Please see the `LICENSE`_ file for details.
 
 .. _LICENSE: https://github.com/edx/edx-platform/blob/master/LICENSE
 
-
 The Open edX Portal
 ---------------------
 
@@ -50,7 +49,6 @@ in. If you do not have an account, follow these steps.
 
 Documentation
 -------------
-
 Documentation details can be found in the `docs index.rst`_.
 
 .. _docs index.rst: docs/index.rst
