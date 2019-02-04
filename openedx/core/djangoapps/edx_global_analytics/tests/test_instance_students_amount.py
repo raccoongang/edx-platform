@@ -3,6 +3,7 @@ Tests for edX global analytics application functions, that calculate statistics.
 """
 
 import datetime
+import json
 
 from django.test import TestCase
 from django.utils import timezone
@@ -10,7 +11,11 @@ from django_countries.fields import Country
 
 from student.tests.factories import UserFactory
 
+from courseware.tests.factories import StudentModuleFactory
+from openedx.core.djangoapps.content.course_structures.models import CourseStructure
 from openedx.core.djangoapps.edx_global_analytics.utils.utilities import fetch_instance_information
+from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
+from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 
 
 class TestStudentsAmountPerParticularPeriod(TestCase):
@@ -91,5 +96,74 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
         activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
 
         result = fetch_instance_information('generated_certificates', activity_period, name_to_cache=None)
+
+        self.assertEqual(test_result, result)
+
+    def test_enthusiastic_users_count(self):
+        """
+        Verify that the no errors in get Enthusiastic Students method if no CourseStructure
+        """
+
+        test_result = {}
+        activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
+        result = fetch_instance_information('enthusiastic_students', activity_period, name_to_cache=None)
+
+        self.assertEqual(test_result, result)
+
+
+class TestCollectedDataTestCase(ModuleStoreTestCase):
+    """
+        Test cases covering Course Structure task-related workflows
+        """
+
+    def setUp(self, **kwargs):
+        super(TestCollectedDataTestCase, self).setUp()
+        course = CourseFactory.create(org='TestX', course='TS101', run='T1')
+
+        CourseStructure.objects.all().delete()
+
+        structure = '{"blocks": ' \
+            '{"block-v1:HISTORG+CS1023+2015_T1+type@chapter+block@bfdb4017fe6d4d74b966f18fccf5942f": {' \
+            '"block_type": "chapter", "graded": false, "format": null, "usage_key": ' \
+            '"block-v1:HISTORG+CS1023+2015_T1+type@chapter+block@bfdb4017fe6d4d74b966f18fccf5942f", ' \
+            '"children": ["block-v1:HISTORG+CS1023+2015_T1+type@sequential+block@ef8b9857bc9b4e8db72410c1414cf804"], ' \
+            '"display_name": "Section"}, "block-v1:HISTORG+CS1023+2015_T1+type@course+block@course": {' \
+            '"block_type": "course", "graded": false, "format": null, ' \
+            '"usage_key": "block-v1:HISTORG+CS1023+2015_T1+type@course+block@course", ' \
+            '"children": ["block-v1:HISTORG+CS1023+2015_T1+type@chapter+block@bfdb4017fe6d4d74b966f18fccf5942f"], ' \
+            '"display_name": "History"}, ' \
+            '"block-v1:HISTORG+CS1023+2015_T1+type@sequential+block@ef8b9857bc9b4e8db72410c1414cf804": {' \
+            '"block_type": "sequential", "graded": false, "format": null, ' \
+            '"usage_key": "block-v1:HISTORG+CS1023+2015_T1+type@sequential+block@ef8b9857bc9b4e8db72410c1414cf804", ' \
+            '"children": ["block-v1:HISTORG+CS1023+2015_T1+type@vertical+block@6d09c8448bd84ccc8aca324dd871c211"], ' \
+            '"display_name": "Subsection"}, ' \
+            '"block-v1:HISTORG+CS1023+2015_T1+type@problem+block@a7d9628670194d66a6c6a87dc2377de0": {' \
+            '"block_type": "problem", "graded": false, "format": null, ' \
+            '"usage_key": "block-v1:HISTORG+CS1023+2015_T1+type@problem+block@a7d9628670194d66a6c6a87dc2377de0",' \
+            '"children": [], "display_name": "Blank Common Problem"}, ' \
+            '"block-v1:HISTORG+CS1023+2015_T1+type@problem+block@93c7e26b2c114d11b98e9feab07a5e85": {' \
+            '"block_type": "problem", "graded": false, "format": null, ' \
+            '"usage_key": "block-v1:HISTORG+CS1023+2015_T1+type@problem+block@93c7e26b2c114d11b98e9feab07a5e85", ' \
+            '"children": [], "display_name": "Checkboxes"}, ' \
+            '"block-v1:HISTORG+CS1023+2015_T1+type@vertical+block@6d09c8448bd84ccc8aca324dd871c211": {' \
+            '"block_type": "vertical", "graded": false, "format": null, ' \
+            '"usage_key": "block-v1:HISTORG+CS1023+2015_T1+type@vertical+block@6d09c8448bd84ccc8aca324dd871c211", ' \
+            '"children": ["block-v1:HISTORG+CS1023+2015_T1+type@problem+block@a7d9628670194d66a6c6a87dc2377de0", ' \
+            '"block-v1:HISTORG+CS1023+2015_T1+type@problem+block@93c7e26b2c114d11b98e9feab07a5e85"], ' \
+            '"display_name": "Unit"}}, "root": "block-v1:HISTORG+CS1023+2015_T1+type@course+block@course"}'
+
+        CourseStructure.objects.create(course_id=course.id, structure_json=structure)
+
+        StudentModuleFactory(
+            module_state_key='block-v1:HISTORG+CS1023+2015_T1+type@problem+block@93c7e26b2c114d11b98e9feab07a5e85',
+            course_id=course.id,
+            modified=datetime.datetime.now()
+        )
+
+    def test_get_enthusiastic_students(self):
+        test_result = {datetime.datetime.now().strftime('%Y-%m-%d'): 1}
+
+        activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
+        result = fetch_instance_information('enthusiastic_students', activity_period, name_to_cache=None)
 
         self.assertEqual(test_result, result)
