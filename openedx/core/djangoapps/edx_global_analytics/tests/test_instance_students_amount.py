@@ -8,6 +8,7 @@ from django.utils import timezone
 from django_countries.fields import Country
 
 
+from certificates.models import CertificateStatuses, GeneratedCertificate
 from courseware.models import StudentModule
 from openedx.core.djangoapps.content.course_structures.models import CourseStructure
 from openedx.core.djangoapps.edx_global_analytics.utils.utilities import fetch_instance_information
@@ -80,6 +81,10 @@ class TestStudentsAmountPerParticularPeriod(ModuleStoreTestCase):
             state="{'attempts': 32, 'otherstuff': 'alsorobots'}",
         )
 
+        GeneratedCertificate.objects.create(
+            user=UserFactory(), course_id=course.location.course_key, status=CertificateStatuses.downloadable
+        )
+
     def test_fetch_active_students(self):
         """
         Verify that fetch_instance_information returns data as expected in particular period and accurate datetime.
@@ -133,6 +138,19 @@ class TestStudentsAmountPerParticularPeriod(ModuleStoreTestCase):
         Verify that generated_certificates returns data as expected if no certificates.
         """
         test_result = {}
+
+        activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
+
+        result = fetch_instance_information('generated_certificates', activity_period, name_to_cache=None)
+
+        self.assertEqual(test_result, result)
+
+    def test_generated_certificates(self):
+        """
+        Verify that generated_certificates returns data as expected
+        """
+        self.create_default_data()
+        test_result = {datetime.datetime.now().strftime('%Y-%m-%d'): 1}
 
         activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
 
