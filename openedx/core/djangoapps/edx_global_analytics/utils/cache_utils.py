@@ -67,35 +67,35 @@ def get_query_result(query_type, activity_period):
         ).annotate(count=Count('pk'))
 
         return {
-            certificates['date'].strftime('%Y-%m-%d'): certificates['count'] for certificates in generated_certificates
+            str(certificates['date']): certificates['count'] for certificates in generated_certificates
         }
 
     if query_type == REGISTERED_STUDENTS:
         registered_students = User.objects.exclude(is_staff=True).extra(select={'date': 'date( date_joined )'}).values(
             'date').annotate(count=Count('pk'))
 
-        return {student['date'].strftime('%Y-%m-%d'): student['count'] for student in registered_students}
+        return {str(student['date']): student['count'] for student in registered_students}
 
     if query_type == ENTHUSIASTIC_STUDENTS:
-        # Get ordered dicts courses structure for all courses
+        # Gets all course's structures
         course_structure_query = CourseStructure.objects.all()
         courses_structures_list = [course_structure.ordered_blocks for course_structure in course_structure_query]
 
-        last_sections_list = list()
+        last_sections_usage_keys_list = list()
 
         for course_structure in courses_structures_list:
             # Get all sections in structure
-            sections = [section[1].get('usage_key', '') for section in course_structure.iteritems()]
+            sections_usage_keys = [section[1].get('usage_key', '') for section in course_structure.iteritems()]
 
-            # Generate UsageKey for last section and add it to last_sections_list
-            last_sections_list.append(UsageKey.from_string(sections[-1]))
+            # Generates UsageKey for last section's usage_key and add it to last_sections_usage_keys_list
+            last_sections_usage_keys_list.append(UsageKey.from_string(sections_usage_keys[-1]))
 
-        # Get all records from db with last sections and grouped them by date
-        enthusiastic_students = StudentModule.objects.filter(module_state_key__in=last_sections_list).extra(
+        # Gets all records from db. Filters them by usage_keys of the last sections and grouped by date.
+        enthusiastic_students = StudentModule.objects.filter(module_state_key__in=last_sections_usage_keys_list).extra(
             select={'date': 'date( modified )'}
         ).values('date').annotate(count=Count('pk'))
 
-        return {student['date'].strftime('%Y-%m-%d'): student['count'] for student in enthusiastic_students}
+        return {str(student['date']): student['count'] for student in enthusiastic_students}
 
 
 def get_cache_week_key():
