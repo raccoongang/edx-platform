@@ -20,6 +20,21 @@ from third_party_auth.models import OAuth2ProviderConfig
 log = logging.getLogger(__name__)
 
 
+def set_default_value_if_params_absent_in_data(params_tuple, data, default_value=True):
+    """
+    Check each param form params_list and set default_value if param is absent.
+
+    :param params_tuple: Tuple of params name
+    :param data: Dictionary where we founding params
+    :param default_value: Set this value if param is absent. Default is True
+    :return: Modified data
+    """
+    if params_tuple and data and isinstance(params_tuple, tuple) and isinstance(data, dict):
+        for param in params_tuple:
+            data[param] = data[param] if param in data else default_value
+    return data
+
+
 class CreateUserAccountWithoutPasswordView(APIView):
     """
     Create user account.
@@ -38,7 +53,8 @@ class CreateUserAccountWithoutPasswordView(APIView):
         """
         Create a user by the email and the username.
         """
-        data = request.data
+        # NOTE(AndreyLykhoman): Making Dict form OrderDict because serializers work good with it. Fix in future.
+        data = dict(request.data.iteritems())
         data['honor_code'] = "True"
         data['terms_of_service'] = "True"
         first_name = request.data.get('first_name', '')
@@ -64,7 +80,7 @@ class CreateUserAccountWithoutPasswordView(APIView):
             data['first_name'] = first_name
             data['last_name'] = last_name
             data['password'] = uuid4().hex
-            data = self._set_default_value_if_absent_params_in_data(('is_active', 'allow_certificate'), data)
+            data = set_default_value_if_params_absent_in_data(('is_active', 'allow_certificate'), data)
             user = create_account_with_params(request, data)
             idp_name = OAuth2ProviderConfig.objects.first().backend_name
             UserSocialAuth.objects.create(user=user, provider=idp_name, uid=uid)
@@ -82,7 +98,8 @@ class CreateUserAccountWithoutPasswordView(APIView):
         """
         Update user information by uid.
         """
-        data = request.data
+        # NOTE(AndreyLykhoman): Making Dict form OrderDict because serializers work good with it. Fix in future.
+        data = dict(request.data.iteritems())
         try:
             uid = self._check_available_required_params(data.get('uid'), "uid")
             user_social_auth = UserSocialAuth.objects.select_related("user").filter(uid=uid).first()
@@ -116,17 +133,3 @@ class CreateUserAccountWithoutPasswordView(APIView):
         if not parameter or (values_list and isinstance(values_list, list) and parameter not in values_list):
             raise ValueError(self._error_dict[parameter_name].format(value=parameter))
         return parameter
-
-    def _set_default_value_if_absent_params_in_data(self, params_tuple, data, default_value=True):
-        """
-        Check each param form params_list and set default_value if param is absent.
-
-        :param params_tuple: Tuple of params name
-        :param data: data where method checks and sets default value
-        :param default_value: Set this value if param is absent. Default is True
-        :return: Modified data
-        """
-        if isinstance(params_tuple, tuple) and params_tuple and data:
-            for param in params_tuple:
-                data[param] = data[param] if param in data else default_value
-        return data
