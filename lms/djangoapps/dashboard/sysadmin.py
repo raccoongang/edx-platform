@@ -484,7 +484,7 @@ class Courses(SysadminDashboardView):
                 course_key = CourseLocator.from_string(course_id)
                 course = courses[course_key] if course_key in courses else get_course_by_id(course_key)
             except (InvalidKeyError, Http404):
-                self.msg += _('Error - cannot get course with ID {0}').format(course_id)
+                self.msg += _('<font color="red">Error - cannot get course with ID {0}</font>').format(course_id)
                 course = None
 
             if course:
