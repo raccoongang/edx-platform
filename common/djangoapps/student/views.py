@@ -16,6 +16,7 @@ from ipware.ip import get_ip
 
 import edx_oauth2_provider
 from django.conf import settings
+from lms.envs import common
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.auth.decorators import login_required
@@ -494,6 +495,7 @@ def register_user(request, extra_context=None):
     if external_auth_response is not None:
         return external_auth_response
 
+    usa_regions = getattr(common, 'USA_STATES_CHOICES', [])
     context = {
         'login_redirect_url': redirect_to,  # This gets added to the query string of the "Sign In" button in the header
         'email': '',
@@ -504,6 +506,7 @@ def register_user(request, extra_context=None):
             'platform_name',
             settings.PLATFORM_NAME
         ),
+        'usa_regions': usa_regions,
         'selected_provider': '',
         'username': '',
     }
@@ -1608,7 +1611,7 @@ def _do_create_account(form, custom_form=None):
 
     profile_fields = [
         "name", "level_of_education", "gender", "mailing_address", "city", "country", "goals",
-        "year_of_birth"
+        "year_of_birth", "usa_regions"
     ]
     profile = UserProfile(
         user=user,
@@ -1682,6 +1685,12 @@ def create_account_with_params(request, params):
     # unless originally we didn't get a valid email or name from the external auth
     # TODO: We do not check whether these values meet all necessary criteria, such as email length
     do_external_auth = 'ExternalAuthMap' in request.session
+    if 'country' in params.keys() and params['country'] == 'US':
+        if 'usa_regions' in params.keys():
+            region_value = params['usa_regions']
+            if len(region_value) is 0:
+                raise ValidationError({"usa_regions": [_("A region is required")]})
+
     if do_external_auth:
         eamap = request.session['ExternalAuthMap']
         try:

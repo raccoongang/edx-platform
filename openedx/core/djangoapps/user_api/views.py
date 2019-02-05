@@ -720,6 +720,24 @@ class RegistrationView(APIView):
             required=required
         )
 
+    def _add_usa_regions_field(self, form_desc, required=False):
+        regions_label = _(u"Region/State")
+        error_msg = _(u"Please select your state")
+
+        regions_choice = getattr(settings, 'USA_STATES_CHOICES', [])
+
+        form_desc.add_field(
+            "usa_region",
+            label=regions_label,
+            field_type="select",
+            options=regions_choice,
+            include_default_option=True,
+            error_msg={
+                "required": error_msg
+            }
+
+        )
+
     def _add_country_field(self, form_desc, required=True):
         """Add a country field to a form description.
 
@@ -733,8 +751,8 @@ class RegistrationView(APIView):
         # Translators: This label appears above a dropdown menu on the registration
         # form used to select the country in which the user lives.
         country_label = _(u"Country")
-        error_msg = _(u"Please select your Country.")
 
+        error_msg = _(u"Please select your Country.")
         form_desc.add_field(
             "country",
             label=country_label,
