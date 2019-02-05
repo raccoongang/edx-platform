@@ -110,7 +110,7 @@
                         lineWidth: 2, // in pixels
                         barWidth: 1, // in units of the x axis
                         fill: true,
-                        fillColor: null,
+                        fillColor: "#6e6e6e",
                         align: "left", // or "center" 
                         horizontal: false
                     },
