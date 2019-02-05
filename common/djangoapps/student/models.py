@@ -291,6 +291,7 @@ class UserProfile(models.Model):
     allow_certificate = models.BooleanField(default=1)
     bio = models.CharField(blank=True, null=True, max_length=3000, db_index=False)
     profile_image_uploaded_at = models.DateTimeField(null=True, blank=True)
+    usa_region = models.CharField(blank=True, null=True, max_length=255)
 
     @property
     def has_profile_image(self):

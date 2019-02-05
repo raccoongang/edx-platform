@@ -15,7 +15,8 @@
 
                 events: {
                     'click .js-register': 'submitForm',
-                    'click .login-provider': 'thirdPartyAuth'
+                    'click .login-provider': 'thirdPartyAuth',
+                    'change #register-country': 'showRegions'
                 },
 
                 formType: 'register',
@@ -74,6 +75,77 @@
                     }
 
                     return this;
+                },
+
+                addDropDownMenu: function(elementsForShow){
+                    let countryClass = $("#register-country").attr("class");
+                    let select = $("<select>", {id: "usa-regions", "class": countryClass})
+                    for (let state in elementsForShow){
+                        select.append($("<option>", {
+                            value: elementsForShow[state],
+                            text: elementsForShow[state]
+                        }))
+                    }
+
+                    $("#register-country").after(select)
+
+                },
+
+                showRegions: function(event) {
+                    let usaStates =  [
+                        "Alabama",
+                        "Alaska",
+                        "Arizona",
+                        "Arkansas",
+                        "California",
+                        "Colorado",
+                        "Connecticut",
+                        "Delaware",
+                        "Florida",
+                        "Georgia",
+                        "Hawaii",
+                        "Idaho",
+                        "Illinois Indiana",
+                        "Iowa",
+                        "Kansas",
+                        "Kentucky",
+                        "Louisiana",
+                        "Maine",
+                        "Maryland",
+                        "Massachusetts",
+                        "Michigan",
+                        "Minnesota",
+                        "Mississippi",
+                        "Missouri",
+                        "Montana Nebraska",
+                        "Nevada",
+                        "New Hampshire",
+                        "New Jersey",
+                        "New Mexico",
+                        "New York",
+                        "North Carolina",
+                        "North Dakota",
+                        "Ohio",
+                        "Oklahoma",
+                        "Oregon",
+                        "Pennsylvania Rhode Island",
+                        "South Carolina",
+                        "South Dakota",
+                        "Tennessee",
+                        "Texas",
+                        "Utah",
+                        "Vermont",
+                        "Virginia",
+                        "Washington",
+                        "West Virginia",
+                        "Wisconsin",
+                        "Wyoming",
+                        ]
+
+                    if (event.target.value === "US") {
+                        this.addDropDownMenu(usaStates);
+                    }
+
                 },
 
                 thirdPartyAuth: function(event) {
