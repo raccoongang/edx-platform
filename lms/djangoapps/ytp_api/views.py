@@ -61,12 +61,11 @@ class CreateUserAccountWithoutPasswordView(APIView):
             data['name'] = "{} {}".format(first_name, last_name).strip() if first_name or last_name else username
             ytp_serializer.UserSerializer().run_validation(data)
             ytp_serializer.ProfileSerializer().run_validation(data)
+            data['first_name'] = first_name
+            data['last_name'] = last_name
             data['password'] = uuid4().hex
+            data = self._set_default_value_if_absent_params_in_data(('is_active', 'allow_certificate'), data)
             user = create_account_with_params(request, data)
-            user.first_name = first_name
-            user.last_name = last_name
-            user.is_active = True
-            user.save()
             idp_name = OAuth2ProviderConfig.objects.first().backend_name
             UserSocialAuth.objects.create(user=user, provider=idp_name, uid=uid)
             user = ytp_serializer.UserSerializer().update(user, data)
@@ -117,3 +116,17 @@ class CreateUserAccountWithoutPasswordView(APIView):
         if not parameter or (values_list and isinstance(values_list, list) and parameter not in values_list):
             raise ValueError(self._error_dict[parameter_name].format(value=parameter))
         return parameter
+
+    def _set_default_value_if_absent_params_in_data(self, params_tuple, data, default_value=True):
+        """
+        Check each param form params_list and set default_value if param is absent.
+
+        :param params_tuple: Tuple of params name
+        :param data: data where method checks and sets default value
+        :param default_value: Set this value if param is absent. Default is True
+        :return: Modified data
+        """
+        if isinstance(params_tuple, tuple) and params_tuple and data:
+            for param in params_tuple:
+                data[param] = data[param] if param in data else default_value
+        return data
