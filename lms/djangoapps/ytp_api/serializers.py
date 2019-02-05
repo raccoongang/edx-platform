@@ -21,9 +21,7 @@ class UserSerializer(HyperlinkedModelSerializer):
 
     class Meta(object):
         model = User
-        # NOTE(AndreyLykhoman): Added 'is_active' field to 'read_only_fields' for disable changing this field. It was
-        #  needed to disable deactivating user when we create a new user without is_active param.
-        read_only_fields = ('password', 'username', 'is_active')
+        read_only_fields = ('password', 'username')
 
     def update(self, instance, data):
         """
