@@ -215,6 +215,10 @@
                     return data;
                 },
 
+                setUsaStateData: function(data){
+                    data.usa_states = $("#usa-regions").val();
+                },
+
                 submitForm: function(event) {
                     var data = this.getFormData();
 
@@ -226,6 +230,7 @@
 
                     if (!_.compact(this.errors).length) {
                         data = this.setExtraData(data);
+                        this.setUsaStateData(data);
                         this.model.set(data);
                         this.model.save();
                         this.clearFormErrors();

@@ -1612,6 +1612,7 @@ def _do_create_account(form, custom_form=None):
     ]
     profile = UserProfile(
         user=user,
+        usa_region=form.data['usa_states'] if 'usa_states' in form.data.keys() else None,
         **{key: form.cleaned_data.get(key) for key in profile_fields}
     )
     extended_profile = form.cleaned_extended_profile
