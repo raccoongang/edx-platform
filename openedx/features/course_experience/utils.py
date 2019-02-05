@@ -1,12 +1,17 @@
 """
 Common utilities for the course experience, including course outline.
 """
-from completion.models import BlockCompletion
+import json
 
+from completion.models import BlockCompletion
+from dateutil import parser
+
+from courseware.models import StudentModule
 from lms.djangoapps.course_api.blocks.api import get_blocks
 from lms.djangoapps.course_blocks.utils import get_student_module_as_dict
-from opaque_keys.edx.keys import CourseKey
+from opaque_keys.edx.keys import CourseKey, UsageKey
 from openedx.core.djangoapps.request_cache.middleware import request_cached
+from web_science.models import WebScienceUnitLog
 from xmodule.modulestore.django import modulestore
 
 
@@ -42,6 +47,51 @@ def get_course_outline_block_tree(request, course_id):
         block['complete'] = False
         for child in block.get('children', []):
             set_last_accessed_default(child)
+
+    def set_last_visited_at(block, user, course_key):
+        """
+        Mark blocks with last_visited_at and completed_at dates
+        """
+        if block['type'] == 'vertical':
+            last_visited_at = None
+            completed_at = None
+
+            try:
+                log = WebScienceUnitLog.objects.get(student=user, block_id=UsageKey.from_string(block['id']))
+                last_visited_at = log.updated_at
+            except WebScienceUnitLog.DoesNotExist:
+                pass
+
+            for children in block.get('children', []):
+                # don't set completed_at for html and video blocks
+                if children['type'] in ['html', 'video']:
+                    deny_completed_at = True
+                else:
+                    if children['type'] == 'problem':
+                        block['graded'] = True
+                    deny_completed_at = False
+
+                try:
+                    # set last completed dates from subunit StudentModule
+                    student_module = StudentModule.objects.get(
+                        student=user,
+                        course_id=course_key,
+                        module_state_key=UsageKey.from_string(children['id']),
+                    )
+                    state = json.loads(student_module.state)
+                    if not deny_completed_at and state and state.get('done'):
+                        last_submission_time = parser.parse(state.get('last_submission_time'))
+                        if completed_at is None or (last_submission_time > completed_at):
+                            completed_at = parser.parse(state.get('last_submission_time'))
+                except StudentModule.DoesNotExist:
+                    pass
+
+            block['last_visited_at'] = last_visited_at.strftime('%d/%m/%Y') if last_visited_at else None
+            block['completed_at'] = completed_at.strftime('%d/%m/%Y') if completed_at else None
+
+        elif block.get('children'):
+            for i in range(len(block['children'])):
+                set_last_visited_at(block['children'][i], user, course_key)
 
     def mark_blocks_completed(block, user, course_key):
         """
@@ -163,6 +213,13 @@ def get_course_outline_block_tree(request, course_id):
             user=request.user,
             course_key=course_key
         )
+
+        set_last_visited_at(
+            block=course_outline_root_block,
+            user=request.user,
+            course_key=course_key,
+        )
+
     return course_outline_root_block
 
 
