@@ -79,6 +79,7 @@
 
                 addDropDownMenu: function(elementsForShow){
                     let countryClass = $("#register-country").attr("class");
+                    let stateLabel = $("<label>", {for: "usa-regions", id: "region-label"}).text("Regions * ")
                     let select = $("<select>", {id: "usa-regions", "class": countryClass})
                     for (let state in elementsForShow){
                         select.append($("<option>", {
@@ -88,7 +89,14 @@
                     }
 
                     $("#register-country").after(select)
+                    $("#register-country").after(stateLabel)
 
+                },
+
+                hideDropdownMenu: function(objectSelector){
+                    objectSelector.html("");
+                    objectSelector.hide();
+                    $("#region-label").hide()
                 },
 
                 showRegions: function(event) {
@@ -144,6 +152,9 @@
 
                     if (event.target.value === "US") {
                         this.addDropDownMenu(usaStates);
+                    }
+                    else {
+                        this.hideDropdownMenu($("#usa-regions"));
                     }
 
                 },
