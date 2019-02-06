@@ -137,13 +137,13 @@ class TestStudentsAmountPerParticularPeriod(ModuleStoreTestCase):
         """
         Verify that generated_certificates returns data as expected if no certificates.
         """
-        test_result = {}
+        expected_result = {}
 
         activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
 
         result = fetch_instance_information('generated_certificates', activity_period, name_to_cache=None)
 
-        self.assertEqual(test_result, result)
+        self.assertEqual(expected_result, result)
 
     def test_generated_certificates(self):
         """
@@ -162,11 +162,11 @@ class TestStudentsAmountPerParticularPeriod(ModuleStoreTestCase):
         """
         Verify that enthusiastic_students returns data as expected if no course structure.
         """
-        test_result = {}
+        expected_result = {}
         activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
         result = fetch_instance_information('enthusiastic_students', activity_period, name_to_cache=None)
 
-        self.assertEqual(test_result, result)
+        self.assertEqual(expected_result, result)
 
     def test_get_enthusiastic_students(self):
         """
@@ -174,9 +174,9 @@ class TestStudentsAmountPerParticularPeriod(ModuleStoreTestCase):
         """
         self.create_default_data()
 
-        test_result = {datetime.datetime.now().strftime('%Y-%m-%d'): 1}
+        expected_result = {datetime.datetime.now().strftime('%Y-%m-%d'): 1}
 
         activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
         result = fetch_instance_information('enthusiastic_students', activity_period, name_to_cache=None)
 
-        self.assertEqual(test_result, result)
+        self.assertEqual(expected_result, result)
