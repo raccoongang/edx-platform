@@ -38,7 +38,9 @@ class CreateUserAccountWithoutPasswordView(APIView):
         """
         Create a user by the email and the username.
         """
-        data = request.data
+        # NOTE(AndreyLykhoman): Making Dict from OrderDict to avoid adding non-sended parametrs to data with 'none' or
+        #  'false' values.
+        data = dict(request.data.iteritems())
         data['honor_code'] = "True"
         data['terms_of_service'] = "True"
         first_name = request.data.get('first_name', '')
@@ -61,12 +63,12 @@ class CreateUserAccountWithoutPasswordView(APIView):
             data['name'] = "{} {}".format(first_name, last_name).strip() if first_name or last_name else username
             ytp_serializer.UserSerializer().run_validation(data)
             ytp_serializer.ProfileSerializer().run_validation(data)
+            data['first_name'] = first_name
+            data['last_name'] = last_name
             data['password'] = uuid4().hex
+            for param in ('is_active', 'allow_certificate'):
+                data[param] = data.get(param, True)
             user = create_account_with_params(request, data)
-            user.first_name = first_name
-            user.last_name = last_name
-            user.is_active = True
-            user.save()
             idp_name = OAuth2ProviderConfig.objects.first().backend_name
             UserSocialAuth.objects.create(user=user, provider=idp_name, uid=uid)
             user = ytp_serializer.UserSerializer().update(user, data)
@@ -83,7 +85,9 @@ class CreateUserAccountWithoutPasswordView(APIView):
         """
         Update user information by uid.
         """
-        data = request.data
+        # NOTE(AndreyLykhoman): Making Dict from OrderDict to avoid adding non-sended parametrs to data with 'none' or
+        #  'false' values.
+        data = dict(request.data.iteritems())
         try:
             uid = self._check_available_required_params(data.get('uid'), "uid")
             user_social_auth = UserSocialAuth.objects.select_related("user").filter(uid=uid).first()
