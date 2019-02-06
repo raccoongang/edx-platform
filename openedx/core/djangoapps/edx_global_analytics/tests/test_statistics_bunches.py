@@ -44,7 +44,7 @@ class TestStatisticsLevelBunches(unittest.TestCase):
 
         enthusiast_level_statistics_bunch()
 
-        mock_fetch_instance_information.assert_called_once_with(
+        mock_fetch_instance_information.assert_any_call(
             'students_per_country', get_previous_day_start_and_end_dates(), name_to_cache=None
         )
 
@@ -55,6 +55,6 @@ class TestStatisticsLevelBunches(unittest.TestCase):
         mock_students_per_country = {'US': 5, 'CA': 10}
         mock_fetch_instance_information.return_value = mock_students_per_country
 
-        result = enthusiast_level_statistics_bunch()
+        result = enthusiast_level_statistics_bunch()[0]
 
         self.assertEqual(mock_students_per_country, result)
