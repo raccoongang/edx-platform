@@ -4,16 +4,20 @@ Tests for edX global analytics application functions, that calculate statistics.
 
 import datetime
 
-from django.test import TestCase
 from django.utils import timezone
 from django_countries.fields import Country
 
-from student.tests.factories import UserFactory
 
+from certificates.models import CertificateStatuses, GeneratedCertificate
+from courseware.models import StudentModule
+from openedx.core.djangoapps.content.course_structures.models import CourseStructure
 from openedx.core.djangoapps.edx_global_analytics.utils.utilities import fetch_instance_information
+from student.tests.factories import UserFactory
+from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
+from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 
 
-class TestStudentsAmountPerParticularPeriod(TestCase):
+class TestStudentsAmountPerParticularPeriod(ModuleStoreTestCase):
     """
     Cover all methods, that have a deal with statistics calculation.
     """
@@ -33,6 +37,53 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
 
         for user_last_login in users_last_login:
             UserFactory(last_login=user_last_login)
+
+        course = CourseFactory.create(org='TestX', course='TS101', run='T1')
+        CourseStructure.objects.all().delete()
+
+        structure = (
+            '{"blocks": {"block-v1:HISTORG+CS1023+2015_T1+type@chapter+block@bfdb4017fe6d4d74b966f18fccf5942f": {'
+            '"block_type": "chapter", "graded": false, "format": null, "usage_key": '
+            '"block-v1:HISTORG+CS1023+2015_T1+type@chapter+block@bfdb4017fe6d4d74b966f18fccf5942f", '
+            '"children": ["block-v1:HISTORG+CS1023+2015_T1+type@sequential+block@ef8b9857bc9b4e8db72410c1414cf804"], '
+            '"display_name": "Section"}, "block-v1:HISTORG+CS1023+2015_T1+type@course+block@course": {'
+            '"block_type": "course", "graded": false, "format": null, '
+            '"usage_key": "block-v1:HISTORG+CS1023+2015_T1+type@course+block@course", '
+            '"children": ["block-v1:HISTORG+CS1023+2015_T1+type@chapter+block@bfdb4017fe6d4d74b966f18fccf5942f"], '
+            '"display_name": "History"}, '
+            '"block-v1:HISTORG+CS1023+2015_T1+type@sequential+block@ef8b9857bc9b4e8db72410c1414cf804": {'
+            '"block_type": "sequential", "graded": false, "format": null, '
+            '"usage_key": "block-v1:HISTORG+CS1023+2015_T1+type@sequential+block@ef8b9857bc9b4e8db72410c1414cf804", '
+            '"children": ["block-v1:HISTORG+CS1023+2015_T1+type@vertical+block@6d09c8448bd84ccc8aca324dd871c211"], '
+            '"display_name": "Subsection"}, '
+            '"block-v1:HISTORG+CS1023+2015_T1+type@problem+block@a7d9628670194d66a6c6a87dc2377de0": {'
+            '"block_type": "problem", "graded": false, "format": null, '
+            '"usage_key": "block-v1:HISTORG+CS1023+2015_T1+type@problem+block@a7d9628670194d66a6c6a87dc2377de0",'
+            '"children": [], "display_name": "Blank Common Problem"}, '
+            '"block-v1:HISTORG+CS1023+2015_T1+type@problem+block@93c7e26b2c114d11b98e9feab07a5e85": {'
+            '"block_type": "problem", "graded": false, "format": null, '
+            '"usage_key": "block-v1:HISTORG+CS1023+2015_T1+type@problem+block@93c7e26b2c114d11b98e9feab07a5e85", '
+            '"children": [], "display_name": "Checkboxes"}, '
+            '"block-v1:HISTORG+CS1023+2015_T1+type@vertical+block@6d09c8448bd84ccc8aca324dd871c211": {'
+            '"block_type": "vertical", "graded": false, "format": null, '
+            '"usage_key": "block-v1:HISTORG+CS1023+2015_T1+type@vertical+block@6d09c8448bd84ccc8aca324dd871c211", '
+            '"children": ["block-v1:HISTORG+CS1023+2015_T1+type@problem+block@a7d9628670194d66a6c6a87dc2377de0", '
+            '"block-v1:HISTORG+CS1023+2015_T1+type@problem+block@93c7e26b2c114d11b98e9feab07a5e85"], '
+            '"display_name": "Unit"}}, "root": "block-v1:HISTORG+CS1023+2015_T1+type@course+block@course"}'
+        )
+
+        CourseStructure.objects.create(course_id=course.id, structure_json=structure)
+
+        StudentModule.objects.create(
+            student=UserFactory(),
+            module_state_key='block-v1:HISTORG+CS1023+2015_T1+type@problem+block@93c7e26b2c114d11b98e9feab07a5e85',
+            course_id=course.id,
+            state="{'attempts': 32, 'otherstuff': 'alsorobots'}",
+        )
+
+        GeneratedCertificate.objects.create(
+            user=UserFactory(), course_id=course.location.course_key, status=CertificateStatuses.downloadable
+        )
 
     def test_fetch_active_students(self):
         """
@@ -81,3 +132,51 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
         result = fetch_instance_information('students_per_country', activity_period, name_to_cache=None)
 
         self.assertEqual({None: 0}, result)
+
+    def test_generated_certificates_if_no_certificates(self):
+        """
+        Verify that generated_certificates returns data as expected if no certificates.
+        """
+        expected_result = {}
+
+        activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
+
+        result = fetch_instance_information('generated_certificates', activity_period, name_to_cache=None)
+
+        self.assertEqual(expected_result, result)
+
+    def test_generated_certificates(self):
+        """
+        Verify that generated_certificates returns data as expected.
+        """
+        self.create_default_data()
+        expected_result = {datetime.datetime.now().strftime('%Y-%m-%d'): 1}
+
+        activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
+
+        result = fetch_instance_information('generated_certificates', activity_period, name_to_cache=None)
+
+        self.assertEqual(expected_result, result)
+
+    def test_enthusiastic_users_count_if_no_course_structure(self):
+        """
+        Verify that enthusiastic_students returns data as expected if no course structure.
+        """
+        expected_result = {}
+        activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
+        result = fetch_instance_information('enthusiastic_students', activity_period, name_to_cache=None)
+
+        self.assertEqual(expected_result, result)
+
+    def test_get_enthusiastic_students(self):
+        """
+        Verify that enthusiastic_students returns data as expected.
+        """
+        self.create_default_data()
+
+        expected_result = {datetime.datetime.now().strftime('%Y-%m-%d'): 1}
+
+        activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
+        result = fetch_instance_information('enthusiastic_students', activity_period, name_to_cache=None)
+
+        self.assertEqual(expected_result, result)
