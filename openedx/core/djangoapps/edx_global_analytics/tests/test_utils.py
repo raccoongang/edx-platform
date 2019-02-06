@@ -10,8 +10,8 @@ from django.utils import timezone
 from django.db.models import Q
 from django_countries.fields import Country
 
-from openedx.core.djangoapps.edx_global_analytics.utils import cache_instance_data, fetch_instance_information
-
+from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import cache_instance_data
+from openedx.core.djangoapps.edx_global_analytics.utils.utilities import fetch_instance_information
 from student.models import UserProfile
 from student.tests.factories import UserFactory
 
@@ -48,22 +48,10 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
         cache_timeout = None
 
         result = fetch_instance_information(
-            'active_students_amount_day', 'active_students_amount', activity_period, cache_timeout
+            'active_students_amount', activity_period, cache_timeout
         )
 
         self.assertEqual(result, 2)
-
-    def test_miss_statistics_query_fetch_instance_information_for_active_students_amount(self):
-        """
-        Verifies that fetch_instance_information raise `KeyError` if default statistics queries don't have
-        corresponding name (dict`s key).
-        """
-        activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
-        cache_timeout = None
-
-        self.assertRaises(KeyError, lambda: fetch_instance_information(
-            'active_students_amount_day', 'active_students_amount_day', activity_period, cache_timeout
-        ))
 
     def test_datetime_is_none_fetch_instance_information_for_active_students_amount(self):
         """
@@ -73,7 +61,7 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
         activity_period, cache_timeout = None, None
 
         self.assertRaises(TypeError, lambda: fetch_instance_information(
-            'active_students_amount_day', 'active_students_amount', activity_period, cache_timeout
+            'active_students_amount', activity_period, cache_timeout
         ))
 
     def test_fetch_instance_information_for_students_per_country(self):
@@ -93,7 +81,7 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
         cache_timeout = None
 
         result = fetch_instance_information(
-            'students_per_country', 'students_per_country', activity_period, cache_timeout)
+            'students_per_country', activity_period, cache_timeout)
 
         self.assertItemsEqual(result, {u'US': 1, u'CA': 1})
 
@@ -109,7 +97,7 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
         cache_timeout = None
 
         result = fetch_instance_information(
-            'students_per_country', 'students_per_country', activity_period, cache_timeout)
+            'students_per_country', activity_period, cache_timeout)
 
         self.assertEqual(result, {None: 0})
 
@@ -139,14 +127,10 @@ class TestCacheInstanceData(TestCase):
         """
         self.create_cache_instance_data_default_database_data()
 
-        period_start, period_end = datetime.date(2017, 5, 8), datetime.date(2017, 5, 15)
-
-        active_students_amount_week = UserProfile.objects.exclude(
-            Q(user__last_login=None) | Q(user__is_active=False)
-        ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end).count()
+        activity_period = datetime.date(2017, 5, 8), datetime.date(2017, 5, 15)
 
         cache_timeout = None
 
-        result = cache_instance_data('active_students_amount_week', active_students_amount_week, cache_timeout)
+        result = cache_instance_data(cache_timeout, 'active_students_amount', activity_period)
 
         self.assertEqual(result, 2)

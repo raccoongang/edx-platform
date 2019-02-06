@@ -4,12 +4,22 @@ Cache functionality.
 
 from datetime import date, timedelta
 
+from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db.models import Count
 from django.db.models import Q
 
 from certificates.models import GeneratedCertificate
+from courseware.models import StudentModule
 from student.models import UserProfile
+from opaque_keys.edx.keys import UsageKey
+from openedx.core.djangoapps.content.course_structures.models import CourseStructure
+
+ACTIVE_STUDENTS_AMOUNT = 'active_students_amount'
+ENTHUSIASTIC_STUDENTS = 'enthusiastic_students'
+GENERATED_CERTIFICATES = 'generated_certificates'
+REGISTERED_STUDENTS = 'registered_students'
+STUDENTS_PER_COUNTRY = 'students_per_country'
 
 
 def cache_instance_data(name_to_cache, query_type, activity_period):
@@ -39,26 +49,53 @@ def get_query_result(query_type, activity_period):
     """
     period_start, period_end = activity_period
 
-    if query_type == 'active_students_amount':
+    if query_type == ACTIVE_STUDENTS_AMOUNT:
         return UserProfile.objects.exclude(
             Q(user__last_login=None) | Q(user__is_active=False)
         ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end).count()
 
-    if query_type == 'students_per_country':
+    if query_type == STUDENTS_PER_COUNTRY:
         return dict(
-            UserProfile.objects.exclude(
-                Q(user__last_login=None) | Q(user__is_active=False)
-            ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end).values(
+            UserProfile.objects.exclude(Q(user__last_login=None) | Q(user__is_active=False)).values(
                 'country'
             ).annotate(count=Count('country')).values_list('country', 'count')
         )
 
-    if query_type == 'generated_certificates':
+    if query_type == GENERATED_CERTIFICATES:
         generated_certificates = GeneratedCertificate.objects.extra(select={'date': 'date( created_date )'}).values(
             'date'
         ).annotate(count=Count('pk'))
 
-        return {str(c.get('date', '')): c.get('count', 0) for c in generated_certificates}
+        return {
+            str(certificates['date']): certificates['count'] for certificates in generated_certificates
+        }
+
+    if query_type == REGISTERED_STUDENTS:
+        registered_students = User.objects.exclude(is_staff=True).extra(select={'date': 'date( date_joined )'}).values(
+            'date').annotate(count=Count('pk'))
+
+        return {str(student['date']): student['count'] for student in registered_students}
+
+    if query_type == ENTHUSIASTIC_STUDENTS:
+        # Gets all course's structures
+        course_structure_query = CourseStructure.objects.all()
+        courses_structures_list = [course_structure.ordered_blocks for course_structure in course_structure_query]
+
+        last_sections_usage_keys_list = list()
+
+        for course_structure in courses_structures_list:
+            # Get all sections in structure
+            sections_usage_keys = [section[1].get('usage_key', '') for section in course_structure.iteritems()]
+
+            # Generates UsageKey for last section's usage_key and add it to last_sections_usage_keys_list
+            last_sections_usage_keys_list.append(UsageKey.from_string(sections_usage_keys[-1]))
+
+        # Gets all records from db. Filters them by usage_keys of the last sections and grouped by date.
+        enthusiastic_students = StudentModule.objects.filter(module_state_key__in=last_sections_usage_keys_list).extra(
+            select={'date': 'date( modified )'}
+        ).values('date').annotate(count=Count('pk'))
+
+        return {str(student['date']): student['count'] for student in enthusiastic_students}
 
 
 def get_cache_week_key():

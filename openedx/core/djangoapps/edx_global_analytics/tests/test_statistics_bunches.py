@@ -55,6 +55,6 @@ class TestStatisticsLevelBunches(unittest.TestCase):
         mock_students_per_country = {'US': 5, 'CA': 10}
         mock_fetch_instance_information.return_value = mock_students_per_country
 
-        result = enthusiast_level_statistics_bunch()
+        result = enthusiast_level_statistics_bunch()[0]
 
         self.assertEqual(mock_students_per_country, result)
