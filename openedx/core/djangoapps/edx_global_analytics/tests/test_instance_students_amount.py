@@ -147,16 +147,16 @@ class TestStudentsAmountPerParticularPeriod(ModuleStoreTestCase):
 
     def test_generated_certificates(self):
         """
-        Verify that generated_certificates returns data as expected
+        Verify that generated_certificates returns data as expected.
         """
         self.create_default_data()
-        test_result = {datetime.datetime.now().strftime('%Y-%m-%d'): 1}
+        expected_result = {datetime.datetime.now().strftime('%Y-%m-%d'): 1}
 
         activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
 
         result = fetch_instance_information('generated_certificates', activity_period, name_to_cache=None)
 
-        self.assertEqual(test_result, result)
+        self.assertEqual(expected_result, result)
 
     def test_enthusiastic_users_count_if_no_course_structure(self):
         """
@@ -170,7 +170,7 @@ class TestStudentsAmountPerParticularPeriod(ModuleStoreTestCase):
 
     def test_get_enthusiastic_students(self):
         """
-        Verify that enthusiastic_students returns data as expected
+        Verify that enthusiastic_students returns data as expected.
         """
         self.create_default_data()
 

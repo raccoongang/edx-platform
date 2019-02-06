@@ -133,12 +133,9 @@ def collect_stats():
 
         latitude, longitude = get_coordinates_by_ip()
 
-        (
-            students_per_country,
-            generated_certificates,
-            registered_students,
-            enthusiastic_students,
-         ) = enthusiast_level_statistics_bunch()
+        students_per_country, generated_certificates, registered_students, enthusiastic_students = (
+            enthusiast_level_statistics_bunch()
+        )
 
         data.update({
             'latitude': latitude,
