@@ -8,12 +8,10 @@ import logging
 from datetime import date, timedelta
 from django.contrib.auth.models import User
 from django.db.models.aggregates import Count, Max
-from django.db.models.expressions import F, Func, Value
 from django.db.transaction import atomic
 
 import requests
 
-import lms.djangoapps.certificates as certificates
 from certificates.models import GeneratedCertificate
 from courseware.courses import get_course_by_id
 from courseware.models import StudentModule
