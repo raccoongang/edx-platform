@@ -152,13 +152,13 @@ def get_registered_students_daily(token):
     """
     last_date = get_last_analytics_sent_date('registered_students', token)
     queryset = User.objects.filter(date_joined__gt=last_date)
-    registered_users = queryset.extra(
-        select={'date': 'date( date_joined )'}
-    ).values('date').annotate(count=Count('id'), datetime=Max('date_joined'))
-    new_last_date = queryset.aggregate(
-        datetime=Max('date_joined')
-    )['datetime']
-    return (dict((str(day['date']), day['count']) for day in registered_users), new_last_date)
+
+    registered_users = queryset.extra(select={'date': 'date( date_joined )'}).values('date').annotate(
+        count=Count('id'), datetime=Max('date_joined')
+    )
+    new_last_date = queryset.aggregate(datetime=Max('date_joined'))['datetime']
+
+    return dict((str(day['date']), day['count']) for day in registered_users), new_last_date
 
 
 @atomic
@@ -172,13 +172,13 @@ def get_generated_certificates_daily(token):
     """
     last_date = get_last_analytics_sent_date('generated_certificates', token)
     queryset = GeneratedCertificate.objects.filter(created_date__gt=last_date)
-    generated_certificates = queryset.annotate(
-        date=Func(F('created_date'), Value('%Y-%m-%d'), function='date_format')
-    ).values('date').annotate(count=Count('id'), datetime=Max('created_date'))
-    new_last_date = queryset.aggregate(
-        datetime=Max('created_date')
-    )['datetime']
-    return (dict((day['date'], day['count']) for day in generated_certificates), new_last_date)
+
+    generated_certificates = queryset.extra(select={'date': 'date( created_date )'}).values('date').annotate(
+        count=Count('id'), datetime=Max('created_date')
+    )
+    new_last_date = queryset.aggregate(datetime=Max('created_date'))['datetime']
+
+    return dict((str(day['date']), day['count']) for day in generated_certificates), new_last_date
 
 
 @atomic
@@ -192,16 +192,14 @@ def get_enthusiastic_students_daily(token):
     """
     last_date = get_last_analytics_sent_date('enthusiastic_students', token)
     last_sections_ids = get_all_courses_last_sections_ids()
-    queryset = StudentModule.objects.filter(
-        created__gt=last_date, module_state_key__in=last_sections_ids
+    queryset = StudentModule.objects.filter(created__gt=last_date, module_state_key__in=last_sections_ids)
+
+    enthusiastic_students = queryset.extra(select={'date': 'date( modified )'}).values('date').annotate(
+        count=Count('student_id', datetime=Max('created'))
     )
-    enthusiastic_students = queryset.annotate(
-        date=Func(F('created'), Value('%Y-%m-%d'), function='date_format')
-    ).values('date').annotate(count=Count('student_id', datetime=Max('created')))
-    new_last_date = queryset.aggregate(
-        datetime=Max('created')
-    )['datetime']
-    return (dict((day['date'], day['count']) for day in enthusiastic_students), new_last_date)
+    new_last_date = queryset.aggregate(datetime=Max('created'))['datetime']
+
+    return dict((str(day['date']), day['count']) for day in enthusiastic_students), new_last_date
 
 
 def get_all_courses_last_sections_ids():

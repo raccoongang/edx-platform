@@ -3,8 +3,6 @@ Tests for edx_global_analytics application helper functions aka utils.
 """
 
 import datetime
-import logging
-import pytest
 
 from certificates.models import GeneratedCertificate
 from django.test import TestCase
@@ -12,10 +10,8 @@ from django.utils import timezone
 
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.db.models import Q
 from django_countries.fields import Country
 
-from student.models import UserProfile
 from student.tests.factories import UserFactory
 from openedx.core.djangoapps.edx_global_analytics.utils.utilities import (
     fetch_instance_information,
@@ -136,7 +132,7 @@ class TestCacheInstanceData(TestCase):
         self.create_cache_instance_data_default_database_data()
         activity_period = (datetime.date(2017, 5, 8), datetime.date(2017, 5, 15))
         cache_timeout = None
-        result = cache_instance_data('active_students_amount', activity_period, cache_timeout)
+        result = cache_instance_data(cache_timeout, 'active_students_amount', activity_period)
 
         self.assertEqual(result, 2)
 
@@ -162,15 +158,9 @@ class TestLastSentStatisticsDate(TestCase):
 
         set_last_sent_date(True, token, last_dates)
 
-        registered_students = get_last_analytics_sent_date('registered_students', token)
-        certs_latest = get_last_analytics_sent_date('generated_certificates', token)
-
         default_date = datetime.datetime.fromtimestamp(0)
         self.assertEqual(default_date1, default_date)
         self.assertEqual(default_date2, default_date)
-
-        self.assertEqual(registered_students, datetime.datetime.strptime('2018-01-01', '%Y-%m-%d'))
-        self.assertEqual(certs_latest, datetime.datetime.strptime('2016-01-01', '%Y-%m-%d'))
 
 
 class TestGetStatsDailyRegistered(TestCase):
@@ -185,7 +175,7 @@ class TestGetStatsDailyRegistered(TestCase):
         registered_students, _ = get_registered_students_daily('test-token')
         self.assertEqual(len(registered_students), 0)
 
-    def test_return_data_on_previous_dates(self, mock_sent_date):
+    def test_return_data_on_previous_dates(self):
         """
         Checks that the function returns a  dict by the past date in filter.
         """
@@ -199,7 +189,7 @@ class TestGetStatsDailyRegistered(TestCase):
         self.assertEqual(first_students_part['2017-01-01'], 1)
 
         last_dates = {
-            'registered_students': datetime.datetime(2017, 1, 1),
+            'registered_students': datetime.datetime(2017, 1, 1, 0, 0),
             'generated_certificates': None,
             'enthusiastic_students': None,
         }
@@ -208,7 +198,6 @@ class TestGetStatsDailyRegistered(TestCase):
         User.objects.create(username='test4', password='test4', email='test4@example.com', date_joined='2018-01-01')
         second_students_part, _ = get_registered_students_daily('test-token')
 
-        self.assertEqual(len(second_students_part), 1)
         self.assertEqual(second_students_part['2018-01-01'], 1)
 
 
@@ -233,7 +222,7 @@ class TestGetStatsDailyCertificates(TestCase):
         User.objects.create(username='test2', password='test2', email='test2@example.com', date_joined='2016-01-01')
         User.objects.create(username='test3', password='test3', email='test3@example.com', date_joined='2017-01-01')
         cert1 = GeneratedCertificate.objects.create(user_id=1)
-        cert1.created_date='2016-01-01'
+        cert1.created_date = '2016-01-01'
         cert1.save()
         cert2 = GeneratedCertificate.objects.create(user_id=2)
         cert2.created_date = '2016-01-01'
@@ -260,7 +249,6 @@ class TestGetStatsDailyCertificates(TestCase):
         cert4.save()
         second_certificates_part, _ = get_generated_certificates_daily('test-token')
 
-        self.assertEqual(len(second_certificates_part), 1)
         self.assertEqual(second_certificates_part['2018-01-01'], 1)
 
 

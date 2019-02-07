@@ -164,5 +164,6 @@ def set_last_sent_date(result, token, dates):
         return
 
     for stat_type, date in dates.iteritems():
+        print stat_type, date, 'set date to cache -----------'
         if date:
             set_last_analytics_sent_date(stat_type, token, date)
