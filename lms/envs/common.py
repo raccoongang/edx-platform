@@ -667,8 +667,8 @@ DEV_CONTENT = True
 
 EDX_ROOT_URL = ''
 
-LOGIN_REDIRECT_URL = EDX_ROOT_URL + '/login'
-LOGIN_URL = EDX_ROOT_URL + '/login'
+LOGIN_REDIRECT_URL = EDX_ROOT_URL + '/auth/login/sdn-oauth2/?auth_entry=login'
+LOGIN_URL = EDX_ROOT_URL + '/auth/login/sdn-oauth2/?auth_entry=login'
 
 ### Dark code. Should be enabled in local settings for devel.
 
@@ -3475,6 +3475,7 @@ FERNET_KEYS = [
 # Maximum number of rows to fetch in XBlockUserStateClient calls. Adjust for performance
 USER_STATE_BATCH_SIZE = 5000
 
+SOCIAL_AUTH_EXCLUDE_URL_PATTERN = r'^/admin'
 
 ############## Plugin Django Apps #########################
 
