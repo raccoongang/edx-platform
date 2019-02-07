@@ -11,7 +11,12 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from xmodule.modulestore.django import modulestore
 
-from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import get_cache_week_key, get_cache_month_key
+from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import (
+    get_cache_week_key,
+    get_cache_month_key,
+    get_last_analytics_sent_date,
+    set_last_analytics_sent_date,
+)
 from openedx.core.djangoapps.edx_global_analytics.utils.token_utils import get_acceptor_api_access_token
 from openedx.core.djangoapps.edx_global_analytics.utils.utilities import (
     fetch_instance_information,
@@ -19,6 +24,9 @@ from openedx.core.djangoapps.edx_global_analytics.utils.utilities import (
     get_previous_day_start_and_end_dates,
     get_previous_week_start_and_end_dates,
     get_previous_month_start_and_end_dates,
+    get_registered_students_daily,
+    get_generated_certificates_daily,
+    get_enthusiastic_students_daily,
     send_instance_statistics_to_acceptor,
 )
 
@@ -54,19 +62,7 @@ def enthusiast_level_statistics_bunch():
         'students_per_country', get_previous_day_start_and_end_dates(), name_to_cache=None,
     )
 
-    generated_certificates = fetch_instance_information(
-        'generated_certificates', get_previous_day_start_and_end_dates(), name_to_cache=None,
-    )
-
-    registered_students = fetch_instance_information(
-        'registered_students', get_previous_day_start_and_end_dates(), name_to_cache=None,
-    )
-
-    enthusiastic_students = fetch_instance_information(
-        'enthusiastic_students', get_previous_day_start_and_end_dates(), name_to_cache=None,
-    )
-
-    return students_per_country, generated_certificates, registered_students, enthusiastic_students
+    return students_per_country
 
 
 def get_olga_acceptor_url(olga_settings):
@@ -98,9 +94,7 @@ def collect_stats():
         return
 
     olga_settings = settings.ENV_TOKENS.get('OPENEDX_LEARNERS_GLOBAL_ANALYTICS')
-
     olga_acceptor_url = get_olga_acceptor_url(olga_settings)
-
     access_token = get_acceptor_api_access_token(olga_acceptor_url)
 
     if not access_token:
@@ -109,12 +103,18 @@ def collect_stats():
 
     # Data volume depends on server settings.
     statistics_level = olga_settings.get("STATISTICS_LEVEL")
-
     courses_amount = len(modulestore().get_courses())
-
     (active_students_amount_day,
      active_students_amount_week,
      active_students_amount_month) = paranoid_level_statistics_bunch()
+    registered_students, registered_students_last_date = get_registered_students_daily(access_token)
+    generated_certificates, generated_certificates_last_date = get_generated_certificates_daily(access_token)
+    enthusiastic_students, enthusiastic_students_last_date = get_enthusiastic_students_daily(access_token)
+    last_dates = {
+        'registered_students': registered_students_last_date,
+        'generated_certificates': generated_certificates_last_date,
+        'enthusiastic_students': enthusiastic_students_last_date,
+    }
 
     # Paranoid statistics level basic data.
     data = {
@@ -124,19 +124,17 @@ def collect_stats():
         'active_students_amount_month': active_students_amount_month,
         'courses_amount': courses_amount,
         'statistics_level': 'paranoid',
+        'registered_students': json.dumps(registered_students),
+        'generated_certificates': json.dumps(generated_certificates),
+        'enthusiastic_students': json.dumps(enthusiastic_students),
     }
 
     if statistics_level == 'enthusiast':
         platform_url = "https://" + settings.SITE_NAME
         platform_name = settings.PLATFORM_NAME or Site.objects.get_current()
-        platform_city_name = olga_settings.get("PLATFORM_CITY_NAME", '')
-
+        platform_city_name = olga_settings.get("PLATFORM_CITY_NAME", "")
         latitude, longitude = get_coordinates_by_ip()
-
-        students_per_country, generated_certificates, registered_students, enthusiastic_students = (
-            enthusiast_level_statistics_bunch()
-        )
-
+        students_per_country = enthusiast_level_statistics_bunch()
         data.update({
             'latitude': latitude,
             'longitude': longitude,
@@ -145,9 +143,25 @@ def collect_stats():
             'platform_url': platform_url,
             'statistics_level': 'enthusiast',
             'students_per_country': json.dumps(students_per_country),
-            'generated_certificates': json.dumps(generated_certificates),
-            'registered_students': json.dumps(registered_students),
-            'enthusiastic_students': json.dumps(enthusiastic_students),
         })
 
-    send_instance_statistics_to_acceptor(olga_acceptor_url, data)
+    result = send_instance_statistics_to_acceptor(olga_acceptor_url, data)
+    set_last_sent_date(result, access_token, last_dates)
+
+
+def set_last_sent_date(result, token, dates):
+    """
+    Set last sent dates to the cache.
+
+    :param result: result of the http client request that were sent a statistics to the OLGA
+    :param statistics_level: statistics level - may be "paranoid" or "enthusiast"
+    :param token: access token used to push statistics and to distinguish the cache elements
+    :param type: type of the data ("registered", "certificates" or "enthusiastic")
+    :param data: data as a dictionary where key is a date and the value is a count of elements at this day
+    """
+    if not result:  # If http request is failed
+        return
+
+    for stat_type, date in dates.iteritems():
+        if date:
+            set_last_analytics_sent_date(stat_type, token, date)
