@@ -216,6 +216,8 @@ def get_all_courses_last_sections_ids():
             continue
 
         course = get_course_by_id(course_key, depth=2)
-        last_sections_ids.append(course.get_children()[-1].location)
+
+        if course.get_children():
+            last_sections_ids.append(course.get_children()[-1].location)
 
     return last_sections_ids
