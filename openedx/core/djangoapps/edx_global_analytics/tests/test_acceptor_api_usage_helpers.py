@@ -19,7 +19,7 @@ class TestAcceptorApiUsageHelpFunctions(unittest.TestCase):
     Tests for OLGA acceptor api usage by edX global analytics application tasks and helper functions.
     """
 
-    @patch('openedx.core.djangoapps.edx_global_analytics.utils.utils.request_exception_handler_with_logger')
+    @patch('openedx.core.djangoapps.edx_global_analytics.utils.utilities.request_exception_handler_with_logger')
     def test_decorator_if_no_exception(self, mock_request_exception_handler_with_logger):
         """
         Test request_exception_handler_with_logger return wrapped function, if Request Exception does not exist.
@@ -36,8 +36,8 @@ class TestAcceptorApiUsageHelpFunctions(unittest.TestCase):
 
         self.assertEqual(mock_decorated_function('mock'), result)
 
-    @patch('openedx.core.djangoapps.edx_global_analytics.utils.utils.logging.Logger.exception')
-    @patch('openedx.core.djangoapps.edx_global_analytics.utils.utils.request_exception_handler_with_logger')
+    @patch('openedx.core.djangoapps.edx_global_analytics.utils.utilities.logging.Logger.exception')
+    @patch('openedx.core.djangoapps.edx_global_analytics.utils.utilities.request_exception_handler_with_logger')
     def test_decorator_if_exception(self, mock_request_exception_handler_with_logger, mock_logging_exception):
         """
         Test request_exception_handler_with_logger log exception if whatever happened with request.
