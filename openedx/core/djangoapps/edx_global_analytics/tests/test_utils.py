@@ -4,24 +4,23 @@ Tests for edx_global_analytics application helper functions aka utils.
 
 import datetime
 
-from certificates.models import GeneratedCertificate
-from django.test import TestCase
-from django.utils import timezone
-
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.test import TestCase
+from django.utils import timezone
 from django_countries.fields import Country
 
-from student.tests.factories import UserFactory
+from certificates.models import GeneratedCertificate
+from openedx.core.djangoapps.edx_global_analytics.tasks import set_last_sent_date
 from openedx.core.djangoapps.edx_global_analytics.utils.utilities import (
-    fetch_instance_information,
     cache_instance_data,
-    get_registered_students_daily,
+    fetch_instance_information,
+    get_enthusiastic_students_daily,
     get_generated_certificates_daily,
     get_last_analytics_sent_date,
-    get_enthusiastic_students_daily,
+    get_registered_students_daily
 )
-from openedx.core.djangoapps.edx_global_analytics.tasks import set_last_sent_date
+from student.tests.factories import UserFactory
 
 
 class TestStudentsAmountPerParticularPeriod(TestCase):

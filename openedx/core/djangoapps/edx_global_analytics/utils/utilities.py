@@ -5,24 +5,24 @@ Helpers for the edX global analytics application.
 import calendar
 import httplib
 import logging
-import requests
-
 from datetime import date, timedelta
+
+import requests
 from django.contrib.auth.models import User
 from django.db.models.aggregates import Count, Max
 from django.db.transaction import atomic
+from opaque_keys import InvalidKeyError
+from opaque_keys.edx.keys import CourseKey
 
 from certificates.models import GeneratedCertificate
 from courseware.courses import get_course_by_id
 from courseware.models import StudentModule
-from opaque_keys import InvalidKeyError
-from opaque_keys.edx.keys import CourseKey
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import (
     cache_instance_data,
     get_last_analytics_sent_date,
-    set_last_analytics_sent_date,
     get_query_result,
+    set_last_analytics_sent_date
 )
 
 logger = logging.getLogger(__name__)
@@ -166,7 +166,6 @@ def get_generated_certificates_daily(token):
     Get the count of the certificates generated  daily starting from the day after the date_start.
 
     :param token: string of the token that used in cache key creation
-    :param date_start: datetime of the last day analytics was sent for
     :return: Dictionary where the keys is a dates and the values is the counts.
     """
     last_date = get_last_analytics_sent_date('generated_certificates', token)
@@ -186,7 +185,6 @@ def get_enthusiastic_students_daily(token):
     Get enthusiastic students count daily starting from the day after the date_start.
 
     :param token: string of the token that used in cache key creation
-    :param date_start: datetime of the last day analytics was sent for
     :return: Dictionary where the keys is a dates and the values is the counts.
     """
     last_date = get_last_analytics_sent_date('enthusiastic_students', token)

@@ -123,6 +123,8 @@ with open(CONFIG_ROOT / CONFIG_PREFIX + "env.json") as env_file:
 # Celery time zone settings for periodic task.
 OPENEDX_LEARNERS_GLOBAL_ANALYTICS_ENABLE = ENV_TOKENS.get('OPENEDX_LEARNERS_GLOBAL_ANALYTICS_ENABLE', False)
 OPENEDX_LEARNERS_GLOBAL_ANALYTICS_SETTINGS = ENV_TOKENS.get('OPENEDX_LEARNERS_GLOBAL_ANALYTICS', None)
+
+# This variable needs for running tasks more faster than once a day when your need test OLGA working.
 OLGA_SENDING_FREQUENCY = ENV_TOKENS.get('OLGA_SENDING_FREQUENCY', None)
 
 if OLGA_SENDING_FREQUENCY and (0 < OLGA_SENDING_FREQUENCY < 60):

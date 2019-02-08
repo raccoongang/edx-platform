@@ -9,26 +9,26 @@ import logging
 from celery.task import task
 from django.conf import settings
 from django.contrib.sites.models import Site
-from xmodule.modulestore.django import modulestore
 
 from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import (
-    get_cache_week_key,
     get_cache_month_key,
+    get_cache_week_key,
     get_last_analytics_sent_date,
-    set_last_analytics_sent_date,
+    set_last_analytics_sent_date
 )
 from openedx.core.djangoapps.edx_global_analytics.utils.token_utils import get_acceptor_api_access_token
 from openedx.core.djangoapps.edx_global_analytics.utils.utilities import (
     fetch_instance_information,
     get_coordinates_by_ip,
-    get_previous_day_start_and_end_dates,
-    get_previous_week_start_and_end_dates,
-    get_previous_month_start_and_end_dates,
-    get_registered_students_daily,
-    get_generated_certificates_daily,
     get_enthusiastic_students_daily,
-    send_instance_statistics_to_acceptor,
+    get_generated_certificates_daily,
+    get_previous_day_start_and_end_dates,
+    get_previous_month_start_and_end_dates,
+    get_previous_week_start_and_end_dates,
+    get_registered_students_daily,
+    send_instance_statistics_to_acceptor
 )
+from xmodule.modulestore.django import modulestore
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -154,10 +154,8 @@ def set_last_sent_date(result, token, dates):
     Set last sent dates to the cache.
 
     :param result: result of the http client request that were sent a statistics to the OLGA
-    :param statistics_level: statistics level - may be "paranoid" or "enthusiast"
     :param token: access token used to push statistics and to distinguish the cache elements
-    :param type: type of the data ("registered", "certificates" or "enthusiastic")
-    :param data: data as a dictionary where key is a date and the value is a count of elements at this day
+    :param dates: data as a dictionary where key is a date and the value is a count of elements at this day
     """
     if not result:  # If http request is failed
         return
