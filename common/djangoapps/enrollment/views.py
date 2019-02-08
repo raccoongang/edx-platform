@@ -641,10 +641,19 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
             user = User.objects.get(username=username)
         except ObjectDoesNotExist:
             # user with such username does not exist
+            is_active = request.data.get('is_active', True)
+            if not isinstance(is_active, bool):
+                return Response(
+                    status=status.HTTP_400_BAD_REQUEST,
+                    data={
+                        'message': (u"'{value}' is an invalid enrollment activation status.").format(
+                            value=is_active)
+                    }
+                )
+            # is_active is True or False
             if email:
                 # if email is passed in request
-                is_active = request.data.get('is_active')
-                if is_active is None:
+                if is_active:
                     #  unenroll is not requested;
                     #  add email to CourseEnrollmentAllowed so that the user
                     #  enrolls automatically as soon as he registers
@@ -656,27 +665,19 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
                         }
                     )
                 else:
-                    if not isinstance(is_active, bool):
-                        return Response(
-                            status=status.HTTP_400_BAD_REQUEST,
-                            data={
-                                'message': (u"'{value}' is an invalid enrollment activation status.").format(
-                                    value=is_active)
-                            }
-                        )
-                    elif not is_active:
-                        #  unenroll is requested (request.data['ia_active'] == False);
-                        #  delete email from CourseEnrollmentAllowed so that the user
-                        #  does not enroll automatically as soon as he registers
-                        unenroll_email(course_id, email, email_students=False)
-                        return Response(
-                            status=status.HTTP_200_OK,
-                            data={
-                                'message': 'email removed from CourseEnrollmentAllowed'
-                            }
-                        )
+                    #  unenroll is requested (request.data['ia_active'] == False);
+                    #  delete email from CourseEnrollmentAllowed so that the user
+                    #  does not enroll automatically as soon as he registers
+                    unenroll_email(course_id, email, email_students=False)
+                    return Response(
+                        status=status.HTTP_200_OK,
+                        data={
+                            'message': 'email removed from CourseEnrollmentAllowed'
+                        }
+                    )
 
             else:
+                # no email, no username
                 return Response(
                     status=status.HTTP_406_NOT_ACCEPTABLE,
                     data={
