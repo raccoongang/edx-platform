@@ -48,3 +48,6 @@ parsel==1.2.0
 
 # Recommender xblock
 -e git+https://github.com/raccoongang/RecommenderXBlock.git@v1.4.1#egg=recommender-xblock==1.4.1
+
+# SSO
+-e git+https://github.com/raccoongang/edx-oauth-client.git@hawthorn-master#egg=edx_oauth_client

@@ -20,7 +20,7 @@ import third_party_auth
 
 from edx_ace import ace
 from edx_ace.recipient import Recipient
-from edxmako.shortcuts import render_to_response
+from edxmako.shortcuts import render_to_response, marketing_link
 from lms.djangoapps.commerce.models import CommerceConfiguration
 from lms.djangoapps.commerce.utils import EcommerceService
 from openedx.core.djangoapps.ace_common.template_context import get_base_template_context
@@ -82,6 +82,10 @@ def login_and_registration_form(request, initial_mode="login"):
     # If we're already logged in, redirect to the dashboard
     if request.user.is_authenticated:
         return redirect(redirect_to)
+
+    redirect_url = marketing_link(initial_mode.upper())
+    if redirect_url != '#':
+        return redirect(redirect_url, permanent=True)
 
     # Retrieve the form descriptions from the user API
     form_descriptions = _get_form_descriptions(request)
@@ -475,6 +479,10 @@ def account_settings(request):
         GET /account/settings
 
     """
+    redirect_url = marketing_link('PROFILE')
+    if redirect_url != '#':
+        return redirect(redirect_url, permanent=True)
+
     context = account_settings_context(request)
     return render_to_response('student_account/account_settings.html', context)
 
