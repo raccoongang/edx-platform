@@ -43,6 +43,7 @@ from student.auth import user_has_role
 from student.models import User
 from student.roles import CourseStaffRole, GlobalStaff
 from util.disable_rate_limit import can_disable_rate_limit
+from lms.djangoapps.instructor.enrollment import enroll_email, unenroll_email
 
 log = logging.getLogger(__name__)
 REQUIRED_ATTRIBUTES = {
@@ -595,6 +596,7 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
 
         username = request.data.get('user', request.user.username)
         course_id = request.data.get('course_details', {}).get('course_id')
+        email = request.data.get('email')
 
         if not course_id:
             return Response(
@@ -638,12 +640,49 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
             # Lookup the user, instead of using request.user, since request.user may not match the username POSTed.
             user = User.objects.get(username=username)
         except ObjectDoesNotExist:
-            return Response(
-                status=status.HTTP_406_NOT_ACCEPTABLE,
-                data={
-                    'message': u'The user {} does not exist.'.format(username)
-                }
-            )
+            # user with such username does not exist
+            if email:
+                # if email is passed in request
+                is_active = request.data.get('is_active')
+                if is_active is None:
+                    #  unenroll is not requested;
+                    #  add email to CourseEnrollmentAllowed so that the user
+                    #  enrolls automatically as soon as he registers
+                    enroll_email(course_id, email, auto_enroll=True, email_students=False)
+                    return Response(
+                        status=status.HTTP_200_OK,
+                        data={
+                            'message': 'email added to CourseEnrollmentAllowed'
+                        }
+                    )
+                else:
+                    if not isinstance(is_active, bool):
+                        return Response(
+                            status=status.HTTP_400_BAD_REQUEST,
+                            data={
+                                'message': (u"'{value}' is an invalid enrollment activation status.").format(
+                                    value=is_active)
+                            }
+                        )
+                    elif not is_active:
+                        #  unenroll is requested (request.data['ia_active'] == False);
+                        #  delete email from CourseEnrollmentAllowed so that the user
+                        #  does not enroll automatically as soon as he registers
+                        unenroll_email(course_id, email, email_students=False)
+                        return Response(
+                            status=status.HTTP_200_OK,
+                            data={
+                                'message': 'email removed from CourseEnrollmentAllowed'
+                            }
+                        )
+
+            else:
+                return Response(
+                    status=status.HTTP_406_NOT_ACCEPTABLE,
+                    data={
+                        'message': u'The user {} does not exist.'.format(username)
+                    }
+                )
 
         embargo_response = embargo_api.get_embargo_response(request, course_id, user)
 
