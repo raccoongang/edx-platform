@@ -72,4 +72,12 @@ class CourseListGetForm(UsernameValidatorMixin, Form):
                 filter_[supported_filter.field_name] = cleaned_data[supported_filter.param_name]
         cleaned_data['filter_'] = filter_ or None
 
+        if cleaned_data['search_term']:
+            if cleaned_data['filter_'] is None:
+                cleaned_data['filter_'] = {}
+
+            cleaned_data['filter_'].update({
+                'display_name__icontains': cleaned_data['search_term']
+            })
+
         return cleaned_data

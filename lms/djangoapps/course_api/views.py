@@ -255,18 +255,20 @@ class CourseListView(DeveloperErrorViewMixin, ListAPIView):
             org=form.cleaned_data['org'],
             filter_=form.cleaned_data['filter_'],
         )
+        return db_courses
 
-        if not settings.FEATURES['ENABLE_COURSEWARE_SEARCH'] or not form.cleaned_data['search_term']:
-            return db_courses
-
-        search_courses = search.api.course_discovery_search(
-            form.cleaned_data['search_term'],
-            size=self.results_size_infinity,
-        )
-
-        search_courses_ids = {course['data']['id']: True for course in search_courses['results']}
-
-        return [
-            course for course in db_courses
-            if unicode(course.id) in search_courses_ids
-        ]
+        #
+        # if not settings.FEATURES['ENABLE_COURSEWARE_SEARCH'] or not form.cleaned_data['search_term']:
+        #     return db_courses
+        #
+        # search_courses = search.api.course_discovery_search(
+        #     form.cleaned_data['search_term'],
+        #     size=self.results_size_infinity,
+        # )
+        #
+        # search_courses_ids = {course['data']['id']: True for course in search_courses['results']}
+        #
+        # return [
+        #     course for course in db_courses
+        #     if unicode(course.id) in search_courses_ids
+        # ]
