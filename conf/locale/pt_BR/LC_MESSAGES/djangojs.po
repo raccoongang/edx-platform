@@ -8064,10 +8064,13 @@ msgid ""
 "file, download course profile information or cohort results on the "
 "{link_start}Data Download{link_end} page."
 msgstr ""
+"para revisar as atribuições de grupo dos alunos ou ver os resultados de fazer upload de um arquivo SCV, "
+"fazer o download das informações do perfil do curso ou grupo os resultados na página de "
+"{link_start}download de dados{link_end}"
 
 #: lms/templates/instructor/instructor_dashboard_2/discussions.underscore
 msgid "Specify whether discussion topics are divided"
-msgstr ""
+msgstr "especifique se os tópicos de discussão são divididos por coorte"
 
 #: lms/templates/instructor/instructor_dashboard_2/divided-discussions-course-wide.underscore
 msgid "Course-Wide Discussion Topics"

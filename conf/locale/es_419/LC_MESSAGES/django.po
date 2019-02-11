@@ -3308,7 +3308,7 @@ msgstr ""
 #: lms/templates/courseware/info.html
 #: openedx/features/course_experience/templates/course_experience/course-home-fragment.html
 msgid "Course Handouts"
-msgstr "Materiales del curso"
+msgstr "Folleto del curs"
 
 #: common/lib/xmodule/xmodule/course_module.py
 msgid ""
@@ -16888,8 +16888,9 @@ msgstr ""
 "ahora!{link_end}"
 
 #: lms/templates/courseware/info.html
-msgid "Welcome to {org}'s {course_title}!"
-msgstr "¡ Bienvenido al curso {org} {course_title}!"
+msgid "Welcome to {org}'s {course_name}!"
+msgstr "¡ Bienvenido al curso {org} {course_name}!"
+
 
 #: lms/templates/courseware/info.html
 msgid "Welcome to {course_title}!"
@@ -20776,7 +20777,7 @@ msgstr ""
 
 #: lms/templates/navigation/navbar-not-authenticated.html
 msgid "Explore Courses"
-msgstr "Explorar cursos"
+msgstr "Explorar Cursos"
 
 #: lms/templates/navigation/navigation.html
 msgid "Global"

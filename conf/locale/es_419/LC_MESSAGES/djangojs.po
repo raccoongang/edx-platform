@@ -3725,7 +3725,7 @@ msgid "Discussion topics in the course are not divided."
 msgstr "Temas de discusión en el curso no son divididos."
 
 #: lms/static/js/discussions_management/views/discussions.js
-msgid "Any divided discussion topics are divided based on enrollment track."
+msgid "Any divided discussion topics are ased on enrollment track."
 msgstr "La división de temas de discusión se basa en la ruta de inscripción."
 
 #: lms/static/js/discussions_management/views/discussions.js

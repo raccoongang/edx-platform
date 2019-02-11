@@ -3212,7 +3212,7 @@ msgstr ""
 #: lms/templates/courseware/info.html
 #: openedx/features/course_experience/templates/course_experience/course-home-fragment.html
 msgid "Course Handouts"
-msgstr "Apostilas do curso"
+msgstr "Folheto do curso"
 
 #: common/lib/xmodule/xmodule/course_module.py
 msgid ""
@@ -12777,6 +12777,7 @@ msgstr "Legal"
 msgid "Choose Language"
 msgstr ""
 
+
 #: cms/templates/widgets/header.html lms/templates/user_dropdown.html
 #: lms/templates/header/user_dropdown.html
 msgid "Account"
@@ -13027,7 +13028,7 @@ msgstr ""
 #: lms/templates/navigation/bootstrap/navbar-authenticated.html
 #: themes/edx.org/lms/templates/dashboard.html
 msgid "Explore courses"
-msgstr ""
+msgstr "Explore cursos"
 
 #: lms/templates/dashboard.html
 #: lms/templates/registration/account_activation_sidebar_notice.html
@@ -15952,18 +15953,18 @@ msgid ""
 msgstr ""
 
 #: lms/templates/courseware/info.html
-msgid "Welcome to {org}'s {course_title}!"
-msgstr ""
+msgid "Welcome to {org}'s {course_name}!"
+msgstr "Bem-vindo ao {org} {course_name}!"
 
 #: lms/templates/courseware/info.html
 msgid "Welcome to {course_title}!"
-msgstr ""
+msgstr "Bem-vindo ao {course_title}!"
 
 #: lms/templates/courseware/info.html
 #: lms/templates/dashboard/_dashboard_course_listing.html
 #: openedx/features/course_experience/templates/course_experience/course-home-fragment.html
 msgid "Resume Course"
-msgstr ""
+msgstr "Retomar el curso"
 
 #: lms/templates/courseware/info.html
 msgid "View Updates in Studio"
@@ -15971,7 +15972,7 @@ msgstr "Visualizar atualizações no Studio"
 
 #: lms/templates/courseware/info.html
 msgid "Course Updates and News"
-msgstr ""
+msgstr "Atualizações e notícias do curso"
 
 #: lms/templates/courseware/info.html
 msgid "Handout Navigation"
@@ -18352,7 +18353,7 @@ msgid ""
 "{strong_start}Note{strong_end}: To keep student data secure, you cannot save"
 " or email these links for direct access. Copies of links expire within 5 "
 "minutes."
-msgstr ""
+msgstr "Nota: Para manter os dados do aluno seguros, não é possível salvar ou enviar por e-mail esses links para acesso direto. Cópias dos links expiram em 5 minutos"
 
 #: lms/templates/instructor/instructor_dashboard_2/e-commerce.html
 msgid "Enrollment Codes"
@@ -19422,7 +19423,7 @@ msgstr "Tentativas do Estudante no Exame especial"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "View gradebook for enrolled learners"
-msgstr ""
+msgstr "Ver o livro de notas dos alunos matriculados"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid ""
@@ -19444,7 +19445,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Learner email address or username"
-msgstr ""
+msgstr "Endereço de e-mail do aluno ou nome de usuário"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "View Progress Page"
@@ -19655,7 +19656,7 @@ msgstr ""
 
 #: lms/templates/navigation/navbar-not-authenticated.html
 msgid "Explore Courses"
-msgstr ""
+msgstr "Explore Cursos"
 
 #: lms/templates/navigation/navigation.html
 msgid "Global"
@@ -20726,7 +20727,7 @@ msgstr ""
 
 #: openedx/features/course_experience/templates/course_experience/course-dates-fragment.html
 msgid "Important Course Dates"
-msgstr ""
+msgstr "Datas importantes do curso"
 
 #: openedx/features/course_experience/templates/course_experience/course-home-fragment.html
 msgid "Goal: "
@@ -20838,7 +20839,7 @@ msgstr ""
 
 #: openedx/features/course_experience/templates/course_experience/dates-summary.html
 msgid "Today is {date}"
-msgstr ""
+msgstr "Hoje é {date}"
 
 #: openedx/features/course_experience/templates/course_experience/latest-update-fragment.html
 msgid "Latest Update"
