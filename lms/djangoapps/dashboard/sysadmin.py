@@ -40,6 +40,7 @@ from student.models import CourseEnrollment, UserProfile, Registration
 import track.views
 from xmodule.modulestore.django import modulestore
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
+from dashboard.tasks import get_courses_xls, send_report_email
 
 
 log = logging.getLogger(__name__)
@@ -497,6 +498,16 @@ class Courses(SysadminDashboardView):
                 self.msg += \
                     u"<font color='red'>{0} {1} = {2} ({3})</font>".format(
                         _('Deleted'), course.location.to_deprecated_string(), course.id.to_deprecated_string(), course.display_name)
+
+        elif action == 'get_courses_xls':
+            xls_file = get_courses_xls.delay()
+            response = HttpResponse(xls_file.result.getvalue(), content_type='application/vnd.ms-excel')
+            response['Content-Disposition'] = "attachment; filename=Courses_{0}.xls".format(request.META['SERVER_NAME'])
+            return response
+        
+        elif action == 'send_courses_xls':
+            email_adress = request.POST.get('email', '')
+            send_report_email.delay(request, email_adress)
 
         context = {
             'datatable': self.make_datatable(),

@@ -131,7 +131,18 @@ if OPENEDX_LEARNERS_GLOBAL_ANALYTICS_ENABLE and OPENEDX_LEARNERS_GLOBAL_ANALYTIC
         'collect_stats': {
             'task': 'openedx.core.djangoapps.edx_global_analytics.tasks.collect_stats',
             'schedule': crontab(hour=0, minute=random.randint(1, 59)),
-        }
+        },
+    })
+
+if FEATURES["ENABLE_SYSADMIN_DASHBOARD"]:    
+    CELERYBEAT_SCHEDULE.update({
+        # send an email with a report on the courses to the mail 
+        # specified in the model EmailsAddressMailing 
+        # every Monday morning at 11:30 A.M
+        "mass-sending-report": {
+            "task": "mass_sending_report",
+            "schedule": crontab(hour=11, minute=30, day_of_week=1),
+        },
     })
 
 # STATIC_ROOT specifies the directory where static files are
