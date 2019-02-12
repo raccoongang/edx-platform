@@ -2,6 +2,7 @@
 
 import mongoengine
 from xmodule.modulestore.mongoengine_fields import CourseKeyField
+from django.db import models
 
 
 class CourseImportLog(mongoengine.Document):
@@ -15,3 +16,9 @@ class CourseImportLog(mongoengine.Document):
     created = mongoengine.DateTimeField()
     meta = {'indexes': ['course_id', 'created'],
             'allow_inheritance': False}
+
+
+class EmailsAdressMailing(models.Model):
+    email = models.EmailField(max_length=254)
+    active = models.BooleanField()
+    comment = models.TextField(blank=True)

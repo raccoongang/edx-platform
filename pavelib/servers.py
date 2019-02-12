@@ -157,7 +157,7 @@ def celery(options):
     """
     Runs Celery workers.
     """
-    settings = getattr(options, 'settings', 'dev_with_worker')
+    settings = getattr(options, 'settings', 'devstack_with_worker')
     run_process(django_cmd('lms', settings, 'celery', 'worker', '--beat', '--loglevel=INFO', '--pythonpath=.'))
 
 
