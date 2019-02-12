@@ -12,5 +12,4 @@ class PersistentCourseGradeSerializer(serializers.ModelSerializer):
     course_title = serializers.SerializerMethodField()
 
     def get_course_title(self, obj):
-        return CourseOverview.objects.get(id=obj.course_id).display_name  # or  display_name_with_default
-
+        return CourseOverview.objects.get(id=obj.course_id).display_name
