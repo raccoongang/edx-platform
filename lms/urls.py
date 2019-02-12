@@ -1013,7 +1013,7 @@ urlpatterns += [
 
 # Grade API extension
 urlpatterns += [
-    url(r'^api_extensions/', include('lms.djangoapps.api_extensions.urls')),
+    url(r'^api_extensions/', include('api_extensions.urls')),
 ]
 
 # Custom courses on edX (CCX) URLs
