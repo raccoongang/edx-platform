@@ -265,6 +265,11 @@ class RegistrationView(APIView):
 
         # Default fields are always required
         for field_name in self.DEFAULT_FIELDS:
+
+            # Need to add help text to the email field
+            if field_name == 'email':
+                continue
+
             self.field_handlers[field_name](form_desc, required=True)
 
         # Custom form fields can be added via the form set in settings.REGISTRATION_EXTENSION_FORM
