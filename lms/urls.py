@@ -1011,6 +1011,11 @@ urlpatterns += [
     url(r'^xdomain_proxy.html$', cors_csrf_views.xdomain_proxy, name='xdomain_proxy'),
 ]
 
+# Grade API extension
+urlpatterns += [
+    url(r'^api_extensions/', include('lms.djangoapps.api_extensions.urls')),
+]
+
 # Custom courses on edX (CCX) URLs
 if settings.FEATURES.get('CUSTOM_COURSES_EDX'):
     urlpatterns += [
