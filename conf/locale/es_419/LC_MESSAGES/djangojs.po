@@ -3933,9 +3933,13 @@ msgstr ""
 "El cohorte {cohortGroupName} ha sido creado. Puedes manualmente añadir "
 "estudiantes a este cohorte."
 
-#: lms/static/js/groups/views/cohorts.js
+#: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid "Assign students to cohorts by uploading a CSV file."
-msgstr "Asignar estudiantes al cohorte cargando un archivo CSV."
+msgstr "Asignar estudiantes a grupos cargando un archivo CSV."
+
+#: lms/static/js/groups/views/cohorts.js
+msgid "Assign students to cohorts by uploading a CSV file"
+msgstr "Asignar estudiantes a grupos cargando un archivo CSV"
 
 #: lms/static/js/groups/views/cohorts.js
 msgid "Choose a .csv file"
@@ -8464,7 +8468,7 @@ msgstr "%(cohort_name)s (%(user_count)s)"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid "Enable Cohorts"
-msgstr "Habilitar Cohortes"
+msgstr "Habilitar Grupos"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid "Select a cohort to manage"
@@ -11353,3 +11357,11 @@ msgstr ""
 #: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 msgid "Use Current Transcript"
 msgstr "Usar la transcripción actual"
+
+#: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
+msgid "To review student cohort assignments or see the results of uploading a CSV file, download course profile information or cohort results on the {link_start}Data Download{link_end} page."
+msgstr "Para revisar las asignaciones de grupos de estudiantes o ver los resultados de cargar un archivo de SCV, descargar información del perfil del curso o resultados de grupos en la página de {link_start}descarga de datos{link_end}."
+
+#: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
+msgid "Specify whether discussion topics are divided by cohort"
+msgstr "Especifique si los temas de discusión están divididos por"
