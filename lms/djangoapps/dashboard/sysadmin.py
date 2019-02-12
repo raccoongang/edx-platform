@@ -286,6 +286,40 @@ class Users(SysadminDashboardView):
         }
         return render_to_response(self.template_name, context)
 
+    def _return_csv_row_data(self):
+        header = [
+            _('username'),
+            _('email'),
+            _('Which Microsoft product/solution are you interested in?'),
+            _('Any specific areas Arrow could support you with?'),
+            _('first_name'),
+            _('last_name'),
+            _('country'),
+            _('company'),
+            _('mailing address'),
+            _('Tell us why you`re interested in Arrow SkillsOnline')
+
+        ]
+
+        """
+        Please keep order with iterable User data and header info
+        """
+        user_model_data = []
+        for user in User.objects.all():
+            data = [user.username,
+                    user.email,
+                    user.extrainfo.interested_in if hasattr(user, 'extrainfo') else None,  # Which Microsoft product/solution are you interested in
+                    user.extrainfo.areas_to_support if hasattr(user, 'extrainfo') else None,  # Any specific areas Arrow could support you with?
+                    user.first_name,
+                    user.last_name,
+                    user.profile.country if hasattr(user, 'profile') else None,
+                    user.profile.company if hasattr(user, 'profile') else None,
+                    user.profile.mailing_address if hasattr(user, 'profile') else None,
+                    user.profile.goals if hasattr(user, 'profile') else None  # Tell us why you`re interested in Arrow SkillsOnline
+            ]
+            user_model_data.append(data)
+        return header, user_model_data
+        
     def post(self, request):
         """Handle various actions available on page"""
 
@@ -298,9 +332,8 @@ class Users(SysadminDashboardView):
         track.views.server_track(request, action, {}, page='user_sysdashboard')
 
         if action == 'download_users':
-            header = [_('username'), _('email'), ]
-            data = ([u.username, u.email] for u in
-                    (User.objects.all().iterator()))
+            # return header and data
+            header, data =  self._return_csv_row_data()
             return self.return_csv('users_{0}.csv'.format(
                 request.META['SERVER_NAME']), header, data)
         elif action == 'repair_eamap':
