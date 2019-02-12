@@ -2319,6 +2319,9 @@ INSTALLED_APPS = [
 
     # API Documentation
     'rest_framework_swagger',
+
+    # grades API extension
+    'api_extensions',
 ]
 
 ######################### CSRF #########################################
