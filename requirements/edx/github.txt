@@ -95,7 +95,7 @@ git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.18#egg=xblock-
 git+https://github.com/Stanford-Online/xblock-in-video-quiz@release/v0.1.6#egg=invideoquiz
 
 #Scorm xblock
--e git+https://github.com/raccoongang/edx_xblock_scorm.git#egg=edx_xblock_scorm
+-e git+https://github.com/raccoongang/edx_xblock_scorm.git@v1.0.2#egg=edx_xblock_scorm
 
 #mpesa
 -e git+https://github.com/raccoongang/mpesa_api.git@edx-ginkgo-version#egg=edx-ginkgo-version

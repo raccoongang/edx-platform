@@ -1076,3 +1076,13 @@ B2C_URL = AUTH_TOKENS.get('B2C_URL', '')
 
 # number of seconds from the expiry we consider the token expired
 TOKEN_THRESHOLD = ENV_TOKENS.get('TOKEN_THRESHOLD', 600)
+
+# In google account setup a new re-captcha for the current site.
+# You will have a SECRET_KEY and a DATA_SITE_KEY. Set next settings in lms.auth.json.
+GOOGLE_RECAPTCHA_SECRET_KEY = AUTH_TOKENS.get('GOOGLE_RECAPTCHA_SECRET_KEY', '')
+GOOGLE_RECAPTCHA_DATA_SITE_KEY = AUTH_TOKENS.get('GOOGLE_RECAPTCHA_DATA_SITE_KEY', '')
+
+# Set this setting to True value if you want use re-captcha in the registration form.
+# You can set this setting in lms.env.json for all sites(microsites)
+# or set up in an admin page for each site.
+USE_GOOGLE_RECAPTCHA = ENV_TOKENS.get('USE_GOOGLE_RECAPTCHA', False)

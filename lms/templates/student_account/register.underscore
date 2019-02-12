@@ -48,6 +48,10 @@
     <% } %>
 
     <%= context.fields %>
+    <% if (context.googleRecaptchaSiteKey) { %>
+        <div class="g-recaptcha" data-sitekey="<%- context.googleRecaptchaSiteKey %>"></div>
+    <% } %>
+
 
     <button type="submit" class="action action-primary action-update js-register register-button"><%- gettext("Create account") %></button>
 </form>

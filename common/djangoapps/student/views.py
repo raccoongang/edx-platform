@@ -90,6 +90,7 @@ from openedx.features.enterprise_support.api import get_dashboard_consent_notifi
 from shoppingcart.api import order_history
 from shoppingcart.models import CourseRegistrationCode, DonationConfiguration
 from student.cookies import delete_logged_in_cookies, set_logged_in_cookies, set_user_info_cookie
+from student.decorators import check_recaptcha
 from student.forms import AccountCreationForm, PasswordResetFormNoActive, get_registration_extension_form
 from student.helpers import (
     DISABLE_UNENROLL_CERT_STATES,
@@ -124,12 +125,12 @@ from student.models import (
 from student.tasks import send_activation_email
 from third_party_auth import pipeline, provider
 from util.bad_request_rate_limiter import BadRequestRateLimiter
+from util.course_utils import country_filter
 from util.db import outer_atomic
 from util.json_request import JsonResponse
 from util.milestones_helpers import get_pre_requisite_courses_not_completed
 from util.password_policy_validators import validate_password_strength
 from xmodule.modulestore.django import modulestore
-from util.course_utils import country_filter
 
 log = logging.getLogger("edx.student")
 AUDIT_LOG = logging.getLogger("audit")
@@ -491,6 +492,9 @@ def register_user(request, extra_context=None):
         'selected_provider': '',
         'username': '',
     }
+
+    if configuration_helpers.get_value('USE_GOOGLE_RECAPTCHA', settings.USE_GOOGLE_RECAPTCHA):
+        context['google_recaptcha_site_key'] = settings.GOOGLE_RECAPTCHA_DATA_SITE_KEY
 
     if extra_context is not None:
         context.update(extra_context)
@@ -2111,6 +2115,7 @@ def record_registration_attributions(request, user):
 
 
 @csrf_exempt
+@check_recaptcha
 def create_account(request, post_override=None):
     """
     JSON call to create new edX account.
@@ -2124,6 +2129,15 @@ def create_account(request, post_override=None):
         return HttpResponseForbidden(_("Account creation not allowed."))
 
     warnings.warn("Please use RegistrationView instead.", DeprecationWarning)
+
+    if configuration_helpers.get_value('USE_GOOGLE_RECAPTCHA', settings.USE_GOOGLE_RECAPTCHA):
+        if not request.recaptcha_is_valid:
+            errors = {
+                'success': False,
+                'value': _('Invalid reCAPTCHA. Please try again.'),
+                'field': "captcha"
+            }
+            return JsonResponse(errors, status=400)
 
     try:
         user = create_account_with_params(request, post_override or request.POST)

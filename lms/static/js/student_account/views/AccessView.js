@@ -75,6 +75,7 @@
                     this.passwordResetSupportUrl = options.password_reset_support_link;
                     this.createAccountOption = options.account_creation_allowed;
                     this.hideAuthWarnings = options.hide_auth_warnings || false;
+                    this.googleRecaptchaSiteKey = options.google_recaptcha_site_key;
 
                 // The login view listens for 'sync' events from the reset model
                     this.resetModel = new PasswordResetModel({}, {
@@ -170,7 +171,8 @@
                             model: model,
                             thirdPartyAuth: this.thirdPartyAuth,
                             platformName: this.platformName,
-                            hideAuthWarnings: this.hideAuthWarnings
+                            hideAuthWarnings: this.hideAuthWarnings,
+                            googleRecaptchaSiteKey: this.googleRecaptchaSiteKey
                         });
 
                     // Listen for 'auth-complete' event so we can enroll/redirect the user appropriately.

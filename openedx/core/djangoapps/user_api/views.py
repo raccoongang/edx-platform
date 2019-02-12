@@ -24,6 +24,7 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
 from openedx.core.lib.api.authentication import SessionAuthenticationAllowInactiveUser
 from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
 from student.cookies import set_logged_in_cookies
+from student.decorators import check_recaptcha
 from student.forms import get_registration_extension_form
 from student.views import create_account_with_params
 from util.json_request import JsonResponse
@@ -306,6 +307,7 @@ class RegistrationView(APIView):
         return HttpResponse(form_desc.to_json(), content_type="application/json")
 
     @method_decorator(csrf_exempt)
+    @method_decorator(check_recaptcha)
     def post(self, request):
         """Create the user's account.
 
@@ -328,6 +330,12 @@ class RegistrationView(APIView):
 
         email = data.get('email')
         username = data.get('username')
+        if configuration_helpers.get_value('USE_GOOGLE_RECAPTCHA', settings.USE_GOOGLE_RECAPTCHA):
+            if not request.recaptcha_is_valid:
+                errors = {
+                    "captcha": [{"user_message": _('Invalid reCAPTCHA. Please try again.')}],
+                }
+                return JsonResponse(errors, status=400)
 
         # Handle duplicate email/username
         conflicts = check_account_exists(email=email, username=username)
