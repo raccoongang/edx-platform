@@ -99,7 +99,8 @@ git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.18#egg=xblock-
 #xblock-in-video-quiz
 git+https://github.com/Stanford-Online/xblock-in-video-quiz@release/v0.1.6#egg=invideoquiz
 
-# alux apps
+
+# alux apps:
 -e git+git@github.com:aludeveloper/pcitool.git@v0.1.0#egg=pcitool
 -e git+git@github.com:aludeveloper/alux_student_dashboard.git@raccoongang-develop#egg=alux_student_dashboard
 -e git+git@github.com:aludeveloper/alux_skills_map.git@v0.1.5#egg=alux_skills_map
@@ -107,6 +108,10 @@ git+https://github.com/Stanford-Online/xblock-in-video-quiz@release/v0.1.6#egg=i
 
 # alu-xblock-adapter
 -e git+git@github.com:aludeveloper/xblock-adapter.git@master#egg=xblock_adapter
+
+# alu-xblock-pci
+-e git+git@github.com:aludeveloper/alux_pci_xblock.git@master#egg=alux_pci_xblock
+
 
 # Raccoongang Instructor analytics
 -e git+https://github.com/raccoongang/rg_instructor_analytics@release-0.3.0#egg=rg_instructor_analytics
