@@ -16,6 +16,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    'change select': 'updateModel',
                    'click .remove-course-introduction-video': 'removeVideo',
                    'focus #course-overview': 'codeMirrorize',
+                   'focus #extra-json': 'codeMirrorizeJson',
                    'mouseover .timezone': 'updateTime',
         // would love to move to a general superclass, but event hashes don't inherit in backbone :-(
                    'focus :input': 'inputFocus',
@@ -84,6 +85,8 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
 
                    this.$el.find('#' + this.fieldToSelectorMap['overview']).val(this.model.get('overview'));
                    this.codeMirrorize(null, $('#course-overview')[0]);
+                   this.$el.find('#' + this.fieldToSelectorMap['extra_json']).val(this.model.get('extra_json'));
+                   this.codeMirrorizeJson(null, $('#extra-json')[0]);
 
                    if (this.model.get('title') !== '') {
                        this.$el.find('#' + this.fieldToSelectorMap.title).val(this.model.get('title'));
@@ -176,7 +179,8 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    'course_settings_learning_fields': 'course-settings-learning-fields',
                    'add_course_learning_info': 'add-course-learning-info',
                    'add_course_instructor_info': 'add-course-instructor-info',
-                   'course_learning_info': 'course-learning-info'
+                   'course_learning_info': 'course-learning-info',
+                   'extra_json':'extra-json'
                },
 
                addLearningFields: function() {
@@ -368,6 +372,41 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        });
                        cmTextArea = this.codeMirrors[thisTarget.id].getInputField();
                        cmTextArea.setAttribute('id', 'course-overview-cm-textarea');
+                   }
+               },
+               codeMirrorsJson: {},
+               codeMirrorizeJson: function(e, forcedTarget) {
+                   var thisTarget, cachethis, field, cmTextArea;
+                   if (forcedTarget) {
+                       thisTarget = forcedTarget;
+                       thisTarget.id = $(thisTarget).attr('id');
+                   } else if (e !== null) {
+                       thisTarget = e.currentTarget;
+                   } else
+        {
+            // e and forcedTarget can be null so don't deference it
+            // This is because in cases where we have a marketing site
+            // we don't display the codeMirrorsJson for editing the marketing
+            // materials, except we do need to show the 'set course image'
+            // workflow. So in this case e = forcedTarget = null.
+                       return;
+                   }
+
+                   if (!this.codeMirrorsJson[thisTarget.id]) {
+                       cachethis = this;
+                       field = this.selectorToField[thisTarget.id];
+                       this.codeMirrorsJson[thisTarget.id] = CodeMirror.fromTextArea(thisTarget, {
+                           mode: 'application/json', lineNumbers: true, lineWrapping: true});
+                       this.codeMirrorsJson[thisTarget.id].on('change', function(mirror) {
+                           mirror.save();
+                           cachethis.clearValidationErrors();
+                           var newVal = mirror.getValue();
+                           if (cachethis.model.get(field) != newVal) {
+                               cachethis.setAndValidate(field, newVal);
+                           }
+                       });
+                       cmTextArea = this.codeMirrorsJson[thisTarget.id].getInputField();
+                       cmTextArea.setAttribute('id', 'extra-json-cm-textarea');
                    }
                },
 

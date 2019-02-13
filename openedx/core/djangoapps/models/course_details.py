@@ -1,17 +1,18 @@
 """
 CourseDetails
 """
-import re
+import json
 import logging
+import re
 
 from django.conf import settings
 from django.dispatch import Signal, receiver
 
-from xmodule.fields import Date
-from xmodule.modulestore.exceptions import ItemNotFoundError
 from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.lib.courses import course_image_url
+from xmodule.fields import Date
 from xmodule.modulestore.django import modulestore
+from xmodule.modulestore.exceptions import ItemNotFoundError
 
 COURSE_PACING_CHANGE = Signal(providing_args=["course_key", "course_self_paced"])
 
@@ -75,13 +76,14 @@ class CourseDetails(object):
         self.self_paced = None
         self.learning_info = []
         self.instructor_info = []
+        self.extra_json = "{}"
 
     @classmethod
     def fetch_about_attribute(cls, course_key, attribute):
         """
         Retrieve an attribute from a course's "about" info
         """
-        if attribute not in ABOUT_ATTRIBUTES + ['video']:
+        if attribute not in ABOUT_ATTRIBUTES + ['video', 'extra_json']:
             raise ValueError("'{0}' is not a valid course about attribute.".format(attribute))
 
         usage_key = course_key.make_usage_key('about', attribute)
@@ -126,6 +128,7 @@ class CourseDetails(object):
         course_details.license = getattr(course_descriptor, "license", "all-rights-reserved")
 
         course_details.intro_video = cls.fetch_youtube_video_id(course_key)
+        course_details.extra_json = cls.fetch_about_attribute(course_key, 'extra_json')
 
         for attribute in ABOUT_ATTRIBUTES:
             value = cls.fetch_about_attribute(course_key, attribute)
@@ -292,6 +295,9 @@ class CourseDetails(object):
             if attribute in jsondict:
                 cls.update_about_item(descriptor, attribute, jsondict[attribute], user.id)
 
+        if 'extra_json' in jsondict and cls.check_json_string(jsondict['extra_json']):
+            cls.update_about_item(descriptor, 'extra_json', jsondict['extra_json'], user.id)
+
         cls.update_about_video(descriptor, jsondict['intro_video'], user.id)
 
         # Could just return jsondict w/o doing any db reads, but I put
@@ -336,6 +342,17 @@ class CourseDetails(object):
                 '?rel=0" frameborder="0" allowfullscreen=""></iframe>'
             )
         return result
+
+    @staticmethod
+    def check_json_string(json_string):
+        """
+        Returns string JSON if json_string is valid json. Return None in another case.
+        """
+        try:
+            json.loads(json_string)
+        except ValueError:
+            return None
+        return json_string
 
 
 @receiver(COURSE_PACING_CHANGE, dispatch_uid="course_pacing_changed")
