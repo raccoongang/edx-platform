@@ -8,6 +8,9 @@ from student.models import EntranceExamConfiguration
 from util.milestones_helpers import get_required_content, is_entrance_exams_enabled
 from xmodule.modulestore.django import modulestore
 
+import logging
+log = logging.getLogger(__name__)
+
 
 def course_has_entrance_exam(course):
     """
@@ -45,6 +48,11 @@ def user_has_passed_entrance_exam(user, course):
     Checks to see if the user has attained a sufficient score to pass the exam
     Begin by short-circuiting if the course does not have an entrance exam
     """
+    log.error('DEBUG!!!!! -  course_has_entrance_exam - {}, user is authenticated - {}, entrance_exam_content is None - {}'.format(
+        course_has_entrance_exam(course),
+        user.is_authenticated,
+        get_entrance_exam_content(user, course) is None
+    ))
     if not course_has_entrance_exam(course):
         return True
     if not user.is_authenticated:
