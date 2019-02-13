@@ -3265,7 +3265,7 @@ US_STATE_CHOICES = (
    ("VT", "Vermont"),
    ("VA", "Virginia"),
    ("WA", "Washington"),
-   ("WV", "Wisconsin"),
+   ("WI", "Wisconsin"),
    ("WY", "Wyoming"),
 )
 
