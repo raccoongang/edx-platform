@@ -843,22 +843,14 @@ class RegistrationView(APIView):
         # Translators: This is a legal document users must agree to
         # in order to register a new account.
         terms_label = _(u"Terms of Service")
-
-        terms_of_service_link = '<a href="{tos_link}">{terms_of_service}</a>'.format(
-            tos_link=settings.ENV_TOKENS.get("TOS_URL", ''),
-            terms_of_service=terms_label
-        )
-
-        platform_name_link = '<a href="{platform_name_link}">{platform_name}</a>'.format(
-            platform_name_link=settings.ENV_TOKENS.get('HONOR_CODE_URL', ''),
-            platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
-        )
+        terms_link = marketing_link("TOS")
+        terms_text = _(u"Review the Terms of Service")
 
         # Translators: "Terms of service" is a legal document users must agree to
         # in order to register a new account.
         label = _(u"I agree to the {platform_name} {terms_of_service}").format(
-            platform_name=platform_name_link,
-            terms_of_service=terms_of_service_link
+            platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
+            terms_of_service=terms_label
         )
 
         # Translators: "Terms of service" is a legal document users must agree to
@@ -877,6 +869,8 @@ class RegistrationView(APIView):
             error_messages={
                 "required": error_msg
             },
+            supplementalLink=terms_link,
+            supplementalText=terms_text
         )
 
     def _apply_third_party_auth_overrides(self, request, form_desc):
