@@ -24834,69 +24834,69 @@ msgstr ""
 "#%(r2)d"
 
 #/lms/templates/courseware/index_and_courses.html
-msgid "Enroll in courses that support your academic learning."
-msgstr "Ta kurs som støtter dine akademiske læreprosesser."
+msgid "Enroll in courses that support your academic learning"
+msgstr "Ta kurs som støtter dine akademiske læreprosesser"
 
 #/lms/templates/courseware/index_and_courses.html
 msgid "Teachers"
-msgstr "Underviser"
+msgstr "Undervisere"
 
 #/lms/templates/courseware/index_and_courses.html
-msgid "Engage in courses to develop your formal and non-formal competencies. The courses are developed for higher education educators."
-msgstr "Ta kompetansehevende kurs spesielt utviklet for universitets-og høgskolesektoren."
+msgid "Engage in courses to develop your formal and non-formal competencies"
+msgstr "Ta kompetansehevende kurs spesielt utviklet for universitets-og høgskolesektoren"
 
 #/lms/templates/courseware/index_and_courses.html
 msgid "Industry and Commerce"
 msgstr "Næringsliv"
 
 #/lms/templates/courseware/index_and_courses.html
-msgid "Keep your workforce up to date withtailored educational content foremployers and employees."
-msgstr "Bestill oppdragsbaserte kurs som tilpasses din organisasjons kompetansebehov."
+msgid "Keep your workforce up to date with tailored educational content"
+msgstr "Bestill oppdragsbaserte kurs som tilpasses din organisasjons kompetansebehov"
 
 #/lms/templates/courseware/index_and_courses.html
 msgid "Lifelong Learning"
 msgstr "Livslang læring"
 
 #/lms/templates/courseware/index_and_courses.html
-msgid "Participate in open online courses and MOOCsin Norwegian or English with learners from all over the world."
-msgstr "Du kan ta våre åpne nettkurs og MOOCs på norsk eller engelsk sammen med mennesker fra hele verden"
+msgid "Participate in open online courses and MOOCs in Norwegian or English"
+msgstr "Delta i åpne nettkurs og MOOCs på norsk eller engelsk sammen med mennesker fra hele verden"
 
 #/lms/templates/courseware/index_and_courses.html
-msgid "Explore our catalogue of courses where you can achieve certificates or academic credits."
-msgstr "Utforsk våre kurs med kompetansebevis og emner med studiepoeng."
+msgid "Explore our catalogue of courses. Earn free certificates or get credit points"
+msgstr "Utforsk våre kurs med kompetansebevis og emner med studiepoeng"
 
 #/lms/templates/courseware/index_and_courses.html
-msgid "Read what the research says about teaching, learning andcompetence development, or how to develop online courses."
-msgstr "Les hva forskningen sier om undervisning, læring og kompetanseheving, eller hvordan du kan utvikle nettkurs og emner."
+msgid "Read the latest research teaching, learning and competence development online"
+msgstr "Les hva forskningen sier om undervisning, læring og kompetanseheving på nett"
 
 #/lms/templates/courseware/index_and_courses.html
-msgid "A flexible culture for learning"
-msgstr "En fleksibel kultur for læring"
+msgid "A platform for flexible learning"
+msgstr "En plattform for fleksibel læring"
 
 #/lms/templates/courseware/index_and_courses.html
-msgid "NTNU Drive offers quality assured courses for lifelong learning."
-msgstr "NTNU Drive tilbyr livslang læring I kvalitetssikrede omgivelser."
+msgid "NTNU offers quality assured courses for lifelong learning"
+msgstr "NTNU tilbyr livslang læring i kvalitetssikrede omgivelser"
 
 #/lms/templates/courseware/index_and_courses.html
 msgid "Personal learning networks"
 msgstr "Personlig læringsnettverk"
 
 #/lms/templates/courseware/index_and_courses.html
-msgid "Our courses give you the opportunity to learn and discuss a range of relevant topics. You can study when you want and find other learners who can help build your own personal learning network."
+msgid "Our courses give you the opportunity to learn and discuss a range of relevant topics. You can study when you want and find other learners who can help build your own personal learning network"
 msgstr "Våre kurs og emner gir deg mulighet til å lære og diskutere en rekke faglige tema med andre somer opptatt av det samme som deg. Du kan studere når det passer deg og du kan skape ditt personlige læringsnettver"
 
 #/lms/templates/courseware/index_and_courses.html
-msgid "Course certificates and academic credits"
+msgid "Course certificates and credit points"
 msgstr "Dokumentert kompetanseheving"
 
 #/lms/templates/courseware/index_and_courses.html
-msgid "You can choose to take parts of a course or the whole course. After completing a course, you can obtain a certificate of completion or register as a student at NTNU to receive academic credits (if you pass the final exam)."
-msgstr "Du står fritt til å ta hele eller deler avet kurs. Vi utsteder kompetansebevis etter fullført kurs og du kan melde deg opp til digital eksamen i et emne ved å registrere deg som student ved NTNU."
+msgid "You can choose to take parts of a course or the whole course. After completing a course, you earn a certificate of completion or register as a student at NTNU to get credit points"
+msgstr "Du står fritt til å ta hele eller deler avet kurs. Vi utsteder kompetansebevis etter fullført kurs og du kan melde deg opp til digital eksamen i et emne ved å registrere deg som student ved NTNU"
 
 #/lms/templates/courseware/index_and_courses.html
 msgid "Research based courses"
-msgstr "Forskningsbasertekurs ogemner"
+msgstr "Forskningsbaserte kurs og emner"
 
 #/lms/templates/courseware/index_and_courses.html
-msgid "All our courses are research-based and our course design builds on years of experience with online teaching and learning. Courses from NTNU are recognized for their high quality in lifelong learning."
-msgstr "Alle våre kurs har et innhold som er solid forankret i forskning I fag. Våre kurs har et læringsdesign som bygger på kunnskap om undervisning og læring I digitale omgivelser. Et kurs fra NTNU har tillit I markedet"
+msgid "All our courses are research-based and our course design builds on years of experience with online teaching and learning. Courses from NTNU are recognized for their high quality"
+msgstr "Alle våre kurs har et innhold som er solid forankret i forskning i fag. Våre kurs har et læringsdesign som bygger på kunnskap om undervisning og læring i digitale omgivelser. Et kurs fra NTNU har tillit i markedet"
