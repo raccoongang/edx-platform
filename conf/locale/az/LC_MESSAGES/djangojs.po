@@ -32,8 +32,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: edx-platform\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2019-01-20 20:42+0000\n"
-"PO-Revision-Date: 2019-01-21 05:59+0000\n"
+"POT-Creation-Date: 2019-02-10 20:42+0000\n"
+"PO-Revision-Date: 2019-02-10 21:27+0000\n"
 "Last-Translator: Laman Mammadli <laman@edumedia.az>\n"
 "Language-Team: Azerbaijani (http://www.transifex.com/open-edx/edx-platform/language/az/)\n"
 "MIME-Version: 1.0\n"
@@ -4830,20 +4830,19 @@ msgstr "Emailinizi yoxlayın"
 msgid ""
 "{paragraphStart}You entered {boldStart}{email}{boldEnd}. If this email "
 "address is associated with your {platform_name} account, we will send a "
-"message with password reset instructions to this email "
+"message with password recovery instructions to this email "
 "address.{paragraphEnd}{paragraphStart}If you do not receive a password reset"
 " message, verify that you entered the correct email address, or check your "
 "spam folder.{paragraphEnd}{paragraphStart}If you need further assistance, "
 "{anchorStart}contact technical support{anchorEnd}.{paragraphEnd}"
 msgstr ""
-"{paragraphStart}ünvanını daxil etmisiniz {boldStart}{email}{boldEnd}. Əgər "
-"bu email ünvanı həqiqətən sizin {platform_name} hesabı ilə əlaqəlidirsə, "
-"parolunuzu sıfırlamaq üçün təlimatlar e-mailinizə göndəriləcək. "
-"{paragraphEnd}{paragraphStart} Əgər parolu sıfırlamaq üçün təlimat "
-"e-mailinizə gəlməsə, ünvanınızı doğru yazıb-yazmadığınızı bir daha yoxlayın."
-" Eyni zamanda e-mail qutunuzun spam qovluğuna da göz gəzdirin.{paragraphEnd}"
-" {paragraphStart}Əgər əlavə hər hansı bir kömək lazımdırsa, "
-"{anchorStart}texniki dəstək üçün əlaqə saxlayın {anchorEnd}.{paragraphEnd}"
+"{paragraphStart} Siz {boldStart} {email} {boldEnd} daxil oldunuz. Əgər bu "
+"e-mail ünvanı {platform_name} hesabınızla əlaqəli olsa, bu e-mail ünvanına "
+"şifrə bərpa təlimatları ilə bir mesaj göndərəcəyik. {ParagraphEnd} "
+"{paragraphStart} Şifrənin sıfırlanması mesajı almırsınızsa, düzgün e-mail "
+"ünvanınızı yoxlayın və ya spam qovluğunuzu yoxlayın. {paragraphEnd} "
+"{paragraphStart} Əlavə kömək istəyirsinizsə, {anchorStart} texniki dəstəklə "
+"əlaqə saxlayın {anchorEnd}. {paragraphEnd}"
 
 #: lms/static/js/student_account/views/LoginView.js
 msgid ""
@@ -4909,12 +4908,16 @@ msgstr ""
 "email ünvanına alırsınız. "
 
 #: lms/static/js/student_account/views/account_settings_factory.js
-msgid "Secondary Email Address"
-msgstr "İkinci e-mail ünvanı "
+msgid "Recovery Email Address"
+msgstr "Bərpa e-mail ünvanı"
 
 #: lms/static/js/student_account/views/account_settings_factory.js
-msgid "You may access your account when single-sign on is not available."
-msgstr "Tək giriş mümkün olmadığı halda siz hesabınıza daxil ola bilərsiniz. "
+msgid ""
+"You may access your account with this address if single-sign on or access to"
+" your primary email is not available."
+msgstr ""
+"Əgər tək giriş və ya əsas e-mailinizə daxil olmaq mümkün deyilsə, siz "
+"hesabınıza bu ünvanla daxil ola bilərsiniz. "
 
 #: lms/static/js/student_account/views/account_settings_factory.js
 #: openedx/features/learner_profile/static/learner_profile/js/learner_profile_factory.js
@@ -5163,6 +5166,22 @@ msgstr "Hesab haqqında məlumat"
 #: lms/static/js/student_account/views/account_settings_view.js
 msgid "Order History"
 msgstr "Sifariş tarixi"
+
+#: lms/static/js/student_account/views/account_settings_view.js
+msgid ""
+"You have set your language to {beta_language}, which is currently not fully "
+"translated. You can help us translate this language fully by joining the "
+"Transifex community and adding translations from English for learners that "
+"speak {beta_language}."
+msgstr ""
+"Siz dilinizi tam tərcümə edilməmiş {beta_language}-nə tənzimləmisiniz. Siz "
+"Transifex cəmiyyətinə qoşularaq və {beta_language} dilində danışan ingilis "
+"dilini bilən tələbələri əlavə etməklə bu dilə tam tərcüməni tamamlamağa "
+"kömək edə bilərsiniz. "
+
+#: lms/static/js/student_account/views/account_settings_view.js
+msgid "Help Translate into {beta_language}"
+msgstr "{beta_language} tərcüməyə kömək edin"
 
 #: lms/static/js/verify_student/views/image_input_view.js
 msgid "Image Upload Error"
@@ -7837,8 +7856,12 @@ msgid "Mark Exam As Completed"
 msgstr "İmtahanı tamamlanmış kimi qeyd et"
 
 #: lms/templates/courseware/proctored-exam-status.underscore
-msgid "timed"
-msgstr "müddətli"
+msgid "a timed exam"
+msgstr "vaxtlı imtahan"
+
+#: lms/templates/courseware/proctored-exam-status.underscore
+msgid "The timer on the right shows the time remaining in the exam."
+msgstr "Sağdakı taymer imtahanın bitməsinə nə qədər vaxt qaldığını bildirir. "
 
 #: lms/templates/courseware/proctored-exam-status.underscore
 msgid ""
@@ -7847,6 +7870,18 @@ msgid ""
 msgstr ""
 "Tapşırıqlara görə qiymət almaq üçün, \"İmtahanı bitir\" düyməsindən əvvəl "
 "hər bir tapşırıq üçün \"Cavabla\" düyməsi basılmalıdır."
+
+#: lms/templates/courseware/proctored-exam-status.underscore
+msgid "Show More"
+msgstr "Daha çox göstərin"
+
+#: lms/templates/courseware/proctored-exam-status.underscore
+msgid "Show Less"
+msgstr "Daha az göstərin"
+
+#: lms/templates/courseware/proctored-exam-status.underscore
+msgid "Exam timer and end exam button"
+msgstr "İmtahan taymeri və imtahanı sonlandırma düyməsi"
 
 #: lms/templates/courseware/proctored-exam-status.underscore
 msgid "End My Exam"
@@ -8569,22 +8604,9 @@ msgstr "E-poçt ünvanımı dəyişin"
 msgid "Reset Password"
 msgstr "Parolu sıfırla"
 
-#: lms/templates/student_account/account_recovery.underscore
-msgid "Account Recovery"
-msgstr "Hesabın bərpası"
-
-#: lms/templates/student_account/account_recovery.underscore
-msgid ""
-"Please enter your secondary email address below and we will send you "
-"instructions for recovering your account and setting a new password."
-msgstr ""
-"Zəhmət olmasa, aşağıda ikinci e-mail ünvanınızı daxil edin və biz sizə öz "
-"hesabınızı bərpa etməyiniz və yeni şifrə qoymağınız üçün təlimat "
-"göndərəcəyik. "
-
-#: lms/templates/student_account/account_recovery.underscore
-msgid "Recover my account"
-msgstr "Mənim hesabımı bərpa edin"
+#: lms/templates/student_account/account_settings.underscore
+msgid "Switch Language Back"
+msgstr "Dili geri qaytarın"
 
 #: lms/templates/student_account/account_settings.underscore
 msgid "Account Settings"
@@ -8595,8 +8617,8 @@ msgid "An error occurred. Please reload the page."
 msgstr "Xəta baş verdi. Zəhmət olmasa, səhifəni yenidən yükləyin. "
 
 #: lms/templates/student_account/form_field.underscore
-msgid "Forgot password?"
-msgstr "Parolu unutmusunuz?"
+msgid "Need help logging in?"
+msgstr "Daxil olmaq üçün köməyə ehtiyacınız var? "
 
 #: lms/templates/student_account/hinted_login.underscore
 #, python-format
@@ -8718,15 +8740,15 @@ msgstr "Parolla bağlı kömək"
 
 #: lms/templates/student_account/password_reset.underscore
 msgid ""
-"Please enter your email address below and we will send you instructions for "
-"setting a new password."
+"Please enter your log-in or recovery email address below and we will send "
+"you an email with instructions."
 msgstr ""
-"E-mail ünvanınızı daxil edin və biz sizə parolu sıfırlamaq üçün təlimatları "
-"göndərəcəyik."
+"Zəhmət olmasa, aşağıda giriş və ya bərpa e-mail ünvanınızı daxil edin və biz"
+" sizə təlimatlar olan e-mail göndərəcəyik."
 
 #: lms/templates/student_account/password_reset.underscore
-msgid "Reset my password"
-msgstr "Şifrəmi sıfırla"
+msgid "Recover my password"
+msgstr "Şifrəmi bərpa edin"
 
 #: lms/templates/student_account/register.underscore
 msgid "Already have an {platformName} account?"
@@ -9915,6 +9937,10 @@ msgid "Ungraded"
 msgstr "Qiymətləndirilməyən"
 
 #: cms/templates/js/course-outline.underscore
+msgid "Onboarding Exam"
+msgstr "Adaptasiya imtahanı"
+
+#: cms/templates/js/course-outline.underscore
 msgid "Practice proctored Exam"
 msgstr "Əyani imtahanın sınağı"
 
@@ -10836,6 +10862,22 @@ msgstr ""
 "Yekun imtahanlar vaxtlandır və imtahan müddətində hər tələbə video "
 "vasitəsilə qeydə alınır. Bu videolar daha sonra tələbələrin qaydalara riayət"
 " edib edilmədiyi istiqamətində nəzərdən keçirilir. "
+
+#: cms/templates/js/timed-examination-preference-editor.underscore
+msgid "Onboarding"
+msgstr "Adaptasiya"
+
+#: cms/templates/js/timed-examination-preference-editor.underscore
+msgid ""
+"Use Onboarding to introduce learners to proctoring, verify their identity, "
+"and create an onboarding profile. Learners must complete the onboarding "
+"profile step prior to taking a proctored exam. Profile reviews take 2+ "
+"business days."
+msgstr ""
+"Tələbələri nəzarətə təqdim etmək üçün adaptasiyadan istifadə edin, onların "
+"şəxsiyyətini təsdiqləyin və adaptasiya profili yaradın. Tələbələr nəzarətli "
+"imtahana daxil olmadan öncə adaptasiya profillərini doldurmalıdırlar. Profil"
+" baxışları 2+ iş günü ərzində tamamlanır. "
 
 #: cms/templates/js/timed-examination-preference-editor.underscore
 msgid "Practice Proctored"
