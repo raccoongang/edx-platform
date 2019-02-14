@@ -168,7 +168,7 @@ textarea {
 	  <label for="email">
 		${_('Email adress')}:
 	  </label>
-	  <input type="text" name="email" style="width:60%" />
+	  <input type="email" name="email" style="width:60%" />
 	</li>
   </ul>
   <div class="form-actions">
@@ -178,6 +178,11 @@ textarea {
 	<button name="action" value="get_courses_xls">Download courses list</button>
 
 </form>
+<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.min.js"></script>
+<script>
+	$('#action').validate();
+</script>
 <hr style="width:40%" />
 %endif
 
