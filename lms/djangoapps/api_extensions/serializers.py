@@ -16,10 +16,25 @@ class PersistentCourseGradeSerializer(serializers.ModelSerializer):
     email = serializers.SerializerMethodField()
 
     def get_course_title(self, obj):
-        return CourseOverview.objects.get(id=obj.course_id).display_name
+        try:
+            course = CourseOverview.objects.get(id=obj.course_id)
+        except CourseOverview.DoesNotExist:
+            return None
+        else:
+            return course.display_name
 
     def get_username(self, obj):
-        return User.objects.get(id=obj.user_id).username
+        try:
+            user = User.objects.get(id=obj.user_id)
+        except User.DoesNotExist:
+            return None
+        else:
+            return user.username
 
     def get_email(self, obj):
-        return User.objects.get(id=obj.user_id).email
+        try:
+            user = User.objects.get(id=obj.user_id)
+        except User.DoesNotExist:
+            return None
+        else:
+            return user.email
