@@ -7,11 +7,11 @@ from datetime import date
 
 from mock import patch
 
-from openedx.core.djangoapps.edx_global_analytics.utils.utilities import get_previous_day_start_and_end_dates
 from openedx.core.djangoapps.edx_global_analytics.tasks import (
     enthusiast_level_statistics_bunch,
     paranoid_level_statistics_bunch
 )
+from openedx.core.djangoapps.edx_global_analytics.utils.utilities import get_previous_day_start_and_end_dates
 
 
 @patch('openedx.core.djangoapps.edx_global_analytics.tasks.fetch_instance_information')
@@ -44,7 +44,7 @@ class TestStatisticsLevelBunches(unittest.TestCase):
 
         enthusiast_level_statistics_bunch()
 
-        mock_fetch_instance_information.assert_any_call(
+        mock_fetch_instance_information.assert_called_once_with(
             'students_per_country', get_previous_day_start_and_end_dates(), name_to_cache=None
         )
 
@@ -55,6 +55,6 @@ class TestStatisticsLevelBunches(unittest.TestCase):
         mock_students_per_country = {'US': 5, 'CA': 10}
         mock_fetch_instance_information.return_value = mock_students_per_country
 
-        result = enthusiast_level_statistics_bunch()[0]
+        result = enthusiast_level_statistics_bunch()
 
         self.assertEqual(mock_students_per_country, result)
