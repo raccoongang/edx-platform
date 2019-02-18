@@ -25181,7 +25181,7 @@ msgstr "Переглянути Умови надання послуг та Ко�
 #: openedx/core/djangoapps/user_api/views.py
 #, python-brace-format
 msgid "I agree to the {platform_name} {terms_of_service}"
-msgstr "Я погоджуюся з {terms_of_service} {platform_name}"
+msgstr "Я погоджуюсь з {terms_of_service} {platform_name}"
 
 #: openedx/core/djangoapps/user_api/views.py
 msgid "Review the Terms of Service"
