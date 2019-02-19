@@ -295,7 +295,7 @@ class CourseDetails(object):
             if attribute in jsondict:
                 cls.update_about_item(descriptor, attribute, jsondict[attribute], user.id)
 
-        if 'extra_json' in jsondict and cls.check_json_string(jsondict['extra_json']):
+        if 'extra_json' in jsondict and cls.check_json_string((jsondict['extra_json'] or "{}")):
             cls.update_about_item(descriptor, 'extra_json', jsondict['extra_json'], user.id)
 
         cls.update_about_video(descriptor, jsondict['intro_video'], user.id)
