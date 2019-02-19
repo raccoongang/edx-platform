@@ -3781,7 +3781,7 @@ msgstr ""
 
 #: lms/static/js/groups/views/cohorts.js
 msgid "Assign students to cohorts by uploading a CSV file."
-msgstr "Atribua alunos para os grupos carregando um arquivo CSV"
+msgstr "Atribuir alunos a grupos fazendo o upload de um arquivo CSV."
 
 #: lms/static/js/groups/views/cohorts.js
 msgid "Choose a .csv file"
@@ -7870,11 +7870,11 @@ msgstr "Gerar certificados de exceção"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificate-white-list.underscore
 msgid "All users on the Exception list who do not yet have a certificate"
-msgstr ""
+msgstr "Todos os usuários da lista de exceções que ainda não possuem um certificado"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificate-white-list.underscore
 msgid "All users on the Exception list"
-msgstr ""
+msgstr "Todos os usuários na lista de exceções"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificate-white-list.underscore
 msgid "User Email"
@@ -8044,7 +8044,7 @@ msgstr "%(cohort_name)s (%(user_count)s)"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid "Enable Cohorts"
-msgstr "Habilitar grupos"
+msgstr "Ativar grupos"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid "Select a cohort to manage"
@@ -8067,7 +8067,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/discussions.underscore
 msgid "Specify whether discussion topics are divided"
-msgstr ""
+msgstr "Especifique se os tópicos de discussão são divididos por coorte"
 
 #: lms/templates/instructor/instructor_dashboard_2/divided-discussions-course-wide.underscore
 msgid "Course-Wide Discussion Topics"
@@ -10789,3 +10789,20 @@ msgstr ""
 #: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 msgid "Use Current Transcript"
 msgstr "Usar a Transcrição Atual"
+
+#: lms/static/templates/instructor/instructor_dashboard_2/cohorts.underscore
+msgid ""
+"To review student cohort assignments or see the results of uploading a CSV " 
+"file, download course profile information or cohort results on the {link_start}Data Download{link_end} page. "
+msgstr ""
+"para revisar as atribuições de grupo dos alunos ou ver os resultados de fazer upload de um arquivo SCV, fazer "
+"o download das informações do perfil do curso ou grupo os resultados na página de {link_start}download de dados{link_end}"
+""
+
+#: lms/static/templates/instructor/instructor_dashboard_2/cohorts.underscore
+msgid "Specify whether discussion topics are divided by cohort"
+msgstr "Especifique se os tópicos de discussão são divididos por coorte"
+
+#: lms/static/templates/instructor/instructor_dashboard_2/cohorts.underscore
+msgid "Assign students to cohorts by uploading a CSV file"
+msgstr "Atribuir alunos a grupos fazendo o upload de um arquivo CSV"
