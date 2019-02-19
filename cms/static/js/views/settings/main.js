@@ -180,7 +180,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    'add_course_learning_info': 'add-course-learning-info',
                    'add_course_instructor_info': 'add-course-instructor-info',
                    'course_learning_info': 'course-learning-info',
-                   'extra_json':'extra-json'
+                   'extra_json': 'extra-json'
                },
 
                addLearningFields: function() {
@@ -347,13 +347,12 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        thisTarget.id = $(thisTarget).attr('id');
                    } else if (e !== null) {
                        thisTarget = e.currentTarget;
-                   } else
-        {
-            // e and forcedTarget can be null so don't deference it
-            // This is because in cases where we have a marketing site
-            // we don't display the codeMirrors for editing the marketing
-            // materials, except we do need to show the 'set course image'
-            // workflow. So in this case e = forcedTarget = null.
+                   } else {
+        // e and forcedTarget can be null so don't deference it
+        // This is because in cases where we have a marketing site
+        // we don't display the codeMirrors for editing the marketing
+        // materials, except we do need to show the 'set course image'
+        // workflow. So in this case e = forcedTarget = null.
                        return;
                    }
 
@@ -382,13 +381,12 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        thisTarget.id = $(thisTarget).attr('id');
                    } else if (e !== null) {
                        thisTarget = e.currentTarget;
-                   } else
-        {
-            // e and forcedTarget can be null so don't deference it
-            // This is because in cases where we have a marketing site
-            // we don't display the codeMirrorsJson for editing the marketing
-            // materials, except we do need to show the 'set course image'
-            // workflow. So in this case e = forcedTarget = null.
+                   } else {
+        // e and forcedTarget can be null so don't deference it
+        // This is because in cases where we have a marketing site
+        // we don't display the codeMirrorsJson for editing the marketing
+        // materials, except we do need to show the 'set course image'
+        // workflow. So in this case e = forcedTarget = null.
                        return;
                    }
 

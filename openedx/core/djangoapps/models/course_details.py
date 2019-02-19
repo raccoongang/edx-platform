@@ -346,12 +346,12 @@ class CourseDetails(object):
     @staticmethod
     def check_json_string(json_string):
         """
-        Returns string JSON if json_string is valid json. Return None in another case.
+        Return JSON string if json_string is valid JSON. Return None in other cases.
         """
         try:
             json.loads(json_string)
         except ValueError:
-            return None
+            return
         return json_string
 
 
