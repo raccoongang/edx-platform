@@ -2230,6 +2230,7 @@ def password_reset(request):
         # bad user? tick the rate limiter counter
         AUDIT_LOG.info("Bad password_reset user passed in.")
         limiter.tick_bad_request_counter(request)
+        return JsonResponse({'success': False})
 
     return JsonResponse({
         'success': True,

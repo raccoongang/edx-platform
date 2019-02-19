@@ -44,7 +44,6 @@ class Command(BaseCommand):
             source_dirs = args[1:]
         else:
             raise CommandError("ERROR: import-library requires at least one library_dir as argument")
-
         self.stdout.write("Importing.  Data_dir={data}, source_dirs={courses}\n".format(
             data=data_dir,
             courses=source_dirs,
@@ -56,7 +55,6 @@ class Command(BaseCommand):
             do_import_static=do_import_static,
             create_if_not_present=True,
         )
-
         if course_items:
             self.stdout.write("Successfully imported {} libraries.\n".format(len(course_items)))
         else:

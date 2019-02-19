@@ -602,6 +602,8 @@ class LibraryImportManager(ImportManager):
             log.info("Importing content into existing library: %s", str(existing_lib))
             dest_id = existing_lib.location.library_key
             runtime = existing_lib.runtime
+        else:
+            log.info("Creating new library: %s", str(courselike_key))
 
         if self.create_if_not_present and not existing_lib:
             try:

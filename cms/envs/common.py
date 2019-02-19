@@ -49,7 +49,7 @@ import lms.envs.common
 # Although this module itself may not use these imported variables, other dependent modules may.
 from lms.envs.common import (
     USE_TZ, TECH_SUPPORT_EMAIL, PLATFORM_NAME, BUGS_EMAIL, DOC_STORE_CONFIG, DATA_DIR, ALL_LANGUAGES, WIKI_ENABLED,
-    update_module_store_settings, ASSET_IGNORE_REGEX, COPYRIGHT_YEAR,
+    update_module_store_settings, ASSET_IGNORE_REGEX,
     PARENTAL_CONSENT_AGE_LIMIT, COMPREHENSIVE_THEME_DIRS, REGISTRATION_EMAIL_PATTERNS_ALLOWED,
     # The following PROFILE_IMAGE_* settings are included as they are
     # indirectly accessed through the email opt-in API, which is
@@ -501,6 +501,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
 EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 DEFAULT_FROM_EMAIL = 'registration@example.com'
@@ -1095,7 +1096,7 @@ OPENID_DOMAIN_PREFIX = 'openid:'
 UPLOAD_CHUNK_SIZE_IN_MB = 10
 
 ### Max size of asset uploads to GridFS
-MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB = 10
+MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB = 50
 
 # FAQ url to direct users to if they upload
 # a file that exceeds the above size
