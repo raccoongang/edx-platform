@@ -78,9 +78,16 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
     mobile_available = serializers.BooleanField()
     hidden = serializers.SerializerMethodField()
     invitation_only = serializers.BooleanField()
+    extra_json = serializers.SerializerMethodField()
 
     # 'course_id' is a deprecated field, please use 'id' instead.
     course_id = serializers.CharField(source='id', read_only=True)
+
+    def get_extra_json(self, course_overview):
+        """
+        Get the representation for SerializerMethodField `extra_json`
+        """
+        return CourseDetails.fetch_about_attribute(course_overview.id, 'extra_json')
 
     def get_hidden(self, course_overview):
         """

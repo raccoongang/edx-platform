@@ -602,6 +602,23 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
               </ol>
             </div>
           % endif
+        <hr class="divide" />
+
+        <div class="group-settings extra-json">
+              <header>
+                <h2 class="title-2">${_("Extra settings in JSON format")}</h2>
+              </header>
+
+              <ol class="list-input">
+                <li class="field text" id="field-extra-json">
+                  <label for="extra-json">${_("Extra Settings")}</label>
+                  <textarea class="tinymce text-editor" id="extra-json"></textarea>
+                  <label class="sr" for="extra-json-cm-textarea">
+                    ${_('JSON Code Editor')}
+                  </label>
+                </li>
+              </ol>
+            </div>
       </form>
     </div>
     <div class="content-supplementary" role="complementary">
