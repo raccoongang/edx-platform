@@ -14,9 +14,12 @@ from rest_framework.response import Response
 from lms.djangoapps.ccx.utils import prep_course_for_grading
 from lms.djangoapps.courseware import courses
 from lms.djangoapps.grades.api.serializers import GradingPolicySerializer
+from lms.djangoapps.grades.models import PersistentCourseGrade
 from lms.djangoapps.grades.new.course_grade import CourseGradeFactory
 from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiveUser
 from openedx.core.lib.api.view_utils import DeveloperErrorViewMixin
+from student.models import CourseEnrollment
+from django.contrib.auth.models import User
 
 log = logging.getLogger(__name__)
 
@@ -93,6 +96,14 @@ class UserGradeView(GradeViewMixin, GenericAPIView):
         is successful, an HTTP 200 "OK" response is returned.
 
         The HTTP 200 response has the following values.
+        'date_enrollment': course_enrollment.created,
+
+        * duration between enrolment and completion: A string representation of a user duration 
+        between enrolment and completion date.
+        
+        * completion Date: A string representation of a user completion date.
+
+        * last_login: A string representation of a user last login date.
 
         * username: A string representation of a user's username passed in the request.
 
@@ -109,6 +120,7 @@ class UserGradeView(GradeViewMixin, GenericAPIView):
     **Example GET Response**
 
         [{
+            "last_login": "2019-02-21T12:50:12.664Z",
             "username": "bob",
             "course_key": "edX/DemoX/Demo_Course",
             "passed": false,
@@ -149,8 +161,15 @@ class UserGradeView(GradeViewMixin, GenericAPIView):
 
         prep_course_for_grading(course, request)
         course_grade = CourseGradeFactory().create(request.user, course)
-
+        user = User.objects.get(username=username)
+        course_enrollment = CourseEnrollment.objects.get(course_id=CourseKey.from_string(course_id), user=user.id)
+        grade = PersistentCourseGrade.objects.get(user_id=user.id, course_id=CourseKey.from_string(course_id))
+        duration = grade.passed_timestamp - max(course_enrollment.created, course.start) if grade.passed_timestamp else None
         return Response([{
+            'date_enrollment': course_enrollment.created,
+            'last_login': user.last_login,
+            'duration between enrolment and completion': duration,
+            'completion Date': grade.passed_timestamp,
             'username': username,
             'course_key': course_id,
             'passed': course_grade.passed,
