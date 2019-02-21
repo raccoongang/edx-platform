@@ -244,6 +244,8 @@ class UserProfile(models.Model):
     meta = models.TextField(blank=True)  # JSON dictionary for future expansion
     courseware = models.CharField(blank=True, max_length=255, default='course.xml')
 
+    company = models.CharField(blank=True, max_length=255)
+
     # Location is no longer used, but is held here for backwards compatibility
     # for users imported from our first class.
     language = models.CharField(blank=True, max_length=255, db_index=True)
