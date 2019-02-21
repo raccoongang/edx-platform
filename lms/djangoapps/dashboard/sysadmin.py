@@ -506,8 +506,9 @@ class Courses(SysadminDashboardView):
             return response
         
         elif action == 'send_courses_xls':
-            email_adress = request.POST.get('email', '')
-            send_report_email.delay(request, email_adress)
+            email_address = request.POST.get('email', '')
+            if email_address:
+                send_report_email.delay(request, email_address)
 
         context = {
             'datatable': self.make_datatable(),

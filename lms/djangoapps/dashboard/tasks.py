@@ -4,16 +4,18 @@ This file contains celery tasks sysdashboard
 import logging
 import time
 import StringIO
-import xlwt
 
+import xlwt
 from celery import task
 from django.core.cache import cache
 from django.conf import settings
 from django.core.mail import EmailMessage, get_connection
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
 from student.roles import CourseStaffRole, CourseInstructorRole
 from xmodule.modulestore.django import modulestore
+
 from .models import EmailsAddressMailing
 
 
@@ -22,17 +24,16 @@ def mass_sending_report():
     connection = get_connection()
     xls_file = get_courses_xls()
     email_list = []
-    for email in EmailsAddressMailing.objects.all():
-        if email.active:
-            email_message = EmailMessage('Catalogue Email Service', 'Hi all,\nThe list of courses is in the attachment.', settings.EMAIL_FROM, [email.email],)
-            email_message.attach('Courses_report.xls', xls_file.getvalue(), 'application/vnd.ms-excel')
-            email_list.append(email_message)
+    for email in EmailsAddressMailing.objects.filter(active=True):
+        email_message = EmailMessage('Catalogue Email Service', 'Hi all,\nThe list of courses is in the attachment.', settings.EMAIL_FROM, [email.email],)
+        email_message.attach('Courses_report.xls', xls_file.getvalue(), 'application/vnd.ms-excel')
+        email_list.append(email_message)
     connection.send_messages(tuple(email_list))
     
 @task()
-def send_report_email(request, email_adress):
+def send_report_email(request, email_address):
     xls_file = get_courses_xls()
-    email_message = EmailMessage('Catalogue Email Service', 'Hi all,\nThe list of courses is in the attachment.', settings.EMAIL_FROM, [email_adress],)
+    email_message = EmailMessage('Catalogue Email Service', 'Hi all,\nThe list of courses is in the attachment.', settings.EMAIL_FROM, [email_address],)
     email_message.attach('Courses_{0}.xls'.format(request.META['SERVER_NAME']), xls_file.getvalue(), 'application/vnd.ms-excel')
     email_message.send()
 
@@ -44,21 +45,16 @@ def get_courses_xls():
     | Course URL | Course Run ID  | Course name | Enrollment end date | Course end date |
     """
     data = []
-    roles = [CourseInstructorRole, CourseStaffRole, ]
-    def_ms = modulestore()
-    for course in def_ms.get_courses():
-        if course.enrollment_end:
-            enroll_end_date = course.enrollment_end
-            enroll_end_date = enroll_end_date.strftime("%m/%d/%Y")
-        else:
-            enroll_end_date = ''
-        if course.end:
-            end_date = course.end
-            end_date = end_date.strftime("%m/%d/%Y")
-        else:
-            end_date = ''
-        datum = [settings.LMS_ROOT_URL + "/courses/" + str(course.id), course.id.run, course.display_name, 
-                enroll_end_date, end_date, ]
+    module_store = modulestore()
+    for course in module_store.get_courses():
+        enroll_end_date = course.enrollment_end.strftime("%m/%d/%Y") if course.enrollment_end else ''
+        end_date = course.end.strftime("%m/%d/%Y") if course.end else ''
+        course_url = '{}{}'.format(
+            settings.LMS_ROOT_URL,
+            reverse('course_root', kwargs={'course_id': course.id})
+        )
+        datum = [course_url, course.id.run, course.display_name,
+                enroll_end_date, end_date]
         data.append(datum)
 
     header = [('Course URL', 16000),
@@ -81,8 +77,6 @@ def return_xls(header, data):
     pattern.pattern = xlwt.Pattern.SOLID_PATTERN
     pattern.pattern_fore_colour = xlwt.Style.colour_map['gray25']
     style.pattern = pattern
-
-
 
     row_num = 0
     for col_num in range(len(header)):
