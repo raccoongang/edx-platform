@@ -4,6 +4,7 @@
 
 # Python libraries to install directly from github / PyPi
 
+xlwt==1.3.0
 click==3.3
 
 # Third-party:
