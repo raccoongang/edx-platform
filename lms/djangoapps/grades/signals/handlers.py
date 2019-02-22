@@ -9,7 +9,10 @@ from django.dispatch import receiver
 from openedx.core.lib.grade_utils import is_score_higher
 from submissions.models import score_set, score_reset
 from util.date_utils import to_timestamp
+from opaque_keys.edx.keys import CourseKey
 
+from student.models import CourseEnrollment
+from lms.djangoapps.grades.models import PersistentCourseGrade
 from courseware.model_data import get_score, set_score
 from eventtracking import tracker
 from student.models import user_by_anonymous_id
@@ -27,7 +30,7 @@ from .signals import (
 )
 from ..new.course_grade import CourseGradeFactory
 from ..scores import weighted_score
-from ..tasks import recalculate_subsection_grade_v2
+from ..tasks import recalculate_subsection_grade_v2, send_api_request
 
 log = getLogger(__name__)
 
@@ -199,6 +202,27 @@ def recalculate_course_grade(sender, course, course_structure, user, **kwargs): 
     Updates a saved course grade.
     """
     CourseGradeFactory().update(user, course, course_structure)
+    grade = CourseGradeFactory()._get_saved_grade(user, course, course_structure)
+    if grade._percent == 1.0:
+        course_enrollment = CourseEnrollment.objects.get(course_id=course.id, user=user.id)
+        persist_course_grade = PersistentCourseGrade.objects.get(user_id=user.id, course_id=course.id)
+        duration = persist_course_grade.passed_timestamp - course_enrollment.created if persist_course_grade.passed_timestamp else None
+        data = {
+            "contentProvider": "FastLane",
+            "userId": user.id,
+            "courseId": course.id.to_deprecated_string(),
+            "lastlogin": user.last_login,
+            "percentageOfcompletion": grade.percent,
+            "duration": duration,
+            "lastVisit": '---',
+            "completationDate" : persist_course_grade.passed_timestamp,
+            "studentGrade": grade.letter_grade,
+            "main_topic": course.main_topic,
+            "skilltag": course.skilltag,
+            "course_level": course.course_level,
+            "effort": course.total_effort,
+        }
+        send_api_request(data)
 
 
 def _emit_problem_submitted_event(kwargs):

@@ -62,6 +62,13 @@ LMS_ROOT_URL = "http://localhost:8000"
 
 # Features
 FEATURES = {
+    'ENABLE_API_GRADE': True,
+    'API_GRADE_PROPERTIES':{
+        'API_URL': '',
+        'APP_KEY': '',
+        'APP_SECRET': '',
+    },
+
     'DISPLAY_DEBUG_INFO_TO_STAFF': True,
     'DISPLAY_HISTOGRAMS_TO_STAFF': False,  # For large courses this slows down courseware access for staff.
 

@@ -48,6 +48,34 @@ class CourseOverview(TimeStampedModel):
     # Cache entry versioning.
     version = IntegerField()
 
+    COURSE_LEVEL_CHOICES = (
+        ('Introductory', 'Introductory'),
+        ('Intermediate', 'Intermediate'),
+        ('Advanced', 'Advanced'),
+    )
+
+    main_topic = models.CharField(
+        max_length=256,
+        verbose_name='Main topic',
+        blank=True
+    )
+
+    skilltag = TextField()
+
+    course_level = models.CharField(
+        max_length=25,
+        verbose_name='Course level',
+        choices=COURSE_LEVEL_CHOICES,
+        blank=True
+    )
+
+    total_effort = models.CharField(
+        max_length=256,
+        verbose_name='Total effort',
+        default="",
+        blank=True
+    )
+
     # Course identification
     id = CourseKeyField(db_index=True, primary_key=True, max_length=255)
     _location = UsageKeyField(max_length=255)
@@ -141,6 +169,12 @@ class CourseOverview(TimeStampedModel):
 
         return cls(
             version=cls.VERSION,
+
+            main_topic = course.main_topic,
+            skilltag = json.dumps(course.skilltag),
+            course_level = course.course_level,
+            total_effort = course.total_effort,
+
             id=course.id,
             _location=course.location,
             org=course.location.org,

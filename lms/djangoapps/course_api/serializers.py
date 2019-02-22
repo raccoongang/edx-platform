@@ -3,6 +3,8 @@ Course API Serializers.  Representing course catalog data
 """
 
 import urllib
+import json
+from StringIO import StringIO
 
 from django.core.urlresolvers import reverse
 from rest_framework import serializers
@@ -56,6 +58,11 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
     Compare this with CourseDetailSerializer.
     """
 
+    main_topic = serializers.CharField()
+    skilltag = serializers.SerializerMethodField()
+    course_level = serializers.CharField()
+    total_effort = serializers.CharField()
+
     blocks_url = serializers.SerializerMethodField()
     effort = serializers.CharField()
     end = serializers.DateTimeField()
@@ -76,6 +83,16 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
 
     # 'course_id' is a deprecated field, please use 'id' instead.
     course_id = serializers.CharField(source='id', read_only=True)
+
+    def get_skilltag(self, course_overview):
+        """
+        Get the representation for SerializerMethodField `skilltag`
+        """
+        skilltag = course_overview.skilltag
+        try:
+            return json.loads(skilltag) if skilltag else ""
+        except ValueError:
+            return "Error. Data is not valid"
 
     def get_hidden(self, course_overview):
         """

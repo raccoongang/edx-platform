@@ -1,25 +1,32 @@
-""" API v0 views. """
+""" API v1 views. """
 import logging
 
 from django.http import Http404
+from django.contrib.auth.models import User
+
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
+
 from rest_framework import status
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.generics import GenericAPIView, ListAPIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from edx_rest_framework_extensions.authentication import JwtAuthentication
+from openedx.core.lib.api.view_utils import DeveloperErrorViewMixin
+from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
+from openedx.core.lib.api.authentication import (
+    SessionAuthenticationAllowInactiveUser,
+    OAuth2AuthenticationAllowInactiveUser,
+)
 
 from lms.djangoapps.ccx.utils import prep_course_for_grading
 from lms.djangoapps.courseware import courses
 from lms.djangoapps.grades.api.serializers import GradingPolicySerializer
 from lms.djangoapps.grades.models import PersistentCourseGrade
 from lms.djangoapps.grades.new.course_grade import CourseGradeFactory
-from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiveUser
-from openedx.core.lib.api.view_utils import DeveloperErrorViewMixin
+
 from student.models import CourseEnrollment
-from django.contrib.auth.models import User
+
 
 log = logging.getLogger(__name__)
 
@@ -29,10 +36,11 @@ class GradeViewMixin(DeveloperErrorViewMixin):
     Mixin class for Grades related views.
     """
     authentication_classes = (
+        JwtAuthentication,
         OAuth2AuthenticationAllowInactiveUser,
-        SessionAuthentication,
+        SessionAuthenticationAllowInactiveUser
     )
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (ApiKeyHeaderPermission,)
 
     def _get_course(self, course_key_string, user, access_action):
         """
@@ -63,14 +71,6 @@ class GradeViewMixin(DeveloperErrorViewMixin):
                 error_code='user_or_course_does_not_exist'
             )
 
-    def perform_authentication(self, request):
-        """
-        Ensures that the user is authenticated (e.g. not an AnonymousUser), unless DEBUG mode is enabled.
-        """
-        super(GradeViewMixin, self).perform_authentication(request)
-        if request.user.is_anonymous():
-            raise AuthenticationFailed
-
 
 class UserGradeView(GradeViewMixin, GenericAPIView):
     """
@@ -81,7 +81,7 @@ class UserGradeView(GradeViewMixin, GenericAPIView):
 
     **Example Request**
 
-        GET /api/grades/v0/course_grade/{course_id}/users/?username={username}
+        GET /api/grades/v1/course_grade/{course_id}/users/?username={username}
 
     **GET Parameters**
 
@@ -141,30 +141,16 @@ class UserGradeView(GradeViewMixin, GenericAPIView):
             A JSON serialized representation of the requesting user's current grade status.
         """
         username = request.GET.get('username')
-
-        # only the student can access her own grade status info
-        if request.user.username != username:
-            log.info(
-                'User %s tried to access the grade for user %s.',
-                request.user.username,
-                username
-            )
-            return self.make_error_response(
-                status_code=status.HTTP_404_NOT_FOUND,
-                developer_message='The user requested does not match the logged in user.',
-                error_code='user_mismatch'
-            )
-
-        course = self._get_course(course_id, request.user, 'load')
-        if isinstance(course, Response):
-            return course
-
-        prep_course_for_grading(course, request)
-        course_grade = CourseGradeFactory().create(request.user, course)
         user = User.objects.filter(username=username).first()
         if user:
+            course = self._get_course(course_id, user, 'load')
+            if isinstance(course, Response):
+                return course
+            prep_course_for_grading(course, request)
+            course_grade = CourseGradeFactory().create(user, course)
             course_enrollment = CourseEnrollment.objects.get(course_id=CourseKey.from_string(course_id), user=user.id)
-            grade = PersistentCourseGrade.objects.filter(user_id=user.id, course_id=CourseKey.from_string(course_id)).first()
+            grade = PersistentCourseGrade.objects.filter(
+                user_id=user.id, course_id=CourseKey.from_string(course_id)).first()
             if grade:
                 duration = grade.passed_timestamp - course_enrollment.created if grade.passed_timestamp else None
                 grade = grade.passed_timestamp
@@ -173,9 +159,9 @@ class UserGradeView(GradeViewMixin, GenericAPIView):
                 duration = "duration can\'t be counted"
             response = Response([{
                 'date_enrollment': course_enrollment.created,
-                'completion Date': grade,
+                'completion_date': grade,
                 'last_login': user.last_login,
-                'duration between enrolment and completion': duration,
+                'duration': duration,
                 'username': username,
                 'course_key': course_id,
                 'passed': course_grade.passed,
@@ -184,7 +170,7 @@ class UserGradeView(GradeViewMixin, GenericAPIView):
             }])
         else:
             response = Response([{
-                'error_code': 'user_mismatch',
+                'error_code': 'Unknown user',
             }])
 
         return response
@@ -198,7 +184,7 @@ class CourseGradingPolicy(GradeViewMixin, ListAPIView):
 
     **Example requests**:
 
-        GET /api/grades/v0/policy/{course_id}/
+        GET /api/grades/v1/policy/{course_id}/
 
     **Response Values**
 
@@ -217,7 +203,9 @@ class CourseGradingPolicy(GradeViewMixin, ListAPIView):
     allow_empty = False
 
     def get(self, request, course_id, **kwargs):
-        course = self._get_course(course_id, request.user, 'staff')
+        username = request.GET.get('username', 'staff')
+        user = User.objects.filter(username=username).first()
+        course = self._get_course(course_id, user, 'staff')
         if isinstance(course, Response):
             return course
         return Response(GradingPolicySerializer(course.raw_grader, many=True).data)
