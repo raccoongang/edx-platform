@@ -37,7 +37,6 @@ def send_report_email(request, email_address):
     email_message.attach('Courses_{0}.xls'.format(request.META['SERVER_NAME']), xls_file.getvalue(), 'application/vnd.ms-excel')
     email_message.send()
 
-@task()
 def get_courses_xls():
     """
     Getting course data and return xls file
