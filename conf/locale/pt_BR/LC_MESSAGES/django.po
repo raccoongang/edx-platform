@@ -18319,7 +18319,7 @@ msgstr "Gerar relatório de notas do problema"
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Generate ORA Data Report"
-msgstr ""
+msgstr "Gerar ORA Relatório de dados"
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Reports Available for Download"
