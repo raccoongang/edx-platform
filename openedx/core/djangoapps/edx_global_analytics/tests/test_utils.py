@@ -204,7 +204,7 @@ class TestGetStatsDailyRegistered(TestCase):
         User.objects.create(username='test4', password='test4', email='test4@example.com', date_joined='2018-01-01')
         second_students_part, _ = get_registered_students_daily('test-token')
 
-        self.assertEqual(len(second_students_part), 1)
+        self.assertEqual(len(second_students_part), 2)
         self.assertEqual(second_students_part['2018-01-01'], 1)
 
 
@@ -256,7 +256,7 @@ class TestGetStatsDailyCertificates(TestCase):
         cert4.save()
         second_certificates_part, _ = get_generated_certificates_daily('test-token')
 
-        self.assertEqual(len(second_certificates_part), 1)
+        self.assertEqual(len(second_certificates_part), 2)
         self.assertEqual(second_certificates_part['2018-01-01'], 1)
 
 
