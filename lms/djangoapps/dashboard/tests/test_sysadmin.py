@@ -6,19 +6,23 @@ import os
 import re
 import shutil
 import unittest
+import mock
+
 from uuid import uuid4
 from util.date_utils import get_time_display, DEFAULT_DATE_TIME_FORMAT
 from nose.plugins.attrib import attr
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.core.mail import EmailMessage, get_connection
 from django.test.client import Client
 from django.test.utils import override_settings
 from django.utils.timezone import utc as UTC
 import mongoengine
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 
-from dashboard.models import CourseImportLog
+from dashboard.tasks import return_xls, get_courses_xls, mass_sending_report
+from dashboard.models import CourseImportLog, EmailsAddressMailing
 from dashboard.git_import import GitImportErrorNoDir
 from datetime import datetime
 from student.roles import CourseStaffRole, GlobalStaff
@@ -26,6 +30,8 @@ from student.tests.factories import UserFactory
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
 from xmodule.modulestore.tests.mongo_connection import MONGO_PORT_NUM, MONGO_HOST
+from xmodule.modulestore.tests.factories import CourseFactory, LibraryFactory
+from xmodule.modulestore import ModuleStoreEnum
 
 
 TEST_MONGODB_LOG = {
@@ -38,6 +44,54 @@ TEST_MONGODB_LOG = {
 
 FEATURES_WITH_SSL_AUTH = settings.FEATURES.copy()
 FEATURES_WITH_SSL_AUTH['AUTH_USE_CERTIFICATES'] = True
+
+
+class TestReportSending(SharedModuleStoreTestCase):
+    """
+    Check the functionality of sending reports.
+    """
+    @classmethod
+    def setUpClass(cls):
+        super(TestReportSending, cls).setUpClass()
+        cls.store = modulestore()
+        cls.first_lib = LibraryFactory.create(
+            org="test", library="lib1", display_name="run1", default_store=ModuleStoreEnum.Type.split
+        )
+        cls.second_lib = LibraryFactory.create(
+            org="test", library="lib2", display_name="run2", default_store=ModuleStoreEnum.Type.split
+        )
+
+        cls.first_course = CourseFactory.create(
+            org="test", course="course1", display_name="run1"
+        )
+        cls.second_course = CourseFactory.create(
+            org="test", course="course2", display_name="run1"
+        )
+        EmailsAddressMailing.objects.create(email='mail+1@exemple.com', active=True, comment='comment')
+        EmailsAddressMailing.objects.create(email='mail+2@exemple.com', active=True, comment='comment')
+        EmailsAddressMailing.objects.create(email='mail+3@exemple.com', active=False, comment='comment')
+
+    def mock_return_xls(header, data):
+        return data
+
+    @mock.patch('dashboard.tasks.return_xls', side_effect=mock_return_xls)
+    def test_get_courses_xls(self, return_xls):
+        """Assert the count of lines in the file with the count of courses."""
+        data = get_courses_xls()
+        count_courses = 2
+        self.assertEqual(count_courses, len(data))
+
+    @mock.patch('dashboard.tasks.EmailMessage')
+    @mock.patch('dashboard.tasks.get_connection')
+    @mock.patch('dashboard.tasks.settings')
+    @mock.patch('dashboard.tasks.return_xls')
+    def test_mass_sending_report(self, return_xls, settings, get_connection, EmailMessage):
+        """Assert count of active emails in the database with the count of emails to send."""
+        settings.EMAIL_FROM='mail@exemple.com'
+        mass_sending_report()
+        email_list = get_connection().send_messages.call_args
+        count_emails = EmailsAddressMailing.objects.filter(active=True).count()
+        self.assertEqual(count_emails, len(email_list))
 
 
 class SysadminBaseTestCase(SharedModuleStoreTestCase):
