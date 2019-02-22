@@ -164,8 +164,8 @@ def delete_bookmarks(usage_key):
         usage_key (UsageKey): The usage_key of the bookmarks.
     """
     bookmarks = Bookmark.objects.filter(usage_key=usage_key)
-    bookmarks.delete()
     [_track_event('edx.bookmark.removed', b) for b in bookmarks]
+    bookmarks.delete()
 
 
 def _track_event(event_name, bookmark):
