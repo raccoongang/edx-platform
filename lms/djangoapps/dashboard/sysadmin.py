@@ -500,8 +500,8 @@ class Courses(SysadminDashboardView):
                         _('Deleted'), course.location.to_deprecated_string(), course.id.to_deprecated_string(), course.display_name)
 
         elif action == 'get_courses_xls':
-            xls_file = get_courses_xls.delay()
-            response = HttpResponse(xls_file.result.getvalue(), content_type='application/vnd.ms-excel')
+            xls_file = get_courses_xls()
+            response = HttpResponse(xls_file.getvalue(), content_type='application/vnd.ms-excel')
             response['Content-Disposition'] = "attachment; filename=Courses_{0}.xls".format(request.META['SERVER_NAME'])
             return response
         
