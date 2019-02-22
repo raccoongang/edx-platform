@@ -28,10 +28,17 @@ from .config.models import PersistentGradesEnabledFlag
 from .new.subsection_grade import SubsectionGradeFactory
 from .signals.signals import SUBSECTION_SCORE_CHANGED
 from .transformer import GradesTransformer
+from .api_grade import APIGrade
 
 log = getLogger(__name__)
 
 KNOWN_RETRY_ERRORS = (DatabaseError, ValidationError)  # Errors we expect occasionally, should be resolved on retry
+
+
+@task()
+def send_api_request(data):
+    api = APIGrade()
+    api.api_call(**data)
 
 
 @task(default_retry_delay=30, routing_key=settings.RECALCULATE_GRADES_ROUTING_KEY)

@@ -167,6 +167,29 @@ class TextbookList(List):
 
 
 class CourseFields(object):
+    main_topic = String(
+        display_name='Main topic',
+        scope=Scope.settings,
+        help=_('free text (can only be one value)'),
+        default=""
+    )
+    skilltag = List(
+        display_name='Skilltag',
+        scope=Scope.settings,
+        default=[],
+        help=_('free text/number combination (comma separated)')
+        )
+    course_level = String(
+        display_name='Course level',
+        scope=Scope.settings,
+        default="",
+        help=_('"Introductory" OR "Intermediate" OR "Advanced"')
+    )
+    total_effort = String(
+        display_name='Total effort',
+        scope=Scope.settings, default="",
+        help=_('"XY" to "XY" hours')
+    )
     lti_passports = List(
         display_name=_("LTI Passports"),
         help=_('Enter the passports for course LTI tools in the following format: "id:client_key:client_secret".'),
