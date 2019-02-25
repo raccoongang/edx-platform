@@ -234,10 +234,42 @@ class RegistrationView(APIView):
 
         """
         form_desc = FormDescription("post", reverse("user_api_registration"))
+
+        # Translators: This label appears above a field on the login form
+        # meant to hold the user's email address.
+        email_label = _(u"Email")
+
+        # Translators: This example email address is used as a placeholder in
+        # a field on the login form meant to hold the user's email address.
+        email_placeholder = _(u"username@domain.com")
+
+        # Translators: These instructions appear on the login form, immediately
+        # below a field meant to hold the user's email address.
+        email_instructions = _("The email address you used to register with {platform_name}").format(
+            platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
+        )
+
+        form_desc.add_field(
+            "email",
+            field_type="email",
+            label=email_label,
+            placeholder=email_placeholder,
+            instructions=email_instructions,
+            restrictions={
+                "min_length": EMAIL_MIN_LENGTH,
+                "max_length": EMAIL_MAX_LENGTH,
+            }
+        )
+
         self._apply_third_party_auth_overrides(request, form_desc)
 
         # Default fields are always required
         for field_name in self.DEFAULT_FIELDS:
+
+            # Need to add help text to the email field
+            if field_name == 'email':
+                continue
+
             self.field_handlers[field_name](form_desc, required=True)
 
         # Custom form fields can be added via the form set in settings.REGISTRATION_EXTENSION_FORM
@@ -811,14 +843,17 @@ class RegistrationView(APIView):
         # Translators: This is a legal document users must agree to
         # in order to register a new account.
         terms_label = _(u"Terms of Service")
-        terms_link = marketing_link("TOS")
-        terms_text = _(u"Review the Terms of Service")
+
+        terms_of_service_link = '<a href="{tos_link}">{terms_of_service}</a>'.format(
+            tos_link=settings.ENV_TOKENS.get("TOS_URL", ''),
+            terms_of_service=terms_label
+        )
 
         # Translators: "Terms of service" is a legal document users must agree to
         # in order to register a new account.
         label = _(u"I agree to the {platform_name} {terms_of_service}").format(
             platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
-            terms_of_service=terms_label
+            terms_of_service=terms_of_service_link
         )
 
         # Translators: "Terms of service" is a legal document users must agree to
@@ -837,8 +872,6 @@ class RegistrationView(APIView):
             error_messages={
                 "required": error_msg
             },
-            supplementalLink=terms_link,
-            supplementalText=terms_text
         )
 
     def _apply_third_party_auth_overrides(self, request, form_desc):

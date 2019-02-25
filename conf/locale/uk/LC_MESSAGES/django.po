@@ -13437,7 +13437,7 @@ msgstr "Я погоджуюсь з  {link_start} Кодексом Честі {li
 #: themes/edx.org/lms/templates/header/navbar-not-authenticated.html
 #: themes/stanford-style/lms/templates/register-form.html
 msgid "Register"
-msgstr "Зареєструватися"
+msgstr "Реєстрація"
 
 #: lms/templates/register-form.html lms/templates/signup_modal.html
 #: themes/stanford-style/lms/templates/register-form.html
@@ -13605,7 +13605,7 @@ msgstr " Мета реєстрації в {platform_name}"
 
 #: lms/templates/signup_modal.html
 msgid "Already have an account?"
-msgstr "Вже маєте аккаунт?"
+msgstr "Вже маєте обліковий запис?"
 
 #: lms/templates/signup_modal.html
 msgid "Login."
@@ -25181,7 +25181,7 @@ msgstr "Переглянути Умови надання послуг та Ко�
 #: openedx/core/djangoapps/user_api/views.py
 #, python-brace-format
 msgid "I agree to the {platform_name} {terms_of_service}"
-msgstr "Я походжуюся з умовами {terms_of_service} {platform_name}"
+msgstr "Я погоджуюсь з {terms_of_service} {platform_name}"
 
 #: openedx/core/djangoapps/user_api/views.py
 msgid "Review the Terms of Service"

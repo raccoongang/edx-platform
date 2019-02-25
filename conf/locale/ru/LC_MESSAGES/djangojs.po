@@ -739,6 +739,18 @@ msgstr "Отключить встроенные субтитры"
 msgid "Required field."
 msgstr "Обязательное поле."
 
+#: lms/templates/student_account/register.underscore
+msgid "Already have an account?"
+msgstr "Уже есть учетная запись?"
+
+#: lms/templates/student_account/register.underscore
+msgid "Create your account"
+msgstr "Создать учетную запись"
+
+#: lms/templates/student_account/register.underscore
+msgid "Required field"
+msgstr "Обязательное поле"
+
 #: common/static/common/js/components/utils/view_utils.js
 msgid "Please do not use any spaces in this field."
 msgstr "Пожалуйста, не используйте пробелы в этом поле."
