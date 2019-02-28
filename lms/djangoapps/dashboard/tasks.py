@@ -18,6 +18,7 @@ from xmodule.modulestore.django import modulestore
 
 from .models import EmailsAddressMailing
 
+logger = logging.getLogger(__name__)
 
 @task(name='mass_sending_report')
 def mass_sending_report():
@@ -25,17 +26,19 @@ def mass_sending_report():
     xls_file = get_courses_xls()
     email_list = []
     for email in EmailsAddressMailing.objects.filter(active=True):
-        email_message = EmailMessage('Catalogue Email Service', 'Hi all,\nThe list of courses is in the attachment.', settings.EMAIL_FROM, [email.email],)
+        email_message = EmailMessage('Catalogue Email Service', 'Hi all,\nThe list of courses is in the attachment.', settings.DEFAULT_FROM_EMAIL, [email.email],)
         email_message.attach('Courses_report.xls', xls_file.getvalue(), 'application/vnd.ms-excel')
         email_list.append(email_message)
     connection.send_messages(tuple(email_list))
+    logger.info('mass_sending_report: {} emails sent successfully.'.format(len(email_list)))
     
 @task()
-def send_report_email(request, email_address):
+def send_report_email(server_name, email_address):
     xls_file = get_courses_xls()
-    email_message = EmailMessage('Catalogue Email Service', 'Hi all,\nThe list of courses is in the attachment.', settings.EMAIL_FROM, [email_address],)
-    email_message.attach('Courses_{0}.xls'.format(request.META['SERVER_NAME']), xls_file.getvalue(), 'application/vnd.ms-excel')
+    email_message = EmailMessage('Catalogue Email Service', 'Hi all,\nThe list of courses is in the attachment.', settings.DEFAULT_FROM_EMAIL, [email_address],)
+    email_message.attach('Courses_{0}.xls'.format(server_name), xls_file.getvalue(), 'application/vnd.ms-excel')
     email_message.send()
+    logger.info('send_report_email: email sent successfully')
 
 def get_courses_xls():
     """

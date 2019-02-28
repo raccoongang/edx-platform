@@ -134,17 +134,6 @@ if OPENEDX_LEARNERS_GLOBAL_ANALYTICS_ENABLE and OPENEDX_LEARNERS_GLOBAL_ANALYTIC
         },
     })
 
-if FEATURES["ENABLE_SYSADMIN_DASHBOARD"]:    
-    CELERYBEAT_SCHEDULE.update({
-        # send an email with a report on the courses to the mail 
-        # specified in the model EmailsAddressMailing 
-        # every Monday morning at 11:30 A.M
-        "mass-sending-report": {
-            "task": "mass_sending_report",
-            "schedule": crontab(hour=11, minute=30, day_of_week=1),
-        },
-    })
-
 # STATIC_ROOT specifies the directory where static files are
 # collected
 STATIC_ROOT_BASE = ENV_TOKENS.get('STATIC_ROOT_BASE', None)
@@ -209,6 +198,17 @@ LMS_ROOT_URL = ENV_TOKENS.get('LMS_ROOT_URL')
 ENV_FEATURES = ENV_TOKENS.get('FEATURES', {})
 for feature, value in ENV_FEATURES.items():
     FEATURES[feature] = value
+
+if FEATURES["ENABLE_SYSADMIN_DASHBOARD"]:    
+    CELERYBEAT_SCHEDULE.update({
+        # send an email with a report on the courses to the mail 
+        # specified in the model EmailsAddressMailing 
+        # every Monday morning at 11:30 A.M
+        "mass-sending-report": {
+            "task": "mass_sending_report",
+            "schedule": crontab(hour=11, minute=30, day_of_week=1),
+        },
+    })
 
 # Backward compatibility for deprecated feature names
 if 'ENABLE_S3_GRADE_DOWNLOADS' in FEATURES:

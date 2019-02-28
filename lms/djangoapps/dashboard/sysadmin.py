@@ -508,7 +508,8 @@ class Courses(SysadminDashboardView):
         elif action == 'send_courses_xls':
             email_address = request.POST.get('email', '')
             if email_address:
-                send_report_email.delay(request, email_address)
+                server_name = request.META['SERVER_NAME']
+                send_report_email.delay(server_name, email_address)
 
         context = {
             'datatable': self.make_datatable(),
