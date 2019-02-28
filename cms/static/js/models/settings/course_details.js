@@ -30,7 +30,8 @@ define(['backbone', 'underscore', 'gettext', 'js/models/validation_helpers', 'js
                 entrance_exam_enabled: '',
                 entrance_exam_minimum_score_pct: '50',
                 learning_info: [],
-                instructor_info: {}
+                instructor_info: {},
+                extra_json: '{}'
             },
 
             validate: function(newattrs) {
@@ -72,6 +73,16 @@ define(['backbone', 'underscore', 'gettext', 'js/models/validation_helpers', 'js
                         errors.entrance_exam_minimum_score_pct = interpolate(gettext('Please enter an integer between %(min)s and %(max)s.'), range, true);
                     }
                 }
+
+                // NOTE(AndreyLykhoman): Validating the JSON
+                try {
+                    if (newattrs.extra_json !== "") {
+                        JSON.parse(newattrs.extra_json);
+                    }
+                } catch (e) {
+                    errors.extra_json = gettext('Please write a valid JSON');
+                }
+
                 if (!_.isEmpty(errors)) return errors;
         // NOTE don't return empty errors as that will be interpreted as an error state
             },
