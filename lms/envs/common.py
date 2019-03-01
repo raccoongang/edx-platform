@@ -2324,6 +2324,9 @@ INSTALLED_APPS = [
     'tinymce',
     'info_pages',
     'hvad',
+
+    # App for migration users from another platform
+    'migrate_users',
 ]
 
 ######################### CSRF #########################################
