@@ -150,7 +150,7 @@ def get_registered_students_daily(token):
     :return: Dictionary where the keys is a dates and the values is the counts.
     """
     last_date = get_last_analytics_sent_date('registered_students', token)
-    queryset = User.objects.filter(date_joined__gte=last_date)
+    queryset = User.objects.filter(date_joined__gte=last_date.date())
 
     registered_users = queryset.extra(select={'date': 'date( date_joined )'}).values('date').annotate(
         count=Count('id'), datetime=Max('date_joined')
@@ -169,7 +169,7 @@ def get_generated_certificates_daily(token):
     :return: Dictionary where the keys is a dates and the values is the counts.
     """
     last_date = get_last_analytics_sent_date('generated_certificates', token)
-    queryset = GeneratedCertificate.objects.filter(created_date__gte=last_date)
+    queryset = GeneratedCertificate.objects.filter(created_date__gte=last_date.date())
 
     generated_certificates = queryset.extra(select={'date': 'date( created_date )'}).values('date').annotate(
         count=Count('id'), datetime=Max('created_date')
@@ -189,7 +189,7 @@ def get_enthusiastic_students_daily(token):
     """
     last_date = get_last_analytics_sent_date('enthusiastic_students', token)
     last_sections_ids = get_all_courses_last_sections_ids()
-    queryset = StudentModule.objects.filter(created__gte=last_date, module_state_key__in=last_sections_ids)
+    queryset = StudentModule.objects.filter(created__gte=last_date.date(), module_state_key__in=last_sections_ids)
 
     enthusiastic_students = queryset.extra(select={'date': 'date( modified )'}).values('date').annotate(
         count=Count('student_id', datetime=Max('created'))
