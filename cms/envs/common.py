@@ -427,8 +427,8 @@ DEFAULT_TEMPLATE_ENGINE = TEMPLATES[0]
 
 EDX_ROOT_URL = ''
 
-LOGIN_REDIRECT_URL = EDX_ROOT_URL + '/signin'
-LOGIN_URL = EDX_ROOT_URL + '/signin'
+LOGIN_REDIRECT_URL = EDX_ROOT_URL + '/auth/login/sdn-oauth2/?auth_entry=login'
+LOGIN_URL = EDX_ROOT_URL + '/auth/login/sdn-oauth2/?auth_entry=login'
 
 # use the ratelimit backend to prevent brute force attacks
 AUTHENTICATION_BACKENDS = [
@@ -1000,6 +1000,7 @@ INSTALLED_APPS = [
 
     # edX Video Pipeline integration
     'openedx.core.djangoapps.video_pipeline',
+    'third_party_auth',
 
     # For CMS
     'contentstore.apps.ContentstoreConfig',
@@ -1530,6 +1531,7 @@ ZENDESK_CUSTOM_FIELDS = {}
 # (0.0 = 0%, 1.0 = 100%)
 COMPLETION_VIDEO_COMPLETE_PERCENTAGE = 0.95
 
+SOCIAL_AUTH_EXCLUDE_URL_PATTERN = r'^/admin'
 
 ############## Installed Django Apps #########################
 
