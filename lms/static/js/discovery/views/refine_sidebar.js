@@ -24,7 +24,7 @@
             },
 
             facetName: function(key) {
-                return this.meanings[key] && this.meanings[key].name || key;
+                return this.meanings[key] && gettext(this.meanings[key].name) || key;
             },
 
             termName: function(facetKey, termKey) {
