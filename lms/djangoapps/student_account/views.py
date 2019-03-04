@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse, resolve
 from django.http import (
-    HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpRequest
+    HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpRequest, HttpResponseRedirect
 )
 from django.shortcuts import redirect
 from django.utils.translation import ugettext as _
@@ -41,7 +41,7 @@ from student.views import (
     signin_user as old_login_view,
     register_user as old_register_view
 )
-from student.helpers import get_next_url_for_login_page, destroy_oauth_tokens
+from student.helpers import get_next_url_for_login_page, destroy_oauth_tokens, auth_pipeline_urls
 import third_party_auth
 from third_party_auth import pipeline
 from third_party_auth.decorators import xframe_allow_whitelisted
@@ -72,6 +72,13 @@ def login_and_registration_form(request, initial_mode="login"):
     # If we're already logged in, redirect to the dashboard
     if request.user.is_authenticated():
         return redirect(redirect_to)
+    else:
+        try:
+            provider = [_ for _ in third_party_auth.provider.Registry.get_enabled_by_backend_name('custom-oauth2')][0]
+            pipeline_url = auth_pipeline_urls(pipeline.AUTH_ENTRY_LOGIN, redirect_url=redirect_to)
+            return HttpResponseRedirect(pipeline_url[provider.provider_id])
+        except IndexError:
+            pass 
 
     # Retrieve the form descriptions from the user API
     form_descriptions = _get_form_descriptions(request)

@@ -26,7 +26,7 @@ from django.core import mail
 from django.core.urlresolvers import reverse, NoReverseMatch, reverse_lazy
 from django.core.validators import validate_email, ValidationError
 from django.db import IntegrityError, transaction
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseServerError, Http404
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseServerError, Http404, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.utils.encoding import force_bytes, force_text
 from django.utils.translation import ungettext
@@ -434,11 +434,18 @@ def _cert_info(user, course_overview, cert_status, course_mode):  # pylint: disa
 @ensure_csrf_cookie
 def signin_user(request):
     """Deprecated. To be replaced by :class:`student_account.views.login_and_registration_form`."""
+    # Determine the URL to redirect to following login:
+    redirect_to = get_next_url_for_login_page(request)
+    if not request.user.is_authenticated():
+        try:
+            provider = [_ for _ in third_party_auth.provider.Registry.get_enabled_by_backend_name('custom-oauth2')][0]
+            pipeline_url = auth_pipeline_urls(pipeline.AUTH_ENTRY_LOGIN, redirect_url=redirect_to)
+            return HttpResponseRedirect(pipeline_url[provider.provider_id])
+        except IndexError:
+            pass
     external_auth_response = external_auth_login(request)
     if external_auth_response is not None:
         return external_auth_response
-    # Determine the URL to redirect to following login:
-    redirect_to = get_next_url_for_login_page(request)
     if request.user.is_authenticated():
         return redirect(redirect_to)
 
@@ -469,8 +476,14 @@ def signin_user(request):
 @ensure_csrf_cookie
 def register_user(request, extra_context=None):
     """Deprecated. To be replaced by :class:`student_account.views.login_and_registration_form`."""
-    # Determine the URL to redirect to following login:
     redirect_to = get_next_url_for_login_page(request)
+    if not request.user.is_authenticated():
+        try:
+            provider = [_ for _ in third_party_auth.provider.Registry.get_enabled_by_backend_name('custom-oauth2')][0]
+            pipeline_url = auth_pipeline_urls(pipeline.AUTH_ENTRY_LOGIN, redirect_url=redirect_to)
+            return HttpResponseRedirect(pipeline_url[provider.provider_id])
+        except IndexError:
+            pass
     if request.user.is_authenticated():
         return redirect(redirect_to)
 
@@ -2658,15 +2671,16 @@ class LogoutView(TemplateView):
     template_name = 'logout.html'
 
     # Keep track of the page to which the user should ultimately be redirected.
-    target = reverse_lazy('cas-logout') if settings.FEATURES.get('AUTH_USE_CAS') else '/'
+    target = reverse_lazy('cas-logout') if settings.FEATURES.get('AUTH_USE_CAS') else getattr(settings, 'LOGOUT_REDIRECT_URL', '/')
 
     def dispatch(self, request, *args, **kwargs):  # pylint: disable=missing-docstring
         # We do not log here, because we have a handler registered to perform logging on successful logouts.
         request.is_from_logout = True
-
+        kwargs.update({
+            'next_page': getattr(settings, 'LOGOUT_REDIRECT_URL', '/')
+        })
         # Get the list of authorized clients before we clear the session.
         self.oauth_client_ids = request.session.get(edx_oauth2_provider.constants.AUTHORIZED_CLIENTS_SESSION_KEY, [])
-
         logout(request)
 
         # If we don't need to deal with OIDC logouts, just redirect the user.

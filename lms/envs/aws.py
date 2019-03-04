@@ -674,6 +674,7 @@ if FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
             'social.backends.azuread.AzureADOAuth2',
             'third_party_auth.saml.SAMLAuthBackend',
             'third_party_auth.lti.LTIAuthBackend',
+            'edx_oauth_client.backends.generic_oauth_client.GenericOAuthBackend'
         ]) + list(AUTHENTICATION_BACKENDS)
     )
 
@@ -917,5 +918,12 @@ ORA2_FILEUPLOAD_CACHE_NAME = ENV_TOKENS.get('ORA2_FILEUPLOAD_CACHE_NAME', 'defau
 ORA2_FILEUPLOAD_ROOT = os.path.join(MEDIA_ROOT, 'submissions_attachments/')
 ORA2_FILEUPLOAD_ROOT = ENV_TOKENS.get('ORA2_FILEUPLOAD_ROOT', ORA2_FILEUPLOAD_ROOT)
 SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING = FEATURES.get("SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING", True)
+
+# Custom OAuth2 client https://github.com/raccoongang/edx-oauth-client
+CUSTOM_OAUTH_PARAMS = ENV_TOKENS.get('CUSTOM_OAUTH_PARAMS', CUSTOM_OAUTH_PARAMS)
+
+# Logout Redirect URL
+LOGOUT_REDIRECT_URL = ENV_TOKENS.get('LOGOUT_REDIRECT_URL', LOGOUT_REDIRECT_URL)
+
 #### RaccoonGang ####
 

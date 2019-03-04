@@ -2161,6 +2161,7 @@ INSTALLED_APPS = (
 
     # Unusual migrations
     'database_fixups',
+    'edx_oauth_client'
 )
 
 ######################### CSRF #########################################
@@ -3042,3 +3043,25 @@ DOC_LINK_BASE_URL = None
 
 ENTERPRISE_ENROLLMENT_API_URL = LMS_ROOT_URL + "/api/enrollment/v1/"
 
+
+######### RaccoonGang OAuth2 client params https://github.com/raccoongang/edx-oauth-client ##############
+
+# default
+CUSTOM_OAUTH_PARAMS = {
+    "PROVIDER_URL": "https://example.com",
+    "AUTHORIZE_URL": "/oauth2/authorize",
+    "GET_TOKEN_URL": "/oauth2/access_token",
+    "PROVIDER_ID_KEY": "<unique identifier>",
+    "USER_DATA_URL": "/api/v0/users/me"
+}
+
+SOCIAL_AUTH_CUSTOM_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
+    "scope": "openid",
+    "nonce": "defaultNonce",
+    "p": "B2C_1A_SignUp_SignIn",
+    "response_type": "id_token",
+    "response_mode": "form_post"
+}
+
+LOGOUT_REDIRECT_URL = 'http://example.com' # need to be overrided
+######### RaccoonGang OAuth2 client params https://github.com/raccoongang/edx-oauth-client ##############
