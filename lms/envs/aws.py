@@ -131,7 +131,7 @@ if OPENEDX_LEARNERS_GLOBAL_ANALYTICS_ENABLE and OPENEDX_LEARNERS_GLOBAL_ANALYTIC
         'collect_stats': {
             'task': 'openedx.core.djangoapps.edx_global_analytics.tasks.collect_stats',
             'schedule': crontab(hour=0, minute=random.randint(1, 59)),
-        }
+        },
     })
 
 # STATIC_ROOT specifies the directory where static files are
@@ -198,6 +198,17 @@ LMS_ROOT_URL = ENV_TOKENS.get('LMS_ROOT_URL')
 ENV_FEATURES = ENV_TOKENS.get('FEATURES', {})
 for feature, value in ENV_FEATURES.items():
     FEATURES[feature] = value
+
+if FEATURES["ENABLE_SYSADMIN_DASHBOARD"]:    
+    CELERYBEAT_SCHEDULE.update({
+        # send an email with a report on the courses to the mail 
+        # specified in the model EmailsAddressMailing 
+        # every Monday morning at 11:30 A.M
+        "mass-sending-report": {
+            "task": "mass_sending_report",
+            "schedule": crontab(hour=11, minute=30, day_of_week=1),
+        },
+    })
 
 # Backward compatibility for deprecated feature names
 if 'ENABLE_S3_GRADE_DOWNLOADS' in FEATURES:
@@ -943,8 +954,7 @@ OIDC_PROVIDERS = {
         'client_registration': {
             'client_id': FEATURES.get('OIDC_CLIENT_ID'),
             'client_secret': FEATURES.get('OIDC_CLIENT_SECRET'),
-            'redirect_uris': ['{}/openid/callback/login/'.format(LMS_ROOT_URL),
-                              '{}://{}/openid/callback/login/'.format(scheme, FEATURES.get('PREVIEW_LMS_BASE', ''))],
+            "redirect_uri": "%s://{}/openid/callback/login/" % scheme,
             'post_logout_redirect_uris': ['{}/openid/callback/logout/'.format(LMS_ROOT_URL)],
        },
    }

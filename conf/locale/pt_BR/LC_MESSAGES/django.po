@@ -3212,7 +3212,7 @@ msgstr ""
 #: lms/templates/courseware/info.html
 #: openedx/features/course_experience/templates/course_experience/course-home-fragment.html
 msgid "Course Handouts"
-msgstr "Apostilas do curso"
+msgstr "Folheto do curso"
 
 #: common/lib/xmodule/xmodule/course_module.py
 msgid ""
@@ -7707,7 +7707,7 @@ msgstr "Preço do Modo de Curso atualizado com sucesso"
 
 #: lms/djangoapps/instructor/views/instructor_dashboard.py
 msgid "Course Info"
-msgstr "Informações sobre o curso"
+msgstr "Informação do curso"
 
 #: lms/djangoapps/instructor/views/instructor_dashboard.py
 #, python-brace-format
@@ -7716,7 +7716,7 @@ msgstr "Data da inscrição está disponível em {dashboard_link}."
 
 #: lms/djangoapps/instructor/views/instructor_dashboard.py
 msgid "Membership"
-msgstr "Assinatura"
+msgstr "Membresia"
 
 #: lms/djangoapps/instructor/views/instructor_dashboard.py
 msgid "Cohorts"
@@ -7730,7 +7730,7 @@ msgstr ""
 #: lms/djangoapps/instructor/views/instructor_dashboard.py
 #: lms/templates/ccx/coach_dashboard.html
 msgid "Student Admin"
-msgstr "Administração de alunos"
+msgstr "Administração do estudante"
 
 #: lms/djangoapps/instructor/views/instructor_dashboard.py
 msgid "Extensions"
@@ -9851,7 +9851,7 @@ msgstr ""
 #: lms/envs/common.py
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Audit"
-msgstr "Auditar"
+msgstr "Auditoria"
 
 #. Translators: This is the website name of www.facebook.com.  Please
 #. translate this the way that Facebook advertises in your language.
@@ -10021,7 +10021,7 @@ msgstr "Última modificação:"
 
 #: lms/templates/wiki/article.html
 msgid "See all children"
-msgstr "Ver todos os artigos subordinados"
+msgstr "Ver todos os filhos"
 
 #: lms/templates/wiki/article.html
 msgid "This article was last modified:"
@@ -13027,7 +13027,7 @@ msgstr ""
 #: lms/templates/navigation/bootstrap/navbar-authenticated.html
 #: themes/edx.org/lms/templates/dashboard.html
 msgid "Explore courses"
-msgstr ""
+msgstr "Explore cursos"
 
 #: lms/templates/dashboard.html
 #: lms/templates/registration/account_activation_sidebar_notice.html
@@ -13079,7 +13079,7 @@ msgstr "Cancelar inscrição"
 
 #: lms/templates/edit_unit_link.html
 msgid "View Unit in Studio"
-msgstr "Visualizar unidade no Studio"
+msgstr "Ver la unidad en estudio"
 
 #: lms/templates/email_change_failed.html lms/templates/email_exists.html
 msgid "E-mail change failed"
@@ -13627,7 +13627,7 @@ msgstr "Visualização do Curso"
 
 #: lms/templates/preview_menu.html
 msgid "View this course as:"
-msgstr "Visualizar o curso como:"
+msgstr "Veja este curso como:"
 
 #: lms/templates/preview_menu.html
 msgid "Learner"
@@ -14039,7 +14039,7 @@ msgstr "Grupos Inativos"
 
 #: lms/templates/staff_problem_info.html
 msgid "Staff Debug Info"
-msgstr "Informações de depuração disponíveis para a equipe"
+msgstr "Informacion de depuracion"
 
 #: lms/templates/staff_problem_info.html
 msgid "Submission history"
@@ -15243,7 +15243,7 @@ msgstr ""
 #: lms/templates/ccx/enrollment.html
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
 msgid "Auto Enroll"
-msgstr "Inscrever-se automaticamente"
+msgstr "inscrição Automática"
 
 #: lms/templates/ccx/enrollment.html
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
@@ -15963,7 +15963,7 @@ msgstr ""
 #: lms/templates/dashboard/_dashboard_course_listing.html
 #: openedx/features/course_experience/templates/course_experience/course-home-fragment.html
 msgid "Resume Course"
-msgstr ""
+msgstr "Retomar o curso"
 
 #: lms/templates/courseware/info.html
 msgid "View Updates in Studio"
@@ -15971,7 +15971,7 @@ msgstr "Visualizar atualizações no Studio"
 
 #: lms/templates/courseware/info.html
 msgid "Course Updates and News"
-msgstr ""
+msgstr "Atualizações e notícias do curso"
 
 #: lms/templates/courseware/info.html
 msgid "Handout Navigation"
@@ -16108,11 +16108,11 @@ msgstr "Progresso {course_number}"
 
 #: lms/templates/courseware/progress.html
 msgid "View Grading in studio"
-msgstr "Visualizar avaliação no Studio"
+msgstr "Ver avaliação em estúdio"
 
 #: lms/templates/courseware/progress.html
 msgid "Course Progress for Student '{username}' ({email})"
-msgstr "Progresso do curso do aluno '{username}' ({email})"
+msgstr "Progreso del Curso para el Estudiante '{username}' ({email})"
 
 #: lms/templates/courseware/progress.html
 msgid "View Certificate"
@@ -16204,7 +16204,7 @@ msgstr "Notas dos problemas:"
 
 #: lms/templates/courseware/progress.html
 msgid "Practice Scores: "
-msgstr "Notas das atividades práticas:"
+msgstr "Pontuações das Práticas:"
 
 #: lms/templates/courseware/progress.html
 msgid "Problem scores are hidden until the due date."
@@ -16224,7 +16224,7 @@ msgstr ""
 
 #: lms/templates/courseware/progress.html
 msgid "No problem scores in this section"
-msgstr "Não há avaliações de questões nesta seção"
+msgstr "Nenhum problema de notas nesta seção"
 
 #: lms/templates/courseware/syllabus.html
 msgid "{course.display_number_with_default} Course Info"
@@ -17941,15 +17941,15 @@ msgstr "Adicionar data de validade"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Example Certificates"
-msgstr "Exemplos de certificados"
+msgstr "Exemplo de Certificados"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Generate example certificates for the course."
-msgstr "Gerar certificados de amostra para o curso."
+msgstr "Gere certificados de exemplo para o curso."
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Generate Example Certificates"
-msgstr "Gerar certificados de amostra"
+msgstr "Gere certificados de exemplo"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Status:"
@@ -17957,7 +17957,7 @@ msgstr "Status: "
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Generating example {name} certificate"
-msgstr "Gerar certificado de amostra {name} "
+msgstr "Gerar certificado de {name} de exemplo "
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Error generating example {name} certificate: {error}"
@@ -17981,19 +17981,19 @@ msgstr "Desabilitar certificados gerados por alunos"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Enable Student-Generated Certificates"
-msgstr "Habilitar Certificado Gerados por alunos"
+msgstr "Ativar certificados gerados por alunos"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid ""
 "You must successfully generate example certificates before you enable "
 "student-generated certificates."
 msgstr ""
-"Você deve gerar a amostra de certificado com sucesso antes de habilitar os "
-"certificados gerados pelo aluno."
+"Você deve gerar certificados de exemplo com êxito antes de ativar "
+"certificados gerados por alunos."
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Generate Certificates"
-msgstr "Gerar certificados"
+msgstr "Gerar Certificados"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid ""
@@ -18009,6 +18009,9 @@ msgid ""
 "Certificates. You do not need to do this if you have set the certificate "
 "mode to on-demand generation."
 msgstr ""
+"Quando você estiver pronto para gerar certificados para seu curso, clique em "
+"Gerar Certificados. Você não precisa " 
+"fazer isso se tiver definido o modo de certificado para geração sob demanda."
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
@@ -18029,7 +18032,7 @@ msgstr "O status para todas as tarefas ativas aparecem na tabela abaixo. "
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Regenerate Certificates"
-msgstr "Recuperar certificados"
+msgstr "Regenerar Certificados"
 
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid ""
@@ -18093,12 +18096,11 @@ msgstr "Invalidar certificados"
 
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Enrollment Information"
-msgstr "Informações sobre a inscrição"
+msgstr "Informação de inscrição"
 
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Number of enrollees (admins, staff, and students) by track"
-msgstr ""
-"Número de inscritos (administradores, funcionários e estudantes) por curso"
+msgstr "Número de inscritos (administradores, funcionários e alunos) por rota"
 
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Professional"
@@ -18106,7 +18108,7 @@ msgstr "Profissional"
 
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Basic Course Information"
-msgstr "Informações básicas sobre o curso"
+msgstr "informação básica do curso"
 
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Course Name:"
@@ -18126,7 +18128,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Has the course started?"
-msgstr "O curso já começou?"
+msgstr "O curso começou?"
 
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Yes"
@@ -18146,7 +18148,7 @@ msgstr "Número de seções"
 
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
 msgid "Grade Cutoffs:"
-msgstr "Notas de corte:"
+msgstr "Corte de notas:"
 
 #. Translators: git is a version-control system; see http://git-scm.com/about
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
@@ -18168,23 +18170,24 @@ msgid ""
 "exams and problem sets), and can be changed on the 'Grading' page (under "
 "'Settings') in Studio."
 msgstr ""
-"Clique para mostrar a configuração de avaliação para o curso. A configuração"
-" da avaliação corresponde à discriminação das subseções avaliadas do curso "
-"(tais como exames e conjuntos de problemas) e podem ser alterados na página "
-"de 'Avaliação' (em 'Configurações') no Studio."
+"Clique para exibir a configuração de classificação do curso. A configuração de classificação"
+"é o detalhamento das subseções classificadas do curso (como exames e conjuntos de problemas) "
+"e pode ser alterada na página 'Classificação' "
+"(em 'Configurações') no Studio"
+
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Grading Configuration"
-msgstr "Configurações de avaliação"
+msgstr "Configuração de notas"
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Click to download a CSV of anonymized student IDs:"
 msgstr ""
-"Clique para baixar um arquivo CSV com identificação anônima de alunos:"
+"Clique para fazer o download de um CSV de IDs de alunos anonimizados:"
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Get Student Anonymized IDs CSV"
-msgstr "Obter arquivo no formato CSV dos alunos com identificação anônima"
+msgstr "Obter CSV de ID anonimizado do aluno"
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 #: lms/templates/instructor/instructor_dashboard_2/e-commerce.html
@@ -18199,19 +18202,19 @@ msgid ""
 "background, meaning it is OK to navigate away from this page while your "
 "report is generating."
 msgstr ""
-"Para cursos grandes, a geração de relatórios pode demorar várias horas. "
-"Quando a geração de relatórios encerrar, um link que inclui a data e hora da"
-" geração é apresentado na tabela abaixo. Estes relatórios são gerados em "
-"segundo plano, o que significa que você pode sair desta página enquanto o "
-"seu relatório está sendo gerado."
+"Para cursos grandes, gerar alguns relatórios pode levar várias horas. Quando a geração"
+"de relatórios é concluída, um link que inclui a data e a hora da geração aparece na tabela abaixo."
+"Esses relatórios são gerados em segundo plano, " 
+"o que significa que você pode navegar  enquanto o relatório está gerando."
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid ""
 "Please be patient and do not click these buttons multiple times. Clicking "
 "these buttons multiple times will significantly slow the generation process."
 msgstr ""
-"Por favor seja paciente, não clique nos botões várias vezes. Clicando várias"
-" vezes tornará o processo de geração de relatórios mais lento."
+"Please be patient and do not click these buttons multiple times. "
+"Clicking these buttons multiple"
+"times will significantly slow the generation process."
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid ""
@@ -18224,19 +18227,19 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Download profile information as a CSV"
-msgstr "Baixar informações sobre o perfil em CSV"
+msgstr "Faça o download das informações do perfil como um arquivo CSV"
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid ""
 "Click to generate a CSV file that lists learners who can enroll in the "
 "course but have not yet done so."
 msgstr ""
-"Clique para gerar o arquivo CSV com a relação dos alunos que podem se "
-"inscrever no curso mas ainda não estão inscritos."
+"Clique para gerar o arquivo CSV com a relação dos alunos que podem se inscrever"
+"no curso mas ainda não estão inscritos."
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Download a CSV of learners who can enroll"
-msgstr "Baixar um CSV dos alunos que podem se inscrever."
+msgstr "Faça o download de um CSV de alunos que podem se inscrever"
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid ""
@@ -18263,9 +18266,9 @@ msgid ""
 "To generate a CSV file that lists all student answers to a given problem, "
 "enter the location of the problem (from its Staff Debug Info)."
 msgstr ""
-"Para gerar um arquivo CSV que liste todas respostas dos alunos para uma "
-"determinada avaliação, entre com a localização do problema (a partir das "
-"informações de Depuração da equipe)"
+"Para gerar um arquivo CSV que liste todas as respostas dos alunos para um determinado problema, "
+"insira o local do "
+"problema (a partir de informações de Depuração)"
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Problem location: "
@@ -18316,7 +18319,7 @@ msgstr "Gerar relatório de notas do problema"
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Generate ORA Data Report"
-msgstr ""
+msgstr "Gerar ORA Relatório de dados"
 
 #: lms/templates/instructor/instructor_dashboard_2/data_download.html
 msgid "Reports Available for Download"
@@ -18353,6 +18356,9 @@ msgid ""
 " or email these links for direct access. Copies of links expire within 5 "
 "minutes."
 msgstr ""
+"{strong_start}Nota{strong_end}: Para manter os dados do aluno seguros, não é possível salvar ou enviar"
+"por e-mail esses links para acesso direto. Cópias dos links expiram em 5 "
+"minutos"
 
 #: lms/templates/instructor/instructor_dashboard_2/e-commerce.html
 msgid "Enrollment Codes"
@@ -18934,7 +18940,7 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/instructor_dashboard_2.html
 msgid "Instructor Dashboard"
-msgstr "Painel de controle do instrutor"
+msgstr "Painel de instrutor"
 
 #: lms/templates/instructor/instructor_dashboard_2/instructor_dashboard_2.html
 msgid "View Course in Studio"
@@ -18961,8 +18967,7 @@ msgstr "Localizar código de matrícula"
 msgid ""
 "Enter email addresses and/or usernames separated by new lines or commas."
 msgstr ""
-"Insira os endereços de e-mail e/ou nomes de usuário separados por novas "
-"linhas ou vírgulas."
+"insira endereços de e-mail e / ou nomes de usuário separados por novas linhas ou vírgulas."
 
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
 msgid ""
@@ -19027,27 +19032,32 @@ msgstr "Enviar arquivo CSV"
 
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
 msgid "Batch Beta Tester Addition"
-msgstr "Adição de testadores beta em lote"
+msgstr "Adição de  beta em lote"
 
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
 msgid ""
 "Note: Users must have an activated {platform_name} account before they can "
 "be enrolled as beta testers."
 msgstr ""
-"Nota: Os usuários devem ter uma conta ativada na {platform_name} antes que "
-"possam ser inscritos como testadores beta."
+"Observação: os usuários devem ter uma conta do Fast Lane LIVE "
+"ativada antes de poderem ser inscritos como beta testers"
 
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
 msgid ""
 "If this option is {em_start}checked{em_end}, users who have not enrolled in "
 "your course will be automatically enrolled."
+"If this option is left unchecked, users who have not yet registered for "
+"Fast Lane LIVE will not be enrolled, but will be allowed to enroll once they make an account."
 msgstr ""
+"Se esta opção estiver {em_start}marcada{em_end}, os usuários que ainda não se registraram no " 
+"Fast Lane LIVE serão automaticamente inscritos. Se esta opção for deixada desmarcada, os usuários"
+"que ainda não se registraram no Fast Lane LIVE não serão inscritos, mas poderão se inscrever assim que criarem uma conta."
 
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
 msgid "Checking this box has no effect if 'Remove beta testers' is selected."
 msgstr ""
-"Marcar esta caixa não terá efeito se 'Excluir testadores beta' for "
-"selecionado."
+"Marcar esta caixa não terá efeito se cancelar inscrição "
+"estiver selecionado"
 
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
 msgid "Add beta testers"
@@ -19422,21 +19432,21 @@ msgstr "Tentativas do Estudante no Exame especial"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "View gradebook for enrolled learners"
-msgstr ""
+msgstr "Ver o livro de notas dos alunos matriculados"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid ""
 "Note: This feature is available only to courses with a small number of "
 "enrolled learners."
-msgstr ""
+msgstr "Nota: esse recurso está disponível apenas para cursos com um pequeno número de alunos inscritos."
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "View Gradebook"
-msgstr "Visualizar boletim"
+msgstr "Ver o livro de notas"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "View a specific learner's grades and progress"
-msgstr ""
+msgstr "Ver as notas e progresso de um aluno específico"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Learner's {platform_name} email address or username"
@@ -19444,36 +19454,37 @@ msgstr ""
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Learner email address or username"
-msgstr ""
+msgstr "Endereço de e-mail do aluno ou nome de usuário"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "View Progress Page"
-msgstr ""
+msgstr "Visualizar a Página de Progresso"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Adjust a learner's grade for a specific problem"
-msgstr ""
+msgstr "Ajustar a nota de um aluno para um problema específico"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
-msgid "Location of problem in course"
-msgstr ""
+msgid "Location of problem in course *"
+msgstr "Localização ou problema emcurso"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Example"
-msgstr ""
+msgstr "Exemplo"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Problem location"
-msgstr "Local do problema"
+msgstr "Localização do problema"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Attempts"
-msgstr ""
+msgstr "Tentativas"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid ""
 "Allow a learner who has used up all attempts to work on the problem again."
 msgstr ""
+"Permitir que um aluno que tenha o usuário todas as tentativas de trabalhar no problema novamente."
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Reset Attempts to Zero"
@@ -20726,7 +20737,7 @@ msgstr ""
 
 #: openedx/features/course_experience/templates/course_experience/course-dates-fragment.html
 msgid "Important Course Dates"
-msgstr ""
+msgstr "Datas importantes do curso"
 
 #: openedx/features/course_experience/templates/course_experience/course-home-fragment.html
 msgid "Goal: "
@@ -20838,7 +20849,7 @@ msgstr ""
 
 #: openedx/features/course_experience/templates/course_experience/dates-summary.html
 msgid "Today is {date}"
-msgstr ""
+msgstr "Hoje é {date}"
 
 #: openedx/features/course_experience/templates/course_experience/latest-update-fragment.html
 msgid "Latest Update"
@@ -21619,7 +21630,7 @@ msgstr ""
 "wiki."
 
 #: cms/templates/course-create-rerun.html
-msgid "Learn more about Course Re-runs"
+msgid "Learn more about Re-runs"
 msgstr "Aprenda mais sobre reprisar cursos"
 
 #: cms/templates/course_info.html
@@ -23222,7 +23233,7 @@ msgstr ""
 
 #: cms/templates/index.html
 msgid "Getting Started with {studio_name}"
-msgstr "Iniciando com {studio_name}"
+msgstr "Começando {studio_name}"
 
 #: cms/templates/index.html
 msgid "Can I create courses in {studio_name}?"
@@ -25785,3 +25796,12 @@ msgid ""
 msgstr ""
 "Uma nova revisão foi criada: combinar entre Revisão #%(r1)d e Revisão "
 "#%(r2)d"
+
+msgid "help"
+msgstr "ajuda"
+
+msgid "Inicio"
+msgstr "inicio"
+
+msgid "Welcome to {org}'s {course_name}!"
+msgstr "Bem-vindo ao {course_name} de {org}"
