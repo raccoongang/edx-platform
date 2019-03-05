@@ -10,6 +10,7 @@ from django.http import HttpResponse, Http404
 from django.utils import translation
 from django.shortcuts import redirect
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.storage import staticfiles_storage
 
 from edxmako.shortcuts import render_to_response
@@ -44,7 +45,7 @@ def get_course_enrollments(user):
 
 
 @ensure_csrf_cookie
-@cache_if_anonymous()
+@login_required
 def index(request):
     '''
     Redirects to main page -- info page if user authenticated, or marketing if not
@@ -95,7 +96,7 @@ def index(request):
 
 
 @ensure_csrf_cookie
-@cache_if_anonymous()
+@login_required
 def courses(request):
     """
     Render the "find courses" page. If the marketing site is enabled, redirect
