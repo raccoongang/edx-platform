@@ -206,20 +206,22 @@ def recalculate_course_grade(sender, course, course_structure, user, **kwargs): 
     if grade._percent == 1.0:
         course_enrollment = CourseEnrollment.objects.get(course_id=course.id, user=user.id)
         persist_course_grade = PersistentCourseGrade.objects.get(user_id=user.id, course_id=course.id)
-        duration = persist_course_grade.passed_timestamp - course_enrollment.created if persist_course_grade.passed_timestamp else None
+        duration = persist_course_grade.passed_timestamp - course_enrollment.created if persist_course_grade.passed_timestamp else 0
+        skilltag = ', '.join(course.skilltag)
+        percentageOfcompletion = int(grade.percent * 100)
         data = {
             "contentProvider": "FastLane",
             "userId": user.id,
             "courseId": course.id.to_deprecated_string(),
             "lastlogin": user.last_login,
-            "percentageOfcompletion": grade.percent,
+            "percentageOfcompletion": percentageOfcompletion,
             "duration": duration,
-            "lastVisit": '---',
+            "lastVisit": '',
             "completationDate" : persist_course_grade.passed_timestamp,
             "studentGrade": grade.letter_grade,
             "main_topic": course.main_topic,
-            "skilltag": course.skilltag,
-            "course_level": course.course_level,
+            "skilltag": skilltag,
+            "course_level": course.course_level if course.course_level else 'Introductory',
             "effort": course.total_effort,
         }
         send_api_request(data)

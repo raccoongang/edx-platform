@@ -64,9 +64,9 @@ LMS_ROOT_URL = "http://localhost:8000"
 FEATURES = {
     'ENABLE_API_GRADE': True,
     'API_GRADE_PROPERTIES':{
-        'API_URL': '',
-        'APP_KEY': '',
+        'API_URL': 'fas-eur-it-int-aep-re.azurewebsites.net',
         'APP_SECRET': '',
+        'APP_CLIENT_ID': '',
     },
 
     'DISPLAY_DEBUG_INFO_TO_STAFF': True,

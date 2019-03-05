@@ -1,4 +1,5 @@
 import requests
+import json
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
@@ -16,9 +17,9 @@ class APIGrade(object):
                     "You must set `API_GRADE_PROPERTIES` when "
                     "`FEATURES['ENABLE_API_GRADE']` is True."
                 )
-            required_params = ("API_URL", "APP_KEY", "APP_SECRET")
+            required_params = ("API_URL", "APP_SECRET", "APP_CLIENT_ID")
             for param in required_params:
-                if param not in self.API_GRADE_PROPERTIES:
+                if not self.API_GRADE_PROPERTIES.get(param) or param not in self.API_GRADE_PROPERTIES:
                     raise ImproperlyConfigured(
                         "You must set `{}` in `API_GRADE_PROPERTIES`".format(param)
                     )
@@ -27,13 +28,13 @@ class APIGrade(object):
             lastVisit, completationDate, studentGrade, main_topic, skilltag, course_level, effort):
         data = {
             "contentProvider": contentProvider,
-            "userid": userId,
+            "user": int(userId),
             "courseId": courseId,
-            "lastlogin": lastlogin,
+            "lastlogin": str(lastlogin) if lastlogin is not None else '',
             "percentageOfcompletion": percentageOfcompletion,
-            "duration":duration,
-            "lastVisit": lastVisit,
-            "completationDate" : completationDate,
+            "duration": duration,
+            "lastVisit": str(lastVisit) if lastVisit is not None else '',
+            "completationDate" : str(completationDate) if completationDate is not None else '',
             "studentGrade": studentGrade,
             "main_topic": main_topic,
             "skilltag": skilltag,
@@ -41,15 +42,16 @@ class APIGrade(object):
             "effort": effort
         }
         headers = {
-            'x-functions-key': self.API_GRADE_PROPERTIES['APP_KEY'],
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache',
         }
-        requests.post(
-            '{api_url}/orchestrators/feedbackloop/{userId}}/?code={secret}'.format(
+        response = requests.post(
+            'https://{api_url}/api/orchestrators/feedbackloop/{userId}?code={secret}==&clientId={client_id}'.format(
                 api_url=self.API_GRADE_PROPERTIES['API_URL'],
                 userId=userId,
-                secret=self.API_GRADE_PROPERTIES['APP_SECRET']
+                secret=self.API_GRADE_PROPERTIES['APP_SECRET'],
+                client_id=self.API_GRADE_PROPERTIES['APP_CLIENT_ID'],
             ),
-            data=data,
-            headers=headers,
-            #verify=False
+            data=json.dumps(data),
+            headers=headers
         )
