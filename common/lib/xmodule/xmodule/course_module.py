@@ -1016,6 +1016,9 @@ class CourseDescriptor(CourseFields, SequenceDescriptor, LicenseMixin):
             if key not in self.us_state:
                 self.us_state[key] = {'number': '', 'provider': DEFAULT_PROVIDER.get(key, ''), 'approved': True}
 
+        for deprecated_key in set(self.us_state).difference(set(dict(US_STATE_CHOICES))):
+            del self.us_state[deprecated_key]
+
     def set_grading_policy(self, course_policy):
         """
         The JSON object can have the keys GRADER and GRADE_CUTOFFS. If either is
