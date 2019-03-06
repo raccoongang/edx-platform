@@ -3,6 +3,7 @@
     import bleach
     import json
     import math
+    from django.utils.translation import ugettext as _
     
     from openedx.core.djangolib.js_utils import (
         dump_js_escaped_json, js_escaped_string
@@ -73,7 +74,7 @@ $(function () {
       ## allowing the display of such images, and remove any previously stored HTML
       ## to prevent ugly HTML from being shown to learners.
       ## xss-lint: disable=javascript-jquery-append
-      ticks.append( [tickIndex, bleach.clean(section['label'], tags=[], strip=True)] )
+      ticks.append( [tickIndex, bleach.clean(_(section['label']), tags=[], strip=True)] )
     
       if section['category'] in detail_tooltips:
           ## xss-lint: disable=javascript-jquery-append
@@ -116,7 +117,7 @@ $(function () {
             
             detail_tooltips[section['category'] + "-grade_breakdown"] = [ section['detail'] ]
   
-    ticks += [ [overviewBarX, "Total"] ]
+    ticks += [ [overviewBarX, _("Total")] ]
     tickIndex += 1 + sectionSpacer
   
   totalScore = grade_summary['percent']
