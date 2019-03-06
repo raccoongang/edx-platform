@@ -1,7 +1,10 @@
+import logging
 import requests
 import json
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+
+log = logging.getLogger(__name__)
 
 
 class APIGrade(object):
@@ -26,32 +29,37 @@ class APIGrade(object):
 
     def api_call(self, contentProvider, userId, courseId, lastlogin, percentageOfcompletion, duration,
             lastVisit, completationDate, studentGrade, main_topic, skilltag, course_level, effort):
-        data = {
-            "contentProvider": contentProvider,
-            "user": int(userId),
-            "courseId": courseId,
-            "lastlogin": str(lastlogin) if lastlogin is not None else '',
-            "percentageOfcompletion": percentageOfcompletion,
-            "duration": duration,
-            "lastVisit": str(lastVisit) if lastVisit is not None else '',
-            "completationDate" : str(completationDate) if completationDate is not None else '',
-            "studentGrade": studentGrade,
-            "main_topic": main_topic,
-            "skilltag": skilltag,
-            "course_level": course_level,
-            "effort": effort
-        }
-        headers = {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache',
-        }
-        response = requests.post(
-            'https://{api_url}/api/orchestrators/feedbackloop/{userId}?code={secret}==&clientId={client_id}'.format(
-                api_url=self.API_GRADE_PROPERTIES['API_URL'],
-                userId=userId,
-                secret=self.API_GRADE_PROPERTIES['APP_SECRET'],
-                client_id=self.API_GRADE_PROPERTIES['APP_CLIENT_ID'],
-            ),
-            data=json.dumps(data),
-            headers=headers
-        )
+        if self.is_enabled:
+            data = {
+                "contentProvider": contentProvider,
+                "user": int(userId),
+                "courseId": courseId,
+                "lastlogin": lastlogin,
+                "percentageOfcompletion": percentageOfcompletion,
+                "duration": duration,
+                "lastVisit": lastVisit,
+                "completationDate" : completationDate,
+                "studentGrade": studentGrade,
+                "main_topic": main_topic,
+                "skilltag": skilltag,
+                "course_level": course_level,
+                "effort": effort
+            }
+            headers = {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache',
+            }
+            response = requests.post(
+                'https://{api_url}/api/orchestrators/feedbackloop/{userId}?code={secret}==&clientId={client_id}'.format(
+                    api_url=self.API_GRADE_PROPERTIES['API_URL'],
+                    userId=userId,
+                    secret=self.API_GRADE_PROPERTIES['APP_SECRET'],
+                    client_id=self.API_GRADE_PROPERTIES['APP_CLIENT_ID'],
+                ),
+                data=json.dumps(data),
+                headers=headers
+            )
+            if response.status_code == 200:
+                log.info('Data "{}" has been successfully sent'.format(data))
+            else:
+                log.error('Error while sending data "{}", status code - {}, message - "{}"'.format(data, response.status_code, response.content))

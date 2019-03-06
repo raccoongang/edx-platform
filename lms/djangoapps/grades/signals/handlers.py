@@ -28,6 +28,8 @@ from .signals import (
     SUBSECTION_SCORE_CHANGED,
     SCORE_PUBLISHED,
 )
+from openedx.core.djangoapps.signals.signals import COURSE_GRADE_UPDATED_CREATED
+
 from ..new.course_grade import CourseGradeFactory
 from ..scores import weighted_score
 from ..tasks import recalculate_subsection_grade_v2, send_api_request
@@ -202,29 +204,45 @@ def recalculate_course_grade(sender, course, course_structure, user, **kwargs): 
     Updates a saved course grade.
     """
     CourseGradeFactory().update(user, course, course_structure)
-    grade = CourseGradeFactory()._get_saved_grade(user, course, course_structure)
-    if grade._percent == 1.0:
-        course_enrollment = CourseEnrollment.objects.get(course_id=course.id, user=user.id)
-        persist_course_grade = PersistentCourseGrade.objects.get(user_id=user.id, course_id=course.id)
-        duration = persist_course_grade.passed_timestamp - course_enrollment.created if persist_course_grade.passed_timestamp else 0
-        skilltag = ', '.join(course.skilltag)
-        percentageOfcompletion = int(grade.percent * 100)
+
+
+@receiver(COURSE_GRADE_UPDATED_CREATED)
+def listen_for_grade_calculation_to_send_push(sender, user, course_grade, course_key, deadline, **kwargs):  # pylint: disable=unused-argument
+    """
+    Args:
+        sender: None
+        user(User): User Model object
+        course_grade(CourseGrade): CourseGrade object
+        course_key(CourseKey): The key for the course
+        deadline(datetime): Course end date or None
+
+    Kwargs:
+        kwargs : None
+
+    """
+    if course_grade.percent == 1.0:
+        course_enrollment = CourseEnrollment.objects.get(course_id=course_key, user=user.id)
+        persist_course_grade = PersistentCourseGrade.objects.get(user_id=user.id, course_id=course_key)
+        duration = (persist_course_grade.passed_timestamp - course_enrollment.created
+                    if persist_course_grade.passed_timestamp else 0)
+        skilltag = ', '.join(course_grade.course.skilltag)
+        percentageOfcompletion = int(course_grade.percent * 100)
         data = {
             "contentProvider": "FastLane",
-            "userId": user.id,
-            "courseId": course.id.to_deprecated_string(),
-            "lastlogin": user.last_login,
+            "userId": int(user.id),
+            "courseId": course_key.to_deprecated_string(),
+            "lastlogin": str(user.last_login or ''),
             "percentageOfcompletion": percentageOfcompletion,
-            "duration": duration,
+            "duration": str(duration),
             "lastVisit": '',
-            "completationDate" : persist_course_grade.passed_timestamp,
-            "studentGrade": grade.letter_grade,
-            "main_topic": course.main_topic,
+            "completationDate": str(persist_course_grade.passed_timestamp or ''),
+            "studentGrade": str(course_grade.letter_grade or ''),
+            "main_topic": course_grade.course.main_topic,
             "skilltag": skilltag,
-            "course_level": course.course_level if course.course_level else 'Introductory',
-            "effort": course.total_effort,
+            "course_level": course_grade.course.course_level if course_grade.course.course_level else 'Introductory',
+            "effort": course_grade.course.total_effort,
         }
-        send_api_request(data)
+        send_api_request.apply_async(args=(data,))
 
 
 def _emit_problem_submitted_event(kwargs):
