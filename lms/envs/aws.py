@@ -21,6 +21,7 @@ import json
 import warnings
 
 import dateutil
+from celery.schedules import crontab
 
 from .common import *
 from openedx.core.lib.logsettings import get_logger_config
@@ -116,6 +117,21 @@ CELERYBEAT_SCHEDULE = {}  # For scheduling tasks, entries can be added to this d
 with open(CONFIG_ROOT / CONFIG_PREFIX + "env.json") as env_file:
     ENV_TOKENS = json.load(env_file)
 
+# Celery time zone settings for periodic task.
+OPENEDX_LEARNERS_GLOBAL_ANALYTICS_ENABLE = ENV_TOKENS.get('OPENEDX_LEARNERS_GLOBAL_ANALYTICS_ENABLE', False)
+OPENEDX_LEARNERS_GLOBAL_ANALYTICS_SETTINGS = ENV_TOKENS.get('OPENEDX_LEARNERS_GLOBAL_ANALYTICS', None)
+if OPENEDX_LEARNERS_GLOBAL_ANALYTICS_ENABLE and OPENEDX_LEARNERS_GLOBAL_ANALYTICS_SETTINGS:
+    CELERY_TIMEZONE = OPENEDX_LEARNERS_GLOBAL_ANALYTICS_SETTINGS.get('CELERY_TIMEZONE') or TIME_ZONE
+    CELERYBEAT_SCHEDULE.update({
+        # 'collect_stats' is the celery periodic task that gathers information about the
+        # students amount, geographical coordinates of the platform, courses amount and
+        # makes a POST request with the data to the appropriate service.
+        'collect_stats': {
+            'task': 'openedx.core.djangoapps.edx_global_analytics.tasks.collect_stats',
+            'schedule': crontab(hour=0, minute=random.randint(1, 59)),
+        },
+    })
+
 # STATIC_ROOT specifies the directory where static files are
 # collected
 STATIC_ROOT_BASE = ENV_TOKENS.get('STATIC_ROOT_BASE', None)
@@ -180,6 +196,17 @@ LMS_ROOT_URL = ENV_TOKENS.get('LMS_ROOT_URL')
 ENV_FEATURES = ENV_TOKENS.get('FEATURES', {})
 for feature, value in ENV_FEATURES.items():
     FEATURES[feature] = value
+
+if FEATURES.get('ENABLE_SYSADMIN_DASHBOARD'):
+    CELERYBEAT_SCHEDULE.update({
+        # send an email with a report on the courses to the mail 
+        # specified in the model EmailsAddressMailing 
+        # every Monday morning at 11:30 A.M
+        "mass-sending-report": {
+            "task": "mass_sending_report",
+            "schedule": crontab(hour=11, minute=30, day_of_week=1),
+        },
+    })
 
 # Backward compatibility for deprecated feature names
 if 'ENABLE_S3_GRADE_DOWNLOADS' in FEATURES:

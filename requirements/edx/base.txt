@@ -200,3 +200,6 @@ py2neo==3.1.2
 -r coverage.txt
 
 pyDes==2.0.1
+
+# Write to xls
+xlwt==1.2.0
