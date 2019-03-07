@@ -211,20 +211,20 @@ def recalculate_course_grade(sender, course, course_structure, user, **kwargs): 
         percentageOfcompletion = int(grade.percent * 100)
         data = {
             "contentProvider": "FastLane",
-            "userId": user.id,
+            "userId": int(user.id),
             "courseId": course.id.to_deprecated_string(),
-            "lastlogin": user.last_login,
+            "lastlogin": str(user.last_login or ''),
             "percentageOfcompletion": percentageOfcompletion,
-            "duration": duration,
+            "duration": str(duration),
             "lastVisit": '',
-            "completationDate" : persist_course_grade.passed_timestamp,
-            "studentGrade": grade.letter_grade,
+            "completationDate" : str(persist_course_grade.passed_timestamp or ''),
+            "studentGrade": str(grade.letter_grade),
             "main_topic": course.main_topic,
             "skilltag": skilltag,
             "course_level": course.course_level if course.course_level else 'Introductory',
             "effort": course.total_effort,
         }
-        send_api_request(data)
+        send_api_request.apply_async(args=(data,))
 
 
 def _emit_problem_submitted_event(kwargs):
