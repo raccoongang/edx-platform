@@ -32,7 +32,7 @@ class APIGrade(object):
         if self.is_enabled:
             data = {
                 "contentProvider": contentProvider,
-                "user": user,
+                "user": user.email,
                 "courseId": courseId,
                 "lastlogin": lastlogin,
                 "percentageOfcompletion": percentageOfcompletion,
@@ -52,7 +52,7 @@ class APIGrade(object):
             response = requests.post(
                 'https://{api_url}/api/orchestrators/feedbackloop/{userId}?code={secret}==&clientId={client_id}'.format(
                     api_url=self.API_GRADE_PROPERTIES['API_URL'],
-                    userId=userId,
+                    userId=user.id,
                     secret=self.API_GRADE_PROPERTIES['APP_SECRET'],
                     client_id=self.API_GRADE_PROPERTIES['APP_CLIENT_ID'],
                 ),
