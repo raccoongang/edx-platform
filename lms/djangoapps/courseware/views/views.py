@@ -780,7 +780,8 @@ def _get_cert_data(student, course, course_key, is_active, enrollment_mode):
         return CertData(
             CertificateStatuses.audit_passing,
             _('Your enrollment: Audit track'),
-            _('You are enrolled in the audit track for this course. The audit track does not include a certificate.'),
+            _('The audit track does not include a certificate issued by the system.' 
+              ' A certificate for this course may be issued by a third party (e.g. Microsoft) and can be purchased on our webstore.'),
             download_url=None,
             cert_web_view_url=None
         )
