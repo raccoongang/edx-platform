@@ -27,12 +27,12 @@ class APIGrade(object):
                         "You must set `{}` in `API_GRADE_PROPERTIES`".format(param)
                     )
 
-    def api_call(self, contentProvider, userId, courseId, lastlogin, percentageOfcompletion, duration,
+    def api_call(self, contentProvider, user, courseId, lastlogin, percentageOfcompletion, duration,
             lastVisit, completationDate, studentGrade, main_topic, skilltag, course_level, effort):
         if self.is_enabled:
             data = {
                 "contentProvider": contentProvider,
-                "user": int(userId),
+                "user": user,
                 "courseId": courseId,
                 "lastlogin": lastlogin,
                 "percentageOfcompletion": percentageOfcompletion,

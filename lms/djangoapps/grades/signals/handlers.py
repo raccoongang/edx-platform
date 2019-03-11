@@ -229,7 +229,7 @@ def listen_for_grade_calculation_to_send_push(sender, user, course_grade, course
         percentageOfcompletion = int(course_grade.percent * 100)
         data = {
             "contentProvider": "FastLane",
-            "userId": int(user.id),
+            "user": user.email,
             "courseId": course_key.to_deprecated_string(),
             "lastlogin": str(user.last_login or ''),
             "percentageOfcompletion": percentageOfcompletion,
