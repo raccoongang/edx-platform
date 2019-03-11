@@ -223,7 +223,7 @@ def listen_for_grade_calculation_to_send_push(sender, user, course_grade, course
     if course_grade.percent == 1.0:
         course_enrollment = CourseEnrollment.objects.get(course_id=course_key, user=user.id)
         persist_course_grade = PersistentCourseGrade.objects.get(user_id=user.id, course_id=course_key)
-        duration = (persist_course_grade.passed_timestamp - course_enrollment.created
+        duration = ((persist_course_grade.passed_timestamp - course_enrollment.created).total_seconds()
                     if persist_course_grade.passed_timestamp else 0)
         skilltag = ', '.join(course_grade.course.skilltag)
         percentageOfcompletion = int(course_grade.percent * 100)
@@ -233,7 +233,7 @@ def listen_for_grade_calculation_to_send_push(sender, user, course_grade, course
             "courseId": course_key.to_deprecated_string(),
             "lastlogin": str(user.last_login or ''),
             "percentageOfcompletion": percentageOfcompletion,
-            "duration": str(duration),
+            "duration": int(round(duration / 3600)),
             "lastVisit": '',
             "completationDate": str(persist_course_grade.passed_timestamp or ''),
             "studentGrade": str(course_grade.letter_grade or ''),
