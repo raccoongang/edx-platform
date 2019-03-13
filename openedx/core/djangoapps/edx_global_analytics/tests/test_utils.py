@@ -3,29 +3,24 @@ Tests for edx_global_analytics application helper functions aka utils.
 """
 
 import datetime
-import logging
-import pytest
-
-from certificates.models import GeneratedCertificate
-from django.test import TestCase
-from django.utils import timezone
 
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.db.models import Q
+from django.test import TestCase
+from django.utils import timezone
 from django_countries.fields import Country
 
-from student.models import UserProfile
-from student.tests.factories import UserFactory
+from certificates.models import GeneratedCertificate
+from openedx.core.djangoapps.edx_global_analytics.tasks import set_last_sent_date
 from openedx.core.djangoapps.edx_global_analytics.utils.utilities import (
-    fetch_instance_information,
     cache_instance_data,
-    get_registered_students_daily,
+    fetch_instance_information,
+    get_enthusiastic_students_daily,
     get_generated_certificates_daily,
     get_last_analytics_sent_date,
-    get_enthusiastic_students_daily,
+    get_registered_students_daily
 )
-from openedx.core.djangoapps.edx_global_analytics.tasks import set_last_sent_date
+from student.tests.factories import UserFactory
 
 
 class TestStudentsAmountPerParticularPeriod(TestCase):
@@ -59,9 +54,7 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
         activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
         cache_timeout = None
 
-        result = fetch_instance_information(
-            'active_students_amount_day', 'active_students_amount', activity_period, cache_timeout
-        )
+        result = fetch_instance_information('active_students_amount', activity_period, cache_timeout)
 
         self.assertEqual(result, 2)
 
@@ -92,8 +85,7 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
         activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
         cache_timeout = None
 
-        result = fetch_instance_information(
-            'students_per_country', 'students_per_country', activity_period, cache_timeout)
+        result = fetch_instance_information('students_per_country', activity_period, cache_timeout)
 
         self.assertItemsEqual(result, {u'US': 1, u'CA': 1})
 
@@ -108,8 +100,7 @@ class TestStudentsAmountPerParticularPeriod(TestCase):
         activity_period = datetime.date(2017, 5, 15), datetime.date(2017, 5, 16)
         cache_timeout = None
 
-        result = fetch_instance_information(
-            'students_per_country', 'students_per_country', activity_period, cache_timeout)
+        result = fetch_instance_information('students_per_country', activity_period, cache_timeout)
 
         self.assertEqual(result, {None: 0})
 
@@ -140,9 +131,7 @@ class TestCacheInstanceData(TestCase):
         self.create_cache_instance_data_default_database_data()
         activity_period = (datetime.date(2017, 5, 8), datetime.date(2017, 5, 15))
         cache_timeout = None
-        result = cache_instance_data(
-            'active_students_amount_week', 'active_students_amount', activity_period
-        )
+        result = cache_instance_data(cache_timeout, 'active_students_amount', activity_period)
 
         self.assertEqual(result, 2)
 
@@ -215,7 +204,7 @@ class TestGetStatsDailyRegistered(TestCase):
         User.objects.create(username='test4', password='test4', email='test4@example.com', date_joined='2018-01-01')
         second_students_part, _ = get_registered_students_daily('test-token')
 
-        self.assertEqual(len(second_students_part), 1)
+        self.assertEqual(len(second_students_part), 2)
         self.assertEqual(second_students_part['2018-01-01'], 1)
 
 
@@ -240,7 +229,7 @@ class TestGetStatsDailyCertificates(TestCase):
         User.objects.create(username='test2', password='test2', email='test2@example.com', date_joined='2016-01-01')
         User.objects.create(username='test3', password='test3', email='test3@example.com', date_joined='2017-01-01')
         cert1 = GeneratedCertificate.objects.create(user_id=1)
-        cert1.created_date='2016-01-01'
+        cert1.created_date = '2016-01-01'
         cert1.save()
         cert2 = GeneratedCertificate.objects.create(user_id=2)
         cert2.created_date = '2016-01-01'
@@ -267,7 +256,7 @@ class TestGetStatsDailyCertificates(TestCase):
         cert4.save()
         second_certificates_part, _ = get_generated_certificates_daily('test-token')
 
-        self.assertEqual(len(second_certificates_part), 1)
+        self.assertEqual(len(second_certificates_part), 2)
         self.assertEqual(second_certificates_part['2018-01-01'], 1)
 
 
