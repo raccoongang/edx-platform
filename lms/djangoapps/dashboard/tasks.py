@@ -49,21 +49,25 @@ def get_courses_xls():
     data = []
     module_store = modulestore()
     for course in module_store.get_courses():
+        enrollment_start_date = course.enrollment_start.strftime("%m/%d/%Y") if course.enrollment_start else ''
+        course_start_date = course.start.strftime("%m/%d/%Y") if course.start else ''
         enroll_end_date = course.enrollment_end.strftime("%m/%d/%Y") if course.enrollment_end else ''
         end_date = course.end.strftime("%m/%d/%Y") if course.end else ''
         course_url = '{}{}'.format(
             settings.LMS_ROOT_URL,
             reverse('course_root', kwargs={'course_id': course.id})
         )
-        datum = [course_url, course.id.run, course.display_name,
-                enroll_end_date, end_date]
+        datum = [course_url, course.id.run, course.display_name, course_start_date,
+                end_date, enrollment_start_date, enroll_end_date,]
         data.append(datum)
 
     header = [('Course URL', 16000),
               ('Course Run ID', 5000),
               (_('Course name'), 10000),
-              (_('Enrollment end date'), 5000),
-              (_('Course end date'), 5000)]
+              (_('Course start date'), 5000),
+              (_('Course end date'), 5000),
+              (_('Enrollment start date'), 5000),
+              (_('Enrollment end date'), 5000)]
     return return_xls(header, data)
 
 def return_xls(header, data):
