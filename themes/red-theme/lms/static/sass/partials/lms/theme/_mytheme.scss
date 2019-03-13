@@ -1,0 +1,66 @@
+.dashboard .side-container {
+display: none;
+}
+.dashboard .main-container .my-courses .listing-courses .course-item .course-container {
+	padding:20px 0;
+}
+.problem-header {
+	background-color: #ffce00;
+    padding: 10px 15px;
+	margin: -15px -15px 15px -15px!important;
+}
+.course-wrapper .course-content .vert-mod .vert, .course-wrapper .courseware-results-wrapper .vert-mod .vert {
+    border-radius: 5px;
+    overflow: hidden;
+	border: 1px solid #ffce00;
+	padding:15px!important;
+	border-bottom: 1px solid #ffce00 !important;
+}
+.course-wrapper .course-content .vert-mod>div:last-child, .course-wrapper .courseware-results-wrapper .vert-mod>div:last-child{
+	border-bottom: 1px solid #ffce00 !important;
+}
+.xmodule_display.xmodule_CapaModule div.problem {
+	padding: 20px;
+}
+.courses-container .courses .course .course-info .course-title{
+	    line-height: 56px;
+		font-size: 28px;
+		padding-top: 38px;
+}
+.courses-container .courses .course .course-info .course-organization{
+	display:none;
+}
+.courses-container .courses .course .course-info .course-code{
+	display:none;
+}
+
+@media screen and (max-width: 750px) {
+.home>header iframe{
+	width:100% !important;
+}
+}
+@media screen and (min-width: 751px) and (max-width: 900px) {
+.home>header iframe{
+	width: 80% !important;
+}
+}
+@media screen and (min-width: 901px) and (max-width: 1200px) {
+.home>header iframe{
+	width: 60% !important;
+}
+}
+.wrapper-footer footer#footer-openedx .colophon .nav-colophon{
+	margin:5px 0 10px 0;
+}
+#footer-openedx .wrapper-logo img{
+	max-height:60px;	
+}
+.home-bg {
+    margin: -20px -20px;
+    background-image: url("../red-theme/images/bkg_homepage.png");
+	padding-top: 20px;
+	background-repeat:no-repeat;
+}
+.homepage{
+	padding:0 20px 10px;
+}
