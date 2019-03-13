@@ -8,8 +8,23 @@ import logging
 from datetime import date, timedelta
 
 import requests
+from requests.exceptions import RequestException
+from django.contrib.auth.models import User
+from django.db.models.aggregates import Count, Max
+from django.db.transaction import atomic
+from django.http import Http404
+from opaque_keys import InvalidKeyError
+from opaque_keys.edx.keys import CourseKey
 
-from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import cache_instance_data, get_query_result
+from certificates.models import GeneratedCertificate
+from courseware.courses import get_course_by_id
+from courseware.models import StudentModule
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import (
+    cache_instance_data,
+    get_last_analytics_sent_date,
+    get_query_result,
+)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -79,52 +94,28 @@ def get_previous_month_start_and_end_dates():
 
 def get_coordinates_by_ip():
     """
-    Gather coordinates by server IP address with FreeGeoIP service.
+    Gather coordinates by server IP address with ip-api service.
+
+    This endpoint is limited to 150 requests per minute from an IP address.
     """
+    latitude, longitude = '', ''
+
     try:
-        ip_data = requests.get('https://freegeoip.net/json')
-        latitude, longitude = ip_data.json()['latitude'], ip_data.json()['longitude']
+        ip_data = requests.get('http://ip-api.com/json')
+    except RequestException:
         return latitude, longitude
 
-    except requests.RequestException as error:
-        logger.exception(error.message)
-        return '', ''
+    if ip_data.status_code == 200:
+        latitude, longitude = ip_data.json().get('lat', ''), ip_data.json().get('lon', '')
 
-
-def get_coordinates_by_platform_city_name(city_name):
-    """
-    Gather coordinates by platform city name with Google API.
-    """
-    google_api_request = requests.get(
-        'https://maps.googleapis.com/maps/api/geocode/json', params={'address': city_name}
-    )
-
-    coordinates_result = google_api_request.json()['results']
-
-    if coordinates_result:
-        location = coordinates_result[0]['geometry']['location']
-        return location['lat'], location['lng']
-
-
-def platform_coordinates(city_name):
-    """
-    Get platform city latitude and longitude.
-
-    If `city_platform_located_in` (name of city) exists in OLGA setting (lms.env.json) as manual parameter
-    Google API helps to get city latitude and longitude. Else FreeGeoIP gathers latitude and longitude by IP address.
-
-    All correct city names are available from Wikipedia -
-    https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-
-    Module `pytz` also has list of cities with `pytz.all_timezones`.
-    """
-    return get_coordinates_by_platform_city_name(city_name) or get_coordinates_by_ip()
+    return latitude, longitude
 
 
 def request_exception_handler_with_logger(function):
     """
     Request Exception decorator. Logs error message if it exists.
     """
+
     def request_exception_wrapper(*args, **kwargs):
         """
         Decorator wrapper.
@@ -148,5 +139,89 @@ def send_instance_statistics_to_acceptor(olga_acceptor_url, data):
 
     if status_code == httplib.CREATED:
         logger.info('Data were successfully transferred to OLGA acceptor. Status code is {0}.'.format(status_code))
+        return True
     else:
         logger.info('Data were not successfully transferred to OLGA acceptor. Status code is {0}.'.format(status_code))
+        return False
+
+
+@atomic
+def get_registered_students_daily(token):
+    """
+    Get registered users count daily starting from the day after the date_start.
+
+    :param token: string of the token that used in cache key creation
+    :return: Dictionary where the keys is a dates and the values is the counts.
+    """
+    last_date = get_last_analytics_sent_date('registered_students', token)
+    queryset = User.objects.filter(date_joined__gte=last_date.date())
+
+    registered_users = queryset.extra(select={'date': 'date( date_joined )'}).values('date').annotate(
+        count=Count('id'), datetime=Max('date_joined')
+    )
+    new_last_date = queryset.aggregate(datetime=Max('date_joined'))['datetime']
+
+    return dict((str(day['date']), day['count']) for day in registered_users), new_last_date
+
+
+@atomic
+def get_generated_certificates_daily(token):
+    """
+    Get the count of the certificates generated  daily starting from the day after the date_start.
+
+    :param token: string of the token that used in cache key creation
+    :return: Dictionary where the keys is a dates and the values is the counts.
+    """
+    last_date = get_last_analytics_sent_date('generated_certificates', token)
+    queryset = GeneratedCertificate.objects.filter(created_date__gte=last_date.date())
+
+    generated_certificates = queryset.extra(select={'date': 'date( created_date )'}).values('date').annotate(
+        count=Count('id'), datetime=Max('created_date')
+    )
+    new_last_date = queryset.aggregate(datetime=Max('created_date'))['datetime']
+
+    return dict((str(day['date']), day['count']) for day in generated_certificates), new_last_date
+
+
+@atomic
+def get_enthusiastic_students_daily(token):
+    """
+    Get enthusiastic students count daily starting from the day after the date_start.
+
+    :param token: string of the token that used in cache key creation
+    :return: Dictionary where the keys is a dates and the values is the counts.
+    """
+    last_date = get_last_analytics_sent_date('enthusiastic_students', token)
+    last_sections_ids = get_all_courses_last_sections_ids()
+    queryset = StudentModule.objects.filter(created__gte=last_date.date(), module_state_key__in=last_sections_ids)
+
+    enthusiastic_students = queryset.extra(select={'date': 'date( modified )'}).values('date').annotate(
+        count=Count('student_id', datetime=Max('created'))
+    )
+    new_last_date = queryset.aggregate(datetime=Max('created'))['datetime']
+
+    return dict((str(day['date']), day['count']) for day in enthusiastic_students), new_last_date
+
+
+def get_all_courses_last_sections_ids():
+    """
+    Get ids of all the courses.
+
+    :return: list of the unique courses ids
+    """
+    courses_ids = CourseOverview.objects.all().values_list('id', flat=True)
+    last_sections_ids = []
+
+    for course_id in courses_ids:
+        try:
+            course_key = CourseKey.from_string(course_id)
+            course = get_course_by_id(course_key, depth=2)
+        except InvalidKeyError:
+            continue
+        except Http404:
+            continue
+
+        if course.get_children():
+            last_sections_ids.append(course.get_children()[-1].location)
+
+    return last_sections_ids
