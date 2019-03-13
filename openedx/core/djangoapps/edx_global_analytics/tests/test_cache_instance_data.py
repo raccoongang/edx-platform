@@ -4,14 +4,14 @@ Tests for edX global analytics application cache functionality.
 
 from datetime import date
 
-from ddt import ddt, data, unpack
-from mock import patch
+from ddt import data, ddt, unpack
 from django.test import TestCase
+from mock import patch
 
 from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import (
     cache_instance_data,
-    get_cache_week_key,
     get_cache_month_key,
+    get_cache_week_key
 )
 
 
