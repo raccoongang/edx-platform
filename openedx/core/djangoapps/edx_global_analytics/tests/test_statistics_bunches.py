@@ -7,11 +7,11 @@ from datetime import date
 
 from mock import patch
 
-from openedx.core.djangoapps.edx_global_analytics.utils.utilities import get_previous_day_start_and_end_dates
 from openedx.core.djangoapps.edx_global_analytics.tasks import (
     enthusiast_level_statistics_bunch,
     paranoid_level_statistics_bunch
 )
+from openedx.core.djangoapps.edx_global_analytics.utils.utilities import get_previous_day_start_and_end_dates
 
 
 @patch('openedx.core.djangoapps.edx_global_analytics.tasks.fetch_instance_information')
