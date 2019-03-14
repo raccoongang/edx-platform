@@ -166,7 +166,7 @@ def delete_bookmarks(usage_key):
     units_keys = []
 
     if usage_key.block_type == u'vertical':
-        units_keys.appent(usage_key)
+        units_keys.append(usage_key)
     else:
         # NOTE(arsentur) Get all children for deleted block
         section = modulestore().get_item(usage_key)
