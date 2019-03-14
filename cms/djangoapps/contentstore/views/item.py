@@ -943,7 +943,7 @@ def _delete_item(usage_key, user):
         store.delete_item(usage_key, user.id)
 
         # Delete user bookmark
-        bookmarks_api.delete_bookmarks(usage_key=usage_key)
+        bookmarks_api.delete_bookmarks(course_key=usage_key.course_key)
 
 
 @login_required

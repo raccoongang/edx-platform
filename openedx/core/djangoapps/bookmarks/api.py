@@ -156,14 +156,22 @@ def delete_bookmark(user, usage_key):
     _track_event('edx.bookmark.removed', bookmark)
 
 
-def delete_bookmarks(usage_key):
+def delete_bookmarks(course_key):
     """
-    Delete all bookmarks for usage_key.
+    Delete bookmarks if they are corresponded to already deleted units.
 
     Arguments:
-        usage_key (UsageKey): The usage_key of the bookmarks.
+        course_key (CourseKey): Course key of item course.
     """
-    bookmarks = Bookmark.objects.filter(usage_key=usage_key)
+    units_keys = []
+
+    # NOTE(arsentur) Get all units in the course
+    course = modulestore().get_course(course_key)
+    for section in course.get_children():
+        for sub_section in section.get_children():
+            units_keys += [unit.location for unit in sub_section.get_children()]
+
+    bookmarks = Bookmark.objects.filter(course_key=course_key).exclude(usage_key__in=units_keys)
     [_track_event('edx.bookmark.removed', b) for b in bookmarks]
     bookmarks.delete()
 
