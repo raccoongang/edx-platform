@@ -9,6 +9,11 @@ from django.utils.translation import ugettext as _
   <%static:css group='style-course'/>
   <script type="text/javascript" src="${static.url('js/vendor/flot/jquery.flot.js')}"></script>
   <script type="text/javascript" src="${static.url('js/vendor/flot/jquery.flot.axislabels.js')}"></script>
+	<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+	<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.min.js"></script>
+	<script>
+		$('#action').validate();
+	</script>
 </%block>
 
 <style type="text/css">
@@ -161,6 +166,22 @@ textarea {
   <div class="form-actions">
 	<button type="submit" name="action" value="del_course">${_('Delete course from site')}</button>
   </div>
+
+	<hr />
+  <ul class="list-input">
+	<li class="field text">
+	  <label for="email">
+		${_('Email address')}:
+	  </label>
+	  <input type="email" name="email" style="width:60%" />
+	</li>
+  </ul>
+  <div class="form-actions">
+	<button type="submit" name="action" value="send_courses_xls">Send courses list</button>
+	</div>
+	<hr />
+	<button name="action" value="get_courses_xls">Download courses list</button>
+
 </form>
 <hr style="width:40%" />
 %endif

@@ -101,3 +101,6 @@ git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.15#egg=xblock-
 -e git+https://github.com/raccoongang/edx-search.git@0.1.2-rg#egg=edx-search
 # Raccoongang rg_instructor_analytics
 -e git+https://github.com/raccoongang/rg_instructor_analytics@release-0.2.3#egg=rg_instructor_analytics
+
+# RaccoonGang
+git+https://github.com/raccoongang/django-oidc.git@sso-microsites#egg=django-oidc

@@ -1,6 +1,7 @@
 """Models for dashboard application"""
 
 import mongoengine
+from django.db import models
 from xmodule.modulestore.mongoengine_fields import CourseKeyField
 
 
@@ -15,3 +16,9 @@ class CourseImportLog(mongoengine.Document):
     created = mongoengine.DateTimeField()
     meta = {'indexes': ['course_id', 'created'],
             'allow_inheritance': False}
+
+
+class EmailsAddressMailing(models.Model):
+    email = models.EmailField()
+    active = models.BooleanField()
+    comment = models.TextField(blank=True)
