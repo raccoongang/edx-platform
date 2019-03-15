@@ -32,11 +32,12 @@ from path import Path as path
 from courseware.courses import get_course_by_id
 import dashboard.git_import as git_import
 from dashboard.git_import import GitImportError
-from student.roles import CourseStaffRole, CourseInstructorRole
 from dashboard.models import CourseImportLog
+from dashboard.tasks import get_courses_xls, send_report_email
 from openedx.core.djangoapps.external_auth.models import ExternalAuthMap
 from openedx.core.djangoapps.external_auth.views import generate_password
 from student.models import CourseEnrollment, UserProfile, Registration
+from student.roles import CourseStaffRole, CourseInstructorRole
 import track.views
 from xmodule.modulestore.django import modulestore
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
@@ -497,6 +498,18 @@ class Courses(SysadminDashboardView):
                 self.msg += \
                     u"<font color='red'>{0} {1} = {2} ({3})</font>".format(
                         _('Deleted'), course.location.to_deprecated_string(), course.id.to_deprecated_string(), course.display_name)
+
+        elif action == 'get_courses_xls':
+            xls_file = get_courses_xls()
+            response = HttpResponse(xls_file.getvalue(), content_type='application/vnd.ms-excel')
+            response['Content-Disposition'] = 'attachment; filename=Courses_{0}.xls'.format(request.META['SERVER_NAME'])
+            return response
+        
+        elif action == 'send_courses_xls':
+            email_address = request.POST.get('email')
+            if email_address:
+                server_name = request.META['SERVER_NAME']
+                send_report_email.delay(server_name, email_address)
 
         context = {
             'datatable': self.make_datatable(),
