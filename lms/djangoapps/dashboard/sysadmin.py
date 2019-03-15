@@ -309,7 +309,7 @@ class Users(SysadminDashboardView):
         for user in User.objects.all():
             data = [user.username,
                     user.email,
-                    user.extrainfo.phone if hasattr(user, 'extrainfo') else None, #Phone number 
+                    user.extrainfo.phone if hasattr(user, 'extrainfo') else None, #Phone number
                     user.extrainfo.interested_in if hasattr(user, 'extrainfo') else None,  # Which Microsoft product/solution are you interested in
                     user.extrainfo.areas_to_support if hasattr(user, 'extrainfo') else None,  # Any specific areas Arrow could support you with?
                     user.first_name,
