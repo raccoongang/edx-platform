@@ -171,7 +171,10 @@ def delete_bookmarks(usage_key):
         # NOTE(arsentur) Get all children for deleted block
         section = modulestore().get_item(usage_key)
         for sub_section in section.get_children():
-            units_keys += [unit.location for unit in sub_section.get_children()]
+            if usage_key.block_type == u'chapter':
+                units_keys += [unit.location for unit in sub_section.get_children()]
+            else:
+                units_keys.append(sub_section.location)
 
     bookmarks = Bookmark.objects.filter(usage_key__in=units_keys)
     [_track_event('edx.bookmark.removed', b) for b in bookmarks]
