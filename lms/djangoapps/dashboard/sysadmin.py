@@ -34,6 +34,7 @@ import dashboard.git_import as git_import
 from dashboard.git_import import GitImportError
 from dashboard.models import CourseImportLog
 from dashboard.tasks import get_courses_xls, send_report_email
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.external_auth.models import ExternalAuthMap
 from openedx.core.djangoapps.external_auth.views import generate_password
 from student.models import CourseEnrollment, UserProfile, Registration
@@ -441,6 +442,25 @@ class Courses(SysadminDashboardView):
                     title=_('Information about all courses'),
                     data=data)
 
+    def make_datatable_sql(self):
+        """Creates course information datatable"""
+
+        data = []
+
+        for course in CourseOverview.objects.all():
+            gdir = course.id.course
+            data.append([course.display_name, course.id.to_deprecated_string()]
+                        + self.git_info_for_course(gdir))
+
+        return dict(header=[_('Course Name'),
+                            _('Directory/ID'),
+                            # Translators: "Git Commit" is a computer command; see http://gitref.org/basic/#commit
+                            _('Git Commit'),
+                            _('Last Change'),
+                            _('Last Editor')],
+                    title=_('Information about all courses'),
+                    data=data)
+
     def get(self, request):
         """Displays forms and course information"""
 
@@ -448,7 +468,7 @@ class Courses(SysadminDashboardView):
             raise Http404
 
         context = {
-            'datatable': self.make_datatable(),
+            'datatable': self.make_datatable_sql(),
             'msg': self.msg,
             'djangopid': os.getpid(),
             'modeflag': {'courses': 'active-section'},
@@ -512,7 +532,7 @@ class Courses(SysadminDashboardView):
                 send_report_email.delay(server_name, email_address)
 
         context = {
-            'datatable': self.make_datatable(),
+            'datatable': self.make_datatable_sql(),
             'msg': self.msg,
             'djangopid': os.getpid(),
             'modeflag': {'courses': 'active-section'},
