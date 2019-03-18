@@ -14,7 +14,7 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
 from student.roles import CourseStaffRole, CourseInstructorRole
-from xmodule.modulestore.django import modulestore
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 from .models import EmailsAddressMailing
 
@@ -49,8 +49,7 @@ def get_courses_xls():
     | Course URL | Course Run ID  | Course name | Enrollment end date | Course end date |
     """
     data = []
-    module_store = modulestore()
-    for course in module_store.get_courses():
+    for course in CourseOverview.objects.all():
         enrollment_start_date = course.enrollment_start.strftime("%m/%d/%Y") if course.enrollment_start else ''
         course_start_date = course.start.strftime("%m/%d/%Y") if course.start else ''
         enroll_end_date = course.enrollment_end.strftime("%m/%d/%Y") if course.enrollment_end else ''
