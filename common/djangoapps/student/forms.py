@@ -48,9 +48,9 @@ class PasswordResetFormNoActive(PasswordResetForm):
 
     def save(
             self,
-            domain_override=None,
             subject_template_name='registration/password_reset_subject.txt',
-            email_template_name='registration/password_reset_email.html',
+            email_template_name='registration/password_reset_email.txt',
+            html_email_template_name='registration/password_reset_email.html',
             use_https=False,
             token_generator=default_token_generator,
             from_email=configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL),
@@ -64,13 +64,10 @@ class PasswordResetFormNoActive(PasswordResetForm):
         # django.contrib.auth.forms.PasswordResetForm directly, which has this import in this place.
         from django.core.mail import send_mail
         for user in self.users_cache:
-            if not domain_override:
-                site_name = configuration_helpers.get_value(
-                    'SITE_NAME',
-                    settings.SITE_NAME
-                )
-            else:
-                site_name = domain_override
+            site_name = configuration_helpers.get_value(
+                'SITE_NAME',
+                settings.SITE_NAME
+            )
             context = {
                 'email': user.email,
                 'site_name': site_name,
@@ -84,7 +81,12 @@ class PasswordResetFormNoActive(PasswordResetForm):
             # Email subject *must not* contain newlines
             subject = subject.replace('\n', '')
             email = loader.render_to_string(email_template_name, context)
-            send_mail(subject, email, from_email, [user.email])
+
+            try:
+                html_email = loader.render_to_string(html_email_template_name, context)
+            except:
+                html_email = None
+            send_mail(subject, email, from_email, [user.email], html_message=html_email)
 
 
 class TrueCheckbox(widgets.CheckboxInput):
