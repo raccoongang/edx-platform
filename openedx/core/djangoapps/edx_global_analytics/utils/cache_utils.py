@@ -88,7 +88,7 @@ def get_last_analytics_sent_date(query_type, token):
     default_date = datetime.fromtimestamp(0)
     cache_value = cache.get(cache_key, default_date)
 
-    if cache_value.replace(tzinfo=None) == default_date:
+    if cache_value == default_date:
         cache.set(cache_key, cache_value, WEEK_TIMEOUT)
 
     return cache_value
