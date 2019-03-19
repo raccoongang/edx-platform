@@ -87,6 +87,16 @@ class City(models.Model):
         return self.name
 
 
+class School(models.Model):
+    name = models.CharField(max_length=254, unique=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __unicode__(self):
+        return self.name
+
+
 # ENROLL signal used for free enrollment only
 class EnrollStatusChange(object):
     """
