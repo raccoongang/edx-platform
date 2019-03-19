@@ -25,7 +25,7 @@ from django.conf import settings
             profile_image_url = get_profile_image_urls_for_user(self.real_user)['medium']
             %>
             <img class="menu-image" src="${profile_image_url}" alt="">
-            ${username}
+            <div class="label-username">${username}</div>
         </a>
         <div role="group" aria-label="User menu" class="user-menu">
             <button type="button" class="menu-button button-more has-dropdown js-dropdown-button" aria-expanded="false" aria-controls="${_("Usermenu")}">

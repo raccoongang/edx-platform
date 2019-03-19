@@ -23,6 +23,8 @@ from gamification_metric.views import dashboard as gamification
 import referrals.views
 
 
+from openassessment.fileupload import views_filesystem
+
 # Uncomment the next two lines to enable the admin:
 if settings.DEBUG or settings.FEATURES.get('ENABLE_DJANGO_ADMIN_SITE'):
     admin.autodiscover()
@@ -121,6 +123,8 @@ urlpatterns = (
 urlpatterns += (
     url(r'^dashboard/', include('learner_dashboard.urls')),
     url(r'^xseries/', include('program_marketing.urls', namespace='xseries')),
+
+    url(r'^(?P<key>.+)/openassessment-filesystem-storage', views_filesystem.filesystem_storage, name='openassessment-filesystem-storage'),
 )
 
 # TODO: This needs to move to a separate urls.py once the student_account and
