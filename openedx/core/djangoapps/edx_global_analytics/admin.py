@@ -13,5 +13,4 @@ class AccessTokensStorageAdmin(admin.ModelAdmin):
     """
     fields = ['access_token']
 
-
 admin.site.register(AccessTokensStorage, AccessTokensStorageAdmin)

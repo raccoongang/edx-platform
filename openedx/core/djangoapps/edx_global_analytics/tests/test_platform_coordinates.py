@@ -3,8 +3,7 @@ Tests for edx global analytics application tasks and helper functions.
 """
 
 import unittest
-
-from mock import call, patch
+from mock import patch, call
 
 from openedx.core.djangoapps.edx_global_analytics.utils.utilities import get_coordinates_by_ip
 

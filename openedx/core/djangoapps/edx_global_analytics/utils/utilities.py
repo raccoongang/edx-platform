@@ -8,22 +8,8 @@ import logging
 from datetime import date, timedelta
 
 import requests
-from django.contrib.auth.models import User
-from django.db.models.aggregates import Count, Max
-from django.db.transaction import atomic
-from opaque_keys import InvalidKeyError
-from opaque_keys.edx.keys import CourseKey
 
-from certificates.models import GeneratedCertificate
-from courseware.courses import get_course_by_id
-from courseware.models import StudentModule
-from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import (
-    cache_instance_data,
-    get_last_analytics_sent_date,
-    get_query_result,
-    set_last_analytics_sent_date
-)
+from openedx.core.djangoapps.edx_global_analytics.utils.cache_utils import cache_instance_data, get_query_result
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -111,7 +97,6 @@ def request_exception_handler_with_logger(function):
     """
     Request Exception decorator. Logs error message if it exists.
     """
-
     def request_exception_wrapper(*args, **kwargs):
         """
         Decorator wrapper.
@@ -135,88 +120,5 @@ def send_instance_statistics_to_acceptor(olga_acceptor_url, data):
 
     if status_code == httplib.CREATED:
         logger.info('Data were successfully transferred to OLGA acceptor. Status code is {0}.'.format(status_code))
-        return True
     else:
         logger.info('Data were not successfully transferred to OLGA acceptor. Status code is {0}.'.format(status_code))
-        return False
-
-
-@atomic
-def get_registered_students_daily(token):
-    """
-    Get registered users count daily starting from the day after the date_start.
-
-    :param token: string of the token that used in cache key creation
-    :return: Dictionary where the keys is a dates and the values is the counts.
-    """
-    last_date = get_last_analytics_sent_date('registered_students', token)
-    queryset = User.objects.filter(date_joined__gt=last_date)
-
-    registered_users = queryset.extra(select={'date': 'date( date_joined )'}).values('date').annotate(
-        count=Count('id'), datetime=Max('date_joined')
-    )
-    new_last_date = queryset.aggregate(datetime=Max('date_joined'))['datetime']
-
-    return dict((str(day['date']), day['count']) for day in registered_users), new_last_date
-
-
-@atomic
-def get_generated_certificates_daily(token):
-    """
-    Get the count of the certificates generated  daily starting from the day after the date_start.
-
-    :param token: string of the token that used in cache key creation
-    :return: Dictionary where the keys is a dates and the values is the counts.
-    """
-    last_date = get_last_analytics_sent_date('generated_certificates', token)
-    queryset = GeneratedCertificate.objects.filter(created_date__gt=last_date)
-
-    generated_certificates = queryset.extra(select={'date': 'date( created_date )'}).values('date').annotate(
-        count=Count('id'), datetime=Max('created_date')
-    )
-    new_last_date = queryset.aggregate(datetime=Max('created_date'))['datetime']
-
-    return dict((str(day['date']), day['count']) for day in generated_certificates), new_last_date
-
-
-@atomic
-def get_enthusiastic_students_daily(token):
-    """
-    Get enthusiastic students count daily starting from the day after the date_start.
-
-    :param token: string of the token that used in cache key creation
-    :return: Dictionary where the keys is a dates and the values is the counts.
-    """
-    last_date = get_last_analytics_sent_date('enthusiastic_students', token)
-    last_sections_ids = get_all_courses_last_sections_ids()
-    queryset = StudentModule.objects.filter(created__gt=last_date, module_state_key__in=last_sections_ids)
-
-    enthusiastic_students = queryset.extra(select={'date': 'date( modified )'}).values('date').annotate(
-        count=Count('student_id', datetime=Max('created'))
-    )
-    new_last_date = queryset.aggregate(datetime=Max('created'))['datetime']
-
-    return dict((str(day['date']), day['count']) for day in enthusiastic_students), new_last_date
-
-
-def get_all_courses_last_sections_ids():
-    """
-    Get ids of all the courses.
-
-    :return: list of the unique courses ids
-    """
-    courses_ids = CourseOverview.objects.all().values_list('id', flat=True)
-    last_sections_ids = []
-
-    for course_id in courses_ids:
-        try:
-            course_key = CourseKey.from_string(course_id)
-        except InvalidKeyError:
-            continue
-
-        course = get_course_by_id(course_key, depth=2)
-
-        if course.get_children():
-            last_sections_ids.append(course.get_children()[-1].location)
-
-    return last_sections_ids
