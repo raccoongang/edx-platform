@@ -2168,6 +2168,11 @@ INSTALLED_APPS = (
 
     # global-statistics application
     'openedx.core.djangoapps.edx_global_analytics',
+
+    # Jupyter Notebook Graded XBlock
+    'xblock_jupyter_graded',
+    # Jupyter Notebook Viewer XBlock
+    'xblock_jupyter_viewer',
 )
 
 ######################### CSRF #########################################

@@ -1,0 +1,4 @@
+# RACCOONGANG
+-e git+https://github.com/ibleducation/jupyter-edx-grader-xblock.git#egg=xblock_jupyter_graded
+-e git+https://github.com/ibleducation/jupyter-viewer-xblock.git#egg=xblock_jupyter_viewer
+# RACCOONGANG

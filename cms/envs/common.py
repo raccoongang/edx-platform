@@ -961,6 +961,11 @@ INSTALLED_APPS = (
 
     # Unusual migrations
     'database_fixups',
+
+    # Jupyter Notebook Graded XBlock
+    'xblock_jupyter_graded',
+    # Jupyter Notebook Viewer XBlock
+    'xblock_jupyter_viewer',
 )
 
 
