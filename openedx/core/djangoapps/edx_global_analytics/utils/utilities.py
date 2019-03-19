@@ -8,7 +8,6 @@ import logging
 from datetime import date, timedelta
 
 import requests
-from requests.exceptions import RequestException
 from django.contrib.auth.models import User
 from django.db.models.aggregates import Count, Max
 from django.db.transaction import atomic
@@ -100,10 +99,7 @@ def get_coordinates_by_ip():
     """
     latitude, longitude = '', ''
 
-    try:
-        ip_data = requests.get('http://ip-api.com/json')
-    except RequestException:
-        return latitude, longitude
+    ip_data = requests.get('http://ip-api.com/json')
 
     if ip_data.status_code == 200:
         latitude, longitude = ip_data.json().get('lat', ''), ip_data.json().get('lon', '')
