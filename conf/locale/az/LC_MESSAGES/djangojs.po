@@ -4828,13 +4828,9 @@ msgstr "Emailinizi yoxlayın"
 
 #: lms/static/js/student_account/views/LoginView.js
 msgid ""
-"{paragraphStart}You entered {boldStart}{email}{boldEnd}. If this email "
-"address is associated with your {platform_name} account, we will send a "
-"message with password recovery instructions to this email "
-"address.{paragraphEnd}{paragraphStart}If you do not receive a password reset"
-" message, verify that you entered the correct email address, or check your "
-"spam folder.{paragraphEnd}{paragraphStart}If you need further assistance, "
-"{anchorStart}contact technical support{anchorEnd}.{paragraphEnd}"
+"{paragraphStart}You entered {boldStart}{email}{boldEnd}. If this email address is associated with your {platform_name} account, we will send a message with password reset instructions to this email address.{paragraphEnd}"
+"{paragraphStart}If you do not receive a password reset message, verify that you entered the correct email address, or check your spam folder.{paragraphEnd}"
+"{paragraphStart}If you need further assistance, {anchorStart}contact technical support{anchorEnd}.{paragraphEnd}"
 msgstr ""
 "{paragraphStart} Siz {boldStart} {email} {boldEnd}  e-maili daxil etmisiniz. Əgər bu "
 "e-mail ünvanı {platform_name} hesabınızla əlaqədardırsa, biz bu ünvana şifrənizi sıfırlamağınız üçün təlimat göndərəcəyik."
@@ -11261,3 +11257,6 @@ msgstr "Ev tapşırığı"
 
 msgid "Course Type"
 msgstr "Kurs növü"
+
+msgid "Forgot password?"
+msgstr "Parolu unutmusunuz?"

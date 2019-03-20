@@ -5190,8 +5190,7 @@ msgid ""
 "You're receiving this e-mail because you requested a password reset for your"
 " user account at %(site_name)s."
 msgstr ""
-"Siz bu e-maili sizin %(site_name)s istifadəçi hesabınız üçün şifrəni "
-"sıfırlamağı istədiyiniz üçün alırsız. "
+"Sizə bu e-mail istifadəçi hesabınızın şifrəsini sıfırlamaq istədiyiniz üçün %(site_name)s portalı tərəfindən göndərilib."
 
 #: common/templates/student/edx_ace/passwordreset/email/body.html
 #: common/templates/student/edx_ace/passwordreset/email/body.txt
@@ -27136,3 +27135,39 @@ msgstr "Ev tapşırığı"
 
 msgid "Course Type"
 msgstr "Kurs növü"
+
+#: lms/templates/instructor/instructor_dashboard_2/membership.html
+msgid "Discussion Community TAs"
+msgstr "Müzakirə cəmiyyəti üzrə komanda adminləri"
+
+#: lms/templates/registration/password_reset_confirm.html
+msgid "Error Resetting Password"
+msgstr ""
+
+#: lms/templates/registration/password_reset_confirm.html
+msgid "You must enter and confirm your new password."
+msgstr ""
+
+#: lms/templates/registration/password_reset_confirm.html
+msgid "The text in both password fields must match."
+msgstr ""
+
+#: lms/templates/registration/password_reset_confirm.html
+msgid "Reset Your Password"
+msgstr ""
+
+#: lms/templates/registration/password_reset_confirm.html
+msgid "Enter and confirm your new password."
+msgstr ""
+
+#: lms/templates/registration/password_reset_confirm.html
+msgid "New Password"
+msgstr ""
+
+#: lms/templates/registration/password_reset_confirm.html
+msgid "Confirm Password"
+msgstr ""
+
+#: lms/templates/forgot_password_modal.html
+msgid "Reset My Password"
+msgstr "Şifrəmi sıfırlayın"
