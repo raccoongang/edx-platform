@@ -7,12 +7,14 @@ import urlparse
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.core import exceptions
 from django.http import Http404, HttpResponse, HttpResponseServerError
 from django.utils.translation import ugettext as _
 from django.views.decorators import csrf
 from django.views.decorators.http import require_GET, require_POST
 from opaque_keys.edx.keys import CourseKey
+from xmodule.modulestore.django import modulestore
 
 import django_comment_client.settings as cc_settings
 import lms.lib.comment_client as cc
@@ -46,6 +48,9 @@ from django_comment_common.utils import ThreadContext
 from eventtracking import tracker
 from lms.djangoapps.courseware.exceptions import CourseAccessRedirect
 from util.file import store_uploaded_file
+
+from edeos.tasks import send_api_request
+from edeos.utils import is_valid_edeos_field
 
 log = logging.getLogger(__name__)
 
@@ -275,9 +280,42 @@ def create_thread(request, course_id, commentable_id):
     track_thread_created_event(request, course, thread, follow)
 
     if request.is_ajax():
-        return ajax_content_response(request, course_key, data)
+        response = ajax_content_response(request, course_key, data)
     else:
-        return JsonResponse(prepare_content(data, course_key))
+        response = JsonResponse(prepare_content(data, course_key))
+
+    # TODO refactor
+    edeos_fields = {
+        'edeos_secret': course.edeos_secret,
+        'edeos_key': course.edeos_key,
+        'edeos_base_url': course.edeos_base_url
+    }
+    if is_valid_edeos_field(edeos_fields):
+        payload = {
+            'student_id': user.email,
+            'course_id': course_id,
+            'org': course.org,
+            'client_id': course.edeos_key,
+            'uid': '{}_{}_{}'.format(user.email, course_id, unicode(thread.id)),
+            'event_type': 8,
+            'event_details': {
+                'event_type_verbose': 'new_forum_topic',
+                "thread_type": post["thread_type"],
+                "commentable_id": commentable_id,
+                "anonymous": anonymous,
+                "anonymous_to_peers": anonymous_to_peers,
+            }
+        }
+        data = {
+            'payload': payload,
+            'secret': course.edeos_secret,
+            'key': course.edeos_key,
+            'base_url': course.edeos_base_url,
+            'api_endpoint': 'transactions_store'
+        }
+        send_api_request(data)
+
+    return response
 
 
 @require_POST
@@ -321,7 +359,7 @@ def update_thread(request, course_id, thread_id):
         return JsonResponse(prepare_content(thread.to_dict(), course_key))
 
 
-def _create_comment(request, course_key, thread_id=None, parent_id=None):
+def _create_comment(request, course_key, thread_id=None, parent_id=None, subcomment=False):
     """
     given a course_key, thread_id, and parent_id, create a comment,
     called from create_comment to do the actual creation
@@ -366,9 +404,41 @@ def _create_comment(request, course_key, thread_id=None, parent_id=None):
     track_comment_created_event(request, course, comment, comment.thread.commentable_id, followed)
 
     if request.is_ajax():
-        return ajax_content_response(request, course_key, comment.to_dict())
+        response = ajax_content_response(request, course_key, comment.to_dict())
     else:
-        return JsonResponse(prepare_content(comment.to_dict(), course.id))
+        response = JsonResponse(prepare_content(comment.to_dict(), course.id))
+
+    # TODO refactor
+    edeos_fields = {
+        'edeos_secret': course.edeos_secret,
+        'edeos_key': course.edeos_key,
+        'edeos_base_url': course.edeos_base_url
+    }
+    if is_valid_edeos_field(edeos_fields):
+        course_id = course_key.to_deprecated_string()
+        student_id = user.email
+        payload = {
+            'student_id': student_id,
+            'course_id': course_key.to_deprecated_string(),
+            'org': course.org,
+            'client_id': course.edeos_key,
+            'event_type': 9,
+            'uid': '{}_{}_{}_{}_{}'.format(student_id, course_id, parent_id, thread_id, unicode(comment.id)),
+            'event_details': {
+                'event_type_verbose': 'forum_comment',
+                "thread_id": thread_id
+            }
+        }
+        data = {
+            'payload': payload,
+            'secret': course.edeos_secret,
+            'key': course.edeos_key,
+            'base_url': course.edeos_base_url,
+            'api_endpoint': 'transactions_store'
+        }
+        send_api_request(data)
+
+    return response
 
 
 @require_POST
@@ -469,7 +539,7 @@ def create_sub_comment(request, course_id, comment_id):
     """
     if is_comment_too_deep(parent=cc.Comment(comment_id)):
         return JsonError(_("Comment level too deep"))
-    return _create_comment(request, CourseKey.from_string(course_id), parent_id=comment_id)
+    return _create_comment(request, CourseKey.from_string(course_id), parent_id=comment_id, subcomment=False)
 
 
 @require_POST
@@ -501,6 +571,7 @@ def _vote_or_unvote(request, course_id, obj, value='up', undo_vote=False):
         # (People could theoretically downvote by handcrafting AJAX requests.)
     else:
         user.vote(obj, value)
+
     track_voted_event(request, course, obj, value, undo_vote)
     return JsonResponse(prepare_content(obj.to_dict(), course_key))
 
@@ -515,6 +586,36 @@ def vote_for_comment(request, course_id, comment_id, value):
     comment = cc.Comment.find(comment_id)
     result = _vote_or_unvote(request, course_id, comment, value)
     comment_voted.send(sender=None, user=request.user, post=comment)
+
+    # TODO refactor
+    course_key = CourseKey.from_string(course_id)
+    course = modulestore().get_course(course_key)
+    edeos_fields = {
+        'edeos_secret': course.edeos_secret,
+        'edeos_key': course.edeos_key,
+        'edeos_base_url': course.edeos_base_url
+    }
+    if is_valid_edeos_field(edeos_fields):
+        payload = {
+            'student_id': request.user.email,
+            'course_id': course_id,
+            'org': course.org,
+            'client_id': course.edeos_key,
+            'uid': '{}_{}_{}'.format(request.user.email, course_id, unicode(comment_id)),
+            'event_type': 11,
+            'event_details': {
+                'event_type_verbose': 'forum_comment_vote',
+            }
+        }
+        data = {
+            'payload': payload,
+            'secret': course.edeos_secret,
+            'key': course.edeos_key,
+            'base_url': course.edeos_base_url,
+            'api_endpoint': 'transactions_store'
+        }
+        send_api_request(data)
+
     return result
 
 
@@ -540,6 +641,36 @@ def vote_for_thread(request, course_id, thread_id, value):
     thread = cc.Thread.find(thread_id)
     result = _vote_or_unvote(request, course_id, thread, value)
     thread_voted.send(sender=None, user=request.user, post=thread)
+
+    # TODO refactor
+    course_key = CourseKey.from_string(course_id)
+    course = modulestore().get_course(course_key)
+    edeos_fields = {
+        'edeos_secret': course.edeos_secret,
+        'edeos_key': course.edeos_key,
+        'edeos_base_url': course.edeos_base_url
+    }
+    if is_valid_edeos_field(edeos_fields):
+        payload = {
+            'student_id': request.user.email,
+            'course_id': course_id,
+            'org': course.org,
+            'client_id': course.edeos_key,
+            'uid': '{}_{}_{}'.format(request.user.email, course_id, unicode(thread_id)),
+            'event_type': 14,
+            'event_details': {
+                'event_type_verbose': 'forum_thread_vote',
+            }
+        }
+        data = {
+            'payload': payload,
+            'secret': course.edeos_secret,
+            'key': course.edeos_key,
+            'base_url': course.edeos_base_url,
+            'api_endpoint': 'transactions_store'
+        }
+        send_api_request(data)
+
     return result
 
 

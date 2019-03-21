@@ -44,12 +44,12 @@ def send_enroll_achievement(sender, instance, created, **kwargs):
     }
     if course.edeos_enabled:
         if _is_valid(edeos_fields):
-
+            # TODO add other params if needed
             payload = {
-                'student_id': "{}:{}".format(instance.user.email, Site.objects.get_current().domain),
+                'student_id': instance.user.email,
                 'course_id': course_id,
                 'org': org,
-                'event_type': 1,
+                'event_type': 1,  # TODO move to some sort of configs
                 'uid': '{}_{}'.format(instance.user.pk, course_id),
             }
 
@@ -58,5 +58,6 @@ def send_enroll_achievement(sender, instance, created, **kwargs):
                 'secret': course.edeos_secret,
                 'key': course.edeos_key,
                 'base_url': course.edeos_base_url,
+                'api_endpoint': 'transactions_store'
             }
-            send_api_request.delay(data)
+            send_api_request.delay(data)  # TODO change to `apply_async()`

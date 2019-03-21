@@ -1,5 +1,6 @@
-<a href="#" class="show"><span class="show-text">Show</span> <span>edeos history</span></a>
+<a href="#" class="show"><span class="show-text">Show</span> <span>Edeos history</span></a>
 <div style="margin: 0 auto;text-align: center;" class="edeos-history hidden">
+    % if edeos_data:
     % if any(edeos_data):
         <br>
         <h3>EdEos History</h3>
@@ -51,6 +52,7 @@
     % else:
         <h6>You don't have any wallets yet.</h6>
         <%include file="/edeos/get_wallet.html" />
+    % endif
     % endif
 </div>
 <script type="text/javascript">

@@ -12,11 +12,16 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from edxmako.shortcuts import render_to_response
 from ipware.ip import get_ip
 
+from opaque_keys.edx.keys import CourseKey
 from track import tracker
 from track import contexts
 from track import shim
 from track.models import TrackingLog
 from eventtracking import tracker as eventtracker
+from xmodule.modulestore.django import modulestore
+
+from edeos.tasks import send_api_request
+# from instructor.views.api import get_student
 
 
 def log_event(event):
@@ -78,6 +83,36 @@ def user_track(request):
 
     with eventtracker.get_tracker().context('edx.course.browser', context_override):
         eventtracker.emit(name=name, data=data)
+
+    if (name == u"stop_video" or name == "stop_video") and username != "anonymous":
+        course_id = context_override.get("course_id")
+        course_key = CourseKey.from_string(course_id)
+        course = modulestore().get_course(course_key)
+        if course.edeos_enabled:
+            from instructor.views.api import get_student
+            student = get_student(username, course_key)
+            student_id = student.email
+            video_id = None
+            if isinstance(data, dict):
+                video_id = data.get("id")
+            if video_id:
+                payload = {
+                    'student_id': student_id,
+                    'course_id': course_id,
+                    'org': course.org,
+                    'client_id': course.edeos_key,
+                    'event_type': 3,
+                    'uid': video_id,
+                    'event_details': {"event_type_verbose": "achievement_video"}
+                }
+                data = {
+                    'payload': payload,
+                    'secret': course.edeos_secret,
+                    'key': course.edeos_key,
+                    'base_url': course.edeos_base_url,
+                    'api_endpoint': 'transactions_store'
+                }
+                send_api_request.delay(data)  # TODO change to `apply_async()`
 
     return HttpResponse('success')
 

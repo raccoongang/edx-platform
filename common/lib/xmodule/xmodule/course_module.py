@@ -173,9 +173,9 @@ class CourseFields(object):
     edeos_base_url = String(display_name='EdEos Base url', scope=Scope.settings, default="",
                                  help=_('EdEos API base url in the following format: "https://example.com"'))
     edeos_secret = String(display_name='EdEos Secret', scope=Scope.settings, default="",
-                               help=_('EdEos secret'))
+                               help=_('EdEos Secret'))
     edeos_key = String(display_name='EdEos Key', scope=Scope.settings, default="",
-                            help=_('EdEos Key'))
+                            help=_('EdEos Key, also known as Client Id'))
     lti_passports = List(
         display_name=_("LTI Passports"),
         help=_('Enter the passports for course LTI tools in the following format: "id:client_key:client_secret".'),

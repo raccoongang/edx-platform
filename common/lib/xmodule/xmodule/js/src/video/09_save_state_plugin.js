@@ -95,7 +95,7 @@
             saveState: function(async, data) {
                 if (!($.isPlainObject(data))) {
                     data = {
-                        saved_video_position: this.state.videoPlayer.currentTime
+                        saved_video_position: this.state.videoPlayer.currentTime,
                     };
                 }
 

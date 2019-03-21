@@ -23,6 +23,8 @@ from model_utils.models import TimeStampedModel
 
 import coursewarehistoryextended
 from openedx.core.djangoapps.xmodule_django.models import BlockTypeKeyField, CourseKeyField, LocationKeyField
+from edeos.tasks import send_api_request
+from edeos.utils import prepare_edeos_data
 
 log = logging.getLogger("edx.courseware")
 
@@ -143,6 +145,35 @@ class StudentModule(models.Model):
 
     def __unicode__(self):
         return unicode(repr(self))
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        event_type = None
+        event_details = {}
+        """
+        if self.module_type == "video":
+            event_type = 3
+            event_details = {
+                "event_type_verbose": "achievement_video"
+            }
+        """
+        if self.module_type == "problem" and float(str(self.grade)) > 0:
+            event_type = 4
+            event_details = {
+                "event_type_verbose": "achievement_problem",
+                "grade": self.grade,
+                "max_grade": self.max_grade
+            }
+        if event_type:
+            data = prepare_edeos_data(self,
+                                      event_type=event_type,
+                                      event_details=event_details)
+            if data:
+                send_api_request.delay(data)  # TODO change to `apply_async()`
+        super(StudentModule, self).save(force_insert=force_insert,
+                                        force_update=force_update,
+                                        using=using,
+                                        update_fields=update_fields)
 
 
 class BaseStudentModuleHistory(models.Model):

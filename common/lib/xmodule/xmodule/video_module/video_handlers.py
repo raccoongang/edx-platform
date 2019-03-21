@@ -27,7 +27,6 @@ from .transcripts_utils import (
     subs_filename
 )
 
-
 log = logging.getLogger(__name__)
 
 
@@ -47,9 +46,9 @@ class VideoStudentViewHandlers(object):
         accepted_keys = [
             'speed', 'saved_video_position', 'transcript_language',
             'transcript_download_format', 'youtube_is_available',
-            'bumper_last_view_date', 'bumper_do_not_show_again'
+            'bumper_last_view_date', 'bumper_do_not_show_again',
+            'total_video_duration', 'saved_video_duration',
         ]
-
         conversions = {
             'speed': json.loads,
             'saved_video_position': RelativeTime.isotime_to_timedelta,
@@ -71,9 +70,7 @@ class VideoStudentViewHandlers(object):
 
                     if key == 'speed':
                         self.global_speed = self.speed
-
             return json.dumps({'success': True})
-
         log.debug(u"GET {0}".format(data))
         log.debug(u"DISPATCH {0}".format(dispatch))
 
