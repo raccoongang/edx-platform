@@ -157,19 +157,23 @@ class StudentModule(models.Model):
                 "event_type_verbose": "achievement_video"
             }
         """
-        if self.module_type == "problem" and float(str(self.grade)) > 0:
-            event_type = 4
-            event_details = {
-                "event_type_verbose": "achievement_problem",
-                "grade": self.grade,
-                "max_grade": self.max_grade
-            }
-        if event_type:
-            data = prepare_edeos_data(self,
-                                      event_type=event_type,
-                                      event_details=event_details)
-            if data:
-                send_api_request.delay(data)  # TODO change to `apply_async()`
+        if self.module_type == "problem" and self.grade:
+            try:
+                if float(str(self.grade)) > 0:
+                    event_type = 4
+                    event_details = {
+                        "event_type_verbose": "achievement_problem",
+                        "grade": self.grade,
+                        "max_grade": self.max_grade
+                    }
+                if event_type:
+                    data = prepare_edeos_data(self,
+                                              event_type=event_type,
+                                              event_details=event_details)
+                    if data:
+                        send_api_request.delay(data)  # TODO change to `apply_async()`
+            except ValueError:
+                pass
         super(StudentModule, self).save(force_insert=force_insert,
                                         force_update=force_update,
                                         using=using,
