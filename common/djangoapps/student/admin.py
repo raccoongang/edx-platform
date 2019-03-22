@@ -27,7 +27,8 @@ from student.models import (
     UserAttribute,
     UserProfile,
     UserTestGroup,
-    City
+    City,
+    School
 )
 from student.roles import REGISTERED_ACCESS_ROLES
 from xmodule.modulestore.django import modulestore
@@ -55,6 +56,10 @@ class CityAdmin(ImportExportModelAdmin):
             base_formats.CSV,
             base_formats.JSON,
         )
+
+@admin.register(School)
+class SchoolAdmin(admin.ModelAdmin):
+    list_display = ('name',)
 
 
 class CourseAccessRoleForm(forms.ModelForm):
