@@ -23587,3 +23587,135 @@ msgid ""
 "A new revision was created: Merge between Revision #%(r1)d and Revision "
 "#%(r2)d"
 msgstr "Создана новая версия: слияние версий #%(r1)d и #%(r2)d"
+
+#: lms/templates/sysadmin_dashboard.html
+msgid "Send courses list"
+msgstr "Отправить список курсов"
+
+#: lms/templates/sysadmin_dashboard.html
+msgid "Download courses list"
+msgstr "Загрузить список курсов"
+
+#: lms/templates/instructor/instructor_dashboard_2/student_admin.html
+msgid "Score Override"
+msgstr "Корректировка полученных баллов"
+
+#: lms/templates/instructor/instructor_dashboard_2/student_admin.html
+msgid "For the specified problem, override the learner's score."
+msgstr "Скорректировать количество полученных баллов учащегося для конкретного задания."
+
+#: lms/templates/instructor/instructor_dashboard_2/student_admin.html
+msgid "New score for problem, out of the total points available for the problem"
+msgstr "Количество баллов превышает максимально возможную оценку для задания"
+
+#: lms/templates/instructor/instructor_dashboard_2/student_admin.html
+msgid "Override Learner's Score"
+msgstr "Скорректировать количество полученных баллов учащегося"
+
+#: edx-ora2
+msgid "The prompt for this section"
+msgstr "Задание"
+
+#: edx-ora2
+msgid "Your response"
+msgstr "Ваш ответ"
+
+#: edx-ora2
+msgid "This response has been saved but not submitted."
+msgstr "Ответ был сохранён но не отправлен на проверку."
+
+#: edx-ora2
+msgid "This response has not been saved."
+msgstr "Ответ пока не был сохранён."
+
+#: edx-ora2
+msgid ""
+"\n"
+"                                    This assignment is in progress. All "
+"submitted peer responses have been assessed. Check back later to see if more "
+"learners have submitted responses. You still need to complete the "
+"%(start_link)speer assessment%(end_link)s step.\n"
+"                                "
+
+msgstr ""
+"\n"
+"                                    Данный этап задания ещё не завершён. Все "
+"доступные ответы других учащихся уже были Вами проверены. Возвращайтесь позже, "
+"когда большее количество учащихся предоставят свои ответы. Для завершения "
+"данного этапа необходимо дать оценку большему количеству "
+"%(start_link)sответов%(end_link)s других учащихся.\n"
+"                                "
+
+#: edx-ora2
+msgid ""
+"\n"
+"                                    This assignment is in progress. You "
+"still need to complete the %(start_link)sself assessment%(end_link)s step.\n"
+"                                "
+msgstr ""
+"\n"
+"                                    Данный этап задания ещё не завершён. "
+"Необходимо дать оценку своему собственному %(start_link)sответу%(end_link)s.\n"
+"                                "
+
+#: edx-ora2
+msgid ""
+"All available peer responses have been assessed. Check back later to see if "
+"more learners have submitted responses. You will receive your grade after "
+"you've completed all the steps for this problem and your peers have assessed"
+" your response."
+msgstr ""
+"Все доступные ответы других учащихся уже были Вами проверены. Возвращайтесь позже, "
+"когда большее количество учащихся предоставят свои ответы. Баллы за выполнение "
+"задания будут получены после прохождения всех этапов задания, включая проверку Вашего "
+"ответа другими учащимися."
+
+#: edx-ora2
+msgid ""
+"\n"
+"                        In Progress (%(review_number)s of "
+"%(num_must_grade)s)\n"
+"                    "
+msgstr ""
+"\n"
+"                        Выполняется (%(review_number)s из "
+"%(num_must_grade)s)\n"
+"                    "
+
+#: edx-ora2
+msgid ""
+"\n"
+"          In Progress (%(review_number)s of %(num_must_grade)s)\n"
+"        "
+msgstr ""
+"\n"
+"          Выполняется (%(review_number)s из %(num_must_grade)s)\n"
+"        "
+
+
+#: wiki
+msgid ""
+"\n"
+"      Browsing <strong><a href=\"%(self_url)s\">/%(path)s</a></strong>. "
+"There %(articles_plur_verb)s <strong>%(cnt)s %(articles_plur)s</strong> in this level.\n"
+"    "
+msgstr ""
+"\n"
+"      Просмотр <strong><a href=\"%(self_url)s\">/%(path)s</a></strong>. "
+"Количество статей на данном уровне: <strong>%(cnt)s</strong>.\n"
+"    "
+
+#: wiki
+msgid "There are no articles in this level"
+msgstr "На данном уровне нет статей"
+
+#: wiki
+msgid "Up one level"
+msgstr "Перейти на уровень выше"
+
+#: wiki
+msgid "Last modified"
+msgstr "Последнее изменение"
+
+msgid "discussion"
+msgstr "Обсуждение"

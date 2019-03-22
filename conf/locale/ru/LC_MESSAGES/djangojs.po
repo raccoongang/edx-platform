@@ -10243,3 +10243,20 @@ msgstr ""
 #: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 msgid "Use Current Transcript"
 msgstr "Использовать субтитры"
+
+#: lms/templates/instructor/instructor_dashboard_2/certificate-white-list.underscore
+msgid "Certificate exceptions group selection"
+msgstr "Выберите категорию в списке исключений для выдачи сертификатов"
+
+#: edx-ora2
+msgid "This response has been saved but not submitted."
+msgstr "Ответ был сохранён но не отправлен на проверку."
+
+#: edx-ora2
+msgid "This response has not been saved."
+msgstr "Ответ пока не был сохранён."
+
+#: common/static/common/templates/discussion/thread-response-show.underscore
+#, python-format
+msgid "posted %(time_ago)s by %(user)s"
+msgstr "опубликовано %(time_ago)s пользователем %(user)s"

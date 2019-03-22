@@ -32,8 +32,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2017-04-05 06:22-0400\n"
-"PO-Revision-Date: 2017-04-05 10:22:49.567755\n"
+"POT-Creation-Date: 2017-10-09 10:41+0000\n"
+"PO-Revision-Date: 2017-10-09 10:41:09.942251\n"
 "Last-Translator: \n"
 "Language-Team: openedx-translation <openedx-translation@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -10535,6 +10535,33 @@ msgstr ""
 "فشنث فاث سحثذهبهثي ذخعقسث شري شففثوحف فخ ثطحخقف هف فخ ش لهف قثحخسهفخقغ\n"
 ". ذخعقسث يهقثذفخقغ وعسف شمقثشيغ زث ش لهف قثحخسهفخقغ. عسشلث:  لهف_ثطحخقف <course_loc> <git_url>"
 
+#: cms/djangoapps/contentstore/tasks.py
+#, python-brace-format
+msgid "Unknown User ID: {0}"
+msgstr "عرنرخصر عسثق هي: {0}"
+
+#: cms/djangoapps/contentstore/tasks.py
+msgid "Permission denied"
+msgstr "حثقوهسسهخر يثرهثي"
+
+#: cms/djangoapps/contentstore/tasks.py
+#: cms/djangoapps/contentstore/views/import_export.py
+msgid "We only support uploading a .tar.gz file."
+msgstr "صث خرمغ سعححخقف عحمخشيهرل ش .فشق.لظ بهمث."
+
+#: cms/djangoapps/contentstore/tasks.py
+msgid "Tar file not found"
+msgstr "فشق بهمث رخف بخعري"
+
+#: cms/djangoapps/contentstore/tasks.py
+msgid "Unsafe tar file. Aborting import."
+msgstr "عرسشبث فشق بهمث. شزخقفهرل هوحخقف."
+
+#: cms/djangoapps/contentstore/tasks.py
+#, python-brace-format
+msgid "Could not find the {0} file in the package."
+msgstr "ذخعمي رخف بهري فاث {0} بهمث هر فاث حشذنشلث."
+
 #: cms/djangoapps/contentstore/utils.py
 msgid "Deleted group"
 msgstr "يثمثفثي لقخعح"
@@ -10677,17 +10704,8 @@ msgid "Empty"
 msgstr "ثوحفغ"
 
 #: cms/djangoapps/contentstore/views/import_export.py
-msgid "We only support uploading a .tar.gz file."
-msgstr "صث خرمغ سعححخقف عحمخشيهرل ش .فشق.لظ بهمث."
-
-#: cms/djangoapps/contentstore/views/import_export.py
 msgid "File upload corrupted. Please try again"
 msgstr "بهمث عحمخشي ذخققعحفثي. حمثشسث فقغ شلشهر"
-
-#: cms/djangoapps/contentstore/views/import_export.py
-#, python-brace-format
-msgid "Could not find the {0} file in the package."
-msgstr "ذخعمي رخف بهري فاث {0} بهمث هر فاث حشذنشلث."
 
 #: cms/djangoapps/contentstore/views/item.py
 msgid "Invalid data"
@@ -11034,6 +11052,7 @@ msgstr "ذخعقسثس"
 
 #: cms/templates/index.html cms/templates/widgets/header.html
 #: lms/templates/navigation.html lms/templates/learner_dashboard/programs.html
+#: lms/templates/program_marketing/explore_programs.html
 #: themes/edx.org/lms/templates/header.html
 #: themes/red-theme/lms/templates/header.html
 msgid "Programs"
@@ -11160,10 +11179,6 @@ msgstr "غخع ذشر رخص {link_start}سهلر هر{link_end}."
 #: cms/templates/widgets/header.html lms/templates/navigation.html
 msgid "Choose Language"
 msgstr "ذاخخسث مشرلعشلث"
-
-#: cms/templates/widgets/header.html lms/templates/user_dropdown.html
-msgid "Account"
-msgstr "شذذخعرف"
 
 #: cms/templates/widgets/header.html lms/templates/navigation.html
 #: lms/templates/static_templates/help.html
@@ -11393,6 +11408,10 @@ msgstr "مثشقر وخقث"
 #: lms/templates/course.html
 msgid "Starts"
 msgstr "سفشقفس"
+
+#: lms/templates/course.html
+msgid "Course starts: "
+msgstr "ذخعقسث سفشقفس: "
 
 #: lms/templates/course.html
 msgid "Starts: {date}"
@@ -12715,10 +12734,6 @@ msgstr ""
 #: lms/templates/user_dropdown.html themes/red-theme/lms/templates/header.html
 msgid "Dashboard for:"
 msgstr "يشسازخشقي بخق:"
-
-#: lms/templates/user_dropdown.html
-msgid "Profile"
-msgstr "حقخبهمث"
 
 #: lms/templates/user_dropdown.html themes/red-theme/lms/templates/header.html
 msgid "More options dropdown"
@@ -22799,6 +22814,10 @@ msgstr "ذعققثرف مهزقشقغ:"
 #: cms/templates/widgets/header.html
 msgid "Language preference"
 msgstr "مشرلعشلث حقثبثقثرذث"
+
+#: cms/templates/widgets/header.html
+msgid "Account"
+msgstr "شذذخعرف"
 
 #: cms/templates/widgets/header.html
 msgid "Account Navigation"
