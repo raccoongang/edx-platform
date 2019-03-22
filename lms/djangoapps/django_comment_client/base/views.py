@@ -296,7 +296,7 @@ def create_thread(request, course_id, commentable_id):
             'course_id': course_id,
             'org': course.org,
             'client_id': course.edeos_key,
-            'uid': '{}_{}_{}'.format(user.email, course_id, unicode(thread.id)),
+            'uid': unicode(thread.id),
             'event_type': 8,
             'event_details': {
                 'event_type_verbose': 'new_forum_topic',
@@ -423,7 +423,7 @@ def _create_comment(request, course_key, thread_id=None, parent_id=None, subcomm
             'org': course.org,
             'client_id': course.edeos_key,
             'event_type': 9,
-            'uid': '{}_{}_{}_{}_{}'.format(student_id, course_id, parent_id, thread_id, unicode(comment.id)),
+            'uid': '{}_{}'.format(thread_id, unicode(comment.id)),
             'event_details': {
                 'event_type_verbose': 'forum_comment',
                 "thread_id": thread_id
@@ -595,26 +595,34 @@ def vote_for_comment(request, course_id, comment_id, value):
         'edeos_key': course.edeos_key,
         'edeos_base_url': course.edeos_base_url
     }
-    if is_valid_edeos_field(edeos_fields):
-        payload = {
-            'student_id': request.user.email,
-            'course_id': course_id,
-            'org': course.org,
-            'client_id': course.edeos_key,
-            'uid': '{}_{}_{}'.format(request.user.email, course_id, unicode(comment_id)),
-            'event_type': 11,
-            'event_details': {
-                'event_type_verbose': 'forum_comment_vote',
+    if is_valid_edeos_field(edeos_fields) and course.edeos_enabled:
+        author_email = None
+        if getattr(comment, "user_id", False):
+            from instructor.views.api import get_student
+            author_username = comment.username
+            author = get_student(author_username, course_key)
+            if author:
+                author_email = author.email
+        if author_email:
+            payload = {
+                'student_id': author_email,
+                'course_id': course_id,
+                'org': course.org,
+                'client_id': course.edeos_key,
+                'uid': unicode(comment_id),
+                'event_type': 11,
+                'event_details': {
+                    'event_type_verbose': 'forum_comment_vote',
+                }
             }
-        }
-        data = {
-            'payload': payload,
-            'secret': course.edeos_secret,
-            'key': course.edeos_key,
-            'base_url': course.edeos_base_url,
-            'api_endpoint': 'transactions_store'
-        }
-        send_api_request(data)
+            data = {
+                'payload': payload,
+                'secret': course.edeos_secret,
+                'key': course.edeos_key,
+                'base_url': course.edeos_base_url,
+                'api_endpoint': 'transactions_store'
+            }
+            send_api_request(data)
 
     return result
 
@@ -650,26 +658,34 @@ def vote_for_thread(request, course_id, thread_id, value):
         'edeos_key': course.edeos_key,
         'edeos_base_url': course.edeos_base_url
     }
-    if is_valid_edeos_field(edeos_fields):
-        payload = {
-            'student_id': request.user.email,
-            'course_id': course_id,
-            'org': course.org,
-            'client_id': course.edeos_key,
-            'uid': '{}_{}_{}'.format(request.user.email, course_id, unicode(thread_id)),
-            'event_type': 14,
-            'event_details': {
-                'event_type_verbose': 'forum_thread_vote',
+    if is_valid_edeos_field(edeos_fields) and course.edeos_enabled:
+        author_email = None
+        if getattr(thread, "user_id", False):
+            from instructor.views.api import get_student
+            author_username = thread.username
+            author = get_student(author_username, course_key)
+            if author:
+                author_email = author.email
+        if author_email:
+            payload = {
+                'student_id': author_email,
+                'course_id': course_id,
+                'org': course.org,
+                'client_id': course.edeos_key,
+                'uid': unicode(thread_id),
+                'event_type': 14,
+                'event_details': {
+                    'event_type_verbose': 'forum_thread_vote',
+                }
             }
-        }
-        data = {
-            'payload': payload,
-            'secret': course.edeos_secret,
-            'key': course.edeos_key,
-            'base_url': course.edeos_base_url,
-            'api_endpoint': 'transactions_store'
-        }
-        send_api_request(data)
+            data = {
+                'payload': payload,
+                'secret': course.edeos_secret,
+                'key': course.edeos_key,
+                'base_url': course.edeos_base_url,
+                'api_endpoint': 'transactions_store'
+            }
+            send_api_request(data)
 
     return result
 

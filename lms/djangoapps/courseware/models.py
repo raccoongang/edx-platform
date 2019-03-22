@@ -148,16 +148,9 @@ class StudentModule(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        event_type = None
-        event_details = {}
-        """
-        if self.module_type == "video":
-            event_type = 3
-            event_details = {
-                "event_type_verbose": "achievement_video"
-            }
-        """
         if self.module_type == "problem" and self.grade:
+            event_type = None
+            event_details = {}
             try:
                 if float(str(self.grade)) > 0:
                     event_type = 4
