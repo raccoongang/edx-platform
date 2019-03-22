@@ -290,7 +290,7 @@ def create_thread(request, course_id, commentable_id):
         'edeos_key': course.edeos_key,
         'edeos_base_url': course.edeos_base_url
     }
-    if is_valid_edeos_field(edeos_fields):
+    if is_valid_edeos_field(edeos_fields) and course.edeos_enabled:
         payload = {
             'student_id': user.email,
             'course_id': course_id,
@@ -414,8 +414,7 @@ def _create_comment(request, course_key, thread_id=None, parent_id=None, subcomm
         'edeos_key': course.edeos_key,
         'edeos_base_url': course.edeos_base_url
     }
-    if is_valid_edeos_field(edeos_fields):
-        course_id = course_key.to_deprecated_string()
+    if is_valid_edeos_field(edeos_fields) and course.edeos_enabled:
         student_id = user.email
         payload = {
             'student_id': student_id,
@@ -609,7 +608,7 @@ def vote_for_comment(request, course_id, comment_id, value):
                 'course_id': course_id,
                 'org': course.org,
                 'client_id': course.edeos_key,
-                'uid': unicode(comment_id),
+                'uid': "{}_{}".format(unicode(request.user.email), unicode(comment_id)),
                 'event_type': 11,
                 'event_details': {
                     'event_type_verbose': 'forum_comment_vote',
@@ -672,7 +671,7 @@ def vote_for_thread(request, course_id, thread_id, value):
                 'course_id': course_id,
                 'org': course.org,
                 'client_id': course.edeos_key,
-                'uid': unicode(thread_id),
+                'uid': "{}_{}".format(unicode(request.user.email), unicode(thread_id)),
                 'event_type': 14,
                 'event_details': {
                     'event_type_verbose': 'forum_thread_vote',
