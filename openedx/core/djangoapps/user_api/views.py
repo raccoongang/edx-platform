@@ -177,6 +177,9 @@ class RegistrationView(APIView):
         "goals",
         "honor_code",
         "terms_of_service",
+        "region",
+        "profession",
+        "user_age",
     ]
 
     # This end-point is available to anonymous users,
@@ -899,6 +902,96 @@ class RegistrationView(APIView):
             },
             supplementalLink=terms_link,
             supplementalText=terms_text
+        )
+
+    def _add_region_field(self, form_desc, required=True):
+        """Add a region field to a form description.
+
+        Arguments:
+            form_desc: A form description
+
+        Keyword Arguments:
+            required (bool): Whether this field is required; defaults to True
+
+        """
+        # Translators: This label appears above a dropdown menu on the registration
+        # form used to select the country in which the user lives.
+        region_label = _(u"Region")
+        error_msg = _(u"Please select your Region.")
+
+        # The labels are marked for translation in UserProfile model definition.
+        options = [(name, _(label)) for name, label in
+                   UserProfile.REGION_CHOICES]  # pylint: disable=translation-of-non-string
+        form_desc.add_field(
+            "region",
+            label=region_label,
+            field_type="select",
+            options=options,
+            include_default_option=True,
+            required=required,
+            error_messages={
+                "required": error_msg
+            },
+        )
+
+    def _add_profession_field(self, form_desc, required=True):
+        """Add a profession field to a form description.
+
+        Arguments:
+            form_desc: A form description
+
+        Keyword Arguments:
+            required (bool): Whether this field is required; defaults to True
+
+        """
+        # Translators: This label appears above a dropdown menu on the registration
+        # form used to select the country in which the user lives.
+        region_label = _(u"Profession")
+        error_msg = _(u"Please select your profession.")
+
+        # The labels are marked for translation in UserProfile model definition.
+        options = [(name, _(label)) for name, label in
+                   UserProfile.PROFESSION_CHOICES]  # pylint: disable=translation-of-non-string
+        form_desc.add_field(
+            "profession",
+            label=region_label,
+            field_type="select",
+            options=options,
+            include_default_option=True,
+            required=required,
+            error_messages={
+                "required": error_msg
+            },
+        )
+
+    def _add_user_age_field(self, form_desc, required=True):
+        """Add a user_age field to a form description.
+
+        Arguments:
+            form_desc: A form description
+
+        Keyword Arguments:
+            required (bool): Whether this field is required; defaults to True
+
+        """
+        # Translators: This label appears above a dropdown menu on the registration
+        # form used to select the country in which the user lives.
+        region_label = _(u"Age")
+        error_msg = _(u"Please select your age.")
+
+        # The labels are marked for translation in UserProfile model definition.
+        options = [(name, _(label)) for name, label in
+                   UserProfile.AGE_CHOICES]  # pylint: disable=translation-of-non-string
+        form_desc.add_field(
+            "user_age",
+            label=region_label,
+            field_type="select",
+            options=options,
+            include_default_option=True,
+            required=required,
+            error_messages={
+                "required": error_msg
+            },
         )
 
     def _apply_third_party_auth_overrides(self, request, form_desc):

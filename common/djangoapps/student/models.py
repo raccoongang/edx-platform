@@ -253,14 +253,33 @@ class UserProfile(models.Model):
     this_year = datetime.now(UTC).year
     VALID_YEARS = range(this_year, this_year - 120, -1)
     year_of_birth = models.IntegerField(blank=True, null=True, db_index=True)
+
+    AGE_LT_20 = '20'
+    AGE_20_40 = '40'
+    AGE_41_64 = '64'
+    AGE_GT_65 = '65'
+    AGE_UNDISCLOSED = 'und'
+    AGE_CHOICES = (
+        (AGE_LT_20, ugettext_noop('< 20')),
+        (AGE_20_40, ugettext_noop('20-40')),
+        (AGE_41_64, ugettext_noop('41-64')),
+        (AGE_GT_65, ugettext_noop('65+')),
+        (AGE_UNDISCLOSED, ugettext_noop('Undisclosed'))
+    )
+
+    user_age = models.CharField(max_length=12, db_index=True, choices=AGE_CHOICES, default=AGE_UNDISCLOSED)
+
+    GENDER_MALE = 'm'
+    GENDER_FEMALE = 'f'
+    GENDER_OTHER = 'o'
     GENDER_CHOICES = (
-        ('m', ugettext_noop('Male')),
-        ('f', ugettext_noop('Female')),
+        (GENDER_MALE, ugettext_noop('Male')),
+        (GENDER_FEMALE, ugettext_noop('Female')),
         # Translators: 'Other' refers to the student's gender
-        ('o', ugettext_noop('Other/Prefer Not to Say'))
+        (GENDER_OTHER, ugettext_noop('Other / Undisclosed'))
     )
     gender = models.CharField(
-        blank=True, null=True, max_length=6, db_index=True, choices=GENDER_CHOICES
+        max_length=6, db_index=True, default=GENDER_OTHER, choices=GENDER_CHOICES
     )
 
     # [03/21/2013] removed these, but leaving comment since there'll still be
@@ -280,6 +299,19 @@ class UserProfile(models.Model):
         # Translators: 'Other' refers to the student's level of education
         ('other', ugettext_noop("Other education"))
     )
+
+    PROFESSION_MEDIA = 'media'
+    PROFESSION_OTHER = 'other'
+    PROFESSION_UNDERSCORED = 'underscored'
+
+    PROFESSION_CHOICES = (
+        (PROFESSION_MEDIA, ugettext_noop('Media professional, activist, human rights defender')),
+        (PROFESSION_OTHER, ugettext_noop("Other")),
+        (PROFESSION_UNDERSCORED, ugettext_noop("Underscored")),
+    )
+    profession = models.CharField(
+        max_length=12, db_index=True, default=PROFESSION_UNDERSCORED, choices=PROFESSION_CHOICES
+    )
     level_of_education = models.CharField(
         blank=True, null=True, max_length=6, db_index=True,
         choices=LEVEL_OF_EDUCATION_CHOICES
@@ -287,6 +319,27 @@ class UserProfile(models.Model):
     mailing_address = models.TextField(blank=True, null=True)
     city = models.TextField(blank=True, null=True)
     country = CountryField(blank=True, null=True)
+
+    REGION_AFRICA = 'africa'
+    REGION_ASIA = 'asia'
+    REGION_EUR = 'eur'
+    REGION_S_US = 's_us'
+    REGION_N_US = 'n_us'
+    REGION_MENA = 'mena'
+    REGION_UNDERSCORED = 'underscored'
+    REGION_CHOICES = (
+        (REGION_AFRICA, ugettext_noop("Africa")),
+        (REGION_ASIA, ugettext_noop('Asia & Pacific')),
+        (REGION_EUR, ugettext_noop("Europe")),
+        (REGION_S_US, ugettext_noop('Latin / South America')),
+        (REGION_N_US, ugettext_noop("North America")),
+        (REGION_MENA, ugettext_noop("MENA")),
+        (REGION_UNDERSCORED, ugettext_noop("Underscored")),
+    )
+    region = models.CharField(
+        max_length=12, db_index=True, default=REGION_UNDERSCORED, choices=REGION_CHOICES
+    )
+
     goals = models.TextField(blank=True, null=True)
     allow_certificate = models.BooleanField(default=1)
     bio = models.CharField(blank=True, null=True, max_length=3000, db_index=False)
