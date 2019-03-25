@@ -298,7 +298,7 @@ FEATURES = {
     'ENABLE_XBLOCK_XML_VALIDATION': True,
 
     # Allow public account creation
-    'ALLOW_PUBLIC_ACCOUNT_CREATION': True,
+    'ALLOW_PUBLIC_ACCOUNT_CREATION': False,
 
     # Whether or not the dynamic EnrollmentTrackUserPartition should be registered.
     'ENABLE_ENROLLMENT_TRACK_USER_PARTITION': True,
@@ -527,6 +527,8 @@ MIDDLEWARE_CLASSES = [
 
     # This must be last so that it runs first in the process_response chain
     'openedx.core.djangoapps.site_configuration.middleware.SessionCookieDomainOverrideMiddleware',
+
+    'tedix_ro.middlewares.OnlySuperuserIsAllowedMiddleware',
 ]
 
 # Clickjacking protection can be enabled by setting this to 'DENY'
