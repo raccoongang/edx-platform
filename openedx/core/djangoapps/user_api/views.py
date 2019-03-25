@@ -914,8 +914,6 @@ class RegistrationView(APIView):
             required (bool): Whether this field is required; defaults to True
 
         """
-        # Translators: This label appears above a dropdown menu on the registration
-        # form used to select the country in which the user lives.
         region_label = _(u"Region")
         error_msg = _(u"Please select your Region.")
 
@@ -944,8 +942,6 @@ class RegistrationView(APIView):
             required (bool): Whether this field is required; defaults to True
 
         """
-        # Translators: This label appears above a dropdown menu on the registration
-        # form used to select the country in which the user lives.
         region_label = _(u"Profession")
         error_msg = _(u"Please select your profession.")
 
@@ -974,8 +970,6 @@ class RegistrationView(APIView):
             required (bool): Whether this field is required; defaults to True
 
         """
-        # Translators: This label appears above a dropdown menu on the registration
-        # form used to select the country in which the user lives.
         region_label = _(u"Age")
         error_msg = _(u"Please select your age.")
 

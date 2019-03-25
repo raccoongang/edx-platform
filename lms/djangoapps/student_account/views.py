@@ -16,7 +16,6 @@ from django.shortcuts import redirect
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
-from django_countries import countries
 
 import third_party_auth
 from commerce.models import CommerceConfiguration
