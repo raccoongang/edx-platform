@@ -9111,6 +9111,14 @@ msgstr "Спасибо за использование нашего сайта!"
 msgid "The %(platform_name)s Team"
 msgstr "Команда %(platform_name)s"
 
+#: wiki/templates/wiki/includes/revision_info.html
+msgid "anonymous (IP not logged)"
+msgstr "анонимно (IP не зарегистрирован)"
+
+#: wiki/templates/wiki/includes/revision_info.html
+msgid "by"
+msgstr " "
+
 #: lms/templates/wiki/article.html
 msgid "Last modified:"
 msgstr "Последнее изменение:"
