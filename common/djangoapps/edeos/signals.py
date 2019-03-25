@@ -11,7 +11,7 @@ from django.conf import settings
 from opaque_keys.edx.keys import CourseKey
 from edeos.tasks import send_api_request
 from certificates.models import CertificateStatuses
-from referrals.models import ActivatedLinks
+from referrals.models import ActivatedLink
 from xmodule.modulestore.django import modulestore
 from django.contrib.sites.models import Site
 

@@ -10,7 +10,7 @@ from django.conf import settings
 from opaque_keys.edx.keys import CourseKey
 from tasks import send_api_request
 from certificates.models import CertificateStatuses
-from referrals.models import ActivatedLinks
+from referrals.models import ActivatedLink
 
 
 @receiver(post_save, sender='courseware.StudentModule')
@@ -52,7 +52,7 @@ def send_enroll_achievement(sender, instance, created, **kwargs):
         }
         send_api_request.delay(data)
 
-        activated_link = ActivatedLinks.objects.filter(
+        activated_link = ActivatedLink.objects.filter(
             user=instance.user,
             referral__course_id=CourseKey.from_string(course_id),
             used=False
