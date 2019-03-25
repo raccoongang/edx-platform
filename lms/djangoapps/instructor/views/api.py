@@ -3095,6 +3095,25 @@ def get_student(username_or_email, course_key):
     return student
 
 
+def get_any_existing_student(username_or_email, course_key):
+    """
+    Retrieve and return User object from db, raise ValueError
+    if user does not exist.
+
+    :param username_or_email: String containing either user name or email of the student.
+    :param course_key: CourseKey object identifying the current course.
+    :return: User object
+    """
+    try:
+        student = get_user_by_username_or_email(username_or_email)
+    except ObjectDoesNotExist:
+        raise ValueError(_("{user} does not exist in the LMS. Please check your spelling and retry.").format(
+            user=username_or_email
+        ))
+
+    return student
+
+
 @transaction.non_atomic_requests
 @ensure_csrf_cookie
 @cache_control(no_cache=True, no_store=True, must_revalidate=True)

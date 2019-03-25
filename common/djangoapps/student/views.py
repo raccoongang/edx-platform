@@ -887,20 +887,21 @@ def dashboard(request):
     from edeos.utils import send_edeos_api_request
     from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
 
-    edeos_post_data = {
-        "payload": {
-            "student_id": request.user.email,
-            'client_id': EDEOS_API_KEY,
-        },
-        "api_endpoint": "transactions",
-        "key": EDEOS_API_KEY,  # settings.EDEOS_API_KEY,  # TODO revert to settings
-        "secret": EDEOS_API_SECRET,  # settings.EDEOS_API_SECRET,  # TODO revert to settings
-        "base_url": "http://195.160.222.156/api/point/v1/"
-    }
-    response = send_edeos_api_request(**edeos_post_data)
-    context.update({
-        "edeos_data": response
-    })
+    if getattr(request.user, "email", False):
+        edeos_post_data = {
+            "payload": {
+                "student_id": request.user.email,
+                'client_id': EDEOS_API_KEY,
+            },
+            "api_endpoint": "transactions",
+            "key": EDEOS_API_KEY,  # settings.EDEOS_API_KEY,  # TODO revert to settings
+            "secret": EDEOS_API_SECRET,  # settings.EDEOS_API_SECRET,  # TODO revert to settings
+            "base_url": "http://195.160.222.156/api/point/v1/"
+        }
+        response = send_edeos_api_request(**edeos_post_data)
+        context.update({
+            "edeos_data": response
+        })
     response = render_to_response('dashboard.html', context)
     set_user_info_cookie(response, request)
 

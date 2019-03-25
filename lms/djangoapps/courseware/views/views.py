@@ -349,21 +349,22 @@ def course_info(request, course_id):
         from edeos.utils import send_edeos_api_request
         from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
 
-        edeos_post_data = {
-            "payload": {
-                "student_id": request.user.email,
-                'client_id': EDEOS_API_KEY,
-                "course_id": course.id.to_deprecated_string()
-            },
-            "api_endpoint": "transactions",
-            "key": EDEOS_API_KEY,  # settings.EDEOS_API_KEY,  # TODO revert to settings
-            "secret": EDEOS_API_SECRET,  # settings.EDEOS_API_SECRET,  # TODO revert to settings
-            "base_url": "http://195.160.222.156/api/point/v1/"
-        }
-        response = send_edeos_api_request(**edeos_post_data)
-        context.update({
-            "edeos_data": response
-        })
+        if getattr(request.user, "email", False):
+            edeos_post_data = {
+                "payload": {
+                    "student_id": request.user.email,
+                    'client_id': EDEOS_API_KEY,
+                    "course_id": course.id.to_deprecated_string()
+                },
+                "api_endpoint": "transactions",
+                "key": EDEOS_API_KEY,  # settings.EDEOS_API_KEY,  # TODO revert to settings
+                "secret": EDEOS_API_SECRET,  # settings.EDEOS_API_SECRET,  # TODO revert to settings
+                "base_url": "http://195.160.222.156/api/point/v1/"
+            }
+            response = send_edeos_api_request(**edeos_post_data)
+            context.update({
+                "edeos_data": response
+            })
 
         # Get the URL of the user's last position in order to display the 'where you were last' message
         context['resume_course_url'] = None

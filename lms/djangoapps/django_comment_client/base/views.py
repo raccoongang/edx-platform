@@ -597,9 +597,9 @@ def vote_for_comment(request, course_id, comment_id, value):
     if is_valid_edeos_field(edeos_fields) and course.edeos_enabled:
         author_email = None
         if getattr(comment, "user_id", False):
-            from instructor.views.api import get_student
+            from instructor.views.api import get_any_existing_student
             author_username = comment.username
-            author = get_student(author_username, course_key)
+            author = get_any_existing_student(author_username, course_key)
             if author:
                 author_email = author.email
         if author_email:
@@ -660,9 +660,9 @@ def vote_for_thread(request, course_id, thread_id, value):
     if is_valid_edeos_field(edeos_fields) and course.edeos_enabled:
         author_email = None
         if getattr(thread, "user_id", False):
-            from instructor.views.api import get_student
+            from instructor.views.api import get_any_existing_student
             author_username = thread.username
-            author = get_student(author_username, course_key)
+            author = get_any_existing_student(author_username, course_key)
             if author:
                 author_email = author.email
         if author_email:
