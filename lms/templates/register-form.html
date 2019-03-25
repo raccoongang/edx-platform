@@ -196,17 +196,6 @@ from student.models import UserProfile
       </div>
     </li>
     % endif
-    % if settings.REGISTRATION_EXTRA_FIELDS['region'] != 'hidden':
-      <div class="field ${settings.REGISTRATION_EXTRA_FIELDS['region']} select" id="field-region">
-        <label for="gender">${_("Region")}</label>
-        <select id="region" name="region" ${'required aria-required="true"' if settings.REGISTRATION_EXTRA_FIELDS['region'] == 'required' else ''}>
-          <option value="">--</option>
-          %for code, region in UserProfile.REGION_CHOICES:
-          <option value="${code}">${_(region)}</option>
-          %endfor
-        </select>
-      </div>
-    % endif
     % if settings.REGISTRATION_EXTRA_FIELDS['year_of_birth'] != 'hidden':
     <li class="field-group field-yob">
       <div class="field ${settings.REGISTRATION_EXTRA_FIELDS['year_of_birth']} select" id="field-yob">

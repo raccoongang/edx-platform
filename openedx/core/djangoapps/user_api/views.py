@@ -177,9 +177,9 @@ class RegistrationView(APIView):
         "goals",
         "honor_code",
         "terms_of_service",
+        "user_age",
         "region",
         "profession",
-        "user_age",
     ]
 
     # This end-point is available to anonymous users,

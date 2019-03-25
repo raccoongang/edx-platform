@@ -117,7 +117,7 @@ class UserReadOnlySerializer(serializers.Serializer):
                         user_profile.language_proficiencies.all(), many=True
                     ).data,
                     "name": user_profile.name,
-                    "gender": AccountLegacyProfileSerializer.transform_gender(user_profile.gender),
+                    "gender": AccountLegacyProfileSerializer.validate_gender(user_profile.gender),
                     "goals": user_profile.goals,
                     "year_of_birth": user_profile.year_of_birth,
                     "level_of_education": AccountLegacyProfileSerializer.convert_empty_to_None(
@@ -194,8 +194,9 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
             )
         return new_name
 
-    def validate_gender(self, value):
-        """Validate gender"""
+    @staticmethod
+    def validate_gender(value):
+        """Returns gender's default value if value is empty string."""
         return value or UserProfile.GENDER_OTHER
 
     def validate_language_proficiencies(self, value):
