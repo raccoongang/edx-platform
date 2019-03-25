@@ -14,12 +14,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='userprofile',
             name='profession',
-            field=models.CharField(default=b'und', max_length=5, db_index=True, choices=[(b'media', b'Media professional, activist, human rights defender'), (b'other', b'Other'), (b'o', b'Undisclosed')]),
+            field=models.CharField(default=b'und', max_length=5, db_index=True, choices=[(b'media', b'Media professional, activist, human rights defender'), (b'other', b'Other'), (b'und', b'Undisclosed')]),
         ),
         migrations.AddField(
             model_name='userprofile',
             name='region',
-            field=models.CharField(default=b'und', max_length=4, db_index=True, choices=[(b'afr', b'Africa'), (b'asia', b'Asia & Pacific'), (b'eur', b'Europe'), (b's_us', b'Latin / South America'), (b'n_us', b'North America'), (b'mena', b'MENA'), (b'o', b'Undisclosed')]),
+            field=models.CharField(default=b'und', max_length=4, db_index=True, choices=[(b'afr', b'Africa'), (b'asia', b'Asia & Pacific'), (b'eur', b'Europe'), (b's_us', b'Latin / South America'), (b'n_us', b'North America'), (b'mena', b'MENA'), (b'und', b'Undisclosed')]),
         ),
         migrations.AddField(
             model_name='userprofile',

@@ -280,7 +280,7 @@ class UserProfile(models.Model):
     PROFESSION_CHOICES = (
         ('media', ugettext_noop('Media professional, activist, human rights defender')),
         ('other', ugettext_noop("Other")),
-        (GENDER_OTHER, ugettext_noop("Undisclosed")),
+        (CHOICE_UNDISCLOSED, ugettext_noop("Undisclosed")),
     )
     profession = models.CharField(
         max_length=5, db_index=True, default=CHOICE_UNDISCLOSED, choices=PROFESSION_CHOICES
@@ -319,7 +319,7 @@ class UserProfile(models.Model):
         ('s_us', ugettext_noop('Latin / South America')),
         ('n_us', ugettext_noop("North America")),
         ('mena', ugettext_noop("MENA")),
-        (GENDER_OTHER, ugettext_noop("Undisclosed")),
+        (CHOICE_UNDISCLOSED, ugettext_noop("Undisclosed")),
     )
     region = models.CharField(
         max_length=4, db_index=True, default=CHOICE_UNDISCLOSED, choices=REGION_CHOICES
