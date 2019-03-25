@@ -169,7 +169,7 @@ def _apply_third_party_auth_overrides(request, form_desc):
 class RegistrationFormFactory(object):
     """HTTP end-points for creating a new user. """
 
-    DEFAULT_FIELDS = ["email", "name", "username", "password"]
+    DEFAULT_FIELDS = ["role", "email", "name", "username", "password"]
 
     EXTRA_FIELDS = [
         "confirm_email",
@@ -305,6 +305,31 @@ class RegistrationFormFactory(object):
                     )
 
         return form_desc
+
+    def _add_role_field(self, form_desc, required=True):
+        """Add a role field to a form description.
+        Arguments:
+            form_desc: A form description
+        Keyword Arguments:
+            required (bool): Whether this field is required; defaults to True
+        """
+        # Translators: This label appears above a dropdown menu on the registration
+        # form used to select the user's role.
+        role_label = "Role"
+
+        # The labels are marked for translation in UserProfile model definition.
+        options = [
+            ('instructor', 'Instructor'),
+            ('student', 'Student')
+        ]
+        form_desc.add_field(
+            "role",
+            label=role_label,
+            field_type="select",
+            options=options,
+            include_default_option=True,
+            required=required
+        )
 
     def _add_email_field(self, form_desc, required=True):
         """Add an email field to a form description.
