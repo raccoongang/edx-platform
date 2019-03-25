@@ -57,8 +57,8 @@ parsel==1.2.0
 -e git+https://github.com/raccoongang/xblock-in-video-quiz.git@invquiz-rg#egg=xblock-in-video-quiz
 -e git+https://github.com/raccoongang/xblock-free-text-response.git@v0.2.1#egg=xblock-free-text-response==0.2.1
 -e common/lib/xmodule
--e git+https://github.com/raccoongang/rg_instructor_analytics@analytics2/release-1.0.1#egg=rg_instructor_analytics
--e git+https://github.com/raccoongang/rg_instructor_analytics_log_collector@analytics2/release-0.2.1#egg=rg_instructor_analytics_log_collector
+-e git+https://github.com/raccoongang/rg_instructor_analytics@analytics2/releases/1.0.X#egg=rg_instructor_analytics
+-e git+https://github.com/raccoongang/rg_instructor_analytics_log_collector@analytics2/releases/0.2.X#egg=rg_instructor_analytics_log_collector
 amqp==1.4.9               # via kombu
 analytics-python==1.1.0
 anyjson==0.3.3            # via kombu
