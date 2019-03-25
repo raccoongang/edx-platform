@@ -254,27 +254,36 @@ class UserProfile(models.Model):
     VALID_YEARS = range(this_year, this_year - 120, -1)
     year_of_birth = models.IntegerField(blank=True, null=True, db_index=True)
 
-    CHOICE_UNDISCLOSED = 'undisclosed'
+    CHOICE_UNDISCLOSED = 'und'
 
     AGE_CHOICES = (
         ('20', ugettext_noop('< 20')),
         ('40', ugettext_noop('20-40')),
         ('64', ugettext_noop('41-64')),
         ('65', ugettext_noop('65+')),
-        ('undisclosed', ugettext_noop('Undisclosed'))
+        (CHOICE_UNDISCLOSED, ugettext_noop('Undisclosed'))
     )
 
-    user_age = models.CharField(max_length=12, db_index=True, choices=AGE_CHOICES, default=CHOICE_UNDISCLOSED)
+    user_age = models.CharField(max_length=3, db_index=True, choices=AGE_CHOICES, default=CHOICE_UNDISCLOSED)
 
     GENDER_OTHER = 'o'
     GENDER_CHOICES = (
         ('m', ugettext_noop('Male')),
         ('f', ugettext_noop('Female')),
         # Translators: 'Other' refers to the student's gender
-        ('o', ugettext_noop('Other / Undisclosed'))
+        (GENDER_OTHER, ugettext_noop('Other / Undisclosed'))
     )
     gender = models.CharField(
-        max_length=6, db_index=True, default=GENDER_OTHER, choices=GENDER_CHOICES
+        max_length=1, db_index=True, default=GENDER_OTHER, choices=GENDER_CHOICES
+    )
+
+    PROFESSION_CHOICES = (
+        ('media', ugettext_noop('Media professional, activist, human rights defender')),
+        ('other', ugettext_noop("Other")),
+        (GENDER_OTHER, ugettext_noop("Undisclosed")),
+    )
+    profession = models.CharField(
+        max_length=5, db_index=True, default=CHOICE_UNDISCLOSED, choices=PROFESSION_CHOICES
     )
 
     # [03/21/2013] removed these, but leaving comment since there'll still be
@@ -295,14 +304,6 @@ class UserProfile(models.Model):
         ('other', ugettext_noop("Other education"))
     )
 
-    PROFESSION_CHOICES = (
-        ('media', ugettext_noop('Media professional, activist, human rights defender')),
-        ('other', ugettext_noop("Other")),
-        ('undisclosed', ugettext_noop("Undisclosed")),
-    )
-    profession = models.CharField(
-        max_length=12, db_index=True, default=CHOICE_UNDISCLOSED, choices=PROFESSION_CHOICES
-    )
     level_of_education = models.CharField(
         blank=True, null=True, max_length=6, db_index=True,
         choices=LEVEL_OF_EDUCATION_CHOICES
@@ -312,16 +313,16 @@ class UserProfile(models.Model):
     country = CountryField(blank=True, null=True)
 
     REGION_CHOICES = (
-        ('africa', ugettext_noop("Africa")),
+        ('afr', ugettext_noop("Africa")),
         ('asia', ugettext_noop('Asia & Pacific')),
         ('eur', ugettext_noop("Europe")),
         ('s_us', ugettext_noop('Latin / South America')),
         ('n_us', ugettext_noop("North America")),
         ('mena', ugettext_noop("MENA")),
-        ('undisclosed', ugettext_noop("Undisclosed")),
+        (GENDER_OTHER, ugettext_noop("Undisclosed")),
     )
     region = models.CharField(
-        max_length=12, db_index=True, default=CHOICE_UNDISCLOSED, choices=REGION_CHOICES
+        max_length=4, db_index=True, default=CHOICE_UNDISCLOSED, choices=REGION_CHOICES
     )
 
     goals = models.TextField(blank=True, null=True)
