@@ -14,17 +14,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='userprofile',
             name='profession',
-            field=models.CharField(default=b'underscored', max_length=12, db_index=True, choices=[(b'media', b'Media professional, activist, human rights defender'), (b'other', b'Other'), (b'underscored', b'Underscored')]),
+            field=models.CharField(default=b'undisclosed', max_length=12, db_index=True, choices=[(b'media', b'Media professional, activist, human rights defender'), (b'other', b'Other'), (b'undisclosed', b'Undisclosed')]),
         ),
         migrations.AddField(
             model_name='userprofile',
             name='region',
-            field=models.CharField(default=b'underscored', max_length=12, db_index=True, choices=[(b'africa', b'Africa'), (b'asia', b'Asia & Pacific'), (b'eur', b'Europe'), (b's_us', b'Latin / South America'), (b'n_us', b'North America'), (b'mena', b'MENA'), (b'underscored', b'Underscored')]),
+            field=models.CharField(default=b'undisclosed', max_length=12, db_index=True, choices=[(b'africa', b'Africa'), (b'asia', b'Asia & Pacific'), (b'eur', b'Europe'), (b's_us', b'Latin / South America'), (b'n_us', b'North America'), (b'mena', b'MENA'), (b'undisclosed', b'Undisclosed')]),
         ),
         migrations.AddField(
             model_name='userprofile',
             name='user_age',
-            field=models.CharField(default=b'und', max_length=12, db_index=True, choices=[(b'20', b'< 20'), (b'40', b'20-40'), (b'64', b'41-64'), (b'65', b'65+'), (b'und', b'Undisclosed')]),
+            field=models.CharField(default=b'undisclosed', max_length=12, db_index=True, choices=[(b'20', b'< 20'), (b'40', b'20-40'), (b'64', b'41-64'), (b'65', b'65+'), (b'undisclosed', b'Undisclosed')]),
         ),
         migrations.AlterField(
             model_name='userprofile',

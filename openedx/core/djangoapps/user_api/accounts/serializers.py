@@ -117,7 +117,7 @@ class UserReadOnlySerializer(serializers.Serializer):
                         user_profile.language_proficiencies.all(), many=True
                     ).data,
                     "name": user_profile.name,
-                    "gender": AccountLegacyProfileSerializer.validate_gender(user_profile.gender),
+                    "gender": user_profile.gender or user_profile.GENDER_OTHER,
                     "goals": user_profile.goals,
                     "year_of_birth": user_profile.year_of_birth,
                     "level_of_education": AccountLegacyProfileSerializer.convert_empty_to_None(
@@ -126,9 +126,9 @@ class UserReadOnlySerializer(serializers.Serializer):
                     "mailing_address": user_profile.mailing_address,
                     "requires_parental_consent": user_profile.requires_parental_consent(),
                     "account_privacy": get_profile_visibility(user_profile, user, self.configuration),
-                    "region": AccountLegacyProfileSerializer.convert_empty_to_None(user_profile.region),
-                    "profession": AccountLegacyProfileSerializer.convert_empty_to_None(user_profile.profession),
-                    "user_age": AccountLegacyProfileSerializer.convert_empty_to_None(user_profile.user_age),
+                    "region": user_profile.region or user_profile.CHOICE_UNDISCLOSED,
+                    "profession": user_profile.profession or user_profile.CHOICE_UNDISCLOSED,
+                    "user_age": user_profile.user_age or user_profile.CHOICE_UNDISCLOSED,
                 }
             )
 
@@ -193,11 +193,6 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
                 "The name field must be at least {} characters long.".format(NAME_MIN_LENGTH)
             )
         return new_name
-
-    @staticmethod
-    def validate_gender(value):
-        """Returns gender's default value if value is empty string."""
-        return value or UserProfile.GENDER_OTHER
 
     def validate_language_proficiencies(self, value):
         """ Enforce all languages are unique. """
