@@ -779,7 +779,6 @@
     "Font Sizes": "\u015erift \u00f6l\u00e7\u00fcl\u0259ri", 
     "Footer": "A\u015fa\u011f\u0131 kolontitul", 
     "For grading to work, you must change all {oldName} subsections to {newName}.": "Qiym\u0259tl\u0259ndiricinin i\u015fl\u0259m\u0259si \u00fc\u00e7\u00fcn b\u00fct\u00fcn {oldName} altb\u00f6lm\u0259l\u0259rinin ad\u0131n\u0131  {newName} etm\u0259lisiniz.", 
-    "Forgot password?": "Parolu unutmusunuz?", 
     "Format": "Format", 
     "Formats": "Formatlar", 
     "Free text notes": "Azad tekst qeydl\u0259ri", 
