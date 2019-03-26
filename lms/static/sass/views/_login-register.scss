@@ -245,12 +245,14 @@
         width: 100%;
         margin: ($baseline/2) 0 0 0;
 
-        &.select-year_of_birth {
+        &.select-year_of_birth,
+        &.select-user_age {
             @include margin-left(15px);
         }
 
         &.select-gender,
-        &.select-year_of_birth {
+        &.select-year_of_birth,
+        &.select-user_age {
             display: inline-block;
             width: calc( 50% - 10px );
         }

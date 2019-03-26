@@ -99,7 +99,10 @@ class UserReadOnlySerializer(serializers.Serializer):
             "mailing_address": None,
             "requires_parental_consent": None,
             "accomplishments_shared": accomplishments_shared,
-            "account_privacy": self.configuration.get('default_visibility')
+            "account_privacy": self.configuration.get('default_visibility'),
+            "region": None,
+            "profession": None,
+            "user_age": None
         }
 
         if user_profile:
@@ -114,7 +117,7 @@ class UserReadOnlySerializer(serializers.Serializer):
                         user_profile.language_proficiencies.all(), many=True
                     ).data,
                     "name": user_profile.name,
-                    "gender": AccountLegacyProfileSerializer.convert_empty_to_None(user_profile.gender),
+                    "gender": user_profile.gender or user_profile.GENDER_OTHER,
                     "goals": user_profile.goals,
                     "year_of_birth": user_profile.year_of_birth,
                     "level_of_education": AccountLegacyProfileSerializer.convert_empty_to_None(
@@ -122,7 +125,10 @@ class UserReadOnlySerializer(serializers.Serializer):
                     ),
                     "mailing_address": user_profile.mailing_address,
                     "requires_parental_consent": user_profile.requires_parental_consent(),
-                    "account_privacy": get_profile_visibility(user_profile, user, self.configuration)
+                    "account_privacy": get_profile_visibility(user_profile, user, self.configuration),
+                    "region": user_profile.region or user_profile.CHOICE_UNDISCLOSED,
+                    "profession": user_profile.profession or user_profile.CHOICE_UNDISCLOSED,
+                    "user_age": user_profile.user_age or user_profile.CHOICE_UNDISCLOSED,
                 }
             )
 
@@ -173,7 +179,8 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
         model = UserProfile
         fields = (
             "name", "gender", "goals", "year_of_birth", "level_of_education", "country",
-            "mailing_address", "bio", "profile_image", "requires_parental_consent", "language_proficiencies"
+            "mailing_address", "bio", "profile_image", "requires_parental_consent", "language_proficiencies",
+            "region", "user_age", "profession",
         )
         # Currently no read-only field, but keep this so view code doesn't need to know.
         read_only_fields = ()

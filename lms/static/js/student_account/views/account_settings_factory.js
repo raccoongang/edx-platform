@@ -121,16 +121,6 @@
                             })
                         },
                         {
-                            view: new AccountSettingsFieldViews.DropdownFieldView({
-                                model: userAccountModel,
-                                required: true,
-                                title: gettext('Country or Region'),
-                                valueAttribute: 'country',
-                                options: fieldsData.country.options,
-                                persistChanges: true
-                            })
-                        },
-                        {
                             view: new AccountSettingsFieldViews.TimeZoneFieldView({
                                 model: userPreferencesModel,
                                 required: true,
@@ -153,15 +143,6 @@
                         {
                             view: new AccountSettingsFieldViews.DropdownFieldView({
                                 model: userAccountModel,
-                                title: gettext('Education Completed'),
-                                valueAttribute: 'level_of_education',
-                                options: fieldsData.level_of_education.options,
-                                persistChanges: true
-                            })
-                        },
-                        {
-                            view: new AccountSettingsFieldViews.DropdownFieldView({
-                                model: userAccountModel,
                                 title: gettext('Gender'),
                                 valueAttribute: 'gender',
                                 options: fieldsData.gender.options,
@@ -171,9 +152,27 @@
                         {
                             view: new AccountSettingsFieldViews.DropdownFieldView({
                                 model: userAccountModel,
-                                title: gettext('Year of Birth'),
-                                valueAttribute: 'year_of_birth',
-                                options: fieldsData.year_of_birth.options,
+                                title: gettext('Region'),
+                                valueAttribute: 'region',
+                                options: fieldsData.region.options,
+                                persistChanges: true
+                            })
+                        },
+                        {
+                            view: new AccountSettingsFieldViews.DropdownFieldView({
+                                model: userAccountModel,
+                                title: gettext('Profession'),
+                                valueAttribute: 'profession',
+                                options: fieldsData.profession.options,
+                                persistChanges: true
+                            })
+                        },
+                        {
+                            view: new AccountSettingsFieldViews.DropdownFieldView({
+                                model: userAccountModel,
+                                title: gettext('Age'),
+                                valueAttribute: 'user_age',
+                                options: fieldsData.user_age.options,
                                 persistChanges: true
                             })
                         },
