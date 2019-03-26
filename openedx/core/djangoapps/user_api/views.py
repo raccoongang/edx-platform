@@ -942,7 +942,7 @@ class RegistrationView(APIView):
 
         """
         region_label = _(u"Profession")
-        error_msg = _(u"Please select your profession.")
+        error_msg = _(u"Please select your Profession.")
 
         # The labels are marked for translation in UserProfile model definition.
         options = [(name, _(label)) for name, label in UserProfile.PROFESSION_CHOICES]  # pylint: disable=translation-of-non-string
@@ -969,7 +969,7 @@ class RegistrationView(APIView):
 
         """
         region_label = _(u"Age")
-        error_msg = _(u"Please select your age.")
+        error_msg = _(u"Please select your Age.")
 
         # The labels are marked for translation in UserProfile model definition.
         options = [(name, _(label)) for name, label in UserProfile.AGE_CHOICES]  # pylint: disable=translation-of-non-string
