@@ -12,6 +12,27 @@ from student.models import AUDIT_LOG
 phone_validator = RegexValidator(regex=r'^\d{10,15}$', message='Phone length should to be from 10 to 15')
 
 
+class City(models.Model):
+    name = models.CharField(max_length=254, unique=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = 'Cities'
+
+    def __unicode__(self):
+        return self.name
+
+
+class School(models.Model):
+    name = models.CharField(max_length=254, unique=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __unicode__(self):
+        return self.name
+
+
 class StudentParent(models.Model):
     """
     Related model for student and his parents

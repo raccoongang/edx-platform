@@ -6,9 +6,6 @@ from django.contrib.admin.sites import NotRegistered
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import ugettext_lazy as _
-from import_export import resources
-from import_export.admin import ImportExportModelAdmin
-from import_export.formats import base_formats
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 
@@ -27,8 +24,6 @@ from student.models import (
     UserAttribute,
     UserProfile,
     UserTestGroup,
-    City,
-    School
 )
 from student.roles import REGISTERED_ACCESS_ROLES
 from xmodule.modulestore.django import modulestore
@@ -39,27 +34,6 @@ User = get_user_model()  # pylint:disable=invalid-name
 # In a large enough deployment of Open edX, this is enough to cause a site outage.
 # See https://openedx.atlassian.net/browse/OPS-2943
 COURSE_ENROLLMENT_ADMIN_SWITCH = WaffleSwitch(STUDENT_WAFFLE_NAMESPACE, 'courseenrollment_admin')
-
-
-class CityResource(resources.ModelResource):
-
-    class Meta:
-        model = City
-        fields = ('name',)
-        import_id_fields = ('name',)
-
-
-@admin.register(City)
-class CityAdmin(ImportExportModelAdmin):
-    resource_class = CityResource
-    formats = (
-            base_formats.CSV,
-            base_formats.JSON,
-        )
-
-@admin.register(School)
-class SchoolAdmin(admin.ModelAdmin):
-    list_display = ('name',)
 
 
 class CourseAccessRoleForm(forms.ModelForm):
