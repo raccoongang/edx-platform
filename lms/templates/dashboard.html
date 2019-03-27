@@ -54,6 +54,21 @@ from openedx.core.djangolib.markup import HTML, Text
         banner.showMessage(${redirect_message | n, dump_js_escaped_json})
     </%static:require_module>
   % endif
+
+  % if user.is_authenticated() and user.is_active:
+  <script src="https://cdn.jsdelivr.net/clipboard.js/1.6.0/clipboard.min.js"></script>
+  <script type="text/javascript" charset="utf-8">
+      $(document).ready(function () {
+          var domain_address = document.location.origin;
+          $.post(domain_address + "/api/get_referral_hash_key/", {},
+              function (data) {
+                  $(".referral-btn").attr('data-clipboard-text', (domain_address + data.hashkey));
+          });
+          new Clipboard('.referral-btn');
+      });
+  </script>
+  % endif
+
 </%block>
 
 <div class="dashboard-notifications" tabindex="-1">
@@ -92,7 +107,7 @@ from openedx.core.djangolib.markup import HTML, Text
 
 <main id="main" aria-label="Content" tabindex="-1">
 
-      <%include file="/edeos/history.html"/>
+    <%include file="/edeos/history.html"/>
 
     <div class="container dashboard" id="dashboard-main">
       <div class="my-courses" id="my-courses">
@@ -158,6 +173,14 @@ from openedx.core.djangolib.markup import HTML, Text
         <div class="sidebar-notification">
           ${sidebar_account_activation_message | n, decode.utf8}
         </div>
+      %endif
+
+      % if user.is_authenticated() and user.is_active:
+      <div class="page-header-secondary">
+      <a href="#" class="referral-btn last-accessed-link" data-clipboard-text="Just because you can doesn't mean you should — clipboard.js">
+          ${_("Copy Referral Link")}
+      </a>
+      </div>
       %endif
 
       % if settings.FEATURES.get('ENABLE_DASHBOARD_SEARCH'):

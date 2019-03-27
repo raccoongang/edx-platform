@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='ActivatedLinks',
+            name='ActivatedLink',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('used', models.BooleanField(default=False)),
-                ('referral', models.ForeignKey(to='referrals.Referrals')),
+                ('referral', models.ForeignKey(to='referrals.Referral')),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
         ),

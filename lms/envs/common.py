@@ -2227,10 +2227,6 @@ INSTALLED_APPS = (
     # Enables default site and redirects
     'django_sites_extensions',
 
-    # Gamification
-    'gamification_metric',
-    'referrals',
-
     # additional release utilities to ease automation
     'release_util',
 
@@ -2254,7 +2250,9 @@ INSTALLED_APPS = (
     'openedx.features.enterprise_support',
 
     'experiments',
+
     'edeos',
+    'referrals',
 )
 
 # Migrations which are not in the standard module "migrations"

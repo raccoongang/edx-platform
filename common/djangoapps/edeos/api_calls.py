@@ -1,7 +1,7 @@
 """
-Send users' achievements to external service.
+Gate API clients logic.
 
-e.g. students' achievements are sent during the course progress.
+For example, sending users' achievements to the Gate.
 """
 import base64
 import httplib
@@ -22,51 +22,9 @@ ALLOWED_EDEOS_API_ENDPOINTS_NAMES = [
     "wallet_update",
     "wallet_balance",
     "transactions",
-    "transactions_store"
+    "transactions_store",
+    "referrals_store"
 ]
-
-
-class GammaEdeosAPIClient(object):
-    """
-    Send user data to the Gamification server.
-
-    Data is then sent to Edeos by Gamma.
-    """
-
-    def __init__(self):
-        self.is_enabled = settings.FEATURES.get('ENABLE_EDEOS', False)
-        if self.is_enabled:
-            self.EDEOS_PROPERTIES = settings.FEATURES.get('EDEOS_PROPERTIES', {})
-            if not self.EDEOS_PROPERTIES:
-                raise ImproperlyConfigured(
-                    "You must set `EDEOS_PROPERTIES` when "
-                    "`FEATURES['ENABLE_EDEOS']` is True."
-                )
-            required_params = ("API_URL", "APP_KEY", "APP_SECRET")
-            for param in required_params:
-                if param not in self.EDEOS_PROPERTIES:
-                    raise ImproperlyConfigured(
-                        "You must set `{}` in `EDEOS_PROPERTIES`".format(param)
-                    )
-
-    def api_call(self, course_id, org, username, event_type, uid):
-        data = {
-            'course_id': course_id,
-            'org': org,
-            'username': username,
-            'event_type': event_type,
-            'uid': uid,
-        }
-        headers = {
-            'App-key': self.EDEOS_PROPERTIES['APP_KEY'],
-            'App-secret': self.EDEOS_PROPERTIES['APP_SECRET']
-        }
-        requests.put(
-            self.EDEOS_PROPERTIES['API_URL']+'gamma-profile/',
-            data=data,
-            headers=headers,
-            verify=False
-        )
 
 
 class EdeosApiBaseClientError(Exception):
@@ -263,8 +221,25 @@ class EdeosApiClient(EdeosBaseApiClient):
                          "data3": 23
                      }
                  }
+                 Note: `student_id` stands for a student who'll get tokens.
 
         Returns:
               response (dict): Edeos response.
         """
         return self.call_api("transactions/store", payload)
+
+    def referrals_store(self, payload):
+        """
+        Store new referral.
+
+        Arguments:
+            payload (dict):  data on a referral, e.g.
+                {
+                    "student_id":"student@example.com",
+                    "referral_id": "asdf@example.com",
+                    "referral_type": "student_signup" | "course_enrollment",
+                    "org": "edX",
+                    "client_id":"5"
+                }
+        """
+        return self.call_api("referrals/store", payload)

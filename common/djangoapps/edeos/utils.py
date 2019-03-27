@@ -30,8 +30,8 @@ def send_edeos_api_request(**kwargs):
                                   api_path=api_path)
     api_endpoint = kwargs.get("api_endpoint")
     if api_endpoint in ALLOWED_EDEOS_API_ENDPOINTS_NAMES:
-        log.info("Data to be sent to Edeos endpoint {} - {}, api_scheme_host - {}, api_path - {}".
-                 format(api_endpoint, kwargs.get('payload'), api_scheme_host, api_path))
+        log.info("Data to be sent to Edeos endpoint {} - {}, api_scheme_host - {}, api_path - {}, client id (auth) - {}".
+                 format(api_endpoint, kwargs.get('payload'), api_scheme_host, api_path, kwargs.get("key")))
         endpoint_to_call = getattr(edeos_client, api_endpoint)
         response = endpoint_to_call(payload=kwargs.get('payload'))
         return response

@@ -64,6 +64,8 @@ from course_modes.models import CourseMode
 from courseware.access import has_access
 from courseware.courses import get_courses, sort_by_announcement, sort_by_start_date  # pylint: disable=import-error
 from django_comment_common.models import assign_role
+from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
+from edeos.utils import send_edeos_api_request
 from edxmako.shortcuts import render_to_response, render_to_string
 from eventtracking import tracker
 from lms.djangoapps.commerce.utils import EcommerceService  # pylint: disable=import-error
@@ -87,6 +89,7 @@ from openedx.core.djangoapps.user_api.preferences import api as preferences_api
 from openedx.core.djangolib.markup import HTML
 from openedx.features.course_experience import course_home_url_name
 from openedx.features.enterprise_support.api import get_dashboard_consent_notification
+from referrals.models import ActivatedLink, Referral
 from shoppingcart.api import order_history
 from shoppingcart.models import CourseRegistrationCode, DonationConfiguration
 from student.cookies import delete_logged_in_cookies, set_logged_in_cookies, set_user_info_cookie
@@ -883,10 +886,6 @@ def dashboard(request):
             'ecommerce_payment_page': ecommerce_service.payment_page_url(),
         })
 
-    from django.contrib.sites.models import Site
-    from edeos.utils import send_edeos_api_request
-    from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
-
     if getattr(request.user, "email", False):
         edeos_post_data = {
             "payload": {
@@ -1511,6 +1510,7 @@ def login_user(request, error=""):  # pylint: disable=too-many-statements,unused
             # We do not log here, because we have a handler registered
             # to perform logging on successful logins.
             login(request, user)
+
             if request.POST.get('remember') == 'true':
                 request.session.set_expiry(604800)
                 log.debug("Setting user session to never expire")

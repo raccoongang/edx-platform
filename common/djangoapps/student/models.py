@@ -47,6 +47,7 @@ import lms.lib.comment_client as cc
 import request_cache
 from certificates.models import GeneratedCertificate
 from course_modes.models import CourseMode
+from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
 from edeos.tasks import send_api_request
 from edeos.utils import prepare_edeos_data
 from enrollment.api import _default_course_mode
@@ -54,6 +55,7 @@ from eventtracking import tracker
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.xmodule_django.models import CourseKeyField, NoneToEmptyManager
+from referrals.models import ActivatedLink, Referral
 from track import contexts
 from util.milestones_helpers import is_entrance_exams_enabled
 from util.model_utils import emit_field_changed_events, get_changed_fields_dict
@@ -534,6 +536,52 @@ class Registration(models.Model):
         self._track_activation()
         self.user.save()
         log.info(u'User %s (%s) account is successfully activated.', self.user.username, self.user.email)
+        # TODO: refactor (mix-in or something)
+        activated_link = ActivatedLink.objects.filter(
+            user=self.user,
+            used=False
+        ).first()
+        referral_id = activated_link.referral.id if activated_link else None
+        referral = Referral.objects.filter(id=referral_id).first() if referral_id else None
+        if referral:
+            if referral.user.email != self.user.email:
+                edeos_referral_store_data = {
+                    "payload": {
+                        'student_id': referral.user.email,
+                        'client_id': EDEOS_API_KEY,
+                        "referral_type": "student_signup",
+                        "referral_id": self.user.email,  # referee
+                        "referral_hashkey": referral.hashkey
+                    },
+                    "api_endpoint": "referrals_store",
+                    "key": EDEOS_API_KEY,
+                    "secret": EDEOS_API_SECRET,
+                    "base_url": "http://195.160.222.156/api/point/v1/"
+                }
+                send_api_request(edeos_referral_store_data)
+                # Won't send, but leaving it here just in case
+                """
+                edeos_event_data = {
+                    'payload': {
+                        'student_id': referral.user.email,
+                        'client_id': EDEOS_API_KEY,
+                        'uid': '{}_{}'.format(self.user.email, referral.hashkey),
+                        'event_type': 5,
+                        'event_details': {
+                            'event_type_verbose': 'referral_signup',
+                            "referral_hashkey": referral.hashkey,
+                            "referral_type": "student_signup",
+                            "referee_id": self.user.email,
+                        }
+                    },
+                    "api_endpoint": "transactions_store",
+                    # TODO configure in settings (here and below)
+                    "key": EDEOS_API_KEY,  # settings.EDEOS_API_KEY,
+                    "secret": EDEOS_API_SECRET,  # settings.EDEOS_API_SECRET,
+                    "base_url": "http://195.160.222.156/api/point/v1/"
+                }
+                send_api_request(edeos_event_data)
+                """
 
     def _track_activation(self):
         """ Update the isActive flag in mailchimp for activated users."""

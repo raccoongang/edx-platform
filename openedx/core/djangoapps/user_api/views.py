@@ -23,6 +23,8 @@ from edxmako.shortcuts import marketing_link
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.lib.api.authentication import SessionAuthenticationAllowInactiveUser
 from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
+
+from referrals.models import ActivatedLink, Referral
 from student.cookies import set_logged_in_cookies
 from student.forms import get_registration_extension_form
 from student.views import create_account_with_params
@@ -375,6 +377,15 @@ class RegistrationView(APIView):
             return JsonResponse(errors, status=400)
         except PermissionDenied:
             return HttpResponseForbidden(_("Account creation not allowed."))
+
+        if "referral_id" in request.COOKIES:
+            referral_id = request.COOKIES.get("referral_id")
+            referral = Referral.objects.filter(id=referral_id).first()
+            if referral.user.email != request.user.email:
+                ActivatedLink.objects.get_or_create(
+                    referral=referral,
+                    user=request.user
+                )
 
         response = JsonResponse({"success": True})
         set_logged_in_cookies(request, response, user)
