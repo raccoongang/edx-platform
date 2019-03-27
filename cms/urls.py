@@ -228,6 +228,13 @@ if settings.FEATURES.get('CERTIFICATES_HTML_VIEW'):
             certificates_list_handler, name='certificates_list_handler')
     ]
 
+# Third-party auth.
+if settings.FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
+    urlpatterns += [
+        url(r'', include('third_party_auth.urls')),
+        url(r'api/third_party_auth/', include('third_party_auth.api.urls')),
+    ]
+
 # Maintenance Dashboard
 urlpatterns.append(url(r'^maintenance/', include('maintenance.urls', namespace='maintenance')))
 

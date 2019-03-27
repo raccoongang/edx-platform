@@ -7,6 +7,10 @@
   from student.roles import GlobalStaff
 %>
 
+<%
+url_logout = marketing_link('LOGOUT') if marketing_link('LOGOUT') != '#' else reverse('logout')
+%>
+
 % if uses_pattern_library:
   <div class="wrapper-user-menu dropdown-menu-container logged-in js-header-user-menu">
       <h3 class="title menu-title">
@@ -52,7 +56,7 @@
         </li>
         % endif
         <li class="nav-item nav-account-signout">
-          <a class="action action-signout" href="${reverse('logout')}">${_("Sign Out")}</a>
+          <a class="action action-signout" href="${url_logout}">${_("Sign Out")}</a>
         </li>
       </ul>
     </div>

@@ -8,7 +8,7 @@ from django.shortcuts import redirect
 from django.views.decorators.clickjacking import xframe_options_deny
 from django.views.decorators.csrf import ensure_csrf_cookie
 
-from edxmako.shortcuts import render_to_response
+from edxmako.shortcuts import render_to_response, marketing_link
 from openedx.core.djangoapps.external_auth.views import redirect_with_get, ssl_get_cert_from_request, ssl_login_shortcut
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from waffle.decorators import waffle_switch
@@ -26,6 +26,11 @@ def signup(request):
     csrf_token = csrf(request)['csrf_token']
     if request.user.is_authenticated:
         return redirect('/course/')
+
+    redirect_url = marketing_link('REGISTER')
+    if redirect_url != '#':
+        return redirect(redirect_url, permanent=True)
+
     if settings.FEATURES.get('AUTH_USE_CERTIFICATES_IMMEDIATE_SIGNUP'):
         # Redirect to course to login to process their certificate if SSL is enabled
         # and registration is disabled.
@@ -41,6 +46,13 @@ def login_page(request):
     """
     Display the login form.
     """
+    if request.user.is_authenticated:
+        return redirect('/course/')
+
+    redirect_url = marketing_link('LOGIN')
+    if redirect_url != '#':
+        return redirect(redirect_url, permanent=True)
+
     csrf_token = csrf(request)['csrf_token']
     if (settings.FEATURES['AUTH_USE_CERTIFICATES'] and
             ssl_get_cert_from_request(request)):
@@ -68,10 +80,11 @@ def login_page(request):
 
 def howitworks(request):
     "Proxy view"
-    if request.user.is_authenticated:
-        return redirect('/home/')
-    else:
-        return render_to_response('howitworks.html', {})
+    return redirect('/home/')
+    # if request.user.is_authenticated:
+    #     return redirect('/home/')
+    # else:
+    #     return render_to_response('howitworks.html', {})
 
 
 @waffle_switch('{}.{}'.format(waffle.WAFFLE_NAMESPACE, waffle.ENABLE_ACCESSIBILITY_POLICY_PAGE))
