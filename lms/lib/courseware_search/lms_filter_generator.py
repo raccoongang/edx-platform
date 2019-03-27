@@ -2,6 +2,7 @@
 This file contains implementation override of SearchFilterGenerator which will allow
     * Filter by all courses in which the user is enrolled in
 """
+from xmodule.course_module import CATALOG_VISIBILITY_NONE
 
 from student.models import CourseEnrollment
 from search.filter_generator import SearchFilterGenerator
@@ -52,4 +53,5 @@ class LmsSearchFilterGenerator(SearchFilterGenerator):
             if org_filter_out_set:
                 exclude_dictionary['org'] = list(org_filter_out_set)
 
+        exclude_dictionary['catalog_visibility'] = [CATALOG_VISIBILITY_NONE]
         return exclude_dictionary
