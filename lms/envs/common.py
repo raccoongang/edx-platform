@@ -2772,6 +2772,22 @@ ALL_LANGUAGES = (
     [u"zu", u"Zulu"]
 )
 
+########################## Course Discovery #######################
+LANGUAGE_MAP = {'terms': {lang: display for lang, display in ALL_LANGUAGES}, 'name': 'Language'}
+COURSE_DISCOVERY_MEANINGS = {
+    'org': {
+        'name': 'Organization',
+    },
+    'modes': {
+        'name': 'Course Type',
+        'terms': {
+            'honor': 'Honor',
+            'verified': 'Verified',
+        },
+    },
+    'language': LANGUAGE_MAP,
+}
+
 
 ### Apps only installed in some instances
 OPTIONAL_APPS = (

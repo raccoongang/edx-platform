@@ -222,7 +222,7 @@ class CourseFields(object):
                     "type": "Homework",
                     "min_count": 12,
                     "drop_count": 2,
-                    "short_label": "HW",
+                    "short_label": _("HW"),
                     "weight": 0.15,
                 },
                 {
@@ -233,14 +233,14 @@ class CourseFields(object):
                 },
                 {
                     "type": "Midterm Exam",
-                    "short_label": "Midterm",
+                    "short_label": _("Midterm"),
                     "min_count": 1,
                     "drop_count": 0,
                     "weight": 0.3,
                 },
                 {
-                    "type": "Final Exam",
-                    "short_label": "Final",
+                    "type": _("Final Exam"),
+                    "short_label": _("Final"),
                     "min_count": 1,
                     "drop_count": 0,
                     "weight": 0.4,

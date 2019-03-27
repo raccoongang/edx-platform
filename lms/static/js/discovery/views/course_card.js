@@ -38,7 +38,7 @@
                     userTimezone = this.model.userPreferences.userTimezone;
                 }
                 if (data.advertised_start !== undefined) {
-                    data.start = data.advertised_start;
+                    data.start = gettext(data.advertised_start);
                 } else {
                     data.start = formatDate(
                         new Date(data.start),

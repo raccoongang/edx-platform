@@ -2827,8 +2827,8 @@ msgstr ""
 "tehsilim.edu.az kurs siyahısında olmalı olan kursun adını daxil edin. "
 
 #: common/lib/xmodule/xmodule/course_module.py
-msgid "Course Display Name"
-msgstr "Kurs görünüş adı"
+msgid "Course Display Name:"
+msgstr "Kursun tələbəyə görünən adı:"
 
 #: common/lib/xmodule/xmodule/course_module.py
 #: common/lib/xmodule/xmodule/modulestore/inheritance.py
@@ -5091,8 +5091,7 @@ msgid ""
 "You're receiving this e-mail because you requested to create a password for "
 "your user account at %(platform_name)s."
 msgstr ""
-"Siz bu e-maili %(platform_name)s-da sizin istifadəçi hesabınız üçün şifrə "
-"yaratmaq istəyilə müraciət etdiyiniz üçün alırsınız. "
+"Sizə bu e-mail istifadəçi hesabınızın şifrəsini sıfırlamaq istədiyiniz üçün %(platform_name)s portalı tərəfindən göndərilib."
 
 #: common/templates/student/edx_ace/accountrecovery/email/body.html
 #: common/templates/student/edx_ace/accountrecovery/email/body.txt
@@ -5189,10 +5188,9 @@ msgstr "Şifrə sıfırlanması"
 #, python-format
 msgid ""
 "You're receiving this e-mail because you requested a password reset for your"
-" user account at %(platform_name)s."
+" user account at %(site_name)s."
 msgstr ""
-"Siz bu e-maili sizin %(platform_name)s istifadəçi hesabınız üçün şifrəni "
-"sıfırlamağı istədiyiniz üçün alırsız. "
+"Sizə bu e-mail istifadəçi hesabınızın şifrəsini sıfırlamaq istədiyiniz üçün %(site_name)s portalı tərəfindən göndərilib."
 
 #: common/templates/student/edx_ace/passwordreset/email/body.html
 #: common/templates/student/edx_ace/passwordreset/email/body.txt
@@ -6173,8 +6171,8 @@ msgid "in {relative} - {absolute}"
 msgstr "içində {relative} - {absolute}"
 
 #: lms/djangoapps/courseware/date_summary.py
-msgid "Course Starts"
-msgstr "Kurs başlayır"
+msgid "Course starts: "
+msgstr "Kursun başlama tarixi: "
 
 #: lms/djangoapps/courseware/date_summary.py
 msgid "Don't forget to add a calendar reminder!"
@@ -12047,7 +12045,7 @@ msgstr "%(min_score)s etibarlı qiymət faizi deyil"
 #: openedx/core/lib/gating/api.py
 #, python-brace-format
 msgid "Gating milestone for {usage_key}"
-msgstr "{use_key} üçün açılış mərhələsi"
+msgstr "{usage_key} üçün açılış mərhələsi"
 
 #: openedx/core/lib/license/mixin.py
 msgid "License"
@@ -13534,7 +13532,7 @@ msgstr "Başlayır"
 
 #: lms/templates/course.html
 msgid "Starts: {date}"
-msgstr "Başlayır: {date}"
+msgstr "Kursun başlama tarixi: {date}"
 
 #: lms/templates/courses_list.html
 msgid "View all Courses"
@@ -13683,11 +13681,8 @@ msgstr "Xarici identifikasiya uğursuz oldu"
 
 #: lms/templates/forgot_password_modal.html
 msgid ""
-"Please enter your e-mail address below, and we will e-mail instructions for "
-"setting a new password."
-msgstr ""
-"Zəhmət olmasa, aşağıda e-mail ünvanınızı daxil edin və biz sizə yeni şifrə "
-"yaratmağınız üçün təlimatlar göndərəcəyik. "
+"Please enter your email address below and we will send you instructions for setting a new password."
+msgstr "Zəhmət olmasa, aşağıya e-mail ünvanınızı yazın və biz sizə yeni şifrə yaratmağınız üçün təlimat göndərəcəyik."
 
 #: lms/templates/forgot_password_modal.html lms/templates/login.html
 #: lms/templates/register-form.html lms/templates/register-shib.html
@@ -13712,8 +13707,8 @@ msgstr ""
 "ünvanınızdır"
 
 #: lms/templates/forgot_password_modal.html
-msgid "Reset My Password"
-msgstr "Şifrəmi sıfırla"
+msgid "Reset my password"
+msgstr "Şifrəmi sıfırlayın"
 
 #: lms/templates/forgot_password_modal.html
 msgid "Email is incorrect."
@@ -16188,7 +16183,6 @@ msgstr ""
 
 #: lms/templates/ccx/enrollment.html
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
-msgctxt "someone"
 msgid "Enroll"
 msgstr "Qeydiyyatdan keçin"
 
@@ -17456,7 +17450,7 @@ msgstr "Bitdi - {date}"
 
 #: lms/templates/dashboard/_dashboard_course_listing.html
 msgid "Started - {date}"
-msgstr "Başladı - {date}"
+msgstr "Kursun başlama tarixi - {date}"
 
 #: lms/templates/dashboard/_dashboard_course_listing.html
 msgid "Starts - {date}"
@@ -19955,7 +19949,7 @@ msgid ""
 "be enrolled as beta testers."
 msgstr ""
 "Qeyd: İstifadəçilər beta tester olaraq qeydiyyatdan keçə bilmək üçün "
-"{platform_name}-da hesablarını aktivləşdirmlidirlər.  "
+"{platform_name}-da hesablarını aktivləşdirməlidirlər."
 
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
 msgid ""
@@ -20432,19 +20426,19 @@ msgstr "İnkişaf səhifəsinə baxın"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Adjust a learner's grade for a specific problem"
-msgstr "Müəyyən problem üçün tələbənin qiymətini tənzimləyin"
+msgstr "Müəyyən tapşırıq üçün tələbənin qiymətini tənzimləyin"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
-msgid "Location of problem in course"
-msgstr "Kursda problemin yeri"
+msgid "Location of problem in course *"
+msgstr "Tapşırığın kursdakı yeri *"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Example"
 msgstr "Nümunə"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
-msgid "Problem location"
-msgstr "Problem yeri"
+msgid "Problem location: "
+msgstr "Tapşırıq yeri: "
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Attempts"
@@ -20454,8 +20448,7 @@ msgstr "Cəhdlər"
 msgid ""
 "Allow a learner who has used up all attempts to work on the problem again."
 msgstr ""
-"Problemi yenidən həll etmək üçün bütün cəhdlərdən istifadə edən bir tələbəyə"
-" icazə verin."
+"Tapşırığı yenidən həll etmək üçün bütün cəhdlərdən istifadə edən bir tələbəyə icazə verin."
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Reset Attempts to Zero"
@@ -20472,8 +20465,7 @@ msgid ""
 "improves in the learner's favor."
 msgstr ""
 "Müəyyən tapşırıqlar üçün göndərilən cavabları yenidən qiymətləndirin. "
-"'Yalnız xal artdığı təqdirdə yenidən qiymətləndir'seçimi tələbənin xalını "
-"yalnız tələbənin xeyrinə yeniləyir."
+"'Yalnız bal artdığı təqdirdə yenidən qiymətləndir' seçimi tələbənin balını yalnız tələbənin xeyrinə yeniləyir."
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Score Override"
@@ -20494,15 +20486,14 @@ msgstr "Tələbənin xalını ləğv edin"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Problem History"
-msgstr "Problem xronologiyası"
+msgstr "Tapşırığın xronologiyası"
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid ""
 "For the specified problem, permanently and completely delete the learner's "
 "answers and scores from the database."
 msgstr ""
-"Müəyyən problem üçün verilənlər bazasından öyrənənlərin cavabları və "
-"xallarını birdəfəlik və tamamilə silin."
+"Müəyyən tapşırıq üçün verilənlər bazasından öyrənənlərin cavabları və xallarını birdəfəlik və tamamilə silin."
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Task Status"
@@ -20546,9 +20537,8 @@ msgid ""
 "Only If Score Improves' option updates the learner's scores only if it "
 "improves in the learner's favor."
 msgstr ""
-"Göndərilən cavabları yenidən qiymətləndirin. 'Yalnız xal artdığı təqdirdə "
-"yenidən qiymətləndir'seçimi tələbənin xalını yalnız tələbənin xeyrinə "
-"yeniləyir."
+"Göndərilən cavabları yenidən qiymətləndirin. 'Yalnız bal artdığı təqdirdə yenidən qiymətləndir' "
+"seçimi tələbənin balını yalnız tələbənin xeyrinə yeniləyir."
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Rescore All Problems"
@@ -20591,12 +20581,9 @@ msgstr "Bütün tələbələrə tapşırığın üzərində yenidən işləməy�
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid ""
-"Rescore submitted responses. The 'Rescore Only If Scores Improve' option "
-"updates a learner's score only if it improves in the learner's favor."
+"Rescore submitted responses. The 'Rescore Only If Scores Improve' option updates a learner's score only if it improves in the learner's favor."
 msgstr ""
-"Göndərilən cavabları yenidən qiymətləndirin. 'Yalnız xal artdığı təqdirdə "
-"yenidən qiymətləndir' seçimi tələbənin xalını yalnız tələbənin xeyrinə "
-"yeniləyir. "
+"Göndərilən cavabları yenidən qiymətləndirin. 'Yalnız bal artdığı təqdirdə yenidən qiymətləndir' seçimi tələbənin balını yalnız tələbənin xeyrinə yeniləyir."
 
 #: lms/templates/instructor/instructor_dashboard_2/student_admin.html
 msgid "Rescore All Learners' Submissions"
@@ -27130,3 +27117,57 @@ msgid ""
 "#%(r2)d"
 msgstr ""
 "Yeni düzəliş yaradıldı: Düzəliş №%(r1)d və Düzəliş №%(r2)d arasında birməşmə"
+
+## Manual adding
+
+msgid "To generate a CSV file that lists all student answers to a given problem, enter the location of the problem (from its Staff Debug Info)."
+msgstr "Verilmiş tapşırığa cavab verən bütün tələbələrin siyahısını "
+"CSV fayl olaraq yaratmaq üçün tapşırığın yerini daxil edin (Heyət Debug məlumat bölməsindən)"
+
+msgid "Final Exam"
+msgstr "Final imtahanı"
+
+msgid "Midterm"
+msgstr "Ara imtahan"
+
+msgid "HW"
+msgstr "Ev tapşırığı"
+
+msgid "Course Type"
+msgstr "Kurs növü"
+
+#: lms/templates/instructor/instructor_dashboard_2/membership.html
+msgid "Discussion Community TAs"
+msgstr "Müzakirə cəmiyyəti üzrə komanda adminləri"
+
+#: lms/templates/registration/password_reset_confirm.html
+msgid "Error Resetting Password"
+msgstr ""
+
+#: lms/templates/registration/password_reset_confirm.html
+msgid "You must enter and confirm your new password."
+msgstr ""
+
+#: lms/templates/registration/password_reset_confirm.html
+msgid "The text in both password fields must match."
+msgstr ""
+
+#: lms/templates/registration/password_reset_confirm.html
+msgid "Reset Your Password"
+msgstr ""
+
+#: lms/templates/registration/password_reset_confirm.html
+msgid "Enter and confirm your new password."
+msgstr ""
+
+#: lms/templates/registration/password_reset_confirm.html
+msgid "New Password"
+msgstr ""
+
+#: lms/templates/registration/password_reset_confirm.html
+msgid "Confirm Password"
+msgstr ""
+
+#: lms/templates/forgot_password_modal.html
+msgid "Reset My Password"
+msgstr "Şifrəmi sıfırlayın"

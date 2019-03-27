@@ -4828,21 +4828,14 @@ msgstr "Emailinizi yoxlayın"
 
 #: lms/static/js/student_account/views/LoginView.js
 msgid ""
-"{paragraphStart}You entered {boldStart}{email}{boldEnd}. If this email "
-"address is associated with your {platform_name} account, we will send a "
-"message with password recovery instructions to this email "
-"address.{paragraphEnd}{paragraphStart}If you do not receive a password reset"
-" message, verify that you entered the correct email address, or check your "
-"spam folder.{paragraphEnd}{paragraphStart}If you need further assistance, "
-"{anchorStart}contact technical support{anchorEnd}.{paragraphEnd}"
+"{paragraphStart}You entered {boldStart}{email}{boldEnd}. If this email address is associated with your {platform_name} account, we will send a message with password reset instructions to this email address.{paragraphEnd}"
+"{paragraphStart}If you do not receive a password reset message, verify that you entered the correct email address, or check your spam folder.{paragraphEnd}"
+"{paragraphStart}If you need further assistance, {anchorStart}contact technical support{anchorEnd}.{paragraphEnd}"
 msgstr ""
-"{paragraphStart} Siz {boldStart} {email} {boldEnd} daxil oldunuz. Əgər bu "
-"e-mail ünvanı {platform_name} hesabınızla əlaqəli olsa, bu e-mail ünvanına "
-"şifrə bərpa təlimatları ilə bir mesaj göndərəcəyik. {ParagraphEnd} "
-"{paragraphStart} Şifrənin sıfırlanması mesajı almırsınızsa, düzgün e-mail "
-"ünvanınızı yoxlayın və ya spam qovluğunuzu yoxlayın. {paragraphEnd} "
-"{paragraphStart} Əlavə kömək istəyirsinizsə, {anchorStart} texniki dəstəklə "
-"əlaqə saxlayın {anchorEnd}. {paragraphEnd}"
+"{paragraphStart} Siz {boldStart} {email} {boldEnd}  e-maili daxil etmisiniz. Əgər bu "
+"e-mail ünvanı {platform_name} hesabınızla əlaqədardırsa, biz bu ünvana şifrənizi sıfırlamağınız üçün təlimat göndərəcəyik."
+"Əgər siz şifrənin sıfırlanması ilə əlaqədar e-mail almamısınızda, düzgün e-mail ünvanı qeyd etdiyinizdən əmin olun və ya spam qovluğunu yoxlayın."
+" Əgər əlavə köməyə ehtiyacınız olarsa, texniki dəstəklə əlaqə saxlayın. {paragraphEnd}"
 
 #: lms/static/js/student_account/views/LoginView.js
 msgid ""
@@ -7898,7 +7891,7 @@ msgstr "DAHA ƏTRAFLI"
 #: lms/templates/discovery/course_card.underscore
 #, python-format
 msgid "Starts: %(start_date)s"
-msgstr "Başlanır: %(start_date)s"
+msgstr "Kursun başlama tarixi: %(start_date)s"
 
 #: lms/templates/discovery/course_card.underscore
 msgid "Starts"
@@ -11229,3 +11222,41 @@ msgstr ""
 #: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 msgid "Use Current Transcript"
 msgstr "Cari transkripti istifadə et"
+
+#: lms/djangoapps/courseware/date_summary.py
+msgid "Course Starts"
+msgstr "Kursun başlama tarixi"
+
+#: lms/templates/dashboard/_dashboard_course_listing.html
+msgid "Started - {date}"
+msgstr "Kursun başlama tarixi - {date}"
+
+#: lms/templates/forgot_password_modal.html
+msgid "Reset my password"
+msgstr "Şifrəmi sıfırlayın"
+
+#: lms/templates/forgot_password_modal.html
+msgid ""
+"Please enter your email address below and we will send you instructions for setting a new password."
+msgstr "Zəhmət olmasa, aşağıya e-mail ünvanınızı yazın və biz sizə yeni şifrə yaratmağınız üçün təlimat göndərəcəyik."
+
+#: common/lib/xmodule/xmodule/course_module.py
+msgid "Course Display Name"
+msgstr "Kursun tələbəyə görünən adı"
+
+## Manual adding
+
+msgid "Final Exam"
+msgstr "Final imtahanı"
+
+msgid "Midterm"
+msgstr "Ara imtahan"
+
+msgid "HW"
+msgstr "Ev tapşırığı"
+
+msgid "Course Type"
+msgstr "Kurs növü"
+
+msgid "Forgot password?"
+msgstr "Parolu unutmusunuz?"
