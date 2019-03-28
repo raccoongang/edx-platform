@@ -49,7 +49,7 @@ class School(models.Model):
 
 class UserProfile(models.Model):
     user = None  # Need to implement
-    city = models.ForeignKey(City)
+    school_city = models.ForeignKey(City)
     school = models.ForeignKey(School)
     phone = models.CharField(_('phone'), validators=[phone_validator], max_length=15)
 
@@ -81,7 +81,7 @@ class StudentProfile(UserProfile):
 
 class ParentProfile(UserProfile):
     """
-    Related model for student and his parents
+    Related model for parent profile
     """
     user = models.OneToOneField(User, related_name='parent_profile', on_delete=models.CASCADE)
     students = models.ManyToManyField(StudentProfile, related_name='parents')

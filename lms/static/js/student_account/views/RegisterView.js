@@ -36,9 +36,6 @@
                     'country',
                     'honor_code',
                     'terms_of_service',
-
-                    'parent_phone',
-                    'instructor',
                 ],
                 formType: 'register',
                 formStatusTpl: formStatusTpl,
@@ -112,8 +109,6 @@
                             // eslint-disable-next-line no-param-reassign
                             field.errorMessages = this.escapeStrings(field.errorMessages);
                         }
-
-                        console.log('exFields', field);
 
                         if (field.required || field.showInRequired) {
                             requiredFields.push(field);

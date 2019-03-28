@@ -15,32 +15,23 @@
     <%static:require_module module_name="js/student_account/logistration_factory" class_name="LogistrationFactory">
         var options = ${data | n, dump_js_escaped_json};
 
-        window.exFields = ['parent_email', 'parent_phone', 'classroom', 'instructor'];
-        var fields = options.registration_form_desc.fields;
-        fields.forEach(function(field) {
-            if (window.exFields.indexOf(field.name) > -1) {
-                field.required = false;
-                field.showInRequired = true;
-                console.log(field);
-            }
-        });
-
         LogistrationFactory(options);
 
+        window.exFields = ['parent_email', 'parent_phone', 'classroom', 'instructor'];
+        // when role changes show/hide required fields
         $(document).on('change', '#register-role', function() {
-            var value = this.value;
-
-            var classroomField = $('.form-field.select-classroom');
-            var parentEmailField = $('.form-field.text-parent_email');
-            var parentPhoneField = $('.form-field.text-parent_phone');
-            var teacherField = $('.form-field.select-instructor');
-
-            var studentFields = [classroomField, parentEmailField, parentPhoneField, teacherField];
-            studentFields.forEach(function(field) {
-                field.toggle(value === 'student');
+            var isStudent = this.value === 'student';
+            window.exFields.forEach(function(field_name) {
+                var field = $('#register-' + field_name);
+                if (isStudent) {
+                    field.attr('required', true);
+                    field.parent('.form-field').show();
+                } else {
+                    field.removeAttr('required');
+                    field.parent('.form-field').hide();
+                }
             });
         });
-
         // set default student role after form loading
         $('#register-role').val('student');
 
