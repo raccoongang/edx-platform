@@ -550,10 +550,11 @@ class Registration(models.Model):
                         'student_id': referral.user.email,
                         'client_id': EDEOS_API_KEY,
                         "referral_type": "student_signup",
-                        "referral_id": self.user.email,
+                        "referral_id": self.user.email,  # referee
                         "referral_hashkey": referral.hashkey,
                         "event_type_verbose": "referral_signup",
-                        "event_code": 5
+                        "event_code": "5",
+                        "event_type": 5
                     },
                     "api_endpoint": "referrals_store",
                     "key": EDEOS_API_KEY,
