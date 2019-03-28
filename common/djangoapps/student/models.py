@@ -553,7 +553,6 @@ class Registration(models.Model):
                         "referral_id": self.user.email,  # referee
                         "referral_hashkey": referral.hashkey,
                         "event_type_verbose": "referral_signup",
-                        "event_code": "5",
                         "event_type": 5
                     },
                     "api_endpoint": "referrals_store",
