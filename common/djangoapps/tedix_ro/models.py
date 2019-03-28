@@ -48,7 +48,7 @@ class School(models.Model):
 
 
 class UserProfile(models.Model):
-    user = None  # Need to implement
+    user = models.OneToOneField(User, related_name='%(class)s', on_delete=models.CASCADE)
     school_city = models.ForeignKey(City)
     school = models.ForeignKey(School)
     phone = models.CharField(_('phone'), validators=[phone_validator], max_length=15)
@@ -64,27 +64,42 @@ class InstructorProfile(UserProfile):
     """
     Related model for instructor profile
     """
-    user = models.OneToOneField(User, related_name='instructor_profile', on_delete=models.CASCADE)
+    pass
 
 
 class StudentProfile(UserProfile):
     """
     Related model for student profile
     """
-    user = models.OneToOneField(User, related_name='student_profile', on_delete=models.CASCADE)
     instructor = models.ForeignKey(InstructorProfile, related_name='students', null=True, on_delete=models.SET_NULL)
     classroom = models.CharField(_('classroom'), choices=CLASSROOM_CHOICES, max_length=254)
 
     def __unicode__(self):
         return unicode(self.user)
 
+    def save(self, *args, **kwargs):
+        super(StudentProfile, self).save(*args, **kwargs)
+
+        # If this attribute is here, other needed fields are passed as well
+        # These attrs are passed from tedix_ro.forms.StudentRegisterForm manually
+        if getattr(self, 'parent_user', None):
+            parent_profile = ParentProfile(
+                user=self.parent_user,
+                school_city=self.school_city,
+                school=self.school,
+                phone=self.parent_phone,
+                password=self.password
+            )
+            parent_profile.save()
+            parent_profile.students.add(self)
+
 
 class ParentProfile(UserProfile):
     """
     Related model for parent profile
     """
-    user = models.OneToOneField(User, related_name='parent_profile', on_delete=models.CASCADE)
     students = models.ManyToManyField(StudentProfile, related_name='parents')
+    password = models.CharField(max_length=10) # it only nedeed for the first registration to send it with an activation email
 
     def __unicode__(self):
         return unicode(self.user)
@@ -96,11 +111,11 @@ def student_parent_logged_in(sender, request, user, **kwargs):  # pylint: disabl
     Relogin as student when parent logins successfully
     """
     try:
-        parent_profile = user.parent_profile
+        parent_profile = getattr(user, 'parentprofile', None)
         AUDIT_LOG.info(u'Parent Login success - {0} ({1})'.format(user.username, user.email))
-        student = parent_profile.students.first()
-        if student is not None and student.is_active:
-            login(request, student, backend=settings.AUTHENTICATION_BACKENDS[0])
-            AUDIT_LOG.info(u'Relogin as parent student - {0} ({1})'.format(student.username, student.email))
+        student = parent_profile.students.first() if parent_profile else None
+        if student is not None and student.user.is_active:
+            login(request, student.user, backend=settings.AUTHENTICATION_BACKENDS[0])
+            AUDIT_LOG.info(u'Relogin as parent student - {0} ({1})'.format(student.user.username, student.user.email))
     except ParentProfile.DoesNotExist:
         pass

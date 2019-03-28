@@ -735,7 +735,6 @@ def create_account_with_params(request, params):
     skip_email = skip_activation_email(
         user, do_external_auth, running_pipeline, third_party_provider,
     )
-
     if skip_email:
         registration.activate()
     else:
