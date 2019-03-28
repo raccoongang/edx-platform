@@ -132,6 +132,12 @@ class StudentRegisterForm(RegisterForm):
             'role': {
                 'default': 'student',
                 'include_default_option': True
+            },
+            'phone': {
+                'field_type': 'number'
+            },
+            'parent_phone': {
+                'field_type': 'number'
             }
         }
 
@@ -143,3 +149,8 @@ class InstructorRegisterForm(RegisterForm):
     class Meta(object):
         model = InstructorProfile
         fields = ('role', 'phone', 'school_city', 'school')
+        serialization_options = {
+            'phone': {
+                'field_type': 'number'
+            }
+        }
