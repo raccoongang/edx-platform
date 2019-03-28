@@ -52,10 +52,17 @@ class StudentRegisterForm(RegisterForm):
         queryset=InstructorProfile.objects.filter(user__is_staff=True, user__is_active=True),
     )
 
-    # def clean_parent_email(self, cleaned_data):
-    #     """
-    #     Validate parent email
-    #     """
+    def clean_parent_email(self):
+        """
+        Validate parent email
+        """
+        parent_email = self.cleaned_data['parent_email']
+        user = User.objects.filter(email=parent_email).first()
+        if user and getattr(user, 'studentprofile', None):
+            raise forms.ValidationError('This email belongs to an existing Student profile')
+        if user and not getattr(user, 'parentprofile', None):
+            raise forms.ValidationError('User with this email is not registered as parent')
+        return parent_email
 
 
 
@@ -83,6 +90,7 @@ class StudentRegisterForm(RegisterForm):
             # Create registry for parent
             registration = Registration()
             registration.register(parent_user)
+
             # Send activation email to the parent as well
             compose_and_send_activation_email(parent_user, profile, registration)
 
