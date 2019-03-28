@@ -64,8 +64,6 @@ class StudentRegisterForm(RegisterForm):
             raise forms.ValidationError('User with this email is not registered as parent')
         return parent_email
 
-
-
     def save(self, commit=True):
         if self.cleaned_data['role'] == 'student':
             # Make user for parent
@@ -108,6 +106,12 @@ class StudentRegisterForm(RegisterForm):
     class Meta(object):
         model = StudentProfile
         fields = ('role', 'phone', 'parent_email', 'parent_phone', 'instructor', 'school_city', 'school', 'classroom')
+        serialization_options = {
+            'role': {
+                'default': 'student',
+                'include_default_option': True
+            }
+        }
 
 
 class InstructorRegisterForm(RegisterForm):
