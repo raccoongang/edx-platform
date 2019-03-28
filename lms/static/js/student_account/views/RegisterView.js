@@ -36,6 +36,13 @@
                     'country',
                     'honor_code',
                     'terms_of_service',
+                    'parent_email',
+                    'phone',
+                    'parent_phone',
+                    'school_city',
+                    'school',
+                    'classroom',
+                    'instructor'
                 ],
                 formType: 'register',
                 formStatusTpl: formStatusTpl,

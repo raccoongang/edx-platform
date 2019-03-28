@@ -31,25 +31,47 @@ class RegisterForm(ModelForm):
     Abstract register form
     """
     role = forms.ChoiceField(label='Role', choices=ROLE_CHOICES)
-    phone = forms.CharField(label='Phone number')
-    school_city = forms.ModelChoiceField(label='City', queryset=City.objects.all())
-    school = forms.ModelChoiceField(label='School', queryset=School.objects.all())
+    phone = forms.CharField(label='Phone Number', error_messages={
+        'required': 'Please enter a Phone Number'
+    })
+    school_city = forms.ModelChoiceField(
+        label='City', queryset=City.objects.all(),
+        error_messages={
+            'required': 'Please select a City'
+        }
+    )
+    school = forms.ModelChoiceField(
+        label='School', queryset=School.objects.all(),
+        error_messages={
+            'required': 'Please select a School'
+        }
+    )
 
 
 class StudentRegisterForm(RegisterForm):
     """
     The fields on this form are derived from the StudentProfile and ParentProfile models
     """
-    classroom = forms.ChoiceField(label='Classroom', choices=CLASSROOM_CHOICES)
-    parent_phone = forms.CharField(label='Parent phone number', error_messages={
-        'required': 'Please enter parent phone number',
+    classroom = forms.ChoiceField(
+        label='Classroom', choices=CLASSROOM_CHOICES,
+        error_messages={
+            'required': 'Please select a Classroom'
+        }
+    )
+    parent_phone = forms.CharField(label='Parent Phone Number', error_messages={
+        'required': 'Please enter a Parent Phone Number',
         'min_length': 9,
         'max_length': 15,
     })
-    parent_email = forms.EmailField(label='Parent email')
+    parent_email = forms.EmailField(label='Parent Email', error_messages={
+        'required': 'Please enter a Parent Email'
+    })
     instructor = forms.ModelChoiceField(
         label='Teacher',
         queryset=InstructorProfile.objects.filter(user__is_staff=True, user__is_active=True),
+        error_messages={
+            'required': 'Please select a Teacher'
+        }
     )
 
     def clean_parent_email(self):
@@ -59,9 +81,9 @@ class StudentRegisterForm(RegisterForm):
         parent_email = self.cleaned_data['parent_email']
         user = User.objects.filter(email=parent_email).first()
         if user and getattr(user, 'studentprofile', None):
-            raise forms.ValidationError('This email belongs to an existing Student profile')
+            raise forms.ValidationError('Parent email you entered belongs to an existing Student profile')
         if user and not getattr(user, 'parentprofile', None):
-            raise forms.ValidationError('User with this email is not registered as parent')
+            raise forms.ValidationError('Parent email you entered - user with such email is not registered as parent')
         return parent_email
 
     def save(self, commit=True):

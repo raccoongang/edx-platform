@@ -23,7 +23,7 @@ CLASSROOM_CHOICES = (
     ('8D', '8D'),
 )
 
-phone_validator = RegexValidator(regex=r'^\d{10,15}$', message='Phone length should to be from 10 to 15')
+phone_validator = RegexValidator(regex=r'^\d{10,15}$', message='Phone length should be from 10 to 15')
 
 
 class City(models.Model):
