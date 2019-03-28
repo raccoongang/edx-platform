@@ -13,7 +13,7 @@ from models import Referral
 
 def user_referral(request, hashkey):
     referral = get_object_or_404(Referral, hashkey=hashkey)
-    response = HttpResponseRedirect(reverse('dashboard'))
+    response = HttpResponseRedirect(reverse('register_user'))
     if hasattr(request.user, "email"):
         if request.user.email != referral.user.email:
             response.set_cookie('referral_id', referral.id)
