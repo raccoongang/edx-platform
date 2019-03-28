@@ -20,6 +20,7 @@
                 year_of_birth: null,
                 bio: null,
                 language_proficiencies: [],
+                social_links: [],
                 requires_parental_consent: true,
                 profile_image: null,
                 accomplishments_shared: false,

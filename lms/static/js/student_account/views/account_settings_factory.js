@@ -19,12 +19,13 @@
             accountUserId,
             platformName,
             contactEmail,
-            allowEmailChange
+            allowEmailChange,
+            socialPlatforms
         ) {
             var accountSettingsElement, userAccountModel, userPreferencesModel, aboutSectionsData,
                 accountsSectionData, ordersSectionData, accountSettingsView, showAccountSettingsPage,
                 showLoadingError, orderNumber, getUserField, userFields, timeZoneDropdownField, countryDropdownField,
-                emailFieldView;
+                emailFieldView, platformData, socialFields;
 
             accountSettingsElement = $('.wrapper-account-settings');
 
@@ -189,6 +190,34 @@
                     ]
                 }
             ];
+
+            // Add the social link fields
+            socialFields = {
+                title: gettext('Social Media Links'),
+                fields: []
+            };
+
+            for (var socialPlatform in socialPlatforms) {
+                platformData = socialPlatforms[socialPlatform];
+                socialFields.fields.push(
+                    {
+                        view: new AccountSettingsFieldViews.SocialLinkTextFieldView({
+                            model: userAccountModel,
+                            title: gettext(platformData[1] + ' Link'),
+                            valueAttribute: 'social_links',
+                            helpMessage: gettext(
+                                'Enter your ' + platformData[1] + ' username or the URL to your ' +
+                                platformData[1] + ' page. Delete the URL to remove the link.'
+                            ),
+                            platform: platformData[0],
+                            persistChanges: true
+                        })
+                    }
+                );
+            }
+
+            aboutSectionsData.push(socialFields);
+
             tabSections['aboutTabSections'] = aboutSectionsData;
 
             // set TimeZoneField to listen to CountryField

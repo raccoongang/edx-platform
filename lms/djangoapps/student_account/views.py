@@ -20,6 +20,7 @@ from django_countries import countries
 
 import third_party_auth
 from commerce.models import CommerceConfiguration
+from edeos.models import UserSocialLink
 from edxmako.shortcuts import render_to_response, render_to_string
 from lms.djangoapps.commerce.utils import EcommerceService
 from openedx.core.djangoapps.commerce.utils import ecommerce_api_client
@@ -553,6 +554,7 @@ def account_settings_context(request):
                 'options': TIME_ZONE_CHOICES,
             }
         },
+        'social_platforms': UserSocialLink.PLATFORM_CHOICES,
         'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
         'password_reset_support_link': configuration_helpers.get_value(
             'PASSWORD_RESET_SUPPORT_LINK', settings.PASSWORD_RESET_SUPPORT_LINK

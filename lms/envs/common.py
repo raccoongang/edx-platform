@@ -2912,6 +2912,7 @@ ACCOUNT_VISIBILITY_CONFIGURATION = {
         'time_zone',
         'language_proficiencies',
         'bio',
+        'social_links',
         'account_privacy',
         # Not an actual field, but used to signal whether badges should be public.
         'accomplishments_shared',
@@ -2934,6 +2935,7 @@ ACCOUNT_VISIBILITY_CONFIGURATION = {
         "country",
         "profile_image",
         "language_proficiencies",
+        "social_links",
         "name",
         "gender",
         "goals",

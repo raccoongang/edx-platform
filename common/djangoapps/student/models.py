@@ -412,6 +412,9 @@ class UserProfile(models.Model):
         """
         return cls.PROFILE_COUNTRY_CACHE_KEY.format(user_id=user_id)
 
+    def __unicode__(self):
+        return unicode(self.user.email)
+
 
 @receiver(models.signals.post_save, sender=UserProfile)
 def invalidate_user_profile_country_cache(sender, instance, **kwargs):  # pylint:   disable=unused-argument, invalid-name

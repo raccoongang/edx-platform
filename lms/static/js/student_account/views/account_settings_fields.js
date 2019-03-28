@@ -7,6 +7,7 @@
         'backbone',
         'js/views/fields',
         'text!templates/fields/field_text_account.underscore',
+        'text!templates/fields/field_text_account_social.underscore',
         'text!templates/fields/field_readonly_account.underscore',
         'text!templates/fields/field_link_account.underscore',
         'text!templates/fields/field_dropdown_account.underscore',
@@ -18,6 +19,7 @@
         gettext, $, _, Backbone,
         FieldViews,
         field_text_account_template,
+        field_text_account_social_template,
         field_readonly_account_template,
         field_link_account_template,
         field_dropdown_account_template,
@@ -219,6 +221,49 @@
                     if (this.persistChanges === true) {
                         var attributes = {},
                             value = this.fieldValue() ? [{code: this.fieldValue()}] : [];
+                        attributes[this.options.valueAttribute] = value;
+                        this.saveAttributes(attributes);
+                    }
+                }
+            }),
+            SocialLinkTextFieldView: FieldViews.TextFieldView.extend({
+                render: function() {
+                    // HtmlUtils.setHtml(this.$el, HtmlUtils.template(field_text_account_template)({
+                    HtmlUtils.setHtml(this.$el, HtmlUtils.template(field_text_account_social_template)({
+                        id: this.options.valueAttribute + '_' + this.options.platform,
+                        title: this.options.title,
+                        // value: this.modelValue(),
+                        attributes: this.modelValue(),
+                        message: this.options.helpMessage,
+                        placeholder: this.options.placeholder || ''
+                    }));
+                    this.delegateEvents();
+                    return this;
+                },
+
+                modelValue: function() {
+                    var socialLinks = this.model.get(this.options.valueAttribute);
+                    for (var i = 0; i < socialLinks.length; i++) { // eslint-disable-line vars-on-top
+                        if (socialLinks[i].platform === this.options.platform) {
+                            // return socialLinks[i].social_link;
+                            return {socialLink: socialLinks[i].social_link, isVerified: socialLinks[i].is_verified};
+                        }
+                    }
+                    // return null;
+                    return {socialLink: null, isVerified: null};
+                },
+
+                updateValueInField: function() {
+                    var attributes = (_.isUndefined(this.modelValue()) || _.isNull(this.modelValue())) ? '' : this.modelValue();
+                    this.$('.u-field-value input').val(attributes.socialLink).prop('disabled', attributes.isVerified);
+                },
+
+                saveValue: function() {
+                    var attributes, value;
+                    if (this.persistChanges === true) {
+                        attributes = {};
+                        value = this.fieldValue() != null ? [{platform: this.options.platform,
+                            social_link: this.fieldValue()}] : [];
                         attributes[this.options.valueAttribute] = value;
                         this.saveAttributes(attributes);
                     }

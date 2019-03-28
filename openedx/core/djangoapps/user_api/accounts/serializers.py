@@ -8,16 +8,21 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
+from six import text_type
 
 from lms.djangoapps.badges.utils import badges_enabled
 from . import (
     NAME_MIN_LENGTH, ACCOUNT_VISIBILITY_PREF_KEY, PRIVATE_VISIBILITY,
     ALL_USERS_VISIBILITY,
 )
+from openedx.core.djangoapps.user_api import errors
 from openedx.core.djangoapps.user_api.models import UserPreference
 from openedx.core.djangoapps.user_api.serializers import ReadOnlyFieldsSerializerMixin
+from edeos.models import UserSocialLink
 from student.models import UserProfile, LanguageProficiency
 from .image_helpers import get_profile_image_urls_for_user
+from .utils import format_social_link, validate_social_link
 
 
 PROFILE_IMAGE_KEY_PREFIX = 'image_url'
@@ -44,6 +49,15 @@ class LanguageProficiencySerializer(serializers.ModelSerializer):
             return data.get('code', None)
         except AttributeError:
             return None
+
+
+class UserSocialLinkSerializer(serializers.ModelSerializer):
+    """
+    Class that serializes the SocialLink model for the UserProfile object.
+    """
+    class Meta(object):
+        model = UserSocialLink
+        fields = ("platform", "social_link", "is_verified")
 
 
 class UserReadOnlySerializer(serializers.Serializer):
@@ -99,7 +113,8 @@ class UserReadOnlySerializer(serializers.Serializer):
             "mailing_address": None,
             "requires_parental_consent": None,
             "accomplishments_shared": accomplishments_shared,
-            "account_privacy": self.configuration.get('default_visibility')
+            "account_privacy": self.configuration.get('default_visibility'),
+            "social_links": None,
         }
 
         if user_profile:
@@ -122,7 +137,10 @@ class UserReadOnlySerializer(serializers.Serializer):
                     ),
                     "mailing_address": user_profile.mailing_address,
                     "requires_parental_consent": user_profile.requires_parental_consent(),
-                    "account_privacy": get_profile_visibility(user_profile, user, self.configuration)
+                    "account_privacy": get_profile_visibility(user_profile, user, self.configuration),
+                    "social_links": UserSocialLinkSerializer(
+                        user_profile.social_links.all(), many=True
+                    ).data
                 }
             )
 
@@ -168,12 +186,14 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
     profile_image = serializers.SerializerMethodField("_get_profile_image")
     requires_parental_consent = serializers.SerializerMethodField()
     language_proficiencies = LanguageProficiencySerializer(many=True, required=False)
+    social_links = UserSocialLinkSerializer(many=True, required=False)
 
     class Meta(object):
         model = UserProfile
         fields = (
             "name", "gender", "goals", "year_of_birth", "level_of_education", "country",
-            "mailing_address", "bio", "profile_image", "requires_parental_consent", "language_proficiencies"
+            "mailing_address", "bio", "profile_image", "requires_parental_consent", "language_proficiencies",
+            "social_links"
         )
         # Currently no read-only field, but keep this so view code doesn't need to know.
         read_only_fields = ()
@@ -248,8 +268,8 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
         language_proficiencies = validated_data.pop("language_proficiencies", None)
 
         # Update all fields on the user profile that are writeable,
-        # except for "language_proficiencies", which we'll update separately
-        update_fields = set(self.get_writeable_fields()) - set(["language_proficiencies"])
+        # except for "language_proficiencies" and "social_links", which we'll update separately
+        update_fields = set(self.get_writeable_fields()) - set(["language_proficiencies"]) - set(["social_links"])
         for field_name in update_fields:
             default = getattr(instance, field_name)
             field_value = validated_data.get(field_name, default)
@@ -257,13 +277,45 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
 
         instance.save()
 
-        # Now update the related language proficiency
+        # Update the related language proficiency
         if language_proficiencies is not None:
             instance.language_proficiencies.all().delete()
             instance.language_proficiencies.bulk_create([
                 LanguageProficiency(user_profile=instance, code=language["code"])
                 for language in language_proficiencies
             ])
+
+        # Update the user's social links
+        social_link_data = self._kwargs['data']['social_links'] if 'social_links' in self._kwargs['data'] else None
+        if social_link_data and len(social_link_data) > 0:
+            new_social_link = social_link_data[0]
+
+            if instance.social_links.filter(
+                    platform=new_social_link['platform'], is_verified=True
+            ).exists():
+                raise errors.AccountUpdateError({
+                                "developer_message": u"Social link has been approved by staff",
+                                "user_message": u"Your social link has been approved by staff"
+                        })
+
+            try:
+                # Add the new social link with correct formatting
+                validate_social_link(new_social_link['platform'], new_social_link['social_link'])
+                formatted_link = format_social_link(new_social_link['platform'], new_social_link['social_link'])
+                instance.social_links.update_or_create(
+                    user_profile=instance, platform=new_social_link['platform'],
+                    defaults={'social_link': formatted_link}
+                )
+            except ValueError as err:
+                # If we have encountered any validation errors, return them to the user.
+                raise errors.AccountValidationError({
+                    'social_links': {
+                        "developer_message": u"Error thrown from adding new social link: '{}'".format(text_type(err)),
+                        "user_message": text_type(err)
+                    }
+                })
+
+        instance.save()
 
         return instance
 
