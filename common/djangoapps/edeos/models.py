@@ -8,7 +8,7 @@ class UserSocialLink(models.Model):
     """
     Represents a user's social platforms links.
     """
-    LINKEDIN = 'linkedin'git
+    LINKEDIN = 'linkedin'
 
     PLATFORM_CHOICES = (
         (LINKEDIN, ugettext_noop('LinkedIn')),
