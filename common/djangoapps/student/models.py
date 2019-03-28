@@ -550,8 +550,10 @@ class Registration(models.Model):
                         'student_id': referral.user.email,
                         'client_id': EDEOS_API_KEY,
                         "referral_type": "student_signup",
-                        "referral_id": self.user.email,  # referee
-                        "referral_hashkey": referral.hashkey
+                        "referee_id": self.user.email,
+                        "referral_hashkey": referral.hashkey,
+                        "event_type_verbose": "referral_signup",
+                        "event_code": 5
                     },
                     "api_endpoint": "referrals_store",
                     "key": EDEOS_API_KEY,
@@ -559,29 +561,6 @@ class Registration(models.Model):
                     "base_url": "http://195.160.222.156/api/point/v1/"
                 }
                 send_api_request(edeos_referral_store_data)
-                # Won't send, but leaving it here just in case
-                """
-                edeos_event_data = {
-                    'payload': {
-                        'student_id': referral.user.email,
-                        'client_id': EDEOS_API_KEY,
-                        'uid': '{}_{}'.format(self.user.email, referral.hashkey),
-                        'event_type': 5,
-                        'event_details': {
-                            'event_type_verbose': 'referral_signup',
-                            "referral_hashkey": referral.hashkey,
-                            "referral_type": "student_signup",
-                            "referee_id": self.user.email,
-                        }
-                    },
-                    "api_endpoint": "transactions_store",
-                    # TODO configure in settings (here and below)
-                    "key": EDEOS_API_KEY,  # settings.EDEOS_API_KEY,
-                    "secret": EDEOS_API_SECRET,  # settings.EDEOS_API_SECRET,
-                    "base_url": "http://195.160.222.156/api/point/v1/"
-                }
-                send_api_request(edeos_event_data)
-                """
 
     def _track_activation(self):
         """ Update the isActive flag in mailchimp for activated users."""
