@@ -5,17 +5,11 @@ e.g. wallets management.
 """
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 from django.http import HttpResponse
-from django.core.urlresolvers import reverse
-from edxmako.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
-import json
-import requests
-from django.contrib.sites.models import Site
 
-from edeos.utils import send_edeos_api_request
 from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
+from edeos.utils import send_edeos_api_request
 
 
 @login_required
