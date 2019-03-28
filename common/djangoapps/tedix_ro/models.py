@@ -9,6 +9,20 @@ from django.utils.translation import ugettext_lazy as _
 
 from student.models import AUDIT_LOG
 
+CLASSROOM_CHOICES = (
+    ('', ''),
+
+    ('7A', '7A'),
+    ('7B', '7B'),
+    ('7C', '7C'),
+    ('7D', '7D'),
+
+    ('8A', '8A'),
+    ('8B', '8B'),
+    ('8C', '8C'),
+    ('8D', '8D'),
+)
+
 phone_validator = RegexValidator(regex=r'^\d{10,15}$', message='Phone length should to be from 10 to 15')
 
 
@@ -33,13 +47,44 @@ class School(models.Model):
         return self.name
 
 
-class StudentParent(models.Model):
+class UserProfile(models.Model):
+    user = None  # Need to implement
+    city = models.ForeignKey(City)
+    school = models.ForeignKey(School)
+    phone = models.CharField(_('phone'), validators=[phone_validator], max_length=15)
+
+    class Meta:
+        abstract = True
+
+    def __unicode__(self):
+        return unicode(self.user)
+
+
+class InstructorProfile(UserProfile):
+    """
+    Related model for instructor profile
+    """
+    user = models.OneToOneField(User, related_name='instructor_profile', on_delete=models.CASCADE)
+
+
+class StudentProfile(UserProfile):
+    """
+    Related model for student profile
+    """
+    user = models.OneToOneField(User, related_name='student_profile', on_delete=models.CASCADE)
+    instructor = models.ForeignKey(InstructorProfile, related_name='students', null=True, on_delete=models.SET_NULL)
+    classroom = models.CharField(_('classroom'), choices=CLASSROOM_CHOICES, max_length=254)
+
+    def __unicode__(self):
+        return unicode(self.user)
+
+
+class ParentProfile(UserProfile):
     """
     Related model for student and his parents
     """
     user = models.OneToOneField(User, related_name='parent_profile', on_delete=models.CASCADE)
-    students = models.ManyToManyField(User, related_name='parents')
-    phone = models.CharField(_('phone'), validators=[phone_validator], max_length=15)
+    students = models.ManyToManyField(StudentProfile, related_name='parents')
 
     def __unicode__(self):
         return unicode(self.user)
@@ -57,5 +102,5 @@ def student_parent_logged_in(sender, request, user, **kwargs):  # pylint: disabl
         if student is not None and student.is_active:
             login(request, student, backend=settings.AUTHENTICATION_BACKENDS[0])
             AUDIT_LOG.info(u'Relogin as parent student - {0} ({1})'.format(student.username, student.email))
-    except StudentParent.DoesNotExist:
+    except ParentProfile.DoesNotExist:
         pass

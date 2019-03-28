@@ -14,7 +14,32 @@
 <%block name="js_extra">
     <%static:require_module module_name="js/student_account/logistration_factory" class_name="LogistrationFactory">
         var options = ${data | n, dump_js_escaped_json};
+
+        window.exFields = ['parent_email', 'parent_phone', 'classroom', 'instructor'];
+        var fields = options.registration_form_desc.fields;
+        fields.forEach(function(field) {
+            if (window.exFields.indexOf(field.name) > -1) {
+                field.required = false;
+                field.showInRequired = true;
+                console.log(field);
+            }
+        });
+
         LogistrationFactory(options);
+
+        $(document).on('change', '#register-role', function() {
+            var value = this.value;
+
+            var classroomField = $('.form-field.select-classroom');
+            var parentEmailField = $('.form-field.text-parent_email');
+            var parentPhoneField = $('.form-field.text-parent_phone');
+            var teacherField = $('.form-field.select-instructor');
+
+            var studentFields = [classroomField, parentEmailField, parentPhoneField, teacherField];
+            studentFields.forEach(function(field) {
+                field.toggle(value === 'student');
+            });
+        });
 
         // set default student role after form loading
         $('#register-role').val('student');
@@ -31,22 +56,6 @@
     % if configuration_helpers.get_value('DISPLAY_TOS_IN_MODAL_ON_REGISTRATION_PAGE', False):
     <script type="text/javascript" src="${static.url('js/student_account/tos_modal.js')}"></script>
     % endif
-
-    <script type="text/javascript">
-        $(document).on('change', '#register-role', function() {
-            var value = this.value;
-
-            var classroomField = $('.form-field.select-classroom');
-            var parentEmailField = $('.form-field.text-parent_email');
-            var parentPhoneField = $('.form-field.text-parent_phone');
-            var teacherField = $('.form-field.select-teacher');
-
-            var studentFields = [classroomField, parentEmailField, parentPhoneField, teacherField];
-            studentFields.forEach(function(field) {
-                field.toggle(value === 'student');
-            });
-        });
-    </script>
 </%block>
 
 <%block name="header_extras">

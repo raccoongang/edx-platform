@@ -4,9 +4,12 @@ from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from import_export.formats import base_formats
 
-from tedix_ro.models import City, School, StudentParent
+from tedix_ro.models import City, School, ParentProfile, StudentProfile, InstructorProfile
 
-admin.site.register(StudentParent)
+
+admin.site.register(InstructorProfile)
+admin.site.register(StudentProfile)
+admin.site.register(ParentProfile)
 
 
 class CityResource(resources.ModelResource):
