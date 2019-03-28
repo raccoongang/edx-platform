@@ -24,6 +24,7 @@
             window.exFields.forEach(function(field_name) {
                 var field = $('#register-' + field_name);
                 if (isStudent) {
+                    field.val('');
                     field.attr('required', true);
                     field.parent('.form-field').show();
                 } else {
