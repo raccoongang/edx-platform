@@ -619,3 +619,5 @@ plugin_settings.add_plugins(__name__, plugin_constants.ProjectType.CMS, plugin_c
 ########################## Derive Any Derived Settings  #######################
 
 derive_settings(__name__)
+
+EDX_API_KEY = AUTH_TOKENS.get('EDX_API_KEY')
