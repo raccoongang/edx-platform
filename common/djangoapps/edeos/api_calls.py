@@ -23,7 +23,8 @@ ALLOWED_EDEOS_API_ENDPOINTS_NAMES = [
     "wallet_balance",
     "transactions",
     "transactions_store",
-    "referrals_store"
+    "referrals_store",
+    "statistics"
 ]
 
 
@@ -243,3 +244,6 @@ class EdeosApiClient(EdeosBaseApiClient):
                 }
         """
         return self.call_api("referrals/store", payload)
+
+    def statistics(self, payload):
+        return self.call_api("statistics", payload)

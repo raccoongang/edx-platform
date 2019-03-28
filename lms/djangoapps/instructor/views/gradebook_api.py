@@ -2,6 +2,7 @@
 Grade book view for instructor and pagination work (for grade book)
 which is currently use by ccx and instructor apps.
 """
+import logging
 import math
 
 from django.contrib.auth.models import User
@@ -11,10 +12,15 @@ from django.views.decorators.cache import cache_control
 from opaque_keys.edx.keys import CourseKey
 
 from courseware.courses import get_course_with_access
+from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
+from edeos.utils import send_edeos_api_request
 from edxmako.shortcuts import render_to_response
 from lms.djangoapps.grades.new.course_grade_factory import CourseGradeFactory
 from lms.djangoapps.instructor.views.api import require_level
 from xmodule.modulestore.django import modulestore
+
+
+log = logging.getLogger(__name__)
 
 # Grade book: max students per page
 MAX_STUDENTS_PER_PAGE_GRADE_BOOK = 20
@@ -89,7 +95,8 @@ def get_grade_book_page(request, course, course_key):
                 'username': student.username,
                 'id': student.id,
                 'email': student.email,
-                'grade_summary': CourseGradeFactory().create(student, course).summary
+                'grade_summary': CourseGradeFactory().create(student, course).summary,
+                'tokens': get_student_statistics(student.email, course_key.to_deprecated_string())
             }
             for student in enrolled_students
         ]
@@ -119,3 +126,25 @@ def spoc_gradebook(request, course_id):
         'staff_access': True,
         'ordered_grades': sorted(course.grade_cutoffs.items(), key=lambda i: i[1], reverse=True),
     })
+
+
+def get_student_statistics(student_email, course_id):
+
+    edeos_post_data = {
+        "payload": {
+            "student_id": student_email,
+            "client_id": EDEOS_API_KEY,
+            "course_id": course_id,
+        },
+        "api_endpoint": "statistics",
+        "key": EDEOS_API_KEY,  # settings.EDEOS_API_KEY,  # TODO revert to settings
+        "secret": EDEOS_API_SECRET,  # settings.EDEOS_API_SECRET,  # TODO revert to settings
+        "base_url": "http://195.160.222.156/api/point/v1/"
+    }
+    response = send_edeos_api_request(**edeos_post_data)
+    tokens = 'n/a'
+    try:
+        tokens = response[student_email][0]["tokens"]
+    except (KeyError, TypeError) as err:
+        log.exception("Edeos student statistics call failed. {}".format(err.message))
+    return tokens
