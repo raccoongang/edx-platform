@@ -6,4 +6,3 @@
     <span class="u-field-message-notification" aria-live="polite"></span>
     <span class="u-field-message-help" id="u-field-message-help-<%- id %>"> <%- message %></span>
 </span>
-lms/templates/fields/field_text_account_social.underscore
