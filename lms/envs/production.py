@@ -1129,4 +1129,16 @@ derive_settings(__name__)
 # Variable for overriding standard MKTG_URLS
 EXTERNAL_MKTG_URLS = ENV_TOKENS.get('EXTERNAL_MKTG_URLS', {})
 
+if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration, CeleryIntegration
+    sentry_sdk.init(
+        AUTH_TOKENS.get('RG_SENTRY_DSN'),
+        integrations = [
+            DjangoIntegration(),
+            CeleryIntegration()
+        ],
+        environment = AUTH_TOKENS.get('RG_SENTRY_ENVIRONMENT', '')
+    )
+
 #RACCOONGANG
