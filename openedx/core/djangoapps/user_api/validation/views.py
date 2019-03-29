@@ -16,7 +16,7 @@ from openedx.core.djangoapps.user_api.accounts.api import (
     get_password_validation_error,
     get_username_validation_error,
     get_username_existence_validation_error,
-    get_phone_number_validation_error,
+    get_phone_validation_error,
     get_parent_email_validation_error,
     get_parent_phone_validation_error,
     get_instructor_validation_error,
@@ -164,9 +164,9 @@ class RegistrationValidationView(APIView):
         country = request.data.get('country')
         return get_country_validation_error(country)
     
-    def phone_number_handler(self, request):
-        phone_number = request.data.get('phone_number')
-        return get_phone_number_validation_error(phone_number)
+    def phone_handler(self, request):
+        phone = request.data.get('phone')
+        return get_phone_validation_error(phone)
     
     def parent_email_handler(self, request):
         parent_email = request.data.get('parent_email')
@@ -200,7 +200,7 @@ class RegistrationValidationView(APIView):
         "confirm_email": confirm_email_handler,
         "password": password_handler,
         "country": country_handler,
-        "phone_number": phone_number_handler,
+        "phone": phone_handler,
         "parent_email": parent_email_handler,
         "parent_phone": parent_phone_handler,
         "instructor": instructor_handler,

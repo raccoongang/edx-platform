@@ -772,7 +772,7 @@ def _validate_instructor(instructor):
 
 def _validate_parent_email(parent_email):
     """
-    Validate the instructor selection.
+    Validate the parent email field.
     """
     if parent_email == '':
         raise errors.AccountParentEmailInvalid(accounts.REQUIRED_FIELD_PARENT_EMAIL_MSG)
@@ -780,24 +780,24 @@ def _validate_parent_email(parent_email):
 
 def _validate_parent_phone(parent_phone):
     """
-    Validate the instructor selection.
+    Validate the parent phone field.
     """
     if parent_phone == '':
         raise errors.AccountParentPhoneInvalid(accounts.REQUIRED_FIELD_PARENT_PHONE_MSG)
 
 
 
-def _validate_phone_number(phone_number):
+def _validate_phone(phone):
     """
-    Validate the instructor selection.
+    Validate the phone field.
     """
-    if phone_number == '':
-        raise errors.AccountPhoneInvalid(accounts.REQUIRED_FIELD_PHONE_NUMBER_MSG)
+    if phone == '':
+        raise errors.AccountPhoneInvalid(accounts.REQUIRED_FIELD_PHONE_MSG)
 
 
 def _validate_classroom(classroom):
     """
-    Validate the instructor selection.
+    Validate the classroom selection.
     """
     if classroom == '':
         raise errors.AccountClassRoomInvalid(accounts.REQUIRED_FIELD_CLASSROOM_MSG)
@@ -805,7 +805,7 @@ def _validate_classroom(classroom):
 
 def _validate_school_city(school_city):
     """
-    Validate the instructor selection.
+    Validate the school city selection.
     """
     if school_city == '':
         raise errors.AccountSchoolCityInvalid(accounts.REQUIRED_FIELD_SCHOOL_CITY_MSG)
@@ -813,14 +813,14 @@ def _validate_school_city(school_city):
 
 def _validate_school(school):
     """
-    Validate the instructor selection.
+    Validate the school selection.
     """
     if school == '':
         raise errors.AccountSchoolInvalid(accounts.REQUIRED_FIELD_SCHOOL_MSG)
 
 
-def get_phone_number_validation_error(phone_number):
-    return _validate(_validate_phone_number, errors.AccountPhoneInvalid, phone_number)
+def get_phone_validation_error(phone):
+    return _validate(_validate_phone, errors.AccountPhoneInvalid, phone)
 
 
 def get_parent_email_validation_error(parent_email):
