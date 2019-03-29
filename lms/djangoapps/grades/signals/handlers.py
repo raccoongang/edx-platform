@@ -9,7 +9,9 @@ from django.dispatch import receiver
 from xblock.scorable import ScorableXBlockMixin, Score
 
 from courseware.model_data import get_score, set_score
+from edeos.tasks import send_api_request
 from eventtracking import tracker
+from openedx.core.djangoapps.signals.signals import COURSE_GRADE_CHANGED
 from openedx.core.lib.grade_utils import is_score_higher_or_equal
 from student.models import user_by_anonymous_id
 from submissions.models import score_reset, score_set
@@ -20,6 +22,7 @@ from track.event_transaction_utils import (
     set_event_transaction_type
 )
 from util.date_utils import to_timestamp
+from xmodule.modulestore.django import modulestore
 
 from ..constants import ScoreDatabaseTableEnum
 from ..new.course_grade_factory import CourseGradeFactory
@@ -243,6 +246,43 @@ def recalculate_course_grade(sender, course, course_structure, user, **kwargs): 
     Updates a saved course grade.
     """
     CourseGradeFactory().update(user, course=course, course_structure=course_structure)
+
+
+@receiver(COURSE_GRADE_CHANGED)
+def listen_for_grade_calculation_to_send_push(sender, user, course_grade, course_key, deadline, **kwargs):  # pylint: disable=unused-argument
+    """
+    Args:
+        sender: None
+        user(User): User Model object
+        course_grade(CourseGrade): CourseGrade object
+        course_key(CourseKey): The key for the course
+        deadline(datetime): Course end date or None
+
+    Kwargs:
+        kwargs : None
+    """
+    course = modulestore().get_course(course_key)
+    if course.edeos_enabled and course_grade.percent == 1.0:
+        payload = {
+            'student_id': user.email,
+            'course_id': course_key.to_deprecated_string(),
+            'org': course.org,
+            'client_id': course.edeos_key,
+            'event_type': 6,
+            'event_details': {
+                "event_type_verbose": "course_completion",
+                "grade": course_grade.percent,
+                "letter_grade": str(course_grade.letter_grade or '')
+            }
+        }
+        data = {
+            'payload': payload,
+            'secret': course.edeos_secret,
+            'key': course.edeos_key,
+            'base_url': course.edeos_base_url,
+            'api_endpoint': 'transactions_store'
+            }
+        send_api_request.apply_async(args=(data,))
 
 
 def _emit_event(kwargs):
