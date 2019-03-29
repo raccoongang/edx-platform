@@ -265,7 +265,6 @@ def compose_and_send_activation_email(user, profile, user_registration=None):
         user_registration = Registration.objects.get(user=user)
     context = generate_activation_email_context(user, user_registration)
     activation_email_template = 'emails/activation_email.txt'
-
     try:
         if not user.is_active and user.parentprofile:
             password = User.objects.make_random_password()

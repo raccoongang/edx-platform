@@ -344,7 +344,6 @@ def get_registration_extension_form(*args, **kwargs):
     if kwargs.get('data'):
         from tedix_ro.forms import get_tedix_registration_form
         form = get_tedix_registration_form(kwargs.get('data')['role'])
-        print('!!! form', form)
         if form:
             return form(*args, **kwargs)
 

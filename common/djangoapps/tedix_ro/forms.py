@@ -103,7 +103,6 @@ class StudentRegisterForm(RegisterForm):
                 defaults={'is_active': False}
             )
             if created:
-
                 # add this account creation to password history
                 # NOTE, this will be a NOP unless the feature has been turned on in configuration
                 password_history_entry = PasswordHistory()
