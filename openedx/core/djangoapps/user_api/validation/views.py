@@ -166,15 +166,18 @@ class RegistrationValidationView(APIView):
     
     def phone_handler(self, request):
         phone = request.data.get('phone')
-        return get_phone_validation_error(phone)
+        parent_phone = request.data.get('parent_phone')
+        return get_phone_validation_error(phone, parent_phone)
     
     def parent_email_handler(self, request):
         parent_email = request.data.get('parent_email')
-        return get_parent_email_validation_error(parent_email)
+        parent_email = request.data.get('email')
+        return get_parent_email_validation_error(parent_email, email)
     
     def parent_phone_handler(self, request):
         parent_phone = request.data.get('parent_phone')
-        return get_parent_phone_validation_error(parent_phone)
+        phone = request.data.get('phone')
+        return get_parent_phone_validation_error(parent_phone, phone)
     
     def instructor_handler(self, request):
         instructor = request.data.get('instructor')

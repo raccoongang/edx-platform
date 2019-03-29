@@ -79,14 +79,14 @@ class StudentRegisterForm(RegisterForm):
         """
         parent_email = self.cleaned_data['parent_email']
         user = User.objects.filter(email=parent_email).first()
-        if user and (getattr(user, 'studentprofile', None) or not getattr(user, 'parentprofile', None)) or not user.is_active:
-            raise forms.ValidationError('Email you entered belongs to an existing profile.')
+        if user and (getattr(user, 'studentprofile', None) or not getattr(user, 'parentprofile', None)) or user and not user.is_active:
+            raise forms.ValidationError('Parent email you entered belongs to an existing profile.')
         return parent_email
     
     def clean_parent_phone(self):
-        parent_email = self.cleaned_data['parent_email']
+        parent_email = self.cleaned_data.get('parent_email', '')
         parent_phone = self.cleaned_data['parent_phone']
-        user = User.objects.filter(email=parent_email).first()
+        user = User.objects.filter(email=parent_email).first() if parent_email else None
         if user and getattr(user, 'parentprofile', None) and parent_phone != user.parentprofile.phone:
             raise forms.ValidationError('Parent phone number you entered is wrong.')
         student_phone = self.cleaned_data['phone']

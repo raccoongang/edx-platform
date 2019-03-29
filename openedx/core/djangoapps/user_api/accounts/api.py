@@ -770,29 +770,35 @@ def _validate_instructor(instructor):
         raise errors.AccountInstructorInvalid(accounts.REQUIRED_FIELD_INSTRUCTOR_MSG)
 
 
-def _validate_parent_email(parent_email):
+def _validate_parent_email(parent_email, email):
     """
     Validate the parent email field.
     """
     if parent_email == '':
         raise errors.AccountParentEmailInvalid(accounts.REQUIRED_FIELD_PARENT_EMAIL_MSG)
+    if parent_email == email:
+        raise errors.AccountParentEmailInvalid(accounts.REQUIRED_FIELD_PARENT_EMAIL_EQUALS_USER_EMAIL_MSG)
 
 
-def _validate_parent_phone(parent_phone):
+def _validate_parent_phone(parent_phone, phone):
     """
     Validate the parent phone field.
     """
     if parent_phone == '':
         raise errors.AccountParentPhoneInvalid(accounts.REQUIRED_FIELD_PARENT_PHONE_MSG)
+    if phone == parent_phone:
+        raise errors.AccountPhoneInvalid(accounts.REQUIRED_FIELD_PHONE_EQUALS_PARENT_PHONE_MSG)
 
 
 
-def _validate_phone(phone):
+def _validate_phone(phone, parent_phone):
     """
     Validate the phone field.
     """
     if phone == '':
         raise errors.AccountPhoneInvalid(accounts.REQUIRED_FIELD_PHONE_MSG)
+    if phone == parent_phone:
+        raise errors.AccountPhoneInvalid(accounts.REQUIRED_FIELD_PHONE_EQUALS_PARENT_PHONE_MSG)
 
 
 def _validate_classroom(classroom):
@@ -819,16 +825,16 @@ def _validate_school(school):
         raise errors.AccountSchoolInvalid(accounts.REQUIRED_FIELD_SCHOOL_MSG)
 
 
-def get_phone_validation_error(phone):
-    return _validate(_validate_phone, errors.AccountPhoneInvalid, phone)
+def get_phone_validation_error(phone, parent_phone):
+    return _validate(_validate_phone, errors.AccountPhoneInvalid, phone, parent_phone)
 
 
-def get_parent_email_validation_error(parent_email):
-    return _validate(_validate_parent_email, errors.AccountParentEmailInvalid, parent_email)
+def get_parent_email_validation_error(parent_email, email):
+    return _validate(_validate_parent_email, errors.AccountParentEmailInvalid, parent_email, email)
 
 
-def get_parent_phone_validation_error(parent_phone):
-    return _validate(_validate_parent_phone, errors.AccountParentPhoneInvalid, parent_phone)
+def get_parent_phone_validation_error(parent_phone, phone):
+    return _validate(_validate_parent_phone, errors.AccountParentPhoneInvalid, parent_phone, phone)
 
 
 def get_instructor_validation_error(instructor):
