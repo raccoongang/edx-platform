@@ -11,6 +11,27 @@ from django.core.urlresolvers import reverse
         <input type="submit" id="submit" value="Add">
     </form>
     <script type="text/javascript">
+         /**
+         * Display message with results of a performed action (e.g. a transcript manual or automatic upload).
+         * @param {jQuery Elements} $el     Container elements where message should be displayed.
+         * @param {String}          type    Message type: 'success' or 'error'.
+         * @param {String}          message Status message for user to be displayed.
+         */
+        function showStatus($el, type, message) {
+            'use strict';
+            // TODO: Convert into class and ensure previously set timeouts are cleared
+            //       before setting new timeout
+
+            var msgShowTime = 5000; // 5 seconds
+
+            $el.removeClass('status-error status-success is-hidden').addClass('status-' + type)
+               .text(message);
+
+            setTimeout(function() {
+                $el.addClass('is-hidden');
+            }, msgShowTime);
+        }
+
         $(document).ready(function() {
             $("#edeos_form").submit(function(e) {
                 e.preventDefault();
@@ -27,7 +48,14 @@ from django.core.urlresolvers import reverse
                         Object.keys(data).forEach((key) => {
                             stringData += key + " " + data[key];
                         });
-                        $('#edeos_response').text(stringData);
+                        console.log("New wallet has been created. " + stringData);
+                        showStatus($('#edeos_response'), "success", "New wallet has been created.")
+                    },
+                    error: function() {
+                        showStatus($('#edeos_response'), "error", "Couldn't create a new wallet.")
+                    },
+                    complete: function(data) {
+                        showStatus($('#edeos_response'), "success", "New wallet has been created.")
                     }
                 });
             });
