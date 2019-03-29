@@ -6,6 +6,9 @@ from django.contrib.admin.sites import NotRegistered
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import ugettext_lazy as _
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
+from import_export.formats import base_formats
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 
