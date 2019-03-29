@@ -31,18 +31,18 @@ class RegisterForm(ModelForm):
     """
     role = forms.ChoiceField(label='Role', choices=ROLE_CHOICES)
     phone = forms.CharField(label='Phone Number', error_messages={
-        'required': 'Please enter a Phone Number'
+        'required': 'Please enter your phone number.'
     })
     school_city = forms.ModelChoiceField(
         label='City', queryset=City.objects.all(),
         error_messages={
-            'required': 'Please select a City'
+            'required': 'Please select your city.'
         }
     )
     school = forms.ModelChoiceField(
         label='School', queryset=School.objects.all(),
         error_messages={
-            'required': 'Please select a School'
+            'required': 'Please select your school.'
         }
     )
 
@@ -54,22 +54,22 @@ class StudentRegisterForm(RegisterForm):
     classroom = forms.ChoiceField(
         label='Classroom', choices=CLASSROOM_CHOICES,
         error_messages={
-            'required': 'Please select a Classroom'
+            'required': 'Please select your classroom.'
         }
     )
     parent_phone = forms.CharField(label='Parent Phone Number', error_messages={
-        'required': 'Please enter a Parent Phone Number',
+        'required': 'Please enter your parent phone number.',
         'min_length': 9,
         'max_length': 15,
     })
     parent_email = forms.EmailField(label='Parent Email', error_messages={
-        'required': 'Please enter a Parent Email'
+        'required': 'Please enter your parent email.'
     })
     instructor = forms.ModelChoiceField(
         label='Teacher',
         queryset=InstructorProfile.objects.filter(user__is_staff=True, user__is_active=True),
         error_messages={
-            'required': 'Please select a Teacher'
+            'required': 'Please select your teacher.'
         }
     )
 
@@ -79,41 +79,51 @@ class StudentRegisterForm(RegisterForm):
         """
         parent_email = self.cleaned_data['parent_email']
         user = User.objects.filter(email=parent_email).first()
-        if user and getattr(user, 'studentprofile', None):
-            raise forms.ValidationError('Parent email you entered belongs to an existing Student profile')
-        if user and not getattr(user, 'parentprofile', None):
-            raise forms.ValidationError('Parent email you entered - user with such email is not registered as parent')
+        if user and (getattr(user, 'studentprofile', None) or not getattr(user, 'parentprofile', None)) or not user.is_active:
+            raise forms.ValidationError('Email you entered belongs to an existing profile.')
         return parent_email
+    
+    def clean_parent_phone(self):
+        parent_email = self.cleaned_data['parent_email']
+        parent_phone = self.cleaned_data['parent_phone']
+        user = User.objects.filter(email=parent_email).first()
+        if user and getattr(user, 'parentprofile', None) and parent_phone != user.parentprofile.phone:
+            raise forms.ValidationError('Parent phone number you entered is wrong.')
+        student_phone = self.cleaned_data['phone']
+        if parent_phone == student_phone:
+            raise forms.ValidationError('Your phone number and parent one can not be the same.')
+        return parent_phone
 
     def save(self, commit=True):
         if self.cleaned_data['role'] == 'student':
             # Make user for parent
-            parent_user = User(
+            parent_user, created = User.objects.get_or_create(
                 username=self.cleaned_data['parent_email'].split('@')[0],
                 email=self.cleaned_data['parent_email'],
-                is_active=False
+                defaults={'is_active': False}
             )
-            parent_user.save()
+            if created:
 
-            # add this account creation to password history
-            # NOTE, this will be a NOP unless the feature has been turned on in configuration
-            password_history_entry = PasswordHistory()
-            password_history_entry.create(parent_user)
+                # add this account creation to password history
+                # NOTE, this will be a NOP unless the feature has been turned on in configuration
+                password_history_entry = PasswordHistory()
+                password_history_entry.create(parent_user)
 
-            # Make UserProfile
-            profile = UserProfile(user=parent_user)
-            profile.save()
+                # Make UserProfile
+                profile = UserProfile(user=parent_user)
+                profile.save()
 
-            # Create registry for parent
-            registration = Registration()
-            registration.register(parent_user)
+                # Create registry for parent
+                registration = Registration()
+                registration.register(parent_user)
+            else:
+                profile = parent_user.profile
+                registration = None
 
             instance = super(StudentRegisterForm, self).save(commit)
             instance.parent_user = parent_user
             instance.profile = profile
             instance.registration = registration
-            instance.school_city = self.cleaned_data['school_city']
-            instance.school = self.cleaned_data['school']
             instance.parent_phone = self.cleaned_data['parent_phone']
             return instance
 

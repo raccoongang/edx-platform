@@ -50,8 +50,6 @@ class School(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='%(class)s', on_delete=models.CASCADE)
-    school_city = models.ForeignKey(City)
-    school = models.ForeignKey(School)
     phone = models.CharField(_('phone'), validators=[phone_validator], max_length=15)
 
     class Meta:
@@ -73,6 +71,8 @@ class StudentProfile(UserProfile):
     """
     instructor = models.ForeignKey(InstructorProfile, related_name='students', null=True, on_delete=models.SET_NULL)
     classroom = models.CharField(_('classroom'), choices=CLASSROOM_CHOICES, max_length=254)
+    school_city = models.ForeignKey(City)
+    school = models.ForeignKey(School)
 
     def __unicode__(self):
         return unicode(self.user)
@@ -83,17 +83,14 @@ class StudentProfile(UserProfile):
         # If this attribute is here, other needed fields are passed as well
         # These attrs are passed from tedix_ro.forms.StudentRegisterForm manually
         if getattr(self, 'parent_user', None):
-            parent_profile = ParentProfile(
+            parent_profile, created = ParentProfile.objects.get_or_create(
                 user=self.parent_user,
-                school_city=self.school_city,
-                school=self.school,
                 phone=self.parent_phone
             )
-            parent_profile.save()
             parent_profile.students.add(self)
-
-            # Send activation email to the parent as well
-            compose_and_send_activation_email(self.parent_user, self.profile, self.registration)
+            if created:
+                # Send activation email to the parent as well
+                compose_and_send_activation_email(self.parent_user, self.profile, self.registration)
 
 
 class ParentProfile(UserProfile):
