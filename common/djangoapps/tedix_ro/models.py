@@ -8,6 +8,7 @@ from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
 from student.models import AUDIT_LOG
+from student.views.management import compose_and_send_activation_email
 
 CLASSROOM_CHOICES = (
     ('', ''),
@@ -64,7 +65,6 @@ class InstructorProfile(UserProfile):
     """
     Related model for instructor profile
     """
-    pass
 
 
 class StudentProfile(UserProfile):
@@ -87,11 +87,13 @@ class StudentProfile(UserProfile):
                 user=self.parent_user,
                 school_city=self.school_city,
                 school=self.school,
-                phone=self.parent_phone,
-                password=self.password
+                phone=self.parent_phone
             )
             parent_profile.save()
             parent_profile.students.add(self)
+
+            # Send activation email to the parent as well
+            compose_and_send_activation_email(self.parent_user, self.profile, self.registration)
 
 
 class ParentProfile(UserProfile):
@@ -99,7 +101,6 @@ class ParentProfile(UserProfile):
     Related model for parent profile
     """
     students = models.ManyToManyField(StudentProfile, related_name='parents')
-    password = models.CharField(max_length=10) # it only nedeed for the first registration to send it with an activation email
 
     def __unicode__(self):
         return unicode(self.user)
@@ -111,7 +112,7 @@ def student_parent_logged_in(sender, request, user, **kwargs):  # pylint: disabl
     Relogin as student when parent logins successfully
     """
     try:
-        parent_profile = getattr(user, 'parentprofile', None)
+        parent_profile = user.parentprofile
         AUDIT_LOG.info(u'Parent Login success - {0} ({1})'.format(user.username, user.email))
         student = parent_profile.students.first() if parent_profile else None
         if student is not None and student.user.is_active:

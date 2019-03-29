@@ -7,7 +7,6 @@ from student.models import (
     Registration,
     UserProfile
 )
-from student.views.management import compose_and_send_activation_email
 
 from tedix_ro.models import City, School, StudentProfile, CLASSROOM_CHOICES, InstructorProfile, ParentProfile
 
@@ -94,8 +93,6 @@ class StudentRegisterForm(RegisterForm):
                 email=self.cleaned_data['parent_email'],
                 is_active=False
             )
-            password = User.objects.make_random_password()
-            parent_user.set_password(password)
             parent_user.save()
 
             # add this account creation to password history
@@ -111,15 +108,13 @@ class StudentRegisterForm(RegisterForm):
             registration = Registration()
             registration.register(parent_user)
 
-            # Send activation email to the parent as well
-            compose_and_send_activation_email(parent_user, profile, registration)
-
             instance = super(StudentRegisterForm, self).save(commit)
             instance.parent_user = parent_user
+            instance.profile = profile
+            instance.registration = registration
             instance.school_city = self.cleaned_data['school_city']
             instance.school = self.cleaned_data['school']
             instance.parent_phone = self.cleaned_data['parent_phone']
-            instance.password = password
             return instance
 
         return super(StudentRegisterForm, self).save(commit)

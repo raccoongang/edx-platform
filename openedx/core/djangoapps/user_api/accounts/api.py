@@ -760,3 +760,88 @@ def _validate_unicode(data, err=u"Input not valid unicode"):
         unicode(data)
     except UnicodeError:
         raise UnicodeError(err)
+
+
+def _validate_instructor(instructor):
+    """
+    Validate the instructor selection.
+    """
+    if instructor == '' or instructor == '--':
+        raise errors.AccountInstructorInvalid(accounts.REQUIRED_FIELD_INSTRUCTOR_MSG)
+
+
+def _validate_parent_email(parent_email):
+    """
+    Validate the instructor selection.
+    """
+    if parent_email == '':
+        raise errors.AccountParentEmailInvalid(accounts.REQUIRED_FIELD_PARENT_EMAIL_MSG)
+
+
+def _validate_parent_phone(parent_phone):
+    """
+    Validate the instructor selection.
+    """
+    if parent_phone == '':
+        raise errors.AccountParentPhoneInvalid(accounts.REQUIRED_FIELD_PARENT_PHONE_MSG)
+
+
+
+def _validate_phone_number(phone_number):
+    """
+    Validate the instructor selection.
+    """
+    if phone_number == '':
+        raise errors.AccountPhoneInvalid(accounts.REQUIRED_FIELD_PHONE_NUMBER_MSG)
+
+
+def _validate_classroom(classroom):
+    """
+    Validate the instructor selection.
+    """
+    if classroom == '':
+        raise errors.AccountClassRoomInvalid(accounts.REQUIRED_FIELD_CLASSROOM_MSG)
+
+
+def _validate_school_city(school_city):
+    """
+    Validate the instructor selection.
+    """
+    if school_city == '':
+        raise errors.AccountSchoolCityInvalid(accounts.REQUIRED_FIELD_SCHOOL_CITY_MSG)
+
+
+def _validate_school(school):
+    """
+    Validate the instructor selection.
+    """
+    if school == '':
+        raise errors.AccountSchoolInvalid(accounts.REQUIRED_FIELD_SCHOOL_MSG)
+
+
+def get_phone_number_validation_error(phone_number):
+    return _validate(_validate_phone_number, errors.AccountPhoneInvalid, phone_number)
+
+
+def get_parent_email_validation_error(parent_email):
+    return _validate(_validate_parent_email, errors.AccountParentEmailInvalid, parent_email)
+
+
+def get_parent_phone_validation_error(parent_phone):
+    return _validate(_validate_parent_phone, errors.AccountParentPhoneInvalid, parent_phone)
+
+
+def get_instructor_validation_error(instructor):
+    return _validate(_validate_instructor, errors.AccountInstructorInvalid, instructor)
+
+
+def get_school_city_validation_error(school_city):
+    return _validate(_validate_school_city, errors.AccountSchoolCityInvalid, school_city)
+
+
+def get_school_validation_error(school):
+    return _validate(_validate_school, errors.AccountSchoolInvalid, school)
+
+
+def get_classroom_validation_error(classroom):
+    return _validate(_validate_classroom, errors.AccountClassRoomInvalid, classroom)
