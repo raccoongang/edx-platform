@@ -13,6 +13,7 @@ import analytics
 import dogstats_wrapper as dog_stats_api
 from bulk_email.models import Optout
 from courseware.courses import get_courses, sort_by_announcement, sort_by_start_date
+from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as django_login
@@ -99,7 +100,7 @@ from student.models import (
     email_exists_or_retired,
 )
 from student.signals import REFUND_ORDER
-from student.tasks import send_activation_email
+from student.tasks import send_activation_email, send_payment_link_to_parent
 from student.text_me_the_app import TextMeTheAppFragmentView
 from third_party_auth import pipeline, provider
 from third_party_auth.saml import SAP_SUCCESSFACTORS_SAML_KEY
@@ -1034,6 +1035,20 @@ def activate_account(request, key):
             )
         else:
             registration.activate()
+            user = request.user
+            StudentProfile = apps.get_model('tedix_ro', 'StudentProfile')
+            ParentProfile = apps.get_model('tedix_ro', 'ParentProfile')
+            
+            try:
+                parent_user = user.parentprofile.user
+            except ParentProfile.DoesNotExist:
+                parent_user = user.studentprofile.parents.first().user
+            except StudentProfile.DoesNotExist:
+                parent_user = None
+
+            if parent_user:
+                send_payment_link_to_parent(parent_user.id)
+
             # Success message for logged in users.
             message = _('{html_start}Success{html_end} You have activated your account.')
 
