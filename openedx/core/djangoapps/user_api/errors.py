@@ -125,3 +125,38 @@ class PreferenceUpdateError(PreferenceRequestError):
 class CountryCodeError(ValueError):
     """There was a problem with the country code"""
     pass
+
+
+class AccountInstructorInvalid(AccountRequestError):
+    """The requested instructor does not exist. """
+    pass
+
+
+class AccountParentEmailInvalid(AccountRequestError):
+    """The requested parent email does not exist. """
+    pass
+
+
+class AccountParentPhoneInvalid(AccountRequestError):
+    """The requested parent phone does not exist. """
+    pass
+
+
+class AccountPhoneInvalid(AccountRequestError):
+    """The requested phone does not exist. """
+    pass
+
+
+class AccountClassRoomInvalid(AccountRequestError):
+    """The requested classroom does not exist. """
+    pass
+
+
+class AccountSchoolCityInvalid(AccountRequestError):
+    """The requested school_city does not exist. """
+    pass
+
+
+class AccountSchoolInvalid(AccountRequestError):
+    """The requested school does not exist. """
+    pass

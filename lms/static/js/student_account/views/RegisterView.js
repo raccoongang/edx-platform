@@ -35,7 +35,14 @@
                     'confirm_email',
                     'country',
                     'honor_code',
-                    'terms_of_service'
+                    'terms_of_service',
+                    'parent_email',
+                    'phone',
+                    'parent_phone',
+                    'school_city',
+                    'school',
+                    'classroom',
+                    'instructor'
                 ],
                 formType: 'register',
                 formStatusTpl: formStatusTpl,
@@ -110,7 +117,7 @@
                             field.errorMessages = this.escapeStrings(field.errorMessages);
                         }
 
-                        if (field.required) {
+                        if (field.required || field.showInRequired) {
                             requiredFields.push(field);
                         } else {
                             if (field.type !== 'hidden') {

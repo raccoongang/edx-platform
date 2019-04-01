@@ -14,7 +14,26 @@
 <%block name="js_extra">
     <%static:require_module module_name="js/student_account/logistration_factory" class_name="LogistrationFactory">
         var options = ${data | n, dump_js_escaped_json};
+
         LogistrationFactory(options);
+
+        window.exFields = ['parent_email', 'parent_phone', 'classroom', 'instructor'];
+        // when role changes show/hide required fields
+        $(document).on('change', '#register-role', function() {
+            var isStudent = this.value === 'student';
+            window.exFields.forEach(function(field_name) {
+                var field = $('#register-' + field_name);
+                if (isStudent) {
+                    field.val('');
+                    field.attr('required', true);
+                    field.parent('.form-field').show();
+                } else {
+                    field.removeAttr('required');
+                    field.parent('.form-field').hide();
+                }
+            });
+        });
+
         if ('newrelic' in window) {
             newrelic.finished();
             // Because of a New Relic bug, the finished() event doesn't show up

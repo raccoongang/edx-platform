@@ -121,7 +121,7 @@ class InvalidFieldError(Exception):
 class FormDescription(object):
     """Generate a JSON representation of a form. """
 
-    ALLOWED_TYPES = ["text", "email", "select", "textarea", "checkbox", "plaintext", "password", "hidden"]
+    ALLOWED_TYPES = ["text", "email", "select", "textarea", "checkbox", "plaintext", "password", "hidden", "number"]
 
     ALLOWED_RESTRICTIONS = {
         "text": ["min_length", "max_length"],
@@ -134,6 +134,7 @@ class FormDescription(object):
         forms.CharField: "text",
         forms.PasswordInput: "password",
         forms.ChoiceField: "select",
+        forms.ModelChoiceField: "select",
         forms.TypedChoiceField: "select",
         forms.Textarea: "textarea",
         forms.BooleanField: "checkbox",
@@ -235,7 +236,7 @@ class FormDescription(object):
             "supplementalText": supplementalText
         }
 
-        field_override = self._field_overrides.get(name, {})
+        field_override = self._field_overrides.get(name, field_dict)
 
         if field_type == "select":
             if options is not None:
@@ -358,7 +359,6 @@ class FormDescription(object):
         # is a reserved word in JavaScript
         if "default" in kwargs:
             kwargs["defaultValue"] = kwargs["default"]
-
         self._field_overrides[field_name].update({
             property_name: property_value
             for property_name, property_value in kwargs.iteritems()

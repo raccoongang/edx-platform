@@ -15,7 +15,14 @@ from openedx.core.djangoapps.user_api.accounts.api import (
     get_name_validation_error,
     get_password_validation_error,
     get_username_validation_error,
-    get_username_existence_validation_error
+    get_username_existence_validation_error,
+    get_phone_validation_error,
+    get_parent_email_validation_error,
+    get_parent_phone_validation_error,
+    get_instructor_validation_error,
+    get_school_city_validation_error,
+    get_school_validation_error,
+    get_classroom_validation_error
 )
 from ipware.ip import get_ip
 
@@ -156,6 +163,38 @@ class RegistrationValidationView(APIView):
     def country_handler(self, request):
         country = request.data.get('country')
         return get_country_validation_error(country)
+    
+    def phone_handler(self, request):
+        phone = request.data.get('phone')
+        parent_phone = request.data.get('parent_phone')
+        return get_phone_validation_error(phone, parent_phone)
+    
+    def parent_email_handler(self, request):
+        parent_email = request.data.get('parent_email')
+        parent_email = request.data.get('email')
+        return get_parent_email_validation_error(parent_email, email)
+    
+    def parent_phone_handler(self, request):
+        parent_phone = request.data.get('parent_phone')
+        phone = request.data.get('phone')
+        return get_parent_phone_validation_error(parent_phone, phone)
+    
+    def instructor_handler(self, request):
+        instructor = request.data.get('instructor')
+        return get_instructor_validation_error(instructor)
+
+    def school_city_handler(self, request):
+        school_city = request.data.get('school_city')
+        return get_school_city_validation_error(school_city)
+
+    def school_handler(self, request):
+        school = request.data.get('school')
+        return get_school_validation_error(school)
+
+    def classroom_handler(self, request):
+        classroom = request.data.get('classroom')
+        return get_classroom_validation_error(classroom)
+        
 
     validation_handlers = {
         "name": name_handler,
@@ -163,7 +202,14 @@ class RegistrationValidationView(APIView):
         "email": email_handler,
         "confirm_email": confirm_email_handler,
         "password": password_handler,
-        "country": country_handler
+        "country": country_handler,
+        "phone": phone_handler,
+        "parent_email": parent_email_handler,
+        "parent_phone": parent_phone_handler,
+        "instructor": instructor_handler,
+        "school_city": school_city_handler,
+        "school": school_handler,
+        "classroom": classroom_handler,
     }
 
     def post(self, request):

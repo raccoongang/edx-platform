@@ -77,26 +77,6 @@ SessionStore = import_module(settings.SESSION_ENGINE).SessionStore  # pylint: di
 
 # enroll status changed events - signaled to email_marketing.  See email_marketing.tasks for more info
 
-class City(models.Model):
-    name = models.CharField(max_length=100)
-
-    class Meta:
-        verbose_name_plural = 'Cities'
-
-    def __unicode__(self):
-        return self.name
-
-
-class School(models.Model):
-    name = models.CharField(max_length=254, unique=True)
-
-    class Meta:
-        ordering = ['name']
-
-    def __unicode__(self):
-        return self.name
-
-
 # ENROLL signal used for free enrollment only
 class EnrollStatusChange(object):
     """

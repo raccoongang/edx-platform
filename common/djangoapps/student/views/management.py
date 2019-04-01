@@ -20,6 +20,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.auth.views import password_reset_confirm
 from django.core import mail
+from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.core.validators import ValidationError, validate_email
 from django.db import transaction
@@ -258,14 +259,29 @@ def compose_and_send_activation_email(user, profile, user_registration=None):
         profile: profile object of the current logged-in user
         user_registration: registration of the current logged-in user
     """
+
     dest_addr = user.email
     if user_registration is None:
         user_registration = Registration.objects.get(user=user)
     context = generate_activation_email_context(user, user_registration)
+    activation_email_template = 'emails/activation_email.txt'
+    try:
+        if not user.is_active and user.parentprofile:
+            password = User.objects.make_random_password()
+            user.set_password(password)
+            user.save()
+
+            context.update({
+                'password': password
+            })
+            activation_email_template = 'emails/parent_activation_email.txt'
+    except ObjectDoesNotExist:  # catching tedix_ro.models.ParentProfile.DoesNotExist exception
+        password = None
+
     subject = render_to_string('emails/activation_email_subject.txt', context)
     # Email subject *must not* contain newlines
     subject = ''.join(subject.splitlines())
-    message_for_activation = render_to_string('emails/activation_email.txt', context)
+    message_for_activation = render_to_string(activation_email_template, context)
     from_address = configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
     from_address = configuration_helpers.get_value('ACTIVATION_EMAIL_FROM_ADDRESS', from_address)
     if settings.FEATURES.get('REROUTE_ACTIVATION_EMAIL'):
@@ -735,7 +751,6 @@ def create_account_with_params(request, params):
     skip_email = skip_activation_email(
         user, do_external_auth, running_pipeline, third_party_provider,
     )
-
     if skip_email:
         registration.activate()
     else:
