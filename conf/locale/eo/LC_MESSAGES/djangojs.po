@@ -26,8 +26,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2017-04-05 06:22-0400\n"
-"PO-Revision-Date: 2017-04-05 10:22:49.876530\n"
+"POT-Creation-Date: 2017-10-09 10:40+0000\n"
+"PO-Revision-Date: 2017-10-09 10:41:10.333201\n"
 "Last-Translator: \n"
 "Language-Team: openedx-translation <openedx-translation@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -8446,8 +8446,13 @@ msgstr ""
 "ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя #"
 
 #: lms/templates/student_account/login.underscore
-msgid "or sign in with"
-msgstr "ör sïgn ïn wïth Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт α#"
+msgid "Get signed in with Young Thinkers"
+msgstr ""
+"Gét sïgnéd ïn wïth Ýöüng Thïnkérs Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тє#"
+
+#: lms/templates/student_account/login.underscore
+msgid "Sign in now"
+msgstr "Sïgn ïn nöw Ⱡ'σяєм ιρѕυм ∂σłσя #"
 
 #: lms/templates/student_account/login.underscore
 #, python-format
