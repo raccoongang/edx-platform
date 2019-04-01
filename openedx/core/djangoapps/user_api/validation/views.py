@@ -171,7 +171,7 @@ class RegistrationValidationView(APIView):
     
     def parent_email_handler(self, request):
         parent_email = request.data.get('parent_email')
-        parent_email = request.data.get('email')
+        email = request.data.get('email')
         return get_parent_email_validation_error(parent_email, email)
     
     def parent_phone_handler(self, request):
