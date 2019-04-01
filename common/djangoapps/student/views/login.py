@@ -12,6 +12,7 @@ from urlparse import parse_qs, urlsplit, urlunsplit
 
 import analytics
 import edx_oauth2_provider
+from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, load_backend, login as django_login, logout
@@ -220,7 +221,6 @@ def _generate_not_activated_message(user):
         'PLATFORM_NAME',
         settings.PLATFORM_NAME
     )
-
     not_activated_msg_template = _('In order to sign in, you need to activate your account.<br /><br />'
                                    'We just sent an activation link to <strong>{email}</strong>.  If '
                                    'you do not receive an email, check your spam folders or '
@@ -235,7 +235,7 @@ def _generate_not_activated_message(user):
     return not_activated_message
 
 
-def _log_and_raise_inactive_user_auth_error(unauthenticated_user):
+def _log_and_raise_inactive_user_auth_error(unauthenticated_user, parent=False):
     """
     Depending on Django version we can get here a couple of ways, but this takes care of logging an auth attempt
     by an inactive user, re-sending the activation email, and raising an error with the correct message.
@@ -249,9 +249,9 @@ def _log_and_raise_inactive_user_auth_error(unauthenticated_user):
         AUDIT_LOG.warning(u"Login failed - Account not active for user {0}, resending activation".format(
             unauthenticated_user.username)
         )
-
-    send_reactivation_email_for_user(unauthenticated_user)
-    raise AuthFailedError(_generate_not_activated_message(unauthenticated_user))
+    if not parent:
+        send_reactivation_email_for_user(unauthenticated_user)
+    raise AuthFailedError(_generate_not_activated_message(unauthenticated_user, parent=parent))
 
 
 def _authenticate_first_party(request, unauthenticated_user):
@@ -274,7 +274,7 @@ def _authenticate_first_party(request, unauthenticated_user):
         raise AuthFailedError(_('Too many failed login attempts. Try again later.'))
 
 
-def _handle_failed_authentication(user):
+def _handle_failed_authentication(user, parent=False):
     """
     Handles updating the failed login count, inactive user notifications, and logging failed authentications.
     """
@@ -283,7 +283,7 @@ def _handle_failed_authentication(user):
             LoginFailures.increment_lockout_counter(user)
 
         if not user.is_active:
-            _log_and_raise_inactive_user_auth_error(user)
+            _log_and_raise_inactive_user_auth_error(user, parent=parent)
 
         # if we didn't find this username earlier, the account for this email
         # doesn't exist, and doesn't have a corresponding password
@@ -464,6 +464,24 @@ def login_user(request):
             if possibly_authenticated_user and password_policy_compliance.should_enforce_compliance_on_login():
                 # Important: This call must be made AFTER the user was successfully authenticated.
                 _enforce_password_policy_compliance(request, possibly_authenticated_user)
+
+        # Check whether both users (student and parent) are active
+        if possibly_authenticated_user and possibly_authenticated_user.is_active:
+            StudentProfile = apps.get_model('tedix_ro', 'StudentProfile')
+            ParentProfile = apps.get_model('tedix_ro', 'ParentProfile')
+            try:
+                # parent is logging in
+                student = possibly_authenticated_user.parentprofile.students.filter(user__is_active=False).first()
+                if student:
+                    _handle_failed_authentication(email_user, parent=True)
+            except ParentProfile.DoesNotExist:
+                # student is logging in
+                try:
+                    parent = possibly_authenticated_user.studentprofile.parents.filter(user__is_active=False).first()
+                    if parent:
+                        _handle_failed_authentication(email_user)
+                except StudentProfile.DoesNotExist:
+                    pass
 
         if possibly_authenticated_user is None or not possibly_authenticated_user.is_active:
             _handle_failed_authentication(email_user)
