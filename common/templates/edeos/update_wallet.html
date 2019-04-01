@@ -10,6 +10,15 @@ from django.core.urlresolvers import reverse
         <input type="text" name="wallet_name" id="wallet_name">
         <input type="submit" id="submit" value="Add">
     </form>
+    <style>
+        .status-error {
+            color: red;
+        }
+
+        .status-success {
+            color: green;
+        }
+    </style>
     <script type="text/javascript">
          /**
          * Display message with results of a performed action (e.g. a transcript manual or automatic upload).
@@ -18,11 +27,10 @@ from django.core.urlresolvers import reverse
          * @param {String}          message Status message for user to be displayed.
          */
         function showStatus($el, type, message) {
+            // TODO move to js
             'use strict';
-            // TODO: Convert into class and ensure previously set timeouts are cleared
-            //       before setting new timeout
 
-            var msgShowTime = 5000; // 5 seconds
+            var msgShowTime = 10000; // 10 seconds
 
             $el.removeClass('status-error status-success is-hidden').addClass('status-' + type)
                .text(message);
