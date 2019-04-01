@@ -8,6 +8,14 @@ from django.core.urlresolvers import reverse
 from openedx.core.djangolib.markup import HTML, Text
 %>
 
+<%block name="title">
+    <title>Открытый университет Егора Гайдара | Gaidar Open University</title>
+</%block>
+
+<%block name="description">
+    <meta name="description" content="Бесплатные онлайн курсы по экономике, истории и культуре в партнерстве с лучшими вузами страны.">
+</%block>
+
 <main id="main" aria-label="Content" tabindex="-1">
     <section class="home">
         <div id="js-slick">
@@ -22,8 +30,6 @@ from openedx.core.djangolib.markup import HTML, Text
                         </hgroup>
 
                         ## Disable social buttons for non-edX sites
-
-
 
                     </div>
                 </div>
@@ -41,8 +47,6 @@ from openedx.core.djangolib.markup import HTML, Text
 
                         ## Disable social buttons for non-edX sites
 
-
-
                     </div>
                 </div>
             </header>
@@ -58,8 +62,6 @@ from openedx.core.djangolib.markup import HTML, Text
                         </hgroup>
 
                         ## Disable social buttons for non-edX sites
-
-
 
                     </div>
                 </div>
