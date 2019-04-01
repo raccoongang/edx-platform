@@ -18,7 +18,9 @@ def send_api_request(data):
     """
     Send data to Edeos API.
     """
-    # base_url = urljoin(data.get('base_url'), data.get('path', ''))
+    send_edeos_api_request(**data)
+    # TODO: elaborate on caching rules specific for each event (e.g. based on uid)
+    """
     cache_key = '{}:{}:{}'.format(
         data.get('payload', {}).get('student_id'),
         data.get('payload', {}).get('course_id'),
@@ -28,3 +30,4 @@ def send_api_request(data):
         response = send_edeos_api_request(**data)
         if response:
             cache.set(cache_key, True, 30)
+    """
