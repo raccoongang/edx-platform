@@ -23176,3 +23176,31 @@ msgid ""
 "A new revision was created: Merge between Revision #%(r1)d and Revision "
 "#%(r2)d"
 msgstr "أُنشأت مراجعة جديدة: الدمج بين المراجعة #%(r1)d والمراجعة #%(r2)d "
+
+# Privacy Policy
+msgid "We care about the confidentiality and security of your personal information. We will use commercially reasonable efforts to keep your Personal Information secure in compliance with this Privacy Policy."
+msgstr "نحن نهتم بسريه وأمن معلوماتك الشخصية. وسوف نبذل الجهود المعقولة للحفاظ على المعلومات الشخصية الخاصة بك آمنه وفقا لسياسة الخصوصية هذه"
+
+msgid "Usernames and postings"
+msgstr "أسماء المستخدمين والمنشورات"
+
+msgid "Comments or other information posted by you to our forums, wikis or other areas of the Site designed for public communications or communications among registered class members may be viewed and downloaded by others who visit the Site. For this reason, we encourage you to use discretion when deciding whether to post any information that can be used to identify you to those forums (or other public or class-wide areas)."
+msgstr "يمكن للآخرين الذين يزورون الموقع الاطلاع على التعليقات أو المعلومات الأخرى التي تنشرها على منتدياتنا أو مواقع الويكي أو غيرها من المناطق في الموقع المصممة للاتصالات العامة أو الاتصالات بين أعضاء الفئة المسجلة وتنزيلها. لهذا السبب، نشجعك على أن تراعي هذه الامكانية عند اتخاذ قرار بشأن نشر اي معلومات يمكن استخدامها للتعرف عليك إلى تلك المنتديات (أو الصفحات العامة-او المناطق المخصصة لصفوف الطلاب)."
+
+msgid "Personal information"
+msgstr "المعلومات الشخصية"
+
+msgid "As used in this Privacy Policy, 'Personal Information' means any information about yourself that you may provide to us when using the Site, such as when you sign up for a user account or enter into a transaction through the Site, which may include (but is not limited to) your name, contact information, gender, date of birth, occupation."
+msgstr "كما هو موضح في سياسة الخصوصية هذه، فان \"المعلومات الشخصية\" تعني اي معلومات عن نفسك قد تقدمها لنا عند استخدام الموقع، مثل عند الاشتراك في حساب مستخدم أو الدخول في معامله من خلال الموقع، والتي قد تشمل (علي سبيل المثال لا الحصر) اسمك، معلومات الاتصال، الجنس، تاريخ الميلاد ، المهنة."
+
+msgid "Information we collect and how we use it"
+msgstr "المعلومات التي نجمعها وكيف نستخدمها"
+
+msgid "We collect information, including Personal Information (described above), when you sign up for a user account, participate in courses, send us email messages and/or participate in our public forums. We also collect certain usage information about student performance and patterns of learning. In addition, we track information indicating, among other things, which pages of our Site were visited, the order in which they were visited, when they were visited, and which hyperlinks and other user interface controls were used."
+msgstr "نجمع المعلومات، بما في ذلك المعلومات الشخصية (الموصوفة أعلاه)، عند الاشتراك في حساب مستخدم، والمشاركة في الدورات التدريبية، وإرسال رسائل البريد الكتروني لنا و/أو المشاركة في منتدياتنا العامة. كما نجمع معلومات استخدام معينه حول أداء الطلاب وأنماط التعلم. إضافة إلى ذلك، نقوم بتتبع المعلومات التي تشير، من بين أمور أخرى، إلى الصفحات التي تمت زيارتها من موقعنا، والترتيب الذي تمت زيارتها به، وعند زيارتها، والارتباطات التشعبية وعناصر التحكم في واجهه المستخدم الأخرى التي تم استخدامها."
+
+msgid "We may log the IP address, operating system, and browser software used by each user of the Site, and we may be able to determine from an IP address a user's Internet Service Provider and the geographic location of his or her point of connectivity. Various web analytics tools are used to collect this information. Some of the information is collected through cookies (small text files placed on your computer that store information about you, which can be accessed by the Site). You should be able to control how and whether cookies will be accepted by your web browser. Most browsers offer instructions on how to reset the browser to reject cookies in the 'Help' section of the toolbar. If you reject our cookies, many functions and conveniences of this Site may not work properly."
+msgstr "قد نقوم بتسجيل عنوان IP ونظام التشغيل وبرنامج المتصفح المستخدم من قبل كل مستخدم للموقع، وقد نتمكن من تحديد من عنوان IP مزود خدمه الإنترنت الخاص بالمستخدم والموقع الجغرافي لنقطه الاتصال الخاصة به. وتستخدم أدوات تحليل الويب المختلفة لجمع هذه المعلومات. يتم جمع بعض المعلومات من خلال ملفات تعريف الارتباط (ملفات نصيه صغيره وضعت على جهاز الحاسوب الخاص بك التي تخزن معلومات عنك، والتي يمكن الوصول اليها من قبل الموقع). يجب ان تكون قادرا على التحكم في كيفية وما إذا كان سيتم قبول ملفات تعريف الارتباط من قبل متصفح الويب الخاص بك. تقدم معظم المتصفحات إرشادات حول كيفية أعاده تعيين المستعرض لرفض ملفات تعريف الارتباط في قسم \"التعليمات\" من شريط الادوات. إذا رفضت ملفات تعريف الارتباط الخاصة بنا، فقد لا تعمل العديد من الوظائف ووسائل الراحة لهذا الموقع بشكل صحيح."
+
+
+
