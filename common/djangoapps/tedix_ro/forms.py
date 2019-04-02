@@ -11,8 +11,6 @@ from student.models import (
 from tedix_ro.models import City, School, StudentProfile, CLASSROOM_CHOICES, InstructorProfile, ParentProfile
 
 ROLE_CHOICES = (
-    ('', ''),
-
     ('student', 'Student'),
     ('instructor', 'Instructor'),
 )

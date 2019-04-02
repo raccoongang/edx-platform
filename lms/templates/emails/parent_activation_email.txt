@@ -17,7 +17,13 @@ ${_("If you need help, please use our web form at {support_url} or email {suppor
   support_url=support_url, support_email=support_email
 )}
 
-${_("This email message was automatically sent by {lms_url} because someone attempted to create an "
-"account on {platform_name} using this email address.").format(
-  lms_url=lms_url, platform_name=platform_name
-)}
+
+
+${_("This email message was automatically sent by {lms_url} because someone has pointed you as parent "
+" using this email address.").format(lms_url=lms_url)}
+ 
+${_("After authorization you will be able to log into {platform_name} using this password - {password}".format(
+    platform_name=platform_name, password=password
+))}
+
+${_("But we highly recommend to change it as soon as possible")}
