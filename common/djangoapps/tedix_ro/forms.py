@@ -83,6 +83,7 @@ class StudentRegisterForm(RegisterForm):
         phone = self.cleaned_data['phone']
         if len(phone) < 10 or len(phone) > 15:
             raise forms.ValidationError('The phone number length must be from 10 to 15 digits.')
+        return phone
 
 
     def clean_parent_email(self):
@@ -90,6 +91,8 @@ class StudentRegisterForm(RegisterForm):
         Validate parent email
         """
         parent_email = self.cleaned_data['parent_email']
+        if parent_email == self.data['email']:
+            raise forms.ValidationError('Student and parent emails must be different.')
         user = User.objects.filter(email=parent_email).first()
         if user and (getattr(user, 'studentprofile', None) or not getattr(user, 'parentprofile', None)) or user and not user.is_active:
             raise forms.ValidationError('Parent email you entered belongs to an existing profile.')
@@ -105,15 +108,16 @@ class StudentRegisterForm(RegisterForm):
             raise forms.ValidationError('Parent phone number you entered is wrong.')
         student_phone = self.cleaned_data.get('phone')
         if parent_phone == student_phone:
-            raise forms.ValidationError('Your phone number and parent one can not be the same.')
+            raise forms.ValidationError('Student and parent phone numbers must be different.')
         return parent_phone
 
     def save(self, commit=True):
         if self.cleaned_data['role'] == 'student':
             # Make user for parent
+            parent_email = self.cleaned_data['parent_email']
             parent_user, created = User.objects.get_or_create(
-                username=self.cleaned_data['parent_email'].split('@')[0],
-                email=self.cleaned_data['parent_email'],
+                username=parent_email.split('@')[0],
+                email=parent_email,
                 defaults={'is_active': False}
             )
             if created:
