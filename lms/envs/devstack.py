@@ -171,14 +171,14 @@ FEATURES['CERTIFICATES_HTML_VIEW'] = True
 ########################## Course Discovery #######################
 LANGUAGE_MAP = {'terms': {lang: display for lang, display in ALL_LANGUAGES}, 'name': 'Language'}
 COURSE_DISCOVERY_MEANINGS = {
-    'modes': {
-        'name': 'Course Type',
-        'terms': {
-            'honor': 'Honor',
-            'verified': 'Verified',
-        },
-    },
-    'language': LANGUAGE_MAP,
+    # 'modes': {
+    #     'name': 'Course Type',
+    #     'terms': {
+    #         'honor': 'Honor',
+    #         'verified': 'Verified',
+    #     },
+    # },
+    # 'language': LANGUAGE_MAP,
     'course_category': {
         'name': 'Category',
         'terms': {
@@ -193,7 +193,7 @@ COURSE_DISCOVERY_MEANINGS = {
 
 FEATURES['ENABLE_COURSE_DISCOVERY'] = True
 # Setting for overriding default filtering facets for Course discovery
-COURSE_DISCOVERY_FILTERS = ["language", "modes", "course_category"]
+COURSE_DISCOVERY_FILTERS = ["course_category"]
 FEATURES['COURSES_ARE_BROWSEABLE'] = True
 HOMEPAGE_COURSE_MAX = 9
 
