@@ -93,3 +93,5 @@ REQUIRED_FIELD_PHONE_EQUALS_PARENT_PHONE_MSG = _(u"Your phone number and parent'
 REQUIRED_FIELD_CLASSROOM_MSG = _(u"Select a classroom.")
 REQUIRED_FIELD_SCHOOL_CITY_MSG = _(u"Select a city.")
 REQUIRED_FIELD_SCHOOL_MSG = _(u"Select a school.")
+REQUIRED_FIELD_PHONE_MIN_MAX_LENGTH_MSG = _(u"The phone number length must be from 10 to 15 digits.")
+REQUIRED_FIELD_PARENT_PHONE_MIN_MAX_LENGTH_MSG = _(u"The parent phone number length must be from 10 to 15 digits.")

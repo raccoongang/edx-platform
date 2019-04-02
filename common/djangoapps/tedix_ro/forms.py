@@ -70,6 +70,20 @@ class StudentRegisterForm(RegisterForm):
             'required': 'Please select your teacher.'
         }
     )
+    phone = forms.CharField(label='Phone Number', error_messages={
+        'required': 'Please enter your phone number.',
+        'min_length': 10,
+        'max_length': 15,
+    })
+
+    def clean_phone(self):
+        """
+        Validate phone number
+        """
+        phone = self.cleaned_data['phone']
+        if len(phone) < 10 or len(phone) > 15:
+            raise forms.ValidationError('The phone number length must be from 10 to 15 digits.')
+
 
     def clean_parent_email(self):
         """
@@ -85,9 +99,11 @@ class StudentRegisterForm(RegisterForm):
         parent_email = self.cleaned_data.get('parent_email', '')
         parent_phone = self.cleaned_data['parent_phone']
         user = User.objects.filter(email=parent_email).first() if parent_email else None
+        if len(parent_phone) < 10 or len(parent_phone) > 15:
+            raise forms.ValidationError('The parent phone number length must be from 10 to 15 digits.')
         if user and getattr(user, 'parentprofile', None) and parent_phone != user.parentprofile.phone:
             raise forms.ValidationError('Parent phone number you entered is wrong.')
-        student_phone = self.cleaned_data['phone']
+        student_phone = self.cleaned_data.get('phone')
         if parent_phone == student_phone:
             raise forms.ValidationError('Your phone number and parent one can not be the same.')
         return parent_phone
@@ -136,10 +152,10 @@ class StudentRegisterForm(RegisterForm):
                 'include_default_option': True
             },
             'phone': {
-                'field_type': 'number'
+                'field_type': 'text'
             },
             'parent_phone': {
-                'field_type': 'number'
+                'field_type': 'text'
             }
         }
 
@@ -153,6 +169,6 @@ class InstructorRegisterForm(RegisterForm):
         fields = ('role', 'phone', 'school_city', 'school')
         serialization_options = {
             'phone': {
-                'field_type': 'number'
+                'field_type': 'text'
             }
         }

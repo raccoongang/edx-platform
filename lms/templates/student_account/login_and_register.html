@@ -33,7 +33,16 @@
                 }
             });
         });
-
+        $('#register-phone, #register-parent_phone').on('change blur keyup', (e)=>{
+            var stringLength = e.target.value.length;
+            var newString = '';
+            for (var i=0; i < stringLength; i++) {
+                if (!e.target.value[i].match(/[^0-9]/g)) {
+                    newString += e.target.value[i];
+                }
+            }
+            $(e.target).val(newString);
+        });
         if ('newrelic' in window) {
             newrelic.finished();
             // Because of a New Relic bug, the finished() event doesn't show up
