@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='instructorprofile',
             name='phone',
-            field=models.CharField(max_length=15, validators=[django.core.validators.RegexValidator(message=b'Phone length should be from 10 to 15', regex=b'^\\d{10,15}$')], verbose_name='phone'),
+            field=models.CharField(max_length=15, validators=[django.core.validators.RegexValidator(message=b'The phone number length must be from 10 to 15 digits', regex=b'^\\d{10,15}$')], verbose_name='phone'),
         ),
         migrations.AlterField(
             model_name='instructorprofile',
@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='parentprofile',
             name='phone',
-            field=models.CharField(max_length=15, validators=[django.core.validators.RegexValidator(message=b'Phone length should be from 10 to 15', regex=b'^\\d{10,15}$')], verbose_name='phone'),
+            field=models.CharField(max_length=15, validators=[django.core.validators.RegexValidator(message=b'The phone number length must be from 10 to 15 digits', regex=b'^\\d{10,15}$')], verbose_name='phone'),
         ),
         migrations.AlterField(
             model_name='parentprofile',
@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='studentprofile',
             name='phone',
-            field=models.CharField(max_length=15, validators=[django.core.validators.RegexValidator(message=b'Phone length should be from 10 to 15', regex=b'^\\d{10,15}$')], verbose_name='phone'),
+            field=models.CharField(max_length=15, validators=[django.core.validators.RegexValidator(message=b'The phone number length must be from 10 to 15 digits', regex=b'^\\d{10,15}$')], verbose_name='phone'),
         ),
         migrations.AlterField(
             model_name='studentprofile',
