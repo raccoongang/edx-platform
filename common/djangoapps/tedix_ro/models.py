@@ -73,6 +73,7 @@ class StudentProfile(UserProfile):
     classroom = models.CharField(_('classroom'), choices=CLASSROOM_CHOICES, max_length=254)
     school_city = models.ForeignKey(City)
     school = models.ForeignKey(School)
+    paid = models.BooleanField(default=False)
 
     def __unicode__(self):
         return unicode(self.user)

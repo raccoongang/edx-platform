@@ -6,10 +6,54 @@ import logging
 from boto.exception import NoAuthHandlerFound
 from celery.exceptions import MaxRetriesExceededError
 from celery.task import task  # pylint: disable=no-name-in-module, import-error
+from django.apps import apps
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core import mail
 
+from edxmako.shortcuts import render_to_response, render_to_string
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+
 log = logging.getLogger('edx.celery.task')
+
+
+@task
+def send_payment_link_to_parent(user_id):
+    """
+    Sending an payment link email to the parent.
+    """
+    ParentProfile = apps.get_model('tedix_ro', 'ParentProfile')
+    try:
+        user = User.objects.get(pk=user_id)
+        parent = user.parentprofile
+        from_address = configuration_helpers.get_value(
+            'email_from_address',
+            settings.DEFAULT_FROM_EMAIL
+        )
+        context = {
+            'pay_link': 'link',
+            'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
+        }
+
+        if user.is_active and parent:
+            for student in parent.students.filter(paid=False, user__is_active=True):
+                context.update({
+                    'student_name': student.user.username,
+                })
+                message = render_to_string('emails/payment_link_email_parent.txt', context)
+                mail.send_mail(
+                        'pay link',
+                        message,
+                        from_address,
+                        [user.email]
+                    )
+                log.info("send_payment_link_to_parent: Email has been sent to User {user_email}".format(
+                    user_email=user.email
+                ))
+    except ParentProfile.DoesNotExist:
+        log.error("send_payment_link_to_parent: This user has no parentprofile.")
+    except User.DoesNotExist:
+        log.error("send_payment_link_to_parent: User with this ID does not exist.")
 
 
 @task(bind=True)
