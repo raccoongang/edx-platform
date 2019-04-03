@@ -8,7 +8,7 @@ from student.models import (
     UserProfile
 )
 
-from tedix_ro.models import City, School, StudentProfile, Classroom, InstructorProfile, ParentProfile
+from tedix_ro.models import City, School, StudentProfile, CLASSROOM_CHOICES, InstructorProfile, ParentProfile
 
 ROLE_CHOICES = (
     ('student', 'Student'),
@@ -49,8 +49,8 @@ class StudentRegisterForm(RegisterForm):
     """
     The fields on this form are derived from the StudentProfile and ParentProfile models
     """
-    classroom = forms.ModelChoiceField(
-        label='Classroom', queryset=Classroom.objects.all(),
+    classroom = forms.ChoiceField(
+        label='Classroom', choices=CLASSROOM_CHOICES,
         error_messages={
             'required': 'Please select your classroom.'
         }

@@ -10,6 +10,20 @@ from django.utils.translation import ugettext_lazy as _
 from student.models import AUDIT_LOG
 from student.views.management import compose_and_send_activation_email
 
+CLASSROOM_CHOICES = (
+    ('', ''),
+
+    ('7A', '7A'),
+    ('7B', '7B'),
+    ('7C', '7C'),
+    ('7D', '7D'),
+
+    ('8A', '8A'),
+    ('8B', '8B'),
+    ('8C', '8C'),
+    ('8D', '8D'),
+)
+
 phone_validator = RegexValidator(regex=r'^\d{10,15}$', message='The phone number length must be from 10 to 15 digits.')
 
 
@@ -21,17 +35,7 @@ class City(models.Model):
         verbose_name_plural = 'Cities'
 
     def __unicode__(self):
-        return u'{}'.format(self.name)
-
-
-class Classroom(models.Model):
-    name = models.CharField(max_length=254, unique=True)
-
-    class Meta:
-        ordering = ['name']
-
-    def __unicode__(self):
-        return u'{}'.format(self.name)
+        return self.name
 
 
 class School(models.Model):
@@ -41,7 +45,7 @@ class School(models.Model):
         ordering = ['name']
 
     def __unicode__(self):
-        return u'{}'.format(self.name)
+        return self.name
 
 
 class UserProfile(models.Model):
@@ -66,7 +70,7 @@ class StudentProfile(UserProfile):
     Related model for student profile
     """
     instructor = models.ForeignKey(InstructorProfile, related_name='students', null=True, on_delete=models.SET_NULL)
-    classroom = models.ForeignKey(Classroom, related_name='classroom', null=True, on_delete=models.SET_NULL)
+    classroom = models.CharField(_('classroom'), choices=CLASSROOM_CHOICES, max_length=254)
     school_city = models.ForeignKey(City)
     school = models.ForeignKey(School)
     paid = models.BooleanField(default=False)
