@@ -251,7 +251,7 @@ def _log_and_raise_inactive_user_auth_error(unauthenticated_user, parent=False):
         )
     if not parent:
         send_reactivation_email_for_user(unauthenticated_user)
-    raise AuthFailedError(_generate_not_activated_message(unauthenticated_user, parent=parent))
+    raise AuthFailedError(_generate_not_activated_message(unauthenticated_user))
 
 
 def _authenticate_first_party(request, unauthenticated_user):
