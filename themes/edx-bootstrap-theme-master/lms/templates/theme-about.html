@@ -1,0 +1,38 @@
+## mako
+<%!
+  from django.core.urlresolvers import reverse
+  from django.utils.translation import ugettext as _
+%>
+<%namespace name='static' file='/static_content.html'/>
+
+<%inherit file="/main.html" />
+
+<%block name="title"><title>${_('About')}</title></%block>
+<%block name="headextra">
+    <link href="${static.url("css/breadcrums.css")}" rel="stylesheet"> 
+    <link href="${static.url("css/partner-listing.css")}" rel="stylesheet"> 
+</%block>
+
+
+<section class="container about" style="width: auto;">
+  <h2>DocMode – From Learning to Practice</h2>
+  <p>Our vision is to become an integral part of the Doctor&#39;s daily routine with essential resources for their Learning and Practice</p>
+
+  <p>Mission: DocMode aims to create a value-based Online Learning experience for Health professionals globally.</p>
+
+  <h2>About Us</h2>
+
+  <p>
+    <ul>
+      <li>DocMode understands the need of constant learning among all individuals in healthcare which is a field that isevolving every single day.</li>
+      <li>DocMode is a website that provides authoritative, comprehensive and interactivelearning programs for Health Professionals - Doctors and Medical Students- across the world.</li>
+      <li>Medical contentis reviewed and presented by Key Opinion leaders to effectively transfer knowledge, as well as communicateand network with each other through our Continuing Medical Education (CME) programs and Online Courses.</li>
+
+      <li>Along with learning, DocMode creates an environment where healthcare professionals meet peers, network,discuss recent scientific advancements in medicine and share their With the number of registered userstouching One Lakh we have conducted more than 600 CME’s and these numbers are ever increasing in mostof the specialties and therapy areas.</li>
+
+      <li>Along with catering to a doctor’s needs, DocMode has become a platform for various players in the Healthcarespace to reach out and engage doctors. With our huge doctor base in a wide range of specialties- from generalpractitioners to Consultants and to super specialists, we are looking at doctors to be more involved andimprove the healthcare environment across the country. </li>
+      <li>DocMode constantly encourages Evidence-basedpractice, Documentation, Inter-professional learning, Doctor-Patient interaction, Research Work and LearningCourses in tie-up with Medical Associations both Indian and International, and world renowned MedicalEducation Institutions.</li>
+    </ul>
+  </p>
+
+</section>

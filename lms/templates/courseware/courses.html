@@ -27,12 +27,51 @@
   </%static:require_module>
 </%block>
 % endif
+<style type="text/css">
+  .play-intro {
+    background-image: linear-gradient(-90deg, rgba(0,0,0,0.65), rgba(0,0,0,0.75));
+    border-radius: 4px;
+    box-shadow: 0 1px 12px 0 rgba(0,0,0,0.4);
+    border: 2px solid rgba(255,255,255,0.8);
+    height: 40px;
+    left: 15%;
+    margin-top: -40px;
+    margin-left: -40px;
+    position: absolute;
+    top: 60%;
+    width: 40px;
+  }
 
+  @media screen and (max-width: 760px) and (min-width: 341px){
+    .play-intro {
+      left:15%;
+      top:20%;
+      margin-top: 0px;
+      margin-left: 0px;
+      position: absolute;
+    }
+  }
+</style>
 <%block name="pagetitle">${_("Courses")}</%block>
-
+<%block name="headextra">
+  <link href="${static.url("css/breadcrums.css")}" rel="stylesheet"> 
+    <link href="${static.url("css/course.css")}" rel="stylesheet"> 
+</%block>
 <main id="main" aria-label="Content" tabindex="-1">
-    <section class="find-courses">
+    <section class="find-courses" style="background-color: #ffffff;">
       <section class="courses-container">
+        <div class="row">
+          <div class="col-xs-12">
+            <ul class="breadcrums">
+                <li>
+                    <a href="/">Home / </a>
+                </li>
+                <li>
+                    <a href="/courses">All Courses</a>
+                </li>
+            </ul>
+          </div>
+        </div>
         % if course_discovery_enabled:
         <div id="discovery-form" role="search" aria-label="course" class="wrapper-search-context">
           <div id="discovery-message" class="search-status-label"></div>
@@ -54,8 +93,30 @@
         <div id="filter-bar" class="filters hide-phone is-collapsed">
         </div>
         % endif
+        % if course_discovery_enabled:
+        <aside aria-label="${_('Refine Your Search')}" class="search-facets phone-menu">
+          <h2 class="header-search-facets">${_('Refine Your Search')}</h2>
+          <section class="search-facets-lists">
+          </section>
+        </aside>
+        % endif
 
         <div class="courses${'' if course_discovery_enabled else ' no-course-discovery'}" role="region" aria-label="${_('List of Courses')}">
+          <div class="video-popup-content clearfix">
+              <div class="video-img">
+                  <a href="#" data-toggle="modal" data-target="#youtube">
+                      <img src="https://img.youtube.com/vi/-S0kLcw105Q/0.jpg" alt="demo" width="219.5px;" height="149px;">
+                      <div class="play-intro"><img src="https://s3.ap-south-1.amazonaws.com/student-verified-photos/icons8-play-40.png" style="margin-left: 0%;margin-top: 0%;"></div>
+                  </a>
+
+              </div>
+              <div class="video-content">
+                  <h4>Learn how courses work on DocMode</h4>
+                  <p>Courses help you study a specific topic in 6-8 week engagements culminating in a certificate
+                      of participation from the Partner Watch the video to learn more!</p>
+                  <a href="#" class="close-content">x</a>
+              </div>
+          </div>
           <ul class="courses-listing">
             %for course in courses:
             <li class="courses-listing-item">
@@ -64,15 +125,6 @@
             %endfor
           </ul>
         </div>
-
-
-        % if course_discovery_enabled:
-        <aside aria-label="${_('Refine Your Search')}" class="search-facets phone-menu">
-          <h2 class="header-search-facets">${_('Refine Your Search')}</h2>
-          <section class="search-facets-lists">
-          </section>
-        </aside>
-        % endif
 
       </section>
     </section>

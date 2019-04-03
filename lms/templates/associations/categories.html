@@ -1,0 +1,46 @@
+<%!
+  import json
+  from django.utils.translation import ugettext as _
+  from openedx.core.djangolib.js_utils import dump_js_escaped_json
+%>
+<%inherit file="../main.html" />
+
+<%namespace name='static' file='../static_content.html'/>
+
+
+<%block name="pagetitle">${_("Subjects")}</%block>
+<%block name="headextra">
+  <link href="${static.url("css/breadcrums.css")}" rel="stylesheet"> 
+    <link href="${static.url("css/topics.css")}" rel="stylesheet"> 
+</%block>
+<div class="content-wrapper" id="content">
+  <section class="learn-from-us">
+      <div class="container topicCont">
+          <div class="row">
+              <ul class=breadcrums>
+                  <li>
+                      <a href="/">Home / </a>
+                  </li>
+                  <li>
+                      <a href="#" class="active">All Topics</a>
+                  </li>
+              </ul>
+          </div>
+          <div class="row">
+              <div class="col-xs-12">
+                  <h3>Topics</h3>
+              </div>
+          </div>
+          <div class="row">
+            %for category in categories:
+              <div class="col-md-3 col-sm-4 col-xs-12">
+                  <a href="/subject/${category.topic_short_name}"" class="topic-anchor">
+                      <img src="${category.topic_image}" alt="${category.topic_name}" />
+                  </a>
+              </div>
+            %endfor
+          </div>
+      </div>
+  </section>
+</div>
+

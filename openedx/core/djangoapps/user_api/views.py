@@ -49,7 +49,7 @@ class LoginSessionView(APIView):
         return HttpResponse(get_login_session_form(request).to_json(), content_type="application/json")
 
     @method_decorator(require_post_params(["email", "password"]))
-    @method_decorator(csrf_protect)
+    @method_decorator(csrf_exempt)
     def post(self, request):
         """Log in a user.
 
@@ -121,10 +121,15 @@ class RegistrationView(APIView):
                 address already exists
             HttpResponse: 403 operation not allowed
         """
-        data = request.POST.copy()
+        import logging
+        import datetime
+        LOGGER = logging.getLogger(__name__)
+        start_time = datetime.datetime.now()
 
+        data = request.POST.copy()
         email = data.get('email')
         username = data.get('username')
+        LOGGER.info("*************** Request received for registration Username = {username}. Start time {start_time}: **************".format(username=username, start_time=start_time))
 
         # Handle duplicate email/username
         conflicts = check_account_exists(email=email, username=username)
@@ -137,6 +142,7 @@ class RegistrationView(APIView):
                 field: [{"user_message": conflict_messages[field]}]
                 for field in conflicts
             }
+            LOGGER.info("*************** Registration failed for Username. Error: Username and email conflicts **************".format(username=username))
             return JsonResponse(errors, status=409)
 
         # Backwards compatibility: the student view expects both
@@ -155,6 +161,7 @@ class RegistrationView(APIView):
             errors = {
                 err.field: [{"user_message": text_type(err)}]
             }
+            LOGGER.info("*************** Registration failed for Username = {username}. Error: {error} **************".format(username=username, error=err))
             return JsonResponse(errors, status=409)
         except ValidationError as err:
             # Should only get non-field errors from this function
@@ -164,12 +171,22 @@ class RegistrationView(APIView):
                 field: [{"user_message": error} for error in error_list]
                 for field, error_list in err.message_dict.items()
             }
+            LOGGER.info("*************** Registration failed for Username = {username}. Error: {error} **************".format(username=username, error=err))
             return JsonResponse(errors, status=400)
         except PermissionDenied:
+            LOGGER.info("*************** Registration failed for Username. Error: PermissionDenied **************".format(username=username))
             return HttpResponseForbidden(_("Account creation not allowed."))
+
+        except Exception as err:
+            LOGGER.exception("*************** Registration failed for Username = {username}. Error: {error}".format(username=username, error=err))
 
         response = JsonResponse({"success": True})
         set_logged_in_cookies(request, response, user)
+        end_time = datetime.datetime.now()
+        LOGGER.info("*************** Request completed for registration Username = {username}. End time: {end_time} **************".format(username=username, end_time=end_time))
+        time_diff = end_time - start_time
+        LOGGER.info("*************** Time Difference for User = {username}:  {time_diff} **************".format(username=username, time_diff=time_diff))
+
         return response
 
     @method_decorator(transaction.non_atomic_requests)

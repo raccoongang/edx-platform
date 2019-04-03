@@ -13,6 +13,7 @@ from edxnotes.helpers import is_feature_enabled as is_edxnotes_enabled
 from openedx.core.djangolib.js_utils import js_escaped_string
 from openedx.core.djangolib.markup import HTML
 from openedx.features.course_experience import course_home_page_title, COURSE_OUTLINE_PAGE_FLAG
+from lms.djangoapps.webform.views import feedback_form_link
 %>
 <%
   include_special_exams = settings.FEATURES.get('ENABLE_SPECIAL_EXAMS', False) and (course.enable_proctored_exams or course.enable_timed_exams)
@@ -59,6 +60,7 @@ from openedx.features.course_experience import course_home_page_title, COURSE_OU
 <script type="text/javascript" src="${static.url('js/src/tooltip_manager.js')}"></script>
 
 <link href="${static.url('css/vendor/jquery.autocomplete.css')}" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://s3-ap-southeast-1.amazonaws.com/site-js/feedback.css" />
   ${HTML(fragment.head_html())}
 </%block>
 
@@ -84,7 +86,7 @@ from openedx.features.course_experience import course_home_page_title, COURSE_OU
   </%static:require_module>
 
   % if staff_access:
-  	<%include file="xqa_interface.html"/>
+    <%include file="xqa_interface.html"/>
   % endif
 
   <script type="text/javascript">
@@ -165,7 +167,7 @@ ${HTML(fragment.foot_html())}
             <div class="page-header-main">
                 <nav aria-label="${_('Course')}" class="sr-is-focusable" tabindex="-1">
                     <div class="has-breadcrumbs">
-                        <div class="breadcrumbs">
+                        <div class="breadcrumbs" style="font-size: 1.5rem;">
                             % if COURSE_OUTLINE_PAGE_FLAG.is_enabled(course.id):
                                 <span class="nav-item nav-item-course">
                                     <a href="${course_url}">${course_home_page_title(course)}</a>
@@ -223,6 +225,12 @@ ${HTML(fragment.foot_html())}
             % endif
 
               ${HTML(fragment.body_html())}
+              <% feedback_link = feedback_form_link(course.id) %>
+              %if feedback_link and feedback_link.feedback_form_link != 'NULL':
+                <div id="feedback">
+                  <div id="feedback-tab" style="background-color: #000;"><a href="${feedback_link.feedback_form_link}" target="_blank" style="color: #fff;">Feedback</a></div>
+                </div>
+              %endif
         </main>
     </section>
 
@@ -260,3 +268,4 @@ ${HTML(fragment.foot_html())}
       % endif
     </nav>
 % endif
+<script src="https://s3-ap-southeast-1.amazonaws.com/site-js/feedback.js"></script>

@@ -48,12 +48,48 @@ from openedx.core.djangolib.markup import HTML
                 <div class="ui-loading-indicator">
                     <p><span class="spin"><span class="icon fa fa-refresh" aria-hidden="true"></span></span> <span class="copy">${_("Loading")}</span></p>
                 </div>
-                <div class="wrapper-profile-section-container-one is-hidden">
+                <div class="wrapper-profile-section-container-one is-hidden" style="width: 50%;">
                     <div class="wrapper-profile-section-one">
                         <div class="profile-image-field">
                         </div>
                         <div class="profile-section-one-fields">
                         </div>
+                        <div class="u-field u-field-text u-field-mci" style="padding-left: 10px;border-top: 1px solid #e7e7e7;">          
+                            <i class="icon fa fa-pencil" style="float: right;cursor: pointer;" onclick="edit('mci');"></i>
+                            <span class="u-field-title field-label">MCI No.</span>
+                            <h4 id="mci">${user_extra_info.reg_num}</h4>
+                            <span class="u-field-value col-sm-8" id="update_mci" style="display: none;">                       
+                                <input id="reg_num" aria-describedby="u-field-message-help-name" type="text" name="input" value="${user_extra_info.reg_num}" onchange="useraddupdate('reg_num');">
+                            </span>
+                            <span class="u-field-message" id="reg_nummsg"></span>
+                        </div>
+                        <div class="u-field u-field-text u-field-rcountry" style=" padding: 10px 0;padding-left: 10px;border-top: 1px solid #e7e7e7;">          
+                            <i class="icon fa fa-pencil" style="float: right;cursor: pointer;" onclick="edit('ucountry');"></i>
+                            <span class="u-field-title field-label">Country</span>
+                            <h4 id="ucountry">${user_extra_info.rcountry}</h4>
+                            <span class="u-field-value col-sm-8" id="update_ucountry" style="display: none;">                       
+                                <input id="rcountry" aria-describedby="u-field-message-help-name" type="text" name="input" value="${user_extra_info.rcountry}" onchange="useraddupdate('rcountry');">
+                            </span>
+                            <span class="u-field-message" id="rcountrymsg"></span>
+                        </div>
+                        <div class="u-field u-field-text u-field-rstate" style="padding-left: 10px;border-top: 1px solid #e7e7e7;">          
+                            <i class="icon fa fa-pencil" style="float: right;cursor: pointer;" onclick="edit('ustate');"></i>
+                            <span class="u-field-title field-label">State</span>
+                            <h4 id="ustate">${user_extra_info.rstate}</h4>
+                            <span class="u-field-value col-sm-8" id="update_ustate" style="display: none;">                       
+                                <input id="rstate" aria-describedby="u-field-message-help-name" type="text" name="input" value="${user_extra_info.rstate}" onchange="useraddupdate('rstate');">
+                            </span>
+                            <span class="u-field-message" id="rstatemsg"></span>
+                        </div>
+                        <div class="u-field u-field-text u-field-rcity" style="padding-left: 10px;border-top: 1px solid #e7e7e7;">          
+                            <i class="icon fa fa-pencil" style="float: right;cursor: pointer;" onclick="edit('ucity');"></i>
+                            <span class="u-field-title field-label">State</span>
+                            <h4 id="ucity">${user_extra_info.rcity}</h4>
+                            <span class="u-field-value col-sm-8" id="update_ucity" style="display: none;">                       
+                                <input id="rcity" aria-describedby="u-field-message-help-name" type="text" name="input" value="${user_extra_info.rcity}" onchange="useraddupdate('rcity');">
+                            </span>
+                            <span class="u-field-message" id="rcitymsg"></span>
+                        </div>                          
                     </div>
                     <div class="ui-loading-error is-hidden">
                         <span class="fa fa-exclamation-triangle message-error" aria-hidden="true"></span>
@@ -62,6 +98,37 @@ from openedx.core.djangolib.markup import HTML
                 </div>
                 <div class="wrapper-profile-section-container-two is-hidden">
                     <div class="wrapper-profile-bio"></div>
+                    
+                        <section class="upcoming-courses">
+                            
+                                <div class="row">
+                                % for course in courses:   
+                                    <%
+                                        if course.start is not None:
+                                            course_date_string = course.start.strftime('%Y-%m-%dT%H:%M:%S%z')
+                                        else:
+                                            course_date_string = ''
+                                    %>    
+                                    <div class="col-md-4">
+                                        <a href="${reverse('about_course', args=[course.id.to_deprecated_string()])}">
+                                        <div class="card">
+                                            <div class="card-img">
+                                                <img src="${course.course_image_url}" alt="${course.display_name_with_default}">
+                                            </div>
+                                            <div class="card-text">
+                                                <h4>${course.display_name_with_default}</h4>
+                                                <span>By ${course.display_org_with_default}</span>
+                                                
+                                                <p>Starts <time class="localized_datetime" itemprop="startDate" data-format="shortDate" data-datetime="${course_date_string}"></time></p>
+                                            </div>
+                                        </div>
+                                        </a>
+                                    </div>
+                                %endfor
+                                </div>
+                            
+                        </section>
+                    
                     % if achievements_fragment:
                         ${HTML(achievements_fragment.body_html())}
                     % endif
@@ -77,3 +144,28 @@ from openedx.core.djangolib.markup import HTML
     LearnerProfileFactory(options);
 </%static:require_module>
 </%block>
+<%static:require_module_async module_name="js/dateutil_factory" class_name="DateUtilFactory">
+    DateUtilFactory.transform(iterationKey=".localized_datetime");
+</%static:require_module_async>
+<script type="text/javascript">
+    function edit(val){
+        document.getElementById(val).style.display="none";
+        document.getElementById("update_"+val).style.display="block";
+    }
+
+    function useraddupdate(val) {
+        var values = {};
+        values[val] = document.getElementById(val).value;
+        $.ajax({
+            method:'GET',
+            url:'',
+            dataType:'html',
+            data : values,
+            success:function(data){
+              $('#'+val+'msg').html(data),
+              setTimeout(function() { $('#'+val+'msg').css("visibility","hidden"); }, 2000);
+            }
+        });
+        return false;
+    }
+</script>

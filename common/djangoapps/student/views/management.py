@@ -106,6 +106,11 @@ from util.bad_request_rate_limiter import BadRequestRateLimiter
 from util.db import outer_atomic
 from util.json_request import JsonResponse
 from util.password_policy_validators import SecurityPolicyError, validate_password
+#added below lines for course, lectures, case_studies, topics
+from lms.djangoapps.specialization.models import categories, sub_categories # Topics Categories List
+from lms.djangoapps.course_extrainfo.models import course_extrainfo
+from django.db.models import Count
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 log = logging.getLogger("edx.student")
 
@@ -165,7 +170,7 @@ def index(request, extra_context=None, user=AnonymousUser()):
         courses = sort_by_announcement(courses)
 
     context = {'courses': courses}
-
+    today = datetime.datetime.now(UTC).date()
     context['homepage_overlay_html'] = configuration_helpers.get_value('homepage_overlay_html')
 
     # This appears to be an unused context parameter, at least for the master templates...
@@ -194,6 +199,42 @@ def index(request, extra_context=None, user=AnonymousUser()):
 
     # Add marketable programs to the context.
     context['programs_list'] = get_programs_with_type(request.site, include_hidden=False)
+
+    context['category_course_count'] = course_extrainfo.objects.exclude(category='').values('category').annotate(ccount=Count('category')).filter(ccount__gte=1).order_by('-ccount')
+    cat_course_count = course_extrainfo.objects.exclude(category='').values('category').annotate(ccount=Count('category')).filter(ccount__gte=1).order_by('-ccount')
+    categoryid = []
+    for catid in cat_course_count:
+        categoryid.append(catid['category'])
+    context['categories_list'] = categories.objects.filter(pk__in=categoryid).values()
+
+    #for lectures list
+    lectures = course_extrainfo.objects.filter(course_type=2).values()
+    cid = []
+    for courseid in lectures:
+      course_id = CourseKey.from_string(courseid['course_id'])
+      cid.append(course_id)
+  
+    context['clectures'] = CourseOverview.objects.all().filter(pk__in=cid, start__gt=today).order_by('start')
+
+    #for courses list
+    index_courses = course_extrainfo.objects.filter(course_type=1).values()
+    index_cid = []
+    for index_course in index_courses:
+      index_course_id = CourseKey.from_string(index_course['course_id'])
+      index_cid.append(index_course_id)
+
+    # below query commented for displaying upcoming courses 
+    context['index_upcoming_courses'] = CourseOverview.objects.all().filter(pk__in=index_cid, start__gt=today).order_by('start')[::-1]
+    # query to display all courses
+    context['index_ongoing_courses'] = CourseOverview.objects.all().filter(pk__in=index_cid,start__lt=today).order_by('start')[::-1]
+    
+    #for upcoming case studies
+    index_case_studies = course_extrainfo.objects.filter(course_type=3).values()
+    index_csid = []
+    for index_casestudy in index_case_studies:
+      index_casestudy_id = CourseKey.from_string(index_casestudy['course_id'])
+      index_csid.append(index_casestudy_id)
+    context['index_upcoming_case_studies'] = CourseOverview.objects.all().filter(pk__in=index_csid).order_by('start')[::-1]
 
     return render_to_response('index.html', context)
 

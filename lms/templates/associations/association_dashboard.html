@@ -1,0 +1,192 @@
+<%inherit file="/main.html" />
+<%namespace name='static' file='../static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+from lms.djangoapps.associations.views import course_usercount, course_viewercount
+%>
+
+<%block name="pagetitle">${assoc_name} | Dashboard</%block>
+<!-- Bootstrap -->
+<link href="${static.url('vendors/bootstrap/dist/css/bootstrap.min.css')}" rel="stylesheet">
+<!-- Custom Theme Style -->
+<link href="${static.url('css/vendor/build/css/custom.css')}" rel="stylesheet">
+<style type="text/css">
+	@media (min-width: 992px){
+		footer {
+		    margin-left: 0px !important;
+		}
+	}
+</style>
+%if user.is_authenticated():
+	%if user.is_staff:
+		<div class="container">
+			<div class="row" style="padding-bottom: 10px;max-width: 100% !important;"> <!-- LOGO and COUNTS -->
+				<div class="col-lg-5">
+					<img src="${assoc_logo}">
+				</div>
+				<div class="col-lg-7">
+					<div class="row tile_count"><!-- Counts of Users/Associations -->
+		        <div class="col-md-4 tile_stats_count">
+		          <span class="count_top"><i class="fa fa-user"></i> Total Members</span>
+		          <div class="count">${total_members}</div>
+		          <span class="count_bottom"><i class="green">4% </i> From last Week</span>
+		        </div>
+		        <div class="col-md-4 tile_stats_count">
+		          <span class="count_top"><i class="fa glyphicon glyphicon-hd-video"></i> Total Webinars</span>
+		          <div class="count">${total_webinars}</div>
+		          <span class="count_bottom"></span>
+		        </div>
+		      </div>
+		      <!-- <div id="regions_div" style="width: 400px; height: 300px;"></div>
+				</div> -->
+			</div>
+			<div class="row">
+			
+			</div>
+			%for course in courses:
+				<div class="row tile-stats" style="max-width: 100% !important;"> <!-- Course List -->
+					<div class="col-md-3" style="border: 0px solid #ddd; padding: 10px 5px 5px 10px;">
+						<a href="/dashboard/${course.id}"><img src="${course.course_image_url}" width= "280px" height= "160px" style="border: 1px solid #ddd;"></a>
+						<!-- <img src="http://docmode.org/c4x/aios/AIOS003/asset/Abhay-image.jpg" width= "280px" height= "160px"> -->
+					</div>
+					<div class="col-md-9">
+						<div class="row">
+							<a href="/dashboard/${course.id}"><h2>${course.display_name}</h2></a>
+						</div>
+						<% 
+							usercount = course_usercount(course.id)
+							viewercount = course_viewercount(course.id)
+						%>
+						<div class="row">
+							<div class="col-md-4">
+								<p>Total Enrollments: 
+								%if usercount == '0' : 
+									No Data
+								%else:
+									${course_usercount(course.id)}
+								%endif
+								</p>
+								<p>Total Viewers: 
+								%if viewercount == 0 : 
+									No Data
+								%else:
+									${course_viewercount(course.id)}
+								%endif
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			%endfor
+		</div>
+	%elif grp_admin == '1':
+		<div class="container">
+			<div class="row" style="padding-bottom: 10px;max-width: 100% !important;"> <!-- LOGO and COUNTS -->
+				<div class="col-lg-5">
+					<img src="${assoc_logo}">
+				</div>
+				<div class="col-lg-7">
+					<div class="row tile_count"><!-- Counts of Users/Associations -->
+		        <div class="col-md-4 tile_stats_count">
+		          <span class="count_top"><i class="fa fa-user"></i> Total Members</span>
+		          <div class="count">${total_members}</div>
+		          <span class="count_bottom"><i class="green">4% </i> From last Week</span>
+		        </div>
+		        <div class="col-md-4 tile_stats_count">
+		          <span class="count_top"><i class="fa glyphicon glyphicon-hd-video"></i> Total Webinars</span>
+		          <div class="count">${total_webinars}</div>
+		          <span class="count_bottom"></span>
+		        </div>
+		      </div>
+		      <!-- <div id="regions_div" style="width: 400px; height: 300px;"></div>
+				</div> -->
+			</div>
+			<div class="row">
+			
+			</div>
+			%if admin_courses == "None":
+				<p style="text-align: center;">Please email us which lecture data are you looking for?</p><br/>
+				<p>The email link is: <a href="mailto:support@docmode.org?Subject=Require%20dashboard%20access" target="_top">Send Mail</a></p>
+			%else:
+				%for course in courses:					
+					%if course.id in admin_courses:
+						<div class="row tile-stats" style="max-width: 100% !important;"> <!-- Course List -->
+							<div class="col-md-3" style="border: 0px solid #ddd; padding: 10px 5px 5px 10px;">
+								<a href="/dashboard/${course.id}"><img src="${course.course_image_url}" width= "280px" height= "160px" style="border: 1px solid #ddd;"></a>
+								<!-- <img src="http://docmode.org/c4x/aios/AIOS003/asset/Abhay-image.jpg" width= "280px" height= "160px"> -->
+							</div>
+							<div class="col-md-9">
+								<div class="row">
+									<a href="/dashboard/${course.id}"><h2>${course.display_name}</h2></a>
+								</div>
+								<% 
+									usercount = course_usercount(course.id)
+									viewercount = course_viewercount(course.id)
+								%>
+								<div class="row">
+									<div class="col-md-4">
+										<p>Total Enrollments: 
+										%if usercount == '0' : 
+											No Data
+										%else:
+											${course_usercount(course.id)}
+										%endif
+										</p>
+										<p>Total Viewers: 
+										%if viewercount == 0 : 
+											No Data
+										%else:
+											${course_viewercount(course.id)}
+										%endif
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					%endif
+				%endfor
+			%endif
+		</div>
+	%else:
+		<h2 style="text-align: center;">U are not authorized to view this page</h2>
+	%endif
+%else:
+	<h2>You must be loggedin and admin to view this page</h2>
+%endif
+<!-- jQuery -->
+<script src="${static.url('https://s3-ap-southeast-1.amazonaws.com/site-js/jquery.min.js')}"></script>
+<!-- Bootstrap -->
+<script src="${static.url('vendors/bootstrap/dist/js/bootstrap.min.js')}"></script>
+<!-- Google Charts -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<!-- Custom Theme Scripts -->
+<script src="${static.url('css/vendor/build/js/custom.js')}"></script>
+<script type="text/javascript">
+  google.charts.load('current', {'packages':['geochart']});
+  google.charts.setOnLoadCallback(drawRegionsMap);
+
+  function drawRegionsMap() {
+
+    var data = google.visualization.arrayToDataTable([
+      ['States', 'Popularity'],
+      ['Maharashtra', 500],
+      ['Gujarat', 300],
+      ['Madhya Pradesh', 400],
+      ['Kerala', 500]
+    ]);
+
+    var options = {
+    	region: 'IN',
+    	displayMode: 'regions',
+      resolution: 'provinces',
+      width: "400px",
+      height: "300px"
+    };
+
+    var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+
+    chart.draw(data, options);
+  }
+</script>

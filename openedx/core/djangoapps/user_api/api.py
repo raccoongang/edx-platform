@@ -810,7 +810,8 @@ class RegistrationFormFactory(object):
             # Translators: This is a legal document users must agree to
             # in order to register a new account.
             terms_label = _(u"Terms of Service and Honor Code")
-            terms_link = marketing_link("HONOR")
+            #terms_link = marketing_link("HONOR")
+            terms_link = "/tos"
 
         # Translators: "Terms of Service" is a legal document users must agree to
         # in order to register a new account.

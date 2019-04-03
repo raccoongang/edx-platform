@@ -1,0 +1,141 @@
+## mako
+<%!
+  from django.conf import settings
+  from django.core.urlresolvers import reverse
+  from django.utils.translation import ugettext as _
+%>
+<%inherit file="/main.html" />
+
+<%namespace name='static' file='/static_content.html'/>
+
+<%block name="title"><title>${_('Privacy Policy')}</title></%block>
+<style type="text/css">
+	ul.dashed {
+  	  list-style-type: none;
+	}
+	ul.dashed > li {
+	  text-indent: -5px;
+	}
+	ul.dashed > li:before {
+	  content: "-";
+	  text-indent: -5px;
+	}
+	ol.a{
+	  list-style-type: lower-alpha;
+	}
+</style>
+<section class="static-container tos">
+    <h2 id="privacy">${_('DocMode Privacy policy')}</h2>
+
+    <p>This Privacy Policy applies to the websites www.docmode.org, which is operated by Jephersons Communications Pvt. Ltd. ("Site"). The term ‘DocMode’ or ‘us’ or ‘we’ or ‘our’ refers to the owner of the website i.e.Jephersons Communications Pvt. Ltd. whose registered office is in Mumbai, India. Our company registration number is U72900MH2009PTC191240. The term ‘you’ and ‘your’ refers to the user or viewer of our website.</p>
+    <p>This Privacy Policy describes how we may collect, use and disclose information about users of the Services. The "Services" for purposes of this Privacy Policy means the Site, and all information and services provided to you in connection with your use of the Site including, without limitation, news, reference content, tools, applications, sponsored programs, advertising, email communications, continuing medical education and discussion boards. Information collected under this Privacy Policy is always protected under the terms of this Privacy Policy. DocMode may change this policy from time to time by updating this page.</p>
+
+    <h2>Information That We Collect</h2>
+    <p>
+        In this section of our Privacy Policy, we discuss the information we may collect about you in connection with your use of the Services, which can include "Personal Information" (i.e., information that we can use to identify you, such as your name or email address) and "Non-Personal Information" (i.e., information that we do not use to identify you). As described below, we may associate Non-Personal Information with Personal Information and upon doing so such information will become Personal Information.
+
+        <ul>
+            <li> <strong>Registration</strong>:- When you register to become a member of the DocMode site, we request certain Personal Information from you such as your name and email address, address/Location, profession, occupation and specialty. You may choose to update and/or supplement the Personal Information that you provided at registration at any time through your account settings.</li>
+            <li><strong>Public Forums</strong>: When you post a comment on a discussion board or other public forum, by default your username, specialty and degree will be displayed along with your comment. Information that you post within a public forum is public information and may be used by us and third parties, as further described in the DocMode Terms of Use.</li>
+            <li><strong>Sponsored Programs</strong>: When you use the Services you may be presented with opportunities to engage in industry-sponsored informational programs consisting of sponsor-selected materials ("Sponsored Programs"). Examples of Sponsored Programs include information resources featuring branded or unbranded commercial content, interactive programs that provide information about medical conditions, treatments and products, and multi-media presentations including videos featuring key opinion leaders. We may make Sponsored Programs available to you through email or on-site units, all of which will be identified as described above. When you choose to engage in a Sponsored Program, you may be asked to provide Personal Information which may be provided directly to the third-party sponsor and also used by us as described in this Privacy Policy. In addition, you may be presented with polling questions from the sponsor. We also collect Non-Personal Information about your use of Sponsored Programs through cookies and web beacons, as described below.</li>
+            <li><strong>Continuing Medical Education</strong>. When you participate in a Continuing Medical Education (CME) or a Continuing Education (CE) activity made available to you through the DocMode site, you may be asked to provide Personal Information as required by that particular activity.</li>
+            <li><strong>Emails You Send to Us</strong>. This Privacy Policy does not apply to information, content, business information, ideas, concepts or inventions that you send to us by email or other non-Site communication. If you want to keep content or business information, ideas, concepts or inventions private or proprietary, do not send them to us in an email or other non-Site communication such as regular mail.</li>
+            <li><strong>Information from Third Party Sources</strong>. We may also collect additional information about members of the DocMode site from third party sources to assist us in providing the Services. For example, we may use third party information to verify and update your registration information and to personalize the Services provided to you, including advertising.</li>
+
+        </ul>
+    </p>
+    <h2><i><strong>What we do with the information we gather</strong></i></h2>
+    <p>
+        In this section of our Privacy Policy, we discuss how we may use the Personal Information and Non-Personal Information that we collect about you
+        <ul>
+            <li><strong>Avoid fraud</strong> To cross check the information you provide us and to reduce misuse and fraudulent profile creations. To make sure you are a registered medical practitioner" means any person, - who holds a qualification granted by an authority specified in his/her respective Country’s Medical Act, who is entitled to be registered as a medical practitioner under any law for the time being in force in any State to which this Act extends relating to the registration of medical practitioners. So that you can be exposed to sensitive medical information which otherwise can be misused by general public.</li> 
+            <li><strong>Internal record keeping</strong>.  </li>
+            <li><strong>Communications</strong>. By registering for the Services, you are consenting to receive certain communications. Specifically, we may use your registration information to send you communications about our products and services and the products and services of our third party sponsors through pop-ups, banners and emails.</li>
+            <li><strong>Member Profiles</strong>. And may associate this information with other information that we have about you, including Personal Information, thereby creating a profile of you that we may update from time to time ("Member Profile").</li>
+            <li><strong>Research, Development and Evaluation Activities</strong>. We use information that we collect about users of our Services, including Personal Information, to evaluate and improve the effectiveness of the Services, to develop new Services and for market analysis. </li>
+            <li><strong>Account Management</strong>. We may use your account information to administer your account, respond to your inquiries you send to us and to send you administrative communications about the Services.</li>
+        </ul>
+    </p>
+    <h2>Disclosure of Your Information to Third Parties</h2>
+    <p>
+        <ul>
+            <li><strong>Sponsored Programs</strong>: We may provide your Personal Information to third party sponsors of Sponsored Programs. Specifically, when you engage in a Sponsored Program, DocMode may provide your Personal Information, such as your name and specialty, but not your contact information such as email address and postal address, to the sponsor of the Sponsored Program and/or its agents on the sponsor's behalf. We may also provide such third parties with details about your engagement with the Sponsored Program (e.g., whether you viewed or otherwise interacted with certain content), your answers to any polling questions contained in the Sponsored Program that you have chosen to provide and information about you that we have received from third parties. We are not responsible for how these third parties use your information and manage your privacy.</li>
+            <li><strong>Advertising</strong>.DocMode guarantees that no registered user will be used without their consent to promote any Vendor or Solution Provider Related promotional, marketing and advertising campaigns. DocMode adheres to THE DRUGS AND MAGIC REMEDIES (OBJECTIONABLE ADVERTISEMENTS) ACT, India 1954.</li>
+            <li><strong>Business purpose</strong>.For presentations and business purposes, DocMode regularly imparts demonstration accounts that allow non-users, sponsors and Partners a glimpse into the DocMode. These demos and accounts have only limited capabilities (e.g., messaging is disabled) and passwords are changed regularly to limit possible misuse and unacceptable behaviour.</li>
+            <li><strong>Member Profiles</strong>. DocMode may provide Member Profiles (excluding contact information, such as email address and postal address, and information about your participation in specific named CME and CE activities) to third parties, including our pharmaceutical manufacturer customers, which they may use for their business purposes including marketing. We require these third parties to agree that they will use Member Profiles in accordance with applicable laws and regulations. By registering as a member of the DocMode site and using the Services, you consent to DocMode's disclosure of your Member Profiles to third parties as described herein.</li>
+            <li><strong>Continuing Medical Education</strong>: We may share your Personal Information with the accreditors of our continuing education programs. DocMode may provide your Personal Information to the accredited providers who certify CME/CE offered through the Services as required by these other providers to process the credits that that you earn by completing the applicable CME/CE activity, and as required for their internal recordkeeping purposes. Supporters of DocMode’s continuing medical education activities will receive only aggregated data about CME/CE activities that they support including participation and outcomes measurement.</li>
+            <li><strong>Consent</strong>: We may disclose your Personal Information to a third party in a manner not addressed by this Privacy Policy subject to your consent.</li>
+            <li><strong>Business Transfers</strong>: If one of us transfers a business unit (such as a subsidiary) or an asset (such as a website) to another company, that company will be required to treat any Personal Information collected under this Privacy Policy consistent with the applicable terms of this Privacy Policy.</li>
+            <li><strong>Legal Requirements</strong>: We may release account and other Personal Information when we believe release (1) is required to comply with valid legal requirements such as a law, regulation, search warrant, subpoena or court order; or (2) is reasonable in response to a physical threat to you or others, to protect property or defend or assert legal rights of us or others.</li>
+
+        </ul>
+    </p>
+    <h2>Security of Information.</h2>
+    <p>We have implemented technology and security policies and other measures to protect the personal data that we have under our control from unauthorized access, improper use, alteration, unlawful or accidental destruction, and accidental loss. We also require that all of our employees and others who have access to or are associated with the processing of your data respect your confidentiality.</p>
+    <p>We use security methods to determine the identity of registered users, so that appropriate rights and restrictions can be enforced for that user. Reliable verification of user identity is called authentication. We use both passwords and usernames to authenticate users. Users are responsible for maintaining the security of their DocMode login credentials. In spite of all this, in the rare occurrence of terrorist or targeted hacking or illegal attack, DocMode will not be held responsible for such an occurrence.</p>
+    <p>You must promptly notify DocMode of any breach of security related to the Services, including but not limited to unauthorized use of your password or account. To help ensure the security of your password or account, please sign out from your account at the end of each session.</p>
+
+    <h2>Links to other websites</h2>
+    <p>Our website may contain links to other websites of interest. However, once you have used these links to leave our site, you should note that we do not have any control over that other website. Therefore, we cannot be held responsible for the protection and privacy of any information which you provide whilst visiting such sites and such sites are not governed by this privacy statement. You should exercise caution and look at the privacy statement applicable to the website in question.</p>
+
+    <h2>Controlling your personal information</h2>
+    <p>We will not sell, distribute or lease your personal information to third parties unless we have your permission or are required by law to do so. We may use your personal information to send you promotional information about third parties which we think you may find interesting if you tell us that you wish this to happen.</p>
+    <p>If you believe that any information we are holding on you is incorrect or incomplete, please write to or email us as soon as possible, at the above address. We will promptly correct any information found to be incorrect.</p>
+
+    <h2>Open Meetings, Webinars and Online Meetings. </h2>
+    <p>Speakers on DocMode Webinars, Online Meetings and Online courses will also be asked to share information for validation and promotion purpose.</p>
+    <p>All content, files and material used for presentation on Webinars and Online Meetings i.e. the DocMode Platform used by the speaker including the session is a property of and a part of DocMode. and can be recorded, archived, shared and promoted for all users of DocMode to impart knowledge and educational and serve DocMode’s Purpose and Mission.  </p>
+
+    <p><strong>Account Information</strong>. You may update your registration information at any time through the Account Management feature available on the Site. You may also contact Docmode and request that your registration information be updated or deleted. Upon your request, we will delete your registration information from our active databases and where feasible, from our backup media. Note that if we delete your account, we may maintain certain demographic information about you for product improvement purposes.</p>
+    <h2>Children's Privacy</h2>
+    <p>The DocMode site and the Services are designed and intended for use by adults, and are not intended for nor designed to be used by children under the age of 18. We do not collect Personal Information from any person we know is under the age of 18.</p>
+
+    <h2>Branding and Advertising Policies on DocMode.org</h2>
+    <p>DocMode also has sponsored activity. Sponsored activity will be identified clearly by the following:</p>
+    <ol type="dash">
+    	<li>The course is on an “Association” page that has the Sponsoring Organisation Name, which is mainly a Company Name or Name of that Division within that Company or Brand name itself
+ e.g. <a href="http://docmode.org/mindvision/">http://docmode.org/mindvision/</a> where Mindvision is a division name of Lupin</li>
+    	<li>The Course maybe on an Association page that is a neutral organisation but ONLY the particular course is supported by a Sponsoring Organisation: 
+e.g <a href="http://docmode.org/cnp/">http://docmode.org/cnp/</a> where CNP is the neutral organisation and Sponsoring Organisations support individual  online lectures/courses.</li>
+    	<li>If a Course has received educational grants by an organisation or institution then a Mention will be made clearly highlighting the same.</li>
+    	<li>Branding of Prescription Drugs would be on the website only if the activity i.e. course or lecture is sponsored and that Organisation under its own Ethics and Advertising Policy wishes to advertise its brand or brands by mentioning “this scientific content or learning programs is sponsored/supported/powered by (Division Name) belonging to (company’s Name) and makers of (brand/s)” with respective Brand logos.  Branding on DocMode will be only in the form of Slider Images or banners.</li>
+    	<li>
+    		If the Sponsoring Organization uploads or wishes to share any content regarding their products/brands/drug detailing/ and other materials. DocMode will mention under the following tags
+    		<ol class="a">
+    			<li>“Advertisement” near an image/video/ html</li>
+    			<li>“Advertorial” for any advertisement editorial </li>
+    			<li>Sponsored Content - to any Article or PPT</li>
+    		</ol>
+    	</li>
+    	<li>
+    		DocMode currently does not showcase any advertisements from Third party Advertising Agencies or Google Ads no banner are served from a any free or paid web hosting services or “banner exchange”. No such advertisements will have any influence over the content of the Website.
+    	</li>
+        <li>
+		Our editorial educational content and course contents are not influenced by the funding sources. Funding Sources could support or sponsor educational content that possibly aligns with their own promotional goals or  marketing strategies.
+        </li>
+    </ol>
+
+    <h2>Funding for DocMode.org</h2>
+    <p>DocMode receives funding for mainly its content, either created on its own or by third-party or professional individual's or group’s (association’s) collaborative efforts.</p>
+
+    <p>The content can then be free to the user or charged as per the content agreements to the participant who voluntarily enrolls for these courses.</p>
+
+    <p>Sponsorship or Educational Grants from Medical Associations, Hospitals, Diagnostic, Research Organisations, Medical Devices or Pharmaceutical Companies are the main source of funding for DocMode.org</p>
+
+    <p>Individual Health professional as Participants Purchasing Certificate Courses is another major source of revenue for DocMode.org</p>
+
+    <p><strong>For privacy questions or concerns about our Web site or Services, please contact  info@docmode.org
+Effective date: September 9, 2016</strong></p>
+
+</section>
+
+<script>
+    $(document).ready(function() {
+        var print_tos = '<input type="button" value="Print Privacy Policy" class="print">';
+        $('#content section.tos').prepend(print_tos).append(print_tos);
+        $('#content section.tos input.print').click(function() {
+            window.print();
+            return false;
+        });
+    });
+</script>

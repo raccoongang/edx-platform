@@ -1,0 +1,132 @@
+<%!
+import json
+from openedx.core.djangolib.js_utils import dump_js_escaped_json
+from django.utils.translation import ugettext as _
+from lms.djangoapps.reg_form.views import userdetails,getuserfullprofile
+from lms.djangoapps.country.views import stateName, cityName
+from lms.djangoapps.specialization.views import specializationName
+%>
+<%namespace name='static' file='/static_content.html'/>
+<%inherit file="../main.html" />
+<%
+    userid = userdetails(user)
+    userstate = userid.rcity
+    userprof = getuserfullprofile(user)
+    speclzn = specializationName(userid.specialization_id)
+  %>  
+  <style type="text/css">
+  	.login-register .form-field label, .financial-assistance-wrapper .financial-assistance-form .form-field label {
+  		color: #000000;
+  		font-size: 18px;
+  	}
+  	p {
+  		font-size: 15px;
+  	}
+  </style>
+<div id="login-and-registration-container" class="login-register" style="background: transparent;padding-bottom: 50px;">
+  <h3 style="text-align:center;color:#337ab7">Case Study Form</h3>
+
+  <p>Fill the below details to submit your Case Study or Send us the Case Study document by mail on <a HREF="mailto:harsh@docmode.com">harsh@docmode.com</a></p>
+  	<ul>The case study must include 
+  		<li>Doctor Details</li>
+  		<li>Abstract of Case Study & Therapeutic Segment </li>
+  		<li>Patient History </li>
+  		<li>Medical History </li>
+  		<li>Physical Examination and Investigations </li>
+  		<li>Clinical Treatment </li>
+  		<li>Results of Clinical Treatment & Conclusion</li>
+  	</ul>
+  	<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+  	<form action="https://docs.google.com/forms/d/e/1FAIpQLSfTnrGGCHOe80XpDCOKy0JnLWCIKzi6GS65bWvMCo9_v6PpLA/formResponse" name="casestudyForm" id="mG61Hd" target="hidden_iframe" method="POST" class="register-form" style="background-color: #f9f9f9;">
+	    <div class="form-field" style="display:none;">
+	      <p>Email:</p>
+	      <input type="hidden" id="email" placeholder="Enter email" name="entry.306474248">
+	    </div>
+	    <div class="form-field" style="display:none;">
+	      <label for="email">Name:</label>
+	      <input type="hidden" class="form-control" id="name" placeholder="Enter name" name="entry.306896819">
+	    </div>
+	    <div class="form-field" style="display:none;">
+	      <label for="email">Contact</label>
+	      <input type="hidden" class="form-control" id="contact" placeholder="Enter phone" name="entry.1101571385">
+	    </div>
+	    <div class="form-field">
+	      <label for="email"><span class="label-text">Specialization*</span>:
+	      </label>
+	      <input type="text" class="input-block " id="specz" placeholder="Enter specz" name="entry.904229445" value="" required style="border: 1px solid #d9d9d9;">
+	    </div>
+	    <div class="form-field">
+	      <label for="email"><span class="label-text">Abstract of Case Study *</span></label>
+	        <p>For Example: To examine the treatment of COPD.
+	      </p>
+	      <textarea name="entry.1226635424" rows="4" cols="50" required></textarea>
+	    </div>
+	    <div class="form-field">
+	      <label for="email"><span class="label-text">Therapeutic Segment</span>
+	        <p>For Example: Respiratory System</p></label>
+	      <input type="text" class="form-control" name="entry.807765674" style="border: 1px solid #d9d9d9; width: 800px;">
+	    </div>
+	    <div class="form-field">
+	      <label for="email"><span class="label-text">Patient History *</span>
+	      <p>For Example: A 55 Year Old Female Business Executive . She has Increasing Symptoms of COPD. She has had two exacerbations within the past 6 months requiring emergency room visit. She is no longer able to walk her dog. She needs to stop to catch her breath even when walking at her own pace..........</p>
+	      </label>
+	      <textarea name="entry.1999443291" rows="4" cols="50" required></textarea>
+	    </div>
+	    <div class="form-field">
+	      <label for="email">Medical History of Patient *
+	      </label>
+	        <p>Long acting Beta Agonist ( LABA ), Long Acting Muscuranic Antagonist ( LAMA), ............</p>
+	      <textarea name="entry.1216657382" rows="4" cols="50" required></textarea>
+	    </div>
+	    <div class="form-field">
+	      <label for="email">Physical Examination & Investigations *
+	        <p>For Example: On physical exam she weighs 50 kilos. Her BMI is only 17.7 . She's lost five kilograms since last year. Her blood pressure is 150/90. 94% is her pulse oximetry at rest. Her heart rate is 90 beats/min and her respiratory rate is 14/min......</p>
+	      </label>
+	      <textarea name="entry.1310254503" rows="4" cols="50" required></textarea>
+	    </div>
+	    <div class="form-field">
+	      <label for="email">3-5 Questions for Doctors & Students with Answers
+	        <p>For Example: Qns) LABA stands for ___________ ? Ans) Long Acting Beta Agonist</p>
+	      </label>
+	      <textarea name="entry.497701898" rows="4" cols="50" ></textarea>
+	    </div>
+	    <div class="form-field">
+	      <label for="email">Diagnosis & Clinical Treatment *
+	        <p>For Example: Her COPD assessment test has a score greater than 10. On the mMRC dyspnea scale she has a Grade 2. According to the newer classification of GOLD 2017 she has had two exacerbations in the last two months which puts her in GOLD category “D” and hence she has COPD. Gold D suggests to increase inhaled corticosteroid....</p>
+	      </label>
+	      <textarea name="entry.870782070" rows="4" cols="50" required></textarea>
+	    </div>
+	    <div class="form-field">
+	      <label for="email">Results of the Clinical Treatment *
+	        <p>For Example: We first confirmed that she was adhering to smoking cessation Then had a choice according the GOLD Guidelines of whether treatment with Azithromycin or Roflumilast. We chose the former and placed her on 500 mg of Azithromycin 3 times a week (MWF). On this regimen she stabilized and did not have any further severe exacerbations of COPD over the next year. Her exercise tolerance remained poor and therefore she was placed in to a pulmonary rehabilitation program Because of this program, her activities of daily living improved and she seemed to have less anxiety about her disease..........</p>
+	      </label>
+	      <textarea name="entry.1415945103" rows="4" cols="50" required></textarea>
+	    </div>
+	    <div class="form-field">
+	      <label for="email">Conclusion *
+	        <p>For Example: The addition of an inhaled a corticosteroid, an antibiotic, Azithromycin, and the initiation of pulmonary rehabilitation did not improve her lung function but did improve her outcomes. She was not requiring further systemic corticosteroids and her general feeling of well being and exercise tolerance were improved. This case shows that despite the presence of severe airflow obstruction due to COPD there are measures that can improve patients breathlessnes, increased their activities and lessen the anxieties that so often accompanies this chronic condition.........</p>
+	      </label>
+	      <textarea name="entry.649340318" rows="4" cols="50" required></textarea>
+	    </div>
+	    <button type="submit" class="btn btn-primary" onclick="setTimeout(casestudy,3000);">Submit</button>
+	    <div>
+	          <span id="casestudy_success"></span>
+	      </div>
+  </form>
+</div>
+<script type="text/javascript">
+	function casestudy() {
+    	document.getElementById('casestudy_success').innerHTML='Submitted';
+      	document.getElementById('mG61Hd').reset();
+   	}
+
+  	function casestudy_form() {
+    	document.getElementById("email").value = "${request.user.email}";
+	    document.getElementById("name").value = "${userprof.name}";
+	    document.getElementById("contact").value = "${userid.phone}";
+	    document.getElementById("specz").value = "${speclzn}";
+  	}
+
+  	setTimeout(casestudy_form, 2000);
+</script>
+

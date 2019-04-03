@@ -1,7 +1,7 @@
 <h3 class="header-facet">
     <%- displayName %>
 </h3>
-<ul data-facet="<%- name %>" class="facet-list collapse">
+<ul data-facet="<%- name %>" class="facet-list ">
     <%= HtmlUtils.ensureHtml(optionsHtml) %>
 </ul>
 <% if (listIsHuge) { %>

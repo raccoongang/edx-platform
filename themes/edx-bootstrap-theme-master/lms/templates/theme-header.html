@@ -1,0 +1,233 @@
+<!-- You can make changes to HTML templates by copying them to your theme directory in the appropriate place, and making the changes you need. Keep in mind that in the future if you upgrade the Open edX code, you may have to update the copied template in your theme also. -->
+
+## mako
+<%namespace name='static' file='static_content.html'/>
+<%namespace file='main.html' import="login_query"/>
+<%!
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
+from openedx.core.djangolib.markup import HTML
+
+# App that handles subdomain specific branding
+import branding
+# app that handles site status messages
+from status.status import get_site_status_msg
+
+from lms.djangoapps.ccx.overrides import get_current_ccx
+%>
+<!--DELETED CONTENT BETWEEN THIS-->
+
+<!--DELETED CONTENT BETWEEN THIS-->
+## Provide a hook for themes to inject branding on top.
+<%block name="navigation_top" />
+
+<%block>
+<%
+try:
+    course_id = course.id.to_deprecated_string()
+except:
+    # can't figure out a better way to get at a possibly-defined course var
+    course_id = None
+site_status_msg = get_site_status_msg(course_id)
+%>
+% if site_status_msg:
+<div class="site-status">
+  <div class="inner-wrapper">
+    <span class="white-error-icon"></span>
+    <p>${site_status_msg}</p>
+  </div>
+</div>
+% endif
+</%block>
+  <!-- <div class="top-bar top-bar-header">
+    <div class="row">
+        <div class="col-md-6 col-xs-6">
+            <div class="top-number"><p><i class="fa fa-phone-square"></i> +0123 456 70 90</p></div>
+        </div>
+        <div class="col-md-6 col-xs-6">
+           <div class="social">
+                <ul class="social-share social-share-header pull-right">
+                    <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                    <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                    <li><a href="#"><i class="fa fa-linkedin"></i></a></li> 
+                    <li><a href="#"><i class="fa fa-dribbble"></i></a></li>
+                    <li><a href="#"><i class="fa fa-skype"></i></a></li>
+                </ul>
+           </div>
+        </div>
+    </div>
+</div> --><!--/.top-bar-->
+<header>
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Menu</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="http://docmode.org">
+                        <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/198x61logo.jpg" alt="">
+                    </a>   
+                </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active">
+                            <a href="/about">About</a>
+                        </li>
+                        <li>
+                            <a href="/assoc/">partners</a>
+                        </li>
+                        <li>
+                            <a href="/contact">contact</a>
+                        </li>
+                        <li>
+                            <a target="_blank" href="https://docmode.blog/">Blog</a>
+                        </li>
+                        % if user.is_authenticated():
+                            %if request.user.is_staff:
+                                <li>
+                                    <a target="_blank" href="/docmode/analytics">Docmode Analytics</a>
+                                </li>
+                            %endif
+                        %endif
+                    </ul>
+                    <!-- <form class="navbar-form navbar-left">
+                        <div class="form-group search-block">
+                            <input type="text" class="search-text" placeholder="Search for courses or topics">
+                            <button type="submit" class="search-btn"></button>
+                        </div>
+                    </form> -->
+                    % if user.is_authenticated():
+                        <div class="pull-right btn-custom dropdown">
+                                <button class="btn btn-primary dropdown-toggle">${user.username}
+                                <span class="caret"></span></button>
+                                <ul class="dropdown-menu">
+                                    <%block name="navigation_dropdown_menu_links" >
+                                    <li><a href="${reverse('dashboard')}">${_("Dashboard")}</a></li>
+                                    <li><a href="${reverse('account_settings')}">${_("Account Settings")}</a></li>
+                                    <li><a href="${reverse('learner_profile', kwargs={'username': user.username})}">${_("My Profile")}</a></li>
+                                    </%block>
+                                    <li><a href="${reverse('logout')}" role="menuitem">${_("Sign Out")}</a></li>
+                                </ul>
+                        </div>
+                    %else:
+                        <div class="pull-right btn-custom">
+                        % if not settings.FEATURES['DISABLE_LOGIN_BUTTON']:
+                            % if course and settings.FEATURES.get('RESTRICT_ENROLL_BY_REG_METHOD') and course.enrollment_domain:
+                                <a href="${reverse('course-specific-register', args=[course.id.to_deprecated_string()])}${login_query()}" class="btn btn-default" >sign up</a>
+                            %else:
+                                <a href="/register?next=${request.path}" class="btn btn-default" >sign up</a>
+                            %endif
+                        %endif
+                        % if not settings.FEATURES['DISABLE_LOGIN_BUTTON']:
+                            % if course and settings.FEATURES.get('RESTRICT_ENROLL_BY_REG_METHOD') and course.enrollment_domain:
+                                <a href="${reverse('course-specific-login', args=[course.id.to_deprecated_string()])}" class="btn btn-secondary">Log in</a>
+                             %else:
+                                <a href="/login?next=${request.path}" class="btn btn-secondary" >Log in</a>
+                            %endif
+                        %endif
+                        </div>
+                    % endif
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <%  
+                path = request.path
+                path = path.split('/')
+            %>
+            %if 'wiki' in path:
+                <div class="mob-menu collapse">
+            %else:
+                <div class="mob-menu collapse">
+            %endif
+                <a href="" class="close-mob-menu" style="color:#fff;">x</a>
+                <div class="mob-search search-block">
+                    <input type="text" class="search-text" placeholder="Search for courses or topics">
+                        <button type="submit" class="search-btn"></button>
+                </div>
+                % if user.is_authenticated():
+                    <ul>
+                        <li><a href="${reverse('dashboard')}">Dashboard</a></li>
+                        <li><a href="${reverse('account_settings')}">Account Settings</a></li>
+                        <li><a href="${reverse('learner_profile', kwargs={'username': user.username})}">My Profile</a></li>
+                        <li><a href="${marketing_link('COURSES')}">courses</a></li>
+                        <li><a href="/lectures">lectures</a></li>
+                        <li><a href="/case_studies/">case studies</a></li>
+                        <li><a href="/subjects/">topics</a></li>
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/assoc/">OUR PARTNERS</a></li>
+                        <!-- <li><a href="/privacy">PRIVACY POLICY</a></li>
+                        <li><a href="/tos">TERMS OF USE</a></li> -->
+                        <li><a href="/contact_us">CONTACT US</a></li>
+                        <li><a href="${reverse('logout')}">Sign Out</a></li>
+                    </ul>
+                %else: 
+                    <div class="mob-menu-btns clearfix btn-custom">                    
+                        % if not settings.FEATURES['DISABLE_LOGIN_BUTTON']:
+                            % if course and settings.FEATURES.get('RESTRICT_ENROLL_BY_REG_METHOD') and course.enrollment_domain:
+                                <a href="${reverse('course-specific-register', args=[course.id.to_deprecated_string()])}${login_query()}" class="btn btn-primary" >sign up</a>
+                            %else:
+                                <a href="/register?next=${request.path}" class="btn btn-primary" >sign up</a>
+                            %endif
+                        %endif
+                        % if not settings.FEATURES['DISABLE_LOGIN_BUTTON']:
+                            % if course and settings.FEATURES.get('RESTRICT_ENROLL_BY_REG_METHOD') and course.enrollment_domain:
+                                <a href="${reverse('course-specific-login', args=[course.id.to_deprecated_string()])}" class="btn btn-default">Log in</a>
+                             %else:
+                                <a href="/login?next=${request.path}" class="btn btn-default" >Log in</a>
+                            %endif
+                        %endif
+                    </div>
+                    <ul>
+                        <li><a href="${marketing_link('COURSES')}">courses</a></li>
+                        <li><a href="/lectures">lectures</a></li>
+                        <li><a href="/case_studies/">case studies</a></li>
+                        <li><a href="/subjects/">topics</a></li>
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/assoc/">OUR PARTNERS</a></li>
+                        <!-- <li><a href="/privacy">PRIVACY POLICY</a></li>
+                        <li><a href="/tos">TERMS OF USE</a></li> -->
+                        <li><a href="/contact">CONTACT US</a></li>
+                    </ul>
+                %endif
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+        <div class="navbar-secondary">
+            <div class="container">
+                <!-- <div class="collapse navbar-collapse"> -->
+                    <ul class="nav navbar-nav clearfix">
+                        <li>
+                            <a href="/">home</a>
+                        </li>
+                        <li>
+                            <a href="${marketing_link('COURSES')}">courses</a>
+                        </li>
+                        <li>
+                            <a href="/lectures">lectures</a>
+                        </li>
+                        <li>
+                            <a href="/case_studies/">case studies</a>
+                        </li>
+                        <li>
+                            <a href="/subjects/">topics</a>
+                        </li>
+                        <li>
+                            <a href="/research/">RESEARCH</a>
+                        </li>
+                    </ul>
+                <!-- </div> -->
+            </div>
+        </div>
+    </header>
+
+<script type="text/javascript">
+  
+  function showm(){
+    document.getElementById("hmenu").style.display = "block";
+  }
+</script>

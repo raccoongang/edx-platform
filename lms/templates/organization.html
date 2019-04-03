@@ -1,0 +1,29 @@
+<%namespace name='static' file='static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+%>
+<%page args="organization" expression_filter="h"/>
+<style type="text/css">
+.comman a{ background : #ffffff; }
+</style>
+<div class="partnerlistBlock">
+        <div class="card">
+            <a href="/${organization['short_name']}">
+            <div class="card-img">
+                <img src="${organization['logo']}" alt="${organization['short_name']}" />
+            </div>
+            <div class="card-text">
+                <h4>${organization['name']}</h4>
+                <!-- <span></span> -->
+            </div>
+            </a>
+        </div>
+</div>
+<!--
+<div class="member-logo">
+  <img src="${organization['logo']}" width="200" height="101"></img>
+</div>
+<div class="member-label">
+  <span>${organization['name']}</span>
+</div>-->

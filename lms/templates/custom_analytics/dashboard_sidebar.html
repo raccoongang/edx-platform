@@ -1,0 +1,41 @@
+<%!
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+%>
+<div class="col-md-3 left_col" style="min-width: 100px;">
+  <div class="left_col scroll-view">
+
+    <div class="clearfix"></div>
+
+    <br />
+
+    <!-- sidebar menu -->
+    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+      <div class="menu_section">
+        <h3>DocMode</h3>
+        <ul class="nav side-menu">
+          <li><a href="/docmode/analytics"><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
+            <!-- <ul class="nav child_menu">
+              <li><a href="index.html">Dashboard</a></li>
+              <li><a href="index2.html">Dashboard2</a></li>
+              <li><a href="index3.html">Dashboard3</a></li>
+            </ul> -->
+          </li>
+          <li><a href="/docmode/coupons"><i class="fa fa-bar-chart-o"></i> Coupons <span class="fa fa-chevron-down"></span></a>
+            <!-- <ul class="nav child_menu">
+              <li><a href="chartjs.html">Chart JS</a></li>
+              <li><a href="chartjs2.html">Chart JS2</a></li>
+              <li><a href="morisjs.html">Moris JS</a></li>
+              <li><a href="echarts.html">ECharts</a></li>
+              <li><a href="other_charts.html">Other Charts</a></li>
+            </ul> -->
+          </li>
+          <li><a href="/docmode/custom_analytics_viewership"><i class="glyphicon glyphicon-user"></i> Viewership </span></a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+    <!-- /sidebar menu -->
+  </div>
+</div>

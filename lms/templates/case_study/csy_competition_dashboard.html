@@ -1,0 +1,114 @@
+<%page expression_filter="h"/>
+<%namespace name='static' file='../static_content.html'/>
+<%!
+    import json
+    from django.utils.translation import ugettext as _
+    from openedx.core.djangolib.js_utils import dump_js_escaped_json
+    from django.template.context_processors import csrf
+    from datetime import date
+%>
+
+<%inherit file="../main.html" />
+<%block name="pagetitle">${_("Case study add")}</%block>
+
+    <link href="/static/edx-bootstrap-theme-master/css/breadcrums.css" rel="stylesheet"> 
+    <link href="/static/edx-bootstrap-theme-master/css/contact.css" rel="stylesheet"> 
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+<style type="text/css">
+  input[type="text"],input[type="email"] {
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: normal;
+  }
+  label {
+    text-transform: uppercase;
+    padding: 6px 16px;
+    font-family: "lato";
+    font-weight: bold;
+    line-height: 1.43;
+    letter-spacing: 0.4px;
+    border-radius: 0;
+    border: none;
+    margin: 10px 0;
+    margin-left: 15px;
+    padding: 8px 16px;
+  }
+  .btn-primary {
+    background-color: #07b256;
+    color: #fff;
+    border: 1px solid #07b256;
+  }
+    input[type="submit"] {
+      background-color: #07b256;
+      color: #fff;
+      border: 1px solid #07b256;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      font-family: "lato";
+      font-weight: bold;
+      line-height: 1.43;
+      letter-spacing: 0.4px;
+      border-radius: 0;
+      border: none;
+      margin: 10px 0;
+      margin-left: 15px;
+      padding: 8px 16px;
+      background-image: none;
+    }
+</style>
+  	<section >
+    	<div class="container topicCont">
+      		<div class="row">
+        		<ul class=breadcrums>
+          			<li><a href="/">Home / </a></li>
+          			<li ><a href="#" class="active" >Case Study</a></li>
+        		</ul>
+      		</div>
+      		<div class="row contactSec">
+        		<div class="col-md-12">
+          			<table id="example" class="table table-striped table-bordered table-hover" style="width:100%">
+				        <thead>
+				            <tr>
+				                <th>Title</th>
+				                <th>Added on</th>
+                        <th>Updated on</th>
+				                <th>Edit</th>
+
+				            </tr>
+				        </thead>
+				        <tbody>  
+				        % for case in case_data:
+                <% 
+                  addeddate = case.csa_added.strftime('%d/%m/%Y %H:%M')
+                  updateddate = case.csa_updated.strftime('%d/%m/%Y %H:%M')
+                %>
+				            <tr>
+				                <td>${case.title}</td>
+				                <td>${addeddate}</td>
+                        <td>${updateddate}</td>
+				                <td><a href="/cs_competition/${case.id}"><i class="fa fa-pencil"></i></a></td>
+				            </tr>
+				        %endfor
+				        </tbody>
+				    </table>
+        		</div>
+            <div class="btn-custom col-md-12">
+              <a href="/cs_competition/new/" style="float: left;" class="btn btn-primary">SUBMIT NEW CASE STUDY</a>                      
+            </div>
+  			</div>
+		</div>
+	</section>
+</div>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript">
+  function msghide(){
+    $('#msg').hide();
+  }
+
+  	$(document).ready(function() {
+    	$('#example').DataTable();
+	} );
+  //CKEDITOR.replace( 'description' );
+
+</script>

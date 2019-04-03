@@ -1,0 +1,8 @@
+<%namespace name='static' file='../static_content.html'/>
+<ul class="courses-listing">
+    %for course in courses:
+    <li class="courses-listing-item">
+      <%include file="../course.html" args="course=course" />
+    </li>
+    %endfor
+</ul>

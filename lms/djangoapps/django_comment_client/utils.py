@@ -558,14 +558,14 @@ def get_ability(course_id, content, user):
             user_group_id,
             content_user_group_id
         ),
-        'can_openclose': check_permissions_by_view(
-            user,
-            course_id,
-            content,
-            "openclose_thread" if content['type'] == 'thread' else False,
-            user_group_id,
-            content_user_group_id
-        ),
+        #'can_openclose': check_permissions_by_view(
+        #    user,
+        #    course_id,
+        #    content,
+        #    "openclose_thread" if content['type'] == 'thread' else False,
+        #    user_group_id,
+        #    content_user_group_id
+        #),
         'can_vote': not is_content_authored_by(content, user) and check_permissions_by_view(
             user,
             course_id,

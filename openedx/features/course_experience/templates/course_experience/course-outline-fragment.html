@@ -10,6 +10,8 @@ from datetime import date
 from django.utils.translation import ugettext as _
 
 from openedx.core.djangolib.markup import HTML, Text
+# added by docmode for add view counter
+from lms.djangoapps.add_manager.views import sponsored_user
 %>
 
 <%
@@ -37,7 +39,7 @@ course_sections = blocks.get('children')
                             aria-controls="${ section['id'] }_contents"
                             id="${ section['id'] }">
                         <span class="fa fa-chevron-right ${ 'fa-rotate-90' if section_is_auto_opened else '' }" aria-hidden="true"></span>
-                        <h3 class="section-title">${ section['display_name'] }</h3>
+                        <h3 class="section-title" style="font-size: 1.7rem;">${ section['display_name'] }</h3>
             % if section.get('complete'):
                             <span class="complete-checkmark fa fa-check"></span>
             % endif
@@ -184,3 +186,123 @@ course_sections = blocks.get('children')
 <%static:webpack entry="CourseOutline">
     new CourseOutline();
 </%static:webpack>
+%if not request.user.is_staff:
+    <% 
+        user_course = sponsored_user(request.user,course.id)
+    %>
+
+    %if user_course > 0:    
+      <div class="modal fade" id="sponsored_content" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="width:100%;" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                  %if user_course[0]['video_url'] :
+                    <iframe id="iframeYoutube" width="100%" height="315" src="${user_course[0]['video_url']}" frameborder="0" allowfullscreen allow="autoplay"></iframe>
+                  %else :
+                    <img src="${user_course[0]['image_url']}" alt="${user_course[0]['video_url']}" width="100%" height="315px;">
+                  %endif
+                </div>
+                <input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }">
+                <!-- <div class="modal-body">
+                    <p style="margin-top: 10px;font-size: 16px;">${user_course[0]['question']}</p>
+                    <input type="text" id="captcha_term" required>
+                    <button type="button" class="btn btn-primary" onclick="check_captcha();">Submit</button>
+                    <p>Hint - ${user_course[0]['answer']}</p>
+                    <input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }">
+                    <p id="errormsg" style="display: none;">Please enter the value.</p>
+                    <p id="errormsg2" style="display: none;">Please enter the correct value.</p>
+                </div> -->
+                <div class="modal-footer" id="closebtn">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="modalclose(); add_view_counter();">Close</button>
+                </div>
+            </div>
+        </div>
+      </div>
+      <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+      <script type="text/javascript">
+        $(window).on('load',function(){
+            /* Get iframe src attribute value i.e. YouTube video url
+            and store it in a variable */
+            var url = "${user_course[0]['video_url']}"+"?autoplay=1&loop=3";
+            
+            /* Remove iframe src attribute on page load to
+            prevent autoplay in background */
+            $("#iframeYoutube").attr('src', '');
+            
+            /* Assign the initially stored url back to the iframe src
+            attribute when modal is displayed */
+            
+            $("#iframeYoutube").attr('src', url);
+            
+            /* Assign empty url value to the iframe src attribute when
+            modal hide, which stop the video playing */
+            $('#sponsored_content').modal('show');
+        });
+
+        function autoplay() {
+          var url = "${user_course[0]['video_url']}";
+          $(".modal-body#iframeYoutube").attr('src', 'url');
+
+        }
+
+        function check_captcha1() {
+            var captcha_list = "";
+            var captcha_list = captcha_list.split(",");
+            var lngth = captcha_list.length;
+            var captcha_t = document.getElementById('captcha_term').value;
+            var captcha_term = captcha_t.replace(/[^a-zA-Z ]/g, "");
+            for(var i = 0; i < lngth; i++) {
+                if(captcha_list[i].replace(/[^a-zA-Z ]/g, "") == captcha_term){
+                    alert("match found");
+                } else {
+                    alert("Please enter same text");
+                }
+            } 
+        }
+
+        function check_captcha() {
+            var captcha_list = "${user_course[0]['answer']}";
+            var captcha_term = document.getElementById('captcha_term').value;
+            if (captcha_term.length > 0) {
+                var captcha_term = captcha_term.replace(/[^a-zA-Z]/g, "");
+                if(captcha_term == captcha_list) {
+                    document.getElementById('iframeYoutube').src="${user_course[0]['video_url']}"+ "?autoplay=1";
+                    
+                    add_view_counter();
+                    $('#sponsored_content').modal('hide');
+                } else {
+                    document.getElementById('captcha_term').value="";
+                    document.getElementById('errormsg2').style.display="block";
+                    document.getElementById('errormsg').style.display="none";
+                }
+            } else {
+                $( "#captcha_term" ).effect( "shake" );
+
+                document.getElementById('errormsg').style.display="block";
+            }
+        }
+
+        function add_view_counter() {
+            $.ajax({
+              method:'GET',
+              url:'',
+              dataType:'html',
+              data:{
+                cid : "${course.id}",
+                csrfmiddlewaretoken : document.getElementsByName('csrfmiddlewaretoken')[0].value
+              },
+              success:function(data){
+                $('#errors').html(data),
+                $('#errors').delay(1000).fadeOut();
+              }
+            });
+          return false;
+          }
+
+        function modalclose() {
+            $('#iframeYoutube').attr('src', '');
+        }
+      </script>
+    %endif
+%endif

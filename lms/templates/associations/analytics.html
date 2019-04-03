@@ -1,0 +1,168 @@
+<%namespace name='static' file='../static_content.html'/>
+<%!
+import json
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+from django.conf import settings
+from edxmako.shortcuts import marketing_link
+from openedx.core.lib.courses import course_image_url
+from associations.views import course_det
+from django.core.context_processors import csrf
+from lms.djangoapps.associations.views import speczName, userType, orgName
+%>
+
+<%inherit file="../main.html" />
+<%block name="headextra">
+  ## OG (Open Graph) title and description added below to give social media info to display
+  ## (https://developers.facebook.com/docs/opengraph/howtos/maximizing-distribution-media-content#tags)
+  <meta property="og:title" content="${_('Association Title')}" />
+  <meta property="og:description" content="${_('short_description')}" />
+  <!-- SLIDER FILES START -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+  <!-- SLIDER FILES END -->
+</%block>
+
+<%block name="pagetitle">${assoc_short_name}</%block>
+
+<section class="course-info">
+  <header class="course-profiless" style="padding-top:0px; height:400px;">
+    % if slider_images is None:
+      <h3>== NONE ==</h3>
+    % else:
+      <div id="myCarousel" class="carousel slide" data-ride="carousel">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+          % for i in range(no_of_slides):
+            % if i == 0:
+              <li data-target="#myCarousel" data-slide-to="${i}" class="active"></li>
+            % else:
+              <li data-target="#myCarousel" data-slide-to="${i}"></li>
+            % endif
+          % endfor
+        </ol>
+
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" role="listbox">
+        % for index, item in enumerate(slider_images):
+          % if index == 0:
+            <div class="item active">
+          % else:
+            <div class="item">
+          % endif
+              <img src="${item}" alt="${index}" width="100%" style="max-height: 400px;">
+              <div class="carousel-caption">
+                
+              </div>
+            </div>
+        % endfor
+        </div>
+
+        <!-- Left and right controls -->
+        <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+          <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+          <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+    % endif
+  </header>
+
+  <section class="container">
+    <section class="details">
+      <div class="inner-wrapper">
+        <h1>
+          ${assoc_name}
+        </h1>
+        <p>
+          ${assoc_description}
+        </p>
+        <header id="global-navigation" class="global ">
+          <nav class="nav-wrapper" aria-label="Global">
+            <ol class="left nav-global">
+              <li class="nav-global-01">
+              %if user.is_authenticated():
+                %if grpmember == '1':
+                  <button type="button" id="button" class="btn btn-info">Already a member </button>
+                %else:
+                  <button type="button" id="button" class="btn btn-info" onclick="locanalytics();">Join Group</button>
+                  <input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }">
+                  <div id="errors"></div>
+                %endif
+              %endif
+              </li>
+              <li id="msg"></li>
+            </ol>
+          </nav>
+        </header>
+      </div>
+    </section>
+
+    <section class="course-sidebar">
+
+    </section>
+
+  </section>
+  <section class="find-courses">
+    <section class="courses-container">
+      <div class="courses${'' if course_discovery_enabled else ' no-course-discovery'}" role="region" aria-label="${_('List of Courses')}">
+        <ul class="courses-listing">
+          %for course in courses:
+          <li class="courses-listing-item">
+            <%include file="../assoc_course.html" args="course=course_det(course.course_id)" />
+          </li>
+          %endfor
+        </ul>
+      </div>
+      <canvas id="myChart" style="width:400px; height:200px;"></canvas>
+    </section>
+  </section>
+</section>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.js"></script>
+  <script type="text/javascript">
+  //setTimeout(locanalytics, 3000);
+
+    function locanalytics() {
+      $.ajax({
+        method:'GET',
+        url:'',
+        dataType:'json',
+        success:function(data){
+          var default_data = $.map(data, function(value) {return value})
+          
+          var default_label = []
+          $.each(data, function(key, value){
+            default_label.push(key);
+          });
+          var ctx = document.getElementById("myChart");
+          var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: default_label,
+              datasets: [{
+                  label: '',
+                  data: default_data,
+                  backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255,99,132,1)',
+                    'rgba(54, 162, 235, 1)'
+                ],
+                borderWidth: 1
+              }]
+            }
+          })
+        }
+      });
+    return false;
+    }
+</script>

@@ -56,7 +56,7 @@ class ResponseNotification(BaseMessageType):
     pass
 
 
-@task(base=LoggedTask, routing_key=ROUTING_KEY)
+#@task(base=LoggedTask, routing_key=ROUTING_KEY)
 def send_ace_message(context):
     context['course_id'] = CourseKey.from_string(context['course_id'])
 
@@ -100,8 +100,8 @@ def _track_notification_sent(message, context):
 def _should_send_message(context):
     cc_thread_author = cc.User(id=context['thread_author_id'], course_id=context['course_id'])
     return (
-        _is_user_subscribed_to_thread(cc_thread_author, context['thread_id']) and
-        _is_not_subcomment(context['comment_id']) and
+        _is_user_subscribed_to_thread(cc_thread_author, context['thread_id']) or
+        _is_not_subcomment(context['comment_id']) or
         _is_first_comment(context['comment_id'], context['thread_id'])
     )
 
@@ -143,7 +143,7 @@ def _build_message_context(context):
     message_context.update({
         'thread_username': thread_author.username,
         'comment_username': comment_author.username,
-        'post_link': _get_thread_url(context),
+        #'post_link': _get_thread_url(context),
         'comment_created_at': date.deserialize(context['comment_created_at']),
         'thread_created_at': date.deserialize(context['thread_created_at'])
     })

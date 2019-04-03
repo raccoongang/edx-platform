@@ -47,7 +47,7 @@ from openedx.core.djangolib.markup import HTML, Text
                             <div class="card-content">
                                 <div class="card-supertitle">${course.display_org_with_default}</div>
                                 <div class="card-title">${course.display_name_with_default}</div>
-                                <p class="card-text">${completion_date_message_html}</p>
+                                <p class="card-text" style="min-height:auto;">${completion_date_message_html}</p>
                             </div>
                         </div>
                     </a>
@@ -63,7 +63,7 @@ from openedx.core.djangolib.markup import HTML, Text
                         <div class="card-content">
                             <div class="card-supertitle">${course.display_org_with_default}</div>
                             <div class="card-title">${course.display_name_with_default}</div>
-                            <p class="card-text">${completion_date_message_html}</p>
+                            <p class="card-text" style="min-height:auto;">${completion_date_message_html}</p>
                         </div>
                     </div>
                 % endif

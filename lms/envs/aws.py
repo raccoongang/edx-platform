@@ -1101,3 +1101,24 @@ plugin_settings.add_plugins(__name__, plugin_constants.ProjectType.LMS, plugin_c
 ########################## Derive Any Derived Settings  #######################
 
 derive_settings(__name__)
+
+####################search filter custom ##############################
+COURSE_DISCOVERY_FILTERS = ["org","subjects"]
+LANGUAGE_MAP = {'terms': {lang: display for lang, display in ALL_LANGUAGES}, 'name': 'Language'}
+COURSE_DISCOVERY_MEANINGS = {
+    'subjects': {
+        'name': 'Topics',
+    },
+    'org': {
+        'name': 'Associations',
+    },
+    # 'modes': {
+    #     'name': 'Course Type',
+    #     'terms': {
+    #         'honor': 'Honor',
+    #         'verified': 'Verified',
+    #     },
+    # },
+    #'language': LANGUAGE_MAP,
+    #'pacing_type': 'Availability',
+}

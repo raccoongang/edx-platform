@@ -1,0 +1,82 @@
+<!-- You can make changes to HTML templates by copying them to your theme directory in the appropriate place, and making the changes you need. Keep in mind that in the future if you upgrade the Open edX code, you may have to update the copied template in your theme also. -->
+
+## mako
+<%namespace name='static' file='static_content.html'/>
+<%!
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
+%>
+    <hr class="hrclass">
+    <footer id="footer" class="midnight-blue">
+        <div class="footer-top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <div class="logo-footer">
+                            <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/198x61logo.jpg" alt="" />
+                        </div>
+                        <div class="complies-text">
+                            <p><a href="https://www.healthonnet.org/HONcode/Conduct.html?HONConduct282455" onclick="window.open(this.href); return false;"> <img src="https://www.honcode.ch/HONcode/Seal/HONConduct282455_s.gif" style="border:0px; width: 49px; height: 72px; float: left; margin: 2px;" title="This website is certified by Health On the Net Foundation. Click to verify." alt="This website is certified by Health On the Net Foundation. Click to verify."></a> This site complies with the <a href="http://www.healthonnet.org/HONcode/Conduct.html" onclick="window.open(this.href); return false;" style="color: #337ab7;">HONcode standard for trustworthy health</a> information:<a href="https://www.healthonnet.org/HONcode/Conduct.html?HONConduct282455" onclick="window.open(this.href); return false;" style="color: #337ab7;">verify here.</a></p>
+                        </div>
+                    </div>
+                    <div class="col-sm-7">
+                        <div class="col-md-12 col-xs-12">
+                            <ul class="nav-footer">
+                               <li><a href="/">Home</a></li>
+                          <li><a href="/about" >About Us</a></li>
+                          <li><a href="/tos">Terms of Service & Honor Code</a></li>
+                          <li><a href="/privacy" >Privacy Policy</a></li>
+                          <li><a href="/contact">Contact Us</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="col-sm-5">
+                            <script src="https://d20iczrsxk7wft.cloudfront.net/botwverified/badge.js?id=13564100"></script>
+                        </div>
+                        <div class="col-sm-7">
+                            <div class="social">
+                                <p>Connect with us on</p>
+                                <ul class="social-share">
+                                    <li><a href="https://www.facebook.com/Docmode" target="_blank"><i class="fa fa-facebook"></i></a></li>
+                            <li><a href="https://www.twitter.com/@docmode1" target="_blank"><i class="fa fa-twitter"></i></a></li>
+                            <li><a href="https://in.linkedin.com/company/docmode" target="_blank"><i class="fa fa-linkedin"></i></a></li> 
+                                </ul>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>&copy; 2018. DocMode Health Technologies Pvt. Ltd. All rights reserved</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <div class="modal fade" id="youtube" data-backdrop="static"
+   data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="width:100%;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+
+                    <iframe id="iframeYoutube" width="100%" height="315" src="https://www.youtube.com/embed/-S0kLcw105Q" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="modalclose();">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function modalclose() {
+            $('#iframeYoutube').attr('src', '');
+        }
+     </script>

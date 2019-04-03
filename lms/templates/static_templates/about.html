@@ -1,16 +1,606 @@
 <%page expression_filter="h"/>
 <%! from django.utils.translation import ugettext as _ %>
+<%block name="headextra">
+    <link href="/static/edx-bootstrap-theme-master/css/breadcrums.css" rel="stylesheet"> 
+    <link href="/static/edx-bootstrap-theme-master/css/aboutus.css" rel="stylesheet"> 
+</%block>
 <%inherit file="../main.html" />
-
+<%namespace name='static' file='../static_content.html'/>
 <%block name="pagetitle">${_("About")}</%block>
 
-<main id="main" aria-label="Content" tabindex="-1">
-    <section class="container about">
-        <h1>
-            <%block name="pageheader">${page_header or _("About")}</%block>
-        </h1>
-        <p>
-            <%block name="pagecontent">${page_content or _("This page left intentionally blank. Feel free to add your own content.")}</%block>
-        </p>
-    </section>
-</main>
+<section>
+    <div class="container topicCont">
+        <div class="row">
+            <ul class=breadcrums>
+                <li><a href="#">Home / </a></li>
+                <li><a href="#">About us / </a></li>
+                <li><a href="#" class="active">Team</a></li>
+            </ul>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <ul class="aboutcat js-about-tabs">
+                    <li class="active"> <a href="#">About</a></li>
+                    <li> <a href="#">Logo and Slogan</a></li>
+                    <li> <a href="#">Scientific Advisory Board</a></li>
+                    <li> <a href="#">Advisory Board</a></li>
+                    <li> <a href="#">Our Team</a></li>
+                </ul>
+            </div>
+            <div class="col-md-9">
+                <div class="content-wrapper">
+                    <div class="content-item active">
+                        <div class="profileSec">
+                        <p style="text-align: center;"><strong>DocMode – “From Learning to Practice“</strong></p>
+                            <p>The Global Platform for Outcome based Learning in Healthcare</p>
+                            <!-- <div class="our-vision">
+                                <h2>Our Vision</h2>
+                                <div class="introtext">
+                                    <p>To become an integral part of the Healthcare Professional’s daily routine with essential resources for their Learning and Practice</p>
+                                </div>
+                                <img src="/static/edx-bootstrap-theme-master/images/contact.png">
+                                <h3>FOR PROFESSIONALS</h3>
+                                <p>Authoritative, comprehensive and interactive learning programs</p>
+                                <p>Content reviewed and presented by Key Opinion leaders</p>
+                                <p>More than 600 CMEs conducted</p>
+                            </div>
+                            <div class="our-vision">
+                                <h2>Our Mission</h2>
+                                <div class="introtext">
+                                    <p>To create a value-based Online Learning experience for Health professionals globally.</p>
+                                </div>
+                                <img src="/static/edx-bootstrap-theme-master/images/Allergy.jpg">
+                                <h3>FOR ORGANISATIONS</h3>
+                                <p>Reach out and engage with Doctors - from generalpractitioners to Consultants and to super specialists</p>
+                                <p>Offer comprehensive training programs through our complete online learning technology</p>
+                                <p>Increase research base and capabilities in emerging marketss</p>
+                            </div> -->
+                            <p>Our vision is to become an integral part of the Healthcare Professional’s daily routine with essential resources for their Learning and Practice</p>
+     
+                            <p>Mission: DocMode aims to create a value-based Online Learning experience for Health professionals globally.</p>
+                        
+                            <p>
+                            DocMode understands the need of constant learning among all individuals in healthcare which is a field that is evolving every single day. </p>
+     
+                            <p>DocMode is a platform that provides authoritative, comprehensive and interactive learning programs for Health Professionals - Doctors, Nurses, Allied and Medical Students - across the world. This Medical content is created, reviewed and presented by Leading Medical Schools/Universities, Medical Associations and  Subject Matter Experts/Key Opinion leaders who are focussed to effectively transfer knowledge, as well as communicate and network with each other through our Continuing Medical Education (CME) programs and Online Courses.</p>
+     
+                            <p>Along with learning, DocMode creates an environment where healthcare professionals can interact with the faculty via discussions board attached to each CME and Course as well as take advantage of our performance assessment tools to better their clinical acumen in their daily medical practice. </p>
+     
+                            <p>Apart from catering to a healthcare professional’s needs in Learning, DocMode has become a platform for various players in the Healthcare space to reach out and engage doctors. With our huge doctor base in a wide range of specialties- from general practitioners to Consultants and to super specialists, we are looking at doctors to be more involved and improve the healthcare environment across the world. </p>
+     
+                            <p>DocMode constantly encourages Scientific, Evidence-based practice, Documentation, Inter-professional, Cross-industrial learning, Doctor-Patient interaction, Research Work and Training Skill-based Courses.</p>
+                        
+                        </div>
+                    </div>
+                    <div class="content-item">
+                        <div class="profileSec">
+                            <p><strong>Why the name DocMode?</strong></p>
+                            <p>
+                                DocMode is a combination of two words. Initially “Doc” which is a popularly used short form for Doctor and “Mode” which means Modus Operandi, procedure or practice.
+                                With the focus of DocMode aimed towards bettering Patient outcomes, thus updating skills and acumen of every Healthcare Professional who assist the doctor is a critical part of our philosophy.
+                            </p>
+                            <p>“Doc” is now an acronym for <strong>“Deliverer of Care”</strong></p>
+                            
+                            <p><strong>From Learning to Practise</strong></p>
+     
+                            <p>With our Slogan, DocMode is reiterating our commitment to the Learners and educators, that every Learning experience on its platform is result oriented with measurable outcomes that can be observed in improving their practise. </p>
+                        
+                            <p><strong>About our Logo?</strong></p>
+     
+                            <p><img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/198x61logo.jpg" alt="docmode"></p>
+     
+                            <p>Our Logo and the vibrant colours are selected to encompass our mission and philosophy of learning in healthcare.</p>
+ 
+                            <p>The Four Arrows represent the coming together of Knowledge seekers and Knowledge givers.The white-space in-between the arrows represented as a medical plus sign is the tabula-rasa or blank slate of the human mind, in which we learn and unlearn constantly.
+                            </p>
+ 
+                            <p>The vibrancy in colours and shades,  represents a shift from the monotonous way that medical and healthcare imagery is generally denoted, we state with gusto that <strong>learning in scientific healthcare is exciting.</strong>
+                            </p>
+                            <p><strong>History</strong></p>
+                            <p>For the past 8 years, DocMode has become a recognised brand for ethical continuing medical education in South Asia, having trained <strong>150,000+ doctors </strong></p>
+
+                            <p>DocMode’s R&D focus has also led to a patent award for a digital nutrition tool</p>
+                            <p> (<a href="http://www.inutrimon.com" target="_blank">www.inutrimon.com)</a> <!-- and <a href="http://www.clinicalnutritionproject.org" target="_blank">www.clinicalnutritionproject.org</a>) --></p>
+                        
+                        </div>
+                    </div>
+                    <div class="content-item">
+                        <div class="profileSec">
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="card" style="max-height: 289.05px;">
+                                    <div class="card-img">
+                                        <a href="#" data-toggle="modal" data-target="#sab9"><img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/Eduardo-Mayorga.jpg" alt=""></a></div>
+                                    <div class="card-text">
+                                        <p style="font-size: 14px;">Dr. Eduardo Mayorga</p>
+                                        <span>Director of E-learning
+                                                International Council of Ophthalmology</span>   
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="card" style="max-height: 289.05px;">
+                                    <div class="card-img">
+                                        <a href="#" data-toggle="modal" data-target="#sab1"><img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/Brian-Pinto.jpg" alt=""></a></div>
+                                    <div class="card-text">
+                                        <p style="font-size: 14px;">Dr. Brian Pinto</p>
+                                        <span>Chief of Cardiology at Holy Family Hospital - Mumbai</span>   
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="card" style="max-height: 289.05px;">
+                                    <div class="card-img">
+                                        <a href="#" data-toggle="modal" data-target="#sab8"><img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/Ramesh-Mehta.jpg" alt=""></a></div>
+                                    <div class="card-text">  
+                                        <p style="font-size: 14px;">Dr. Ramesh Mehta</p>
+                                        <span>Founder President of British Association of Physicians of Indian Origin (BAPIO)</span>   
+                                    </div>   
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="card" style="max-height: 289.05px;">
+                                    <div class="card-img">
+                                        <a href="#" data-toggle="modal" data-target="#sab2"><img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/Shirish-Hastak.jpg" alt=""></a></div>
+                                    <div class="card-text">
+                                        <p style="font-size: 14px;">Dr. Shirish Hastak</p>
+                                        <span>Group Director - Neurology & Stroke Services  at Wockhardt Hospitals</span>   
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="card" style="max-height: 289.05px;">
+                                    <div class="card-img">
+                                        <a href="#" data-toggle="modal" data-target="#sab3"><img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/Mangesh-Tiwaskar.jpg" alt=""></a></div>
+                                    <div class="card-text">
+                                        <p style="font-size: 14px;">Dr. Mangesh Tiwaskar</p>
+                                        <span>MD Governing body of Association of Physicians of India - API</span>   
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="card" style="max-height: 289.05px;">
+                                    <div class="card-img">
+                                        <a href="#" data-toggle="modal" data-target="#sab4"><img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/Sanjay-Pujari.jpg" alt=""></a></div>
+                                    <div class="card-text">
+                                        <p style="font-size: 14px;">Dr. Sanjay Pujari </p>
+                                        <span>Director and Chief Consultant, Institute of Infectious Diseases (IID) - Pune</span>   
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="card" style="max-height: 289.05px;">
+                                    <div class="card-img">
+                                        <a href="#" data-toggle="modal" data-target="#sab5"><img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/Duru-Shah.jpg" alt=""></a></div>
+                                    <div class="card-text">  
+                                        <p style="font-size: 14px;">Dr. Duru Shah</p>
+                                        <span>Scientific Director of Gynaecworld</span>   
+                                    </div>
+                                </div>
+                            </div>  
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="card" style="max-height: 289.05px;">
+                                    <div class="card-img">
+                                        <a href="#" data-toggle="modal" data-target="#sab6"><img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/Sanjith-Saseedharan.jpg" alt=""></a></div>
+                                    <div class="card-text">  
+                                        <p style="font-size: 14px;">Dr. Sanjith Saseedharan</p>
+                                        <span>Head of Critical Care at Fortis SL Raheja Hospital - Mumbai</span>   
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="card" style="max-height: 289.05px;">
+                                    <div class="card-img">
+                                        <a href="#" data-toggle="modal" data-target="#sab7"><img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/Shehla-Shaikh.jpg" alt=""></a></div>
+                                    <div class="card-text">  
+                                        <p style="font-size: 14px;">Dr. Shehla Shaikh</p>
+                                        <span>Consulting Endocrinologist  - Mumbai</span>   
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-item">
+                        <div class="profileSec">
+                            <p style="text-align: center;"><strong>Advisory Board</strong></p>
+                            <p><strong>Anwar Feroz Siddiqi</strong><br/>
+                                Hon. Health Industry Advisor to the American Association of Physicians of India (AAPI) origin, USA; the British Association of Physicians of India Origin (BAPIO); and Global Association of Physicians of India origin (GAPIO).<br/>
+                                <a href="https://www.linkedin.com/in/anwarferoz/">https://www.linkedin.com/in/anwarferoz/</a>
+                            </p>
+
+                            <p><strong>Gabe Rijpma</strong><br/>
+                                Sr. Director Health Industry - Asia<br>
+                                Microsoft <br/>
+                                <a href="https://www.linkedin.com/in/gaberijpma/">https://www.linkedin.com/in/gaberijpma/</a>
+                            </p>
+
+                            <p><strong>Parag Agarwal</strong><br/>
+                                Previously Co-founder and CEO of Imagine Health (Singapore)<br/>
+                                <a href="https://www.linkedin.com/in/paragis/">https://www.linkedin.com/in/paragis/</a>
+                            </p>
+                            <p><strong>Kenneth Paul Lewis</strong><br/>
+                            <strong>Strategic Team Coaching and Guidance</strong><br/>
+                                As a seasoned entrepreneur and consultant Kenneth has experience of working closely with more than 300+ organizations over the past 18 years. He has studied Electronics Engineering from Nagpur University, India and holds 16 certifications in the field of Coaching, NLP, Human Resource, Human Behaviour, Training and Leadership development.He is the Founder and Director at Purpose Trade International Pvt. Ltd. Kenneth provides Purpose Trade with strategic investment and productivity advise to grow its global trade and business opportunities.<br/>
+                                He is also the Director at Seven People Systems Pvt. Ltd and at Atlas Learning Pvt. Ltd both HR and Management Consulting firms based in Mumbai, India. He also advises at Grassroutes Journeys Pvt. Ltd. He is an empanelled facilitator and consultant with Psychological Associates, U.S.A, Duke CE , EDA (APAC) and Hemsley Fraser, UK.Read more about him <a href="https://in.linkedin.com/in/kennethpaullewis">here</a>.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="content-item">
+                        <div class="profileSec">
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="card">
+                                    <div class="card-img">
+                                        <a href="#" data-toggle="modal" data-target="#profile1"><img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/Hans-Lewis.jpg" alt=""></a></div>
+                                    <div class="card-text">
+                                        <p>Hans Albert Lewis</p>
+                                        <span> Founder & CEO</span>   
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="card">
+                                    <div class="card-img">
+                                        <a href="#" data-toggle="modal" data-target="#profile2"><img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/Paulson-Paul.jpg" alt=""></a></div>
+                                    <div class="card-text">
+                                        <p>Paulson Paul</p>
+                                        <span> Founder & COO</span>   
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="card">
+                                    <div class="card-img">
+                                        <a href="#" data-toggle="modal" data-target="#profile3"><img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/Hemant-B.jpg" alt=""></a></div>
+                                    <div class="card-text">
+                                        <p>Hemant Brahmane</p>
+                                        <span>CTO and Product Head</span>   
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="card">
+                                    <div class="card-img">
+                                        <a href="#" data-toggle="modal" data-target="#profile5"><img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/Shweta-Patil.jpg" alt=""></a></div>
+                                    <div class="card-text">  
+                                        <p>Shweta Patil</p>
+                                        <span>Head of Channel Partnerships</span>   
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </section>
+  <div class="modal fade" id="sab9" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="width: auto;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="photoSec">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/330x180/Eduardo_Mayorga.jpg" alt=""/>
+                    <h3>Dr. Eduardo Mayorga -Director of E-learning International Council of Ophthalmology</h3>
+                </div>
+                <div class="profileCont">
+                    <p>
+                        The medical profession like others requires a continuing educational program to ensure that the best patient care is available universally. This is so important that it is critical that the most effective and efficient means are used to provide medical education.
+                    </p>
+                    <p>
+                        The combination of e-learning and classroom instruction has been proven to be the most effective means of providing educational instruction. Besides offering webinars, developing asynchronous courses and participating in class discussions, I am passionate about educating the educators in these new technologically based techniques.</p>
+                    <p>
+                        Over the next ten years, it is my hope that many more will be able to avail themselves of the latest medical advances as a result of current and future capabilities of e-learning and other technological innovations.</p>
+                    <p><a href="https://www.linkedin.com/in/eduardomayorga/">https://www.linkedin.com/in/eduardomayorga/</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="sab1" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="width: auto;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="photoSec">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/330x180/Brian_Pinto.jpg" alt="" />
+                    <h3>Dr. Brian Pinto - Chief of Cardiology,<br/> Holy Family Hospital - Mumbai</h3>
+                </div>
+                <div class="profileCont">
+                    <p>
+                        Dr. Brian Pinto is the Chief of Cardiology at Holy Family Hospital, Mumbai and Director Cardiac Catheterization Laboratory. 
+                    </p>
+                    <p>He is also the Interventional Cardiologist attached to Breach Candy Hospital, Nanavati Hospital and Holy Spirit Hospital. Dr. Brian is a member of the Cardiology Society of India and the Association of Physicians of India. 
+                    </p>
+                    <p>
+                    <!-- <a href="http://drbrianpinto.com/">http://drbrianpinto.com/</a> -->
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="sab2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="width: auto;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="photoSec">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/330x180/Shirish_Hastak.jpg" alt="" />
+                    <h3>Dr. Shirish Hastak - Group Director - Neurology & Stroke Services at Wockhardt Hospitals</h3>
+                </div>
+                <div class="profileCont">
+                    <p>
+                        Dr. Shirish M. Hastak, a widely renowned neurology specialist completed a stroke fellowship in Canada under Prof. Vladimir Hachinski, a world renowned name in the field of stroke, at the Western University of Canada at London, Ontario. Along with his mentor he has co-authored chapters on stroke. He later returned to India in 1990 and worked at renowned hospitals in the field of neurology and stroke services. While working at Kokilaben Dhirubhai Ambani Hospital in Mumbai, he pioneered hyper acute stroke management and the use of thrombolysis in combination with mechanical intervention (bridging therapy) to help patients in acute stroke settings. He continues to pursue his passion in the field of acute stroke management and plans to set up a Stroke Institute. 
+                    </p>
+                    <p>
+                    <a href="https://www.linkedin.com/in/dr-shirish-hastak-0659884b/">https://www.linkedin.com/in/dr-shirish-hastak-0659884b/</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="sab3" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="width: auto;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="photoSec">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/330x180/Mangesh_Tiwaskar.jpg" alt="" />
+                    <h3>Dr. Mangesh Tiwaskar - MD Governing body of Association of Physicians of India - API</h3>
+                </div>
+                <div class="profileCont">
+                    <p>
+                        Dr. Mangesh Tiwaskar is specialised in Diabetology and Cardiology. He holds a Gold Medal in MD Post graduation and is practising for more than two decades as a Physician in Umrao Hospital, Asian Heart Institute, Karuna Hospital, Suwarna Hospital & Seven Hills Hospital. Dr. Tiwaskar is a member of the Governing body of API and is active in several other medical associations. He has authored chapters in medical textbooks, and published and presented many papers on Diabetes and related subjects. 
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="sab4" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="width: auto;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="photoSec">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/330x180/Sanjay_Pujari.jpg" alt="" />
+                    <h3>Dr. Sanjay Pujari - Director and Chief Consultant, Institute of Infectious Diseases (IID) - Pune</h3>
+                </div>
+                <div class="profileCont">
+                    <p>
+                        Dr. Sanjay Pujari is currently the Director and Chief Consultant, Institute of Infectious Diseases (IID) - Pune and Consultant in HIV Medicine and Infectious Diseases, Poona Hospital and Research Center (PHRC). He also holds the position of Principal Investigator (Institute of Infectious Diseases Site), START, TAHOD, IeDEA and the Founder Member: Board of Directors, HIV Medicine Association of India. Dr. Sanjay has a large number of publications in field of HIV. 
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="sab5" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="width: auto;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="photoSec">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/330x180/Duru_Shah.jpg" alt="" />
+                    <h3>Dr. Duru Shah - Scientific Director of Gynaecworld</h3>
+                </div>
+                <div class="profileCont">
+                    <p>
+                        Dr. Duru Shah is presently the Scientific Director of Gynaecworld and the Gynaecworld Assisted Fertility Center, Mumbai, India and is a Consultant to the Breach Candy Hospital, Jaslok Hospital and Sir Hurkisondas Hospital in Mumbai. Dr. Duru Shah leads a highly qualified team of Consultants at the Gynaecworld Assisted Fertility Centre that offers a wide range of specialised fertility options under one roof. 
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="sab6" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="width: auto;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="photoSec">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/330x180/Sanjith_Saseedharan.jpg" alt="" />
+                    <h3>Dr. Sanjith Saseedharan - Head of Critical Care at Fortis SL Raheja Hospital - Mumbai</h3>
+                </div>
+                <div class="profileCont">
+                    <p>
+                        Dr. Sanjith is presently the Head of Critical Care at Fortis SL Raheja Hospital in Mumbai. He has done his Fellowship in Neurointensive care and Neuroanaesthesia under the guidance of Dr. Charles Weissmann in Israel. He is the Founder of CNP and creator of iNutriMon. 
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="sab7" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="width: auto;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="photoSec">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/330x180/Shehla_Shaikh.jpg" alt="" />
+                    <h3>Dr. Shehla Shaikh - Consulting Endocrinologist - Mumbai</h3>
+                </div>
+                <div class="profileCont">
+                    <p>
+                        Dr. Shehla Shaikh is a consulting endocrinologist attached to reputed Mumbai hospitals like Saifee Hospital, Wockhardt Hospitals and Prince Aly Khan Hospital. Prior to this, she has worked as a registrar and lecturer in various eminent hospitals. Her clinical paper presentations have won her many accolades. She has been the Principal investigator to national and international clinical trials and this has strengthened her research experience. 
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="sab8" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="width: auto;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="photoSec">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/330x180/Ramesh_Mehta.jpg" alt="" />
+                    <h3>Dr. Ramesh Mehta - Founder President of British Association of Physicians of Indian Origin (BAPIO)</h3>
+                </div>
+                <div class="profileCont">
+                    <p>
+                        Dr. Ramesh Mehta graduated from Nagpur, India and moved to UK in 1981. He is a consultant and lead paediatrician at Bedford Hospital. Dr. Mehta is a general paediatrician and a neonatologist. His clinical interests include paediatric rheumatology and childhood asthma. He also has special interest in sickle cell disease and tuberculosis in children. He has presented several papers in national and international meetings. 
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="profile1" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="width: auto;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="photoSec">
+                        <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/330x180/Hans_Lewis.jpg" alt="" />
+                        <h3>Hans Lewis - Founder & CEO</h3>
+                    </div>
+                    <div class="profileCont">
+                        <p>
+                            Hans Lewis has a distinguished career working at the intersection of healthcare and technology for more than 13 years. He looks after the Partnership and Strategy for DocMode. 
+                        </p>
+                        <p>
+                            Prior to the Creation of DocMode.org in 2009, Hans worked in the field of Healthcare Advertising as a Copywriter and followed up as a Sponsorship Head in Medical Events. In the initial years of DocMode, he was the Freelance contributing editor for TMCnet covering articles predominantly in Healthcare IT. 
+                        </p>
+                        <p>
+                            He is a Tech autodidact and is also the  project Head of the award-winning and patented clinical nutrition management app www.iNutrimon.com
+                        </p>
+                        <p>   
+                            Graduated in Advertising, he has a Masters in Philosophy from Mumbai University.  Yoga and Logic are his interest areas.
+                        </p>
+                        <p>
+                        <a href="https://www.linkedin.com/in/hanslewis/">https://www.linkedin.com/in/hanslewis/</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+<div class="modal fade" id="profile2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="width: auto;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="photoSec">
+                        <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/330x180/Paulson_Paul.jpg" alt="" />
+                        <h3>Paulson Paul - Founder and COO</h3>
+                    </div>
+                    <div class="profileCont">
+                        <p>
+                            Paulson handles the Operations and LMS of DocMode.  He looks at innovative ways  for scaling every branch of the organisation.
+                        </p>
+                        <p>
+                            With a background ranging from working with Disney as a production assistant and as an online editor for Pixion LLC where he worked on Films and Advertising. Paulson has had a key interest in broadcasting over the Web and merged this interest in the early days of DocMode.
+                        </p>
+                        <p>
+                            He has overlooked projects involving Apps for Doctor Appointments and LMS Models. 
+                            Paulson has Studied Advertising, loves reading Biographies and Books of Inspiring People, practices Vipassana Meditation. 
+                        </p>
+                        <p><a href="https://www.linkedin.com/in/paulson-paul-5649381b/">https://www.linkedin.com/in/paulson-paul-5649381b/</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+<div class="modal fade" id="profile3" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="width: auto;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="photoSec">
+                    <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/330x180/Hemant-B.jpg" alt="" />
+                    <h3>Hemant Brahmane -CTO and Product Head </h3>
+                </div>
+                <div class="profileCont">
+                <p>
+                    Hemant has been working with DocMode since 4 years and is the CTO and product head of DocMode.org. His skills are in Php, AJAX, Python and Networking. 
+                </p>
+                <p>
+                    After his BSc Degree in Physics, his passion for coding made him complete his  Software Engineering Degree from the National Institute of Information Technology NIIT. He has also completed his Masters in Business Administration - IT from Welingkar Institute.
+                </p>
+                <p>
+                    Hemant is organised, hands-on talented, resourceful and loves solving problems. Always Positive and ready to take any challenge, big or small thrown at him. He has a natural talent for singing and hums Bollywood songs in office while coding. He is a big believer in Information Technology for the benefit of Mankind and is actively working towards Artificial Intelligence Projects.
+                </p>
+                <p><a href="https://www.linkedin.com/in/hemantbrahmane/">https://www.linkedin.com/in/hemantbrahmane/</a></p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="profile5" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="width: auto;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">  
+                    <div class="photoSec">
+                        <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/DocMode-Team-Photo/330x180/Shweta_Patil.jpg" alt="" />
+                        <h3>Shweta Patil - Head of Channel Partnerships</h3>
+                    </div>
+                    <div class="profileCont">
+                        <p>
+                            Shweta has worked with DocMode for 6 years handling Corporate, Medical Association and Hospital partnerships. She has graduated in Commerce and has vast experience in Quality and Customer relations in the Telecommunications Industry. 
+                        </p>
+                        <p><a href="https://www.linkedin.com/in/shweta-patil-13a87a38/">https://www.linkedin.com/in/shweta-patil-13a87a38/</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+<script src="https://s3.ap-south-1.amazonaws.com/student-verified-photos/jquery.js" charset="utf-8" type="text/javascript"></script>

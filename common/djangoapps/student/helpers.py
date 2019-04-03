@@ -51,6 +51,8 @@ from student.models import (
     email_exists_or_retired
 )
 
+# added by docmode to prevent aws bounce rate and invalid mail
+from zerobounce import ZeroBounceAPI
 
 # Enumeration of per-course verification statuses
 # we display on the student dashboard.
@@ -617,14 +619,24 @@ def do_create_account(form, custom_form=None):
     if errors:
         raise ValidationError(errors)
 
-    proposed_username = form.cleaned_data["username"]
-    user = User(
-        username=proposed_username,
-        email=form.cleaned_data["email"],
-        is_active=False
-    )
-    user.set_password(form.cleaned_data["password"])
-    registration = Registration()
+    zba = ZeroBounceAPI('af8e53a08b7a4a9ab3cc98584fd3a734') 
+    chck_valid_email = form.cleaned_data["email"]
+    zerobounce_resp = zba.validate(chck_valid_email)
+    log.info("zerobounce %s",zerobounce_resp)
+    if zerobounce_resp.status == 'Valid' :
+        proposed_username = form.cleaned_data["username"]
+        user = User(
+            username=proposed_username,
+            email=form.cleaned_data["email"],
+            is_active=False
+        )
+        user.set_password(form.cleaned_data["password"])
+        registration = Registration()
+    else:
+        raise AccountValidationError(
+            _("Invalid email "+chck_valid_email+" please input correct email id."),
+            field="email"
+        )
 
     # TODO: Rearrange so that if part of the process fails, the whole process fails.
     # Right now, we can have e.g. no registration e-mail sent out and a zombie account

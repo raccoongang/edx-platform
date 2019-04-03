@@ -1,0 +1,33 @@
+<%namespace name='static' file='static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+%>
+<%page args="course" expression_filter="h"/>
+%for cd in course:
+  <article class="course" id="${cd['id']}" role="region" aria-label="${cd['display_name']}">
+  	<a href="${reverse('about_course', args=[cd['id']])}">
+	    <header class="course-image">
+	      <div class="cover-image">
+	        <img src="${cd['course_image_url']}" alt="${cd['display_name']}" />
+	        <div class="learn-more" aria-hidden=true>${_("LEARN MORE")}</div>
+	      </div>
+	    </header>
+	    <div class="course-info" aria-hidden="true">
+	      <h2 class="course-name">
+	        <span class="course-organization">${cd['display_org_with_default']}</span>
+	        <span class="course-code">${cd['display_number_with_default']}</span>
+	        <span class="course-title">${cd['display_name']}</span>
+	      </h2>
+	      <div class="course-date" aria-hidden="true">${_("Starts")}: ${cd['start']}</div>
+	    </div>
+	    <div class="sr">
+	      <ul>
+	      <li>${cd['display_org_with_default']}</li>
+	      <li>${cd['display_number_with_default']}</li>
+	      <li>${_("Starts")}: <time itemprop="startDate" datetime="${cd['start']}">${cd['start']}</time></li>
+	    </ul>
+	    </div>
+  	</a>
+  </article>
+%endfor

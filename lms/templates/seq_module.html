@@ -1,5 +1,10 @@
 <%page expression_filter="h"/>
-<%! from django.utils.translation import ugettext as _ %>
+<%! 
+  from django.utils.translation import ugettext as _ 
+  from lms.djangoapps.webform.views import webformdetails
+  from lms.djangoapps.reg_form.views import userdetails,getuserfullprofile
+  from lms.djangoapps.specialization.views import specializationName
+%>
 
 <div id="sequence_${element_id}" class="sequence" data-id="${item_id}" data-position="${position}" data-ajax-url="${ajax_url}" data-next-url="${next_url}" data-prev-url="${prev_url}">
   % if banner_text:
@@ -80,7 +85,56 @@
   % endfor
   <div id="seq_content" role="tabpanel"></div>
   % endif
-
+  <%
+    courseid = item['id']
+    cid = courseid.split(':')
+    cids = cid[1].split('+')
+    course_id = 'course-v1:' + cids[0] + '+' + cids[1] + '+' + cids[2]
+    qnadetails = webformdetails(course_id)
+    username = user.username
+    userid = userdetails(user)
+    userstate = userid.rcity
+    userprof = getuserfullprofile(user)
+    speclzn = specializationName(userid.specialization_id)
+  %>  
+  <title>Ask Question</title>
+  <script type="text/javascript">
+      // If the element's string matches the regular expression it is all numbers
+      function isNumeric(elem, helperMsg){
+          var numericExpression = /^[0-9]+$/;
+          if(elem.value.match(numericExpression)){
+              return true;
+          }else{
+              alert(helperMsg);
+              elem.focus();
+              return false;
+          }
+      }
+      function checkBeforeSubmit(){
+          var frm = document.getElementById('theForm')[0];
+          if ((isNumeric(document.getElementById('numbers'), 'Please enter a number'))){
+              document.getElementById('theForm').submit();
+              document.getElementById('success').innerHTML='Submitted';
+              document.getElementById('theForm').reset();
+          }
+      }
+  </script>
+  %if qnadetails != None:
+      <h2>Ask a Question:</h2>
+      <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+      <form method="post" action="${qnadetails.sheeturl}" name="theForm" id="theForm" target="hidden_iframe" id="GoogleForm">
+      <input type="hidden" name="entry.${qnadetails.name}" id="name" value="${userprof.name}" />
+      <input type="hidden" name="entry.${qnadetails.location}" id="name" value="${userstate}">
+      Question:<br />
+      <textarea name="entry.${qnadetails.question}" id="comment" style="height: 130px; width:650px; max-width: 100%;"></textarea>
+      <br />
+      Basic spam prevention (enter any 4 digit number): <br /><input name="numbers" id="numbers" type="text">
+      <input type="button" value="Submit" class="submit"  onclick="checkBeforeSubmit();"/>
+      <div>
+          <span id="success"></span>
+      </div>
+      </form>
+  %endif
   <nav class="sequence-bottom" aria-label="${_('Section')}">
     <button class="sequence-nav-button button-previous">
       <span class="icon fa fa-chevron-prev" aria-hidden="true"></span>
@@ -92,3 +146,23 @@
     </button>
   </nav>
 </div>
+<script type="text/javascript">
+  function casestudy_form() {
+    document.getElementById("email").value = "${request.user.email}";
+    document.getElementById("name").value = "${userprof.name}";
+    document.getElementById("contact").value = "${userid.phone}";
+    document.getElementById("specz").value = "${speclzn}";
+  }
+  //setTimeout(casestudy_form, 2000);
+
+  function survey_form() {
+    document.getElementById("email").value = "${request.user.email}";
+    document.getElementById("name").value = "${userprof.name}";
+    document.getElementById("courseid").value = "${course_id}";
+  }
+
+  function servey_form_success_message(){
+    document.getElementById('survey_success').innerHTML='Thank you for your valuable feedback';
+  }
+
+</script>

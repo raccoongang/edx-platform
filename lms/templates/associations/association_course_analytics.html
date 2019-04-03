@@ -1,0 +1,175 @@
+<%inherit file="/main.html" />
+<%namespace name='static' file='../static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+from lms.djangoapps.associations.views import course_usercount, course_viewercount
+from lms.djangoapps.specialization.views import specializationName
+%>
+
+<%block name="pagetitle">${assoc_name} | Dashboard</%block>
+<!-- Bootstrap -->
+<link href="${static.url('vendors/bootstrap/dist/css/bootstrap.min.css')}" rel="stylesheet">
+<!-- Custom Theme Style -->
+<link href="${static.url('css/vendor/build/css/custom.css')}" rel="stylesheet">
+
+%if user.is_authenticated():
+    %if user.is_staff or org_admin == '1':
+        <div class="container">
+        <div class="row" style="padding-bottom: 10px;max-width: 100% !important;"> <!-- LOGO and COUNTS -->
+          <div class="col-lg-4">
+            <img src="${courses.course_image_url}" height="250px">
+          </div>
+          <div class="col-lg-8">
+            <div class="row tile_count"><!-- Counts of Users/Associations -->
+              <div class="col-md-4 tile_stats_count">
+                <span class="count_top"><i class="fa fa-user"></i> Total Enrolled</span>
+                <div class="count">${total_enrolled}</div>
+                <!-- <span class="count_bottom"><i class="green">4% </i> From last Week</span> -->
+              </div>
+              <div class="col-md-4 tile_stats_count">
+                <span class="count_top"><i class="fa glyphicon glyphicon-hd-video"></i> Total viewers</span>
+                <div class="count">${total_viewers}</div>
+                <button onclick="window.location.href='/courses/${courses}/courseware'" style="background:#337ab7;color:#ffffff;">View Webinar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row" style="max-width: 100% !important;">
+          <div class="col-md-6">
+            <h2>Total Enrolled Users</h2>
+            <div id="regions_div" style="width: 500px; height: 400px;"></div>
+            <a href="excel/enrolled"><input type="button" value="Download Enrolled Users"></a>
+          </div>
+          <div class="col-md-6">
+            <h2>Total Viewers</h2>
+            <div id="viewers" style="width: 500px; height: 400px;"></div>
+            <p><a href="excel/viewers"><input type="button" value="Download Viewers"></a></p>
+          </div>
+        </div>
+        <div class="row" style="max-width: 100% !important;">
+          <div class="col-md-6">
+            <div id="enrolled_user_specGcChart" style="width: 400px; height: 300px;"></div>
+          </div>
+          <div class="col-md-6">
+            <div id="viewer_user_specGcChart" style="width: 400px; height: 300px;"></div>
+          </div>
+        </div>
+        <%def name="user_enrollment()">
+            [
+              ["State", "Count"],
+              %for sq in enrolldata:
+                ["${sq['rstate']}", ${sq['dcount']}],
+              %endfor
+            ]
+        </%def>
+        <%def name="viewed_user()">
+            [
+              ["State", "Count"],
+              %for sq in viewers:
+                ["${sq['rstate']}", ${sq['dcount']}],
+              %endfor
+            ]
+        </%def>
+        <%def name="enrolleduser_specialization()"><!-- Doctor Specialization Chart Data -->
+          [
+            ["Specialization", "Doctors Count"],
+            %for sq in enrolleduserspecz:
+              ["${specializationName(sq['specialization_id'])}", ${sq['dcount']}],
+            %endfor
+          ]
+        </%def>
+        <%def name="viewer_specialization()"><!-- Doctor Specialization Chart Data -->
+          [
+            ["Specialization", "Doctors Count"],
+            %for sq in viewerspecz:
+              ["${specializationName(sq['specialization_id'])}", ${sq['dcount']}],
+            %endfor
+          ]
+        </%def>
+        </div>
+    %else:
+        <h2 style="text-align: center;">U are not authorized to view this page</h2>
+    %endif
+%else:
+    <h2>You must be loggedin and admin to view this page</h2>
+%endif
+<!-- jQuery -->
+<script src="${static.url('https://s3-ap-southeast-1.amazonaws.com/site-js/jquery.min.js')}"></script>
+<!-- Bootstrap -->
+<script src="${static.url('vendors/bootstrap/dist/js/bootstrap.min.js')}"></script>
+<!-- Google Charts -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<!-- Custom Theme Scripts -->
+<script src="${static.url('css/vendor/build/js/custom.js')}"></script>
+<script type="text/javascript">
+  google.charts.load('current', {'packages':['geochart','corechart']});
+  google.charts.setOnLoadCallback(drawRegionsMap);
+  google.charts.setOnLoadCallback(ViewersdrawRegionsMap);
+  google.charts.setOnLoadCallback(drawChart);
+  function drawRegionsMap() {
+
+    var data = google.visualization.arrayToDataTable(${user_enrollment()});
+
+    var options = {
+      region: 'IN',
+      displayMode: 'regions',
+      resolution: 'provinces',
+      colorAxis: {colors: ['#30529a'] },
+      width: "500px",
+      height: "400px"
+    };
+
+    var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+
+    chart.draw(data, options);
+  }
+
+  function ViewersdrawRegionsMap() {
+
+    var data = google.visualization.arrayToDataTable(${viewed_user()});
+
+    var options = {
+      title: ' Total Viewers',
+      region: 'IN',
+      colorAxis: {colors: ['green'] },
+      displayMode: 'regions',
+      resolution: 'provinces',
+      width: "500px",
+      height: "400px"
+    };
+
+    var chart = new google.visualization.GeoChart(document.getElementById('viewers'));
+
+    chart.draw(data, options);
+  }
+
+  function drawChart() {
+
+    var enrolled_userspecdata = google.visualization.arrayToDataTable(${enrolleduser_specialization()});
+    var viewer_userspecdata = google.visualization.arrayToDataTable(${viewer_specialization()});
+
+    var options = {
+      title: 'Enrolled User Specializations',
+      titleTextStyle: { fontSize: 20, bold: true },
+      backgroundColor: '#FEF7F5',
+      width: 500
+    };
+    var options2 = {
+      title: 'Viewers Specialization',
+      titleTextStyle: { fontSize: 20, bold: true },
+      backgroundColor: '#FEF7F5',
+      colors: ['#1AC3D7', '#AC60F9', '#F960F8', '#F96E60', '#6FF960'],
+      //is3D:true,
+      width: 500
+    };
+
+    var enrolled_userspecchart = new google.visualization.PieChart(document.getElementById('enrolled_user_specGcChart'));
+    var viewer_specchart = new google.visualization.PieChart(document.getElementById('viewer_user_specGcChart'));
+
+    enrolled_userspecchart.draw(enrolled_userspecdata, options);
+    viewer_specchart.draw(viewer_userspecdata, options2);
+  }
+
+</script>

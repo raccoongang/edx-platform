@@ -6,6 +6,7 @@ from openedx.core.djangolib.markup import HTML, Text
 from openedx.core.djangolib.js_utils import (
       dump_js_escaped_json
   )
+from lms.djangoapps.specialization.models import (categories, sub_categories)
 %>
 
 <%inherit file="base.html" />
@@ -68,6 +69,47 @@ from openedx.core.djangolib.js_utils import (
               <legend class="sr">${_("Required Information to Create a New Course")}</legend>
 
               <ol class="list-input">
+                <li class="field text required" id="field-course-type">
+                  <label for="new-course-type">${_("Course Type")}</label>
+                  ## Translators: This is an example type for a new course type, seen when
+                  ## filling out the form to create a new course type.
+                  <select class="new-course-type" id="new-course-type" name="new-course-type" aria-describedby="tip-new-course-type tip-error-new-course-type" autofocus>
+                    <option value='1'>Course</option>
+                    <option value='2'>Webinar</option>
+                    <option value='3'>Case Study</option>
+                  </select>
+                  <span class="tip" id="tip-new-course-type">${_("Please select type Webinar or Course.")}</span>
+                  <span class="tip tip-error is-hiding" id="tip-error-new-course-type"></span>
+                </li>
+                <li class="field text required" id="field-course-category">
+                  <label for="new-course-category">${_("Category")}</label>
+                  ## Translators: This is an example type for a new course type, seen when
+                  ## filling out the form to create a new course type.
+                  <select class="new-course-category" id="new-course-category" name="new-course-category" aria-describedby="tip-new-course-category tip-error-new-course-category" onchange="getsubcat(this.value);">
+                    <option>Select category</option>
+                    <% c_categories = categories.objects.all() %>
+                    %for cat in c_categories:
+                      <option value='${cat.id}'>${cat.topic_name}</option>
+                    %endfor
+                  </select>
+                  <span class="tip" id="tip-new-course-category">${_("Please select course category.")}</span>
+                  <span class="tip tip-error is-hiding" id="tip-error-new-course-category"></span>
+                </li>
+                <li class="field text required" id="field-course-category">
+                  <label for="new-course-category">${_("Sub_Categories")}</label>
+                  ## Translators: This is an example type for a new course type, seen when
+                  ## filling out the form to create a new course type.
+                  <select multiple class="new-course-subcategory" id="new-course-subcategory" name="new-course-subcategory" aria-describedby="tip-new-course-subcategory tip-error-new-course-subcategory">
+                    <option>Select category first</option>
+                    <% c_categories = sub_categories.objects.all() %>
+                    %for subcat in c_categories:
+                      <option value='${subcat.id}'>${subcat.sub_topic_name}</option>
+                    %endfor
+                  </select>
+                  <span class="tip" id="tip-new-course-category">${_("Please select course category.")}</span>
+                  <span class="tip tip-error is-hiding" id="tip-error-new-course-category"></span>
+                </li>
+                <input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }">
                 <li class="field text required" id="field-course-name">
                   <label for="new-course-name">${_("Course Name")}</label>
                   ## Translators: This is an example name for a new course, seen when
@@ -93,7 +135,7 @@ from openedx.core.djangolib.js_utils import (
                   ## Translators: This is an example for the number used to identify a course,
                   ## seen when filling out the form to create a new course. The number here is
                   ## short for "Computer Science 101". It can contain letters but cannot contain spaces.
-                  <input class="new-course-number" id="new-course-number" type="text" name="new-course-number" required placeholder="${_('e.g. CS101')}" aria-describedby="tip-new-course-number tip-error-new-course-number" />
+                  <input class="new-course-number" id="new-course-number" type="text" name="new-course-number" required placeholder="${_('e.g. CS101')}" aria-describedby="tip-new-course-number tip-error-new-course-number" onfocus="docnum();"/>
                   <span class="tip" id="tip-new-course-number">${Text(_("The unique number that identifies your course within your organization. {strong_start}Note: This is part of your course URL, so no spaces or special characters are allowed and it cannot be changed.{strong_end}")).format(
                       strong_start=HTML('<strong>'),
                       strong_end=HTML('</strong>'),
@@ -105,7 +147,7 @@ from openedx.core.djangolib.js_utils import (
                   <label for="new-course-run">${_("Course Run")}</label>
                   ## Translators: This is an example for the "run" used to identify different
                   ## instances of a course, seen when filling out the form to create a new course.
-                  <input class="new-course-run" id="new-course-run" type="text" name="new-course-run" required placeholder="${_('e.g. 2014_T1')}" aria-describedby="tip-new-course-run tip-error-new-course-run" />
+                  <input class="new-course-run" id="new-course-run" type="text" name="new-course-run" required placeholder="${_('e.g. 2014_T1')}" aria-describedby="tip-new-course-run tip-error-new-course-run" onclick="docrun();" />
                   <span class="tip" id="tip-new-course-run">${Text(_("The term in which your course will run. {strong_start}Note: This is part of your course URL, so no spaces or special characters are allowed and it cannot be changed.{strong_end}")).format(
                       strong_start=HTML('<strong>'),
                       strong_end=HTML('</strong>'),
@@ -584,5 +626,72 @@ from openedx.core.djangolib.js_utils import (
   </section>
 
   %endif
+  <script type="text/javascript">
+    function docnum() {
+      var id = document.getElementById('new-course-org').value;
+      $.ajax({
+        type:'POST',
+        url:'',
+        dataType:'json',
+        data:{
+          org : id,
+          csrfmiddlewaretoken : document.getElementsByName('csrfmiddlewaretoken')[0].value
+        },
+        success:function(json){
+          document.getElementById('new-course-number').value = json.orgcode + '00'+ json.newcount;
+          if(json.newcount == 0) {
+            document.getElementById('new-course-number').disabled = true;
+            document.getElementById('new-course-run').value = '';
+            document.getElementById('new-course-run').disabled = true;
+          }
+        }
+      });
+      return false;
+    }
+
+    function getsubcat(val) {
+        $.ajax({
+            type : 'POST',
+            url : '',
+            dataType:'json',
+            data :{
+                categoryid: val,
+                csrfmiddlewaretoken : document.getElementsByName('csrfmiddlewaretoken')[0].value
+            },
+            success : function(data) {
+              document.getElementById('new-course-subcategory').disabled=false;
+                $('#new-course-subcategory').empty();
+                $('select[name=new-course-subcategory]').append('<option value="">Select Your subcategory</option>');
+                $.each(data, function(key, value){
+                    $('select[name=new-course-subcategory').append('<option value="' + key + '">' + value +'</option>');
+                });
+            }
+        });
+        
+        return false;
+
+    }
+
+    function docrun() {
+      var dateObj = new Date();
+      var month = new Array();
+      month[0] = "Jan";
+      month[1] = "Feb";
+      month[2] = "Mar";
+      month[3] = "Apr";
+      month[4] = "May";
+      month[5] = "Jun";
+      month[6] = "Jul";
+      month[7] = "Aug";
+      month[8] = "Sep";
+      month[9] = "Oct";
+      month[10] = "Nov";
+      month[11] = "Dec";
+      var n = month[dateObj.getMonth()];
+      var year = dateObj.getUTCFullYear();
+      cnum = document.getElementById('new-course-number').value;
+      document.getElementById('new-course-run').value = year + '_' + n + '_' + cnum;
+    }
+  </script>
 </div>
 </%block>

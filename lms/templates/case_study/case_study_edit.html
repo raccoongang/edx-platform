@@ -1,0 +1,231 @@
+<%page expression_filter="h"/>
+<%namespace name='static' file='../static_content.html'/>
+<%!
+  import json
+  import urlparse, os
+  from django.utils.translation import ugettext as _
+  from openedx.core.djangolib.js_utils import dump_js_escaped_json
+  from django.core.context_processors import csrf
+  from django.template.defaultfilters import safe
+%>
+<%inherit file="../main.html" />
+<%block name="pagetitle">${_("Case study add")}</%block>
+<link href="/static/edx-bootstrap-theme-master/css/breadcrums.css" rel="stylesheet">
+<link href="/static/edx-bootstrap-theme-master/css/contact.css" rel="stylesheet">
+<style type="text/css">
+  input[type="text"],input[type="email"] {
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: normal;
+  }
+  .btn {
+  text-transform: uppercase;
+  padding: 6px 16px;
+  font-family: "lato";
+  font-weight: bold;
+  line-height: 1.43;
+  letter-spacing: 0.4px;
+  border-radius: 0;
+  border: none;
+  margin: 10px 0;
+  margin-left: 15px;
+  padding: 8px 16px;
+  }
+  .btn-primary {
+  background-color: #07b256;
+  color: #fff;
+  border: 1px solid #07b256;
+  }
+  input[type="submit"] {
+  background-color: #07b256;
+  color: #fff;
+  border: 1px solid #07b256;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  font-family: "lato";
+  font-weight: bold;
+  line-height: 1.43;
+  letter-spacing: 0.4px;
+  border-radius: 0;
+  border: none;
+  margin: 10px 0;
+  margin-left: 15px;
+  padding: 8px 16px;
+  background-image: none;
+  }
+</style>
+<section class="form-type">
+  <div class="container topicCont">
+    <div class="row form-wrapper">
+      <ul class=breadcrums>
+        <li><a href="/">Home / </a></li>
+        <li ><a href="#" class="active" >Case Study</a></li>
+      </ul>
+    </div>
+    <div class="row contactSec">
+      <div class="col-md-12">
+        <h3>Add Case Study</h3>
+        <form action="" method="post" enctype="multipart/form-data" class="register-form">
+          <p>Title</p>
+          <input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }">
+          <div class="col-xs-12 col-sm-12 col-md-7">
+            <div class="form-field " style="padding:10px 5px;"> 
+              <input  class="mat-input" type="text" id="first-name" name="title" placeholder="Title" value="${case_data.title}" required>
+            </div>
+            <div class="form-field" style="padding:10px 5px;"> 
+              <p>Description</p>      
+                <textarea class="mat-input" id="description" placeholder="Message*" name= "description" required>${case_data.description}</textarea>
+            </div>
+            <div class="form-field" style="padding:10px 5px;">
+              <input  class="mat-input" type="file" id="file" name="my_file[]" accept="image/*,application/pdf" >
+              <input  class="mat-input" type="file" id="file" name="my_file[]" accept="image/*,application/pdf" >
+              <input  class="mat-input" type="file" id="file" name="my_file[]" accept="image/*,application/pdf" >
+              <p>Attach images related to the case study
+              </p>
+
+            </div>
+            <div class="form-field " style="padding:10px 5px;">
+                <p>Terms and condition 
+                <input type="checkbox" value="1" name="tos" required {% if case_data.tos == 1  %} checked="checked" {% endif %}></p>
+                <p><strong>If accepted, I am likely to attend the conference without the need for any support.</strong></p>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-5">
+            <div class="form-field" style="padding:10px 5px;">
+              <p>Register as:</p>  
+              <select id="register-user_type" name="user_type" class="form-control" required="">
+                %if case_data.user_type == "id":
+                  <option value="${case_data.user_type}">Invited Speakers</option>
+                %elif case_data.user_type == "yi":
+                  <option value="${case_data.user_type}">Young Investigator</option>
+                %elif case_data.user_type == "rcp":
+                  <option value="${case_data.user_type}">Research Competition Participants</option>
+                %endif
+                <option value="is">Invited Speakers</option>
+                <option value="yi">Young Investigator</option>
+                <option value="rcp">Research Competition Participants</option>
+              </select>
+            </div>
+            <div class="form-field" style="padding:10px 5px;">
+              <p>XII GLOBAL HEALTH CARE SUMMIT 2018 Topic</p>   
+              <select id="register-user_type" name="case_study_type" class="form-control" required="">
+                %if case_data.case_study_type == "cspbr":
+                  <option value="${case_data.case_study_type}">Clinical Sciences and Patient-Based Research</option>
+                %elif case_data.case_study_type == "bstr":
+                  <option value="${case_data.case_study_type}">Basic Sciences and Translational Research (large animals and human studies)</option>
+                %elif case_data.case_study_type == "temr":
+                  <option value="${case_data.case_study_type}">Technology Innovations in Medicine including EMR, Devices etc</option>
+                %elif case_data.case_study_type == "cim":
+                  <option value="${case_data.case_study_type}">Complimentary and Integrative Medicine/AYUSH</option> 
+                %endif
+                    <option value="cspbr" >Clinical Sciences and Patient-Based Research</option>
+                    <option value="bstr">Basic Sciences and Translational Research (large animals and human studies)</option>
+                    <option value="temr">Technology Innovations in Medicine including EMR, Devices etc
+                    </option>
+                    <option value="cim">Complimentary and Integrative Medicine/AYUSH</option>
+              </select>
+            </div>
+            <div class="form-field" style="padding:10px 5px;" id="coauthors_table">
+              <h3>Author Information
+                <span class="glyphicon glyphicon-plus-sign add_author" onclick="wpabstracts_add_coauthor();" style="margin-left:20px; padding-right: 10px;"></span>
+                <span class="glyphicon glyphicon-minus-sign delete_author" onclick="wpabstracts_delete_coauthor();"></span>
+              </h3>
+              <%
+                anames = case_data.author_name.split(',')
+                aemails = case_data.author_email.split(',')
+                affil = case_data.author_affiliation.split(',')
+                i=0
+              %>
+              %for aname in anames:
+                <div class="author_box">
+                  <h4>Name</h4>
+                  <input type="text" name="author_names[]" required value="${aname}">
+                  <h4>Email</h4>
+                  <input type="email" name="author_emails[]" required value="${aemails[i]}">
+                  <h4>Affiliation</h4>
+                  <input type="text" name="author_affiliations[]" required value="${affil[i]}">
+                </div>
+                <% i += 1 %>
+              %endfor
+            </div>
+          </div>
+          
+          %if case_data.user_id == request.user.id:
+            <div class="col-md-12">
+              <div class="form-field btn-custom">
+                <button class="btn btn-primary col-md-5">Submit</button>
+              </div>
+            </div>
+          %endif
+        </form>
+      </div>
+      <div class="col-md-12">
+      	<% 
+            images = case_data.uploaded_file
+            imgurl = images.split(',') 
+        %>
+    	%for img in imgurl:
+        <%
+          a = urlparse.urlparse(img)
+          b = os.path.basename(a.path)
+        %>
+        %if img:
+          %if ".pdf" not in img:
+            <img src="${img}" class="img-thumbnail" alt="${img}" style="width: 15%;">  
+          %else:
+            <a href="${img}">${b}</a>
+          %endif
+        %endif
+    	%endfor
+      
+      </div>
+      <div class="col-md-12">
+        % if message:
+        <ul class="messages" style="margin-left: -0.5rem;">
+          
+          <div class = "alert alert-success alert-dismissable" id="msg" style="background: #07b256;min-width: 325px;">
+            <button type = "button" class = "close" data-dismiss = "alert" aria-hidden = "true" onclick="msghide();">&times;</button>${ message }
+          </div>
+        </ul>
+        % endif
+        <div class = "alert alert-success alert-dismissable" id="errormsg" style="background: #07b256;min-width: 325px;display: none;">
+            <button type = "button" class = "close" data-dismiss = "alert" aria-hidden = "true" onclick="errormsghide();">&times;</button>Please input some description
+          </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+</div>
+<script src="https://cdn.ckeditor.com/4.10.0/basic/ckeditor.js"></script>
+<script type="text/javascript">
+  function msghide(){
+    $('#msg').hide();
+  }
+  function errormsghide(){
+    $('#errormsg').hide();
+  }
+  var editor = CKEDITOR.replace( 'description');
+
+  function validate() {
+    if(editor.getData().length == 0) {
+      document.getElementById('errormsg').style.display="block";
+      return false;
+    } else {
+      document.getElementById('desc').value = CKEDITOR.instances.editor.getData();
+    }
+  }
+
+  function wpabstracts_add_coauthor(){
+    var author_box = jQuery('.author_box:first').clone();
+    jQuery(author_box).find('input').val('');
+    jQuery('#coauthors_table').append(author_box);
+  }
+
+  function wpabstracts_delete_coauthor(){
+    if(jQuery("#coauthors_table .author_box").length > 1){
+        jQuery('#coauthors_table').find(".author_box:last").remove();
+    }
+  }
+  
+</script>

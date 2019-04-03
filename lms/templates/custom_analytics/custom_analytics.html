@@ -1,0 +1,211 @@
+<%inherit file="/main.html" />
+<%namespace name='static' file='../static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+from lms.djangoapps.associations.views import get_user_type, organizationName
+from lms.djangoapps.specialization.views import specializationName
+from lms.djangoapps.hcspecialization.views import hcSpecName
+%>
+<%block name="headextra">
+<style type="text/css">
+  .nav.navbar-nav>li>a {
+     color: #ffffff !important; 
+  }
+  </style>
+</%block>
+<%block name="pagetitle">DocMode Analytics</%block>
+<!-- Custom Theme Style -->
+<link href="${static.url('css/vendor/build/css/custom.css')}" rel="stylesheet">
+
+<%def name="user_specialization()"><!-- Doctor Specialization Chart Data -->
+  [
+  ["Specialization", "Doctors Count"],
+  %for sq in spec_qset:
+    ["${specializationName(sq['specialization_id'])}", ${sq['dcount']}],
+  %endfor
+  ]
+</%def>
+<%def name="orgMemData()"><!-- Org Members Chart Data -->
+  [
+  ["Associations", "Members Count"],
+  %for omq in orgMemQset:
+    ["${organizationName(omq['organization_id'])}", ${omq['dcount']}],
+  %endfor
+  ]
+</%def>
+<%def name="hcSpecData()"><!-- Healthcare Specialization Chart Data -->
+  [
+  ["Healthcare Professional", "Members Count"],
+  %for hc in hc_qset:
+    ["${hcSpecName(hc['hcspecialization_id'])}", ${hc['dcount']}],
+  %endfor
+  ]
+</%def>
+<div class="nav-sm">
+  <div class="container body" style="border: 0px solid blue;">
+    <div class="main_container">
+      <%include file="dashboard_sidebar.html" />
+      <div class="right_col" role="main">
+      	<div class="container" style="border: 0px solid red;">
+      		<div class="col-md-12">
+      			<!-- top tiles -->
+      			<div class="container tile_count"><!-- Counts of Users/Associations -->
+      				<div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+      					<span class="count_top"><i class="fa fa-user"></i> Total Users</span>
+      					<div class="count">${total_users}</div>
+      					<span class="count_bottom"><i class="green">4% </i> From last Week</span>
+      				</div>
+      				<div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+      					<span class="count_top"><i class="fa fa-user"></i> Total Associations</span>
+      					<div class="count">${total_assoc}</div>
+      					<span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>
+      				</div>
+      				<div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+      					<span class="count_top"><i class="fa fa-user"></i> Total Lectures</span>
+      					<div class="count">${webinar_count}</div>
+      					<span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>12% </i> From last Week</span>
+      				</div>
+      				<div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+      					<span class="count_top"><i class="fa fa-user"></i> Total Courses</span>
+      					<div class="count">${course_count}</div>
+      					<span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> From last Week</span>
+      				</div>
+                                <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+                                        <span class="count_top"><i class="fa fa-user"></i> Verified Users</span>
+                                        <div class="count green">${verified_users}</div>
+                                        <span class="count_bottom"></span>
+                                </div>
+                                <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+                                        <span class="count_top"><i class="fa fa-user"></i> Users Not Verified</span>
+                                        <div class="count">${users_not_verified}</div>
+                                        <span class="count_bottom"></span>
+                                </div>
+      			</div>
+      			<!-- /top tiles -->
+      		</div>  
+        </div>
+        <div class="container top_tiles"><!-- Counts of User Types -->
+      		%for qs in usertype_qset:
+      			<div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+      			  <div class="tile-stats">
+      			    <div class="icon"><i class="glyphicon glyphicon-user"></i></div>
+      			    <div class="count">${qs['dcount']}</div>
+      			    <h3>${get_user_type(qs['user_type'])}</h3>
+      			  </div>
+      			</div>
+      		%endfor
+        </div>
+        <div class="container"><!-- Pie Charts of Specializations/Healthcare -->
+        	<div class="col-md-6 col-sm-6 col-xs-12">
+        		<div id="specGcChart" style="width: 400px; height: 400px;"></div>
+        	</div>
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <div id="healthcareChart" style="width: 400px; height: 400px;"></div>
+          </div>
+        </div>
+
+      	<div class="container" style="border: 0px solid green;"><!-- Pie Charts of Registrations/Members -->
+      		<div class="col-md-6 col-sm-6 col-xs-12">
+            <div id="regwebChart"></div>
+          </div>
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <div id="orgMemChart" style="width: 400px; height: 400px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- jQuery -->
+<!-- Bootstrap -->
+<script src="${static.url('js/bootstrap.min.js')}"></script>
+<!-- Chart.js -->
+<!-- <script src="${static.url('vendors/Chart.js/dist/Chart.min.js')}"></script> -->
+<!-- Google Charts -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<!-- <script src="${static.url('css/vendor/build/js/custom-gc.js')}"></script> -->
+<script type="text/javascript">
+  google.charts.load('current', {'packages':['corechart', 'bar']});
+  google.charts.setOnLoadCallback(drawChart);
+  google.charts.setOnLoadCallback(drawMultSeries);
+
+  function drawChart() {
+
+    var specdata = google.visualization.arrayToDataTable(${user_specialization()});
+    var org_members = google.visualization.arrayToDataTable(${orgMemData()});
+    var healthcare = google.visualization.arrayToDataTable(${hcSpecData()});
+
+    var options = {
+      title: 'Doctors Specializations',
+      titleTextStyle: { fontSize: 20, bold: true },
+      backgroundColor: '#FEF7F5',
+      width: 500
+    };
+    var options2 = {
+      title: 'Association Members',
+      titleTextStyle: { fontSize: 20, bold: true },
+      backgroundColor: '#FEF7F5',
+      colors: ['#1AC3D7', '#AC60F9', '#F960F8', '#F96E60', '#6FF960'],
+      is3D:true,
+      width: 500
+    };
+    var options3 = {
+      title: 'Healthcare Specializations',
+      titleTextStyle: { fontSize: 20, bold: true },
+      backgroundColor: '#F7EAE6',
+      is3D:true,
+      width: 500
+    };
+
+    var specchart = new google.visualization.PieChart(document.getElementById('specGcChart'));
+    var org_members_chart = new google.visualization.PieChart(document.getElementById('orgMemChart'));
+    var healthcare_chart = new google.visualization.PieChart(document.getElementById('healthcareChart'));
+
+    specchart.draw(specdata, options);
+    org_members_chart.draw(org_members, options2);
+    healthcare_chart.draw(healthcare, options3);
+  }
+
+  function drawMultSeries() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('timeofday', 'Time of Day');
+    data.addColumn('number', 'Motivation Level');
+    data.addColumn('number', 'Energy Level');
+
+    data.addRows([
+      [{v: [8, 0, 0], f: '8 am'}, 1, .25],
+      [{v: [9, 0, 0], f: '9 am'}, 2, .5],
+      [{v: [10, 0, 0], f:'10 am'}, 3, 1],
+      [{v: [11, 0, 0], f: '11 am'}, 4, 2.25],
+      [{v: [12, 0, 0], f: '12 pm'}, 5, 2.25],
+      [{v: [13, 0, 0], f: '1 pm'}, 6, 3],
+      [{v: [14, 0, 0], f: '2 pm'}, 7, 4],
+      [{v: [15, 0, 0], f: '3 pm'}, 8, 5.25],
+      [{v: [16, 0, 0], f: '4 pm'}, 9, 7.5],
+      [{v: [17, 0, 0], f: '5 pm'}, 10, 10],
+    ]);
+
+    var options = {
+      title: 'Motivation and Energy Level Throughout the Day',
+      hAxis: {
+        title: 'Time of Day',
+        format: 'h:mm a',
+        viewWindow: {
+          min: [7, 30, 0],
+          max: [17, 30, 0]
+        }
+      },
+      vAxis: {
+        title: 'Rating (scale of 1-10)'
+      }
+    };
+
+    var chart = new google.visualization.ColumnChart(
+      document.getElementById('regwebChart'));
+
+    chart.draw(data, options);
+  }
+</script>
+<!-- Custom Theme Scripts -->
+<script src="${static.url('css/vendor/build/js/custom.js')}"></script>

@@ -1,16 +1,299 @@
 <%page expression_filter="h"/>
-<%! from django.utils.translation import ugettext as _ %>
-<%inherit file="../main.html" />
+<%namespace name='static' file='../static_content.html'/>
+<%!
+    import json
+    from django.conf import settings
+    from django.utils.translation import ugettext as _
+    from openedx.core.djangolib.js_utils import dump_js_escaped_json
+    from django.template.context_processors import csrf
+    from lms.djangoapps.reg_form.views import getuserfullprofile, userdetails
+%>
 
+<%inherit file="../main.html" />
 <%block name="pagetitle">${_("Contact")}</%block>
 
-<main id="main" aria-label="Content" tabindex="-1">
-    <section class="container about">
-        <h1>
-            <%block name="pageheader">${page_header or _("Contact")}</%block>
-        </h1>
-        <p>
-            <%block name="pagecontent">${page_content or _("This page left intentionally blank. Feel free to add your own content.")}</%block>
-        </p>
-    </section>
-</main>
+    <link href="/static/edx-bootstrap-theme-master/css/breadcrums.css" rel="stylesheet"> 
+    <link href="/static/edx-bootstrap-theme-master/css/contact.css" rel="stylesheet"> 
+<style type="text/css">
+  input[type="text"],input[type="email"] {
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: normal;
+  }
+  .btn {
+    text-transform: uppercase;
+    padding: 6px 16px;
+    font-family: "lato";
+    font-weight: bold;
+    line-height: 1.43;
+    letter-spacing: 0.4px;
+    border-radius: 0;
+    border: none;
+    margin: 10px 0;
+    margin-left: 15px;
+    padding: 8px 16px;
+  }
+  .btn-primary {
+    background-color: #07b256;
+    color: #fff;
+    border: 1px solid #07b256;
+  }
+    input[type="submit"] {
+      background-color: #07b256;
+      color: #fff;
+      border: 1px solid #07b256;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      font-family: "lato";
+      font-weight: bold;
+      line-height: 1.43;
+      letter-spacing: 0.4px;
+      border-radius: 0;
+      border: none;
+      margin: 10px 0;
+      margin-left: 15px;
+      padding: 8px 16px;
+      background-image: none;
+    }
+    input[name=check_spam] {
+        display: none;
+    }
+</style>
+<section>
+  <div class="container topicCont">
+    <div class="row">
+      <ul class=breadcrums>
+        <li><a href="/">Home / </a></li>
+        <li ><a href="#" class="active" >Contact us</a></li>
+      </ul>
+    </div>
+    <div class="row contactSec">
+      <div class="col-md-6">
+        <h3>Get in touch with us</h3>
+        
+        <form action="/ask_us" method="post" class="register-form" id="contact">
+        <input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }">
+        <input type="text" class="mat-input" name="check_spam" id="check_spam" placeholder="Check Spam">
+        %if user.is_authenticated():
+        <%
+          uname = getuserfullprofile(request.user)
+          phonenum = userdetails(request.user)
+        %>
+          <div class="mat-div">
+            <input type="email" class="mat-input" id="email-addr" name="emailid" placeholder="Email-id" required value="${request.user.email}" readonly="readonly">
+          </div>
+          <div class="mat-div">  
+            <input  class="mat-input" type="text" id="first-name" name="name" placeholder="Full name" required value="${uname.name}" readonly="readonly">
+          </div>   
+          <div class="mat-div">
+            
+            <input type="text" class="mat-input" id="register-phone" name="phone" minlength="10" placeholder="Phone number*" required value="${phonenum.phone}" readonly="readonly">
+          </div>
+        %else:
+          <div class="mat-div">
+            <input type="email" class="mat-input" id="email-addr" name="emailid" placeholder="Email-id" required >
+          </div>
+          <div class = "alert alert-success alert-dismissable" id="email_msg" style="background: #07b256;min-width: 325px; display: none;">Please enter correct emaiid!.
+            </div>
+          <div class="mat-div">  
+            <input  class="mat-input" type="text" id="first-name" name="name" placeholder="Full name" required>
+          </div>   
+          <div class="mat-div">
+            
+            <input type="text" class="mat-input" id="register-phone" name="phone" minlength="10" placeholder="Phone number*" required>
+          </div>
+        %endif
+        <div class="mat-div">
+          <select id="register-user_type" name="inquiry_type" class="form-control" required="">   
+            <option value="">Select your option below</option>             
+            <option value="1">Medical Content</option>
+            <option value="2">Technical</option>
+            <option value="3">Certificates</option>
+            <option value="4">General</option>
+            <option value="5">Sales & Partnership</option>
+          </select>
+        </div>
+         <div class="mat-div">  
+          <textarea style="height: 100px;" class="mat-input" id="message" name="message" maxlength="255" minlength="20" placeholder="Message*" required ></textarea>
+        </div>
+        <div class="mat-div">
+          <input type="text" id="mainCaptcha" class="col-md-6" disabled="" />
+          <img src="https://s3-ap-southeast-1.amazonaws.com/docmode-in-uploads/reload.png" onclick="Captcha();" style="cursor:pointer;padding-left: 10px;">
+        </div>
+        <div class="mat-div">
+          <p>Please enter the above captcha term. </p>
+          <input type="text" id="txtInput" class="mat-input" required onchange="ValidCaptcha();"/> 
+            <div class = "alert alert-success alert-dismissable" id="captcha_msg" style="background: #07b256;min-width: 325px; display: none;">Please enter the captcha correctly!.
+            </div>
+        </div>
+        <div class="btn-custom">
+          <input type="submit" id="submit" class="btn btn-primary" disabled="" value="Send Message">                                
+        </div>
+        </form>
+        % if messages:
+          <ul class="messages" style="margin-left: -0.5rem;">
+            % for message in messages:
+              <div class = "alert alert-success alert-dismissable" id="msg" style="background: #07b256;min-width: 325px;">
+                 <button type = "button" class = "close" data-dismiss = "alert" aria-hidden = "true" onclick="msghide();">&times;</button>${ message }
+              </div>
+            % endfor
+          </ul>
+        % endif
+      </div>
+      <div class="col-md-6">
+        <div class="addressSec">
+          <div class="addressCont">
+            <h4> For business enquiries</h4>
+            <p>Email: partner@docmode.org</p>
+            <!-- <p>Call: +91 9821554642 </p> -->
+          </div>
+          <div class="addressCont">
+            <h4>Visit us</h4>
+            <p>DocMode Health Technologies Pvt Ltd,<br/> 
+            301- A Wing, New Delite Building, <br/>
+            Old Shopping Centre, Chandravarkar Road, <br/>
+            Borivali West<br/>
+            Mumbai, Maharashtra<br/>
+            Postal code - 400092, India</p>
+            <a href="https://goo.gl/maps/iDqY2k1pYtB2"  target="_blank" class="direction"> Get Direction</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script type="text/javascript">
+  $( document ).ready(function() {
+    Captcha();
+    spamCheck();
+  });
+
+  function msghide(){
+    $('#msg').hide();
+  }
+
+  function phone_validation() {
+    var inputtxt = document.getElementById('register-phone').value;
+    var phoneno = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+    if((inputtxt.value.match(phoneno))) {
+        return true;
+      document.getElementById("submit").disabled = false;
+    } else {
+      alert("message");
+      return false;
+    }
+  }
+
+  function Captcha(){
+     var alpha = new Array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
+     var i;
+     for (i=0;i<6;i++){
+       var a = alpha[Math.floor(Math.random() * alpha.length)];
+       var b = alpha[Math.floor(Math.random() * alpha.length)];
+       var c = alpha[Math.floor(Math.random() * alpha.length)];
+       var d = alpha[Math.floor(Math.random() * alpha.length)];
+       var e = alpha[Math.floor(Math.random() * alpha.length)];
+       var f = alpha[Math.floor(Math.random() * alpha.length)];
+       var g = alpha[Math.floor(Math.random() * alpha.length)];
+      }
+    var code = a + b+ c+ d+ e +f + g;
+    document.getElementById("mainCaptcha").value = code
+  }
+
+  function ValidCaptcha(){
+      var string1 = removeSpaces(document.getElementById('mainCaptcha').value);
+      var string2 = removeSpaces(document.getElementById('txtInput').value);
+      if (string1 == string2){
+        document.getElementById("captcha_msg").style.display = "none";
+        document.getElementById("submit").disabled = false;
+      }else{
+      document.getElementById("captcha_msg").style.display = "block";
+      document.getElementById("submit").disabled = true;
+      Captcha();
+      }
+  }
+
+  function removeSpaces(string){
+    return string.split(' ').join('');
+  }
+
+  function checkEmailValidity() {
+      class ZeroBounceApi {
+        constructor(apiKey){
+          var baseUrl = "https://api.zerobounce.net/v1";
+          var get = new XMLHttpRequest();
+          /**
+           * @param apiKey - your private API key
+           * */
+          this.apiKey = apiKey;
+
+          /**
+           * @return the number of credits remaining on your account
+           * */
+          this.getCredits = function(){
+              var uri = baseUrl + "/getcredits" + "?apikey=" + apiKey;
+              get.open('GET', uri, false);
+              get.send();
+              if (get.readyState === 4 && get.status === 200) {
+                  return get.responseText;
+              }
+          }
+
+          /**
+           * @param email - the email you want to validate
+           * @return - a JSONObject with all of the information for the specified email
+           * */
+          this.validate = function(email){
+              var uri = baseUrl + "/validate" + "?apikey=" + apiKey + "&email=" + email;
+              get.open('GET', uri, false);
+              get.send();
+              if (get.readyState == 4 && get.status == 200) {
+                  return get.responseText;
+              }
+          }
+
+          /**
+           * @param email - the email you want to validate
+           * @param ip - the ip to be use for this validation (advanced)
+           * @return - a JSONObject with all of the information for the specified email
+           * */
+          this.validateWithIpAddress = function(email, ipAddress){
+              var uri = baseUrl + "/validate" + "?apikey=" + apiKey + "&email=" + email + "&ipAddress=" + ipAddress;
+              get.open('GET', uri, false);
+              get.send();
+              if (get.readyState == 4 && get.status == 200) {
+                  return get.responseText;
+              }
+          }
+        }
+      }
+      mail = document.getElementById('email-addr').value;
+      var ZeroBounceApiVar = new ZeroBounceApi('af8e53a08b7a4a9ab3cc98584fd3a734');
+      ZeroBounceApiVar.apiKey;
+      ZeroBounceApiVar.getCredits();
+      var getResults = ZeroBounceApiVar.validate(mail);
+      var getStatus = JSON.parse(getResults);
+      // alert(getStatus.status);
+      if (getStatus.status != 'valid') {
+        
+        document.getElementById('email-addr').value = "";
+        document.getElementById('email-addr').focus();
+        document.getElementById("email_msg").style.display = "block";
+        document.getElementById("submit").disabled = true;
+      }
+    }
+    function spamCheck(){
+    	// $('#check_spam').hide();
+    	$('#contact').submit(function(){
+    		if($('#check_spam').val().length > 1){
+    			event.preventDefault()
+    		}
+    	})
+    }
+
+    function clean_data() {
+      var value =  $('textarea#message').val();
+      cleaned_data = value.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '');
+      $('textarea#message').val(cleaned_data);
+    }
+</script>

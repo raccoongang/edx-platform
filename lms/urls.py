@@ -27,6 +27,11 @@ from lms.djangoapps.instructor.views import instructor_dashboard as instructor_d
 from lms.djangoapps.instructor.views import registration_codes as instructor_registration_codes_views
 from lms.djangoapps.instructor_task import views as instructor_task_views
 from lms_migration import migrate as lms_migrate_views
+# additional apps import start 
+from lms.djangoapps.associations.views import index, list_categories, list_lectures,association_course_analytics,export_csv,case_study,association_about,category,association_dashboard,custom_analytics,custom_analytics_coupons,coupon_details,export_coupon_csv
+from lms.djangoapps.case_study.views import csy_about,csy_admin_dashboard,csy_dashboard,cs_addnew,cs_update
+from lms.djangoapps.contact_us.views import contact_us
+#additional apps import ends
 from notes import views as notes_views
 from notification_prefs import views as notification_prefs_views
 from openedx.core.djangoapps.auth_exchange.views import LoginWithAccessTokenView
@@ -295,6 +300,45 @@ urlpatterns += [
         xqueue_callback,
         name='xqueue_callback',
     ),
+
+        #url for association course analytics
+    url(
+        r'^dashboard/{}/$'.format(
+            settings.COURSE_ID_PATTERN,
+        ),
+        association_course_analytics,
+        name='association_course_analytics'
+    ),
+
+    #url for association course data download
+    url(
+        r'^dashboard/{}/excel/(?P<datatype>[^/]+)$'.format(
+            settings.COURSE_ID_PATTERN,
+        ),
+        export_csv,
+        name='usercsv'
+    ),
+
+    # Association pages and all extra docmode apps view urls
+    url(r'^assoc/?$', index),
+    url(r'^subjects/?$', list_categories),
+    url(r'^lectures?$', list_lectures),
+    url(r'^case_studies/?$', case_study),
+    url(r'^research/?$', csy_about),
+    url(r'^research/admin?$', csy_admin_dashboard),
+    url(r'^research/dashboard/?$', csy_dashboard),
+    url(r'^research/new/?$', cs_addnew),
+    url(r'^research/(?P<caseid>[0-9]+)/?$', cs_update),
+    url(r'^ask_us$', contact_us),
+    #url(r'^(?P<organization_id>[\w-]+)/$',association_about),
+    url(r'^subject/(?P<category_id>[\w-]+)$',category),
+    url(r'^dashboard/(?P<org_sname>[^/]+)/$',association_dashboard),
+    # TODO: These views need to be updated before they work
+    url(r'^calculate$', util_views.calculate),
+    url(r'^docmode/analytics$',custom_analytics),
+    url(r'^docmode/coupons$',custom_analytics_coupons),
+    url(r'^docmode/coupon/(?P<coupon_name>[^/]+)/$',coupon_details),
+    url(r'^docmode/coupon/excel/(?P<coupon_name>[^/]+)$',export_coupon_csv),
 
     # TODO: These views need to be updated before they work
     url(r'^calculate$', util_views.calculate),
@@ -1081,5 +1125,10 @@ if settings.FEATURES.get('ENABLE_API_DOCS'):
     urlpatterns += [
         url(r'^api-docs/$', get_swagger_view(title='LMS API')),
     ]
+
+# About the association
+urlpatterns += [
+    url(r'^(?P<organization_id>[\w-]+)/$',association_about),
+]
 
 urlpatterns.extend(plugin_urls.get_patterns(plugin_constants.ProjectType.LMS))

@@ -1,0 +1,124 @@
+<%namespace name='static' file='../static_content.html'/>
+<%!
+import json
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+from django.conf import settings
+from edxmako.shortcuts import marketing_link
+from openedx.core.lib.courses import course_image_url
+from associations.views import course_det
+from django.template.context_processors import csrf
+from lms.djangoapps.associations.views import speczName, userType, orgName
+%>
+
+<%inherit file="../main.html" />
+<%block name="headextra">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+</%block>
+
+
+<%block name="pagetitle">${category.topic_name}</%block>
+  <section class="courses-container" style="text-align: center;">
+    <div class="col-sm-12" >
+      <select id="subcategory" style="padding: 10px 10px; min-width: 90px;" onchange="get_courses(this.value);">
+        <option value="0">Course topics</option>
+        %for subcategory in subcat:
+          <option value="${subcategory.id}"> ${subcategory.name}</option>
+        %endfor
+      </select>
+      <select id="cstart" style="padding: 10px 10px; min-width: 90px; padding-left: 10px;" onchange="course_start(this.value);">
+        <option value="0">Start Date</option>
+        <option value="1">Start Now</option>
+        <option value="2">Start Later</option>
+      </select>
+    </div>
+  </section>
+  <section class="courses-container">
+    <section class="find-courses" style="background: none;"> <!-- Upcoming Courses -->
+      <section class="courses-container" style="padding-top: 0;">
+        <div class="courses${'' if course_discovery_enabled else ' no-course-discovery'}" role="region" aria-label="${_('List of Courses')}" id="prod">
+          <ul class="courses-listing">
+            %for course in courses:
+            <li class="courses-listing-item">
+              <%include file="../course.html" args="course=course" />
+            </li>
+            %endfor
+          </ul>
+        </div>
+      </section>
+    </section>
+  </section>
+<script type="text/javascript">
+
+  $(document).ready(function() {
+    // Configure/customize these variables.
+    var showChar = 600;  // How many characters are shown by default
+    var ellipsestext = "...";
+    var moretext = "Show more ";
+    var lesstext = "Show less";
+    
+
+    $('.more').each(function() {
+        var content = $(this).html();
+ 
+        if(content.length > showChar) {
+ 
+            var c = content.substr(0, showChar);
+            var h = content.substr(showChar, content.length - showChar);
+ 
+            var html = c + '<span class="moreellipses">' + ellipsestext+ '&nbsp;</span><span class="morecontent"><span>' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+ 
+            $(this).html(html);
+        }
+ 
+    });
+ 
+    $(".morelink").click(function(){
+        if($(this).hasClass("less")) {
+            $(this).removeClass("less");
+            $(this).html(moretext);
+        } else {
+            $(this).addClass("less");
+            $(this).html(lesstext);
+        }
+        $(this).parent().prev().toggle();
+        $(this).prev().toggle();
+        return false;
+    });
+  });
+
+  function get_courses(val) {
+    var ctime = $("#cstart option:selected").val();
+
+    $.ajax({
+        type : 'POST',
+        url : '',
+        dataType:'html',
+        data :{
+            subcategoryid: val,
+            coursetime : ctime
+        },
+          success : function(data) {
+            $('#prod').html(data);
+          }
+    });
+    return false;
+  }
+
+  function course_start(val) {
+    var scategory = $("#subcategory option:selected").val();
+    $.ajax({
+        type : 'POST',
+        url : '',
+        dataType:'html',
+        data :{
+            coursetime: val,
+            subcategoryid : scategory
+        },
+          success : function(data) {
+            $('#prod').html(data);
+          }
+    });
+    return false;
+  }
+</script>

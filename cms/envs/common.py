@@ -255,16 +255,16 @@ FEATURES = {
     'LICENSING': False,
 
     # Enable the courseware search functionality
-    'ENABLE_COURSEWARE_INDEX': False,
+    'ENABLE_COURSEWARE_INDEX': True,
 
     # Enable content libraries search functionality
-    'ENABLE_LIBRARY_INDEX': False,
+    'ENABLE_LIBRARY_INDEX': True,
 
     # Enable course reruns, which will always use the split modulestore
     'ALLOW_COURSE_RERUNS': True,
 
     # Certificates Web/HTML Views
-    'CERTIFICATES_HTML_VIEW': False,
+    'CERTIFICATES_HTML_VIEW': True,
 
     # Teams feature
     'ENABLE_TEAMS': True,
@@ -284,7 +284,7 @@ FEATURES = {
     # Special Exams, aka Timed and Proctored Exams
     'ENABLE_SPECIAL_EXAMS': False,
 
-    'ORGANIZATIONS_APP': False,
+    'ORGANIZATIONS_APP': True,
 
     # Show the language selector in the header
     'SHOW_HEADER_LANGUAGE_SELECTOR': False,
@@ -318,7 +318,7 @@ FEATURES = {
     'RESTRICT_AUTOMATIC_AUTH': True,
 
     # Set this to true to make API docs available at /api-docs/.
-    'ENABLE_API_DOCS': False,
+    'ENABLE_API_DOCS': True,
 }
 
 ENABLE_JASMINE = False
@@ -1156,6 +1156,8 @@ INSTALLED_APPS = [
 
     # API Documentation
     'rest_framework_swagger',
+    'lms.djangoapps.specialization',
+    'lms.djangoapps.course_extrainfo'
 ]
 
 
@@ -1379,7 +1381,7 @@ FILES_AND_UPLOAD_TYPE_FILTERS = {
 }
 
 # Default to no Search Engine
-SEARCH_ENGINE = None
+SEARCH_ENGINE = "search.elastic.ElasticSearchEngine"
 ELASTIC_FIELD_MAPPINGS = {
     "start_date": {
         "type": "date"

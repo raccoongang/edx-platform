@@ -6,25 +6,52 @@ from openedx.core.djangolib.markup import HTML, Text
 %>
 <%inherit file="../main.html" />
 
-<%block name="pagetitle">${_("Page Not Found")}</%block>
-
-<main id="main" aria-label="Content" tabindex="-1">
-    <section class="outside-app">
-        <h1>
-            <%block name="pageheader">${page_header or _("Page not found")}</%block>
-        </h1>
-        <p>
-            <%block name="pagecontent">
-                % if page_content:
-                    ${page_content}
-                % else:
-                    ${Text(_('The page that you were looking for was not found. Go back to the {link_start}homepage{link_end} or let us know about any pages that may have been moved at {email}.')).format(
-                    link_start=HTML('<a href="/">'),
-                    link_end=HTML('</a>'),
-                    email=HTML('<a href="mailto:{email}">{email}</a>').format(email=Text(static.get_tech_support_email_address()))
-                    )}
-                % endif
-            </%block>
-        </p>
+<%block name="pagetitle">${_("Page Not Found 404")}</%block>
+<% email = 'support@docmode.org' %>
+<main id="main" aria-label="Content" tabindex="-1">  
+    <section >  
+        <div class="row">
+            <div class="container topicCont">
+             
+                <!-- <div class="row" style="text-align: center;">
+                    <h2>${_("Page not found")}</h2> 
+                </div> -->
+                <div class="row">
+                    <a href="https://docmode.org"><img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Docmode-Themes/404-error.png" width="100%" height="30%"></a>
+                </div>
+                <!-- <div class="row" style="text-align: center;">
+                    <p>
+                        <h3>Looks like the page you were looking doesn't exist or has been moved.<br/>Please go through other links provided below.
+                        </h3>
+                    </p>
+                </div> -->
+                <!-- <div class="row" style="text-align: center;">
+                    <p>
+                        <ul>
+                            <li>
+                                <p>
+                                    <a href="javascript:history.back()" >Go back</a> to the last page.
+                                </p>
+                            </li>
+                            <li>
+                                <p>
+                                    Go to docmode.org <a href="docmode.org" >home page</a>
+                                </p>
+                            </li>
+                            <li>
+                                <p>
+                                    View our <a href="/courses" >new courses</a>.
+                                </p>
+                            </li>
+                            <li>
+                                <p>
+                                    Please wait a few seconds and then reload the page. If the problem persists, please email us at <a href="mailto:support@docmode.org">support@docmode.org</a>
+                                </p>
+                            </li>
+                        </ul>   
+                    </p>        
+                </div> -->
+            </div>
+        </div>
     </section>
 </main>

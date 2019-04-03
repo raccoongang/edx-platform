@@ -101,6 +101,7 @@ class ScheduleMessageBaseTask(LoggedTask):
                 override_recipient_email,
             )
             cls.log_info('Launching task with args = %r', task_args)
+            
             cls().apply_async(
                 task_args,
                 retry=False,
@@ -133,7 +134,7 @@ class ScheduleMessageBaseTask(LoggedTask):
 
 
 @task(base=LoggedTask, ignore_result=True, routing_key=ROUTING_KEY)
-def _recurring_nudge_schedule_send(site_id, msg_str):
+def _recurring_nudge_schedule_send(site_id, msg_str):    
     _schedule_send(
         msg_str,
         site_id,
@@ -168,7 +169,6 @@ class ScheduleRecurringNudge(ScheduleMessageBaseTask):
     log_prefix = RECURRING_NUDGE_LOG_PREFIX
     resolver = resolvers.RecurringNudgeResolver
     async_send_task = _recurring_nudge_schedule_send
-
     def make_message_type(self, day_offset):
         return message_types.RecurringNudge(abs(day_offset))
 
@@ -197,6 +197,7 @@ class ScheduleCourseUpdate(ScheduleMessageBaseTask):
 
 def _schedule_send(msg_str, site_id, delivery_config_var, log_prefix):
     site = Site.objects.select_related('configuration').get(pk=site_id)
+    LOG.info("site ->msg %s",site)
     if _is_delivery_enabled(site, delivery_config_var, log_prefix):
         msg = Message.from_string(msg_str)
 

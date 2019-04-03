@@ -3,7 +3,7 @@
 import json
 import logging
 from datetime import datetime
-
+import string
 import urlparse
 from django.conf import settings
 from django.contrib import messages
@@ -78,7 +78,14 @@ def login_and_registration_form(request, initial_mode="login"):
 
     """
     # Determine the URL to redirect to following login/registration/third_party_auth
-    redirect_to = get_next_url_for_login_page(request)
+    if initial_mode == "register":
+        redirect_to = get_next_url_for_login_page(request)
+    else:
+        redirect_path = get_next_url_for_login_page(request)
+        redirect_to = string.replace(redirect_path, ' ', '+')
+
+    # original -> redirect_to = get_next_url_for_login_page(request)
+    
     # If we're already logged in, redirect to the dashboard
     if request.user.is_authenticated:
         return redirect(redirect_to)

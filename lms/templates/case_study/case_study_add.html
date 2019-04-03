@@ -1,0 +1,184 @@
+<%page expression_filter="h"/>
+<%namespace name='static' file='../static_content.html'/>
+<%!
+  import json
+  from django.utils.translation import ugettext as _
+  from openedx.core.djangolib.js_utils import dump_js_escaped_json
+  from django.template.context_processors import csrf
+%>
+<%inherit file="../main.html" />
+<%block name="pagetitle">${_("Case study add")}</%block>
+<link href="/static/edx-bootstrap-theme-master/css/breadcrums.css" rel="stylesheet">
+<link href="/static/edx-bootstrap-theme-master/css/contact.css" rel="stylesheet">
+<style type="text/css">
+  input[type="text"],input[type="email"] {
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: normal;
+  }
+  .btn {
+  text-transform: uppercase;
+  padding: 6px 16px;
+  font-family: "lato";
+  font-weight: bold;
+  line-height: 1.43;
+  letter-spacing: 0.4px;
+  border-radius: 0;
+  border: none;
+  margin: 10px 0;
+  margin-left: 15px;
+  padding: 8px 16px;
+  }
+  .btn-primary {
+  background-color: #07b256;
+  color: #fff;
+  border: 1px solid #07b256;
+  }
+  input[type="submit"] {
+  background-color: #07b256;
+  color: #fff;
+  border: 1px solid #07b256;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  font-family: "lato";
+  font-weight: bold;
+  line-height: 1.43;
+  letter-spacing: 0.4px;
+  border-radius: 0;
+  border: none;
+  margin: 10px 0;
+  margin-left: 15px;
+  padding: 8px 16px;
+  background-image: none;
+  }
+</style>
+<section class="form-type">
+  <div class="container topicCont">
+    <div class="row form-wrapper">
+      <ul class=breadcrums>
+        <li><a href="/">Home / </a></li>
+        <li ><a href="#" class="active" >Case Study</a></li>
+      </ul>
+    </div>
+    <div class="row contactSec">
+      <div class="col-md-12">
+
+        <form action="" method="post" enctype="multipart/form-data" class="register-form">
+          <input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }">
+          <div class="col-xs-12 col-sm-12 col-md-7">
+            <div style="border-color: #ddd;margin-bottom: 20px;background-color: #fff;border: 1px solid transparent;border-radius: 4px;-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);">
+                <div class="form-field " style="padding:10px 5px;"> 
+                  <input  class="mat-input" type="text" id="first-name" name="title" placeholder ="Enter Title" required value="">
+                </div>
+                <div class="form-field" style="padding:10px 5px;">  
+                <p>Description</p>     
+                  <textarea class="mat-input" id="description" placeholder="Message*" name= "description" required> </textarea>
+                </div>
+                <div class="form-field " style="padding:10px 5px;">
+                  <input  class="mat-input" type="file" id="file" name="my_file[]" accept="image/*,application/pdf"  >
+                  <input  class="mat-input" type="file" id="file" name="my_file[]" accept="image/*,application/pdf"  >
+                  <input  class="mat-input" type="file" id="file" name="my_file[]" accept="image/*,application/pdf"  >
+                  <p>Attach images related to the case study</p>
+                </div>
+                <div class="form-field " style="padding:10px 5px;">
+                    <p>Terms and condition 
+                    <input type="checkbox" value="1" name="tos" required></p>
+                    
+                </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-md-5">
+            <div class="form-field">
+              <p>Register as:</p>    
+              <select id="register-user_type" name="user_type" class="form-control" required="">
+                <option value="">Choose an option</option>
+                <option value="is">Invited Speakers</option>
+                <option value="yi">Young Investigator</option>
+                <option value="rcp">Research Competition Participants</option>
+              </select>
+            </div>
+            
+            <div class="form-field ">
+              <p>Select your Topic:</p>   
+              <select id="register-user_type" name="case_study_type" class="form-control" required="">
+                <option value="">Choose an option</option>
+                  
+                  <option value="cspbr" >Clinical Sciences and Patient-Based Research</option>
+                  <option value="bstr">Basic Sciences and Translational Research (large animals and human studies)</option>
+                  <option value="temr">Technology Innovations in Medicine including EMR, Devices etc</option>
+                  <option value="cim">Complimentary and Integrative Medicine/AYUSH</option>
+              </select>
+            </div>
+            <div class="form-field" style="padding:10px 5px;" id="coauthors_table">
+              <h3>Author Information
+                <span class="glyphicon glyphicon-plus-sign add_author" onclick="wpabstracts_add_coauthor();" style="margin-left:20px; padding-right: 10px;"></span>
+                <span class="glyphicon glyphicon-minus-sign delete_author" onclick="wpabstracts_delete_coauthor();"></span>
+              </h3>
+              <div class="author_box col-md-8">
+                <h4>Name</h4>
+                <input type="text" name="author_names[]" required>
+                <h4>Email</h4>
+                <input type="email" name="author_emails[]" required>
+                <h4>Affiliation</h4>
+                <input type="text" name="author_affiliations[]" required>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+          <div class="form-field btn-custom ">
+                  <button class="btn btn-primary col-md-2">Submit</button>
+                </div>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-12">
+        % if errors:
+        <ul class="messages" style="margin-left: -0.5rem;">
+          
+          <div class = "alert alert-success alert-dismissable" id="msg" style="background: #07b256;min-width: auto; font-size: 20px;">
+            <button type = "button" class = "close" data-dismiss = "alert" aria-hidden = "true" onclick="msghide();"><img src="https://cdn2.iconfinder.com/data/icons/filled-icons/493/x-512.png" height="25px;"></button>${ errors }
+          </div>
+        </ul>
+        % endif
+        <div class = "alert alert-success alert-dismissable" id="errormsg" style="background: #07b256;min-width: 325px;display: none;">
+            <button type = "button" class = "close" data-dismiss = "alert" aria-hidden = "true" onclick="errormsghide();">&times;</button>Please input some description
+          </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+</div>
+<script src="https://cdn.ckeditor.com/4.10.0/basic/ckeditor.js"></script>
+<script type="text/javascript">
+  function msghide(){
+    $('#msg').hide();
+  }
+  function errormsghide(){
+    $('#errormsg').hide();
+  }
+
+  var editor = CKEDITOR.replace( 'description');
+
+  function validate() {
+    if(editor.getData().length == 0) {
+      document.getElementById('errormsg').style.display="block";
+      return false;
+    } else {
+      document.getElementById('desc').value = CKEDITOR.instances.editor.getData();
+    }
+  }
+
+  function wpabstracts_add_coauthor(){
+    var author_box = jQuery('.author_box:first').clone();
+    jQuery(author_box).find('input').val('');
+    jQuery('#coauthors_table').append(author_box);
+  }
+
+  function wpabstracts_delete_coauthor(){
+    if(jQuery("#coauthors_table .author_box").length > 1){
+        jQuery('#coauthors_table').find(".author_box:last").remove();
+    }
+  }
+  
+</script>

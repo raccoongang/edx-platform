@@ -1,0 +1,137 @@
+## mako
+<%!
+  from django.conf import settings
+  from django.core.urlresolvers import reverse
+  from django.utils.translation import ugettext as _
+%>
+<%inherit file="/main.html" />
+
+<%namespace name='static' file='/static_content.html'/>
+
+<%block name="title"><title>${_('Terms of Service')}</title></%block>
+
+<section class="static-container tos">
+    <h2>${_('DocMode Terms of Use')}</h2>
+
+    <p>Welcome to the website DocMode which provides features to you subject to the following terms of use. These Terms of Use govern your access to www.docmode.org (the “Site”), including any content, functionality and services offered through the Site and create a binding legal agreement that we may enforce against you in the event of a violation. PLEASE READ THESE TERMS OF USE CAREFULLY BEFORE YOU START USE OF THE SITE. By using the Site (whether as a guest or a registered user) you accept and agree to these Terms of Use and our Privacy Policy. You will always be able to view the most current version of these Terms by clicking on the Terms of Use link at the bottom of any page of DocMode.</p>
+    <p>The term ‘DocMode’ or ‘us’ or ‘we’ or ‘our’ refers to the owner of the website i.e. Jephersons Communications Pvt. Ltd. whose registered office is in Mumbai, India. Our company registration number is U72900MH2009PTC191240. The term ‘you’ and ‘your’ refers to the user or viewer of our website.</p>
+
+    <h2>Account Registration</h2>
+
+    <p>You must register an account with DocMode to access our Services. Registration requires you to provide us with your name, email address, profession, specialty and other information specified in the registration form ("Registration Information"), and to select a username and password that will be associated with your account. You agree that your Registration Information is true, accurate, current, and complete, and you will promptly update your Registration Information as necessary so that it continues to be true, accurate, current and complete.. You are solely responsible for maintaining the confidentiality and security of your DocMode account username and password. We shall have no liability for any unauthorized access to or use of your account information.</p>
+
+    <h2>Use of services</h2>
+
+    <p>The use of DocMode is subject to the following terms of use:</p>
+
+    <p>If you are registering under “Doctor” You have to be a registered medical practitioner, or registered Medicinal researcher who engages in application of medical, scientific, diagnostic, and therapeutic principles or Medical student studying in a Government or Government recognized registered Medical College of your country.
+    Other self-proclaimed healers or “quack" as a "fraudulent or ignorant pretender to medical skill" or "a person who pretends, professionally or publicly, to have skill, knowledge, or qualifications he or she does not possess; a charlatan." are not entertained and asked to not use and register on DocMode. If you belong to this party, any information you share with DocMode can be used against you by Law.  Currently DocMode does not provide account registration for doctors or students from Homeopathy, Ayurveda background and Veterinary Science. </p>
+
+    <p>The information and tools that we make available through the Services are provided for educational and informational purposes only. While we hope you find the Services useful to you as a healthcare professional, they are in no way intended to serve as a diagnostic service or platform, to provide certainty with respect to a diagnosis, to recommend a particular product or therapy or to otherwise substitute for the clinical judgment of a qualified healthcare professional. </p>
+
+    <p>You agree that you will not use the Services with the intention of creating any kind of physician/patient relationship, e.g., to diagnose or treat users. You are solely responsible for evaluating the information obtained from the Services and for your use or misuse of such information in connection with your treatment decisions or otherwise. You agree that you shall be solely responsible for your compliance with all laws and standards of professional practice applicable to you and the practice of medicine or other relevant health profession.</p>
+
+    Neither we nor any third parties provide any warranty or guarantee as to the accuracy, timeliness, performance, completeness or suitability of the information and materials found or offered on this website for any particular purpose. You acknowledge that such information and materials may contain inaccuracies or errors and we expressly exclude liability for any such inaccuracies or errors to the fullest extent permitted by law.
+
+    <p>Your use of any information or materials on this website is entirely at your own risk, for which we shall not be liable. DocMode will not be held responsible in case of damages occurring to you from the use of such erroneous content. It shall be your own responsibility to ensure that any products, services or information available through this website meet your specific requirements.</p>
+
+    <p>This website contains material which is owned by or licensed to us. The material is solely for your personal and professional use. You shall not use, copy, adapt, modify, distribute, license, sell, transfer, publicly display, publicly perform, transmit, stream, broadcast or otherwise exploit the Services. All trademarks reproduced in this 
+    website, which are not the property of, or licensed to the operator, are acknowledged on the website.
+    Unauthorized use of this website may give rise to a claim for damages and/or be a criminal offence.</p>
+
+    <p>From time to time this website may also include links to other websites. These links are provided for your convenience to provide further information. They do not signify that we endorse the website(s). We have no responsibility for the content of the linked website(s). </p>
+    <p>You agree that you will not engage in any of the following activities in connection with your use of the Services:
+        <ul>
+            <li>Forge headers or otherwise manipulate identifiers in order to disguise the origin of any content transmitted through the Services;</li>
+            <li>Use, display, mirror or frame the DocMode Site or any component of DocMode’s logo or other proprietary information, without the written consent of DocMode, as applicable;</li>
+            <li>Remove any copyright, trademark or other proprietary rights notices contained within the DocMode site or of our respective licensors;</li>
+            <li>Infringe or use the DocMode’s brand, logos in any business name, email, URL or other context unless expressly approved in writing by DocMode, as applicable;</li>
+            <li>Attempt to circumvent any protective technological measure associated with the Services;</li>
+            <li>Post, upload, transmit or otherwise distribute chain letters, pyramid schemes, advertising or spam;</li>
+            <li>Impersonate or misrepresent your affiliation with another person or entity;</li>
+            <li>Harvest or otherwise collect information about others, including email addresses;</li>
+            <li>Interfere with or disrupt any of the Services or the associated computer or technical delivery systems;</li>
+            <li>Interfere with, or attempt to interfere with, the access of any user, host or network, including, without limitation, sending a virus, overloading, flooding, spamming, or mail-bombing the DocMode site</li>
+            <li>Use a the DocMode Site, the Services or any DocMode Content in any manner not permitted by these Terms.</li>
+            <li>Generate or facilitate unsolicited commercial email ("spam"). Such activity includes, but is not limited to sending email in violation of the CAN-SPAM Act or any other applicable anti-spam law. Iimitating or impersonating another person or his, her or its email address, or creating false accounts for the purpose of sending spam. </li>
+            <li>Data mining any web property (including DocMode) to find email addresses. </li>
+            <li>Sending unauthorized mail via open, third-party servers; Selling, exchanging or distributing to a third party the email addresses of any Doctor/user without such person's knowing and continued consent to such disclosure. </li>
+            <li>Sending unsolicited emails, post, messages to significant numbers of email addresses belonging to individuals and/or entities with whom you have no preexisting relationship. Send, upload, distribute or disseminate or offer to do the same with respect to any unlawful, defamatory, harassing, abusive, fraudulent, infringing, obscene, or otherwise objectionable content. </li>
+            <li>Illegally transmit another's intellectual property or other proprietary information without such owner's or licensor's permission.</li>
+        </ul>
+    </p>
+    <p>We may (but are not obligated to) do any or all of the following without notice:
+        <ul>
+            <li>Record or pre-screen User Content submissions to public areas on the DocMode site;</li>
+            <li>Investigate your use of the Services as we deem appropriate to comply with any applicable law, regulation, government request or legal process;</li>
+            <li>Remove User Content which we believe does not comply with these Terms of Use;</li>
+            <li>Terminate your access to your DocMode upon our determination that you have violated these Terms of Use.</li>
+        </ul>
+    </p>
+
+    <h2>Your Intellectual Property Rights</h2>
+
+    <p>DocMode does not claim any ownership in any of the content, including any text, data, information, images, photographs, music, sound, video, or other material, that you upload, transmit or store in your DocMode account. We will not use any of your content for any purpose except to provide you with the Service.
+    In the case of DocMode Webinars, Webcasts, Courses, all content, files and material used for presentation on Webinars and Online Meetings i.e. the DocMode Platform used by the SPEAKER including the session itself is the leased property of and a part of DocMode as discussed and agreed by the speaker for the said duration. It will/may be recorded, archived, shared and promoted for all users of DocMode to impart knowledge and educational and serve DocMode’s Purpose and Mission. </p>
+ 
+    <h2>Content Liability:  </h2>
+    <p>DocMode does not prepare the slides or content on DocMode , We urge speakers/consultants from the medical fraternity to use citations and references even for images if borrowed from other publication or sites. We cannot be held liable for any copyright content as all content is user generated and we are only a platform. If the grieved party approaches us via email or contact form and informs about copyright or plagiarised content with proper documentation, appropriate action will be taken in the form of notifying the user/ speaker or removing the content. </p>
+
+    <h2>FORUMS </h2>
+    <p>We may offer forums for the exchange of information among our Users. You agree to comply with all applicable forum rules. In particular, you understand that we do not assure the accuracy, reliability, confidentiality or security of information made available through the use of such forums. You acknowledge that any information you post in a forum or discussion group is available to the public, and may result in you receiving communications from others outside the Site. You are responsible for safeguarding the privacy of your and your patients' personal information when you participate in forums, discussion groups and the like. You agree not to disclose individually identifiable health information through such forums. You acknowledge that any liability resulting from your sharing of any information in a forum or discussion group is your sole responsibility. You not will hold DocMode harmless for any damages, direct or indirect, arising from any post made by you.</p>
+
+    <h2>REVIEWS, COMMENTS, COMMUNICATIONS, AND OTHER CONTENT</h2>
+    <p>The Site may contain features that allow users to post reviews and comments, and submit suggestions, ideas, comments, questions, or other information, so long as the content is not illegal, obscene, threatening, defamatory, invasive of privacy, infringing of intellectual property rights, or otherwise injurious to third parties or objectionable and does not consist of or contain software viruses, political campaigning, commercial solicitation, chain letters, mass mailings, or any form of “spam.” 
+    If you do post content or submit material it will be considered non-confidential and non-proprietary, and unless we indicate otherwise, you grant Docmode.org a nonexclusive, royalty-free, perpetual, irrevocable, and fully sub-licensable right to use, reproduce, modify, adapt, publish, translate, create derivative works from, and display such content throughout the world in any media in association with name that you submit in connection with such content. You represent and warrant that you own or otherwise control all of the rights to the content that you post; that the content is accurate; that use of the content you supply does not violate this policy and will not cause injury to any person or entity; and that you will indemnify DocMode for all claims resulting from content you supply
+    In addition, DocMode urges you to review posts, articles and case studies posted by other members of the medical fraternity and inform us of any erroneous, inaccurate and plagiarised, with sufficient proof.</p>
+
+    <h2>Termination and Modification</h2>
+    <p>You agree that we may, under certain circumstances and without prior notice, discontinue, temporarily or permanently, the Services (or any part thereof) or eliminate your account and remove any User Content that you have made available through the Services, with or without notice, for any of the following reasons (which are not intended to be exclusive): (a) breaches or violations of these Terms or other incorporated agreements or guidelines, (b) requests by law enforcement or other government agencies, (c) a request by you, (d) discontinuance or material modification to the Services (or any part thereof), (e) technical or security issues or problems, (f) extended periods of inactivity, and/or (g) your engagement in fraudulent or illegal activities. You agree that all terminations for cause shall be made at our sole discretion, and we shall not be liable to you or any third party for any termination of your account or access to the Services.</p>
+
+    <h2>Delete Account:</h2>
+    <p>You hold the right to delete your account at any given time if you are unhappy with the DocMode services or for any reason you feel fit. DocMode provides the Delete feature under ‘Settings’. DocMode requests you to give a reason for leaving so we can better our service
+    DocMode may store your information provided so that you can re-enter and use it, when you see fit.  DocMode may contact you by email, post, fax or phone from the information you provided, about future developments on DocMode. 
+    Complete Delete account process can take a duration of anywhere between 48 hrs to 10 days.</p>
+
+    <h2>Disclaimer</h2>
+    <p>THE DOCMODE SITE AND CONTENT ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED. WITHOUT LIMITING THE FOREGOING, WE EXPRESSLY DISCLAIM ANY WARRANTIES, EXPRESS IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT, AND ANY WARRANTIES ARISING OUT OF COURSE OF DEALING OR USAGE OF TRADE. WE MAKE NO WARRANTY THAT THE DOCMODE SITES AND CONTENT WILL MEET YOUR REQUIREMENTS OR BE AVAILABLE ON AN UNINTERRUPTED, SECURE, OR ERROR-FREE BASIS. WE MAKE NO WARRANTY AS TO THE ACCURACY, TIMELINESS, COMPLETENESS OR RELIABILITY OF ANY CONTENT OBTAINED THROUGH THE SERVICES. NO INFORMATION PROVIDED THROUGH THE SERVICES OR BY US IN ORAL OR WRITTEN FORM WILL CREATE ANY WARRANTY NOT EXPRESSLY MADE HEREIN YOUR RELIANCE UPON THE CONTENT OBTAINED OR USED BY YOU THROUGH THE SERVICES IS SOLELY AT YOUR OWN RISK. YOU ARE SOLELY RESPONSIBLE FOR ALL OF YOUR COMMUNICATIONS AND INTERACTIONS WITH OTHER USERS OF THE DOCMODE SITE. YOU UNDERSTAND THAT WE DO NOT ASSUME RESPONSIBILITY FOR SCREENING ANY DOCMODE USER NOR DO WE VERIFY OR TAKE RESPONSIBILITY FOR USER CONTENT. WE DO NOT PROVIDE MEDICAL ADVICE AND WE DO NOT RECOMMEND OR ENDORSE ANY SPECIFIC PRODUCTS, PRODUCT USERS, THERAPIES, TESTS, PHYSICIANS, HEALTHCARE PROFESSIONS OR OPINIONS.</p>
+
+    <h2>Liability</h2>
+    <p>In no event will DocMode or any other person or entity involved in creating, developing or delivering the DocMode Site, the Services or the Content be liable for any damages (including, without limitation, incidental and consequential damages, personal injury/wrongful death, lost profits, or damages resulting from lost data or business interruption) arising out of or in connection with these Terms or from the use of or inability to access or use the DocMode Site, the Services or the DocMode Content, or from any communications or interactions with other persons with whom you communicate or interact as a result of your use of the Services, whether based on warranty, contract, tort, or any other legal theory, and whether or not we, our licensors, ours suppliers, or any third parties mentioned with the Services are advised of the possibility of such damages.</p>
+
+    <p>Notice and Take Down Procedures and Copyright Agent</p>
+
+    <p>If you believe any materials within the DocMode site infringe your copyright, you may request removal of those materials (or access thereto) by contacting DocMode and providing the following information:
+        <ul>
+            <li>Identification of the copyrighted work that you believe to be infringed. Please describe the work, and where possible include a copy or the location (e.g., URL) of an authorized version of the work.</li>
+            <li>Identification of the material that you believe to be infringing and its location. Please describe the material, and provide us with its URL or any other pertinent information that will allow us to locate the material.</li>
+            <li>Your name, address, telephone number and (if available) e-mail address.</li>
+            <li>A statement that you have a good faith belief that the complained of use of the materials is not authorized by the copyright owner, its agent, or the law.</li>
+            <li>A statement that the information that you have supplied is accurate, and indicating that "under penalty of perjury," you are the copyright owner or are authorized to act on the copyright owner's behalf.</li>
+            <li>A signature or the electronic equivalent from the copyright holder or authorized representative.</li>
+        </ul>
+    </p>
+    <h2>Account Inactivity</h2>
+    <p>DocMode will terminate your account in accordance with the terms of service 
+    If you fail to provide us with required documents for verification of Account. 
+    If the documents provided are not clear, fake or non-compliancy or forged. 
+    If there is sufficient data and report flagged against you by other users for misuse, spamming, illegal, vulgar and unsolicited content sharing and uploading and breach of  ‘Prohibited Actions’ statements.</p>
+
+
+    <p>For more information about our terms, disclaimer, legal and privacy practices and If you have additional questions, please contact us any time at info@docmode.org or through our contact form.</p>
+
+    <p>Last Updated on 09th September, 2016</p>
+
+
+</section>
+
+<script>
+    $(document).ready(function() {
+        var print_tos = '<input type="button" value="Print Terms of Service" class="print">';
+        $('#content section.tos').prepend(print_tos).append(print_tos);
+        $('#content section.tos input.print').click(function() {
+            window.print();
+            return false;
+        });
+    });
+</script>

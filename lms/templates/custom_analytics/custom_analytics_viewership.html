@@ -1,0 +1,118 @@
+<%inherit file="/main.html" />
+<%namespace name='static' file='../static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+%>
+
+<%block name="pagetitle">DocMode Analytics</%block>
+<!-- Bootstrap -->
+<link href="${static.url('vendors/bootstrap/dist/css/bootstrap.min.css')}" rel="stylesheet">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<!-- Custom Theme Style -->
+<link href="${static.url('css/vendor/build/css/custom.css')}" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
+
+<div class="nav-sm">
+  <div class="container body" style="border: 0px solid blue;">
+    <div class="main_container">
+      <%include file="dashboard_sidebar.html" />
+      <div class="right_col" role="main">
+        ${title}<br/>
+        ${qset}<br/>
+        ==> ${rows}
+        <input type="text" name="courseId" value="" id="project">
+        <input type="hidden" id="project-id">
+        <%def name="autocourse()"><!-- Doctor Specialization Chart Data -->
+          [
+          %for course in courses:
+            {id:"${course.id}",label:"${course.id}",value:"${course.id}"},
+          %endfor
+          ]
+        </%def>
+        <div id="usercount"></div>
+        <table id="myTable" class="display" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>State</th>
+                    <th>City</th>
+                    <th>Email</th>
+                    <th>viewed</th>
+                </tr>
+            </thead>
+            <tfoot>
+            </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- jQuery -->
+<script src="${static.url('https://s3-ap-southeast-1.amazonaws.com/site-js/jquery.min.js')}"></script>
+<!-- Bootstrap -->
+<script src="${static.url('vendors/bootstrap/dist/js/bootstrap.min.js')}"></script>
+
+<!-- Chart.js -->
+<!-- <script src="${static.url('vendors/Chart.js/dist/Chart.min.js')}"></script> -->
+<!-- Google Charts -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<!-- <script src="${static.url('css/vendor/build/js/custom-gc.js')}"></script> -->
+
+<!-- Custom Theme Scripts -->
+<script src="${static.url('css/vendor/build/js/custom.js')}"></script>
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script type="text/javascript" src="//cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#myTable').DataTable();
+});
+
+$( function() {
+    
+    $( "#project" ).autocomplete({
+        minLength: 0,
+        source: ${autocourse()},
+        focus: function( event, ui ) {
+            $( "#project" ).val( ui.item.label );
+            return false;
+        },
+        select: function( event, ui ) {
+            $( "#project" ).val( ui.item.label );
+            $( "#project-id" ).val( ui.item.value );
+            get_count();
+            return false;
+        }
+    })
+    .autocomplete( "instance" )._renderItem = function( ul, item ) {
+      return $( "<li>" )
+        .append( "<div>" + item.label + "</div>" )
+        .appendTo( ul );
+    };
+});
+
+    function get_count(val) {
+        var val = document.getElementById('project').value;
+        $.ajax({
+            type : 'GET',
+            url : '',
+            dataType:'html',
+            data :{
+                courseid: val
+            },
+            success : function(data) {
+                var $tr = $('<tr/>');
+                $.each(JSON.parse(data), function(key, value) {
+                    
+                    $tr.append($('<td/>').html(value));
+                    $('.display tr:last').before($tr);
+                });
+            }
+        });
+        return false;
+    }
+
+
+</script>

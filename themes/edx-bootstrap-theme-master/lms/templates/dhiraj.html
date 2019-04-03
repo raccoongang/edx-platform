@@ -1,0 +1,305 @@
+<%page expression_filter="h"/>
+<%inherit file="theme-main.html" />
+<%namespace name='static' file='static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+
+from openedx.core.djangolib.markup import HTML, Text
+%>
+<div class="content-wrapper homepage" id="content">
+        <section class="banner-wrapper">
+            <div class="banner-img">
+                <picture>
+                    <source media="(min-width: 650px)" srcset="${static.url('images/banner.jpg')}" />
+                    <source media="(min-width: 320px)" srcset="${static.url('images/Mobile-Slider-IMG.jpg')}" />
+                    <img src="${static.url('images/banner.jpg')}" alt="" />
+                </picture>
+               
+            </div>
+            <div class="banner-text">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="banner-detail">
+                                <h1>Outcome Based Medical Learning</h1>
+                                <p class="hidden-xs">Learn from the world’s best Medical Universities and Associations</p>
+                                <div class="btn-custom">
+                                    <a href="#" class="btn btn-primary">BROWSE COURSES</a>
+                                    <a href="#" class="btn btn-secondary">LEARN MORE</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="partner-wrapper">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ul class="partner-list owl-carousel js-partner-carousel clearfix">
+                            <li><a href="#"><img src="${static.url('images/partner.jpg')}" alt=""></a></li>
+                            <li><a href="#"><img src="${static.url('images/partner.jpg')}" alt=""></a></li>
+                            <li><a href="#"><img src="${static.url('images/partner.jpg')}" alt=""></a></li>
+                            <li><a href="#"><img src="${static.url('images/partner.jpg')}" alt=""></a></li>
+                            <li><a href="#"><img src="${static.url('images/partner.jpg')}" alt=""></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section class="learn-from-us">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12 col-md-12">
+                        <h2>Why learn from us?</h2>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class="icon-text clearfix">
+                            <div class="icon-img">
+                                <img src="${static.url('images/icon.png')}" alt="">
+                            </div>
+                            <p>High quality certified courses by Ivy league Universities & International Medical Associations</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class="icon-text clearfix">
+                            <div class="icon-img">
+                                <img src="${static.url('images/icon.png')}" alt="">
+                            </div>
+                            <p>Self-paced and outcome based learning so you can study at your own liesure.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class="icon-text clearfix">
+                            <div class="icon-img">
+                                <img src="${static.url('images/icon.png')}" alt="">
+                            </div>
+                            <p>Life-time access to over 700 lectures, courses & any certificates earned after your courses.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="upcoming-courses">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12 col-md-12">
+                        <h3>Upcoming Courses</h3>
+                    </div>
+                </div>
+                <div class="row js-courses-slider owl-carousel">
+                     <div class="col-md-3 col-xs-12">
+                        <div class="card">
+                            <div class="card-img">
+                                <img src="${static.url('images/card.jpg')}" alt="">
+                            </div>
+                            <div class="card-text">
+                                <h4>Focusing on Challenging fields in Dermatology</h4>
+                                <span>By Dermallive</span>
+                                <a href="#" class="btn btn-primary">Credit Hours</a>
+                                <p>Starts May 26, 2018</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-xs-12 ">
+                        <div class="card">
+                            <div class="card-img">
+                                <img src="${static.url('images/card.jpg')}" alt="">
+                            </div>
+                            <div class="card-text">
+                                <h4>Focusing on Challenging fields in Dermatology</h4>
+                                <span>By Dermallive</span>
+                                <a href="#" class="btn btn-primary">Credit Hours</a>
+                                <p>Starts May 26, 2018</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-xs-12">
+                        <div class="card">
+                            <div class="card-img">
+                                <img src="${static.url('images/card.jpg')}" alt="">
+                            </div>
+                            <div class="card-text">
+                                <h4>Focusing on Challenging fields in Dermatology</h4>
+                                <span>By Dermallive</span>
+                                <p>Starts May 26, 2018</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-xs-12">
+                        <div class="card">
+                            <div class="card-img">
+                                <img src="${static.url('images/card.jpg')}" alt="">
+                            </div>
+                            <div class="card-text">
+                                <h4>Focusing on Challenging fields in Dermatology</h4>
+                                <span>By Dermallive</span>
+                                <a href="#" class="btn btn-primary">Credit Hours</a>
+                                <p>Starts May 26, 2018</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="row">
+                     <div class="col-xs-12 col-md-12">
+                        <div class="link-all text-right">
+                            <a href="" class="view-all link link-arrow">view all courses</a>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        </section>
+        <section class="topic-wrapper">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3>Explore by topics</h3>
+                    </div>
+                    <div class="col-xs-12">
+                        <ul class="topic-card clearfix">
+                            <li>
+                                <a href="">
+                                    <img src="${static.url('images/Allergy.jpg')}" alt="">
+                                </a>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <img src="${static.url('images/Allergy.jpg')}" alt="">
+                                </a>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <img src="${static.url('images/Allergy.jpg')}" alt="">
+                                </a>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <img src="${static.url('images/Allergy.jpg')}" alt="">
+                                </a>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <img src="${static.url('images/Allergy.jpg')}" alt="">
+                                </a>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <img src="${static.url('images/Allergy.jpg')}" alt="">
+                                </a>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <img src="${static.url('images/Allergy.jpg')}" alt="">
+                                </a>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <img src="${static.url('images/Allergy.jpg')}" alt="">
+                                </a>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <img src="${static.url('images/Allergy.jpg')}" alt="">
+                                </a>
+                            </li>
+                            <li>
+                                <a href="">
+                                    <img src="${static.url('images/Allergy.jpg')}" alt="">
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                     <div class="col-xs-12 col-md-12 visible-xs">
+                        <div class="link-all text-right">
+                            <a href="" class="view-all link link-arrow">view all topics</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12 col-md-12">
+                        <h3>What our learners are saying</h3>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class="learner-card">
+                            <p>First time in India. We can now hear and learn from experts from our home.</p>
+                            <div class="learner-img-text clearfix">
+                                <div class="learner-img">
+                                    <img src="${static.url('images/actor.jpg')}" alt="">
+                                </div>
+                                <div class="learner-text">
+                                    <h5>Dr. Sunil Batra</h5>
+                                    <span>Bombay Hospital</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class="learner-card">
+                            <p>First time in India. We can now hear and learn from experts from our home.</p>
+                            <div class="learner-img-text clearfix">
+                                <div class="learner-img">
+                                    <img src="${static.url('images/actor.jpg')}" alt="">
+                                </div>
+                                <div class="learner-text">
+                                    <h5>Dr. Sunil Batra</h5>
+                                    <span>Bombay Hospital</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class="learner-card">
+                            <p>First time in India. We can now hear and learn from experts from our home.</p>
+                            <div class="learner-img-text clearfix">
+                                <div class="learner-img">
+                                    <img src="${static.url('images/actor.jpg')}" alt="">
+                                </div>
+                                <div class="learner-text">
+                                    <h5>Dr. Sunil Batra</h5>
+                                    <span>Bombay Hospital</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="ready-started">
+                            <h3>Ready to get started?</h3>
+                            <p>Explore over 700 lectures and 30 specialized courses offered by top Universities and Medical Associations</p>
+                            <div class="btn-custom"><a href="#" class="btn btn-primary">BROWSE COURSES</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--   ${self.body()}
+      <%block name="bodyextra"/> -->
+    </div>
+    <%block name="js_extra">
+   <script type="text/javascript">
+      $(window).load(function() {
+         if(getParameterByName('next')) {
+              $('#login').trigger("click");
+         }
+      })
+   </script>
+</%block>
+
+% if show_signup_immediately is not UNDEFINED:
+  ## NOTE: This won't work in production, because anonymous views are cached, so it will
+  ## show either with or without this extra js for 3 minutes at a time.
+<script type="text/javascript">
+  $(window).load(function() {$('#signup_action').trigger("click");});
+</script>
+% endif

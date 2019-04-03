@@ -1,0 +1,98 @@
+<%!
+  import json
+  from django.utils.translation import ugettext as _
+  from openedx.core.djangolib.js_utils import dump_js_escaped_json
+%>
+<%inherit file="../main.html" />
+
+<%namespace name='static' file='../static_content.html'/>
+
+<%block name="pagetitle">${_("Associations")}</%block>
+<%block name="headextra">
+  <link href="${static.url("css/breadcrums.css")}" rel="stylesheet"> 
+    <link href="${static.url("css/partner-listing.css")}" rel="stylesheet"> 
+</%block>
+<div class="content-wrapper" id="content">
+  <section class="learn-from-us">
+      <div class="container">
+        <div class="row">
+              <ul class=breadcrums>
+                  <li>
+                      <a href="#">Home / </a>
+                  </li>
+                  <li>
+                      <a href="#" class="active">Our Partners</a>
+                  </li>
+              </ul>
+          </div>
+        <div class="row partnerlist comman">
+          <div class="col-md-12 col-xs-12">
+                    <h3> Our partners</h3>
+                    <p>DocMode offers the highest quality courses from institutions who share our commitment to excellence
+                        in teaching and learning.
+                    </p>
+                </div>
+              <!--  <div class="col-md-12 col-xs-12">
+                    <div class="viewtypeSec">
+                        <span> View by Type</span>
+                        <label class="rediofield">All
+                            <input type="radio" rediofieldchecked="checked" name="radio">
+                            <span class="checkmark"></span>
+                        </label>
+                        <label class="rediofield">Universities
+                            <input type="radio" name="radio">
+                            <span class="checkmark"></span>
+                        </label>
+                        <label class="rediofield">Associations
+                            <input type="radio" name="radio">
+                            <span class="checkmark"></span>
+                        </label>
+                        <label class="rediofield">Industry
+                            <input type="radio" name="radio">
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                </div> -->
+            
+              %for organization in organizations:
+                    <%include file="../organization.html" args="organization=organization" />
+              %endfor
+            </ul>
+        </div>
+        <div class="container partnerlist ">
+                <div class="row">
+                    <div class="col-md-12 col-xs-12">
+                        <h3> Join Us</h3>
+                    </div>
+
+                    <!-- <div class="col-md-4 col-xs-12 ">
+                        <div class="learner-card">
+                            <p>Our collaboration with DocMode has helped us reach thousands of students and increased our research
+                                capabilities manifold. We could not have imagined a more cost effective and democratic way
+                                forward.</p>
+                            <div class="learner-img-text clearfix">
+                                <div class="learner-img">
+                                    <img src="images/actor.jpg" alt="">
+                                </div>
+                                <div class="learner-text">
+                                    <h5>Dr. Swati Suresh</h5>
+                                    <span>Bombay Hospital</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="col-md-8 col-xs-12 comman">
+                        <p>Come become a part of a learning revolution. Reach out to 300,000 students world wide and benefit
+                            from the research and data collection capability that comes with performance based learning outcomes.
+                            Let’s get things rolling. Write to us at partner@docmode.com and we’ll work together to realize
+                            your outreach mission.
+                        </p>
+                        <a href="/contact" style="background-color: #07b256;">Contact us</a>
+                    </div>
+
+
+                </div>
+        </div>
+      </div>
+  </section>
+</div>

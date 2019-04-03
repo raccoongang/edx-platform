@@ -1,0 +1,265 @@
+<%namespace name='static' file='../static_content.html'/>
+<%!
+import json
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+from django.conf import settings
+from edxmako.shortcuts import marketing_link
+from openedx.core.lib.courses import course_image_url
+from associations.views import course_det
+from django.template.context_processors import csrf
+from lms.djangoapps.associations.views import speczName, userType, orgName
+%>
+
+<%inherit file="../main.html" />
+<%block name="headextra">
+    <link href="${static.url("css/breadcrums.css")}" rel="stylesheet"> 
+    <link href="${static.url("css/partner_detail.css")}" rel="stylesheet"> 
+    <style type="text/css">
+      @media (min-width: 1200px) {
+        .content-wrapper {
+            padding: 0 0px 0px;
+        }
+      }
+      .content-wrapper {
+          padding: 0 0px 0px; 
+          width: 100%;
+          margin-top: 0px;
+          min-width: 100% !important;
+      }
+    </style>
+</%block>
+ 
+<%block name="pagetitle">${assoc_short_name}</%block>
+
+  %if notfound:
+    <h2>NOt found</h2>
+  %else:
+      <section class="course-info">
+        <header class="course-profiless" style="padding-top:0px;">
+          % if slider_images is None:
+            <h3>== NONE ==</h3>
+          % else:
+            <div id="myCarousel" class="carousel slide" data-ride="carousel">
+              <!-- Indicators -->
+              <ol class="carousel-indicators">
+                % for i in range(no_of_slides):
+                  % if i == 0:
+                    <li data-target="#myCarousel" data-slide-to="${i}" class="active"></li>
+                  % else:
+                    <li data-target="#myCarousel" data-slide-to="${i}"></li>
+                  % endif
+                % endfor
+              </ol>
+
+              <!-- Wrapper for slides -->
+              <div class="carousel-inner" role="listbox">
+                % for index, item in enumerate(slider_images):
+                  % if index == 0:
+                    <div class="item active">
+                      <img src="${item}" alt="${index}" width="100%" style="max-height: 400px;">
+                        <div class="carousel-caption">
+                      
+                        </div>
+                    </div>
+                  % else:
+                    <div class="item">
+                      <img src="${item}" alt="${index}" width="100%" style="max-height: 400px;">
+                        <div class="carousel-caption">
+                      
+                        </div>
+                    </div>
+                  % endif
+                % endfor
+              </div>
+
+                <!-- Left and right controls -->
+                <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                  <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                  <span class="sr-only">Previous</span>
+                </a>
+                <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                  <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                  <span class="sr-only">Next</span>
+                </a>
+            </div>
+          % endif
+        </header>
+    </section>
+    <section class="learn-from-us">
+        <div class="container ">
+            <!-- <div class="row">
+                <ul class=breadcrums>
+                    <li>
+                        <a href="/">Home / </a>
+                    </li>
+                    <li>
+                        <a href="/assoc">Partners /</a>
+                    </li>
+                    <li>
+                        <a href="#" class="active">${assoc_name}</a>
+                    </li>
+                </ul>
+            </div> -->
+            <div class="row productDetailCont comman">
+               
+                <div class="col-md-4 col-sm-6 col-xs-12">
+
+                    <img src="${assoc_logo}" alt="" />
+                </div>
+                <div class="col-md-8 col-sm-6 col-xs-12">
+                    <h2>${assoc_name}</h2>
+                    <p>${assoc_description}
+                    </p>
+                    %if user.is_authenticated():
+                        %if gusr_staff == '1':
+                          
+                          <a href="/dashboard/${assoc_short_name}/">View Dashboard</a>
+                        %elif user.is_staff:
+                          
+                          <a href="/dashboard/${assoc_short_name}/">View Dashboard</a>
+                        %elif grpmember == '0':
+                        <a href="" onclick="joingroup(${ association_id });" id="button">follow ${assoc_name} </a>
+                          
+                          <input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }">
+                          <div id="errors"></div>
+                        %else:
+                          <a href="">Following ${assoc_name}</a>
+                        %endif
+                      %endif
+                    <!-- <span>Get notified about updates, lectures and courses from AIOS</span> -->
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="upcoming-courses">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 col-md-12">
+                    <h3>By ${assoc_name}</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-xs-12">
+                    <div class="viewtypeSec">
+                        <span> View by Type</span>
+                        <label class="rediofield">All
+                            <input type="radio"  checked="checked" name="radio">
+                            <span class="checkmark"></span>
+                        </label>
+                        <label class="rediofield">Courses
+                            <input type="radio" name="radio">
+                            <span class="checkmark"></span>
+                        </label>
+                        <label class="rediofield">Lectures
+                            <input type="radio" name="radio">
+                            <span class="checkmark"></span>
+                        </label>
+                        <label class="rediofield">Case study
+                            <input type="radio" name="radio">
+                            <span class="checkmark"></span>
+                        </label>
+
+                    </div>
+                </div>
+            </div>
+            %if uc_lect:
+                <div class="row" style="display:block;"> 
+                    <section class="courses-container">
+                        <div class="courses${'' if course_discovery_enabled else ' no-course-discovery'}" role="region" aria-label="${_('List of Courses')}">
+                                <div class="col-xs-12 col-md-12">
+                                    <h3>Upcoming Lectures</h3>
+                            </div>
+                            <ul class="courses-listing">
+                                %for course in uc_lect:
+                                    <div class="col-md-3 col-xs-12">
+                                      <li class="courses-listing-item">
+                                        <%include file="../course.html" args="course=course" />
+                                      </li>
+                                    </div>   
+                                %endfor
+                          </ul>
+                        </div>
+                  </section>
+                </div>
+            %endif
+            <div class="row" style="display:block;">
+                <section class="courses-container">
+                    <div class="courses${'' if course_discovery_enabled else ' no-course-discovery'}" role="region" aria-label="${_('List of Courses')}">
+                        
+                            <div class="col-xs-12 col-md-12">
+                                <h3>All Lectures</h3>
+                        </div>
+                        <ul class="courses-listing">
+                            %for course in courses:
+                                <div class="col-md-3 col-xs-12">
+                                  <li class="courses-listing-item">
+                                    <%include file="../course.html" args="course=course" />
+                                  </li>
+                                </div>   
+                            %endfor
+                      </ul>
+                    </div>
+              </section>
+            </div>
+        </div>
+    </section>
+  %endif
+</div>
+<script type="text/javascript">
+
+  $(document).ready(function() {
+    // Configure/customize these variables.
+    var showChar = 600;  // How many characters are shown by default
+    var ellipsestext = "...";
+    var moretext = "Show more ";
+    var lesstext = "Show less";
+    
+
+    $('.more').each(function() {
+        var content = $(this).html();
+ 
+        if(content.length > showChar) {
+ 
+            var c = content.substr(0, showChar);
+            var h = content.substr(showChar, content.length - showChar);
+ 
+            var html = c + '<span class="moreellipses">' + ellipsestext+ '&nbsp;</span><span class="morecontent"><span>' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+ 
+            $(this).html(html);
+        }
+ 
+    });
+ 
+    $(".morelink").click(function(){
+        if($(this).hasClass("less")) {
+            $(this).removeClass("less");
+            $(this).html(moretext);
+        } else {
+            $(this).addClass("less");
+            $(this).html(lesstext);
+        }
+        $(this).parent().prev().toggle();
+        $(this).prev().toggle();
+        return false;
+    });
+  });
+
+  function joingroup(id) {
+    document.getElementById("button").disabled = true;
+    $.ajax({
+      method:'GET',
+      url:'',
+      dataType:'html',
+      data:{
+        groupid : id,
+        csrfmiddlewaretoken : document.getElementsByName('csrfmiddlewaretoken')[0].value
+      },
+      success:function(data){
+        $('#errors').html(data),
+        $('#errors').delay(10000).fadeOut();
+      }
+    });
+  return false;
+  }
+</script>

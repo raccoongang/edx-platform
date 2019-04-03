@@ -1,0 +1,414 @@
+<%namespace name='static' file='../static_content.html'/>
+<%!
+import json
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+from django.conf import settings
+from edxmako.shortcuts import marketing_link
+from openedx.core.lib.courses import course_image_url
+from associations.views import course_det
+from django.template.context_processors import csrf
+from lms.djangoapps.associations.views import speczName, userType, orgName
+%>
+
+<%inherit file="../main.html" />
+<%block name="headextra">
+    <link href="${static.url("css/breadcrums.css")}" rel="stylesheet"> 
+    <link href="${static.url("css/partner_detail.css")}" rel="stylesheet">  
+    <style type="text/css">
+        
+
+h1{
+  color: #396;
+  font-weight: 100;
+  font-size: 40px;
+  margin: 40px 0px 20px;
+}
+
+p strong {
+    color: #1e81bb;
+    font-size: 30px;
+}
+
+#clockdiv{
+    font-family: sans-serif;
+    color: #fff;
+    display: inline-block;
+    font-weight: 100;
+    text-align: center;
+    font-size: 30px;
+}
+
+#clockdiv > div{
+    padding: 10px;
+    border-radius: 3px;
+    background: #08b058;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+#clockdiv div > span{
+    padding: 25px;
+    border-radius: 3px;
+    background: #08b058;
+    display: inline-block;
+    color: #ffffff;
+    font-size: 40px;
+}
+
+.smalltext{
+    padding-top: 5px;
+    font-size: 16px;
+}
+#content { max-height: 500px;
+    }
+.content-wrapper {
+    min-height: auto !important;
+}
+    </style>  
+</%block>
+ 
+<%block name="pagetitle">Case study competition</%block>
+
+    <section class="course-info" >
+        <header class="course-profiless" style="padding-top:0px;">
+              
+              <div class="carousel-inner" role="listbox">
+                    <div class="item active">
+                        <picture>
+                            <source media="(max-width: 650px)" srcset="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Case_Study_IMG/DocMode-Competition-Banner.png" />
+                            <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Case_Study_IMG/DocMode-Competition-Banner.png" alt="$" width="100%" style="max-height: 500px;">
+                        </picture>
+                    </div>
+              </div>
+            </div>
+        </header>
+    </section>
+    <section class="learn-from-us" style="margin-top: -80px;">
+        <div class="container ">
+            <div class="row productDetailCont comman">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <!-- <p style="text-align: center;color: #1e81bb;">Global Case Study and Research Competition</p> -->
+                    <!-- <p style="text-align: center;"></p> -->
+                    <p style="text-align: center;">
+                        <!-- <strong>International Research Competition 2019</strong> -->
+                        <div class="btn-custom" style="text-align: center;">
+                        
+                        <a href="/research/new/" class="btn btn-primary" target="_blank" > Submit Abstract</a>
+                        <!-- <a href="#" data-toggle="modal" data-target="#competition" class="btn btn-primary" >Click to Participate Now</a>
+                        </div> -->
+                    </p>
+                </div>
+                <!-- <div class="col-md-12 col-sm-12 col-xs-12" style="background-color: #ffffff;text-align: center;"> 
+                    <p style="text-align: center;">
+                        <strong>Time Left To Submit</strong></p>
+                    <p>
+                            <div id="clockdiv" style="text-align: center;">
+                              <div>
+                                <span class="days"></span>
+                                <div class="smalltext">Days</div>
+                              </div>
+                              <div>
+                                <span class="hours"></span>
+                                <div class="smalltext">Hours</div>
+                              </div>
+                              <div>
+                                <span class="minutes"></span>
+                                <div class="smalltext">Minutes</div>
+                              </div>
+                              <div>
+                                <span class="seconds"></span>
+                                <div class="smalltext">Seconds</div>
+                              </div>
+                            </div>
+                        </p>
+                        <p>
+                            <picture>
+                                <source media="(max-width: 650px)" srcset="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Case_Study_IMG/for+Mobile/Mobile-CaseStudy1.jpg" />
+                                <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/Case_Study_IMG/UpdatedSlider-MIddle-Banner-2.jpg" alt="$" width="100%" style="max-height: 500px;">
+                            </picture>
+                        </p>
+                </div> -->
+                <!-- <div class="col-md-12 col-sm-12 col-xs-12" style="background-color: #ffffff;"> 
+                    <p style="text-align: center;"><strong>
+                        Abstract Submission Guidelines for Competition</strong>
+                    </p>
+                    <p>Global Health Summit Registration is not required to Submit Abstracts</p>
+                    <p>
+                        All participants are invited to submit Original Research Abstracts for presentation at the AAPI Global Health Summit on Friday December 28th, 2018 at KEM Hospital and G.S. Medical College, Mumbai, India.
+                    </p>
+                    <p>
+                        The submission period opens July 1st, 2018 and closes Nov 15th, 2018 at 5 p.m. India Standard Time. All submissions after this time will not be considered for any award evaluation.
+                    </p>
+                    <p style="text-align: center;"><strong>Submissions are requested under following categories</strong></p>
+                    <p>1. Clinical Sciences and Patient-Based Research.</p>
+                    <p>2. Basic Sciences and Translational Research (large animals and human studies)</p>
+                    <p>3. Technology Innovations in Medicine including EMR, Devices etc.</p>
+                    <p>4. Complimentary and Integrative Medicine/AYUSH</p>
+                    
+                </div> -->
+                <div class="col-md-12 col-sm-12 col-xs-12" style="background-color: #ffffff;"> 
+                    <p style="text-align: center;"><strong>Abstract Submission Format</strong></p>
+                        <p>
+                        <ul>
+                            <li>Abstracts must be no more than 1 page, single-spaced</li>
+                            <li>Submit as Microsoft Word Document</li>
+                            <li>Fonts: Arial, Symbol (for Greek letters)</li>
+                            <li>Font Size: 11 point</li>
+                            <li>Margins: 1” on all sides</li>
+                            <li>Abstract Size: Not to exceed 300 words (excluding title, authors name and affiliation)</li>
+                            <li>Title: In upper case</li>
+                            <li>Authors: Write first and last names in full with middle initial</li>
+                            <li class="has-submenu">
+                                The body of the abstract should be divided into the following segments
+                                <ul class="sub-menu" style="list-style-type:circle">
+                                    <li>Background</li>
+                                    <li>Hypothesis</li>
+                                    <li>Methods</li>
+                                    <li>Results: Not more than 100 words</li>
+                                    <li>Statistics</li>
+                                    <li>Conclusion</li>
+                                    <li>Funding source</li>
+                                    <li>Key words (minimum three keywords)</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </p>
+                    <!-- <p>
+                        <h3 style="font-size: 20px; ">All abstracts will be scored based on peer review process. Accepted abstracts for POSTER presentation will be notified by e-mail by November 30th, 2018.</h3>
+                        <ul>
+                            <li>Accepted Poster abstract should be presented in person by the lead author.</li>
+                            <li>An oral PowerPoint presentation will be required of the top 4 selected Poster Abstracts in each category.</li>
+                        </ul>
+                    </p>
+                    <p>
+                        Failure to confirm participation in person may result in invitation of the next presenter based on scoring.
+                    </p>
+                    <p>Final decision on awards will be with the conference organizers.</p>
+                    </p> -->
+                </div>
+                <!-- <div class="col-md-12 col-sm-12 col-xs-12" style="background-color: #ffffff;">
+                    <p style="text-align: center;"><strong>Criteria for selection</strong></p>
+                    <p>
+                        <ul>
+                            <li>
+                                The presenting author has to be within 10 years of his/her last degree (MBBS/MD/PhD)
+                            </li>
+                            <li>
+                                The work must have never been published or presented elsewhere
+                            </li>
+                            <li>
+                                The young investigator invited based on merit must present the work in person at the conference
+                            </li>
+                        </ul>
+                    </p>
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12" style="background-color: #ffffff;">
+                    <p style="text-align: center;">
+                        <h3 style="font-size: 20px; ">It is realized that some may be unable to travel to Mumbai. For those submissions, we have created: On-Line Participation only.</h3>
+                    </p>
+                    <p><ul>
+                            <li>The criteria and submission deadlines remain same.</li>
+                            <li>Results and Certificate of Excellence in Research will be announced online.</li>
+                            <li>In person presentation is not required</li>
+                        </ul>
+                    </p>
+                </div> -->
+                
+                <div class="col-md-12 col-sm-12 col-xs-12" style="background-color: #ffffff;">
+                    <!-- <p>
+                        <p><table class="table table-striped table-hover table-responsive table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Friday, 28th Dec</th>
+                                <th>GS Medical College &amp; KEM Hospital Mumbai</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>7:00 AM – 9:00 AM</td>
+                                <td>Poster Mounting</td>
+                            </tr>
+                            <tr>
+                                <td>9:00 AM – 12:30 PM</td>
+                                <td>Poster Presentation &amp; Judging</td>
+                            </tr>
+                            <tr>
+                                <td>12:30 PM – 1:30 PM</td>
+                                <td>Invited Lecture: Dr. William Pinsky, President ECFMG (Box lunch will be provided)</td>
+                            </tr>
+                            <tr>
+                                <td>1:30 PM – 4:00 PM</td>
+                                <td>Oral Presentation of the Finalists (7 + 2)’ X 16</td>
+                            </tr>
+                            <tr>
+                                <td>6:30 PM – 10:00 PM</td>
+                                <td>Inauguration &amp; Awards Ceremony at Trident Nariman Point</td>
+                            </tr>
+                        </tbody>
+                        </table>
+                    </p> -->
+                    <!-- <p><h3 style="font-size: 20px; "> AAPI GHS 2018 Global Case Study &  Research Competition Co-Leads:</h3></p>
+                    <p>Co-Chair: Dr. Beejadi Mukunda MD AAPI USA, Chair, AAPI International Research Competition</p>
+                    <p>Co-Chair: Dr. Avinash Supe: Director (ME&MH) & Dean,Seth GS Medical College and KEM Hospital</p>
+                    <p>Dean: Dr. Jayashree Mondkar,Lokmanya Tilak Medical College and Hospital</p>
+
+                    <p>Dean: Dr. Ramesh Bharmal,Topiwala National Medical College & BYL Nair Charitable Hospital</p>
+
+                    <p>Dr. Sanjay Desai, Johns Hopkins, Baltimore MD</p>
+
+                    <p>Prof. Atul Goel, Head Dept. of Neurosurgery, KEM Hospital   </p> -->
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="modal fade" id="competition" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="width:100%;" >
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">   
+                    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+                    <form method="post" action="https://docs.google.com/forms/d/e/1FAIpQLSdQQ0w8SUp9U5bONKV0tOJHKMKKQu07Z-gEdFwOK6p6bT-wNA/formResponse" name="theForm" id="theForm" target="hidden_iframe" onsubmit="return redirect();">
+                        <div class="col-sm-12">
+                            <p class="col-sm-2">Name* </p>
+                            <input type="text" name="entry.1410235620" class="col-sm-6" id="name" required/>                                  
+                        </div>
+                        <div class="col-sm-12" style="margin-top: 5px;">   
+                            <p class="col-sm-2">Email* </p>      
+                            <input type="email" name="entry.1801289058" class="col-sm-6" id="email" required onchange="checkEmailValidity();">
+                        </div>
+                        <div class="col-sm-12" style="margin-top: 5px;">   
+                            <p class="col-sm-2">Phone </p>      
+                            <input type="text" name="entry.311819746" id="phone" class="col-sm-6"    accept="numbers" placeholder="9999999999">
+                        </div>
+                        <p><button type="submit" class="btn btn-primary">Submit</button></p>
+                    </form>
+                    <p id="errormsg" style="display: none;"></p>
+                     
+                        <p>Thank you for participating in the International Research Competition 2018. You will now be directed to the AAPI website once you click submit. We are doing this to prevent spam submissions. Thank you for your patience. </p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+<script type="text/javascript">
+    function getTimeRemaining(endtime) {
+  var t = Date.parse(endtime) - Date.parse(new Date());
+  var seconds = Math.floor((t / 1000) % 60);
+  var minutes = Math.floor((t / 1000 / 60) % 60);
+  var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
+  var days = Math.floor(t / (1000 * 60 * 60 * 24));
+  return {
+    'total': t,
+    'days': days,
+    'hours': hours,
+    'minutes': minutes,
+    'seconds': seconds
+  };
+}
+
+function initializeClock(id, endtime) {
+  var clock = document.getElementById(id);
+  var daysSpan = clock.querySelector('.days');
+  var hoursSpan = clock.querySelector('.hours');
+  var minutesSpan = clock.querySelector('.minutes');
+  var secondsSpan = clock.querySelector('.seconds');
+
+  function updateClock() {
+    var t = getTimeRemaining(endtime);
+
+    daysSpan.innerHTML = t.days;
+    hoursSpan.innerHTML = ('0' + t.hours).slice(-2);
+    minutesSpan.innerHTML = ('0' + t.minutes).slice(-2);
+    secondsSpan.innerHTML = ('0' + t.seconds).slice(-2);
+
+    if (t.total <= 0) {
+      clearInterval(timeinterval);
+    }
+  }
+
+  updateClock();
+  var timeinterval = setInterval(updateClock, 1000);
+}
+
+var deadline = new Date(Date.parse(new Date("Nov 15 2018 23:55:25")));
+initializeClock('clockdiv', deadline);
+
+    function checkEmailValidity() {
+      class ZeroBounceApi {
+        constructor(apiKey){
+          var baseUrl = "https://api.zerobounce.net/v1";
+          var get = new XMLHttpRequest();
+          /**
+           * @param apiKey - your private API key
+           * */
+          this.apiKey = apiKey;
+
+          /**
+           * @return the number of credits remaining on your account
+           * */
+          this.getCredits = function(){
+              var uri = baseUrl + "/getcredits" + "?apikey=" + apiKey;
+              get.open('GET', uri, false);
+              get.send();
+              if (get.readyState === 4 && get.status === 200) {
+                  return get.responseText;
+              }
+          }
+
+          /**
+           * @param email - the email you want to validate
+           * @return - a JSONObject with all of the information for the specified email
+           * */
+          this.validate = function(email){
+              var uri = baseUrl + "/validate" + "?apikey=" + apiKey + "&email=" + email;
+              get.open('GET', uri, false);
+              get.send();
+              if (get.readyState == 4 && get.status == 200) {
+                  return get.responseText;
+              }
+          }
+
+          /**
+           * @param email - the email you want to validate
+           * @param ip - the ip to be use for this validation (advanced)
+           * @return - a JSONObject with all of the information for the specified email
+           * */
+          this.validateWithIpAddress = function(email, ipAddress){
+              var uri = baseUrl + "/validate" + "?apikey=" + apiKey + "&email=" + email + "&ipAddress=" + ipAddress;
+              get.open('GET', uri, false);
+              get.send();
+              if (get.readyState == 4 && get.status == 200) {
+                  return get.responseText;
+              }
+          }
+        }
+      }
+      mail = document.getElementById('email').value;
+      var ZeroBounceApiVar = new ZeroBounceApi('af8e53a08b7a4a9ab3cc98584fd3a734');
+      ZeroBounceApiVar.apiKey;
+      ZeroBounceApiVar.getCredits();
+      var getResults = ZeroBounceApiVar.validate(mail);
+      var getStatus = JSON.parse(getResults);
+      // alert(getStatus.status);
+      if (getStatus.status == 'Invalid' || getStatus.status == 'Catch-All' || getStatus.status == 'Spamtrap' || getStatus.status == 'Abuse' || getStatus.status == 'DoNotMail' || getStatus.status == 'Unknown') {
+        alert('Email Address Invalid');
+        document.getElementById('register-email').value = "";
+        document.getElementById('register-email').focus();
+      }    
+    }
+
+    function redirect() {
+        name = document.getElementById('name').value;
+        email = document.getElementById('email').value;
+        phone = document.getElementById('phone').value;
+        errormsg = document.getElementById('errormsg');
+        if(name.length > 0 && email.length > 0 && phone.length > 0) {
+            window.location.href="https://aapisummit.org/registernow/";
+        } else {
+            errormsg.innerHTML += 'Please fill all details';
+            document.getElementById('errormsg').style.display="block";
+            return fasle;
+        }
+    }
+
+</script>

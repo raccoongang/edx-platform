@@ -1,0 +1,96 @@
+<%inherit file="/main.html" />
+<%namespace name='static' file='../static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
+from datetime import datetime
+import urllib
+%>
+<%block name="headextra">
+  <%block name="pagetitle">DocMode Analytics</%block>
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+  <!-- Custom Theme Style -->
+  <link href="${static.url('css/vendor/build/css/custom.css')}" rel="stylesheet">
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script> -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+  
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+
+  <style type="text/css">
+  #btnmenus{
+    width: 100%;
+  }
+
+  .navbar-secondary .navbar-nav>li>a {
+     color: #ffffff !important; 
+  }
+  </style>
+</%block>
+<div class="nav-sm">
+  	<div class="container body" style="border: 0px solid blue;">
+    <div class="main_container">
+      <div class="container-fluid">
+        <%include file="dashboard_sidebar.html" />
+      </div>
+      <div class="container-fluid">
+      	<div class="right_col" role="main">
+      		<div class="container-fluid" style="border: 0px solid red;">
+      			<div class="col-md-12">
+	      			<div class="container-fluid tile_count"><!-- Counts of Users/Associations -->
+                <table id="table_id" class="display">
+                  	<thead>
+                      	<tr>
+                        	<th>Coupon Name</th>
+                          	<th>Total Coupons</th>
+                          	<th>Usage</th>
+                          	<th>Total orders</th>
+                          	<th>Start Date</th>
+                          	<th>Expiry Date</th>
+                      	</tr>
+                  	</thead>
+                  	<tbody>
+                    %for voucher in vouchers:
+                    	<% 
+                    		start_date = datetime.strftime(voucher[4], '%Y-%m-%d')
+                    		expiry_date = datetime.strftime(voucher[5], '%Y-%m-%d')
+                    	%>
+                      <tr>  
+                        
+                          <td><a href="/docmode/coupon/${urllib.quote_plus(voucher[1])}/">${voucher[1]}</a></td>
+                          <td>${voucher[10]}</td>
+                          <td>${voucher[3]}</td>
+                          <td>${voucher[11]}</td>
+                          <td>${start_date}</td>
+                          <td>${expiry_date}</td>
+                      </tr>
+                    %endfor
+                  </tbody>
+              </table>
+      				</div>
+	      		</div>
+	    	  </div>
+        </div>
+      </div>
+  	</div>
+	</div>
+</div>
+<!-- Bootstrap -->
+<script src="${static.url('vendors/bootstrap/dist/js/bootstrap.min.js')}"></script>
+<!-- Chart.js -->
+<!-- <script src="${static.url('vendors/Chart.js/dist/Chart.min.js')}"></script> -->
+<!-- Google Charts -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<!-- <script src="${static.url('css/vendor/build/js/custom-gc.js')}"></script> -->
+
+<!-- Custom Theme Scripts -->
+<script src="${static.url('css/vendor/build/js/custom.js')}"></script>
+<script type="text/javascript">
+    $(document).ready( function () {
+    	$('#table_id').DataTable({
+			aaSorting: [[4, 'desc']]
+		});
+  } );
+</script>

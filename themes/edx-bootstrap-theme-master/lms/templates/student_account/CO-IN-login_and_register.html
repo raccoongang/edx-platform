@@ -1,0 +1,204 @@
+<%!
+    import json
+    from django.utils.translation import ugettext as _
+    from openedx.core.djangolib.js_utils import dump_js_escaped_json
+%>
+<%namespace name='static' file='/static_content.html'/>
+
+<%inherit file="../theme-main.html" />
+
+<%block name="pagetitle">${_("Sign in or Register")}</%block>
+
+<%block name="js_extra">
+    <%static:require_module module_name="js/student_account/logistration_factory" class_name="LogistrationFactory">
+        var options = ${data | n, dump_js_escaped_json};
+        LogistrationFactory(options);
+        if ('newrelic' in window) {
+            newrelic.finished();
+            // Because of a New Relic bug, the finished() event doesn't show up
+            // in Insights, so we have to make a new PageAction that is basically
+            // the same thing. We still want newrelic.finished() for session
+            // traces though.
+            newrelic.addPageAction('xfinished');
+        }
+    </%static:require_module>
+</%block>
+
+<%block name="header_extras">
+    % for template_name in ["account", "access", "form_field", "login", "register", "institution_login", "institution_register", "password_reset", "hinted_login"]:
+        <script type="text/template" id="${template_name}-tpl">
+            <%static:include path="student_account/${template_name}.underscore" />
+        </script>
+% endfor
+</%block>
+
+<div class="section-bkg-wrapper">
+    <style>
+  /* Absolute Center Spinner */
+    .loading {
+      position: fixed;
+      z-index: 999;
+      height: 2em;
+      width: 2em;
+      overflow: show;
+      margin: auto;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+    }
+
+    /* Transparent Overlay */
+    .loading:before {
+      content: '';
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.3); 
+    }
+
+    /* :not(:required) hides these rules from IE9 and below */
+    .loading:not(:required) {
+      /* hide "loading..." text */
+      font: 0/0 a;
+      color: transparent;
+      text-shadow: none;
+      background-color: transparent;
+      border: 0;
+    }
+
+  </style>
+
+    <div class="loading" id="gifloader" style="display:none;">
+        <img src="https://s3-ap-southeast-1.amazonaws.com/docmode.co/logo/100x100Docmode.gif" width="100" height="100" border="0" alt="">
+    </div>
+    <main id="main" aria-label="Content" tabindex="-1">
+        <div id="login-and-registration-container" class="login-register" style="background: transparent;padding-bottom: 50px;" />
+    </main>
+</div>
+<script type="text/javascript">
+    
+    function setfunc() {
+        $("#register-cemail").on("change", function(event) { 
+            checkmail();
+        } );
+
+        $("#register-user_type").on("change", function(event) { 
+            usertype(this.value);
+        } );
+        usertype('dr');
+        $("#register-rpincode").on("change", function(event) { 
+            getlocation(this.value);
+        });
+        
+        var appBanners = document.getElementsByClassName('tip'), i;
+
+        for (var i = 0; i < appBanners.length; i ++) {
+            appBanners[i].style.display = 'none';
+        }
+
+        var label = document.getElementsByClassName('label-text'), i;
+
+        for (var i = 0; i < label.length; i ++) {
+            label[i].style.display = 'none';
+        }
+         
+        document.getElementsByClassName('label-text')[16].style.display="block";
+
+        document.getElementById("register-password").placeholder = "Password";
+        document.getElementById("register-phone").placeholder = "Phone number";
+        document.getElementById("register-reg_num").placeholder = "Medical registration number";
+       	document.getElementById("register-rpincode").placeholder = "Enter your pincode,Zipcode,Postal-code";
+
+       	$('.text-reg_num').hide();
+       	$('.select-specialization').hide();
+        $('.select-hcspecialization').hide();
+        $('.text-rcountry').hide();
+        $('.text-rstate').hide();
+        $('.text-rcity').hide();
+        $('.text-address').hide();
+    }
+
+    function usertype(val){
+        
+        if(val == 'u') {
+            $('.text-reg_num').hide();
+            $('.select-specialization').hide();
+            $('.select-hcspecialization').hide();
+        } else if(val == 'hc') {
+            $('.text-reg_num').hide();
+            $('.select-specialization').hide();
+            $('.select-hcspecialization').show();
+        } else if(val == 'dr') {
+            $('.text-reg_num').show();
+            $('.select-specialization').show();
+            $('.select-hcspecialization').hide();
+        } else if(val == 'ms') {
+            $('.text-reg_num').hide();
+            $('.select-specialization').show();
+            $('.select-hcspecialization').hide();
+        }
+    }
+
+    function checkmail() {
+
+        mail = document.getElementById('register-email').value;
+        cmail = document.getElementById('register-cemail').value
+        if (mail != cmail) {
+            document.getElementById('register-cemail').style.borderColor = "red";
+            document.getElementById('register-cemail').value = "Email id does not match. Please re-enter";
+            document.getElementById('register-username').value = "";
+        } else {
+            document.getElementById('register-cemail').disabled=false;
+            document.getElementById('register-cemail').style.backgroundColor = "white";
+        newval = mail.replace(".", "-")
+            document.getElementById('register-username').value = newval.replace("@", "_");
+        }
+    }
+
+    setTimeout(setfunc, 2000);
+
+    function getlocation(zipcode) {
+      var zip;
+      zip = zipcode;
+      if (zip.length >1) {
+        $.ajax({
+          type: 'POST',
+          url: "https://maps.googleapis.com/maps/api/geocode/json?address=" + zip + "&key=AIzaSyDQUh3L4Gfjc-QOrpQAIUm7MG6hR1RX6Bo",
+          success: (function(_this) {
+            return function(data) {
+              if (data["status"] === "OK") {
+                $('.text-rcountry').show();
+                $('.text-rstate').show();
+                $('.text-rcity').show();
+                var count = Object.keys(data["results"][0]["address_components"]).length;
+                if (count == 6 ) {
+                    $('input#register-rcountry').val(data["results"][0]["address_components"][5]["long_name"]);
+                    $('input#register-rstate').val(data["results"][0]["address_components"][4]["long_name"]);
+                    $('input#register-rcity').val(data["results"][0]["address_components"][2]["long_name"]);
+                } else if (count == 5 ) {
+                    $('input#register-rcountry').val(data["results"][0]["address_components"][4]["long_name"]);
+                    $('input#register-rstate').val(data["results"][0]["address_components"][3]["long_name"]);
+                    $('input#register-rcity').val(data["results"][0]["address_components"][1]["long_name"]);
+                } else if (count == 4 ) {
+                    $('input#register-rcountry').val(data["results"][0]["address_components"][3]["long_name"]);
+                    $('input#register-rstate').val(data["results"][0]["address_components"][2]["long_name"]);
+                    $('input#register-rcity').val(data["results"][0]["address_components"][1]["long_name"]);
+                } else if (count == 3 ) {
+                    $('input#register-rcountry').val(data["results"][0]["address_components"][2]["long_name"]);
+                    $('input#register-rstate').val(data["results"][0]["address_components"][1]["long_name"]);
+                    $('input#register-rcity').val("Not Found Please enter you city name");
+                    document.getElementById("register-rcity").style.color = "#80709d";
+                }
+                $('input#register-address').val(data["results"][0]["formatted_address"]);
+              }
+            };
+          })(this)
+        });
+      }
+    };
+
+</script>

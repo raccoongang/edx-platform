@@ -106,7 +106,8 @@ from xmodule.x_module import STUDENT_VIEW
 
 from ..entrance_exams import user_can_skip_entrance_exam
 from ..module_render import get_module, get_module_by_usage_id, get_module_for_descriptor
-
+#added by docmode for org details
+from organizations.models import Organization, OrganizationCourse, OrganizationSlider, OrganizationMembers
 log = logging.getLogger("edx.courseware")
 
 
@@ -846,6 +847,22 @@ def course_about(request, course_id):
 
         # Embed the course reviews tool
         reviews_fragment_view = CourseReviewsModuleFragmentView().render_to_fragment(request, course=course)
+        
+        # below lines added by docmode for course reviews and other org courses
+        try:
+            creviews = StudentModule.objects.filter(course_id=course.id,module_type='rate')
+        except StudentModule.DoesNotExist:
+            creviews = 'None'
+
+        try:
+            org_data = Organization.objects.get(short_name=course.display_org_with_default)
+        except Organization.DoesNotExist:
+            org_data = None
+
+        try:
+            org_courses = CourseOverview.objects.all().filter(display_org_with_default=course.display_org_with_default).order_by('start')[::-1][:4]
+        except CourseOverview.DoesNotExist:
+            org_courses = None
 
         context = {
             'course': course,
@@ -877,6 +894,9 @@ def course_about(request, course_id):
             'course_image_urls': overview.image_urls,
             'reviews_fragment_view': reviews_fragment_view,
             'sidebar_html_enabled': sidebar_html_enabled,
+            'creviews' : creviews,
+            'assoc_logo' : org_data.logo,
+            'org_courses' : org_courses
         }
 
         return render_to_response('courseware/course_about.html', context)

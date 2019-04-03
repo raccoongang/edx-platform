@@ -1,12 +1,12 @@
 """ Views for a student's profile information. """
-
+import json
 from badges.utils import badges_enabled
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
-from django.http import Http404
+from django.http import Http404,HttpRequest, HttpResponse
 from django.shortcuts import render_to_response
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_http_methods
@@ -21,6 +21,10 @@ from openedx.core.djangoapps.user_api.preferences.api import get_user_preference
 from openedx.core.djangoapps.util.user_messages import PageLevelMessages
 from openedx.core.djangolib.markup import HTML, Text
 from student.models import User
+# added by docmode to get user enrolled courses
+from student.models import CourseEnrollment
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from lms.djangoapps.reg_form.models import extrafields
 
 from .. import SHOW_PROFILE_MESSAGE
 
@@ -46,6 +50,19 @@ def learner_profile(request, username):
     Example usage:
         GET /account/profile
     """
+    user = request.user
+    usr = request.user.id
+    """ User Account update function starts"""
+    if request.is_ajax():
+        if request.method == 'GET' :
+            vfields = request.GET
+            for key in vfields:
+                vfield = key   
+            columname = vfield   
+            fieldvalue = vfields[key]
+            gmember = extrafields.objects.filter(user_id=usr).update(**{ columname: fieldvalue })
+            msg = ' Updated succesfully'
+            return HttpResponse(msg)
     try:
         context = learner_profile_context(request, username, request.user.is_staff)
         # TODO: LEARNER-2554: 09/2017: Remove message and cookie logic when we no longer want this message
@@ -76,7 +93,7 @@ def learner_profile(request, username):
         return response
     except (UserNotAuthorized, UserNotFound, ObjectDoesNotExist):
         raise Http404
-
+    
 
 def learner_profile_context(request, profile_username, user_is_staff):
     """Context for the learner profile page.
@@ -107,7 +124,14 @@ def learner_profile_context(request, profile_username, user_is_staff):
         username=profile_user.username,
         own_profile=own_profile,
     )
-
+    user_enrolled_courses = CourseEnrollment.objects.filter(user_id=logged_in_user.id,is_active=1)
+    cid = []
+    for courseid in user_enrolled_courses:
+      course_id = courseid.course_id
+      cid.append(course_id)
+  
+    course_data = CourseOverview.objects.all().filter(pk__in=cid).order_by('start')[::-1]
+    user_extra_info = extrafields.objects.get(user_id=logged_in_user.id)
     context = {
         'own_profile': own_profile,
         'achievements_fragment': achievements_fragment,
@@ -141,6 +165,8 @@ def learner_profile_context(request, profile_username, user_is_staff):
         'disable_courseware_js': True,
         'nav_hidden': True,
         'records_url': get_credentials_records_url(),
+        'courses': course_data,
+        'user_extra_info': user_extra_info
     }
 
     if badges_enabled():

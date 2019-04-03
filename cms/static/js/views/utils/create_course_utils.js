@@ -6,8 +6,8 @@ define(['jquery', 'gettext', 'common/js/components/utils/view_utils', 'js/views/
         'use strict';
         return function(selectors, classes) {
             var keyLengthViolationMessage = gettext('The combined length of the organization, course number, and course run fields cannot be more than <%=limit%> characters.');
-            var keyFieldSelectors = [selectors.org, selectors.number, selectors.run];
-            var nonEmptyCheckFieldSelectors = [selectors.name, selectors.org, selectors.number, selectors.run];
+            var keyFieldSelectors = [selectors.org, selectors.number, selectors.run, selectors.course_type];
+            var nonEmptyCheckFieldSelectors = [selectors.name, selectors.org, selectors.number, selectors.run, selectors.course_type, selectors.course_category,selectors.sub_category];
 
             CreateUtilsFactory.call(this, selectors, classes, keyLengthViolationMessage, keyFieldSelectors, nonEmptyCheckFieldSelectors);
 

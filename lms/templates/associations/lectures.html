@@ -1,0 +1,88 @@
+<%!
+  import json
+  from django.utils.translation import ugettext as _
+  from openedx.core.djangolib.js_utils import dump_js_escaped_json
+  from django.core.urlresolvers import reverse
+  from openedx.core.djangolib.markup import HTML, Text
+%>
+<%inherit file="../main.html" />
+<%namespace name='static' file='../static_content.html'/>
+<%
+  course_discovery_enabled = settings.FEATURES.get('ENABLE_COURSE_DISCOVERY')
+%>
+<%block name="headextra">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+</%block>
+
+<%block name="pagetitle">Lectures</%block>
+  <section class="upcoming-courses">
+            <div class="container">
+                <div class="row js-courses-slider owl-carousel">
+                % for course in lectures_list:   
+                    <%
+                        if course.start is not None:
+                            course_date_string = course.start.strftime('%Y-%m-%dT%H:%M:%S%z')
+                        else:
+                            course_date_string = ''
+                    %>    
+                    <div class="col-md-3 col-xs-12" style="max-height: 355.89px; !important;">
+                        <a href="${reverse('about_course', args=[course.id.to_deprecated_string()])}">
+                        <div class="card">
+                            <div class="card-img">
+                                <img src="${course.course_image_url}" alt="${course.display_name_with_default}">
+                            </div>
+                            <div class="card-text">
+                                <h4 style="height: auto;">${course.display_name_with_default}</h4>
+                                <span>By ${course.display_org_with_default}</span>
+                                
+                                <p>Starts <time class="localized_datetime" itemprop="startDate" data-format="shortDate" data-datetime="${course_date_string}"></time></p>
+                            </div>
+                        </div>
+                        </a>
+                    </div>
+                %endfor
+                </div>
+            </div>
+        </section>
+<script type="text/javascript">
+
+  $(document).ready(function() {
+    // Configure/customize these variables.
+    var showChar = 600;  // How many characters are shown by default
+    var ellipsestext = "...";
+    var moretext = "Show more ";
+    var lesstext = "Show less";
+    
+
+    $('.more').each(function() {
+        var content = $(this).html();
+ 
+        if(content.length > showChar) {
+ 
+            var c = content.substr(0, showChar);
+            var h = content.substr(showChar, content.length - showChar);
+ 
+            var html = c + '<span class="moreellipses">' + ellipsestext+ '&nbsp;</span><span class="morecontent"><span>' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink">' + moretext + '</a></span>';
+ 
+            $(this).html(html);
+        }
+ 
+    });
+ 
+    $(".morelink").click(function(){
+        if($(this).hasClass("less")) {
+            $(this).removeClass("less");
+            $(this).html(moretext);
+        } else {
+            $(this).addClass("less");
+            $(this).html(lesstext);
+        }
+        $(this).parent().prev().toggle();
+        $(this).prev().toggle();
+        return false;
+    });
+  });
+</script>
+<%static:require_module_async module_name="js/dateutil_factory" class_name="DateUtilFactory">
+    DateUtilFactory.transform(iterationKey=".localized_datetime");
+</%static:require_module_async>

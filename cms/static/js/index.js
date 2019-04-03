@@ -7,6 +7,9 @@ define(['domReady', 'jquery', 'underscore', 'js/utils/cancel_on_escape', 'js/vie
             org: '.new-course-org',
             number: '.new-course-number',
             run: '.new-course-run',
+            course_type: '.new-course-type',
+            course_category: '.new-course-category',
+            sub_category: '.new-course-subcategory',
             save: '.new-course-save',
             errorWrapper: '.create-course .wrap-error',
             errorMessage: '#course_creation_error',
@@ -51,12 +54,18 @@ define(['domReady', 'jquery', 'underscore', 'js/utils/cancel_on_escape', 'js/vie
             var org = $newCourseForm.find('.new-course-org').val();
             var number = $newCourseForm.find('.new-course-number').val();
             var run = $newCourseForm.find('.new-course-run').val();
+            var course_type = $newCourseForm.find('#new-course-type').val();
+            var course_category = $newCourseForm.find('#new-course-category').val();
+            var sub_category = $newCourseForm.find('#new-course-subcategory').val();
 
             var course_info = {
                 org: org,
                 number: number,
                 display_name: display_name,
-                run: run
+                run: run,
+                course_type: course_type,
+                course_category: course_category,
+                sub_category : sub_category
             };
 
             analytics.track('Created a Course', course_info);
@@ -108,6 +117,12 @@ define(['domReady', 'jquery', 'underscore', 'js/utils/cancel_on_escape', 'js/vie
             $cancelButton = $newCourse.find('.new-course-cancel');
             $courseName = $('.new-course-name');
             $courseName.focus().select();
+            var $courseType = $('.new-course-type');
+            $courseType.focus().select();
+            var $courseCategory = $('.new-course-category');
+            $courseCategory.focus().select();
+            var $subCategory = $('.new-course-subcategory');
+            $subCategory.focus().select();
             $('.new-course-save').on('click', saveNewCourse);
             $cancelButton.bind('click', makeCancelHandler('course'));
             CancelOnEscape($cancelButton);

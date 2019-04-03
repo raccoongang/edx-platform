@@ -1,15 +1,17 @@
 <%namespace name='static' file='../static_content.html'/>
 <%!
+import json
+import unicodedata
 from django.utils.translation import ugettext as _
-from django.utils.translation import pgettext
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 from courseware.courses import get_course_about_section
 from django.conf import settings
-from six import text_type
 from edxmako.shortcuts import marketing_link
 from openedx.core.djangolib.markup import HTML
 from openedx.core.lib.courses import course_image_url
-from six import string_types
+from lms.djangoapps.course_extrainfo.views import course_ctype, course_ctype_number
+from lms.djangoapps.reg_form.views import getuserfullprofile, get_authuser
+from openedx.core.djangoapps.user_api.accounts.image_helpers import get_profile_image_urls_for_user, set_has_profile_image
 %>
 
 <%inherit file="../main.html" />
@@ -18,6 +20,49 @@ from six import string_types
   ## (https://developers.facebook.com/docs/opengraph/howtos/maximizing-distribution-media-content#tags)
   <meta property="og:title" content="${course.display_name_with_default_escaped}" />
   <meta property="og:description" content="${get_course_about_section(request, course, 'short_description')}" />
+  <link href="${static.url("css/breadcrums.css")}" rel="stylesheet"> 
+    <link href="${static.url("css/coursedetail.css")}" rel="stylesheet"> 
+    <style type="text/css">
+        .panel-heading .accordion-toggle:after {
+            /* symbol for "opening" panels */
+            font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
+            content: "\e114";    /* adjust as needed, taken from bootstrap.css */
+            float: right;        /* adjust as needed */
+            color: grey;         /* adjust as needed */
+        }
+        .panel-heading .accordion-toggle.collapsed:after {
+          /* symbol for "collapsed" panels */
+          content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+        }
+
+        .play-intro {
+          background-image: linear-gradient(-90deg, rgba(0,0,0,0.65), rgba(0,0,0,0.75));
+          border-radius: 4px;
+          box-shadow: 0 1px 12px 0 rgba(0,0,0,0.4);
+          border: 2px solid rgba(255,255,255,0.8);
+          height: 80px;
+          left: 50%;
+          margin-top: -40px;
+          margin-left: -40px;
+          position: absolute;
+          top: 50%;
+          width: 80px;
+        }
+
+        .play-intro :: after {
+          color: rgba(255,255,255,0.8);
+          content: "\25B6";
+          display: block;
+          font: normal 2em/1em "Open Sans",Verdana,Geneva,sans-serif,sans-serif;
+          left: 50%;
+          margin-left: -11px;
+          margin-top: -16px;
+          position: absolute;
+          text-shadow: 0 -1px rgba(0,0,0,0.8);
+          top: 50%;
+        }
+
+    </style>
 </%block>
 
 <%block name="js_extra">
@@ -45,7 +90,7 @@ from six import string_types
 
       $("#add_to_cart_post").click(function(event){
         $.ajax({
-          url: "${reverse('add_course_to_cart', args=[text_type(course.id)])}",
+          url: "${reverse('add_course_to_cart', args=[course.id.to_deprecated_string()])}",
           type: "POST",
           /* Rant: HAD TO USE COMPLETE B/C PROMISE.DONE FOR SOME REASON DOES NOT WORK ON THIS PAGE. */
           complete: add_course_complete_handler
@@ -68,7 +113,7 @@ from six import string_types
       if(xhr.status == 200) {
         location.href = "${reverse('dashboard')}";
       } else if (xhr.status == 403) {
-        location.href = "${reverse('course-specific-register', args=[text_type(course.id)])}?course_id=${course.id | u}&enrollment_action=enroll";
+        location.href = "${reverse('course-specific-register', args=[course.id.to_deprecated_string()])}?course_id=${course.id | u}&enrollment_action=enroll";
       } else if (xhr.status == 400) { //This means the user did not have permission
         $('#register_error').html("${perms_error}").css("display", "block");
       } else {
@@ -106,253 +151,284 @@ from six import string_types
 </%block>
 
 <%block name="pagetitle">${course.display_name_with_default_escaped}</%block>
-
-<section class="course-info">
-
-  <%block name="course_about_header">
-  <header class="course-profile">
-    <div class="intro-inner-wrapper">
-      <div class="table">
-      <section class="intro">
-        <div class="heading-group">
-          <h1>
-            ${course.display_name_with_default_escaped}
-          </h1>
-          <br />
-          <span>${course.display_org_with_default | h}</span>
+<%  ctype = course_ctype(course.id) %>
+<% ctype_numb = course_ctype_number(course.id) %>
+<div class="content-wrapper" id="content">
+  <section >
+    <div class="container topicCont">
+        <div class="row">
+            <ul class=breadcrums>
+                <li><a href="#">Home / </a></li>
+                <li ><a href="#" >All Courses / </a></li>
+                <li ><a href="#" class="active" >${course.display_name_with_default_escaped}</a></li>
+            </ul>
         </div>
-
-        <div class="main-cta">
-        %if user.is_authenticated and registered:
-          %if show_courseware_link:
-            <a href="${course_target}">
-          %endif
-
-          <span class="register disabled">${_("You are enrolled in this course")}</span>
-
-          %if show_courseware_link:
-            <strong>${_("View Course")}</strong>
-            </a>
-          %endif
-
-        %elif in_cart:
-          <span class="add-to-cart">
-            ${_('This course is in your <a href="{cart_link}">cart</a>.').format(cart_link=cart_link)}
-          </span>
-        % elif is_course_full:
-          <span class="register disabled">
-            ${_("Course is full")}
-          </span>
-        % elif invitation_only and not can_enroll:
-          <span class="register disabled">${_("Enrollment in this course is by invitation only")}</span>
-        ## Shib courses need the enrollment button to be displayed even when can_enroll is False,
-        ## because AnonymousUsers cause can_enroll for shib courses to be False, but we need them to be able to click
-        ## so that they can register and become a real user that can enroll.
-        % elif not is_shib_course and not can_enroll:
-          <span class="register disabled">${_("Enrollment is Closed")}</span>
-        %elif can_add_course_to_cart:
-          <%
-          if user.is_authenticated:
-            reg_href = "#"
-            reg_element_id = "add_to_cart_post"
-          else:
-            reg_href = reg_then_add_to_cart_link
-            reg_element_id = "reg_then_add_to_cart"
-          %>
-          <% if ecommerce_checkout:
-              reg_href = ecommerce_checkout_link
-              reg_element_id = ""
-          %>
-          <a href="${reg_href}" class="add-to-cart" id="${reg_element_id}">
-            ${_("Add {course_name} to Cart <span>({price} USD)</span>")\
-              .format(course_name=course.display_number_with_default, price=course_price)}
-          </a>
-          <div id="register_error"></div>
-        %else:
-          <% 
-            if ecommerce_checkout:
-              reg_href = ecommerce_checkout_link
-            else:
-              reg_href="#"
-            if professional_mode:
-              href_class = "add-to-cart"
-            else:
-              href_class = "register"
-          %>
-          <a href="${reg_href}" class="${href_class}">
-            ${_("Enroll in {course_name}").format(course_name=course.display_number_with_default) | h}
-          </a>
-          <div id="register_error"></div>
-        %endif
-        </div>
-
-      </section>
-      % if get_course_about_section(request, course, "video"):
-      <a href="#video-modal" class="media" rel="leanModal">
-        <div class="hero">
-          <img src="${course_image_urls['large']}" alt="" />
-          <div class="play-intro"></div>
-        </div>
-      </a>
-      %else:
-      <div class="media">
-        <div class="hero">
-          <img src="${course_image_urls['large']}" alt="" />
-        </div>
-      </div>
-      % endif
-    </div>
-      </div>
-  </header>
-  </%block>
-
-  <div class="container">
-
-    <%block name="course_about_details">
-    <div class="details">
-      % if staff_access and studio_url is not None:
-        <div class="wrap-instructor-info studio-view">
-          <a class="instructor-info-action" href="${studio_url}">${_("View About Page in studio")}</a>
-        </div>
-      % endif
-
-      <div class="inner-wrapper">
-        ${get_course_about_section(request, course, "overview")}
-      </div>
-    </div>
-    </%block>
-
-    <div class="course-sidebar">
-      <div class="course-summary">
-
-        <%include file="course_about_sidebar_header.html" />
-
-        <%block name="course_about_important_dates">
-        <ol class="important-dates">
-          <li class="important-dates-item"><span class="icon fa fa-info-circle" aria-hidden="true"></span><p class="important-dates-item-title">${_("Course Number")}</p><span class="important-dates-item-text course-number">${course.display_number_with_default | h}</span></li>
-          % if not course.start_date_is_still_default:
-              <%
-                  course_start_date = course.advertised_start or course.start
-              %>
-            <li class="important-dates-item">
-              <span class="icon fa fa-calendar" aria-hidden="true"></span>
-              <p class="important-dates-item-title">${_("Classes Start")}</p>
-              % if isinstance(course_start_date, string_types):
-                  <span class="important-dates-item-text start-date">${course_start_date}</span>
-              % else:
-                  <%
-                     course_date_string = course_start_date.strftime('%Y-%m-%dT%H:%M:%S%z')
-                  %>
-                  <span class="important-dates-item-text start-date localized_datetime" data-format="shortDate" data-datetime="${course_date_string}"></span>
+        <div class="row">
+            <div class="col-md-4 ">
+                 % if get_course_about_section(request, course, "video"):
+                <a href="#video-modal" class="media" rel="leanModal">
+                  <div class="hero">
+                    <img src="${course_image_urls['large']}" alt="" width= "360;" height="230px;"/>
+                    <div class="play-intro"><img src="https://s3.ap-south-1.amazonaws.com/student-verified-photos/icons8-play-40.png" style="margin-left: 25%; margin-top: 25%;"></div>
+                  </div>
+                </a>
+              %else:
+              <div class="media">
+                <div class="hero">
+                  <img src="${course_image_urls['large']}" alt="${course.display_name_with_default_escaped}" width= "360;" height="230px;" />
+                </div>
+              </div>
               % endif
-            </li>
-          % endif
-            ## We plan to ditch end_date (which is not stored in course metadata),
-            ## but for backwards compatibility, show about/end_date blob if it exists.
-            % if course.end:
-                <%
-                    course_end_date = course.end
-                %>
-
-            <li class="important-dates-item">
-                <span class="icon fa fa-calendar" aria-hidden="true"></span>
-                <p class="important-dates-item-title">${_("Classes End")}</p>
-                  % if isinstance(course_end_date, string_types):
-                      <span class="important-dates-item-text final-date">${course_end_date}</span>
-                  % else:
+            </div>
+            <div class="col-md-8">
+                <div class="coursesDetail">
+                    <h2>${course.display_name_with_default_escaped}</h2>
+                    <p> ${get_course_about_section(request, course, 'short_description')} 
+                    </p>
+                    %if user.is_authenticated() and registered:
+                      %if show_courseware_link:
+                        <a href="/courses/${course.id}/${ctype}" class="enroll"> 
+                        %if ctype_numb == '1':
+                          ${_("View Course")} </a>
+                        %elif ctype_numb == '2':
+                          ${_("View Lecture")} </a>
+                        %else:
+                          ${_("View Case study")} </a> 
+                        %endif
+                      %else:
+                        % if ctype_numb == '1':
+                          <a href="#" class="enroll"> Course link will be available soon </a>
+                          </a>
+                        %elif ctype_numb == '2':
+                          <a href="#" class="enroll"> Lecture link will be available soon </a>
+                          </a>
+                        %else:
+                          <a href="#" class="enroll"> Case Study link will be available soon </a>
+                          </a>
+                        %endif
+                      %endif
+                    %elif in_cart:
+                      <span class="add-to-cart">
+                        ${_('This course is in your <a href="{cart_link}">cart</a>.').format(cart_link=cart_link)}
+                      </span>
+                    % elif is_course_full:
+                      <span class="register disabled">
+                        ${_("Course is full")}
+                      </span>
+                    % elif invitation_only and not can_enroll:
+                      <span class="register disabled">${_("Enrollment in this course is by invitation only")}</span>
+                    ## Shib courses need the enrollment button to be displayed even when can_enroll is False,
+                    ## because AnonymousUsers cause can_enroll for shib courses to be False, but we need them to be able to click
+                    ## so that they can register and become a real user that can enroll.
+                    % elif not is_shib_course and not can_enroll:
+                      <span class="register disabled">${_("Enrollment is Closed")}</span>
+                    %elif can_add_course_to_cart:
+                      <%
+                      if user.is_authenticated():
+                        reg_href = "#"
+                        reg_element_id = "add_to_cart_post"
+                      else:
+                        reg_href = reg_then_add_to_cart_link
+                        reg_element_id = "reg_then_add_to_cart"
+                      %>
+                      <% if ecommerce_checkout:
+                          reg_href = ecommerce_checkout_link
+                          reg_element_id = ""
+                      %>
+                      <a href="${reg_href}" class="enroll add-to-cart" id="${reg_element_id}">
+                        ${_("Add {course_name} to Cart <span>({price} USD)</span>")\
+                          .format(course_name=course.display_number_with_default, price=course_price)}
+                      </a>
+                      <div id="register_error"></div>
+                    %else:
+                      <% 
+                        if ecommerce_checkout:
+                          reg_href = ecommerce_checkout_link
+                        else:
+                          reg_href="#"
+                        if professional_mode:
+                          href_class = "add-to-cart"
+                        else:
+                          href_class = "register"
+                      %>
+                      <a href="${reg_href}" class="enroll ${href_class}">
+                        ${_("Enroll in {course_name}").format(course_name=course.display_number_with_default) | h}
+                      </a> 
+                    %endif
+                    <!-- <a href="#" class="share">Share
+                    <span><img src="${static.url('images/share.png')}" /></span> 
+                    </a>
+                    <ul class="social-shareCont">
+                      <li class="facebook">
+                      <span><img src="${static.url('images/facebook.png')}"</span>
+                      <a href="facebook" > Facebook</a>
+                      </li>
+                      <li class="twitter">
+                      <span><img src="${static.url('images/twitter.png')}"</span>
+                      <a href="facebook" > twitter</a>
+                      </li>
+                    </ul> -->
                     <%
-                        course_date_string = course_end_date.strftime('%Y-%m-%dT%H:%M:%S%z')
-                    %>
-                    <span class="important-dates-item-text final-date localized_datetime" data-format="shortDate" data-datetime="${course_date_string}"></span>
-                  % endif
-            </li>
-            % endif
-
-          % if get_course_about_section(request, course, "effort"):
-            <li class="important-dates-item"><span class="icon fa fa-pencil" aria-hidden="true"></span><p class="important-dates-item-title">${_("Estimated Effort")}</p><span class="important-dates-item-text effort">${get_course_about_section(request, course, "effort")}</span></li>
-          % endif
-
-          ##<li class="important-dates-item"><span class="icon fa fa-clock-o" aria-hidden="true"></span><p class="important-dates-item-title">${_('Course Length')}</p><span class="important-dates-item-text course-length">${_('{number} weeks').format(number=15)}</span></li>
-
-          %if course_price and (can_add_course_to_cart or is_cosmetic_price_enabled):
-            <li class="important-dates-item">
-              <span class="icon fa fa-money" aria-hidden="true"></span>
-              <p class="important-dates-item-title">${_("Price")}</p>
-              <span class="important-dates-item-text">${course_price}</span>
-            </li>
-          %endif
-
-          % if pre_requisite_courses:
-          <% prc_target = reverse('about_course', args=[unicode(pre_requisite_courses[0]['key'])]) %>
-          <li class="prerequisite-course important-dates-item">
-            <span class="icon fa fa-list-ul" aria-hidden="true"></span>
-            <p class="important-dates-item-title">${_("Prerequisites")}</p>
-            ## Multiple pre-requisite courses are not supported on frontend that's why we are pulling first element
-            <span class="important-dates-item-text pre-requisite"><a href="${prc_target}">${pre_requisite_courses[0]['display']}</a></span>
-            <p class="tip">
-            ${_("You must successfully complete {link_start}{prc_display}{link_end} before you begin this course.").format(
-              link_start='<a href="{}">'.format(prc_target),
-              link_end='</a>',
-              prc_display=pre_requisite_courses[0]['display'],
-            )}
-            </p>
-          </li>
-          % endif
-
-          % if get_course_about_section(request, course, "prerequisites"):
-            <li class="important-dates-item"><span class="icon fa fa-book" aria-hidden="true"></span><p class="important-dates-item-title">${_("Requirements")}</p><span class="important-dates-item-text prerequisites">${get_course_about_section(request, course, "prerequisites")}</span></li>
-          % endif
-        </ol>
-        </%block>
-    </div>
-
-      <%block name="course_about_reviews_tool">
-      ## Course reviews tool
-      % if reviews_fragment_view:
-       ${HTML(reviews_fragment_view.body_html())}
-      % endif
-      </%block>
-
-      ## For now, ocw links are the only thing that goes in additional resources
-      % if get_course_about_section(request, course, "ocw_links"):
-      <div class="additional-resources">
-        <header>
-          <h1>${_("Additional Resources")}</h1>
-      </div>
-
-        <div>
-          ## "MITOpenCourseware" should *not* be translated
-          <h2 class="opencourseware">MITOpenCourseware</h2>
-             ${get_course_about_section(request, course, "ocw_links")}
+                        if course.start is not None:
+                            course_date_string = course.start.strftime('%Y-%m-%dT%H:%M:%S%z')
+                        else:
+                            course_date_string = ''
+                    %>  
+                    <h3>Starts <time class="localized_datetime" itemprop="startDate" data-format="shortDate" data-datetime="${course_date_string}"></time></h3>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="offerby">
+                    <span> Offered by <a href="https://docmode.org/${course.display_org_with_default}">${course.display_org_with_default}</a></span>
+                    <img src="${assoc_logo}" alt="${course.org}" height="100%;" width="70%;"/> 
+                </div>
+                <div class="keyfact">
+                    <h3>Key Fact</h3>
+                    <ul>
+                      ##%if course_price and (can_add_course_to_cart or is_cosmetic_price_enabled):
+                        <li  style="background-image: url(${static.url('images/price.png')})"><strong> Price</strong>
+                            <span>${course_price}</span>
+                        </li>
+                      ##%endif
+                      % if get_course_about_section(request, course, "effort"):
+                        <li> <strong>Commitment</strong>
+                            <span>${get_course_about_section(request, course, "effort")}</span>
+                        </li>
+                      %endif
+                        <li style="background-image: url(${static.url('images/language.jpg')})"> <strong>Language</strong>
+                            <span>English</span>
+                        </li>
+                        % if pre_requisite_courses:
+                          <% prc_target = reverse('about_course', args=[unicode(pre_requisite_courses[0]['key'])]) %>
+                          <li style="background-image: url(${static.url('images/prerequist.jpg')})"> Pre-requisties
+                              <a href="${prc_target}"><span>${pre_requisite_courses[0]['display']}</span></a>
+                          </li>
+                        %endif
+                        <!-- <li> Student rating
+                            <span>4.5 average out of 1,200 ratings</span>
+                        </li> -->
+                    </ul>    
+                </div>
+                <div class="aboutCourse">
+                  <h2>Share your Case Studies</h2>
+                  <p>Come join our "Learn as you Teach" initiative to democratise healthcare learning by submitting your unique & interesting Case-Studies which will be reviewed by our global medical fraternity as well as an opportunity to be published in leading research journals.</p>
+                </div>
+                <div class="coursesDetail"> 
+                  <a href="https://docmode.org/research/new" class="enroll" target="_blank"> Submit Case Study</a>
+                  <a href="https://docmode.org/case_studies/" class="enroll" target="_blank" style="background-color: #ffffff; color:#b6348e; "> View Case Study</a>
+                </div>
+            </div>
+            <div class="col-md-8">
+                ${get_course_about_section(request, course, "overview")}
+                <!-- <div class="ratingSec clearfix">
+                    <h2>Rating and Review</h2>
+                    <div class="ratingbox">
+                        <div class="rating">
+                            <p> 4/5</p>
+                            <span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>
+                        </div>
+                        <p>First time in india. We can now here and learn from expert from or home</p>
+                        <div class="reviewUser">
+                            <img src="${static.url('images/man1.jpg')}"/>
+                            <div class="reviewtext">
+                                <h3> Dr. Swati Suresh</h3>
+                                <span>Bombay Hospital</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ratingbox">
+                        <div class="rating">
+                            <p> 4/5</p>
+                            <span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>
+                        </div>
+                        <p>First time in india. We can now here and learn from expert from or home</p>
+                        <div class="reviewUser">
+                            <img src="${static.url('images/man1.jpg')}"/>
+                            <div class="reviewtext">
+                                <h3> Dr. Swati Suresh</h3>
+                                <span>Bombay Hospital</span>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+                %if len(org_courses) > 1:
+                  <div class="coursesbyharvad clearfix">
+                  %if course.org == 'casestudy' :
+                    <h2> Other <a href="https://docmode.org/casestudy">Case studies</a> </h2>
+                  %else:
+                    <h2> Other courses by <a href= "/${course.org}">${course.org} </a></h2>
+                  %endif
+                     
+                    % for org_course in org_courses:
+                      <%
+                        if org_course.start is not None:
+                            org_course_date_string = org_course.start.strftime('%Y-%m-%dT%H:%M:%S%z')
+                        else:
+                            org_course_date_string = ''
+                      %>  
+                      %if course.id != org_course.id:
+                        <a href="${reverse('about_course', args=[org_course.id.to_deprecated_string()])}">
+                          <div class="card">
+                              <div class="card-img">
+                                  <img src="${org_course.course_image_url}" alt="">
+                              </div>
+                              <div class="card-text">
+                                  <h4>${org_course.display_name_with_default}</h4>
+                                  <span>By ${org_course.display_org_with_default}</span>
+                                  <!-- <a href="#" class="btn btn-primary">Credit Hours</a> -->
+                                  <p>Starts <time class="localized_datetime" itemprop="startDate" data-format="shortDate" data-datetime="${org_course_date_string}"></time></p>
+                              </div>
+                          </div>
+                        </a>
+                      %endif
+                    % endfor
+                  </div>
+                %endif
+            </div>
         </div>
     </div>
-      %endif
-
-    % if sidebar_html_enabled:
-      % if get_course_about_section(request, course, "about_sidebar_html"):
-        <section class="about-sidebar-html">
-          ${get_course_about_section(request, course, "about_sidebar_html")}
-        </section>
-      % endif
-    %endif
-  </div>
-
+  </section>
+  <div class="modal fade" id="profile1" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="photoSec">
+                    <img src="images/popup-profilepic.jpg" alt=""/>
+                    <h3>Hans Lewis</h3>
+                    <span>Founder & CEO</span>
+                    <a href="#"><img src="images/linkdin.png" alt=""/></a>
+                    <a href="#"><img src="images/mail.png" alt=""/></a>
+                </div>
+                <div class="profileCont">
+                    <p>
+                        Hans Lewis has a distinguished career working at the intersection of healthcare and technology for more than 13 years. He looks after the Partnership and Strategy for DocMode. 
+                        Prior to the Creation of DocMode.org in 2009, Hans worked in the field of Healthcare Advertising as a Copywriter and followed up as a Sponsorship Head in Medical Events. In the initial years of DocMode, he was the Freelance contributing editor for TMCnet covering articles predominantly in Healthcare IT. 
+                        He is a Tech autodidact and is also the  project Head of the award-winning and patented clinical nutrition management app www.iNutrimon.com
+                        Graduated in Advertising, he has a Masters in Philosophy from Mumbai University.  Yoga and Logic is his interest areas
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
   </div>
 </div>
-
-## Need to put this hidden form on the page so that the registration button works.
-## Since it's no harm to display a hidden form, we display it with the most permissive conditional
-## which is when the student is not registered.
 %if active_reg_button or is_shib_course:
   <div style="display: none;">
     <form id="class_enroll_form" method="post" data-remote="true" action="${reverse('change_enrollment')}">
       <fieldset class="enroll_fieldset">
-        <legend class="sr">${pgettext("self","Enroll")}</legend>
+        <legend class="sr">${_("Enroll")}</legend>
         <input name="course_id" type="hidden" value="${course.id | h}">
         <input name="enrollment_action" type="hidden" value="enroll">
       </fieldset>
       <div class="submit">
-        <input name="submit" type="submit" value="${pgettext('self','enroll')}">
+        <input name="submit" type="submit" value="${_('enroll')}">
       </div>
     </form>
   </div>

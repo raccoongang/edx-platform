@@ -1,0 +1,69 @@
+body .wrapper-footer {
+    margin-top: 0px;
+    padding: 0px;
+    clear: both;
+}
+
+#main-home-content{
+    padding: 0px;
+    width: calc;
+}
+
+.header-btns .btn-success, .btn-info{
+    padding: 7px 18px;
+    margin-right: 10px
+}
+
+.header-btns-login .btn-success, .btn-info{
+    padding: 7px 18px;
+    margin-right: 10px
+}
+
+.theme-content-wrapper {
+    max-width: 100%;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.theme-content-wrapper .container{
+    border: none;
+    background-color: transparent;
+    padding: 0px;
+}
+
+.color-black{
+  color: black !important;;
+}
+
+.p-l-5{
+    margin-right: 5px;
+}
+
+.header-btns-login {
+    padding-top: 1% !important;
+}
+
+.header-btns {
+    margin-top: 2.5% !important;
+}
+
+.is-authenticated  .header-btns-auth{
+    margin-top: 0px !important;
+}
+
+.dashboard .dashboard-search-bar{
+    margin-left: 0px;
+    margin-bottom: 0px;
+}
+
+.view-in-course   .header-btns-auth{
+    margin-top: 0px !important;
+}
+
+.view-courseware   .header-btns-auth{
+    margin-top: 0px !important;
+}
+
+.courseware  .header-btns-auth{
+    margin-top: 0px !important;
+}

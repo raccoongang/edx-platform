@@ -21,6 +21,11 @@ from xmodule.annotator_mixin import html_to_text
 from xmodule.library_tools import normalize_key_for_search
 from xmodule.modulestore import ModuleStoreEnum
 
+# imported by docmode for topics in filter
+from lms.djangoapps.specialization.models import categories
+from lms.djangoapps.course_extrainfo.models import course_extrainfo
+# import ends
+
 # REINDEX_AGE is the default amount of time that we look back for changes
 # that might have happened. If we are provided with a time at which the
 # indexing is triggered, then we know it is safe to only index items
@@ -586,6 +591,9 @@ class CourseAboutSearchIndexer(object):
         searcher = SearchEngine.get_search_engine(cls.INDEX_NAME)
         if not searcher:
             return
+        subject_id = course_extrainfo.objects.get(course_id=course.id)
+        subj_name = categories.objects.get(id=subject_id.category)
+        log.info('sub_id-> %s',subj_name.topic_name)
 
         course_id = unicode(course.id)
         course_info = {
@@ -593,8 +601,9 @@ class CourseAboutSearchIndexer(object):
             'course': course_id,
             'content': {},
             'image_url': course_image_url(course),
+            'subjects': subj_name.topic_name
         }
-
+        log.info('course->about %s',course_info)
         # load data for all of the 'about' modules for this course into a dictionary
         about_dictionary = {
             item.location.block_id: item.data
