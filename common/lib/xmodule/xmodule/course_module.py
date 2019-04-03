@@ -166,6 +166,14 @@ class TextbookList(List):
         return json_data
 
 
+class CategoryList(List):
+    def from_json(self, value):
+        if value is None or isinstance(value, list):
+            return value
+        else:
+            return [value]
+
+
 class CourseFields(object):
     lti_passports = List(
         display_name=_("LTI Passports"),
@@ -853,13 +861,12 @@ class CourseFields(object):
         scope=Scope.settings, default=False
     )
 
-    course_category = String(
+    course_category = CategoryList(
         display_name=_("Category"),
         help="",
-        default="",
+        default=[],
         scope=Scope.settings,
         values=[
-            {"display_name": "----------", "value": ""},
             {"display_name": _("Client, Server & Networking"), "value": "client_server"},
             {"display_name": _("Cloud & DevOps"), "value": "cloud_devops"},
             {"display_name": _("Data, BI, Machine Learning & Artificial Intelligence"), "value": "data_bi"},

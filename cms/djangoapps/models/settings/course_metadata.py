@@ -134,7 +134,11 @@ class CourseMetadata(object):
                 'editor_type': ''
             }
 
-            if field.name in ['course_category', 'index_visible']:
+            if field.name == 'course_category':
+                result[field.name].update({
+                    'editor_type': 'checkbox'
+                })
+            elif field.name == 'index_visible':
                 result[field.name].update({
                     'editor_type': 'select'
                 })
