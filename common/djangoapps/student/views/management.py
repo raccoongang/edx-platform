@@ -1035,17 +1035,17 @@ def activate_account(request, key):
             )
         else:
             registration.activate()
-            user = request.user
+            user = registration.user
             StudentProfile = apps.get_model('tedix_ro', 'StudentProfile')
             ParentProfile = apps.get_model('tedix_ro', 'ParentProfile')
-            
-            try:
+            parentprofile = getattr(user, 'parentprofile', None)
+            studentprofile = getattr(user, 'studentprofile', None)
+            if parentprofile:
                 parent_user = user.parentprofile.user
-            except ParentProfile.DoesNotExist:
+            elif studentprofile:
                 parent_user = user.studentprofile.parents.first().user
-            except StudentProfile.DoesNotExist:
+            else:
                 parent_user = None
-
             if parent_user:
                 send_payment_link_to_parent(parent_user.id)
 
