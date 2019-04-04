@@ -13,6 +13,13 @@
             <option value="<%= val.value %>" <% if (val.value == valueOrigin) { %> selected <% } %> ><%= val.display_name %></option>
             <% }) %>
         </select>
+        <% } else if (editor_type == 'checkbox') { %>
+        <ul class="checkbox-group">
+            <% _.each(values, function(val) { %>
+            <li><input class="advanced" type="checkbox" id="<%= valueUniqueId + '-' + val.value %>" name="<%= valueUniqueId %>[]" <% if (valueOrigin.includes(val.value)) { %> checked <% } %> value="<%= val.value %>">
+            <label for="<%= valueUniqueId + '-' + val.value %>"><%= val.display_name %></label></li>
+            <% }) %>
+        </ul>
         <% } else { %>
         <textarea class="json text" id="<%= valueUniqueId %>"><%= value %></textarea>
         <% } %>
