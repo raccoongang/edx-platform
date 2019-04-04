@@ -215,7 +215,7 @@ if FEATURES["ENABLE_SYSADMIN_DASHBOARD"]:
         # every Monday morning at 11:30 A.M
         "mass-sending-report": {
             "task": "mass_sending_report",
-            "schedule": crontab(hour=11, minute=30, day_of_week=1),
+            "schedule": crontab(hour=3, minute=0, day_of_week=1),
         },
     })
 
