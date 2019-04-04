@@ -266,15 +266,17 @@ class UserProfile(models.Model):
 
     user_age = models.CharField(max_length=3, db_index=True, choices=AGE_CHOICES, default=CHOICE_UNDISCLOSED)
 
-    GENDER_OTHER = 'o'
+    GENDER_UNDISCLOSED = 'u'
     GENDER_CHOICES = (
-        ('m', ugettext_noop('Male')),
         ('f', ugettext_noop('Female')),
+        ('g', ugettext_noop('Gender Nonconforming')),
+        ('m', ugettext_noop('Male')),
+        ('o', ugettext_noop('Other')),
         # Translators: 'Other' refers to the student's gender
-        (GENDER_OTHER, ugettext_noop('Other / Undisclosed'))
+        (GENDER_UNDISCLOSED, ugettext_noop('Undisclosed'))
     )
     gender = models.CharField(
-        max_length=1, db_index=True, default=GENDER_OTHER, choices=GENDER_CHOICES
+        max_length=1, db_index=True, default=GENDER_UNDISCLOSED, choices=GENDER_CHOICES
     )
 
     PROFESSION_CHOICES = (
