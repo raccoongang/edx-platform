@@ -117,7 +117,7 @@ class UserReadOnlySerializer(serializers.Serializer):
                         user_profile.language_proficiencies.all(), many=True
                     ).data,
                     "name": user_profile.name,
-                    "gender": user_profile.gender or user_profile.GENDER_OTHER,
+                    "gender": user_profile.gender or user_profile.GENDER_UNDISCLOSED,
                     "goals": user_profile.goals,
                     "year_of_birth": user_profile.year_of_birth,
                     "level_of_education": AccountLegacyProfileSerializer.convert_empty_to_None(
