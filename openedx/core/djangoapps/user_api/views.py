@@ -168,6 +168,7 @@ class RegistrationView(APIView):
         "city",
         "state",
         "country",
+        'privacy_policy',
         "gender",
         "year_of_birth",
         "level_of_education",
@@ -735,6 +736,29 @@ class RegistrationView(APIView):
             required=required
         )
 
+    def _add_privacy_policy_field(self, form_desc, required=False):
+        """Add a privacy policy field to a form description.
+
+        Arguments:
+            form_desc: A form description
+
+        Keyword Arguments:
+            required (bool): Whether this field is required; defaults to False
+
+        """
+        text = "Totem project's Privacy policy"
+        privacy_link = settings.ENV_TOKENS.get("PRIVACY_LINK", "")
+        html_link = '<a href="{privacy_link}" target="_blank">{text}</a>'.format(privacy_link=privacy_link, text=text)
+
+        label = 'Read first {link}'.format(link=html_link)
+
+        form_desc.add_field(
+            "privacy_policy",
+            label=label,
+            required=required,
+            field_type="hidden",
+        )
+
     def _add_first_name_field(self, form_desc, required=False):
         """Add a First Name field to a form description.
 
@@ -874,7 +898,7 @@ class RegistrationView(APIView):
         # Translators: This is a legal document users must agree to
         # in order to register a new account.
         terms_label = _(u"Terms of Service")
-        terms_link = marketing_link("TOS")
+        terms_link = settings.ENV_TOKENS.get("TERMS_LINK", "")
         terms_text = _(u"Review the Terms of Service")
 
         # Translators: "Terms of service" is a legal document users must agree to
