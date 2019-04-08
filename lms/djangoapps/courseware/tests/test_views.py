@@ -2023,6 +2023,42 @@ class TestIndexViewWithGating(ModuleStoreTestCase, MilestonesTestCaseMixin):
         self.assertEquals(response.status_code, 404)
 
 
+@attr(shard=2)
+@ddt.ddt
+class CourseInfoViewsTestCase(ModuleStoreTestCase):
+    """
+    Tests for views.py course info
+    """
+
+    def setUp(self):
+        super(CourseInfoViewsTestCase, self).setUp()
+        self.student_user, _ = self.create_non_staff_user()
+
+        # create course with 3 positions
+        self.course = CourseFactory.create()
+        self.chapter = ItemFactory.create(parent=self.course, category='chapter')
+        self.section = ItemFactory.create(parent=self.chapter, category='sequential', display_name="Sequence")
+        ItemFactory.create(parent=self.section, category='vertical', display_name="Vertical1")
+        ItemFactory.create(parent=self.section, category='vertical', display_name="Vertical2")
+        ItemFactory.create(parent=self.section, category='vertical', display_name="Vertical3")
+
+        # enroll student and user
+        CourseEnrollmentFactory(user=self.user, course_id=self.course.id)
+        CourseEnrollmentFactory(user=self.student_user, course_id=self.course.id)
+
+    def test_view_studio_button_as_student(self):
+        # login as user
+        self.assertTrue(self.client.login(username=self.student_user, password='foo'))
+        response = self.client.get(reverse('info', args=[self.course.id]))
+        self.assertNotContains(response, u'View Updates in Studio')
+
+    def test_view_studio_button_as_staff(self):
+        # login as staff
+        self.assertTrue(self.client.login(username=self.user, password='foo'))
+        response = self.client.get(reverse('info', args=[self.course.id]))
+        self.assertContains(response, u'View Updates in Studio')
+
+
 class TestRenderXBlock(RenderXBlockTestMixin, ModuleStoreTestCase):
     """
     Tests for the courseware.render_xblock endpoint.
