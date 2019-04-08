@@ -2492,6 +2492,7 @@ REGISTRATION_EXTRA_FIELDS = {
     'terms_of_service': 'hidden',
     'city': 'hidden',
     'country': 'hidden',
+    'privacy_policy': 'optional',
 }
 
 REGISTRATION_FIELD_ORDER = [
@@ -2505,6 +2506,7 @@ REGISTRATION_FIELD_ORDER = [
     "city",
     "state",
     "country",
+    "privacy_policy",
     "gender",
     "year_of_birth",
     "level_of_education",
