@@ -15,22 +15,22 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='instructorprofile',
-            name='school',
-        ),
-        migrations.RemoveField(
-            model_name='instructorprofile',
-            name='school_city',
-        ),
-        migrations.RemoveField(
-            model_name='parentprofile',
-            name='school',
-        ),
-        migrations.RemoveField(
-            model_name='parentprofile',
-            name='school_city',
-        ),
+        # migrations.RemoveField(
+        #     model_name='instructorprofile',
+        #     name='school',
+        # ),
+        # migrations.RemoveField(
+        #     model_name='instructorprofile',
+        #     name='school_city',
+        # ),
+        # migrations.RemoveField(
+        #     model_name='parentprofile',
+        #     name='school',
+        # ),
+        # migrations.RemoveField(
+        #     model_name='parentprofile',
+        #     name='school_city',
+        # ),
         migrations.AlterField(
             model_name='instructorprofile',
             name='phone',
