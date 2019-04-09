@@ -57,6 +57,8 @@ class UserProfile(models.Model):
 
 
 class InstructorProfile(UserProfile):
+    school_city = models.ForeignKey(City, null=True, on_delete=models.SET_NULL)
+    school = models.ForeignKey(School, null=True, on_delete=models.SET_NULL)
     """
     Related model for instructor profile
     """
@@ -67,8 +69,8 @@ class StudentProfile(UserProfile):
     Related model for student profile
     """
     instructor = models.ForeignKey(InstructorProfile, related_name='students', null=True, on_delete=models.SET_NULL)
-    school_city = models.ForeignKey(City)
-    school = models.ForeignKey(School)
+    school_city = models.ForeignKey(City, null=True, on_delete=models.SET_NULL)
+    school = models.ForeignKey(School, null=True, on_delete=models.SET_NULL)
     paid = models.BooleanField(default=False)
     classroom = models.ForeignKey(Classroom, related_name='students', null=True, on_delete=models.SET_NULL)
 
