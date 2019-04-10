@@ -115,6 +115,9 @@ urlpatterns = (
     url(r'^api/experiments/', include('experiments.urls', namespace='api_experiments')),
 
     url(r'^(?P<key>.+)/openassessment-filesystem-storage', views_filesystem.filesystem_storage, name='openassessment-filesystem-storage'),
+
+    # URL agent api for headquarters
+    url(r'^agent_api/', include('agent.urls')),
 )
 
 # TODO: This needs to move to a separate urls.py once the student_account and

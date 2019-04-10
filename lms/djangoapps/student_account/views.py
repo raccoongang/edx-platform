@@ -67,6 +67,9 @@ def login_and_registration_form(request, initial_mode="login"):
     if request.user.is_authenticated():
         return redirect(redirect_to)
 
+    if initial_mode == "login":
+        return redirect(settings.LOGIN_REDIRECT_URL)
+
     # Retrieve the form descriptions from the user API
     form_descriptions = _get_form_descriptions(request)
 
@@ -147,6 +150,9 @@ def login_and_registration_form(request, initial_mode="login"):
             settings.FEATURES['ENABLE_COMBINED_LOGIN_REGISTRATION_FOOTER']
         ),
     }
+
+    if initial_mode == "register" and context['data']['third_party_auth']['currentProvider'] is None:
+        return redirect(settings.LOGIN_REDIRECT_URL)
 
     context = update_context_for_enterprise(request, context)
 

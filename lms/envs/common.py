@@ -607,8 +607,8 @@ DEV_CONTENT = True
 
 EDX_ROOT_URL = ''
 
-LOGIN_REDIRECT_URL = EDX_ROOT_URL + '/login'
-LOGIN_URL = EDX_ROOT_URL + '/login'
+LOGIN_REDIRECT_URL = EDX_ROOT_URL + '/auth/login/google-oauth2/?auth_entry=login'
+LOGIN_URL = EDX_ROOT_URL + '/auth/login/google-oauth2/?auth_entry=login'
 
 COURSE_NAME = "6.002_Spring_2012"
 COURSE_NUMBER = "6.002x"
@@ -2253,6 +2253,9 @@ INSTALLED_APPS = (
     'openedx.features.enterprise_support',
 
     'experiments',
+
+    # ALUx api or headquarters
+    'agent',
 )
 
 ######################### CSRF #########################################
