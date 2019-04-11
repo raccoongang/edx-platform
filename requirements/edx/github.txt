@@ -102,3 +102,7 @@ git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.18#egg=xblock-
 -e git+https://github.com/open-craft/problem-builder.git@v2.7.9#egg=xblock-problem-builder==v2.7.9
 -e git+https://github.com/metit-bu/xblock-carousel.git#egg=xblock-carousel
 -e git+https://github.com/Stanford-Online/xblock-free-text-response#egg=xblock-free-text-response
+
+# Totem ind xblock (greenhost)
+-e git+https://code.greenhost.net/totem/ind.git#egg=xblock-ind
+
