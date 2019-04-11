@@ -960,6 +960,28 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 # Guidelines for translators
 TRANSLATORS_GUIDE = 'http://edx.readthedocs.org/projects/edx-developer-guide/en/latest/conventions/internationalization/i18n_translators_guide.html'  # pylint: disable=line-too-long
 
+ARROW_CUSTOMER_SITE_COUNTRY_LIST = {
+        "Austria": "at",
+        "Belgium": "be",
+        "Luxembourg": "be",
+        "Czech Republic": "cz",
+        "Denmark": "dk",
+        "Baltics": "dk",
+        "Finland": "fi",
+        "France": "fr",
+        "Germany": "de",
+        "Hungary": "hu",
+        "Netherlands": "nl",
+        "Norway": "no",
+        "Poland": "pl",
+        "Spain": "es",
+        "Sweden": "se",
+        "Switzerland": "ch",
+        "United Kingdom": "uk",
+        "Ireland": "uk",
+    }
+
+ARROW_CUSTOMER_SITE_URL =  "https://edu.arrow.com/"
 #################################### GITHUB #######################################
 # gitreload is used in LMS-workflow to pull content from github
 # gitreload requests are only allowed from these IP addresses, which are
