@@ -16,7 +16,6 @@ from django.shortcuts import redirect
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
-from django_countries import countries
 
 import third_party_auth
 from commerce.models import CommerceConfiguration
@@ -521,7 +520,6 @@ def account_settings_context(request):
     """
     user = request.user
 
-    year_of_birth_options = [(unicode(year), unicode(year)) for year in UserProfile.VALID_YEARS]
     try:
         user_orders = get_user_orders(user)
     except:  # pylint: disable=bare-except
@@ -535,18 +533,18 @@ def account_settings_context(request):
         'duplicate_provider': None,
         'nav_hidden': True,
         'fields': {
-            'country': {
-                'options': list(countries),
-            }, 'gender': {
+            'gender': {
                 'options': [(choice[0], _(choice[1])) for choice in UserProfile.GENDER_CHOICES],  # pylint: disable=translation-of-non-string
+            }, 'region': {
+                'options': [(choice[0], _(choice[1])) for choice in UserProfile.REGION_CHOICES],  # pylint: disable=translation-of-non-string
+            }, 'profession': {
+                'options': [(choice[0], _(choice[1])) for choice in UserProfile.PROFESSION_CHOICES],  # pylint: disable=translation-of-non-string
+            }, 'user_age': {
+                'options': [(choice[0], _(choice[1])) for choice in UserProfile.AGE_CHOICES],  # pylint: disable=translation-of-non-string
             }, 'language': {
                 'options': released_languages(),
-            }, 'level_of_education': {
-                'options': [(choice[0], _(choice[1])) for choice in UserProfile.LEVEL_OF_EDUCATION_CHOICES],  # pylint: disable=translation-of-non-string
             }, 'password': {
                 'url': reverse('password_reset'),
-            }, 'year_of_birth': {
-                'options': year_of_birth_options,
             }, 'preferred_language': {
                 'options': all_languages(),
             }, 'time_zone': {

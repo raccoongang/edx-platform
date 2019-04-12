@@ -486,5 +486,9 @@
             width: 100%;
             cursor: pointer;
         }
+
+        a:after {
+          z-index: 2;
+        }
     }
 }

@@ -168,6 +168,7 @@ class RegistrationView(APIView):
         "city",
         "state",
         "country",
+        'privacy_policy',
         "gender",
         "year_of_birth",
         "level_of_education",
@@ -177,6 +178,9 @@ class RegistrationView(APIView):
         "goals",
         "honor_code",
         "terms_of_service",
+        "user_age",
+        "region",
+        "profession",
     ]
 
     # This end-point is available to anonymous users,
@@ -732,6 +736,29 @@ class RegistrationView(APIView):
             required=required
         )
 
+    def _add_privacy_policy_field(self, form_desc, required=False):
+        """Add a privacy policy field to a form description.
+
+        Arguments:
+            form_desc: A form description
+
+        Keyword Arguments:
+            required (bool): Whether this field is required; defaults to False
+
+        """
+        text = "Totem project's Privacy policy"
+        privacy_link = settings.ENV_TOKENS.get("PRIVACY_LINK", "")
+        html_link = '<a href="{privacy_link}" target="_blank">{text}</a>'.format(privacy_link=privacy_link, text=text)
+
+        label = 'Read first {link}'.format(link=html_link)
+
+        form_desc.add_field(
+            "privacy_policy",
+            label=label,
+            required=required,
+            field_type="hidden",
+        )
+
     def _add_first_name_field(self, form_desc, required=False):
         """Add a First Name field to a form description.
 
@@ -871,7 +898,7 @@ class RegistrationView(APIView):
         # Translators: This is a legal document users must agree to
         # in order to register a new account.
         terms_label = _(u"Terms of Service")
-        terms_link = marketing_link("TOS")
+        terms_link = settings.ENV_TOKENS.get("TERMS_LINK", "")
         terms_text = _(u"Review the Terms of Service")
 
         # Translators: "Terms of service" is a legal document users must agree to
@@ -899,6 +926,87 @@ class RegistrationView(APIView):
             },
             supplementalLink=terms_link,
             supplementalText=terms_text
+        )
+
+    def _add_region_field(self, form_desc, required=True):
+        """Add a region field to a form description.
+
+        Arguments:
+            form_desc: A form description
+
+        Keyword Arguments:
+            required (bool): Whether this field is required; defaults to True
+
+        """
+        region_label = _(u"Region")
+        error_msg = _(u"Please select your Region.")
+
+        # The labels are marked for translation in UserProfile model definition.
+        options = [(name, _(label)) for name, label in UserProfile.REGION_CHOICES]  # pylint: disable=translation-of-non-string
+        form_desc.add_field(
+            "region",
+            label=region_label,
+            field_type="select",
+            options=options,
+            include_default_option=True,
+            required=required,
+            error_messages={
+                "required": error_msg
+            },
+        )
+
+    def _add_profession_field(self, form_desc, required=True):
+        """Add a profession field to a form description.
+
+        Arguments:
+            form_desc: A form description
+
+        Keyword Arguments:
+            required (bool): Whether this field is required; defaults to True
+
+        """
+        region_label = _(u"Profession")
+        error_msg = _(u"Please select your Profession.")
+
+        # The labels are marked for translation in UserProfile model definition.
+        options = [(name, _(label)) for name, label in UserProfile.PROFESSION_CHOICES]  # pylint: disable=translation-of-non-string
+        form_desc.add_field(
+            "profession",
+            label=region_label,
+            field_type="select",
+            options=options,
+            include_default_option=True,
+            required=required,
+            error_messages={
+                "required": error_msg
+            },
+        )
+
+    def _add_user_age_field(self, form_desc, required=True):
+        """Add a user_age field to a form description.
+
+        Arguments:
+            form_desc: A form description
+
+        Keyword Arguments:
+            required (bool): Whether this field is required; defaults to True
+
+        """
+        region_label = _(u"Age")
+        error_msg = _(u"Please select your Age.")
+
+        # The labels are marked for translation in UserProfile model definition.
+        options = [(name, _(label)) for name, label in UserProfile.AGE_CHOICES]  # pylint: disable=translation-of-non-string
+        form_desc.add_field(
+            "user_age",
+            label=region_label,
+            field_type="select",
+            options=options,
+            include_default_option=True,
+            required=required,
+            error_messages={
+                "required": error_msg
+            },
         )
 
     def _apply_third_party_auth_overrides(self, request, form_desc):

@@ -2483,6 +2483,7 @@ REGISTRATION_EXTRA_FIELDS = {
     'terms_of_service': 'hidden',
     'city': 'hidden',
     'country': 'hidden',
+    'privacy_policy': 'optional',
 }
 
 REGISTRATION_FIELD_ORDER = [
@@ -2496,6 +2497,7 @@ REGISTRATION_FIELD_ORDER = [
     "city",
     "state",
     "country",
+    "privacy_policy",
     "gender",
     "year_of_birth",
     "level_of_education",
@@ -2929,6 +2931,9 @@ ACCOUNT_VISIBILITY_CONFIGURATION = {
         "requires_parental_consent",
         "account_privacy",
         "accomplishments_shared",
+        "region",
+        "profession",
+        "user_age",
     ]
 }
 
