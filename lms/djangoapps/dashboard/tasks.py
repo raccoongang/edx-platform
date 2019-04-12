@@ -1,6 +1,7 @@
 """
 This file contains celery tasks sysdashboard
 """
+from datetime import datetime
 import logging
 import time
 import StringIO
@@ -49,7 +50,8 @@ def get_courses_xls():
     | Course URL | Course Run ID  | Course name | Enrollment end date | Course end date |
     """
     data = []
-    for course in CourseOverview.objects.all():
+    datetime_now = datetime.now()
+    for course in CourseOverview.objects.filter(enrollment_start__lt=datetime_now, enrollment_end__gt=datetime_now):
         enrollment_start_date = course.enrollment_start.strftime("%m/%d/%Y") if course.enrollment_start else ''
         course_start_date = course.start.strftime("%m/%d/%Y") if course.start else ''
         enroll_end_date = course.enrollment_end.strftime("%m/%d/%Y") if course.enrollment_end else ''
