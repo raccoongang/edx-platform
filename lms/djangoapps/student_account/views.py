@@ -135,6 +135,9 @@ def login_and_registration_form(request, initial_mode="login"):
         ),
     }
 
+    if initial_mode == "register" and context['data']['third_party_auth']['currentProvider'] is None:
+        return redirect(settings.LOGIN_REDIRECT_URL)
+
     return render_to_response('student_account/login_and_register.html', context)
 
 
