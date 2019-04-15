@@ -398,6 +398,9 @@ FEATURES = {
 
     # Whether to display the account deletion section the account settings page
     'ENABLE_ACCOUNT_DELETION': True,
+
+    # Disable bulk email send from random different addresses when 'False'
+    'BULK_EMAIL_FROM_DIFFERENT_ADDRESSES': False,
 }
 
 # Settings for the course reviews tool template and identification key, set either to None to disable course reviews
@@ -2316,6 +2319,11 @@ INSTALLED_APPS = [
 
     # API Documentation
     'rest_framework_swagger',
+
+    # Info pages
+    'tinymce',
+    'info_pages',
+    'hvad',
 ]
 
 ######################### CSRF #########################################
@@ -3479,3 +3487,26 @@ SOCIAL_AUTH_EXCLUDE_URL_PATTERN = r'^/admin'
 from openedx.core.djangoapps.plugins import plugin_apps, plugin_settings, constants as plugin_constants
 INSTALLED_APPS.extend(plugin_apps.get_apps(plugin_constants.ProjectType.LMS))
 plugin_settings.add_plugins(__name__, plugin_constants.ProjectType.LMS, plugin_constants.SettingsType.COMMON)
+
+TINYMCE_DEFAULT_CONFIG = {
+    'plugins': "table,spellchecker,paste,searchreplace",
+    'theme': "advanced",
+    'cleanup_on_startup': True,
+    'custom_undo_redo_levels': 10,
+    'style_formats' : [
+        {'title' : 'Black text', 'inline' : 'span', 'styles': {'color': '#000'}},
+        {'title' : 'Red text', 'inline' : 'span', 'styles': {'color': '#f00'}},
+        {'title' : 'Yellow text', 'inline' : 'span', 'styles': {'color': '#ff0'}},
+        {'title' : 'Green text', 'inline' : 'span', 'styles': {'color': '#0f0'}},
+        {'title' : 'Cyan text', 'inline' : 'span', 'styles': {'color': '#0ff'}},
+        {'title' : 'Blue text', 'inline' : 'span', 'styles': {'color': '#00f'}},
+        {'title' : 'White text', 'inline' : 'span', 'styles': {'color': '#fff'}},
+        {'title' : 'White background', 'inline' : 'span', 'styles': {'background': '#fff'}},
+        {'title' : 'Blue background', 'inline' : 'span', 'styles': {'background': '#00f'}},
+        {'title' : 'Cyan background', 'inline' : 'span', 'styles': {'background': '#0ff'}},
+        {'title' : 'Green background', 'inline' : 'span', 'styles': {'background': '#0f0'}},
+        {'title' : 'Yellow background', 'inline' : 'span', 'styles': {'background': '#ff0'}},
+        {'title' : 'Red background', 'inline' : 'span', 'styles': {'background': '#f00'}},
+        {'title' : 'Black background', 'inline' : 'span', 'styles': {'background': '#000'}},
+    ]
+}

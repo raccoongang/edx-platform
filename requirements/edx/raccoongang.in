@@ -1,3 +1,6 @@
+# Scorm xblock
+-e git+https://github.com/raccoongang/edx_xblock_scorm.git@v1.0.1#egg=xblock-scorm==1.0.1
+
 # Video xblock
 -e git+https://github.com/raccoongang/pycaption.git@1.0.1#egg=pycaption==1.0.1
 -e git+https://github.com/raccoongang/xblock-video.git@v0.10.3#egg=xblock-video==0.10.3
@@ -23,6 +26,32 @@
 
 # Flow Control xblock
 -e git+https://github.com/eduNEXT/flow-control-xblock.git@v0.2.0#egg=xblock-flow-control==0.2.0
+
+# Pdf xblock
+-e git+https://github.com/MarCnu/pdfXBlock.git#egg=pdfXBlock
+
+# Crowdsourcehinter xblock
+-e git+https://github.com/solashirai/crowdsourcehinter.git#egg=crowdsourcehinter
+
+# Feedback xblock
+-e git+https://github.com/raccoongang/FeedbackXBlock.git@v0.0.1#egg=xblock-feedback==0.0.1
+
+# Image Explorer xblock
+parsel==1.2.0
+-e git+https://github.com/edx-solutions/xblock-image-explorer.git#egg=xblock-image-explorer
+
+# InvideoQuiz xblock
+-e git+https://github.com/raccoongang/xblock-in-video-quiz.git@invquiz-rg#egg=xblock-in-video-quiz
+
+# Free text response xbloxk
+-e git+https://github.com/raccoongang/xblock-free-text-response.git@v0.2.1#egg=xblock-free-text-response==0.2.1
+
+# Recommender xblock
+-e git+https://github.com/raccoongang/RecommenderXBlock.git@v1.4.1#egg=recommender-xblock==1.4.1
+
+# Info pages requirements
+django-tinymce==2.8.0
+django-hvad==1.8.0
 
 # SSO
  -e git+https://github.com/raccoongang/edx-oauth-client.git@hawthorn-master#egg=edx_oauth_client
