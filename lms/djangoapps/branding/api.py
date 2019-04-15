@@ -398,9 +398,16 @@ def get_logo_url(is_secure=True):
 
 def get_tos_and_honor_code_url():
     """
-    Lookup and return terms of services page url
+    Lookup and return terms of services and honor code page url
     """
     return get_url("TOS_AND_HONOR")
+
+
+def get_tos_url():
+    """
+    Lookup and return terms of services page url
+    """
+    return get_url("TOS")
 
 
 def get_privacy_url():
