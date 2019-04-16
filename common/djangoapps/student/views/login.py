@@ -435,7 +435,7 @@ def login_user(request):
     third_party_auth_requested = third_party_auth.is_enabled() and pipeline.running(request)
     trumped_by_first_party_auth = bool(request.POST.get('email')) or bool(request.POST.get('password'))
     was_authenticated_third_party = False
-
+    is_studio_platform = request.POST.get('platform') == 'studio'
     try:
         if third_party_auth_requested and not trumped_by_first_party_auth:
             # The user has already authenticated via third-party auth and has not
@@ -458,6 +458,14 @@ def login_user(request):
         _check_forced_password_reset(email_user)
 
         possibly_authenticated_user = email_user
+
+        if possibly_authenticated_user and is_studio_platform and\
+             not possibly_authenticated_user.is_superuser and not possibly_authenticated_user.is_active:
+            return JsonResponse({
+                'success': False,
+                'not_allowed': True,
+                'redirect_url': reverse('login')
+            })
 
         if not was_authenticated_third_party:
             possibly_authenticated_user = _authenticate_first_party(request, email_user)

@@ -31,7 +31,7 @@ export default function LoginFactory(homepageURL) {
             deferred = new $.Deferred(),
             promise = deferred.promise();
         ViewUtils.disableElementWhileRunning($submitButton, function () { return promise; });
-        var submit_data = $('#login_form').serialize();
+        var submit_data = $('#login_form').serialize() + '&platform=studio';
 
         postJSON('/login_post', submit_data, function (json) {
             if (json.success) {
@@ -41,6 +41,8 @@ export default function LoginFactory(homepageURL) {
                 } else {
                     ViewUtils.redirect(homepageURL);
                 }
+            } else if (!json.success && json.not_allowed) {
+                ViewUtils.redirect(json.redirect_url)
             } else if ($('#login_error').length === 0) {
                 $('#login_form').prepend(
                     '<div id="login_error" class="message message-status error">' +
