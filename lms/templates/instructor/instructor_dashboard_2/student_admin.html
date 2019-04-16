@@ -1,3 +1,4 @@
+<%namespace name='static' file='../../static_content.html'/>
 <%page args="section_data" expression_filter="h"/>
 <%! from django.utils.translation import ugettext as _ %>
 %if section_data['access']['staff'] or section_data['access']['instructor']:
@@ -18,7 +19,7 @@
     <h4 class="hd hd-4">${_("View a specific learner's grades and progress")}</h4>
     <div class="request-response-error"></div>
     <label for="student-select-progress">
-        ${_("Learner's {platform_name} email address or username *").format(platform_name=settings.PLATFORM_NAME)}
+        ${_("Learner's {platform_name} email address or username *").format(platform_name=static.get_platform_name())}
     </label>
     <br>
     <input type="text" name="student-select-progress" placeholder="${_('Learner email address or username')}" >
@@ -37,7 +38,7 @@
     <h4 class="hd hd-4">${_("Adjust a learner's grade for a specific problem")}</h4>
     <div class="request-response-error"></div>
     <label for="student-select-grade">
-        ${_("Learner's {platform_name} email address or username *").format(platform_name=settings.PLATFORM_NAME)}
+        ${_("Learner's {platform_name} email address or username *").format(platform_name=static.get_platform_name())}
     </label>
     <br>
     <input type="text" name="student-select-grade" placeholder="${_('Learner email address or username')}">
@@ -94,7 +95,7 @@
     <div class="request-response-error"></div>
 
     <label for="entrance-exam-student-select-grade">
-        ${_("Learner's {platform_name} email address or username *").format(platform_name=settings.PLATFORM_NAME)}
+        ${_("Learner's {platform_name} email address or username *").format(platform_name=static.get_platform_name())}
     </label>
     <br>
     <input type="text" name="entrance-exam-student-select-grade" placeholder="${_('Learner email address or username')}">
