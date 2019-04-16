@@ -585,10 +585,10 @@ def get_certificate_footer_context():
     """
     data = dict()
 
-    # get Terms of Service and Honor Code page url
-    terms_of_service_and_honor_code = branding_api.get_tos_and_honor_code_url()
-    if terms_of_service_and_honor_code != branding_api.EMPTY_URL:
-        data.update({'company_tos_url': terms_of_service_and_honor_code})
+    # get Terms of Service page url
+    terms_of_service_url = branding_api.get_tos_url()
+    if terms_of_service_url != branding_api.EMPTY_URL:
+        data.update({'company_tos_url': terms_of_service_url})
 
     # get Privacy Policy page url
     privacy_policy = branding_api.get_privacy_url()
