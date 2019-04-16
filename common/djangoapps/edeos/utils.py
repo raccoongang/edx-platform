@@ -1,6 +1,7 @@
 """
 Various utils for communication with Edeos API.
 """
+import hashlib
 import logging
 from urlparse import urlparse
 
@@ -10,6 +11,8 @@ from xmodule.modulestore.django import modulestore
 
 from api_calls import ALLOWED_EDEOS_API_ENDPOINTS_NAMES, EdeosApiClient
 from configs import EDEOS_STUDIO_FIELDS
+
+from django.contrib.auth.models import User
 
 log = logging.getLogger(__name__)
 
@@ -22,6 +25,8 @@ def send_edeos_api_request(**kwargs):
     """
     Initialize Edeos API client and perform respective call.
     """
+    import pydevd_pycharm
+    pydevd_pycharm.settrace('10.217.0.198', port=3254, stdoutToServer=True, stderrToServer=True)
     api_scheme_host = '{uri.scheme}://{uri.netloc}/'.format(uri=urlparse(kwargs.get('base_url')))
     api_path = '{uri.path}'.format(uri=urlparse(kwargs.get('base_url')))
     edeos_client = EdeosApiClient(client_id=kwargs.get("key"),
@@ -55,6 +60,23 @@ def is_valid_edeos_field(fields):
             return False
     return True
 
+def get_user_id(user_model):
+    # type: (User) -> str
+    """
+    Generate users unique id by user object.
+
+    :return: the md5 hash of the user's id.
+    """
+    m = hashlib.md5()
+    m.update(str(user_model.id))
+    return m.hexdigest()
+
+def get_user_id_from_email(user_email):
+    # type: (str) -> str
+    """
+    Generate users unique id by email of the user.
+    """
+    return get_user_id(User.objects.get(email = user_email))
 
 # TODO: this could go as a mixin,
 #  but note that it's used not only in `save()` now
@@ -82,16 +104,12 @@ def prepare_edeos_data(model_obj, event_type, event_details=None):
     }
     if course.edeos_enabled:
         if is_valid_edeos_field(edeos_fields):
-            student_id = ""
-            if getattr(model_obj, "user", False):
-                student_id = model_obj.user.email
-            elif getattr(model_obj, "student", False):
-                student_id = model_obj.student.email
+            user =  getattr(model_obj, "user", getattr(model_obj, "student", None))
             uid = ""
             if event_type == 3 or event_type == 4:
                 uid = unicode(model_obj.module_state_key)
             payload = {
-                'student_id': student_id,
+                'student_id': user and get_user_id(user) or '',
                 'course_id': course_id,
                 'org': org,
                 'client_id': course.edeos_key,

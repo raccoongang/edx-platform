@@ -10,6 +10,8 @@ from django.views.decorators.http import require_http_methods
 from django_countries import countries
 
 from badges.utils import badges_enabled
+
+from edeos.utils import get_user_id
 from edxmako.shortcuts import marketing_link, render_to_response
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.user_api.accounts.api import get_account_settings
@@ -78,7 +80,7 @@ def learner_profile_context(request, profile_username, user_is_staff):
 
     d = {
         "payload": {
-            'student_id': request.user.email,
+            'student_id': get_user_id(request.user),
             'client_id': EDEOS_API_KEY,
         },
         "api_endpoint": "wallet_balance",

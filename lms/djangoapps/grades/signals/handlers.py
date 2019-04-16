@@ -13,6 +13,8 @@ from edeos.tasks import send_api_request
 from eventtracking import tracker
 from openedx.core.djangoapps.signals.signals import COURSE_GRADE_CHANGED
 from openedx.core.lib.grade_utils import is_score_higher_or_equal
+
+from edeos.utils import get_user_id
 from student.models import user_by_anonymous_id
 from submissions.models import score_reset, score_set
 from track.event_transaction_utils import (
@@ -264,7 +266,7 @@ def listen_for_grade_calculation_to_send_push(sender, user, course_grade, course
     course = modulestore().get_course(course_key)
     if course.edeos_enabled and course_grade.percent == 1.0:
         payload = {
-            'student_id': user.email,
+            'student_id': get_user_id(user),
             'course_id': course_key.to_deprecated_string(),
             'org': course.org,
             'client_id': course.edeos_key,

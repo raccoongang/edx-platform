@@ -65,7 +65,7 @@ from courseware.access import has_access
 from courseware.courses import get_courses, sort_by_announcement, sort_by_start_date  # pylint: disable=import-error
 from django_comment_common.models import assign_role
 from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
-from edeos.utils import send_edeos_api_request
+from edeos.utils import send_edeos_api_request, get_user_id
 from edxmako.shortcuts import render_to_response, render_to_string
 from eventtracking import tracker
 from lms.djangoapps.commerce.utils import EcommerceService  # pylint: disable=import-error
@@ -889,7 +889,7 @@ def dashboard(request):
     if getattr(request.user, "email", False):
         edeos_post_data = {
             "payload": {
-                "student_id": request.user.email,
+                "student_id": get_user_id(request.user),
                 'client_id': EDEOS_API_KEY,
             },
             "api_endpoint": "transactions",

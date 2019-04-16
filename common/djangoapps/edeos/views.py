@@ -9,7 +9,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
-from edeos.utils import send_edeos_api_request
+from edeos.utils import send_edeos_api_request, get_user_id
 
 
 @login_required
@@ -20,7 +20,7 @@ def update_wallet(request):
         if data.get('wallet_name'):
             edeos_post_data = {
                 'payload': {
-                    'student_id': request.user.email,
+                    'student_id': get_user_id(request.user),
                     'client_id': EDEOS_API_KEY,
                     'wallet': data.get('wallet_name')
                 },
@@ -42,7 +42,7 @@ def generate_wallet(request):
     if request.method == 'POST' and request.is_ajax():
         edeos_post_data = {
             'payload': {
-                'student_id': request.user.email,
+                'student_id': get_user_id(request.user),
                 'client_id': EDEOS_API_KEY,
             },
             "api_endpoint": "wallet_store",

@@ -49,7 +49,7 @@ from certificates.models import GeneratedCertificate
 from course_modes.models import CourseMode
 from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
 from edeos.tasks import send_api_request
-from edeos.utils import prepare_edeos_data
+from edeos.utils import prepare_edeos_data, get_user_id
 from enrollment.api import _default_course_mode
 from eventtracking import tracker
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
@@ -550,7 +550,7 @@ class Registration(models.Model):
             if referral.user.email != self.user.email:
                 edeos_referral_store_data = {
                     "payload": {
-                        'student_id': referral.user.email,
+                        'student_id': get_user_id(referral.user),
                         'client_id': EDEOS_API_KEY,
                         "referral_type": "student_signup",
                         "referral_id": self.user.email,  # referee
