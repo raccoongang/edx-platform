@@ -25,8 +25,6 @@ def send_edeos_api_request(**kwargs):
     """
     Initialize Edeos API client and perform respective call.
     """
-    import pydevd_pycharm
-    pydevd_pycharm.settrace('10.217.0.198', port=3254, stdoutToServer=True, stderrToServer=True)
     api_scheme_host = '{uri.scheme}://{uri.netloc}/'.format(uri=urlparse(kwargs.get('base_url')))
     api_path = '{uri.path}'.format(uri=urlparse(kwargs.get('base_url')))
     edeos_client = EdeosApiClient(client_id=kwargs.get("key"),
