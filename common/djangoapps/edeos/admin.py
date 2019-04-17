@@ -4,6 +4,7 @@ from ratelimitbackend import admin
 from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
 from edeos.models import UserSocialLink
 from edeos.tasks import send_api_request
+from edeos.utils import get_user_id
 
 
 class UserSocialLinkAdmin(admin.ModelAdmin):
@@ -26,7 +27,7 @@ class UserSocialLinkAdmin(admin.ModelAdmin):
         if 'is_verified' in form.changed_data and obj.is_verified is True:
             edeos_event_data = {
                 'payload': {
-                    'student_id': obj.user_profile.user.email,
+                    'student_id': get_user_id(obj.user_profile.user),
                     'client_id': EDEOS_API_KEY,
                     'event_type': 7,
                     'event_details': {

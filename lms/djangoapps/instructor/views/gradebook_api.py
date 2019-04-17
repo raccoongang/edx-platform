@@ -13,7 +13,7 @@ from opaque_keys.edx.keys import CourseKey
 
 from courseware.courses import get_course_with_access
 from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
-from edeos.utils import send_edeos_api_request
+from edeos.utils import send_edeos_api_request, get_user_id_from_email
 from edxmako.shortcuts import render_to_response
 from lms.djangoapps.grades.new.course_grade_factory import CourseGradeFactory
 from lms.djangoapps.instructor.views.api import require_level
@@ -132,7 +132,7 @@ def get_student_statistics(student_email, course_id):
 
     edeos_post_data = {
         "payload": {
-            "student_id": student_email,
+            "student_id": get_user_id_from_email(student_email),
             "client_id": EDEOS_API_KEY,
             "course_id": course_id,
         },

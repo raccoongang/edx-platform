@@ -62,6 +62,8 @@ from courseware.model_data import FieldDataCache
 from courseware.models import BaseStudentModuleHistory, StudentModule
 from courseware.url_helpers import get_redirect_url
 from courseware.user_state_client import DjangoXBlockUserStateClient
+
+from edeos.utils import get_user_id
 from edxmako.shortcuts import marketing_link, render_to_response, render_to_string
 from enrollment.api import add_enrollment
 from eventtracking import tracker
@@ -352,7 +354,7 @@ def course_info(request, course_id):
         if getattr(request.user, "email", False):
             edeos_post_data = {
                 "payload": {
-                    "student_id": request.user.email,
+                    "student_id": get_user_id(request.user),
                     'client_id': EDEOS_API_KEY,
                     "course_id": course.id.to_deprecated_string()
                 },

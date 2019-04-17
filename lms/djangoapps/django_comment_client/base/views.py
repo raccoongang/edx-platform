@@ -50,7 +50,7 @@ from lms.djangoapps.courseware.exceptions import CourseAccessRedirect
 from util.file import store_uploaded_file
 
 from edeos.tasks import send_api_request
-from edeos.utils import is_valid_edeos_field
+from edeos.utils import is_valid_edeos_field, get_user_id
 
 log = logging.getLogger(__name__)
 
@@ -292,7 +292,7 @@ def create_thread(request, course_id, commentable_id):
     }
     if is_valid_edeos_field(edeos_fields) and course.edeos_enabled:
         payload = {
-            'student_id': user.email,
+            'student_id': get_user_id(user),
             'course_id': course_id,
             'org': course.org,
             'client_id': course.edeos_key,
@@ -415,7 +415,7 @@ def _create_comment(request, course_key, thread_id=None, parent_id=None, subcomm
         'edeos_base_url': course.edeos_base_url
     }
     if is_valid_edeos_field(edeos_fields) and course.edeos_enabled:
-        student_id = user.email
+        student_id = get_user_id(user)
         payload = {
             'student_id': student_id,
             'course_id': course_key.to_deprecated_string(),
@@ -595,16 +595,16 @@ def vote_for_comment(request, course_id, comment_id, value):
         'edeos_base_url': course.edeos_base_url
     }
     if is_valid_edeos_field(edeos_fields) and course.edeos_enabled:
-        author_email = None
+        author_id = None
         if getattr(comment, "user_id", False):
             from instructor.views.api import get_any_existing_student
             author_username = comment.username
             author = get_any_existing_student(author_username, course_key)
             if author:
-                author_email = author.email
-        if author_email:
+                author_id = get_user_id(author)
+        if author_id:
             payload = {
-                'student_id': author_email,
+                'student_id': author_id,
                 'course_id': course_id,
                 'org': course.org,
                 'client_id': course.edeos_key,
@@ -658,16 +658,16 @@ def vote_for_thread(request, course_id, thread_id, value):
         'edeos_base_url': course.edeos_base_url
     }
     if is_valid_edeos_field(edeos_fields) and course.edeos_enabled:
-        author_email = None
+        author_id = None
         if getattr(thread, "user_id", False):
             from instructor.views.api import get_any_existing_student
             author_username = thread.username
             author = get_any_existing_student(author_username, course_key)
             if author:
-                author_email = author.email
-        if author_email:
+                author_id = get_user_id(author)
+        if author_id:
             payload = {
-                'student_id': author_email,
+                'student_id': author_id,
                 'course_id': course_id,
                 'org': course.org,
                 'client_id': course.edeos_key,

@@ -9,6 +9,7 @@ from django.shortcuts import redirect
 
 from django.views.decorators.csrf import ensure_csrf_cookie
 
+from edeos.utils import get_user_id
 from edxmako.shortcuts import render_to_response
 from ipware.ip import get_ip
 
@@ -91,13 +92,12 @@ def user_track(request):
         if course.edeos_enabled:
             from instructor.views.api import get_student
             student = get_student(username, course_key)
-            student_id = student.email
             video_id = None
             if isinstance(data, dict):
                 video_id = data.get("id")
             if video_id:
                 payload = {
-                    'student_id': student_id,
+                    'student_id': get_user_id(student),
                     'course_id': course_id,
                     'org': course.org,
                     'client_id': course.edeos_key,
