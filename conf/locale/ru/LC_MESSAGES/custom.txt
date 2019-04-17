@@ -1,0 +1,91 @@
+#: openedx/core/djangoapps/models/course_details.py:49
+msgid "Business Education"
+msgstr "Бизнес образование"
+
+#: openedx/core/djangoapps/models/course_details.py:50
+msgid "Transport Education"
+msgstr "Транспортное образование"
+
+#: openedx/core/djangoapps/models/course_details.py:51
+msgid "Foreign languages"
+msgstr "Иностранные языки"
+
+#: openedx/core/djangoapps/models/course_details.py:52
+msgid "Personal Development"
+msgstr "Личностное развитие"
+
+#: openedx/core/djangoapps/models/course_details.py:53
+msgid "Psychology"
+msgstr "Психология"
+
+#: openedx/core/djangoapps/models/course_details.py:54
+msgid "Information Technology"
+msgstr "Информационные технологии"
+
+#: cms/templates/settings.html
+msgid "Rubric"
+msgstr "Рубрика"
+
+#: cms/templates/settings.html
+msgid "Minimum price"
+msgstr "Минимальная цена"
+
+#: cms/templates/settings.html
+msgid "Average price"
+msgstr "Средняя цена"
+
+#: cms/templates/settings.html
+msgid "Maximum price"
+msgstr "Максимальная цена"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "c e r t i f i c a t e"
+msgstr "с е р т и ф и к а т"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "THIS CERTIFICATE IS PROUDLY PRESENTED TO"
+msgstr "Сертификат об успешном прохождении курса"
+
+#: lms/templates/footer.html
+msgid "COURSES CATALOG"
+msgstr "КАТАЛОГ КУРСОВ"
+
+#: lms/templates/footer.html
+msgid "Business education"
+msgstr "Бизнес образование"
+
+#: lms/templates/footer.html
+msgid "Transport education"
+msgstr "Транспортное образование"
+
+#: lms/templates/footer.html
+msgid "Personal development"
+msgstr "Личностное развитие"
+
+#: lms/templates/footer.html
+msgid "GENERAL INFORMATION"
+msgstr "ОБЩАЯ ИНФОРМАЦИЯ"
+
+#: lms/templates/footer.html
+msgid "About project"
+msgstr "О проекте"
+
+#: lms/templates/footer.html
+msgid "Cooperation"
+msgstr "Сотрудничество"
+
+#: lms/templates/footer.html
+msgid "Terms of use"
+msgstr "Пользовательское соглашение"
+
+#: lms/templates/footer.html
+msgid "Protection of personal information"
+msgstr "Защита персональных данных"
+
+#: lms/templates/footer.html
+msgid "Technical support"
+msgstr "Техническая поддержка"
+
+#: lms/templates/footer.html
+msgid "CONTACT INFORMATION"
+msgstr "КОНТАКТНАЯ ИНФОРМАЦИЯ"
