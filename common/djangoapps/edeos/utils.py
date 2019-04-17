@@ -59,7 +59,6 @@ def is_valid_edeos_field(fields):
     return True
 
 def get_user_id(user_model):
-    # type: (User) -> str
     """
     Generate users unique id by user object.
 
@@ -70,7 +69,6 @@ def get_user_id(user_model):
     return m.hexdigest()
 
 def get_user_id_from_email(user_email):
-    # type: (str) -> str
     """
     Generate users unique id by email of the user.
     """
