@@ -607,7 +607,7 @@ def user_post_save_callback(sender, **kwargs):
             ceas = CourseEnrollmentAllowed.for_user(user).filter(auto_enroll=True)
 
             for cea in ceas:
-                enrollment = CourseEnrollment.enroll(user, cea.course_id)
+                enrollment = CourseEnrollment.enroll(user, cea.course_id, due_date=cea.due_date)
 
                 manual_enrollment_audit = ManualEnrollmentAudit.get_manual_enrollment_by_email(user.email)
                 if manual_enrollment_audit is not None:
@@ -1188,6 +1188,8 @@ class CourseEnrollment(models.Model):
 
     objects = CourseEnrollmentManager()
 
+    due_date = models.DateField(blank=True, null=True)
+
     # cache key format e.g enrollment.<username>.<course_key>.mode = 'honor'
     COURSE_ENROLLMENT_CACHE_KEY = u"enrollment.{}.{}.mode"  # TODO Can this be removed?  It doesn't seem to be used.
 
@@ -1217,7 +1219,7 @@ class CourseEnrollment(models.Model):
         cache.delete(self.enrollment_status_hash_cache_key(self.user))
 
     @classmethod
-    def get_or_create_enrollment(cls, user, course_key):
+    def get_or_create_enrollment(cls, user, course_key, due_date=None):
         """
         Create an enrollment for a user in a class. By default *this enrollment
         is not active*. This is useful for when an enrollment needs to go
@@ -1299,7 +1301,7 @@ class CourseEnrollment(models.Model):
         from courseware.access import has_access  # pylint: disable=import-error
         return not has_access(user, 'enroll', course)
 
-    def update_enrollment(self, mode=None, is_active=None, skip_refund=False):
+    def update_enrollment(self, mode=None, is_active=None, skip_refund=False, due_date=None):
         """
         Updates an enrollment for a user in a class.  This includes options
         like changing the mode, toggling is_active True/False, etc.
@@ -1323,7 +1325,14 @@ class CourseEnrollment(models.Model):
             self.mode = mode
             mode_changed = True
 
-        if activation_changed or mode_changed:
+        due_date_changed = False
+        # if due_date is None, the call to update_enrollment didn't specify a new
+        # due_date, so leave as-is
+        if due_date is not None and self.due_date != due_date:
+            self.due_date = due_date
+            due_date_changed = True
+
+        if activation_changed or mode_changed or due_date_changed:
             self.save()
             self._update_enrollment_in_request_cache(
                 self.user,
@@ -1414,7 +1423,7 @@ class CourseEnrollment(models.Model):
                 )
 
     @classmethod
-    def enroll(cls, user, course_key, mode=None, check_access=False):
+    def enroll(cls, user, course_key, mode=None, check_access=False, due_date=None):
         """
         Enroll a user in a course. This saves immediately.
 
@@ -1488,13 +1497,13 @@ class CourseEnrollment(models.Model):
 
         # User is allowed to enroll if they've reached this point.
         enrollment = cls.get_or_create_enrollment(user, course_key)
-        enrollment.update_enrollment(is_active=True, mode=mode)
+        enrollment.update_enrollment(is_active=True, mode=mode, due_date=due_date)
         enrollment.send_signal(EnrollStatusChange.enroll)
 
         return enrollment
 
     @classmethod
-    def enroll_by_email(cls, email, course_id, mode=None, ignore_errors=True):
+    def enroll_by_email(cls, email, course_id, mode=None, ignore_errors=True, due_date=None):
         """
         Enroll a user in a course given their email. This saves immediately.
 
@@ -1524,7 +1533,7 @@ class CourseEnrollment(models.Model):
         """
         try:
             user = User.objects.get(email=email)
-            return cls.enroll(user, course_id, mode)
+            return cls.enroll(user, course_id, mode=mode, due_date=due_date)
         except User.DoesNotExist:
             err_msg = u"Tried to enroll email {} into course {}, but user not found"
             log.error(err_msg.format(email, course_id))
@@ -2159,7 +2168,7 @@ class CourseEnrollmentAllowed(DeletableByUserValue, models.Model):
                   "Once set, it won't change.",
         on_delete=models.CASCADE,
     )
-
+    due_date = models.DateField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True, db_index=True)
 
     class Meta(object):

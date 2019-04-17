@@ -4,6 +4,7 @@ consist primarily of authentication, request validation, and serialization.
 
 """
 import logging
+from datetime import datetime
 
 from course_modes.models import CourseMode
 from django.contrib.auth import get_user_model
@@ -597,6 +598,8 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
         username = request.data.get('user', request.user.username)
         course_id = request.data.get('course_details', {}).get('course_id')
         email = request.data.get('email')
+        due_date_data = request.data.get('due_date')
+        due_date = due_date_data and datetime.strptime(due_date_data, "%d-%m-%Y").date()
 
         if not course_id:
             return Response(
@@ -657,7 +660,7 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
                     #  unenroll is not requested;
                     #  add email to CourseEnrollmentAllowed so that the user
                     #  enrolls automatically as soon as he registers
-                    enroll_email(course_id, email, auto_enroll=True, email_students=False)
+                    enroll_email(course_id, email, auto_enroll=True, email_students=False, due_date=due_date)
                     return Response(
                         status=status.HTTP_200_OK,
                         data={
@@ -766,7 +769,8 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
                     unicode(course_id),
                     mode=mode,
                     is_active=is_active,
-                    enrollment_attributes=enrollment_attributes
+                    enrollment_attributes=enrollment_attributes,
+                    due_date=due_date
                 )
 
             email_opt_in = request.data.get('email_opt_in', None)

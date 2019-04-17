@@ -111,7 +111,8 @@ def get_user_email_language(user):
     return UserPreference.get_value(user, LANGUAGE_KEY)
 
 
-def enroll_email(course_id, student_email, auto_enroll=False, email_students=False, email_params=None, language=None):
+def enroll_email(course_id, student_email, auto_enroll=False, email_students=False, email_params=None,
+                 language=None, due_date=None):
     """
     Enroll a student by email.
 
@@ -144,7 +145,7 @@ def enroll_email(course_id, student_email, auto_enroll=False, email_students=Fal
         if previous_state.enrollment:
             course_mode = previous_state.mode
 
-        enrollment_obj = CourseEnrollment.enroll_by_email(student_email, course_id, course_mode)
+        enrollment_obj = CourseEnrollment.enroll_by_email(student_email, course_id, mode=course_mode, due_date=due_date)
         if email_students:
             email_params['message'] = 'enrolled_enroll'
             email_params['email_address'] = student_email
@@ -152,6 +153,8 @@ def enroll_email(course_id, student_email, auto_enroll=False, email_students=Fal
             send_mail_to_student(student_email, email_params, language=language)
     elif not is_email_retired(student_email):
         cea, _ = CourseEnrollmentAllowed.objects.get_or_create(course_id=course_id, email=student_email)
+        if due_date:
+            cea.due_date = due_date
         cea.auto_enroll = auto_enroll
         cea.save()
         if email_students:
