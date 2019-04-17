@@ -760,6 +760,7 @@ class RegistrationView(APIView):
         # Separate terms of service and honor code checkboxes
         if self._is_field_visible("terms_of_service"):
             terms_label = _(u"Honor Code")
+            terms_link = marketing_link("HONOR")
             terms_text = _(u"Review the Honor Code")
 
         # Combine terms of service and honor code checkboxes
@@ -767,9 +768,9 @@ class RegistrationView(APIView):
             # Translators: This is a legal document users must agree to
             # in order to register a new account.
             terms_label = _(u"Terms of Service and Honor Code")
+            terms_link = marketing_link("HONOR")
             terms_text = _(u"Review the Terms of Service and Honor Code")
 
-        terms_link = settings.ENV_TOKENS.get("TOS_LINK", "")
         # Translators: "Terms of Service" is a legal document users must agree to
         # in order to register a new account.
         label = _(u"I agree to the {platform_name} {terms_of_service}").format(

@@ -60,12 +60,12 @@ def marketing_link(name):
         # e.g. urljoin('http://marketing.com', 'http://open-edx.org/about') >>> 'http://open-edx.org/about'
         return urljoin(marketing_urls.get('ROOT'), marketing_urls.get(name))
     # only link to the old pages when the marketing site isn't on
+    elif not enable_mktg_site and name in cms_mktg_urls:
+        return cms_mktg_urls[name] or '#'
     elif not enable_mktg_site and name in link_map:
         # don't try to reverse disabled marketing links
         if link_map[name] is not None:
             return reverse(link_map[name])
-    elif not enable_mktg_site and name in cms_mktg_urls:
-        return cms_mktg_urls[name] or '#'
     else:
         log.debug("Cannot find corresponding link for name: %s", name)
         return '#'
