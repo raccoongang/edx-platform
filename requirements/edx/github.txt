@@ -100,7 +100,7 @@ git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.15#egg=xblock-
 # RaccoonGang
 
 git+https://github.com/raccoongang/django-wiki.git@v0.0.9-rg#egg=django-wiki
--e git+https://github.com/raccoongang/django-oidc.git@v1.1.0-rg#egg=django-oidc
+-e git+https://github.com/raccoongang/django-oidc.git@v1.1.1-fastlane#egg=django-oidc
 
 # Write to xls
 xlwt==1.3.0
