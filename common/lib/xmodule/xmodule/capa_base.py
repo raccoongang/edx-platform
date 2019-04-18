@@ -13,6 +13,8 @@ import traceback
 
 from django.conf import settings
 # We don't want to force a dependency on datadog, so make the import conditional
+from opaque_keys.edx.keys import CourseKey
+
 try:
     import dogstats_wrapper as dog_stats_api
 except ImportError:
@@ -851,8 +853,15 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
         """
         Is it now past this problem's due date, including grace period?
         """
-        return (self.close_date is not None and
-                datetime.datetime.now(utc) > self.close_date)
+        from student.models import CourseEnrollment
+
+        course_enrollment = CourseEnrollment.objects.filter(
+            user_id=self.runtime.user_id,
+            course_id=CourseKey.from_string(unicode(self.runtime.course_id))
+        ).first()
+        due_date = course_enrollment.due_date if course_enrollment else None
+        return ((due_date is not None and datetime.date.today() > due_date)
+                or (self.close_date is not None and datetime.datetime.now(utc) > self.close_date))
 
     def closed(self):
         """
