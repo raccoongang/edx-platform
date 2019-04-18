@@ -88,9 +88,6 @@ class StudentProfile(UserProfile):
                 phone=self.parent_phone
             )
             parent_profile.students.add(self)
-            if created:
-                # Send activation email to the parent as well
-                compose_and_send_activation_email(self.parent_user, self.profile, self.registration)
 
 
 class ParentProfile(UserProfile):
