@@ -210,7 +210,7 @@ def index(request, extra_context=None, user=AnonymousUser()):
     context.update(extra_context)
 
     courses_data = {}
-    for category, data in configuration_helpers.get_value("CATEGORIES", {}).items():
+    for category, data in configuration_helpers.get_value("CATEGORIES", settings.CATEGORIES).items():
         # TODO validate categories
         # data == {'description': '', 'data': ['key1', 'key2', ...]}
         courses_data[category] = {'description': data.get('description', ''), 'courses': []}
