@@ -405,6 +405,9 @@
                 },
 
                 addLiveValidationIndicators: function($el, $label, $req, $icon, $tip, indicator, icon, msg) {
+                    if ($el.attr('id') == 'register-school_city') {
+                        $('span[aria-labelledby="select2-register-school_city-container"]').addClass(indicator);
+                    }
                     $el.addClass(indicator);
                     $label.addClass(indicator);
                     $req.addClass(indicator);
@@ -413,6 +416,9 @@
                 },
 
                 removeLiveValidationIndicators: function($el, $label, $req, $icon, indicator, icon) {
+                    if ($el.attr('id') == 'register-school_city') {
+                        $('span[aria-labelledby="select2-register-school_city-container"]').removeClass(indicator);
+                    }
                     $el.removeClass(indicator);
                     $label.removeClass(indicator);
                     $req.removeClass(indicator);
