@@ -1,9 +1,0 @@
-"""
-Edeos auth data.
-
-# TODO move to settings
-#  for now, configure on each instance manually.
-
-"""
-EDEOS_API_KEY = ""
-EDEOS_API_SECRET = ""

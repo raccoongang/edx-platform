@@ -12,7 +12,7 @@ from django.views.decorators.cache import cache_control
 from opaque_keys.edx.keys import CourseKey
 
 from courseware.courses import get_course_with_access
-from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
+from django.conf import settings
 from edeos.utils import send_edeos_api_request, get_user_id_from_email
 from edxmako.shortcuts import render_to_response
 from lms.djangoapps.grades.new.course_grade_factory import CourseGradeFactory
@@ -133,13 +133,13 @@ def get_student_statistics(student_email, course_id):
     edeos_post_data = {
         "payload": {
             "student_id": get_user_id_from_email(student_email),
-            "client_id": EDEOS_API_KEY,
+            "client_id": getattr(settings, 'EDEOS_API_KEY'),
             "course_id": course_id,
         },
         "api_endpoint": "statistics",
-        "key": EDEOS_API_KEY,  # settings.EDEOS_API_KEY,  # TODO revert to settings
-        "secret": EDEOS_API_SECRET,  # settings.EDEOS_API_SECRET,  # TODO revert to settings
-        "base_url": "http://195.160.222.156/api/point/v1/"
+        "key": getattr(settings, 'EDEOS_API_KEY'),
+        "secret": getattr(settings, 'EDEOS_API_SECRET'),
+        "base_url": getattr(settings, 'EDEOS_API_URL')
     }
     response = send_edeos_api_request(**edeos_post_data)
     tokens = 'n/a'

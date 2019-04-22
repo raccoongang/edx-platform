@@ -64,7 +64,6 @@ from course_modes.models import CourseMode
 from courseware.access import has_access
 from courseware.courses import get_courses, sort_by_announcement, sort_by_start_date  # pylint: disable=import-error
 from django_comment_common.models import assign_role
-from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
 from edeos.utils import send_edeos_api_request, get_user_id
 from edxmako.shortcuts import render_to_response, render_to_string
 from eventtracking import tracker
@@ -890,12 +889,12 @@ def dashboard(request):
         edeos_post_data = {
             "payload": {
                 "student_id": get_user_id(request.user),
-                'client_id': EDEOS_API_KEY,
+                'client_id': getattr(settings, 'EDEOS_API_KEY'),
             },
             "api_endpoint": "transactions",
-            "key": EDEOS_API_KEY,  # settings.EDEOS_API_KEY,  # TODO revert to settings
-            "secret": EDEOS_API_SECRET,  # settings.EDEOS_API_SECRET,  # TODO revert to settings
-            "base_url": "http://195.160.222.156/api/point/v1/"
+            "key": getattr(settings, 'EDEOS_API_KEY'),
+            "secret": getattr(settings, 'EDEOS_API_SECRET'),
+            "base_url": getattr(settings, 'EDEOS_API_URL')
         }
         response = send_edeos_api_request(**edeos_post_data)
         context.update({

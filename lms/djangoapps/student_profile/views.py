@@ -76,17 +76,16 @@ def learner_profile_context(request, profile_username, user_is_staff):
     import json
     from django.contrib.sites.models import Site
     from edeos.utils import send_edeos_api_request
-    from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
 
     d = {
         "payload": {
             'student_id': get_user_id(request.user),
-            'client_id': EDEOS_API_KEY,
+            'client_id': getattr(settings, 'EDEOS_API_KEY'),
         },
         "api_endpoint": "wallet_balance",
-        "key": EDEOS_API_KEY,  # settings.EDEOS_API_KEY,  # TODO revert to settings
-        "secret": EDEOS_API_SECRET,  # settings.EDEOS_API_SECRET,  # TODO revert to settings
-        "base_url": "http://195.160.222.156/api/point/v1/"
+        "key": getattr(settings, 'EDEOS_API_KEY'),
+        "secret": getattr(settings, 'EDEOS_API_SECRET'),
+        "base_url": getattr(settings, 'EDEOS_API_URL')
     }
     edeos_resp = send_edeos_api_request(**d)
     context = {

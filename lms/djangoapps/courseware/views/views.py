@@ -349,19 +349,18 @@ def course_info(request, course_id):
 
         from django.contrib.sites.models import Site
         from edeos.utils import send_edeos_api_request
-        from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
 
         if getattr(request.user, "email", False):
             edeos_post_data = {
                 "payload": {
                     "student_id": get_user_id(request.user),
-                    'client_id': EDEOS_API_KEY,
+                    'client_id': getattr(settings, 'EDEOS_API_KEY'),
                     "course_id": course.id.to_deprecated_string()
                 },
                 "api_endpoint": "transactions",
-                "key": EDEOS_API_KEY,  # settings.EDEOS_API_KEY,  # TODO revert to settings
-                "secret": EDEOS_API_SECRET,  # settings.EDEOS_API_SECRET,  # TODO revert to settings
-                "base_url": "http://195.160.222.156/api/point/v1/"
+                "key": getattr(settings, 'EDEOS_API_KEY'),
+                "secret": getattr(settings, 'EDEOS_API_SECRET'),
+                "base_url": getattr(settings, 'EDEOS_API_URL')
             }
             response = send_edeos_api_request(**edeos_post_data)
             context.update({

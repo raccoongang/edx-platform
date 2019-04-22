@@ -47,7 +47,6 @@ import lms.lib.comment_client as cc
 import request_cache
 from certificates.models import GeneratedCertificate
 from course_modes.models import CourseMode
-from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
 from edeos.tasks import send_api_request
 from edeos.utils import prepare_edeos_data, get_user_id
 from enrollment.api import _default_course_mode
@@ -551,7 +550,7 @@ class Registration(models.Model):
                 edeos_referral_store_data = {
                     "payload": {
                         'student_id': get_user_id(referral.user),
-                        'client_id': EDEOS_API_KEY,
+                        'client_id': getattr(settings, 'EDEOS_API_KEY'),
                         "referral_type": "student_signup",
                         "referral_id": self.user.email,  # referee
                         "referral_hashkey": referral.hashkey,
@@ -559,9 +558,9 @@ class Registration(models.Model):
                         "event_type": 5
                     },
                     "api_endpoint": "referrals_store",
-                    "key": EDEOS_API_KEY,
-                    "secret": EDEOS_API_SECRET,
-                    "base_url": "http://195.160.222.156/api/point/v1/"
+                    "key": getattr(settings, 'EDEOS_API_KEY'),
+                    "secret": getattr(settings, 'EDEOS_API_SECRET'),
+                    "base_url": getattr(settings, 'EDEOS_API_URL')
                 }
                 send_api_request(edeos_referral_store_data)
 

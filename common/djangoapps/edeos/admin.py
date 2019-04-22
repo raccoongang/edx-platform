@@ -1,7 +1,7 @@
 """ Django admin pages for edeox app """
 from ratelimitbackend import admin
 
-from edeos.edeos_keys import EDEOS_API_KEY, EDEOS_API_SECRET
+from django.conf import settings
 from edeos.models import UserSocialLink
 from edeos.tasks import send_api_request
 from edeos.utils import get_user_id
@@ -28,7 +28,7 @@ class UserSocialLinkAdmin(admin.ModelAdmin):
             edeos_event_data = {
                 'payload': {
                     'student_id': get_user_id(obj.user_profile.user),
-                    'client_id': EDEOS_API_KEY,
+                    'client_id': getattr(settings, 'EDEOS_API_KEY'),
                     'event_type': 7,
                     'event_details': {
                         'event_type_verbose': 'social_profile_approval',
@@ -36,10 +36,9 @@ class UserSocialLinkAdmin(admin.ModelAdmin):
                     }
                 },
                 "api_endpoint": "transactions_store",
-                # TODO configure in settings (here and below)
-                "key": EDEOS_API_KEY,  # settings.EDEOS_API_KEY,
-                "secret": EDEOS_API_SECRET,  # settings.EDEOS_API_SECRET,
-                "base_url": "http://195.160.222.156/api/point/v1/"
+                "key": getattr(settings, 'EDEOS_API_KEY'),
+                "secret": getattr(settings, 'EDEOS_API_SECRET'),
+                "base_url": getattr(settings, 'EDEOS_API_URL')
             }
             send_api_request(edeos_event_data)
         super(UserSocialLinkAdmin, self).save_model(request, obj, form, change)
