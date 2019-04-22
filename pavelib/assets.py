@@ -950,6 +950,8 @@ def update_assets(args):
     for sys in args.system:
         _update_assets(sys, args, is_devstack=is_devstack)
 
+    symlink_translations(args.settings)
+
     if not is_devstack:
         STATIC_ROOT_BASE = django_settings.STATIC_ROOT_BASE if django_settings and hasattr(django_settings, 'STATIC_ROOT_BASE') else Env.get_django_setting("STATIC_ROOT_BASE", "lms", settings=args.settings)
         EDX_PLATFORM_STATIC_ROOT_BASE = django_settings.EDX_PLATFORM_STATIC_ROOT_BASE if django_settings and hasattr(django_settings, 'EDX_PLATFORM_STATIC_ROOT_BASE') else Env.get_django_setting("EDX_PLATFORM_STATIC_ROOT_BASE", "lms", settings=args.settings)
@@ -969,17 +971,6 @@ def update_assets(args):
                 'wait': [float(args.wait)]
             },
         )
-
-
-def file_hash(file_name):
-    with open(file_name, 'rb') as f:
-        content = File(f)
-
-        md5 = hashlib.md5()
-        for chunk in content.chunks():
-            md5.update(chunk)
-
-        return md5.hexdigest()[:12]
 
 
 def _update_assets(sys, args, is_devstack=True):
@@ -1021,22 +1012,38 @@ def _update_assets(sys, args, is_devstack=True):
 
         collect_assets([sys], args.settings, **collect_log_args)
 
-    if sys == CMS:
-        prev_dir = os.getcwd()
-        static_root_cms = Env.get_django_setting("STATIC_ROOT", "cms", settings=args.settings)
-        cms_js_langs_dir = path(static_root_cms) / 'js' / 'i18n'
 
-        for lang in os.listdir(cms_js_langs_dir):
+def file_hash(file_name):
+    with open(file_name, 'rb') as f:
+        content = File(f)
+
+        md5 = hashlib.md5()
+        for chunk in content.chunks():
+            md5.update(chunk)
+
+        return md5.hexdigest()[:12]
+
+
+def symlink_translations(settings):
+    for system in ALL_SYSTEMS:
+        sys = SYSTEMS[system]
+        prev_dir = os.getcwd()
+        static_root = Env.get_django_setting("STATIC_ROOT", sys, settings=settings)
+        another_sys_static_root = Env.get_django_setting("STATIC_ROOT", (sys == CMS and LMS or CMS), settings=settings)
+        js_langs_dir = path(static_root) / 'js' / 'i18n'
+
+        print("Creating translation symbolyc links for '{sys}'".format(sys=sys))
+        for lang in os.listdir(js_langs_dir):
             _hash = None
-            lms_file = path(LMS) / 'static' / 'js' / 'i18n' / lang / 'djangojs.js'
+            another_sys_file = path(another_sys_static_root) / 'js' / 'i18n' / lang / 'djangojs.js'
 
             try:
-                _hash = file_hash(lms_file)
+                _hash = file_hash(another_sys_file)
             except Exception:
-                print("\t\tFile '{file}' could not be read.".format(file=lms_file))
+                print("\t\tFile '{file}' could not be read.".format(file=another_sys_file))
 
             if _hash:
-                os.chdir(cms_js_langs_dir / lang)
+                os.chdir(js_langs_dir / lang)
 
                 src_file = 'djangojs.js'
                 dst_file = 'djangojs.{hash}.js'.format(hash=_hash)
@@ -1044,6 +1051,19 @@ def _update_assets(sys, args, is_devstack=True):
                 try:
                     os.symlink(src_file, dst_file)
                 except OSError:
-                    print("\t\tSymbolic link or file '{file}' is exists.".format(file=dst_file))
+                    print(
+                        "\t\tSymbolic link or file '{file}' for language '{lang}' is exists.".format(
+                            file=dst_file,
+                            lang=lang
+                        )
+                    )
+                else:
+                    print(
+                        "\t\tCreate symbolic link '{dst_file} -> {src_file}' for language '{lang}'.".format(
+                            dst_file=dst_file,
+                            src_file=src_file,
+                            lang=lang
+                        )
+                    )
 
                 os.chdir(prev_dir)
