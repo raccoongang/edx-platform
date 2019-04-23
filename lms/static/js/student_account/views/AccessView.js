@@ -99,14 +99,15 @@
                     $(this.el).html(_.template(this.tpl)({
                         mode: this.activeForm
                     }));
+                    
+                    this.postRender();
+
                     // selectjs initializing for the #register-school_city select
                     $("#register-school_city").select2();
                     // handling selectjs events and triggering RegisterView events to stick the validation errors displaying
                     $('#register-school_city').on('select2:select select2:close', function (e) {
                         $('#register-school_city').trigger('blur');
                     });
-
-                    this.postRender();
 
                     return this;
                 },

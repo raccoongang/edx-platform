@@ -64,3 +64,22 @@ display: none;
 .homepage{
 	padding:0 20px 10px;
 }
+
+.select2-container--default .select2-selection--single {
+	border-radius: 0 !important;
+    height: 32px !important;
+}
+
+.select2-container--default .select2-selection--single.error {
+	outline-color: #d9534f !important;
+	border-color: #d9534f !important;
+}
+
+.select2-container--default .select2-selection--single.success {
+	outline-color: #24ad97 !important;
+	border-color: #24ad97 !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+	height: 32px !important;
+}
