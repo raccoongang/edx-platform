@@ -267,7 +267,7 @@ def compose_and_send_activation_email(user, profile, user_registration=None):
     context = generate_activation_email_context(user, user_registration)
     activation_email_template = 'emails/activation_email.txt'
     try:
-        if not user.is_active and user.parentprofile:
+        if user.parentprofile and not user.has_usable_password():
             password = User.objects.make_random_password()
             user.set_password(password)
             user.save()
@@ -1036,18 +1036,19 @@ def activate_account(request, key):
         else:
             registration.activate()
             user = registration.user
-            StudentProfile = apps.get_model('tedix_ro', 'StudentProfile')
-            ParentProfile = apps.get_model('tedix_ro', 'ParentProfile')
-            parentprofile = getattr(user, 'parentprofile', None)
             studentprofile = getattr(user, 'studentprofile', None)
-            if parentprofile:
-                parent_user = user.parentprofile.user
-            elif studentprofile:
-                parent_user = user.studentprofile.parents.first().user
-            else:
-                parent_user = None
+            parent_user = None
+            parentprofile = None
+            if studentprofile:
+                parentprofile = user.studentprofile.parents.first()
+                if parentprofile and not parentprofile.user.is_active:
+                    parent_user = parentprofile.user
+                    parent_user.is_active = True
+                    parent_user.save()
             if parent_user:
-                send_payment_link_to_parent(parent_user.id)
+                compose_and_send_activation_email(parent_user, parent_user.profile, registration)
+            if parentprofile:
+                send_payment_link_to_parent(parentprofile.user.id)
 
             # Success message for logged in users.
             message = _('{html_start}Success{html_end} You have activated your account.')
