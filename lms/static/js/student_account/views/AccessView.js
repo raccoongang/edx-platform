@@ -99,7 +99,7 @@
                     $(this.el).html(_.template(this.tpl)({
                         mode: this.activeForm
                     }));
-                    
+
                     this.postRender();
 
                     // selectjs initializing for the #register-school_city select
