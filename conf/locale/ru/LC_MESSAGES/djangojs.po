@@ -6671,7 +6671,14 @@ msgstr "Обновить сообщение"
 
 #: common/static/common/templates/discussion/thread-list-item.underscore
 msgid "discussion"
-msgstr "обсуждение"
+msgstr "Обсуждение."
+
+#: common/static/common/templates/discussion/thread-list-item.underscore
+msgid "question"
+msgstr "Вопрос."
+
+msgid "You're about to submit your response for this assignment. After you submit this response, you can't change it or submit a new response."
+msgstr "Вы собираетесь отправить свой ответ на это задание. После отправки Вы не сможете изменить его или отправить новый ответ."
 
 #: common/static/common/templates/discussion/thread-list-item.underscore
 msgid "answered question"
@@ -6752,7 +6759,7 @@ msgstr "Добавить комментарий"
 #: common/static/common/templates/discussion/thread-show.underscore
 #, python-format
 msgid "%(post_type)s posted %(time_ago)s by %(author)s"
-msgstr "%(post_type)s опубликовано %(time_ago)s пользователем %(author)s"
+msgstr "%(post_type)s Публикация %(time_ago)s пользователем %(author)s"
 
 #: common/static/common/templates/discussion/thread-show.underscore
 msgid "Closed"

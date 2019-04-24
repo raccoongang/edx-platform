@@ -23693,6 +23693,36 @@ msgstr ""
 #: edx-ora2
 msgid ""
 "\n"
+"                          In Progress (%(current_progress_num)s of "
+"%(training_available_num)s)\n"
+"                      "
+msgstr ""
+"\n"
+"                          Выполняется (%(current_progress_num)s из "
+"%(training_available_num)s)\n"
+"                      "
+
+#: edx-ora2
+msgid "This assignment is in progress. Complete the learner training step to move on."
+msgstr "Данный этап задания ещё не завершён. Необходимо завершить обучение оцениванию работ других учащихся."
+
+#: edx-ora2
+msgid "The question for this section"
+msgstr "Вопрос этого раздела"
+
+#: edx-ora2
+msgid ""
+"\n"
+"                                    This assignment is in progress. You still need to complete the %(start_link)speer assessment%(end_link)s step.\n"
+"                                "
+msgstr ""
+"\n"
+"                                    Данный этап задания ещё не завершён. Необходимо %(start_link)sдать оценку работам других учащихся%(end_link)s.\n"
+"                                "
+
+#: edx-ora2
+msgid ""
+"\n"
 "          In Progress (%(review_number)s of %(num_must_grade)s)\n"
 "        "
 msgstr ""
