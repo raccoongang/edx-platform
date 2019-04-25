@@ -162,15 +162,6 @@ site_status_msg = get_site_status_msg(course_id)
                 <a class="btn" href="/courses">${_("Explore Courses")}</a>
               </li>
             %endif
-            % if course and settings.FEATURES.get('RESTRICT_ENROLL_BY_REG_METHOD') and course.enrollment_domain:
-              <li class="item nav-global-04">
-                <a class="btn-neutral" href="${reverse('course-specific-register', args=[course.id.to_deprecated_string()])}">${_("Register")}</a>
-              </li>
-            % else:
-              <li class="item nav-global-04">
-                <a class="btn-neutral" href="/register${login_query()}">${_("Register")}</a>
-              </li>
-            % endif
           % endif
         </%block>
       </ol>
