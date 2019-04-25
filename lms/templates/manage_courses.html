@@ -1,0 +1,42 @@
+<%page expression_filter="h"/>
+<%inherit file="main.html" />
+<%namespace name='static' file='static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+from django.urls import reverse
+
+from openedx.core.djangolib.markup import HTML, Text
+%>
+
+<%block name="pagetitle">${_("Manage Courses")}</%block>
+
+<main id="main">
+    <h1>Manage Courses</h1>
+    <form>
+        <div style="float: left">
+            <h2>Student list:</h2>
+            <p>
+                <select multiple size="5">
+                    % if students:
+                        % for student in students: 
+                            <option>${student.user.profile.name or student.user.username}</option>
+                        % endfor
+                    % endif
+                </select>
+            <p>
+        </div>
+        <div>
+            <h2>Course list:</h2>
+            <p>
+                <select multiple size="5">
+                    % if courses:
+                        % for course in courses: 
+                            <option>${course.id}</option>
+                        % endfor
+                    % endif
+                </select>
+            <p>
+            <p><input type="submit"></p>
+        </div>
+    </form>
+</main>
