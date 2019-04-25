@@ -13,6 +13,7 @@ file and check it in at the same time as your model changes. To do that,
 import hashlib
 import json
 import logging
+import urlparse
 import uuid
 from collections import defaultdict, OrderedDict, namedtuple
 from datetime import datetime, timedelta
@@ -293,6 +294,13 @@ class UserProfile(models.Model):
     allow_certificate = models.BooleanField(default=1)
     bio = models.CharField(blank=True, null=True, max_length=3000, db_index=False)
     profile_image_uploaded_at = models.DateTimeField(null=True, blank=True)
+
+    @property
+    def arrow_url(self):
+        return urlparse.urljoin(
+            settings.ARROW_CUSTOMER_SITE_URL, 
+            settings.ARROW_CUSTOMER_SITE_COUNTRY_LIST.get(self.country.name, '')
+        )
 
     @property
     def has_profile_image(self):

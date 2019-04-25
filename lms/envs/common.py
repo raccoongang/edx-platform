@@ -245,7 +245,7 @@ FEATURES = {
     # When a logged in user goes to the homepage ('/') should the user be
     # redirected to the dashboard - this is default Open edX behavior. Set to
     # False to not redirect the user
-    'ALWAYS_REDIRECT_HOMEPAGE_TO_DASHBOARD_FOR_AUTHENTICATED_USER': True,
+    'ALWAYS_REDIRECT_HOMEPAGE_TO_DASHBOARD_FOR_AUTHENTICATED_USER': False,
 
     # When a user goes to the homepage ('/') the user sees the
     # courses listed in the announcement dates order - this is default Open edX behavior.
@@ -960,6 +960,31 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 # Guidelines for translators
 TRANSLATORS_GUIDE = 'http://edx.readthedocs.org/projects/edx-developer-guide/en/latest/conventions/internationalization/i18n_translators_guide.html'  # pylint: disable=line-too-long
 
+ARROW_CUSTOMER_SITE_COUNTRY_LIST = {
+        "Austria": "at",
+        "Belgium": "be",
+        "Luxembourg": "be",
+        "Czech Republic": "cz",
+        "Denmark": "dk",
+        "Estonia": "dk",
+        "Latvia": "dk",
+        "Lithuania": "dk",
+        "Finland": "fi",
+        "France": "fr",
+        "Germany": "de",
+        "Hungary": "hu",
+        "Netherlands": "nl",
+        "Norway": "no",
+        "Poland": "pl",
+        "Spain": "es",
+        "Portugal": "es",
+        "Sweden": "se",
+        "Switzerland": "ch",
+        "United Kingdom": "uk",
+        "Ireland": "uk",
+    }
+
+ARROW_CUSTOMER_SITE_URL =  "https://edu.arrow.com/"
 #################################### GITHUB #######################################
 # gitreload is used in LMS-workflow to pull content from github
 # gitreload requests are only allowed from these IP addresses, which are
