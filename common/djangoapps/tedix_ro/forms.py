@@ -64,6 +64,7 @@ class StudentRegisterForm(RegisterForm):
         'required': 'Please enter your parent email.'
     })
     instructor = forms.ModelChoiceField(
+        required=False,
         label='Teacher',
         queryset=InstructorProfile.objects.filter(user__is_staff=True, user__is_active=True),
         error_messages={
@@ -149,7 +150,7 @@ class StudentRegisterForm(RegisterForm):
 
     class Meta(object):
         model = StudentProfile
-        fields = ('role', 'phone', 'parent_email', 'parent_phone', 'instructor', 'school_city', 'school', 'classroom')
+        fields = ('role', 'phone', 'parent_email', 'parent_phone', 'school_city', 'school', 'instructor', 'classroom')
         serialization_options = {
             'role': {
                 'default': 'student',

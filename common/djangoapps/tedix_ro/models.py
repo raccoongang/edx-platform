@@ -68,7 +68,7 @@ class StudentProfile(UserProfile):
     """
     Related model for student profile
     """
-    instructor = models.ForeignKey(InstructorProfile, related_name='students', null=True, on_delete=models.SET_NULL)
+    instructor = models.ForeignKey(InstructorProfile, related_name='students', null=True, on_delete=models.SET_NULL, blank=True)
     school_city = models.ForeignKey(City, null=True, on_delete=models.SET_NULL)
     school = models.ForeignKey(School, null=True, on_delete=models.SET_NULL)
     paid = models.BooleanField(default=False)
