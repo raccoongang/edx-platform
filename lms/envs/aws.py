@@ -1028,6 +1028,10 @@ LOCALESET_FROM_REQUEST = ENV_TOKENS.get('LOCALESET_FROM_REQUEST', {"en": "en_US.
 ORA2_FILEUPLOAD_BACKEND = ENV_TOKENS.get('ORA2_FILEUPLOAD_BACKEND', 'filesystem')
 ORA2_FILEUPLOAD_ROOT = ENV_TOKENS.get('ORA2_FILEUPLOAD_BACKEND',  os.path.join(MEDIA_ROOT, 'submissions_attachments/'))
 ORA2_FILEUPLOAD_CACHE_NAME = ENV_TOKENS.get('ORA2_FILEUPLOAD_CACHE_NAME', 'default')
+
+# Variable for overriding standard MKTG_URLS
+EXTERNAL_MKTG_URLS = ENV_TOKENS.get('EXTERNAL_MKTG_URLS', {})
+
 #RACCOONGANG
 
 ############## Settings for CourseGraph ############################
