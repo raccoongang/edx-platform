@@ -3170,7 +3170,7 @@ msgstr "كلاهما"
 #: themes/stanford-style/lms/templates/footer.html
 #: themes/stanford-style/lms/templates/static_templates/about.html
 msgid "About"
-msgstr "لمحة عن"
+msgstr "عنا"
 
 #: common/lib/xmodule/xmodule/course_module.py cms/templates/settings.html
 msgid "None"
@@ -10801,7 +10801,7 @@ msgstr "البرامج"
 #: cms/templates/login.html cms/templates/widgets/header.html
 #: themes/red-theme/cms/templates/login.html
 msgid "Sign In"
-msgstr "تسجيل الدخول"
+msgstr "استكشف الدورات"
 
 #: cms/templates/login.html themes/red-theme/cms/templates/login.html
 msgid "Sign In to {studio_name}"
@@ -23202,5 +23202,14 @@ msgstr "نجمع المعلومات، بما في ذلك المعلومات ال
 msgid "We may log the IP address, operating system, and browser software used by each user of the Site, and we may be able to determine from an IP address a user's Internet Service Provider and the geographic location of his or her point of connectivity. Various web analytics tools are used to collect this information. Some of the information is collected through cookies (small text files placed on your computer that store information about you, which can be accessed by the Site). You should be able to control how and whether cookies will be accepted by your web browser. Most browsers offer instructions on how to reset the browser to reject cookies in the 'Help' section of the toolbar. If you reject our cookies, many functions and conveniences of this Site may not work properly."
 msgstr "قد نقوم بتسجيل عنوان IP ونظام التشغيل وبرنامج المتصفح المستخدم من قبل كل مستخدم للموقع، وقد نتمكن من تحديد من عنوان IP مزود خدمه الإنترنت الخاص بالمستخدم والموقع الجغرافي لنقطه الاتصال الخاصة به. وتستخدم أدوات تحليل الويب المختلفة لجمع هذه المعلومات. يتم جمع بعض المعلومات من خلال ملفات تعريف الارتباط (ملفات نصيه صغيره وضعت على جهاز الحاسوب الخاص بك التي تخزن معلومات عنك، والتي يمكن الوصول اليها من قبل الموقع). يجب ان تكون قادرا على التحكم في كيفية وما إذا كان سيتم قبول ملفات تعريف الارتباط من قبل متصفح الويب الخاص بك. تقدم معظم المتصفحات إرشادات حول كيفية أعاده تعيين المستعرض لرفض ملفات تعريف الارتباط في قسم \"التعليمات\" من شريط الادوات. إذا رفضت ملفات تعريف الارتباط الخاصة بنا، فقد لا تعمل العديد من الوظائف ووسائل الراحة لهذا الموقع بشكل صحيح."
 
+msgid "Welcome to online academy at Riyadh Schools"
+msgstr "مرحبًا بكم في أكاديمية مدارس الرياض للتدريب عن بعد"
 
+msgid "Empower your future"
+msgstr "نحو مستقبل مشرق"
 
+msgid "Online Academy at Riyadh schools"
+msgstr "أكاديمية مدارس الرياض للتدريب عن بعد"
+
+msgid "Show more courses"
+msgstr "مزيد من الدورات"
