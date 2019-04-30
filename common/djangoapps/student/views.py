@@ -76,7 +76,7 @@ from opaque_keys.edx.locator import CourseLocator
 
 from collections import namedtuple
 
-from courseware.courses import get_courses, sort_by_announcement, sort_by_start_date  # pylint: disable=import-error
+from courseware.courses import get_courses, sort_by_announcement, sort_by_start_date, sort_by_course_id  # pylint: disable=import-error
 from courseware.access import has_access
 
 from django_comment_common.models import Role
@@ -177,13 +177,7 @@ def index(request, extra_context=None, user=AnonymousUser()):
     programs_list = []
     courses = get_courses(user)
 
-    if configuration_helpers.get_value(
-            "ENABLE_COURSE_SORTING_BY_START_DATE",
-            settings.FEATURES["ENABLE_COURSE_SORTING_BY_START_DATE"],
-    ):
-        courses = sort_by_start_date(courses)
-    else:
-        courses = sort_by_announcement(courses)
+    courses = sort_by_course_id(courses)
 
     context = {'courses': courses}
 
@@ -614,9 +608,6 @@ def dashboard(request):
     # enrollments, because it could have been a data push snafu.
     course_enrollments = list(get_course_enrollments(user, course_org_filter, org_filter_out_set))
 
-    # sort the enrollment pairs by the enrollment date
-    course_enrollments.sort(key=lambda x: x.created, reverse=True)
-
     # Retrieve the course modes for each course
     enrolled_course_ids = [enrollment.course_id for enrollment in course_enrollments]
     __, unexpired_course_modes = CourseMode.all_and_unexpired_modes_for_courses(enrolled_course_ids)
@@ -755,6 +746,9 @@ def dashboard(request):
         )
     else:
         redirect_message = ''
+
+    # sort the enrollment pairs by the course id
+    course_enrollments.sort(key=lambda x: str(x.course_id).lower())
 
     context = {
         'enrollment_message': enrollment_message,

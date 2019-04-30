@@ -413,6 +413,14 @@ def sort_by_start_date(courses):
     return courses
 
 
+def sort_by_course_id(courses, reverse=False):
+    """
+    Returns a list of courses sorted by their course_id.
+    """
+    courses = sorted(courses, key=lambda x: str(x.pk).lower(), reverse=reverse)
+    return courses
+
+
 def get_cms_course_link(course, page='course'):
     """
     Returns a link to course_index for editing the course in cms,
