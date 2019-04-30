@@ -12,31 +12,24 @@ from openedx.core.djangolib.markup import HTML, Text
 
 <main id="main">
     <h1>Manage Courses</h1>
-    <form>
-        <div style="float: left">
-            <h2>Student list:</h2>
-            <p>
-                <select multiple size="5">
-                    % if students:
-                        % for student in students: 
-                            <option>${student.user.profile.name or student.user.username}</option>
-                        % endfor
-                    % endif
-                </select>
-            <p>
-        </div>
-        <div>
-            <h2>Course list:</h2>
-            <p>
-                <select multiple size="5">
-                    % if courses:
-                        % for course in courses: 
-                            <option>${course.id}</option>
-                        % endfor
-                    % endif
-                </select>
-            <p>
-            <p><input type="submit"></p>
-        </div>
+    % if messages:
+    <ul class="messages">
+        % for message in messages:
+            % if message.tags:
+                <li class=${ message.tags }>
+            % else:
+                <li>
+            % endif
+            ${ message }
+            </li>
+        % endfor
+    </ul>
+    % endif
+    <form method="post">
+        <table>
+            <input type="hidden" name="csrfmiddlewaretoken" value="${ csrftoken }" />
+            ${form.as_table() | h}
+        </table>
+        <input type="submit">
     </form>
 </main>

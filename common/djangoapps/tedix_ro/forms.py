@@ -1,6 +1,12 @@
+import datetime
+import pytz
+import time
+
 from django import forms
 from django.contrib.auth.models import User
 from django.forms import ModelForm
+
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 from student.models import (
     PasswordHistory,
@@ -177,3 +183,28 @@ class InstructorRegisterForm(RegisterForm):
                 'field_type': 'text'
             }
         }
+
+
+class StudentEnrollForm(forms.Form):
+    courses = forms.ModelMultipleChoiceField(queryset=CourseOverview.objects.none())
+    students = forms.ModelMultipleChoiceField(queryset=StudentProfile.objects.none())
+    due_date = forms.DateField(widget=forms.widgets.DateInput(attrs={'type': 'date'}))
+
+    def __init__(self, *args, **kwargs):
+        courses = kwargs.pop('courses')
+        students = kwargs.pop('students')
+        super(StudentEnrollForm, self).__init__(*args, **kwargs)
+        self.fields['courses'].queryset = courses
+        self.fields['students'].queryset = students
+
+    def clean_due_date(self):
+        due_date = self.cleaned_data['due_date']
+        due_date_utc = datetime.datetime.fromtimestamp(time.mktime(
+            due_date.timetuple()),
+            tz=pytz.utc
+        )
+        courses  = self.cleaned_data['courses']
+        for course in courses:
+            if not course.enrollment_start < due_date_utc < course.enrollment_end:
+                self.add_error('due_date', 'this due date is not valid for the course: {}'.format(course.id))
+        return due_date
