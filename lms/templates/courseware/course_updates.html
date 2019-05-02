@@ -1,9 +1,26 @@
-<%! from django.utils.translation import ugettext as _ %>
+<%!
+from django.utils.translation import ugettext as _
+from datetime import datetime
+%>
+
+<%def name="get_formatted_date(date)">
+  <%
+    formatted_date_str = date
+    try:
+        formatted_date = datetime.strptime(date, '%B %d, %Y')
+    except ValueError:
+        pass
+    else:
+        formatted_date_str = formatted_date.strftime('%m/%d/%Y')
+    return formatted_date_str
+  %>
+</%def>
+
 <div class="recent-updates">
   % for index, update in enumerate(visible_updates):
     <article class="updates-article">
       % if not update.get("is_error"):
-        <h5 class="date" id="msg-date-${index}">${update.get("date")}</h5>
+        <h5 class="date" id="msg-date-${index}">${get_formatted_date(update.get("date"))}</h5>
         <button
             class="toggle-visibility-button"
             data-hide="${_('Hide')}"
@@ -33,7 +50,7 @@
 <div class="old-updates hidden toggle-visibility-element" id="old-updates">
   % for index, update in enumerate(hidden_updates):
     <article class="updates-article">
-      <h5 class="date" id="msg-date-${index + len(visible_updates)}">${update.get("date")}</h5>
+      <h5 class="date" id="msg-date-${index + len(visible_updates)}">${get_formatted_date(update.get("date"))}</h5>
       <button
           class="toggle-visibility-button"
           data-hide="${_('Hide')}"

@@ -10,6 +10,7 @@ from django.utils.translation import ugettext as _
   <script type="text/javascript" src="${static.url('js/vendor/flot/jquery.flot.js')}"></script>
   <script type="text/javascript" src="${static.url('js/vendor/flot/jquery.flot.axislabels.js')}"></script>
 	<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 	<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.min.js"></script>
 	<script>
 		$('#action').validate();
@@ -177,10 +178,10 @@ textarea {
 	</li>
   </ul>
   <div class="form-actions">
-	<button type="submit" name="action" value="send_courses_xls">Send courses list</button>
+	<button type="submit" name="action" value="send_courses_xls">${_('Send courses list')}</button>
 	</div>
 	<hr />
-	<button name="action" value="get_courses_xls">Download courses list</button>
+	<button name="action" value="get_courses_xls">${_('Download courses list')}</button>
 
 </form>
 <hr style="width:40%" />
