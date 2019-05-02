@@ -479,8 +479,8 @@ def login_user(request):
             ParentProfile = apps.get_model('tedix_ro', 'ParentProfile')
             try:
                 # parent is logging in
-                student = possibly_authenticated_user.parentprofile.students.filter(user__is_active=False).first()
-                if student:
+                student = possibly_authenticated_user.parentprofile.students.all().first()
+                if student and not student.user.is_active:
                     _handle_failed_authentication(email_user, parent=True)
             except ParentProfile.DoesNotExist:
                 # student is logging in
