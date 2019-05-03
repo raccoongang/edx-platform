@@ -26,7 +26,6 @@ from lms.djangoapps.instructor.views import coupons as instructor_coupons_views
 from lms.djangoapps.instructor.views import instructor_dashboard as instructor_dashboard_views
 from lms.djangoapps.instructor.views import registration_codes as instructor_registration_codes_views
 from lms.djangoapps.instructor_task import views as instructor_task_views
-from lms.djangoapps.manage_courses.views import manage_courses
 from lms_migration import migrate as lms_migrate_views
 from notes import views as notes_views
 from notification_prefs import views as notification_prefs_views
@@ -52,6 +51,7 @@ from static_template_view import views as static_template_view_views
 from staticbook import views as staticbook_views
 from student import views as student_views
 from student_account import views as student_account_views
+from tedix_ro.views import manage_courses
 from track import views as track_views
 from util import views as util_views
 
