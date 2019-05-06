@@ -16,7 +16,7 @@ from openedx.core.djangoapps.content.course_overviews.models import CourseOvervi
 from student.models import CourseEnrollment
 from student.helpers import get_next_url_for_login_page
 from tedix_ro.forms import StudentEnrollForm
-from tedix_ro.models import StudentProfile
+from tedix_ro.models import StudentProfile, StudentCourseDueDate
 
 
 def manage_courses(request):
@@ -52,6 +52,11 @@ def manage_courses(request):
             for course in form.cleaned_data['courses']:
                 for student in form.cleaned_data['students']:
                     CourseEnrollment.enroll_by_email(student.user.email, course.id)
+                    StudentCourseDueDate.objects.update_or_create(
+                        student=student,
+                        course_id=course.id,
+                        defaults={'due_date':form.cleaned_data['courses']}
+                    )
 
             messages.success(request, 'Students have been successfully enrolled.')
             return redirect(reverse('manage_courses'))

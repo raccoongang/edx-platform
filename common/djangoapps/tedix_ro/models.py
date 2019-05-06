@@ -6,7 +6,9 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
+from opaque_keys.edx.django.models import CourseKeyField
 
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from student.models import AUDIT_LOG
 from student.views.management import compose_and_send_activation_email
 
@@ -98,6 +100,15 @@ class ParentProfile(UserProfile):
 
     def __unicode__(self):
         return unicode(self.user)
+
+
+class StudentCourseDueDate(models.Model):
+    due_date = models.DateField()
+    student = models.ForeignKey(StudentProfile, related_name='course_due_dates', on_delete=models.CASCADE)
+    course_id = CourseKeyField(max_length=255, db_index=True)
+
+    class Meta:
+        unique_together = ('student', 'course_id')
 
 
 @receiver(user_logged_in)
