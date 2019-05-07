@@ -7,6 +7,12 @@ from django.urls import reverse
 
 from openedx.core.djangolib.markup import HTML, Text
 %>
+<%block name="head_extra_js">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+</%block>
+<%block name="head_extra_css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css"/>
+</%block>
 
 <%block name="pagetitle">${_("Manage Courses")}</%block>
 
@@ -32,4 +38,11 @@ from openedx.core.djangolib.markup import HTML, Text
         </table>
         <input type="submit">
     </form>
+    <script>
+    $(function () {
+        $("#id_due_date").datetimepicker({
+        format: 'd/m/Y H:i',
+        });
+    });
+    </script>
 </main>

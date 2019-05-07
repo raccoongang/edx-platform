@@ -188,7 +188,13 @@ class InstructorRegisterForm(RegisterForm):
 class StudentEnrollForm(forms.Form):
     courses = forms.ModelMultipleChoiceField(queryset=CourseOverview.objects.none())
     students = forms.ModelMultipleChoiceField(queryset=StudentProfile.objects.none())
-    due_date = forms.DateField(widget=forms.widgets.DateInput(attrs={'type': 'date'}))
+    due_date = forms.DateTimeField(
+        input_formats=['%d/%m/%Y %H:%M'],
+        widget=forms.DateTimeInput(attrs={
+            'type': 'datetime',
+            'autocomplete': 'off'
+        })
+    )
 
     def __init__(self, *args, **kwargs):
         courses = kwargs.pop('courses')
