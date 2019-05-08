@@ -52,3 +52,6 @@ parsel==1.2.0
 # Info pages requirements
 django-tinymce==2.8.0
 django-hvad==1.8.0
+
+# ALU HQ Agent
+# -e git+https://gitlab.raccoongang.com/kraken/alu/hq-agent.git#egg=hq-agent

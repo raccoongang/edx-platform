@@ -173,7 +173,7 @@ def can_self_enroll_in_course(course_key):
     """
     if hasattr(course_key, 'ccx'):
         return False
-    return True
+    return False
 
 
 def course_open_for_self_enrollment(course_key):

@@ -141,6 +141,9 @@ urlpatterns = [
 
     url(r'^dashboard/', include('learner_dashboard.urls')),
     url(r'^api/experiments/', include('experiments.urls', namespace='api_experiments')),
+
+    # ALU HQ Agent
+    url(r'^agent_api/', include('agent.urls')),
 ]
 
 if settings.FEATURES.get("ENABLE_RG_INSTRUCTOR_ANALYTICS"):
