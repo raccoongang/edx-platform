@@ -595,6 +595,10 @@ if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
     sentry_sdk.init(AUTH_TOKENS.get('RG_SENTRY_DSN'), integrations=[DjangoIntegration()])
 #RACCOONGANG
 
+############################### Settings for custom oauth ###############################
+CUSTOM_OAUTH_PARAMS = ENV_TOKENS.get('CUSTOM_OAUTH_PARAMS', {})
+SOCIAL_AUTH_EXCLUDE_URL_PATTERN = r'^/admin'
+
 ####################### Plugin Settings ##########################
 
 from openedx.core.djangoapps.plugins import plugin_settings, constants as plugin_constants

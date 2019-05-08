@@ -24,7 +24,7 @@ import track.views
 from bulk_email.models import BulkEmailFlag, Optout  # pylint: disable=import-error
 from course_modes.models import CourseMode
 from courseware.access import has_access
-from edxmako.shortcuts import render_to_response, render_to_string
+from edxmako.shortcuts import render_to_response, render_to_string, marketing_link
 from entitlements.models import CourseEntitlement
 from lms.djangoapps.commerce.utils import EcommerceService  # pylint: disable=import-error
 from lms.djangoapps.verify_student.services import IDVerificationService
@@ -546,6 +546,10 @@ def student_dashboard(request):
         The dashboard response.
 
     """
+    redirect_url = marketing_link('DASHBOARD')
+    if redirect_url != '#':
+        return redirect(redirect_url, permanent=True)
+
     user = request.user
     if not UserProfile.objects.filter(user=user).exists():
         return redirect(reverse('account_settings'))

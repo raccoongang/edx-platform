@@ -7,7 +7,7 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.http import Http404
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_http_methods
 from django_countries import countries
@@ -46,6 +46,11 @@ def learner_profile(request, username):
     Example usage:
         GET /account/profile
     """
+
+    redirect_url = marketing_link('PROFILE')
+    if redirect_url != '#':
+        return redirect(redirect_url, permanent=True)
+
     try:
         context = learner_profile_context(request, username, request.user.is_staff)
         # TODO: LEARNER-2554: 09/2017: Remove message and cookie logic when we no longer want this message

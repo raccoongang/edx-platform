@@ -2324,6 +2324,9 @@ INSTALLED_APPS = [
     'tinymce',
     'info_pages',
     'hvad',
+
+    # ALU HQ Agent
+    'agent',
 ]
 
 ######################### CSRF #########################################
