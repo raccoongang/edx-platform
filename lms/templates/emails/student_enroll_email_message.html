@@ -1,0 +1,8 @@
+<p>You have been enrolled in:
+    {% for course_url, course_name in courses %}
+    <a href="{{ course_url }}">{{ course_name }}</a>
+    {% endfor %}
+    {% if due_date %}
+    Due date: {{ due_date }}
+    {% endif %}
+</p>
