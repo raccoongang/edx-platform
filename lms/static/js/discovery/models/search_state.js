@@ -16,6 +16,7 @@
             terms: {},
             jqhxr: null,
             catalog_visibility: 'both',
+            sort: 'course',
 
             initialize: function() {
                 this.discovery = new CourseDiscovery();
@@ -65,7 +66,8 @@
                     search_string: this.searchTerm,
                     page_size: this.pageSize,
                     page_index: pageIndex,
-                    catalog_visibility: this.catalog_visibility
+                    catalog_visibility: this.catalog_visibility,
+                    sort: this.sort,
                 };
                 _.extend(data, this.terms);
                 return data;
