@@ -136,7 +136,8 @@
                             search_string: '',
                             page_size: this.pageSize,
                             page_index: 0,
-                            catalog_visibility: this.catalog_visibility
+                            catalog_visibility: this.catalog_visibility,
+                            sort: this.sort,
                         },
                         success: function(model, response, options) {
                             deferred.resolveWith(self, [model]);
