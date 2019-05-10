@@ -55,7 +55,7 @@ def manage_courses(request):
                     StudentCourseDueDate.objects.update_or_create(
                         student=student,
                         course_id=course.id,
-                        defaults={'due_date':form.cleaned_data['courses']}
+                        defaults={'due_date':form.cleaned_data['due_date']}
                     )
 
             messages.success(request, 'Students have been successfully enrolled.')

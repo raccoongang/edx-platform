@@ -103,7 +103,7 @@ class ParentProfile(UserProfile):
 
 
 class StudentCourseDueDate(models.Model):
-    due_date = models.DateField()
+    due_date = models.DateTimeField()
     student = models.ForeignKey(StudentProfile, related_name='course_due_dates', on_delete=models.CASCADE)
     course_id = CourseKeyField(max_length=255, db_index=True)
 
