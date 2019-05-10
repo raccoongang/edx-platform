@@ -177,7 +177,18 @@ def index(request, extra_context=None, user=AnonymousUser()):
     programs_list = []
     courses = get_courses(user)
 
-    courses = sort_by_course_id(courses)
+    if configuration_helpers.get_value(
+        "ENABLE_COURSE_SORTING_BY_START_DATE",
+        settings.FEATURES["ENABLE_COURSE_SORTING_BY_START_DATE"],
+    ):
+        courses = sort_by_start_date(courses)
+    elif configuration_helpers.get_value(
+        "ENABLE_COURSE_SORTING_BY_COURSE_ID",
+        settings.FEATURES["ENABLE_COURSE_SORTING_BY_COURSE_ID"],
+    ):
+        courses = sort_by_course_id(courses)
+    else:
+        courses = sort_by_announcement(courses)
 
     context = {'courses': courses}
 
@@ -608,6 +619,16 @@ def dashboard(request):
     # enrollments, because it could have been a data push snafu.
     course_enrollments = list(get_course_enrollments(user, course_org_filter, org_filter_out_set))
 
+    if configuration_helpers.get_value(
+        "ENABLE_COURSE_SORTING_BY_COURSE_ID",
+        settings.FEATURES["ENABLE_COURSE_SORTING_BY_COURSE_ID"],
+    ):
+        # sort the enrollment pairs by the course id
+        course_enrollments.sort(key=lambda x: str(x.course_id).lower())
+    else:
+        # sort the enrollment pairs by the enrollment date
+        course_enrollments.sort(key=lambda x: x.created, reverse=True)
+
     # Retrieve the course modes for each course
     enrolled_course_ids = [enrollment.course_id for enrollment in course_enrollments]
     __, unexpired_course_modes = CourseMode.all_and_unexpired_modes_for_courses(enrolled_course_ids)
@@ -651,7 +672,8 @@ def dashboard(request):
     # Find programs associated with courses being displayed. This information
     # is passed in the template context to allow rendering of program-related
     # information on the dashboard.
-    meter = programs_utils.ProgramProgressMeter(user, enrollments=course_enrollments)
+    # Use list() method for coping list because 'meter.engaged_programs' sorting enrollments by created date.
+    meter = programs_utils.ProgramProgressMeter(user, enrollments=list(course_enrollments))
     programs_by_run = meter.engaged_programs(by_run=True)
 
     # Construct a dictionary of course mode information
@@ -691,7 +713,6 @@ def dashboard(request):
             BulkEmailFlag.feature_enabled(enrollment.course_id)
         )
     )
-
     # Verification Attempts
     # Used to generate the "you must reverify for course x" banner
     verification_status, verification_msg = SoftwareSecurePhotoVerification.user_status(user)
@@ -746,9 +767,6 @@ def dashboard(request):
         )
     else:
         redirect_message = ''
-
-    # sort the enrollment pairs by the course id
-    course_enrollments.sort(key=lambda x: str(x.course_id).lower())
 
     context = {
         'enrollment_message': enrollment_message,

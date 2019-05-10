@@ -143,7 +143,18 @@ def courses(request):
     course_discovery_meanings = getattr(settings, 'COURSE_DISCOVERY_MEANINGS', {})
     if not settings.FEATURES.get('ENABLE_COURSE_DISCOVERY'):
         courses_list = get_courses(request.user)
-        courses_list = sort_by_course_id(courses_list)
+        if configuration_helpers.get_value(
+            "ENABLE_COURSE_SORTING_BY_START_DATE",
+            settings.FEATURES["ENABLE_COURSE_SORTING_BY_START_DATE"],
+        ):
+            courses_list = sort_by_start_date(courses_list)
+        elif configuration_helpers.get_value(
+            "ENABLE_COURSE_SORTING_BY_COURSE_ID",
+            settings.FEATURES["ENABLE_COURSE_SORTING_BY_COURSE_ID"],
+        ):
+            courses_list = sort_by_course_id(courses_list)
+        else:
+            courses_list = sort_by_announcement(courses_list)
 
     # Getting all the programs from course-catalog service. The programs_list is being added to the context but it's
     # not being used currently in courseware/courses.html. To use this list, you need to create a custom theme that

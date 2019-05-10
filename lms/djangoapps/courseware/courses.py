@@ -413,12 +413,11 @@ def sort_by_start_date(courses):
     return courses
 
 
-def sort_by_course_id(courses, reverse=False):
+def sort_by_course_id(courses):
     """
     Returns a list of courses sorted by their course_id.
     """
-    courses = sorted(courses, key=lambda x: str(x.pk).lower(), reverse=reverse)
-    return courses
+    return sorted(courses, key=lambda x: str(x.pk).lower(), reverse=False)
 
 
 def get_cms_course_link(course, page='course'):
