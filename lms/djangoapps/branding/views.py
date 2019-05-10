@@ -112,6 +112,9 @@ def courses(request):
 
     if not settings.FEATURES.get('COURSES_ARE_BROWSABLE'):
         raise Http404
+    
+    if not request.GET.get('search_query'):
+        return redirect(reverse('root'))
 
     #  we do not expect this case to be reached in cases where
     #  marketing is enabled or the courses are not browsable
