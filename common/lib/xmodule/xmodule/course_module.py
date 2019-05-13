@@ -872,6 +872,7 @@ class CourseFields(object):
             {"display_name": _("Data, BI, Machine Learning & Artificial Intelligence"), "value": "data_bi"},
             {"display_name": _("Development"), "value": "development"},
             {"display_name": _("Security"), "value": "security"},
+            {"display_name": _("Business Applications"), "value": "business_applications"},
         ]
     )
 
