@@ -1504,7 +1504,7 @@ msgstr "апреля"
 #: common/djangoapps/util/date_utils.py
 msgctxt "month name"
 msgid "May"
-msgstr "май"
+msgstr "мая"
 
 #. Translators: this is a month name that will be used when displaying
 #. dates, as in "June 10, 2014". It is used for the %B directive in
@@ -26063,6 +26063,10 @@ msgstr "Права доступа"
 #: wiki/forms.py
 msgid "Owner"
 msgstr "Владелец"
+
+#: wiki/forms.py
+msgid "Group"
+msgstr "Группа"
 
 #: wiki/forms.py
 msgid "Enter the username of the owner."
