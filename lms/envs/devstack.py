@@ -187,6 +187,7 @@ COURSE_DISCOVERY_MEANINGS = {
             'data_bi': 'Data, BI, Machine Learning & Artificial Intelligence',
             'development': 'Development',
             'security': 'Security',
+            'business_applications': 'Business Applications',
         }
     }
 }
