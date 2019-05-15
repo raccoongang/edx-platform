@@ -25,6 +25,10 @@ class VideoFields(object):
         scope=Scope.user_state,
         default=datetime.timedelta(seconds=0)
     )
+    is_viewed = Boolean(
+        scope=Scope.user_state,
+        defult=False
+    )
     # TODO: This should be moved to Scope.content, but this will
     # require data migration to support the old video module.
     youtube_id_1_0 = String(

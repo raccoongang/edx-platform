@@ -97,6 +97,9 @@
                     data = {
                         saved_video_position: this.state.videoPlayer.currentTime
                     };
+                    if (this.state.videoPlayer.isEnded()) {
+                        data.is_viewed = true;
+                    }
                 }
 
                 if (data.speed) {

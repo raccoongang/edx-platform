@@ -688,6 +688,7 @@ function(HTML5Video, HTML5HLSVideo, Resizer, HLS, _) {
             break;
         case this.videoPlayer.PlayerState.ENDED:
             this.el.addClass('is-ended');
+            this.el.addClass('is-viewed');
             this.videoPlayer.onEnded();
             break;
         case this.videoPlayer.PlayerState.CUED:
