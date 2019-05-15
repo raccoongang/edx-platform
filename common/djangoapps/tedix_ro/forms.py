@@ -4,6 +4,7 @@ import time
 
 from django import forms
 from django.contrib.auth.models import User
+from django.utils import six, timezone
 from django.forms import ModelForm
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
@@ -184,11 +185,20 @@ class InstructorRegisterForm(RegisterForm):
             }
         }
 
+class CustomDateTimeField(forms.DateTimeField):
+
+    def to_python(self, value):
+        value = super(forms.DateTimeField, self).to_python(value)
+        if isinstance(value, datetime.datetime):
+            value = value.replace(tzinfo=pytz.UTC)
+        return value
+
 
 class StudentEnrollForm(forms.Form):
     courses = forms.ModelMultipleChoiceField(queryset=CourseOverview.objects.none())
     students = forms.ModelMultipleChoiceField(queryset=StudentProfile.objects.none())
-    due_date = forms.DateTimeField(
+    due_date = CustomDateTimeField(
+        label='Due Date (UTC):',
         input_formats=['%d/%m/%Y %H:%M'],
         widget=forms.DateTimeInput(attrs={
             'type': 'datetime',
@@ -204,13 +214,10 @@ class StudentEnrollForm(forms.Form):
         self.fields['students'].queryset = students
 
     def clean_due_date(self):
-        due_date = self.cleaned_data['due_date']
-        due_date_utc = datetime.datetime.fromtimestamp(time.mktime(
-            due_date.timetuple()),
-            tz=pytz.utc
-        )
+        due_date_utc = self.cleaned_data['due_date']
         courses  = self.cleaned_data['courses']
+        utcnow = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
         for course in courses:
-            if not course.enrollment_start < due_date_utc < course.enrollment_end:
+            if not (course.enrollment_start < due_date_utc < course.enrollment_end and utcnow < due_date_utc):
                 self.add_error('due_date', 'this due date is not valid for the course: {}'.format(course.id))
-        return due_date
+        return due_date_utc

@@ -103,20 +103,12 @@ class CoursewareIndex(View):
 
         if not (request.user.is_authenticated or self.enable_anonymous_courseware_access):
             return redirect_to_login(request.get_full_path())
-
-        StudentProfile = apps.get_model('tedix_ro', 'StudentProfile')
         try:
             student_course_due_date = request.user.studentprofile.course_due_dates.filter(course_id=self.course_key).first()
             if student_course_due_date:
-                now = datetime.datetime.utcnow()
-                user_time_zone = request.user.preferences.filter(key='time_zone').first()
-                if user_time_zone:
-                    user_tz = pytz.timezone(user_time_zone.value)
-                    course_tz_due_datetime = user_tz.localize(student_course_due_date.due_date.replace(tzinfo=None), is_dst=None)
-                    user_local_now = pytz.utc.localize(now, is_dst=None).astimezone(user_tz)
-                    if course_tz_due_datetime < user_local_now:
-                        return redirect(reverse('openedx.course_experience.course_home', kwargs={'course_id': self.course_key}))
-                elif student_course_due_date.due_date < now:
+                now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
+                if student_course_due_date.due_date < now:
+                    PageLevelMessages.register_warning_message(request, _('The due date has passed. You can no longer access the content.'))
                     return redirect(reverse('openedx.course_experience.course_home', kwargs={'course_id': self.course_key}))
         except StudentProfile.DoesNotExist:
             pass
