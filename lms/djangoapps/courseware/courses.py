@@ -417,7 +417,7 @@ def sort_by_course_id(courses):
     """
     Returns a list of courses sorted by their course_id.
     """
-    return sorted(courses, key=lambda x: str(x.pk).lower(), reverse=False)
+    return sorted(courses, key=lambda x: str(x.pk).lower())
 
 
 def get_cms_course_link(course, page='course'):
