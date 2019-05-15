@@ -250,7 +250,11 @@ FEATURES = {
     # When a user goes to the homepage ('/') the user sees the
     # courses listed in the announcement dates order - this is default Open edX behavior.
     # Set to True to change the course sorting behavior by their start dates, latest first.
-    'ENABLE_COURSE_SORTING_BY_START_DATE': True,
+    'ENABLE_COURSE_SORTING_BY_START_DATE': False,
+
+    # When a user goes to the homepage ('/') the user sees the courses listed in the announcement course id order.
+    # Set to True to change the course sorting behavior by their course id.
+    'ENABLE_COURSE_SORTING_BY_COURSE_ID': True,
 
     # When set to True, a list of programs is displayed along with the list of courses
     # when the user visits the homepage or the find courses page.

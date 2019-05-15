@@ -1,6 +1,7 @@
 """
 Student Views
 """
+import copy
 import datetime
 import logging
 import uuid
@@ -76,7 +77,7 @@ from opaque_keys.edx.locator import CourseLocator
 
 from collections import namedtuple
 
-from courseware.courses import get_courses, sort_by_announcement, sort_by_start_date  # pylint: disable=import-error
+from courseware.courses import get_courses, sort_by_announcement, sort_by_start_date, sort_by_course_id  # pylint: disable=import-error
 from courseware.access import has_access
 
 from django_comment_common.models import Role
@@ -178,10 +179,15 @@ def index(request, extra_context=None, user=AnonymousUser()):
     courses = get_courses(user)
 
     if configuration_helpers.get_value(
-            "ENABLE_COURSE_SORTING_BY_START_DATE",
-            settings.FEATURES["ENABLE_COURSE_SORTING_BY_START_DATE"],
+        "ENABLE_COURSE_SORTING_BY_START_DATE",
+        settings.FEATURES["ENABLE_COURSE_SORTING_BY_START_DATE"],
     ):
         courses = sort_by_start_date(courses)
+    elif configuration_helpers.get_value(
+        "ENABLE_COURSE_SORTING_BY_COURSE_ID",
+        settings.FEATURES["ENABLE_COURSE_SORTING_BY_COURSE_ID"],
+    ):
+        courses = sort_by_course_id(courses)
     else:
         courses = sort_by_announcement(courses)
 
@@ -614,8 +620,15 @@ def dashboard(request):
     # enrollments, because it could have been a data push snafu.
     course_enrollments = list(get_course_enrollments(user, course_org_filter, org_filter_out_set))
 
-    # sort the enrollment pairs by the enrollment date
-    course_enrollments.sort(key=lambda x: x.created, reverse=True)
+    if configuration_helpers.get_value(
+        "ENABLE_COURSE_SORTING_BY_COURSE_ID",
+        settings.FEATURES["ENABLE_COURSE_SORTING_BY_COURSE_ID"],
+    ):
+        # sort the enrollment pairs by the course id
+        course_enrollments.sort(key=lambda x: str(x.course_id).lower())
+    else:
+        # sort the enrollment pairs by the enrollment date
+        course_enrollments.sort(key=lambda x: x.created, reverse=True)
 
     # Retrieve the course modes for each course
     enrolled_course_ids = [enrollment.course_id for enrollment in course_enrollments]
@@ -660,7 +673,8 @@ def dashboard(request):
     # Find programs associated with courses being displayed. This information
     # is passed in the template context to allow rendering of program-related
     # information on the dashboard.
-    meter = programs_utils.ProgramProgressMeter(user, enrollments=course_enrollments)
+    # Use copy.copy() because 'meter.engaged_programs' sorting enrollments by created date.
+    meter = programs_utils.ProgramProgressMeter(user, enrollments=copy.copy(course_enrollments))
     programs_by_run = meter.engaged_programs(by_run=True)
 
     # Construct a dictionary of course mode information
@@ -700,7 +714,6 @@ def dashboard(request):
             BulkEmailFlag.feature_enabled(enrollment.course_id)
         )
     )
-
     # Verification Attempts
     # Used to generate the "you must reverify for course x" banner
     verification_status, verification_msg = SoftwareSecurePhotoVerification.user_status(user)
