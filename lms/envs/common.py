@@ -2257,6 +2257,9 @@ INSTALLED_APPS = (
     # ALUx external content widget application
     'notifications',
     'alu_ec_widget',
+
+    # ALU Student Gradebook:
+    'alux_student_gradebook',
 )
 
 ######################### CSRF #########################################

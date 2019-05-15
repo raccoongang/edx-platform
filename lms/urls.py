@@ -127,6 +127,9 @@ urlpatterns = (
 
     # URLs for external-content-widget
     url(r'^', include('alu_ec_widget.urls', namespace="widget")),
+
+    # ALU Student Dashboard:
+    url(r'^gradebook/', include('alux_student_gradebook.urls', namespace="gradebook")),
 )
 
 if settings.FEATURES["ENABLE_RG_INSTRUCTOR_ANALYTICS"]:
