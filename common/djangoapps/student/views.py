@@ -1,6 +1,7 @@
 """
 Student Views
 """
+import copy
 import datetime
 import logging
 import uuid
@@ -672,8 +673,8 @@ def dashboard(request):
     # Find programs associated with courses being displayed. This information
     # is passed in the template context to allow rendering of program-related
     # information on the dashboard.
-    # Use list() method for coping list because 'meter.engaged_programs' sorting enrollments by created date.
-    meter = programs_utils.ProgramProgressMeter(user, enrollments=list(course_enrollments))
+    # Use copy.copy() because 'meter.engaged_programs' sorting enrollments by created date.
+    meter = programs_utils.ProgramProgressMeter(user, enrollments=copy.copy(course_enrollments))
     programs_by_run = meter.engaged_programs(by_run=True)
 
     # Construct a dictionary of course mode information
