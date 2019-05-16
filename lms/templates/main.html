@@ -41,6 +41,8 @@ from pipeline_mako import render_require_js_path_overrides
       </title>
   </%block>
 
+  <%block name="description"></%block>
+
   % if not allow_iframing:
       <script type="text/javascript">
         /* immediately break out of an iframe if coming from the marketing website */
