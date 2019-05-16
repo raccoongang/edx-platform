@@ -99,6 +99,7 @@
                     };
                     if (this.state.videoPlayer.isEnded()) {
                         data.is_viewed = true;
+                        this.state.storage.setItem('isViewed', true, true);
                     }
                 }
 
