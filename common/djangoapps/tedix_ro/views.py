@@ -42,7 +42,7 @@ def manage_courses(request):
     except InstructorProfile.DoesNotExist:
         return redirect(reverse('dashboard'))
 
-    now = datetime.datetime.utcnow()
+    now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
     courses = CourseOverview.objects.filter(enrollment_end__gt=now, enrollment_start__lt=now)
     form = StudentEnrollForm(students=students, courses=courses)
     if request.method == 'POST':
