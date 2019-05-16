@@ -371,6 +371,7 @@ class VideoModule(VideoFields, VideoTranscriptsMixin, VideoStudentViewHandlers, 
             'transcript_download_format': transcript_download_format,
             'transcript_download_formats_list': self.descriptor.fields['transcript_download_format'].values,
             'license': getattr(self, "license", None),
+            'video_class': self.is_viewed and 'is-viewed' or '',
         }
         return self.system.render_template('video.html', context)
 
