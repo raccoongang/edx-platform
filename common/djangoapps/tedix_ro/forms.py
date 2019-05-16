@@ -193,10 +193,21 @@ class CustomDateTimeField(forms.DateTimeField):
             value = value.replace(tzinfo=pytz.UTC)
         return value
 
+class CourseMultipleModelChoiceField(forms.ModelMultipleChoiceField):
+
+    def label_from_instance(self, obj):
+        return "{}".format(obj.display_name)
+
+
+class StudentMultipleModelChoiceField(forms.ModelMultipleChoiceField):
+
+    def label_from_instance(self, obj):
+        return "{}".format(obj.user.profile.name) if obj.user.profile.name else obj.user.username
+
 
 class StudentEnrollForm(forms.Form):
-    courses = forms.ModelMultipleChoiceField(queryset=CourseOverview.objects.none())
-    students = forms.ModelMultipleChoiceField(queryset=StudentProfile.objects.none())
+    courses = CourseMultipleModelChoiceField(queryset=CourseOverview.objects.none())
+    students = StudentMultipleModelChoiceField(queryset=StudentProfile.objects.none())
     due_date = CustomDateTimeField(
         label='Due Date (UTC):',
         input_formats=['%d/%m/%Y %H:%M'],
