@@ -16,6 +16,12 @@ from openedx.core.djangolib.markup import HTML, Text
 
 <%block name="pagetitle">${_("Manage Courses")}</%block>
 
+## TODO:this layout solution is temporary 
+<style type="text/css">
+    select {width: 200%}
+    #id_due_date {width: 197%}
+</style>
+
 <main id="main">
     <h1>Manage Courses</h1>
     % if messages:
@@ -35,8 +41,8 @@ from openedx.core.djangolib.markup import HTML, Text
         <table>
             <input type="hidden" name="csrfmiddlewaretoken" value="${ csrftoken }" />
             ${form.as_table() | h}
+            <th/><td><input id='submit' type="submit"></td>
         </table>
-        <input type="submit">
     </form>
     <script>
     $(function () {
