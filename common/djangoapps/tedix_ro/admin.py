@@ -5,6 +5,7 @@ import time
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.widgets import AdminSplitDateTime
+from django.contrib.auth.models import User
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from import_export.formats import base_formats
@@ -23,10 +24,51 @@ from tedix_ro.models import (
 )
 
 
-admin.site.register(InstructorProfile)
-admin.site.register(StudentProfile)
-admin.site.register(ParentProfile)
 admin.site.register(Classroom)
+
+
+class ProfileForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(ProfileForm, self).__init__(*args, **kwargs)
+        instructors = InstructorProfile.objects.all()
+        students = StudentProfile.objects.all()
+        parents = ParentProfile.objects.all()
+        users = User.objects.exclude(studentprofile__in=students).exclude(instructorprofile__in=instructors).exclude(parentprofile__in=parents)
+        self.fields['user'].queryset = users
+
+
+class StudentProfileForm(ProfileForm):
+    class Meta:
+        model = StudentProfile
+        fields = '__all__'
+
+
+class InstructorProfileForm(ProfileForm):
+    class Meta:
+        model = InstructorProfile
+        fields = '__all__'
+
+
+class ParentProfileForm(ProfileForm):
+    class Meta:
+        model = ParentProfile
+        fields = '__all__'
+
+
+@admin.register(StudentProfile)
+class StudentProfileAdmin(admin.ModelAdmin):
+    form = StudentProfileForm
+
+
+@admin.register(ParentProfile)
+class ParentProfileAdmin(admin.ModelAdmin):
+    form = ParentProfileForm
+
+
+@admin.register(InstructorProfile)
+class InstructorProfileAdmin(admin.ModelAdmin):
+    form = InstructorProfileForm
 
 
 class CityResource(resources.ModelResource):
