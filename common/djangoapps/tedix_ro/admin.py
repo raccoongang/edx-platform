@@ -70,6 +70,7 @@ class StudentCourseDueDateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(StudentCourseDueDateForm, self).__init__(*args, **kwargs)
         self.fields['due_date'].widget = CustomAdminSplitDateTime()
+        self.fields['student'].queryset = StudentProfile.objects.filter(user__is_active=True)
     
     def clean_due_date(self):
         data = self.cleaned_data['due_date'].replace(tzinfo=pytz.UTC)
