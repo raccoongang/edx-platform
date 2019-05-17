@@ -230,5 +230,5 @@ class StudentEnrollForm(forms.Form):
         utcnow = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
         for course in courses:
             if not (course.enrollment_start < due_date_utc < course.enrollment_end and utcnow < due_date_utc):
-                self.add_error('due_date', 'this due date is not valid for the course: {}'.format(course.id))
+                self.add_error('due_date', 'this due date is not valid for the course: {}'.format(course.display_name))
         return due_date_utc
