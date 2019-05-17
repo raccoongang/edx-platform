@@ -49,7 +49,10 @@ def manage_courses(request):
         data = dict(
             courses = map(CourseKey.from_string, request.POST.getlist('courses')),
             students = request.POST.getlist('students'),
-            due_date = request.POST['due_date']
+            due_date = request.POST.get('due_date'),
+            send_to_students=request.POST.get('send_to_students'),
+            send_to_parents=request.POST.get('send_to_parents'),
+            send_sms=request.POST.get('send_sms')
         )
         form = StudentEnrollForm(data=data, courses=courses, students=students)
         if form.is_valid():
@@ -94,9 +97,18 @@ def manage_courses(request):
                     'email_from_address',
                     settings.DEFAULT_FROM_EMAIL
                 )
-                recipient_list = [student.user.email, student.parents.first().user.email]
-                send_mail("Due Date", txt_message, from_address, recipient_list, html_message=html_message)
+                recipient_list = []
+                if form.cleaned_data['send_to_students']:
+                    recipient_list.append(student.user.email)
+                if form.cleaned_data['send_to_parents']:
+                    recipient_list.append(student.parents.first().user.email)
 
+                if recipient_list:
+                    send_mail("Due Date", txt_message, from_address, recipient_list, html_message=html_message)
+                
+                if form.cleaned_data['send_sms']:
+                    # sending sms logic to be here
+                    pass
             messages.success(request, 'Students have been successfully enrolled.')
             return redirect(reverse('manage_courses'))
 
