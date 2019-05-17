@@ -30,7 +30,7 @@ def manage_courses(request):
     if not user.is_authenticated():
         return redirect(get_next_url_for_login_page(request))
 
-    if not user.is_staff:
+    if not (user.is_staff or user.is_superuser):
         return redirect(reverse('dashboard'))
 
     context = {
@@ -38,9 +38,12 @@ def manage_courses(request):
         'show_dashboard_tabs': True
     }
     try:
-        students = user.instructorprofile.students.all()
+        if user.is_superuser:
+            students = StudentProfile.objects.filter(user__is_active=True)
+        else:
+            students = user.instructorprofile.students.filter(user__is_active=True)
     except InstructorProfile.DoesNotExist:
-        return redirect(reverse('dashboard'))
+        students = StudentProfile.objects.none()
 
     now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
     courses = CourseOverview.objects.filter(enrollment_end__gt=now, enrollment_start__lt=now)
