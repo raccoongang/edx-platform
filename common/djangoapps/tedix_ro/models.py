@@ -110,6 +110,9 @@ class StudentCourseDueDate(models.Model):
     class Meta:
         unique_together = ('student', 'course_id')
 
+    def __unicode__(self):
+        return u'Student course due date'
+
 
 @receiver(user_logged_in)
 def student_parent_logged_in(sender, request, user, **kwargs):  # pylint: disable=unused-argument
