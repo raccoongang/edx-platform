@@ -76,7 +76,7 @@ def manage_courses(request):
                     user_time_zone = student.user.preferences.filter(key='time_zone').first()
                     if user_time_zone:
                         user_tz = pytz.timezone(user_time_zone.value)
-                        course_tz_due_datetime = user_tz.localize(due_date.replace(tzinfo=None), is_dst=None)
+                        course_tz_due_datetime = pytz.UTC.localize(due_date.replace(tzinfo=None), is_dst=None).astimezone(user_tz)
                         context = {
                             'courses': courses_list,
                             'due_date': course_tz_due_datetime.strftime(
