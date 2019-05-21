@@ -138,16 +138,17 @@ class StudentCourseDueDateForm(forms.ModelForm):
         super(StudentCourseDueDateForm, self).clean()
         student = self.cleaned_data.get('student')
         due_date_utc = self.cleaned_data.get('due_date')
-        try:
-            course_id = CourseKey.from_string(self.cleaned_data.get('course_id'))
-            course = CourseOverview.objects.get(id=course_id)
-            utcnow = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
-            if not (course.start < due_date_utc < course.end and utcnow < due_date_utc):
-                self.add_error('due_date', 'This due date is not valid for the course: {}'.format(course_id))
-        except CourseOverview.DoesNotExist:
-            raise forms.ValidationError("Course does not exist")
-        except InvalidKeyError:
-            self.add_error('course_id', 'Invalid CourseKey')
+        if due_date_utc and student:
+            try:
+                course_id = CourseKey.from_string(self.cleaned_data.get('course_id'))
+                course = CourseOverview.objects.get(id=course_id)
+                utcnow = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
+                if not (course.start < due_date_utc < course.end and utcnow < due_date_utc):
+                    self.add_error('due_date', 'This due date is not valid for the course: {}'.format(course_id))
+            except CourseOverview.DoesNotExist:
+                raise forms.ValidationError("Course does not exist")
+            except InvalidKeyError:
+                self.add_error('course_id', 'Invalid CourseKey')
 
         return self.cleaned_data
 
