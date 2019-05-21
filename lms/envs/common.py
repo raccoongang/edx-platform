@@ -2161,6 +2161,9 @@ INSTALLED_APPS = (
 
     # Unusual migrations
     'database_fixups',
+
+    # Extension of the registration form
+    'reg_form_extension',
 )
 
 ######################### CSRF #########################################
@@ -2381,15 +2384,15 @@ XDOMAIN_PROXY_CACHE_TIMEOUT = 60 * 15
 # - 'hidden': to not display the field
 
 REGISTRATION_EXTRA_FIELDS = {
-    'level_of_education': 'optional',
-    'gender': 'optional',
-    'year_of_birth': 'optional',
-    'mailing_address': 'optional',
+    'level_of_education': 'hidden',
+    'gender': 'hidden',
+    'year_of_birth': 'hidden',
+    'mailing_address': 'hidden',
     'goals': 'optional',
     'honor_code': 'required',
     'terms_of_service': 'hidden',
     'city': 'hidden',
-    'country': 'hidden',
+    'country': 'required',
 }
 
 # Optional setting to restrict registration / account creation to only emails
@@ -2973,7 +2976,7 @@ MAX_BOOKMARKS_PER_COURSE = 100
 # need to add the model's app to the ADDL_INSTALLED_APPS array in your
 # lms.env.json file.
 
-REGISTRATION_EXTENSION_FORM = None
+REGISTRATION_EXTENSION_FORM = "reg_form_extension.forms.ExtraInfoForm"
 
 # Identifier included in the User Agent from open edX mobile apps.
 MOBILE_APP_USER_AGENT_REGEXES = [
