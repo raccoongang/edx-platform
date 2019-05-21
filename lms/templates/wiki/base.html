@@ -9,6 +9,10 @@
 {% block bodyclass %}view-in-course view-wiki{% endblock %}
 
 {% block headextra %}
+
+  {{ xml_css_includes | safe }}
+  {{ xml_js_includes | safe }}
+
   {% stylesheet 'course' %}
   {% stylesheet 'style-course-vendor' %}
   {% stylesheet 'style-course' %}
