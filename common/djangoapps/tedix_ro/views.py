@@ -112,7 +112,7 @@ def manage_courses(request):
                 if form.cleaned_data['send_sms']:
                     # sending sms logic to be here
                     pass
-            messages.success(request, 'Course(s) have been successfully assigned.')
+            messages.success(request, 'Successfully assigned.')
             return redirect(reverse('manage_courses'))
 
     context.update({

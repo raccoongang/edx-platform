@@ -3,8 +3,10 @@ import pytz
 import time
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.utils import six, timezone
+from django.utils.encoding import force_text
 from django.forms import ModelForm
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
@@ -198,6 +200,47 @@ class CourseMultipleModelChoiceField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
         return "{}".format(obj.display_name)
 
+    def _check_values(self, value):
+        """
+        Given a list of possible PK values, returns a QuerySet of the
+        corresponding objects. Raises a ValidationError if a given value is
+        invalid (not a valid PK, not in the queryset, etc.)
+        """
+        key = self.to_field_name or 'pk'
+        # deduplicate given values to avoid creating many querysets or
+        # requiring the database backend deduplicate efficiently.
+        try:
+            value = frozenset(value)
+        except TypeError:
+            # list of lists isn't hashable, for example
+            raise ValidationError(
+                self.error_messages['list'],
+                code='list',
+            )
+        for pk in value:
+            try:
+                self.queryset.filter(**{key: pk})
+            except (ValueError, TypeError):
+                raise ValidationError(
+                    self.error_messages['invalid_pk_value'],
+                    code='invalid_pk_value',
+                    params={'pk': pk},
+                )
+        qs = self.queryset.filter(**{'%s__in' % key: value})
+        pks = set(force_text(getattr(o, key)) for o in qs)
+        error_course_list = list()
+        for val in value:
+            if force_text(val) not in pks:
+                course = CourseOverview.objects.filter(id=val).first()
+                error_course_list.append(course.display_name if course else val)
+        if error_course_list:
+            raise ValidationError(
+                self.error_messages['invalid_choice'],
+                code='invalid_choice',
+                params={'value': '", "'.join(error_course_list)},
+            )
+        return qs
+
 
 class StudentMultipleModelChoiceField(forms.ModelMultipleChoiceField):
 
@@ -225,13 +268,20 @@ class StudentEnrollForm(forms.Form):
         students = kwargs.pop('students')
         super(StudentEnrollForm, self).__init__(*args, **kwargs)
         self.fields['courses'].queryset = courses
+        self.fields['courses'].error_messages={
+            'invalid_choice': 'The enrollment end date has passed. The following courses are no longer available for enrollment: "%(value)s".',
+        }
         self.fields['students'].queryset = students
 
     def clean_due_date(self):
         due_date_utc = self.cleaned_data['due_date']
-        courses  = self.cleaned_data['courses']
-        utcnow = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
-        for course in courses:
-            if not (course.start < due_date_utc < course.end and utcnow < due_date_utc):
-                self.add_error('due_date', 'This due date is not valid for the course: {}.'.format(course.display_name))
+        courses  = self.cleaned_data.get('courses')
+        if courses:
+            utcnow = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
+            error_course_list = list()
+            for course in courses:
+                if not (course.start < due_date_utc < course.end and utcnow < due_date_utc):
+                    error_course_list.append(course.display_name)
+            if error_course_list:
+                self.add_error('due_date', 'This due date is not valid for the following courses: "{}".'.format('", "'.join(error_course_list)))
         return due_date_utc
