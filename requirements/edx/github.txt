@@ -68,7 +68,7 @@ git+https://github.com/hmarr/django-debug-toolbar-mongo.git@b0686a76f1ce3532088c
 rfc6266-parser
 
 # Used for testing
-git+https://github.com/edx/lettuce.git@0.2.20.002#egg=lettuce==0.2.20.002
+git+https://github.com/edx/lettuce.git@0.2.22#egg=lettuce==0.2.22
 
 # Our libraries:
 git+https://github.com/edx/XBlock.git@xblock-0.4.13#egg=XBlock==0.4.13
