@@ -535,6 +535,9 @@ TEMPLATES = [
                 # Allows the open edX footer to be leveraged in Django Templates.
                 'edxmako.shortcuts.footer_context_processor',
 
+                # Xml header and footer filters
+                'context_processors.xml_header_and_footer',
+
                 # Online contextual help
                 'context_processors.doc_url',
                 'openedx.core.djangoapps.site_configuration.context_processors.configuration_context'
