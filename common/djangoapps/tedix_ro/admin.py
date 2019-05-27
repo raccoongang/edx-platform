@@ -39,13 +39,10 @@ class ProfileForm(forms.ModelForm):
         if instance:
             if isinstance(instance, StudentProfile):
                 students = students.exclude(user=instance.user)
-                if instance.instructor:
-                    instructors = instructors.exclude(id=instance.instructor.id)
             if isinstance(instance, InstructorProfile):
                 instructors = instructors.exclude(user=instance.user)
             if isinstance(instance, ParentProfile):
                 parents = parents.exclude(user=instance.user)
-                students = students.exclude(id__in=instance.students.all())
         users = User.objects.exclude(id__in=set(chain(
             instructors.values_list('user_id', flat=True),
             students.values_list('user_id', flat=True),
