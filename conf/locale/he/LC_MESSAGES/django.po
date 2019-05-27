@@ -25641,3 +25641,335 @@ msgid ""
 "A new revision was created: Merge between Revision #%(r1)d and Revision "
 "#%(r2)d"
 msgstr "גרסה חדשה נוצרה: מיזוג בין גרסה #%(r1)d וגרסה #%(r2)d"
+
+#: about.html
+msgid "About John Bryce Online Academy"
+msgstr "אודות John Bryce Online Training"
+
+msgid "John Bryce Online Academy is an interactive, online learning platform that gives you direct access to a wide range of high-quality e-learning courses."
+msgstr "האקדמיה המקוונת של ג'ון ברייס היא פלטפורמה המאפשרת למידה מקוונת ואינטראקטיבית, באמצעות גישה למגוון רחב של קורסי e-learning איכותיים."
+
+msgid "Our course catalog offers a variety of e-learning courses in various areas, such as Data Science, Programming, Microsoft Azure and more."
+msgstr "קטלוג הקורסים שלנו מציע מבחר של קורסי e-learning בתחומים שונים, כגון Data Science, תכנות, Microsoft Azure ועוד."
+
+msgid "Log in at any time, from anywhere and on any device to your profile and continue your learning with John Bryce Online Academy."
+msgstr "אתם מוזמנים להתחבר בכל עת, מכל מקום ובכל מכשיר, ולהמשיך את הלמידה עם John Bryce Online Training."
+
+msgid "Looking for a blended/hybrid learning solution for your team or company?"
+msgstr "מתעניינים בפתרון ללמידה היברידית (Hybrid) / מעורבת (Blended) עבור הצוות או החברה"
+
+msgid "We can happily provide you with a tailored solution to your team's needs. Contact us at"
+msgstr "שלכם? נשמח לספק לכם פתרון מותאם בתפירה אישית לצרכיכם. מוזמנים ליצור קשר בכתובת"
+
+msgid "John Bryce Training, the training division of <a target='_blank' href='https://www.matrix-globalservices.com/'>Matrix Group</a>, is the leading training company in Israel, providing reskilling courses for Hi-Tech industry and training for technology professionals, training over 10,000 participants in a year, with a verity of over 500 professional courses in 3 training centers located at Tel Aviv, Haifa and Jerusalem."
+msgstr "חברת ג'ון ברייס הדרכה, זרוע ההדרכה של <a target='_blank' href='https://www.matrix-globalservices.com/'>Matrix Group</a>, הינה חברת ההדרכה המובילה בישראל ומהמובילות באירופה בתחום הדרכת המחשוב וטכנולוגיית המידע ובתחום הדרכת מיומנות הניהול, השירות והמכירות. לג'ון ברייס הדרכה 3 מרכזי הדרכה בישראל ומרכזים נוספים באירופה."
+
+msgid "Interested to know more? Visit us at"
+msgstr "למכללה שני קהלי יעד מרכזיים: אנשי מקצוע מנוסים מהתעשייה בכלל ומתעשיית ההייטק בפרט ותלמידים העושים את צעדיהם הראשונים בעולם ההייטק במסגרת קורסי הסבה והכשרה ייחודיים המועברים בשעות הבוקר והערב.  מדי שנה אנו מכשירים למעלה מ- 10,000 אנשי הייטק הבוחרים מתוך מגוון של יותר מ-500 קורסים מקצועיים, החל ממסלולי הכשרה להזנקת הקריירה ועד התמחות בטכנולוגיות מתקדמות עבור אנשי מקצוע מנוסים. מעוניינים לדעת יותר? בקרו באתר www.johnbryce.co.il"
+
+#: privacy.html
+msgid "This Privacy Policy by John Bryce Training Ltd, Private Company Number 511449878 ('The Company' Or any appeal in first person), the operator of the site John Bryce Online Academy (online.johnbryce.co.il) (Hereinafter: 'the Site'), will state the general outlines of how we collect and use information about you, through the Site or through other means, within our Services."
+msgstr "מדיניות פרטיות זו היא של חברת ג'ון ברייס הדרכה בע'מ, ח.פ. 511449878 ('החברה' או כל פנייה בגוף ראשון) מפעילת אתר John Bryce Online Academy (להלן: 'האתר'), ויצוינו בה הקווים הכלליים של האופן בו אנו אוספים ומשתמשים במידע אודותיך, באמצעות האתר או באמצעים אחרים, במסגרת השירותים שלנו. פרטיותך חשובה לנו. אנו נפעל כמפורט במדיניות פרטיות זו, בהתאם להוראות הדין, לרבות חוק הגנת הפרטיות, התשמ'א-1981."
+
+msgid "Your privacy is important to us. We will act as described in this privacy policy, in accordance with the applicable law, including the Privacy Protection Law, 1981."
+msgstr "מדיניות הפרטיות חלה על מידע מזוהה או ניתן לזיהוי באמצעים סבירים. ככלל, לא חלה עלייך חובה חוקית למסור את המידע שיפורט להלן, אולם אי מסירתו עלולה למנוע מאיתנו לספק לך שירותים מסויימים."
+
+msgid "The Privacy Policy applies to identified information or identifiable information by reasonable means. In general, you do not have a legal obligation to provide the information specified below, but failure to provide it may prevent us from providing you with certain services."
+msgstr "המידע ישמר במאגר הלקוחות של החברה ויישמר למשך הזמן הדרוש לחברה למימוש המטרות המותרות לה על פי דין ועל פי מדיניות פרטיות זו."
+
+msgid "The information will be stored in the Company's customers' database and will be kept for the time required for the Company to execute the objectives permitted to by law and in accordance with this Privacy Policy."
+msgstr "ייתכן שנעדכן את מדיניות פרטיות זו מעת לעת, בהתאם לצורך ולשינויים בחוק. שים לב לשינויים אלו, משום שהם חלים עליך. בכל עת תופיע באתר זה מדיניות הפרטיות המעודכנת שלנו."
+
+msgid "We may update this Privacy Policy from time to time, according to necessities and changes in the law. Note these changes, since they apply to you. Our updated Privacy Policy will appear on the Site at all times."
+msgstr "ייתכן שנעדכן את מדיניות פרטיות זו מעת לעת, בהתאם לצורך ולשינויים בחוק. שים לב לשינויים אלו, משום שהם חלים עליך. בכל עת תופיע באתר זה מדיניות הפרטיות המעודכנת שלנו."
+
+msgid "What information do we collect and how do we collect it?"
+msgstr "מידע אנו אוספים וכיצד אנו אוספאיזהים אותו?"
+
+msgid "Contact Information - We collect information related to the provision of the Services, including name, email address, mobile phone number, passwords, credit card details. Such information will be provided by you directly as part of filling out the details on the site, registering for the site, fill out the details on landing page you reach through social networks, or by contacting our customer service."
+msgstr "פרטי קשר- אנו אוספים מידע הקשור לאספקת השירותים לרבות שם, כתובת דוא'ל, מספר טלפון נייד, סיסמאות, פרטי כרטיסי אשראי. מידע כאמור יימסר על ידך באופן ישיר במסגרת עמוד מילוי הפרטים באתר, הרשמה לאתר, מילוי פרטים בעמודי נחיתה אליהם תגיע דרך רשתות חברתיות, או באמצעות פנייה לשירות הלקוחות שלנו."
+
+msgid "Information regarding our web site - We use Cookies for data security needs, proper and ongoing Site operations, Services' optimization, information verification and in order to specify the services to your personal preferences. For example, the use of Cookies helps identify you when you log back to our website. Using Cookies, your activity on the Site will be monitored and information will be automatically collected, such as an IP address, duration of your visit to the Site, your operating system's version, browser type, location and more. The Cookies will also serve us for marketing needs, including personalized marketing. In addition, we may use network signals or other monitoring technologies. You can stop the collection of information with Cookies by changing the settings in your browser. If you block Cookies, some services may not be available to you, or you may need to re-enter details. Changing these settings is under your responsibility."
+msgstr "מידע בקשר לאתר האינטרנט שלנו- אנו משתמשים בקוקיות (cookies) לצרכי אבטחת מידע, תפעול שוטף ותקין של האתר, לשם ייעול השירותים שלנו, לאימות פרטים ועל מנת להתאים את השירותים להעדפותיך האישיות. למשל, שימוש בקוקיות מסייע לזהותך בעת כניסה חוזרת לאתר האינטרנט שלנו. באמצעות הקוקיות תנוטר פעילותך באתר וייאסף באופן אוטומטי מידע כגון כתובת IP, משך ביקורך באתר, גרסאת מערכת ההפעלה, סוג דפדפן, מיקום ועוד. קוקיות ישמשו אותנו גם לצרכים שיווקיים, כולל שיווק מותאם אישית. בנוסף, אנו עשויים להשתמש באותות רשת או בטכנולוגיות ניטור אחרות. תוכל להפסיק את איסוף המידע באמצעות קוקיות על ידי שינוי ההגדרות בדפדפן בו אתה משתמש. אם תחסום קוקיות, יתכן שחלק מהשירותים לא יהיו לך זמינים, או שתצטרך להזין מחדש פרטים. שינוי הגדרות אלו הינו באחריותך."
+
+msgid "Information about others"
+msgstr "מידע על אחרים"
+
+msgid "When you provide us with information about others, it is your responsibility to make sure that it is done in accordance with the law, including the Privacy Protection Law, 1981, and Communications Law (Telecommunications and Broadcasts) ,1982."
+msgstr "כשאתה מוסר לנו מידע על אחרים, באחריותך לוודא כי הדבר נעשה בהתאם להוראות הדין, ובכלל זה בהתאם לחוק הגנת הפרטיות, תשמ'א- 1981 וחוק התקשורת (בזק ושידורים), תשמ'ב-1982."
+
+msgid "How will the information be used?"
+msgstr "מהם השימושים שנעשה במידע?"
+
+msgid "We will use your information to provide you with our services, for our operational needs, contacting you, providing you customer service, call recording, optimization, control and management of our services ,optimization of your information in our database, compliance with procedures and policies, information security, processing of requests for review and correction of information, statistical needs and research (Including means such as anonymization and Pseudonymisation, making personal information to non-identifiable information or non-personally identifiable information), marketing needs (See below), and the protection of legal rights and legitimate interests of ourselves and others."
+msgstr "אנו נשתמש במידע אודותיך לצורך אספקת השירותים, צרכים תפעוליים, יצירת קשר, שירות לקוחות, הקלטת שיחות, ניהול, ייעול ובקרה על השירותים שלנו, טיוב המידע אודותיך המצוי אצלנו, קיום נהלים ומדיניות, אבטחת מידע, טיפול בבקשות עיון ותיקון מידע, צרכים סטטיסטים ומחקר (לרבות שימוש באמצעים כגון אנונימיזציה ופסאודונימיזציה, להפיכת מידע אישי למידע לא מזוהה, או לא מזוהה באופן ישיר), צרכים שיווקיים (ראה בהמשך), והגנה על זכויות משפטיות ועל אינטרסים לגיטימיים שלנו ושל אחרים."
+
+msgid "Transfer of information to third parties"
+msgstr "העברת מידע לצד שלישי"
+
+msgid "The Company may transfer the information to third parties, including Matrix IT. Ltd. and its related companies, whether in Israel or abroad, in the following cases:"
+msgstr "החברה תוכל להעביר את המידע לצדדים שלישיים, לרבות חברת מטריקס אי.טי. בע'מ והחברות הקשורות שלה, בין בארץ ובין בחו'ל, במקרים הבאים:"
+
+msgid "For the purposes set out in this Privacy Policy, for the purposes permitted by law, and for the implementation of our legitimate interests, such as preventing fraud. Such information transfer shall be made subject to the third party's obligations to maintain privacy and data security at the level required according to the type of information transferred."
+msgstr "לצרכי המטרות המופיעות במדיניות פרטיות זו, למימוש המטרות המותרות לנו על פי דין, ולמימוש אינטרסים לגיטימיים שלנו, למשל לשם מניעת הונאה. העברת מידע כאמור תיעשה בכפוף להתחייבויותיו של הצד השלישי לשמור על פרטיות ואבטחת מידע ברמה הנדרשת בהתאם לסוג המידע המועבר."
+
+msgid "To Microsoft Corporation, subject to your consent, if you request to receive a certificate of completion for courses offered by Microsoft.  We will forward the information and data derived from your access to Microsoft courses with Microsoft, and you agree to receive communications from Microsoft. When you request a certificate of completion of a Microsoft course, Microsoft may use your information and data for: (1) courses' analysis; (2) to track your course progress and performance; (3) for various Microsoft programs; (4) to detect and combat suspected fraud; and (5) share the information and data with Microsoft affiliates, subsidiaries, and vendors and agents working on behalf of Microsoft"
+msgstr "לחברת מיקרוסופט, בכפוף להסכמתך, במידה ותבקש לקבל תעודת סיום קורס של קורסי מיקרוסופט המוצעים באתר. אנחנו נעביר את המידע והנתונים הנובעים מהגישה שלך לקורסי מיקרוסופט, עם מיקרוסופט, ואתה מסכים לקבל תקשורת ממיקרוסופט. בעת בקשתך את תעודת ההשלמה של איזה מקורסי מיקרוסופט, מיקרוסופט תהיה רשאית להשתמש במידע ובנתונים שלך לשם: (1) ניתוח קורסים; (2) מעקב וניטור אחר הביצועים וההתקדמות שלך; (3) לתוכניות מיקרוסופט שונות; (4) לאתר וללחום בחשד להונאות; ו-(5) לחלוק את המידע והנתונים עם שותפים של מיקרוסופט, חברות בנות, ועם ספקים וסוכנים העובדים מטעם מיקרוסופט."
+
+msgid "Subcontractors and suppliers with whom we cooperate as part of our ongoing activities (such as cloud computing services, printing houses and mail distribution and mailing services)."
+msgstr "קבלני משנה וספקים עמם אנחנו משתפים פעולה במסגרת הפעילות השוטפת שלנו (כמו ספקי שירותי מחשוב ענן, בתי דפוס ונותני שירותי הפצת דואר ודיוורים)."
+
+msgid "As part of the sale of the Company's business (in whole or in part), provided that such third party complies with the provisions of the law regarding the protection of privacy and information security."
+msgstr "במסגרת מכירת עסקי החברה (כולם או חלקם), ובתנאי שאותו צד שלישי יעמוד בהוראות הדין לגבי הגנת הפרטיות ואבטחת מידע."
+
+msgid "If we have received a judicial order instructing us to do so or if there is a requirement to do so by law."
+msgstr "אם התקבל אצלנו צו שיפוטי המורה לעשות כן או אם קיימת דרישה שבדין לעשות כן."
+
+msgid "So that we can defend ourselves against lawsuits."
+msgstr "על מנת שנוכל להתגונן מפני תביעות משפטיות."
+
+msgid "Advertisements and direct mail"
+msgstr "פרסומות ודיוור ישיר"
+
+msgid "The information will also be used for marketing, advertising and direct mail purposes by us or anyone on our behalf, as well as information on products and services of third parties provided in cooperation with us, including personalized advertising."
+msgstr "המידע ישמש גם לצרכי שיווק, פרסום ודיוור ישיר שלנו או מי מטעמנו, וכן מידע על מוצרים ושירותים של צדדים שלי''ם שמסופקים בשיתוף פעולה איתנו, לרבות פרסום מותאם אישית. אנו נהיה רשאים לשלוח לך דיוור ישיר ופרסומות בקשר לשירותים שלנו (ובכפוף להסכמתך, גם בקשר לשירותים או מוצרים אחרים), בכל אמצעי תקשורת, ובין היתר באמצעות דואר אלקטרוני, הודעות SMS, מערכת חיוג אוטומטית ורשתות חברתיות."
+
+msgid "We will be allowed to send you direct mail and advertisements regarding our services (and subject to your consent, also in connection with other services or products), by any means of communication, including by e-mail, SMS, automated dialing system and social networks. You can request to unsubscribe from the mailing list for advertisements and direct mail mailing list, also by contacting the service center using the e-mail address: online_academy@johnbryce.co.il. In certain cases, you may contact the e-mail address to have specified information removed. Note that even after unsubscribing, you may still receive some Mailings"
+msgstr "באפשרותך לבקש להימחק מרשימת התפוצה לפרסומות ומרשימת התפוצה לדיוור ישיר, גם באמצעות פנייה למוקד השירות בכתובת הדוא'ל online_academy@johnbryce.co.il במקרים מסויימים תוכל לפנות לכתובת הדוא'ל שצויינה גם כדי למחוק מידע אחר. שים לב כי ייתכן שיישלחו אליך לאחר בקשת ההסרה דיוורים אותם אנו חייבים ו/או רשאים לשלוח לך על פי דין, גם ללא הסכמתך."
+
+msgid "Right of review the Information and amend it"
+msgstr "זכות עיון במידע ותיקונו"
+
+msgid "Subject to applicable law, you can contact the customer service of the Company, as described below, and ask to review your information as stored in the Company. If you find that the information we hold about you is incorrect, you have the right to request its correction or deletion. In your inquiry, you must provide identifying information as requested, so that we can properly identify you."
+msgstr "בכפוף לחוק, תוכל לפנות לשירות הלקוחות של החברה, כמפורט בהמשך, ולבקש לעיין במידע אודותייך השמור אצל החברה. אם יתברר לך כי המידע שאנו מחזיקים עליך אינו נכון, זכותך לבקש את תיקונו או מחיקתו. בפנייתך עליך לציין פרטי זיהוי כפי שיתבקשו ממך, על מנת שנוכל לזהות אותך כיאות."
+
+msgid "To the extent that our site includes links to other websites, we will not be responsible for the privacy and security policies of such sites."
+msgstr "ככל שאתרנו יכלול קישורים לאתרי אינטרנט אחרים, לא נהיה אחראים למדיניות השמירה על הפרטיות ואבטחת המידע של אתרים אלה."
+
+msgid "Information Security"
+msgstr "אבטחת מידע"
+
+msgid "The Company takes appropriate data security measures for the type of information it possesses and in accordance with the provisions of the law. For this purpose, the Company uses reasonable and acceptable security measures that comply with the custom standards in this field. Notwithstanding the aforesaid, there is a risk of penetration of the Company's databases and information. As long as the Company takes reasonable security measures, it shall not be liable for any damage caused by such unauthorized penetration and transfer of information to a third party as a result of such penetration. It is also clarified that you are responsible for taking appropriate information security measures such as the use of anti-virus measures, software updates, and the like"
+msgstr "החברה נוקטת אמצעי אבטחת מידע מתאימים לסוג המידע שנמצא ברשותה ובהתאם להוראות הדין. לצורך זה, החברה משתמשת באמצעי אבטחה סבירים ומקובלים התואמים את הסטנדרטים הנהוגים בתחום. למרות האמור, קיים סיכון של חדירה למאגרי הנתונים והמידע של החברה. כל עוד נוקטת החברה באמצעי אבטחה סבירים, היא לא תהא אחראית לכל נזק שנגרם בעקבות חדירה בלתי מורשית כאמור והעברת מידע לצד ג' עקב חדירה כאמור. יובהר כי גם באחריותך לנקוט אמצעי אבטחת מידע הולמים כגון שימוש באמצעים נגד וירוסים, עדכון תוכנה וכדומה."
+
+msgid "Messages regarding Changes and updates"
+msgstr "הודעות בדבר שינויים ועדכונים"
+
+msgid "The Company may update and/or modify the Privacy Policy from time to time, as necessary and at its sole discretion. Please note that these changes or updates, which will appear in the Privacy Policy displayed on the site, because they apply to you."
+msgstr "החברה רשאית לעדכן ו/או לשנות את מדיניות הפרטיות מעת לעת, בהתאם לצורך ובהתאם לשיקול דעתה הבלעדי. אנא שים לב לשינויים או עדכונים אלו, אשר יופיעו במדיניות הפרטיות המוצגת באתר, משום שהם יחולו עליך."
+
+msgid "Contacting the Company's customer service"
+msgstr "פנייה לשירות הלקוחות של החברה"
+
+msgid "You can contact the Company's customer service email address: <a href='mailto:online_academy@johnbryce.co.il'>online_academy@johnbryce.co.il</a> or by phone 03-7100713 in order to clarify details of such rights, and in general."
+msgstr "תוכל לפנות לשירות הלקוחות של החברה בכתובת במייל: online_academy@johnbryce.co.il או בטלפון 03-7100713 על מנת לברר פרטים על זכויות כאמור, ובכלל."
+
+#: tos.html
+msgid "Terms and Conditions"
+msgstr "תנאי שימוש"
+
+msgid "These terms of use ('Agreement' or 'Terms') form a legal agreement between you (including, if applicable, any legal entity which you represent or act for) ('you' or 'Customer') and John Bryce Training Ltd. ('us', 'we', or 'our') which provide or promote 'John Bryce Online Academy' ('Website') and sets forth, together with the Privacy Policy, the Terms governing Customer’s access to and use of the Website.  By clicking 'I Accept,' entering into the Website, or by using the services and content made available on the Website (the 'Services'), Customer agrees to be bound by this Agreement, as may be amended by us from time to time. IF YOU DO NOT AGREE TO THESE TERMS, DO NOT USE THE SERVICES. We may make changes to these Terms from time to time, without prior notice. When we do, we will revise the 'last updated' date given above. It is your responsibility to review these Terms frequently and to remain informed of any changes made. The then-current version of these Terms will supersede all earlier versions. You agree that your continued use of the Services will constitute your acceptance of such revised Terms."
+msgstr "תנאי שימוש אלו (להלן 'הסכם' או 'תנאים') יוצרים הסכם משפטי בינך (ולרבות, ככל שרלוונטי, כל גוף משפטי שאתה מייצג או פועל עבורו) (להלן 'אתה' או 'הלקוח') וג'ון ברייס הדרכה בע'מ (להלן 'אנחנו', 'אנו' או 'שלנו') המספקים או מקדמים את John Bryce Online Academy היא 'האקדמיה המקוונת של ג'ון בר''ס' (להלן 'האתר') וקובעים, יחד עם מדיניות הפרטיות, את התנאים החלים על הגישה והשימוש של באתר. על ידי לחיצה על ''אני מסכים', כניסה והתחברות לאתר או באמצעות שימוש בשירותים והתכנים העומדים לרשותך באתר ('השירות' או 'השירותים'), הלקוח מסכים להיות כפוף להסכם זה, כפי שיתוקן על ידינו מעת לעת. אם אינך מסכים לתנאים אלה, אל תשתמש בשירותים. אנו עשויים לערוך שינויים בתנאים אלה מעת לעת, ללא הודעה מוקדמת. כאשר נעשה זאת, נשנה את תאריך ''העדכון האחרון'' לעיל. באחריותך לבדוק תנאים אלו לעתים קרובות ולהתעדכן לגבי כל שינוי שבוצע. הגרסה הנוכחית של תנאים אלו תחליף את כל הגרסאות הקודמות. הינך מסכים שהמשך השימוש שלך בשירותים יהווה את הסכמתך לתנאים המתוקנים."
+
+msgid "Right to use the services"
+msgstr "הזכות להשתמש בשירותים"
+
+msgid "The Website is not directed at anyone under the age of 18. By entering this Website, you expressly confirm that you have full legal capacity to enter into legal binding agreements, you are at least 18 years old, you have read and understood these Terms, and that you have confirmed that your use of the Services is permitted under the laws of your country. we will not be responsible if the use of the Services does not comply with the laws of your country."
+msgstr "האתר אינו מיועד לאיש מתחת לגיל 18. על-ידי כניסה לאתר זה, הינך מאשר מפורשות כי יש לך כשירות משפטית מלאה להתקשר בהסכמים מחייבים משפטיים, אתה בן 18 לפחות, קראת והבנת את התנאים האלה, וכי אישרת ששימושך בשירותים מותר על פי חוקי מדינתך. לא נהיה אחראים אם השימוש בשירותים אינו תואם לחוקי מדינתך."
+
+msgid "You also represent and warrant that any information you provide us in connection with your use of the Services is accurate, correct and up to date."
+msgstr "כמו כן, הינך מצהיר ומתחייב שכל מידע שתספק לנו בקשר לשימושך בשירותים הוא מדויק, נכון ועדכני."
+
+msgid "Each course is licensed as a single unit and may not separate its components; some online courses may contain additional terms, conditions, and licenses regarding their use. Any non-conflicting terms in those conditions and licenses also apply to the use of that respective component and supplement these terms of use."
+msgstr "כל קורס מורשה מתקיים כיחידה אחת ואין אפשרות להפריד את מרכיביו; מספר קורסים מקוונים עשויים להכיל תנאי שימוש ורישיונות נוספים לגבי השימוש בהם. תנאים בתנאי השימוש ו/או הרישיונות כאמור שאינם סותרים תנאים אלה, חלים גם על השימוש באותו רכיב ומשלימים לתנאי שימוש אלה."
+
+msgid "The Website’s contents are provided “As Is” and without warranties of any kind. This agreement is personal to you to a personal, non-commercial use, and you may not assign your rights or obligations to anyone. we, however, may assign these Terms without your notice or consent."
+msgstr "תוכן האתר מסופק 'כמות שהוא' (AS IS) וללא אחריות מכל סוג שהוא. הסכם זה הוא אישי עבורך לשימושך האישי, לא מסחרי, ואינך יכול להקצות זכויותיך או חובותיך לאף אחד. אנו רשאים להקצות תנאים אלה ללא הודעה או הסכמה."
+
+msgid "Use of website"
+msgstr "שימוש באתר"
+
+msgid "This Website contains online courses, study aids, as well as references to external sites which include educational content. You may access and use these contents and the services for learning and practice only, and for personal use in accordance with the Terms. You may only access the Website via your personal account."
+msgstr "אתר זה מכיל קורסים מקוונים, עזרי לימוד, וכן הפניות לאתרים חיצוניים הכוללים תוכן לימודי. הינך רשאי לגשת ולהשתמש בתכנים אלה ובשירותים לשימושך האישי, ללמידה ולתרגול בלבד, בהתאם לתנאים אלו. תוכל לגשת לאתר רק דרך החשבון האישי שלך."
+
+msgid "We will not be responsible for any damage (whether direct or indirect) incurred by you, to property or body, and/or to any third party, insofar in connection with the use of our Website or its contents, relying on them, including the effect of content on a user and / or third party and / or their effect on software, hardware and / or end equipment in it and / or through it."
+msgstr "אנו לא נהיה אחראים לנזק כלשהו (ישיר או עקיף) שייגרם לך, לרכוש או לגוף, ו/או לצד שלישי כלשהו, ​​בכל הנוגע לשימוש באתר האינטרנט שלנו או בתוכנו, תוך הסתמכות עליהם, לרבות השפעה של תוכן על משתמש ו/או צד שלישי ו/או השפעתם על תוכנה, חומרה ו/או ציוד קצה בו ו/או באמצעותו."
+
+msgid "Registration and account"
+msgstr "רישום וחשבון"
+
+msgid "Our Services requires an account. All accounts shall be governed by these Terms. You are responsible for maintaining the confidentiality of your account (including the registration details and the data collected from the Website, and any other data that may be related to your account), and fully responsible for all activities associated with your account. We cannot and will not be liable for any loss or damage arising from any unauthorized use of your account."
+msgstr "השירותים שלנו דורשים חשבון. כל החשבונות יהיו כפופים לתנאים אלה. הינך אחראי לשמירה על סודיות החשבון שלך (כולל פרטי הרישום והנתונים שנאספו מהאתר, וכל הנתונים האחרים הקשורים לחשבון שלך), ואחראי באופן מלא לכל הפעילויות הקשורות לחשבון שלך. אנו לא נהיה אחראיים לכל אובדן או נזק הנובעים משימוש לא מורשה בחשבונך."
+
+msgid "You must notify us, via the contact details specified below, of any unauthorized access of your account or any other breach of security you are aware of."
+msgstr "עליך להודיע ​​לנו, באמצעות פרטי ההתקשרות המפורטים להלן, על כל גישה לא מורשית של חשבונך או על כל הפרת אבטחה שאתה מודע לה."
+
+msgid "License to use the services"
+msgstr "רישיון לשימוש בשירותים"
+
+msgid "Subject to these Terms, we grant to you a limited, non-exclusive, non-transferable license to use the Services for your use only and not for resale or further distribution. Your right to use the Services is limited by all terms and conditions set forth in these Terms. Except for this license granted to you, we and our licensors retain all right, title and interest in and to the Services, including all related intellectual property rights. The Website or our Services are protected by applicable intellectual property laws, including international treaties."
+msgstr "בכפוף לתנאים אלו, אנו מעניקים לך רישיון מוגבל, שאינו בלעדי ואינו ניתן להעברה, לשימוש בשירותים לשימושך האישי בלבד, ולא לצורך מכירה חוזרת או הפצה. זכותך להשתמש בשירותים מוגבלת על-ידי כל התנאים וההגבלות המפורטים בתנאים אלה. למעט רישיון זה המוענק לך, אנו ומורשי הרישיונות שלנו שומרים על כל זכות, בעלות ועניין בשירותים, כולל כל זכויות הקניין הרוחני הקשורות. האתר או השירותים שלנו מוגנים על ידי חוקי הקניין הרוחני הניתנים להחלה, לרבות אמנות בינלאומיות."
+
+msgid "You acknowledge and agree that we own all right, title and interest in and to the Website (including without limitation any intellectual property rights therein or related thereto), and you agree not to take any action inconsistent with such ownership interests. You do not acquire any rights or licenses of copyrights, trade secrets, trademarks or other intellectual property rights other than expressly granted to you in these Terms."
+msgstr "הינך מאשר ומסכים כי אנו הבעלים של כל זכות, בעלות ועניין באתר (לרבות, ללא הגבלה, זכויות קניין רוחני כלשהן או הקשורות אליו), והינך מסכים שלא לנקוט פעולה כלשהי שאינה עולה בקנה אחד עם זכויות הבעלות. אינך רוכש זכויות או רישיונות של זכויות יוצרים, סודות מסחריים, סימני מסחר או זכויות קניין רוחני אחרות, למעט הרשאה מפורשת הניתנת לך בתנאים אלה."
+
+msgid "Restrictions"
+msgstr "הגבלות"
+
+msgid "You must comply with all applicable laws when using our Services. Except as may be expressly permitted by applicable law, or as we may authorize expressly in writing, you will not, and will not permit anyone else to:"
+msgstr "עליך לציית לכל החוקים החלים בעת השימוש בשירותים שלנו. אלא אם הדבר מותר במפורש על פי החוק החל, או כפי שאנו מאשרים במפורש בכתב, לא תוכל, ולא תאפשר לאף אחד אחר:"
+
+msgid "store, download, publish, transmit, transfer, broadcast, print, circulate, copy, modify, distribute, disseminate, forward, post, link to, make derivative work based upon, make available, lease, loan, license or resell any of the information; audio, visual, and audiovisual works, or other content made available through our Services, or any portion thereof (collectively, “Service Content”) or compile or collect any Service Content as part of a database or other work;"
+msgstr "לאחסן, להוריד, לפרסם, להעביר, לשדר, להדפיס, להפיץ, להעתיק, לשנות, לפרסם, ליצור קישור, ליצור תוצר נגזר מהבסיס הקיים, להפוך לזמין, לחכור, להלוות, להעניק רישוי או לתת כל מידע מהתוכן הקיים, כולל יצירות קוליות, ויזואליות, אודיו-ויזואליות, או כל תוכן אחר העומד לרשותנו באמצעות השירותים שלנו או כל חלק ממנו (להלן 'תוכן שירות'), או לאסוף כל תוכן שירות כחלק ממסד נתונים או מעבודות אחרות;"
+
+msgid "use any automated tool (e.g., deep link, page scrape, robots, spiders) to access or use our Services or to store, copy, modify, distribute, or resell any Service Content;"
+msgstr "להשתמש בכל כלי אוטומטי (לדוגמה' deep link','page scrape', 'robots', 'spiders' ) כדי לגשת אל השירותים שלנו או להשתמש בהם, לאחסן, להעתיק, לשנות, להפיץ או למכור מחדש כל תוכן שירות;"
+
+msgid "rent, transmit, lease, or sublicense your access to our Services to another person;"
+msgstr "להשכיר, להעביר, להחכיר או להעניק רישיון משנה לגישתך לשירותים שלנו לאדם אחר;"
+
+msgid "use any Services or Service Content for any purpose except for your own personal (noncommercial) use;"
+msgstr "להשתמש בכל שירות או תוכן שירות לכל מטרה מלבד שימוש אישי (לא מסחרי) שלך;"
+
+msgid "circumvent or disable any digital rights management, usage rules, or other security features of our Services;"
+msgstr "לעקוף או להשבית כל ניהול זכויות דיגיטלי, כללי שימוש או תכונות אבטחה אחרות של השירותים שלנו;"
+
+msgid "use our Services in a manner that overburdens, or that threatens the integrity, performance, or availability of, our Services;"
+msgstr "להשתמש בשירותים שלנו באופן שיוצר עומס יתר או שמאיים על מכלול השירותים שלנו, שלמותם, ביצועיהם או זמינותם."
+
+msgid "remove, alter, or obscure any proprietary notices (including copyright and trademark notices) on any portion of our Services or any Service Content;"
+msgstr "להסיר, לשנות או להסתיר כל הודעות על בעלות בקניין כלשהו (לרבות הודעות זכויות יוצרים וסימנים מסחריים) בכל חלק של השירותים שלנו או בכל תוכן שירות;"
+
+msgid "reproduce, modify, translate, enhance, decompile, disassemble, reverse engineer or create derivative works of any of our Services."
+msgstr "לשכפל, לשנות, לתרגם, לשפר, להדר מחדש (דקומפילציה), לפרק, להנדס לאחור או ליצור עבודות נגזרות של כל אחד מהשירותים שלנו."
+
+msgid "will not work around any technical limitations in the courses provided on our Website and in the Service Content and must comply with any technical limitations provided in the courses and the Service Content;"
+msgstr "לא לעקוף איזו מהמגבלות הטכניות בקורסים המסופקים באתר האינטרנט שלנו ובתוכן השירות, ועליך לעמוד בכל המגבלות הטכניות הקבועות בקורסים ובתוכן השירות;"
+
+msgid "attempt to gain unauthorized access to any portion or feature of the Website, or breach the security or authentication measures on the Website, including, without limitation, the account of any other user, any other systems or networks connected to the Website or its servers, to any of the services offered on or through the Website, by hacking, password \"mining\", or any other illegitimate or prohibited means;"
+msgstr "לנסות להשיג גישה לא מורשית לכל חלק או תכונה של האתר, או לפרוץ את אמצעי האבטחה או האימות באתר, לרבות, ללא הגבלה, חשבון של משתמש אחר, כל מערכות או רשתות אחרות המחוברות לאתר או השרתים שלה, לכל אחד מהשירותים המוצעים באתר או באמצעותו, על ידי פריצה, ''כריית'' סיסמאות, או כל אמצעי לא לגיטימי או אסור;"
+
+msgid "submit any through our Website any work or answers that are not your own;"
+msgstr "להגיש דרך אתר האינטרנט שלנו כל עבודה או תשובות שאינן שלך;"
+
+msgid "permit any third party to access your account or use the Services;"
+msgstr "להתיר לכל צד שלישי לגשת לחשבון שלך או להשתמש בשירותים;"
+
+msgid "impersonate another person or misrepresent your identity;"
+msgstr "להתחזות לאדם אחר או לסלף את זהותך;"
+
+msgid "use the Website to collect unauthorized information about the users, or send spam or other unauthorized promotional material, including of third party;"
+msgstr "להשתמש באתר כדי לאסוף מידע לא מורשה על משתמשים, או לשלוח דואר זבל או חומר פרסומי בלתי מורשה אחר, כולל של צד שלישי;"
+
+msgid "send, knowingly receive, upload, download, or use any material which is offensive, abusive, indecent, defamatory, obscene or menacing, or in breach of copyright, confidence, privacy and/or any other rights;"
+msgstr "לשלוח, לקבל ביודעין, להעלות, להוריד או להשתמש בכל חומר פוגעני,  מגונה, משמיץ או מאיים, או מפר זכויות יוצרים, ביטחון, פרטיות ו/או כל זכות אחרת;"
+
+msgid "use the Website in any other unlawful manner or in a manner that could be perceived to damage, disparage, or otherwise negatively impact us (XIII) access or use the Services not through the Website."
+msgstr "להשתמש באתר בכל אופן בלתי חוקי אחר או באופן שייתפס כנזק, זלזול או ישפיע עלינו לרעה (י''ג) או להשתמש בשירותים שלא באמצעות האתר."
+
+msgid "Use your content"
+msgstr "שימוש בתוכן שלך"
+
+msgid "You are solely responsible for any content and other material that you submit, publish, transmit, display or make available through, or with the Website or our Services. By accessing and/or using the Website for any purpose whatsoever, you agree to the collection and use of any documents uploaded, in addition to the collection of your personal information, all in accordance with these Terms under our Privacy Policy. We reserve the right to keep uploaded documents in a data-base and use for all purposes according to our Privacy Policy."
+msgstr "הינך האחראי הבלעדי לכל תוכן וחומר אחר שאתה שולח, מפרסם, משדר, מציג או הופך לזמין דרך, או באמצעות האתר או השירותים שלנו."
+
+msgid "Notwithstanding the foregoing, you are not allowed to use, upload or post through the Website or our Services any illegal Content, including, without limitation, pornographic, harassing, abusing or harming Content."
+msgstr "על ידי גישה ו/או שימוש באתר לכל מטרה שהיא, הינך מסכים לאיסוף ושימוש בכל המסמכים המועלים, בנוסף לאיסוף המידע האישי שלך, והכל בהתאם לתנאים אלו בהתאם למדיניות הפרטיות שלנו . אנו שומרים לעצמנו את הזכות לשמור מסמכים שהועלו בבסיס נתונים, ולהשתמש בהם לכל שימוש בהתאם למדיניות הפרטיות שלנו. למרות האמור לעיל, אינך מורשה להשתמש, להעלות או לפרסם באמצעות האתר או השירותים שלנו כל תוכן בלתי חוקי, כולל, ללא הגבלה, תוכן פורנוגרפי, מטריד, פוגעני או מזיק."
+
+msgid "You represent and warrant that: (a) you are the sole owner of all the Content, or you have all rights, licenses, consents and releases that are necessary to grant to WE the rights in the Content; and (b) your Content or your associated actions with the Content will not infringe, misappropriate or violate a third party’s patent, copyright, trademark, trade secret, moral rights or other proprietary or intellectual property rights, or rights of publicity or privacy, or result in the violation of any applicable law or regulation. For the avoidance of any doubt, we do does not claim any ownership rights in any such Content and nothing in these Terms will be deemed to restrict any propriety rights that you may have in the Content."
+msgstr "הינך מצהיר ומתחייב כי: (א) הינך הבעלים הבלעדי של כל התוכן, או שברשותך הזכויות, הרישיונות, ההסכמות וההיתרים הנחוצים כדי להעניק לנו את הזכויות שבתוכן; וכן (ב) התוכן שלך או הפעולות המשויכות לך עם התוכן לא מפרות את זכויות היוצרים של צד שלישי, זכויות יוצרים, סימנים מסחריים, סודות מסחריים, זכויות מוסריות או קנייניות או קניין רוחני אחרות, או זכויות פרסום או פרטיות, או מובילות להפרה של כל חוק או תקנה הניתנים להחלה. למען הסר ספק, אנו לא טוענים לזכויות בעלות כלשהן בתוכן כזה, ושום דבר בתנאים אלה לא ייחשב כהגבלה על זכויות קניין כלשהן שיש לך בתוכן."
+
+msgid "Costs and payments"
+msgstr "עלויות ותשלומים"
+
+msgid "In the event that the courses and programs offered on our Website will be require payment valid information on the cost of the Services is provided in the Pricing section of the Website. We outsource all online payment processing to a third party payment processor (“Payment Processor”). We do not have access to credit card numbers and all other payment information submitted to the Payment Processor as a result of the online payment process, and such process is subject to the Payment Processor’s terms, conditions and privacy policies. You agree to provide the Payment Processor with a valid credit card and accurate, complete and updated information required by the subscription registration form. Failure to comply may result in the immediate termination of Services. If you have any billing problems or discrepancies, you must inform Us, when they first appear on your account statement. If you do not bring them to our attention when they first appear on your account statement, you agree that you waive your right to dispute such problems or discrepancies.We reserve the sole right to suspend, modify, remove and/or add any Service, at any time with or without notice to you."
+msgstr "במידה והקורסים והתכנים המוצעים באתר שלנו ידרשו מידע תקף לתשלום עבור עלות השירותים, העלויות יפורטו בחלק המפרט את העלויות באתר. אנו מעבירים כל תשלום מקוון לצד שלישי שהינו ספק מיקור חוץ (''מעבד התשלום''). אין לנו גישה למספרי כרטיסי אשראי ולכל פרטי התשלום האחרים המוזנים למעבד התשלום כתוצאה מתהליך התשלום המקוון, ותהליך זה כפוף לתנאים של תנאי מעבד התשלום, לתנאים ולהגבלות הפרטיות. הינך מסכים לספק למעבד התשלום כרטיס אשראי תקף ומידע מדויק, מלא ומעודכן אשר נדרש בטופס ההרשמה. אי עמידה בדרישות עלול לגרום להפסקה מיידית של השירותים. אם הינך נתקל בבעיות חיוב או אי-תאימויות, עליך להודיע ​​לנו כאשר הן מופיעות לראשונה בחשבונך. אם אינך מביא אותם לתשומת לבנו כאשר הם מופיעים לראשונה בחשבונך, הינך מסכים לוותר על זכותך לערער על בעיות או אי-תאימויות. אנו שומרים לעצמנו את הזכות הבלעדית להשעות, לשנות, להסיר ו/או להוסיף כל שירות, בכל עת עם או ללא הודעה מוקדמת."
+
+msgid "From time to time, we, and our affiliates, providing courses and programs on the Website (“Course Provider”), may offer ID verified certificates for courses or programs (for example, the Microsoft professional Program) (“Certificate”) for users who have completed certain credit.  Certificates will be issued by us under the name of the underlying Course Provider which provided the course or program originated. The decision whether a certificate will be awarded to a given user is and will be solely within the discretion of the awarding Course Provider. In order to obtain such Certificate we will have to provide the Course Provider our data and information regarding your use of the Course Provider’s course in order for the Course Provider to use (i) for course analysis, (ii) to track your course progress and performance, (iii) for the Course Provider programs, and (iv) to detect and combat suspected fraud. In such case, you accept to receive communications from the Course Provider. The Course Provider may share your data and information with its affiliates, subsidiaries, and with vendors and agents working on its behalf."
+msgstr "מעת לעת, אנו ושותפנו, המספקים קורסים ותוכניות באתר (''ספק קורס''), עשויים להציע תעודות הסמכה מאומתות עבור קורסים או תוכניות (לדוגמה, התוכנית המקצועית של 'Microsoft') ('תעודת הסמכה') עבור משתמשים אשר השלימו דרישות מסויימות. תעודות ההסמכה יונפקו על ידינו תחת השם של ספק הקורס הרשום אשר סיפק את הקורס או התוכנית במקור. ההחלטה האם תעודה תוענק למשתמש נתונה אך ורק לשיקול דעתו של ספק הקורס. על מנת לקבל תעודה זו, נצטרך לספק לספק הקורס את הנתונים והמידע אשר ברשותנו לגבי השימוש שלך בקורס/ים על מנת שספק הקורס ישתמש בנתונים אלו (א) לצורך ניתוח נתונים של הקורסים, (ב) כדי לעקוב אחר התקדמות וביצועים שלך בקורס, (ג) עבור תכניות של ספק הקורס,  (ד) ולאיתור ומניעת מעשי הונאה חשודים. במקרה כזה, הינך מסכים לקבל הודעות מספק הקורס. ספק הקורס רשאי לשתף את הנתונים והמידע שלך עם שותפיו, חברות הבת שלו ועם ספקים וסוכנים הפועלים מטעמו."
+
+msgid "By requesting us for a specific Certificate, you hereby consent to the terms specified above. For further details, please see our Privacy Policy."
+msgstr "על ידי בקשתך לתעודת הסמכה מסוימת, הינך מסכים בזאת לתנאים המפורטים לעיל. לפרטים נוספים, עיין במדיניות הפרטיות שלנו."
+
+msgid "Copyright and trademarks"
+msgstr "זכויות יוצרים וסימנים מסחריים"
+
+msgid "The site or our services include proprietary content, information and other materials, which are protected under intellectual property, copyright, trademark and other laws (\"Proprietary Rights\"). You acknowledge and agree that WE or our Course provider own all right, title and interest in and to the Website (including without limitation any intellectual property rights therein or related thereto and all names, logos, seals or any other trademark), and you agree not to take any action(s) inconsistent with such ownership interests. You do not acquire any rights or licenses of copyrights, trade secrets, trademarks or other intellectual property rights other than expressly granted to you in these Terms. We reserve the right to cancel, suspend, disable or terminate the accounts of users who are infringing or charged with infringing the Proprietary Rights."
+msgstr "האתר או השירותים שלנו כוללים תוכן קנייני, מידע וחומרים אחרים, אשר מוגנים תחת קניין רוחני, זכויות יוצרים, סימנים מסחריים וחוקים אחרים ('זכויות קנייניות'). הינך מאשר ומסכים לכך שאנו או ספקי הקורסים שלנו מחזיקים בכל זכות, בעלות ועניין באתר (לרבות, ללא הגבלה, זכויות קניין רוחני כלשהן בו או הקשורות אליו וכל השמות, הלוגו, החותמות או כל סימן מסחרי אחר), והינך מסכים לא לנקוט בפעולות כלשהן שאינן תואמות את זכויות הבעלות. אינך רוכש זכויות או רישיונות של זכויות יוצרים, סודות מסחריים, סימנים מסחריים או זכויות קניין רוחני אחרות, למעט הרשאה מפורשת לך בתנאים אלה. אנו שומרים לעצמנו את הזכות לבטל, להשעות, להשבית או לסיים פעילותם של חשבונות של משתמשים המפרים זכויות קנייניות או מואשמים בהפרתן."
+
+msgid "You may not use the Proprietary Rights or any variation thereof, in any way, without the owner’s prior written consent, or for promotional purposes. You will not, deliberately or inadvertently claim, suggest or give the appearance or impression of a relationship with or endorsement by, the owner of the applicable Proprietary Rights. Nothing contained herein will be construed as granting, by estoppel, implication or otherwise, any right or license to use any of the Proprietary Rights displayed on the Website without the written permission of the owner of the applicable Proprietary Rights."
+msgstr "אינך רשאי להשתמש בזכויות הקנייניות או בכל שינוי שלהן, בכל דרך שהיא, ללא הסכמת הבעלים מראש ובכתב, או למטרות קידום מכירות. לא תטען או תיצור רושם, במתכוון או שלא במתכוון, של מערכת יחסים עם בעל הזכויות הקנייניות הרלוונטיות. האמור בסעיף זה לא יפורש כהענקה, במישרין או בכל דרך אחרת, בכל זכות או רישיון להשתמש בכל אחת מהזכויות הקנייניות המוצגות באתר ללא אישור בכתב מבעל הזכויות הקנייניות הרלוונטיות."
+
+msgid "Termination:"
+msgstr "סיום שירותים"
+
+msgid "These Terms which govern your right to use the Website, take effect as of the moment you access or use the Website until updated, or terminated as set forth in these Terms. You acknowledge and agree that we have the right, at any time and for any reason, at our sole discretion with or without notice to you to terminate and/or shut down (temporarily or permanently) parts or all of the Services. Upon termination of the Services, your right to use the Services will immediately cease.You also acknowledge and agree that in case of any suspected violation of these Terms or any suspected unauthorized use of the Services or the Service Content or fraudulent, abusive or unlawful activity occurring under your account, we have the right, without notice, to terminate, suspend or otherwise limit your access to the Services and/or Service Content, fully or partly."
+msgstr "תנאים אלו, המסדירים את זכותך להשתמש באתר, ייכנסו לתוקף החל מהרגע בו תיגש לאתר או תשתמש באתר עד לעדכונם, או עד לסיומם, כפי שמוגדר בתנאים אלו. הינך מאשר ומסכים כי יש לנו את הזכות, בכל עת ומכל סיבה שהיא, על פי שיקול דעתנו הבלעדי, עם או ללא הודעה מראש, לסיים ו/או להשבית (זמנית או לצמיתות) את השירותים באופן מלא או חלקי. עם סיום השירותים, זכותך להשתמש בשירותים תופסק מיידית. כמו כן, הינך מאשר ומסכים כי במקרה של חשד להפרה של תנאים אלו או לכל חשד של שימוש בלתי מורשה בשירותים או בתוכן השירות או בפעילות מזויפת, פוגעת או בלתי חוקית המתרחשת בחשבונך, תהיה לנו הזכות, ללא הודעה מוקדמת, לסיים, להשעות או להגביל באופן אחר את הגישה שלך לשירותים ו/או לשירות, באופן מלא או חלקי."
+
+msgid "Privacy:"
+msgstr "פרטיות:"
+
+msgid "You understand, acknowledge and agree that the operation of certain services or materials of the Website may require WE to collect, submit, use and disseminate various personal identifying information about you and others. Accordingly, if you wish to access and use the services or materials, you acknowledge and agree that your use of the website will constitute acceptance of our personal identifying information collection and use practices to protect your personal information, as covered in our Privacy Policy Statement."
+msgstr "הינך מבין, מאשר ומסכים כי הפעלתם של שירותים או תכנים מסוימים של האתר עשויה לחייב אותנו לאסוף, להגיש, להשתמש ולהפיץ מידע אישי מזהה אודותיך ואודות אחרים. לפיכך, אם ברצונך לגשת לשירותים או לתכנים, הינך מאשר ומסכים שהשימוש שלך באתר יהווה קבלה של נהלי איסוף מידע אישי והשימוש בו ,על מנת להגן על המידע האישי שלך, כפי שמפורט במדיניות הפרטיות שלנו ('מדיניות הפרטיות') "
+
+msgid "Please read our Privacy Policy before providing any personal data on this Website."
+msgstr "אנא קרא את מדיניות הפרטיות שלנו לפני שתספק נתונים אישיים באתר זה."
+
+msgid "Third party:"
+msgstr "צד שלישי:"
+
+msgid "The Website may contain information, data, links, promotional offers, or other information and content in any form, including information related to third parties. We are not responsible or liable for the availability or accuracy of, and we make no representations whatsoever, nor does it guarantee or endorse, the quality, non-infringement, accuracy, completeness or reliability of such third-party materials, programs, products displayed on this Website or which you may access through a link on this Website."
+msgstr "האתר עשוי להכיל מידע, נתונים, קישורים, קידום מכירות או מידע ותוכן אחר בכל צורה שהיא, כולל מידע הקשור לצדדים שלישיים. אנחנו לא אחראים לאמינות או לדיוק של תכנים אלה, ואנחנו לא מבטיחים או אחראיים על איכות, אי הפרה, דיוק, שלמות או אמינות של חומרים של צד שלישי, לרבות תוכניות ומוצרים המוצגים באתר זה או כאלה שבאפשרותך לגשת אליהם באמצעות קישור באתר זה."
+
+msgid "You acknowledge and accept your sole responsibility for and assume all risk arising from your use of any such websites or resources."
+msgstr "הינך מאשר ומקבל על עצמך את האחריות הבלעדית ומתחשב בכל סיכון הנובע מהשימוש שלך באתרים או במשאבים אלו."
+
+msgid "Disclaimer of warranties:"
+msgstr "כתב ויתור על אחריות:"
+
+msgid "You understand and agree that your use of the Service is at your sole risk. The Services are provided on an 'as is' basis. To the maximum extent permitted by law, we, our affiliates, our Course Providers, or anyone on behalf, expressly disclaim all warranties, whether express, implied or statutory. We do not guarantee or warrant that the Website or our Services will be uninterrupted or that defects in the Website or Service will be fixed at any time. In addition, we do not guarantee or warrant that the Website or our Services will be fit a particular purpose or be free of infection or viruses, worms, trojan horses or other code that manifest contaminating or destructive properties. You assume the entire risk as to the results and the performance of the Services, you are responsible for implementing appropriate procedures on your personal computer to satisfy your requirements for accuracy of data input and output, securities, and for maintaining a means external to the Website for the reconstruction of any lost data, in case needed."
+msgstr "הינך מבין ומסכים כי שימושך  בשירות הוא על אחריותך הבלעדית. השירותים ניתנים על בסיס 'כמות שהוא' (AS IS)."
+
+msgid "No advice or information, whether oral or written, obtained by you from WE, through or from the Services, or from any of our affiliates or course providers, will create any warranty not expressly stated in the Terms."
+msgstr "במידה המרבית המותרת על פי חוק, אנו, החברות המסונפות לנו, ספקי הקורסים שלנו, או מי מטעמנו, מתנערים במפורש מכל אחריות, בין אם מפורשת, משתמעת או מעוגנת בחוק. איננו מבטיחים או מתחייבים שהאתר או השירותים שלנו יפעלו ללא הפרעות או על תיקון פגמים במידה ויופיעו באתר או בשירות בכל עת. בנוסף, איננו מבטיחים או מתחייבים כי האתר או השירותים שלנו יהיו מתאימים למטרה מסוימת או יהיו חופשיים מוירוסים, סוסים טרויאנים או קוד אחר בעלי תכונות פוגעניות או הרסניות. הינך מקבל על עצמך את הסיכון כולו לגבי התוצאות והביצועים של השירותים, הינך אחראי ליישום תהליכים מתאימים במחשב האישי שלך בכדי לספק את הדרישות שלך לדיוק של קלט ופלט נתונים, אבטחה, ועל שמירה על אמצעים חיצוניים לאתר עבור שחזור של כל הנתונים שאבדו, במקרה הצורך. אין הודעה או מידע, בין אם בעל פה או בכתב, המתקבל על ידך מאת, ג'ון ברייס הדרכה בע'מ, דרך השירותים או מהם, או מכל שותף או ספק שירות , היוצר כל אחריות שלא צוינה במפורש בתנאי השימוש."
+
+msgid "Limitation of liability:"
+msgstr "הגבלת החבות:"
+
+msgid "We do not guarantee your satisfaction with our Services. You expressly absolve and release, to the maximum extent permitted by law, us and our officers, directors, employees, Course Providers or agents, from any claim of harm resulting for a cause beyond our control, as well to any damages whatsoever, including without limitation, indirect, incidental, special, punitive or consequential damages arising out of or that relates in anyway to your use of the Website, Services and Service Content whether the damages are foreseeable and whether or not WE has been advised of the possibility of such damages."
+msgstr "אנו לא מבטיחים את שביעות רצונך מהשירותים שלנו. אתה פוטר באופן מפורש, עד למידה המרבית המותרת על פי דין, את ג'ון ברייס הדרכה בע'מ, כולל נושאי משרה, מנהלים, עובדים, ספקי קורס או סוכנים, מכל תביעה של נזק שנגרם לגורם שמעבר לשליטתנו, וכן לכל נזק שהוא, לרבות ללא הגבלה, נזק עקיף, מקרי, מקרים מיוחדים, עונשי או תוצאתי, הנובעים או הקשורים בכל מקרה לשימושך באתר, בשירותים ובתוכן השירות, בין אם הנזק צפוי מראש ובין אם לא נודע לנו על האפשרות של נזקים כאלה."
+
+msgid "This exclusion will apply regardless of the legal theory upon which any claim for such damages is based, whether we were advised of the possibility of such damages, whether such damages were reasonably foreseeable, or whether application of the exclusion causes any remedy to fail of its essential purpose."
+msgstr "אי הכללה זו תחול ללא קשר לבסיס המשפטי שעליו מתבססת כל תביעה על נזקים אלה, בין אם נודע לנו על האפשרות לנזקים אלה, בין אם נזקים אלה היו צפויים בצורה סבירה מראש או אם יישום אי ההכללה גורם לכל תיקון לכשל במטרתו."
+
+msgid "Idemnification"
+msgstr "שיפוי"
+
+msgid "You agree to indemnify, defend and hold harmless us, our affiliates, and all of our respective officers, directors, employees, agents, licensors, Course Providers, attorneys, successors, and assigns from and against all claims, actions, injuries, liabilities, losses, damages , costs, and expenses, including reasonable attorneys' fees and litigation expenses, relating to or arising from any breach or violation of this agreement by you (including negligent or reckless conduct). Each of the above referred individuals or entities reserves the right to assert and enforce these provisions directly against you, on their own behalf."
+msgstr "הינך מסכים לשפות, להגן עלינו ולהחזיק בנו ללא אחריות, בשותפים שלנו, ובכל נושאי המשרה, הדירקטורים, העובדים, הסוכנים, מעניקי הרישיונות, ספקי הקורסים והשירותים, עורכי הדין, היורשים שלנו, וממנו מכל וכל נגד תביעות, פעולות, פציעות, הפסדים, נזקים, עלויות והוצאות, לרבות שכר טרחת עורך דין סביר והוצאות ליטיגציה, הנובעות מכל הפרה של הסכם זה על ידך (לרבות התנהגות רשלנית או פזיזה). כל אחד מן האנשים או הגופים המוזכרים לעיל שומר לעצמו את הזכות לאכוף הוראות אלה ישירות נגדך בעצמם."
+
+msgid "Governing law and dispute resolution:"
+msgstr "החוק הגובר ופתירת מחלוקות:"
+
+msgid "Should one or more of the stipulations in the Terms be held to be invalid by a competent jurisdiction the remaining clauses shall remain valid and enforceable. These Terms shall be governed by and interpreted in accordance with the laws of the state of Israel."
+msgstr "אם אחד או יותר מהתנאים שבתנאים יוגדרו כבלתי חוקיים על ידי סמכות שיפוטית מוסמכת, יישארו הסעיפים הנותרים תקפים וניתנים לאכיפה. תנאים אלה יחולו ויפורשו בהתאם לחוקי מדינת ישראל."
+
+msgid "We may make changes to these Terms from time to time, without prior notice. When we do, we will revise the “last updated” date given above. The updated Terms will apply on your use, so you should review these Terms frequently and to remain informed of any changes made. The last version will supersede all earlier versions. Your continued use of the Services will constitute your acceptance of such revised Terms."
+msgstr "אנו עשויים לערוך שינויים בתנאים אלה מעת לעת, ללא הודעה מוקדמת. כאשר נעשה זאת, נשנה את תאריך 'העדכון האחרון' לעיל. התנאים המעודכנים יחולו על השימוש שלך, לכן עליך לעיין בתנאים אלה לעתים קרובות ולהיות מעודכן לגבי שינויים שבוצעו. הגרסה האחרונה תחליף את כל הגרסאות הקודמות. המשך השימוש שלך בשירותים יהווה את הסכמתך לתנאים המתוקנים."
+
+msgid "Miscellaneous"
+msgstr "שונות"
+
+msgid "Should one or more of the stipulations in these Terms be held to be invalid by a competent jurisdiction, the remaining clauses shall remain valid and enforceable. These Terms are personal to You and not assignable. No joint venture, partnership, employment, or agency relationship exists between You and Us as a result of these Terms or arising out of your use of the Website. Our failure to insist upon or enforce strict performance of any provision of this Terms shall not be construed as a waiver of any provision or right under these Terms or at law remedies. Neither the course of conduct between the parties nor trade practice modifies any provision of the Terms."
+msgstr "אם אחד או יותר מהתנאים שבתנאי שימוש אלו יוגדרו כלא תקפים על ידי סמכות שיפוטית מוסמכת, שאר הסעיפים יישארו תקפים וניתנים לאכיפה. תנאים אלו הם אישיים לך ולא ניתנים להעברה. לא קיימים יחסי שותפות, העסקה או יחסי סוכנות בינך לג'ון ברייס הדרכה כתוצאה מתנאים אלו או כנובע משימושך באתר. כישלוננו לאכוף ביצוע קפדני של הוראה כלשהי של תנאים אלו לא יפורש כוויתור על כל הוראה או זכות על פי תנאים אלו או על החוק. אין לראות בהתנהלות בין הצדדים כל הוראה לשינוי של התנאים."
+
+msgid "WE may assign our rights and duties under this Agreement to any party and at any time, without notice to you. These Terms and along with our Privacy Policy, represent the entire agreement between you and WE with respect to use of the Service and the Website, and supersedes all prior or contemporaneous communications and proposals, whether electronic, oral, or written between you and us."
+msgstr "אנו רשאים להקצות את הזכויות והחובות שלנו על פי הסכם זה לכל צד ובכל עת, ללא הודעה מוקדמת. תנאים אלו יחד עם מדיניות הפרטיות שלנו מייצגים את כל ההסכם בינך לבין ג'ון ברייס הדרכה בע'מ בהקשר של שימוש בשירות ובאתר, ומחליפים את כל ההצעות הקודמות או מקבילות, בין אם אלקטרוניות, בעל פה או בכתב בינך לביננו."
+
+msgid "Any questions?"
+msgstr "שאלות?"
+
+msgid "If you have any questions or comments about these Terms or the practices relating to the Website, please contact us at"
+msgstr "אם יש לך שאלות או הערות בנוגע לתנאים אלו או לכל הקשור לאתר, אנא פנה אלינו בכתובת"
+
+
