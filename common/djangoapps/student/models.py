@@ -537,6 +537,7 @@ class Registration(models.Model):
         self.user.is_active = True
         self._track_activation()
         self.user.save()
+        self.referral_uid = uuid.uuid4().hex
         log.info(u'User %s (%s) account is successfully activated.', self.user.username, self.user.email)
         # TODO: refactor (mix-in or something)
         activated_link = ActivatedLink.objects.filter(
@@ -552,7 +553,7 @@ class Registration(models.Model):
                         'student_id': get_user_id(referral.user),
                         'client_id': getattr(settings, 'EDEOS_API_KEY'),
                         "referral_type": "student_signup",
-                        "referral_id": self.user.email,  # referee
+                        "referral_id": self.referral_uid,
                         "referral_hashkey": referral.hashkey,
                         "event_type_verbose": "referral_signup",
                         "event_type": 5
