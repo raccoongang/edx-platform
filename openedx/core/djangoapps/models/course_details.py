@@ -1,16 +1,16 @@
 """
 CourseDetails
 """
-import re
 import logging
 
+import re
 from django.conf import settings
 
-from xmodule.fields import Date
-from xmodule.modulestore.exceptions import ItemNotFoundError
+from course_category.models import CourseCategory
 from openedx.core.lib.courses import course_image_url
+from xmodule.fields import Date
 from xmodule.modulestore.django import modulestore
-
+from xmodule.modulestore.exceptions import ItemNotFoundError
 
 # This list represents the attribute keys for a course's 'about' info.
 # Note: The 'video' attribute is intentionally excluded as it must be
@@ -35,6 +35,7 @@ class CourseDetails(object):
     """
     An interface for extracting course information from the modulestore.
     """
+
     def __init__(self, org, course_id, run):
         # still need these for now b/c the client's screen shows these 3
         # fields
@@ -73,6 +74,7 @@ class CourseDetails(object):
         self.self_paced = None
         self.learning_info = []
         self.instructor_info = []
+        # self.category = []
 
     @classmethod
     def fetch_about_attribute(cls, course_key, attribute):
@@ -120,7 +122,7 @@ class CourseDetails(object):
         course_details.self_paced = course_descriptor.self_paced
         course_details.learning_info = course_descriptor.learning_info
         course_details.instructor_info = course_descriptor.instructor_info
-
+        course_details.category = [i['id'] for i in CourseCategory.objects.filter(courses__id=course_key).values('id')]
         # Default course license is "All Rights Reserved"
         course_details.license = getattr(course_descriptor, "license", "all-rights-reserved")
 
@@ -294,6 +296,16 @@ class CourseDetails(object):
                 cls.update_about_item(descriptor, attribute, jsondict[attribute], user.id)
 
         cls.update_about_video(descriptor, jsondict['intro_video'], user.id)
+
+        # FIXME: Dymamic import. Did to avoid cycle dependencies. Try to fix if it is possible.
+        from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+
+        category_ids = jsondict["category"] or []
+        course_overview = CourseOverview.get_from_id_if_exists(course_key)
+        if course_overview:
+            CourseCategory.courses.through.objects.filter(courseoverview_id=course_key).delete()
+            for category in CourseCategory.objects.filter(id__in=category_ids):
+                category.courses.add(course_overview)
 
         # Could just return jsondict w/o doing any db reads, but I put
         # the reads in as a means to confirm it persisted correctly

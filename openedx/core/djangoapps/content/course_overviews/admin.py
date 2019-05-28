@@ -3,26 +3,26 @@ Django admin page for CourseOverviews, the basic metadata about a course that
 is used in user dashboard queries and other places where you need info like
 name, and start dates, but don't actually need to crawl into course content.
 """
+from config_models.admin import ConfigurationModelAdmin
 from django.contrib import admin
 
-from config_models.admin import ConfigurationModelAdmin
+from course_category.models import CourseCategory
 from .models import CourseOverview, CourseOverviewImageConfig, CourseOverviewImageSet
+
+
+class CourseCategoryInline(admin.TabularInline):
+    model = CourseCategory.courses.through
+    extra = 1
 
 
 class CourseOverviewAdmin(admin.ModelAdmin):
     """
     Simple, read-only list/search view of Course Overviews.
     """
-    list_display = [
-        'id',
-        'display_name',
-        'version',
-        'enrollment_start',
-        'enrollment_end',
-        'created',
-        'modified',
-    ]
 
+    list_display = ['id', 'display_name', 'version', 'enrollment_start', 'enrollment_end', 'created', 'modified']
+
+    inlines = (CourseCategoryInline,)
     search_fields = ['id', 'display_name']
 
 
@@ -35,6 +35,7 @@ class CourseOverviewImageConfigAdmin(ConfigurationModelAdmin):
     the entries in CourseOverviewImageSet manually for new entries to be
     created.
     """
+
     list_display = [
         'change_date',
         'changed_by',

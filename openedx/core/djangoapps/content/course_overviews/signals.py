@@ -6,8 +6,11 @@ import logging
 from django.dispatch import Signal
 from django.dispatch.dispatcher import receiver
 
-from .models import CourseOverview
+from course_category.tasks import task_add_categories
 from xmodule.modulestore.django import SignalHandler
+
+from .models import CourseOverview
+
 
 LOG = logging.getLogger(__name__)
 
@@ -25,6 +28,14 @@ def _listen_for_course_publish(sender, course_key, **kwargs):  # pylint: disable
     previous_course_overview = CourseOverview.get_from_ids_if_exists([course_key]).get(course_key)
     updated_course_overview = CourseOverview.load_from_module_store(course_key)
     _check_for_course_changes(previous_course_overview, updated_course_overview)
+    course_overview = CourseOverview.objects.filter(id=course_key).first()
+    category_names = []
+    if course_overview:
+        category_names = list(course_overview.coursecategory_set.all().values_list('name', flat=True))
+        course_overview.delete()
+    CourseOverview.load_from_module_store(course_key)
+    if category_names:
+        task_add_categories.delay(category_names, str(course_key))
 
 
 @receiver(SignalHandler.course_deleted)
