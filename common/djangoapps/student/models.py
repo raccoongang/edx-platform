@@ -552,7 +552,7 @@ class Registration(models.Model):
                         'student_id': get_user_id(referral.user),
                         'client_id': getattr(settings, 'EDEOS_API_KEY'),
                         "referral_type": "student_signup",
-                        "referral_id": self.user.email,  # referee
+                        "referral_id": get_user_id(self.user),
                         "referral_hashkey": referral.hashkey,
                         "event_type_verbose": "referral_signup",
                         "event_type": 5
