@@ -1036,6 +1036,10 @@ if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
         'dsn': AUTH_TOKENS.get('RG_SENTRY_DSN'),
     }
     raven.fetch_git_sha(REPO_ROOT)
+
+# Variable for overriding standard MKTG_URLS
+EXTERNAL_MKTG_URLS = ENV_TOKENS.get('EXTERNAL_MKTG_URLS', {})
+
 #RACCOONGANG
 
 ############## Settings for CourseGraph ############################
