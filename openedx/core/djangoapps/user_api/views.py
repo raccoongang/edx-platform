@@ -773,7 +773,7 @@ class RegistrationView(APIView):
 
         # Translators: "Terms of Service" is a legal document users must agree to
         # in order to register a new account.
-        label = _(u"I agree to the {platform_name} {terms_of_service}").format(
+        label = _(u"I hereby agree and approve that, in the event, I will request to receive a Certificate of completion for any of the courses that are provided by Microsoft Corporation and available on the website, the Company will transfer my information to Microsoft, as detailed in the Privacy Policy.").format(
             platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
             terms_of_service=terms_label
         )
@@ -793,9 +793,7 @@ class RegistrationView(APIView):
             required=required,
             error_messages={
                 "required": error_msg
-            },
-            supplementalLink=terms_link,
-            supplementalText=terms_text
+            }
         )
 
     def _add_terms_of_service_field(self, form_desc, required=True):

@@ -25972,4 +25972,5 @@ msgstr "שאלות?"
 msgid "If you have any questions or comments about these Terms or the practices relating to the Website, please contact us at"
 msgstr "אם יש לך שאלות או הערות בנוגע לתנאים אלו או לכל הקשור לאתר, אנא פנה אלינו בכתובת"
 
-
+msgid "I hereby agree and approve that, in the event, I will request to receive a Certificate of completion for any of the courses that are provided by Microsoft Corporation and available on the website, the Company will transfer my information to Microsoft, as detailed in the Privacy Policy."
+msgstr "אני מסכים ומאשר כי במידה ואבקש לקבל תעודת השלמה לאיזה מקורסי מיקרוסופט המוצעים באתר, החברה תמסור את פרטי למיקרוסופט, כמפורט במדיניות הפרטיות של החברה"
