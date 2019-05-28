@@ -6,7 +6,7 @@ import logging
 import uuid
 import json
 import warnings
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from urlparse import urljoin, urlsplit, parse_qs, urlunsplit
 
 from django.views.generic import TemplateView
@@ -46,7 +46,13 @@ from social.exceptions import AuthException, AuthAlreadyAssociated
 
 from edxmako.shortcuts import render_to_response, render_to_string
 
-from util.enterprise_helpers import data_sharing_consent_requirement_at_login
+from bulk_email.models import Optout, BulkEmailFlag  # pylint: disable=import-error
+from certificates.api import (  # pylint: disable=import-error
+    get_certificate_url,
+    has_html_certificates_enabled,
+)
+from certificates.models import CertificateStatuses, certificate_status_for_student
+from course_category.models import CourseCategory
 from course_modes.models import CourseMode
 from shoppingcart.api import order_history
 from student.models import (
@@ -59,14 +65,8 @@ from student.models import (
 from student.forms import AccountCreationForm, PasswordResetFormNoActive, get_registration_extension_form
 from student.tasks import send_activation_email
 from lms.djangoapps.commerce.utils import EcommerceService  # pylint: disable=import-error
-from lms.djangoapps.verify_student.models import SoftwareSecurePhotoVerification  # pylint: disable=import-error
-from bulk_email.models import Optout, BulkEmailFlag  # pylint: disable=import-error
-from certificates.models import CertificateStatuses, certificate_status_for_student
-from certificates.api import (  # pylint: disable=import-error
-    get_certificate_url,
-    has_html_certificates_enabled,
-)
 from lms.djangoapps.grades.new.course_grade import CourseGradeFactory
+from lms.djangoapps.verify_student.models import SoftwareSecurePhotoVerification  # pylint: disable=import-error
 
 from xmodule.modulestore.django import modulestore
 from opaque_keys import InvalidKeyError
@@ -81,6 +81,7 @@ from courseware.access import has_access
 
 from django_comment_common.models import Role
 
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.external_auth.models import ExternalAuthMap
 import openedx.core.djangoapps.external_auth.views
 from openedx.core.djangoapps.external_auth.login_and_register import (
@@ -92,7 +93,9 @@ import track.views
 
 import dogstats_wrapper as dog_stats_api
 
+from util.bad_request_rate_limiter import BadRequestRateLimiter
 from util.db import outer_atomic
+from util.enterprise_helpers import data_sharing_consent_requirement_at_login
 from util.json_request import JsonResponse
 from util.bad_request_rate_limiter import BadRequestRateLimiter
 from util.milestones_helpers import (
@@ -218,6 +221,19 @@ def index(request, extra_context=None, user=AnonymousUser()):
 
     context["programs_list"] = programs_list
 
+    courses_data = OrderedDict()
+    for category in CourseCategory.objects.filter(parent=None):
+        if category.coursecategorycourse_set.all():
+            courses_data[category.name] = {'description': category.description, 'courses': []}
+            for coursecategory in category.coursecategorycourse_set.all():
+                try:
+                    course_id = coursecategory.course_id
+                    courses_data[category.name]['courses'].append(CourseOverview.get_from_id(course_id))
+                except CourseOverview.DoesNotExist:
+                    log.warning(u"Course with key %s doesn't exist", course_id)
+                except InvalidKeyError:
+                    log.warning(u"SiteConfiguration contains invalid course key: %s", course_id)
+    context['courses_data'] = courses_data
     return render_to_response('index.html', context)
 
 

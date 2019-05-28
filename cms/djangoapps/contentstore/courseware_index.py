@@ -10,8 +10,9 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy, ugettext as _
 from django.core.urlresolvers import resolve
 
-from contentstore.course_group_config import GroupConfiguration
+from cms.djangoapps.contentstore.course_group_config import GroupConfiguration
 from course_modes.models import CourseMode
+from course_category.models import CourseCategoryCourse
 from eventtracking import tracker
 from openedx.core.lib.courses import course_image_url
 from search.search_engine_base import SearchEngine
@@ -591,7 +592,8 @@ class CourseAboutSearchIndexer(object):
             'course': course_id,
             'content': {},
             'image_url': course_image_url(course),
-            'catalog_visibility': course.catalog_visibility
+            'catalog_visibility': course.catalog_visibility,
+            'category': []
         }
 
         # load data for all of the 'about' modules for this course into a dictionary
@@ -626,6 +628,7 @@ class CourseAboutSearchIndexer(object):
                     course_info['content'][about_information.property_name] = analyse_content
                 if about_information.index_flags & AboutInfo.PROPERTY:
                     course_info[about_information.property_name] = section_content
+        course_info['category'] = map(lambda x: x.course_category.name, CourseCategoryCourse.objects.filter(course_id=course.id))
 
         # Broad exception handler to protect around and report problems with indexing
         try:

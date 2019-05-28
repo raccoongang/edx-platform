@@ -28,11 +28,12 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                initialize: function(options) {
                    options = options || {};
         // fill in fields
-                   this.$el.find('#course-language').val(this.model.get('language'));
-                   this.$el.find('#course-organization').val(this.model.get('org'));
-                   this.$el.find('#course-number').val(this.model.get('course_id'));
-                   this.$el.find('#course-name').val(this.model.get('run'));
-                   this.$el.find('.set-date').datepicker({'dateFormat': 'm/d/yy'});
+                    this.$el.find('#course-category').val(this.model.get('category'));
+                    this.$el.find('#course-language').val(this.model.get('language'));
+                    this.$el.find('#course-organization').val(this.model.get('org'));
+                    this.$el.find('#course-number').val(this.model.get('course_id'));
+                    this.$el.find('#course-name').val(this.model.get('run'));
+                    this.$el.find('.set-date').datepicker({'dateFormat': 'm/d/yy'});
 
         // Avoid showing broken image on mistyped/nonexistent image
                    this.$el.find('img').error(function() {
@@ -154,6 +155,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    return this;
                },
                fieldToSelectorMap: {
+                   'category' : 'course-category',
                    'language': 'course-language',
                    'start_date': 'course-start',
                    'end_date': 'course-end',
@@ -298,6 +300,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        this.model.set('self_paced', JSON.parse(event.currentTarget.value));
                        break;
                    case 'course-language':
+                   case 'course-category':
                    case 'course-effort':
                    case 'course-title':
                    case 'course-subtitle':
