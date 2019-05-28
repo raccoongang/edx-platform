@@ -264,3 +264,5 @@ django-hvad==1.8.0
 # only this version works with django-storages
 azure-storage==v0.20.3
 pip==9.0.1
+django-mptt-admin==0.4.2
+
