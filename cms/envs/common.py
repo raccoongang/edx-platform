@@ -1156,6 +1156,10 @@ INSTALLED_APPS = [
 
     # API Documentation
     'rest_framework_swagger',
+
+    'course_category',
+
+    'django_mptt_admin',
 ]
 
 
