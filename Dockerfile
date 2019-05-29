@@ -1,8 +1,10 @@
 FROM ubuntu:16.04 as build_base
 
-WORKDIR /edx/edxapp
+WORKDIR /edx/app/edxapp/edx-platform
 
 COPY requirements requirements
+RUN mkdir -p /edx/app/edxapp/themes
+RUN mkdir -p /edx/var/edxapp/static_collector
 
 ENV CFLAGS="-O2 -g0 -Wl,--strip-all"
 
@@ -80,6 +82,8 @@ FROM build_base as edxapp
 
 COPY . .
 RUN pip install --no-cache-dir -r requirements/edx/local.txt
+RUN pip install -e common/lib/xmodule
+RUN sed -i 's#\(\W\)_(#\1(#g' /usr/local/lib/python2.7/dist-packages/rest_framework/fields.py
 
 
 # Build static files for final image
