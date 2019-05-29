@@ -2694,7 +2694,7 @@ msgstr ""
 #: lms/djangoapps/teams/static/teams/js/views/edit_team.js
 #: lms/static/js/student_account/views/account_settings_factory.js
 msgid "Language"
-msgstr "Язык"
+msgstr "Язык интерфейса"
 
 #: lms/djangoapps/teams/static/teams/js/views/edit_team.js
 #: lms/djangoapps/teams/static/teams/templates/team-profile.underscore
@@ -4705,10 +4705,10 @@ msgid ""
 "Select the time zone for displaying course dates. If you do not specify a "
 "time zone, course dates, including assignment deadlines, will be displayed "
 "in your browser's local time zone."
-msgstr ""
-"Выберите часовой пояс для отображения дат в курсе. Если вы не укажете "
-"часовой пояс, все даты в курсе, включая сроки сдачи заданий, будут "
-"отображаться в часовом поясе, который указан в настройках вашего браузера."
+msgstr "" 
+"Выберите часовой пояс для отображения дат курса. Если вы не укажете"
+"часовой пояс, даты курса, включая сроки выполнения, будут отображаться"
+"в часовом поясе вашего браузера."
 
 #: lms/static/js/student_account/views/account_settings_factory.js
 msgid "All Time Zones"
@@ -4724,7 +4724,7 @@ msgstr "Дополнительная информация"
 
 #: lms/static/js/student_account/views/account_settings_factory.js
 msgid "Education Completed"
-msgstr "Законченное образование"
+msgstr "Ваше образование"
 
 #: lms/static/js/student_account/views/account_settings_factory.js
 msgid "Gender"
@@ -4801,10 +4801,8 @@ msgid ""
 " password. Didn't receive the message? Contact {anchorStart}technical "
 "support{anchorEnd}."
 msgstr ""
-"Электронное сообщение с указаниями по смене пароля отправлено на адрес "
-"{email}. Чтобы сбросить пароль, перейдите по ссылке в письме. Если вы не "
-"получили сообщение, {anchorStart}свяжитесь с командой технической "
-"поддержки{anchorEnd}."
+"Мы отправили Вам сообщение на {email}. Нажмите на ссылку в сообщении, чтобы сбросить пароль. Не получили сообщение?"
+"Обратитесь в нашу службу технической поддержки: {anchorStart}academy@mama.mobytize.com{anchorEnd}."
 
 #: lms/static/js/student_account/views/account_settings_fields.js
 msgid "Link your {accountName} account"
@@ -4897,15 +4895,16 @@ msgstr ""
 
 #: lms/static/js/student_profile/views/learner_profile_fields.js
 msgid "Account Settings page."
-msgstr "настройках учётной записи."
+msgstr " настройках учетной записи."
+
 
 #: lms/static/js/student_profile/views/learner_profile_fields.js
 msgid ""
 "You must specify your birth year before you can share your full profile. To "
 "specify your birth year, go to the {account_settings_page_link}"
 msgstr ""
-"Для публикации полного профиля вам необходимо указать год вашего рождения в "
-"{account_settings_page_link}"
+"Для публикации полного профиля вам необходимо указать год вашего рождения в"
+" {account_settings_page_link}"
 
 #: lms/static/js/student_profile/views/learner_profile_fields.js
 msgid ""
@@ -7967,16 +7966,12 @@ msgid "Reset my password"
 msgstr "Сбросить пароль"
 
 #: lms/templates/student_account/register.underscore
-msgid "Already have an {platformName} account?"
-msgstr "Уже есть учётная запись на платформе «{platformName}»?"
-
-#: lms/templates/student_account/register.underscore
 msgid "Sign in."
-msgstr "Войдите."
+msgstr "Войти."
 
 #: lms/templates/student_account/register.underscore
 msgid "Create an Account"
-msgstr "Создать учётную запись"
+msgstr "Создайте учетную запись"
 
 #: lms/templates/student_account/register.underscore
 msgid "Create an account using"
@@ -7993,7 +7988,11 @@ msgstr "или создать новую в этом сервисе"
 
 #: lms/templates/student_account/register.underscore
 msgid "Create account"
-msgstr "Создать учётную запись"
+msgstr "Coздать профиль"
+
+#: lms/templates/student_account/register.underscore
+msgid "Already have an {platformName} account?"
+msgstr "У вас уже есть аккаунт в {platformName}?"
 
 #: lms/templates/student_profile/badge.underscore
 #, python-format
@@ -8024,6 +8023,11 @@ msgstr "Найти курс"
 #: lms/templates/student_profile/learner_profile.underscore
 msgid "An error occurred. Try loading the page again."
 msgstr "Произошла ошибка.  Попробуйте перезагрузить страницу."
+
+#: lms/templates/student_profile/learner_profile.underscore
+#: test_root/staticfiles/templates/student_profile/learner_profile.underscore
+msgid "Balance -"
+msgstr "На вашем счету -"
 
 #: lms/templates/student_profile/section_two.underscore
 msgid "You are currently sharing a limited profile."
@@ -10197,3 +10201,5 @@ msgstr ""
 #: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 msgid "Use Current Transcript"
 msgstr "Использовать субтитры"
+
+

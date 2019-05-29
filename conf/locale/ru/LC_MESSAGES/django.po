@@ -10633,7 +10633,7 @@ msgstr ""
 #. below a field meant to hold the user's email address.
 #: openedx/core/djangoapps/user_api/views.py
 msgid "This is what you will use to login."
-msgstr "Будет использоваться для входа."
+msgstr "Будет использоваться для входа в систему."
 
 #. Translators: This label appears above a field on the registration form
 #. meant to confirm the user's email address.
@@ -10656,7 +10656,7 @@ msgstr "Мария Ученикова"
 #. below a field meant to hold the user's full name.
 #: openedx/core/djangoapps/user_api/views.py
 msgid "This name will be used on any certificates that you earn."
-msgstr "Это имя будет использовано на всех выпускаемых сертификатах."
+msgstr "Это имя будет использоваться в любых сертификатах, которые вы получите."
 
 #. #-#-#-#-#  django-partial.po (0.1a)  #-#-#-#-#
 #. Translators: This label appears above a field on the registration form
@@ -10675,9 +10675,7 @@ msgstr "Имя пользователя"
 #: openedx/core/djangoapps/user_api/views.py
 msgid ""
 "The name that will identify you in your courses. It cannot be changed later."
-msgstr ""
-"Имя, под которым вы будете проходить курс Не может быть впоследствии "
-"изменено."
+msgstr "Имя, которое будет идентифицировать вас на ваших курсах. Оно не может быть изменено позже."
 
 #. Translators: This example username is used as a placeholder in
 #. a field on the registration form meant to hold the user's username.
@@ -10741,7 +10739,7 @@ msgstr "Условия предоставления услуг и Кодекс �
 
 #: openedx/core/djangoapps/user_api/views.py
 msgid "Review the Terms of Service and Honor Code"
-msgstr "Просмотр условий предоставления услуг и Кодекса чести"
+msgstr "Условия предоставления услуг и кодекс чести"
 
 #. Translators: "Terms of Service" is a legal document users must agree to
 #. in order to register a new account.
@@ -16193,30 +16191,30 @@ msgid ""
 "engaging, high-quality {platform_name} courses. Note that you will not be "
 "able to log back into your account until you have activated it."
 msgstr ""
-"Уже почти всё! Для доступа к занимательным, высококачественным курсам на "
-"платформе «{platform_name}» активируйте свою учётную запись с помощью "
-"указанной ссылки. Вы не сможете зайти в свою учётную запись до её активации."
+"Привет!"
+"Используйте нашу ссылку, чтобы активировать свою учетную запись и получить доступ к курсам {platform_name}."
+"{platform_name} - это обучение от ведущих преподавателей и высокое качество полученных знаний онлайн."
+"Жми на ссылку:"
 
 #: lms/templates/emails/activation_email.txt
 msgid "Enjoy learning with {platform_name}."
-msgstr "Успехов в обучении на платформе «{platform_name}»!"
+msgstr ""
+"Важно:"
+"Вы не сможете снова войти в свою учетную запись, пока не активируете ее."
+"Команда {platform_name} желает Вам хорошего дня!"
 
 #: lms/templates/emails/activation_email.txt
-msgid ""
-"If you need help, please use our web form at {support_url} or email "
-"{support_email}."
-msgstr ""
-"Если вам нужна помощь, используйте форму помощи {support_url} или напишите "
-"нам e-mail по адресу {support_email}. "
+msgid "If you need help, please use our web form at {support_url} or email {support_email}."
+msgstr "Если Вам понадобится помощь, пишите нам на электронною почту {support_email}"
+
 
 #: lms/templates/emails/activation_email.txt
 msgid ""
 "This email message was automatically sent by {lms_url} because someone "
 "attempted to create an account on {platform_name} using this email address."
 msgstr ""
-"Это письмо было автоматически отправлено  {lms_url}, так как кто-то "
-"использовал этот электронный адрес для создания учётной записи на платформе "
-"«{platform_name}»."
+"Это электронное письмо было автоматически отправлено {lms_url}, потому что кто-то пытался создать учетную запись в "
+"{platform_name}, используя этот адрес электронной почты."
 
 #: lms/templates/emails/activation_email_subject.txt
 msgid "Action Required: Activate your {platform_name} account"
