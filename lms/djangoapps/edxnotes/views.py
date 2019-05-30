@@ -59,6 +59,7 @@ def edxnotes(request, course_id):
     if not is_feature_enabled(course, request.user):
         raise Http404
 
+    log.error('INTERO test log')
     notes_info = get_notes(request, course)
     has_notes = (len(notes_info.get('results')) > 0)
     context = {

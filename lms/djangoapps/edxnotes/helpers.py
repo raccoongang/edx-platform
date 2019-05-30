@@ -347,7 +347,14 @@ def get_notes(request, course, page=DEFAULT_PAGE, page_size=DEFAULT_PAGE_SIZE, t
     try:
         collection = json.loads(response.content)
     except ValueError:
+        #INTERO-START: Debugging 
+        log.error("Invalid JSON response received from notes api: INTERO-DEBUG")
+        #INTERO-END: Debugging 
+
         log.error("Invalid JSON response received from notes api: response_content=%s", response.content)
+        #INTERO-START: Debugging 
+        log.error("Invalid JSON response received from notes api: request=%s", request)
+        #INTERO-END: Debugging 
         raise EdxNotesParseError(_("Invalid JSON response received from notes api."))
 
     # Verify response dict structure
