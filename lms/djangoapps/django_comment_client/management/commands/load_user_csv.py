@@ -81,8 +81,7 @@ class Command(BaseCommand):
                 try:
                     email_message = self.message.format(
                         login=email,
-                        password=password,
-                        login_link=reverse("signin_user")
+                        password=password
                     )
                     mail.send_mail(self.subject, email_message, settings.DEFAULT_FROM_EMAIL, [email],
                                    fail_silently=False)
