@@ -5,7 +5,7 @@
             <div class="profile-image-field">
             </div>
             <div class="profile-section-one-fields">
-                <span>Balance - <%- balance %> </span>
+                <span><%- gettext("Balance -") %> <%- balance %> </span>
             </div>
         </div>
         <div class="ui-loading-error is-hidden">
