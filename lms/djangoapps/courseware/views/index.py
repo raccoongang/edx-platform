@@ -536,6 +536,7 @@ def check_prerequisite(request, course_id):
         course = get_course(course_key)
 
     next_item = None
+    prev_item = None
     chapters = course.get_children()
     for c, chapter in enumerate(chapters):
         sections = chapter.get_children()
@@ -545,6 +546,10 @@ def check_prerequisite(request, course_id):
                     next_item = sections[s+1]
                 elif c < (len(chapters) - 1):
                     next_item = (chapters[c+1].get_children() or [None])[0]
+                if s > 0:
+                    prev_section = sections[s-1]
+                    children = prev_section.get_children()
+                    prev_item = children and children[0] or prev_section
 
     if not next_item:
         url = reverse(
@@ -587,6 +592,12 @@ def check_prerequisite(request, course_id):
                     next_for_user = (table_of_contents['chapters'][c+1].get('sections') or [None])[0]
 
     descriptor = modulestore().get_item(UsageKey.from_string(prereq[0]), depth=2)
+
+    with_randomization = any(
+        [True for cc in c.get_children() if cc.location.block_type == 'library_content']
+        for c in descriptor.get_children()
+    )
+
     if next_for_user and next_item.url_name == next_for_user['url_name']:
         next_url = reverse(
             'jump_to',
@@ -600,12 +611,15 @@ def check_prerequisite(request, course_id):
             'jump_to',
             kwargs={
                 'course_id': course_id,
-                'location': prereq[0],
+                # If subsection contains library_content xblock, then redirected to previous subsection
+                'location': with_randomization and prev_item and prev_item.location.to_deprecated_string() or prereq[0],
             }
         )
 
         msg = _("Sorry, you've failed the quiz. In order to go Next, you should complete it first")
         if number_attempts == '3':  # last request
+            if with_randomization and prev_item:
+                reset_library_content(prev_section, request.user, for_all=True)
             reset_library_content(descriptor, request.user)
 
         return JsonResponse({'next': False, 'msg': msg, 'url': url})
@@ -617,10 +631,14 @@ def check_prerequisite(request, course_id):
     return JsonResponse({'next': True, 'msg': msg, 'url': next_url})
 
 
-def reset_library_content(sequential, user):
+def reset_library_content(sequential, user, for_all=False):
+    types = [u'library_content']
+    if for_all:
+        types.append('problem')
+
     for vertical in sequential.get_children():
         for children in vertical.get_children():
-            if children.location.block_type == u'library_content':
+            if children.location.block_type in types:
                 reset_student_attempts(children.location.course_key, user, children.location, user, delete_module=True)
 
 

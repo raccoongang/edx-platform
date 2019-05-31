@@ -205,6 +205,10 @@ function(VideoPlayer, i18n, moment, _) {
             state.__dfd__.resolve();
             state.htmlPlayerLoaded = true;
         }
+
+        if (state.storage.getItem('isViewed', true)) {
+            state.el.addClass('is-viewed');
+        }
     }
 
     function _waitForYoutubeApi(state) {
