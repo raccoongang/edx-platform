@@ -35,7 +35,6 @@ class Command(BaseCommand):
         → Пароль: {password}
         → Ссылка на платформу: https://lms.accellab.ru/login?next=/dashboard
         
-        
         С уважением, команда Accel.    
         """)
     subject = u'Добро пожаловать на платформу Accel.'
@@ -82,6 +81,9 @@ class Command(BaseCommand):
                     email_message = self.message.format(
                         login=email,
                         password=password,
+
+                        login_link=reverse("signin_user")
+
                     )
                     mail.send_mail(self.subject, email_message, settings.DEFAULT_FROM_EMAIL, [email],
                                    fail_silently=False)
