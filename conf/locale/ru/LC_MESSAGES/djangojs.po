@@ -7912,12 +7912,8 @@ msgid "First time here?"
 msgstr "Вы здесь первый раз?"
 
 #: lms/templates/student_account/login.underscore
-msgid "Create an Account."
-msgstr "Создайте учётную запись."
-
-#: lms/templates/student_account/login.underscore
 msgid "Sign In"
-msgstr "Вход"
+msgstr "Войти"
 
 #: lms/templates/student_account/login.underscore
 msgid ""
@@ -7972,6 +7968,10 @@ msgstr "Войти."
 #: lms/templates/student_account/register.underscore
 msgid "Create an Account"
 msgstr "Создайте учетную запись"
+
+#: test_root/staticfiles/templates/student_account/register.underscore
+msgid "Already have an account?"
+msgstr "Уже есть учётная запись?"
 
 #: lms/templates/student_account/register.underscore
 msgid "Create an account using"

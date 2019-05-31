@@ -9547,10 +9547,8 @@ msgstr "Ошибка"
 #, python-format
 msgid ""
 "You're receiving this e-mail because you requested a password reset for your"
-" user account at %(site_name)s."
-msgstr ""
-"Вы получили это сообщение, потому что запросили смену пароля своей учётной "
-"записи на %(site_name)s."
+" user account at %(platform_name)s."
+msgstr "Вы получили это сообщение, потому что запросили сброс пароля своей учётной записи на %(platform_name)s."
 
 #: lms/templates/registration/password_reset_email.html
 msgid "Please go to the following page and choose a new password:"
@@ -10575,7 +10573,7 @@ msgstr "Нет данных для обновления пользователь
 #. a field on the password reset form meant to hold the user's email address.
 #: openedx/core/djangoapps/user_api/views.py
 msgid "username@domain.com"
-msgstr "username@domain.com"
+msgstr "Электронная почта"
 
 #. Translators: These instructions appear on the login form, immediately
 #. below a field meant to hold the user's email address.
@@ -10649,7 +10647,7 @@ msgstr "Адреса электронной почты не совпадают."
 #. a field on the registration form meant to hold the user's name.
 #: openedx/core/djangoapps/user_api/views.py
 msgid "Jane Q. Learner"
-msgstr "Мария Ученикова"
+msgstr "Фамилия Имя"
 
 #. Translators: These instructions appear on the registration form,
 #. immediately
@@ -24696,3 +24694,29 @@ msgid ""
 "A new revision was created: Merge between Revision #%(r1)d and Revision "
 "#%(r2)d"
 msgstr "Создана новая версия: слияние версий #%(r1)d и #%(r2)d"
+
+msgid "Activate Your {platform_name} Account"
+msgstr "Активация учетной записи на сайте {platform_name}"
+
+msgid "Thank you for creating an account with {platform_name}!"
+msgstr "Благодарим Вас за создание учётной записи на {platform_name}!"
+
+msgid ""
+"There's just one more step before you can enroll in a course: "
+"you need to activate your {platform_name} account. To activate "
+"your account, click the following link. If that doesn't work, "
+"copy and paste the link into your browser's address bar."
+msgstr ""
+"Остался всего ещё один шаг, и Вы сможете записаться на курс: Вам нужно активировать свою учётную запись на {platform_name}. "
+"Для активации нажмите на нижеследующую ссылку. Если ссылка не работает, скопируйте и вставьте её в адресную строку своего браузера."
+""
+
+msgid ""
+"If you didn't create an account, you don't need to do anything; you "
+"won't receive any more email from us. If you need assistance, please "
+"do not reply to this email message. Check the help section of the "
+"{platform_name} website."
+msgstr ""
+"Если Вы не создавали учетную запись, дальнейших действий не требуется; "
+"Вы больше не будете получать от нас сообщения. Если Вам потребуется помощь, пожалуйста, не отвечайте на это сообщение. "
+"Обратитесь к разделу \"Помощь\" на веб-сайте {platform_name}."

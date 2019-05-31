@@ -25,6 +25,17 @@ from openedx.features.course_experience.course_tools import CourseToolsPluginMan
             <nav aria-label="${_('Course Outline')}" class="sr-is-focusable" tabindex="-1">
                 <h2 class="hd hd-3 page-title">${course.display_name_with_default}</h2>
             </nav>
+        <!--theme creation-->
+            % if certificate_data:
+                % for signatory in certificate_data.get('signatories', []):
+                <div>
+                    <p>
+                        <span>${signatory['organization']}</span>
+                    </p>
+                </div>
+                % endfor
+            % endif
+        <!--end-->
         </div>
         <div class="page-header-secondary">
             % if settings.FEATURES.get('ENABLE_COURSEWARE_SEARCH'):

@@ -113,6 +113,17 @@ from openedx.core.lib.courses import course_image_url
           <h1>
             ${course.display_name_with_default_escaped}
             <button type="button">${course.display_org_with_default | h}</button>
+        <!--theme creation-->
+            % if certificate_data:
+                % for signatory in certificate_data.get('signatories', []):
+                <div>
+                    <p>
+                        <span>${signatory['organization']}</span>
+                    </p>
+                </div>
+                % endfor
+            % endif
+        <!--end-->
           </h1>
           <br>
           <h3>

@@ -81,6 +81,17 @@ from openedx.features.course_experience import SHOW_REVIEWS_TOOL_FLAG
         <div class="page-header-main">
             <h2 class="hd hd-2 page-title">${_("Welcome to {org}'s {course_name}!").format(org=course.display_org_with_default, course_name=course.display_number_with_default)}
               <div class="page-subtitle">${course.display_name_with_default}</div>
+          <!--theme creation-->
+                % if certificate_data:
+                    % for signatory in certificate_data.get('signatories', []):
+                    <div>
+                        <p>
+                            <span>${signatory['organization']}</span>
+                        </p>
+                    </div>
+                    % endfor
+                % endif
+          <!--end-->
             </h2>
         </div>
         % if resume_course_url and user_is_enrolled:
@@ -114,6 +125,20 @@ from openedx.features.course_experience import SHOW_REVIEWS_TOOL_FLAG
           ${HTML(get_course_info_section(request, masquerade_user, course, 'updates'))}
 
         </section>
+  <!--theme creation-->
+        <section>
+        % if blocks.get('children'):
+            % for section in blocks.get('children'):
+                <div>
+                    <h3>${ section['display_name'] }</h3>
+                </div>
+                    % for subsection in section.get('children', []):
+                        <span>${ subsection['display_name'] }</span>
+                    % endfor
+            % endfor
+        % endif
+        </section>
+  <!--end-->
         <section aria-label="${_('Handout Navigation')}" class="handouts">
           <h3 class="hd hd-3 handouts-header">${_("Course Tools")}</h3>
             <div>

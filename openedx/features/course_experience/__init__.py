@@ -32,14 +32,8 @@ def course_home_page_title(course):  # pylint: disable=unused-argument
 def default_course_url_name(course_id):
     """
     Returns the default course URL name for the current user.
-
-    Arguments:
-        course_id (CourseKey): The course id of the current course.
     """
-    if COURSE_OUTLINE_PAGE_FLAG.is_enabled(course_id):
-        return 'openedx.course_experience.course_home'
-    else:
-        return 'courseware'
+    return 'courseware'
 
 
 def course_home_url_name(course_key):

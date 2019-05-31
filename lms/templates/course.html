@@ -3,6 +3,8 @@
 <%!
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
+from certificates.api import get_active_web_certificate
+from courseware.courses import get_course
 %>
 <%page args="course" expression_filter="h"/>
 <article class="course" id="${course.id}" role="region" aria-label="${course.display_name_with_default}">
@@ -18,6 +20,28 @@ from django.core.urlresolvers import reverse
         <span class="course-organization">${course.display_org_with_default}</span>
         <span class="course-code">${course.display_number_with_default}</span>
         <span class="course-title">${course.display_name_with_default}</span>
+        <!--theme creation-->
+        <% course_subject=get_course(course.id, depth=1) %>
+        <% certificate_data = get_active_web_certificate(course_subject)%>
+        <!--School Name-->
+        <span>
+        % if certificate_data:
+            % for signatory in certificate_data.get('signatories', []):
+            <div>
+                <p>
+                    <span>${signatory['organization']}</span>
+                </p>
+            </div>
+            % endfor
+        % endif
+        </span>
+        <!--Subsections Names-->
+        <span>
+        % for chapter in course_subject.get_children():
+            <div>${ chapter.display_name }</div>
+        % endfor
+        </span>
+        <!--end-->
       </h2>
       <%
       if course.start is not None:

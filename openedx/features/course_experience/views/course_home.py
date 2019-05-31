@@ -16,6 +16,8 @@ from lms.djangoapps.courseware.views.views import CourseTabView
 from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
 from util.views import ensure_valid_course_key
 
+from certificates.api import get_active_web_certificate
+
 from ..utils import get_course_outline_block_tree
 from .course_dates import CourseDatesFragmentView
 from .course_outline import CourseOutlineFragmentView
@@ -112,6 +114,8 @@ class CourseHomeFragmentView(EdxFragmentView):
         # Get the handouts
         handouts_html = get_course_info_section(request, request.user, course, 'handouts')
 
+        certificate_data = get_active_web_certificate(course)
+
         # Render the course home fragment
         context = {
             'request': request,
@@ -127,6 +131,7 @@ class CourseHomeFragmentView(EdxFragmentView):
             'course_sock_fragment': course_sock_fragment,
             'disable_courseware_js': True,
             'uses_pattern_library': True,
+            'certificate_data': certificate_data,
         }
         html = render_to_string('course_experience/course-home-fragment.html', context)
         return Fragment(html)
