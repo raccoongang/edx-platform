@@ -7974,10 +7974,6 @@ msgid "Already have an account?"
 msgstr "Уже есть учётная запись?"
 
 #: lms/templates/student_account/register.underscore
-msgid "Sign in."
-msgstr "Войти"
-
-#: lms/templates/student_account/register.underscore
 msgid "Create an account using"
 msgstr "Создать учётную запись, используя"
 
