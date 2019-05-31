@@ -1,0 +1,56 @@
+---
+metadata:
+    display_name: Dropdown inline
+    markdown: |
+        PARAGRAPH 1. You can use this template as a guide to the simple editor markdown and OLX markup to use for dropdown
+        [[
+        an incorrect answer
+        (the correct answer)
+        an incorrect answer
+        ]]
+        problems. Edit this component to replace this template with your own assessment.
+
+        PARAGRAPH 2. You can use this template
+        [[
+        an incorrect answer
+        (the correct answer)
+        an incorrect answer
+        ]]
+        as a guide to the simple editor markdown and OLX markup to use for dropdown problems. Edit this component to replace this template with your own assessment.
+data:   |
+    <problem>
+        <style>
+            p.problem-inline-p + div.wrapper-problem-response, .option-input {
+                display: inline !important;
+            }
+
+            p.problem-inline-p {
+                display: inline;
+            }
+        </style>
+
+        <p>
+            <p class="problem-inline-p">PARAGRAPH 1. You can use this template as a guide to the simple editor markdown and OLX markup to use for dropdown </p>
+
+            <optionresponse>
+                <optioninput>
+                    <option correct="False">an incorrect answer</option>
+                    <option correct="True">the correct answer</option>
+                    <option correct="False">an incorrect answer</option>
+                </optioninput>
+            </optionresponse>
+            <p class="problem-inline-p">problems. Edit this component to replace this template with your own assessment.</p>
+        </p>
+        <p>
+            <p class="problem-inline-p">PARAGRAPH 2. You can use this template </p>
+
+            <optionresponse>
+                <optioninput>
+                    <option correct="False">an incorrect answer</option>
+                    <option correct="True">the correct answer</option>
+                    <option correct="False">an incorrect answer</option>
+                </optioninput>
+            </optionresponse>
+            <p class="problem-inline-p">as a guide to the simple editor markdown and OLX markup to use for dropdown problems. Edit this component to replace this template with your own assessment.</p>
+        </p>
+    </problem>

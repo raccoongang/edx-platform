@@ -1774,6 +1774,40 @@ class CapaDescriptorTest(unittest.TestCase):
         </problem>
     """)
 
+    sample_dropdown_inline_problem_xml = textwrap.dedent("""
+        <problem>
+            <style>
+                p.problem-inline-p + div.wrapper-problem-response, .option-input {
+                    display: inline !important;
+                }
+            
+                p.problem-inline-p {
+                    display: inline;
+                }
+            </style>
+            <p>Dropdown problems allow learners to select only one option from a list of options.</p>
+
+            <p>Description</p>
+
+            <p>You can use the following example problem as a model.</p>
+
+            <optionresponse>
+              <optioninput options="('India','Spain','China','Bermuda')" correct="India"></optioninput>
+            </optionresponse>
+            <p class="problem-inline-p">celebrates its independence on August 15?</p>
+
+             <solution>
+            <div class="detailed-solution">
+            <p>Explanation</p>
+
+            <p> India became an independent nation on August 15, 1947.</p>
+
+            </div>
+            </solution>
+
+        </problem>
+    """)
+
     sample_multichoice_problem_xml = textwrap.dedent("""
         <problem>
             <p>Multiple choice problems allow learners to select only one option.</p>
@@ -2224,6 +2258,27 @@ class CapaDescriptorTest(unittest.TestCase):
             Description
             You can use the following example problem as a model.
             Which of the following countries celebrates its independence on August 15?
+        """)
+        self.assertEquals(descriptor.problem_types, {"optionresponse"})
+        self.assertEquals(
+            descriptor.index_dictionary(), {
+                'content_type': CapaDescriptor.INDEX_CONTENT_TYPE,
+                'problem_types': ["optionresponse"],
+                'content': {
+                    'display_name': name,
+                    'capa_content': capa_content.replace("\n", " ")
+                }
+            }
+        )
+
+    def test_indexing_dropdown_inline(self):
+        name = "Dropdown inline"
+        descriptor = self._create_descriptor(self.sample_dropdown_inline_problem_xml, name=name)
+        capa_content = textwrap.dedent("""
+            Dropdown problems allow learners to select only one option from a list of options.
+            Description
+            You can use the following example problem as a model.
+            celebrates its independence on August 15?
         """)
         self.assertEquals(descriptor.problem_types, {"optionresponse"})
         self.assertEquals(
