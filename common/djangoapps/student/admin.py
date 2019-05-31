@@ -2,6 +2,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm, UserChangeForm as BaseUserChangeForm
 from django.utils.translation import ugettext_lazy as _
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
@@ -20,7 +21,9 @@ User = get_user_model()  # pylint:disable=invalid-name
 
 
 class CourseAccessRoleForm(forms.ModelForm):
-    """Form for adding new Course Access Roles view the Django Admin Panel."""
+    """
+    Form for adding new Course Access Roles view the Django Admin Panel.
+    """
 
     class Meta(object):
         model = CourseAccessRole
@@ -51,7 +54,8 @@ class CourseAccessRoleForm(forms.ModelForm):
         return None
 
     def clean_org(self):
-        """If org and course-id exists then Check organization name
+        """
+        If org and course-id exists then Check organization name
         against the given course.
         """
         if self.cleaned_data.get('course_id') and self.cleaned_data['org']:
@@ -106,7 +110,9 @@ class CourseAccessRoleForm(forms.ModelForm):
 
 @admin.register(CourseAccessRole)
 class CourseAccessRoleAdmin(admin.ModelAdmin):
-    """Admin panel for the Course Access Role. """
+    """
+    Admin panel for the Course Access Role.
+    """
     form = CourseAccessRoleForm
     raw_id_fields = ("user",)
     exclude = ("user",)
@@ -131,7 +137,9 @@ class CourseAccessRoleAdmin(admin.ModelAdmin):
 
 @admin.register(LinkedInAddToProfileConfiguration)
 class LinkedInAddToProfileConfigurationAdmin(admin.ModelAdmin):
-    """Admin interface for the LinkedIn Add to Profile configuration. """
+    """
+    Admin interface for the LinkedIn Add to Profile configuration.
+    """
 
     class Meta(object):
         model = LinkedInAddToProfileConfiguration
@@ -142,7 +150,9 @@ class LinkedInAddToProfileConfigurationAdmin(admin.ModelAdmin):
 
 @admin.register(CourseEnrollment)
 class CourseEnrollmentAdmin(admin.ModelAdmin):
-    """ Admin interface for the CourseEnrollment model. """
+    """
+    Admin interface for the CourseEnrollment model.
+    """
     list_display = ('id', 'course_id', 'mode', 'user', 'is_active',)
     list_filter = ('mode', 'is_active',)
     raw_id_fields = ('user',)
@@ -156,20 +166,68 @@ class CourseEnrollmentAdmin(admin.ModelAdmin):
 
 
 class UserProfileInline(admin.StackedInline):
-    """ Inline admin interface for UserProfile model. """
+    """
+    Inline admin interface for UserProfile model.
+    """
     model = UserProfile
     can_delete = False
     verbose_name_plural = _('User profile')
 
 
+class EmailValidationMixin(object):
+    def clean_email(self):
+        """
+        Checks that email is not blank and there is no user with such email yet.
+        Checks if there was an initial value for the email field, which it is the previous value of the email.
+        So if the email did not change, there is no need to check the DB for duplicate emails.
+        """
+        email = self.cleaned_data['email']
+        initial = self.initial.get('email', None)
+        if not email or not email.strip():
+            raise forms.ValidationError("Email can not be blank.", code='blank')
+        elif initial != email and User.objects.filter(email=email).exists():
+            raise forms.ValidationError("User with such email already exists.", code='unique')
+        return email
+
+
+class UserCreationForm(EmailValidationMixin, BaseUserCreationForm):
+    pass
+
+
+class UserChangeForm(EmailValidationMixin, BaseUserChangeForm):
+    pass
+
+
 class UserAdmin(BaseUserAdmin):
-    """ Admin interface for the User model. """
+    """
+    Admin interface for the User model. Adds email field uniqueness support.
+    """
     inlines = (UserProfileInline,)
+    add_form = UserCreationForm
+    form = UserChangeForm
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide', 'required'),
+            'fields': ('username', 'password1', 'password2', 'email'),
+        }),
+    )
+    fieldsets = (
+        (None, {
+            'classes': ('wide', 'required'),
+            'fields': ('username', 'email', 'password')
+        }),
+        (_('Personal info'), {'fields': ('first_name', 'last_name')}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
+                                       'groups', 'user_permissions')}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+    )
 
 
 @admin.register(UserAttribute)
 class UserAttributeAdmin(admin.ModelAdmin):
-    """ Admin interface for the UserAttribute model. """
+    """
+    Admin interface for the UserAttribute model.
+    """
     list_display = ('user', 'name', 'value',)
     list_filter = ('name',)
     raw_id_fields = ('user',)
@@ -186,7 +244,6 @@ admin.site.register(PendingNameChange)
 admin.site.register(DashboardConfiguration, ConfigurationModelAdmin)
 admin.site.register(LogoutViewConfiguration, ConfigurationModelAdmin)
 admin.site.register(RegistrationCookieConfiguration, ConfigurationModelAdmin)
-
 
 # We must first un-register the User model since it may also be registered by the auth app.
 admin.site.register(User, UserAdmin)
