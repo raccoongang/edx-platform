@@ -6,7 +6,7 @@ class ContactForm(forms.Form):
     name = forms.CharField(label=_('Name'), max_length=255)
     email = forms.EmailField(label=_('E-mail'), max_length=255)
     phone = forms.CharField(label=_('Mobile phone number'), max_length=16, required=False)
-    message = forms.CharField(label=_('Message:'), widget=forms.Textarea)
+    message = forms.CharField(label=_('Message:'), widget=forms.Textarea({'cols': '135', 'rows': '40'}))
 
     @property
     def get_data(self):
