@@ -9,6 +9,7 @@ from openedx.core.djangolib.markup import HTML, Text
 %>
 <%block name="head_extra_js">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+
 </%block>
 <%block name="head_extra_css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css"/>
@@ -16,39 +17,85 @@ from openedx.core.djangolib.markup import HTML, Text
 
 <%block name="pagetitle">${_("Manage Courses")}</%block>
 
-## TODO:this layout solution is temporary 
-<style type="text/css">
-    select {width: 100%}
-    #id_due_date {width: 100%}
-</style>
-
 <main id="main">
     <h1>Manage Courses</h1>
-    % if messages:
-    <ul class="messages">
-        % for message in messages:
-            % if message.tags:
-                <li class=${ message.tags }>
-            % else:
-                <li>
-            % endif
-            ${ message }
-            </li>
-        % endfor
-    </ul>
-    % endif
-    <form method="post">
-        <table>
+
+    <div class="manage-courses-wrapper">
+        <form method="post">
             <input type="hidden" name="csrfmiddlewaretoken" value="${ csrftoken }" />
-            ${form.as_table() | h}
-            <th/><td><input id='submit' type="submit" value="Assign Courses"></td>
-        </table>
-    </form>
+            <div class="courses-field field">
+                <label for="${form['courses'].id_for_label}">${form['courses'].label}:</label>
+                ${form['courses'].as_widget()|h}
+            </div>
+            <div class="students-field field">
+                <label for="${form['students'].id_for_label}">${form['students'].label}:</label>
+                ${form['students'].as_widget()|h}
+            </div>
+            <div class="due_date-field field">
+                <label for="${form['due_date'].id_for_label}">${form['due_date'].label}</label>
+                ${form['due_date'].as_widget()|h}
+            </div>
+
+            % if messages:
+            <ul class="messages messages-success">
+                % for message in messages:
+                % if message.tags:
+                <li class=${ message.tags }>
+                    % else:
+                <li>
+                    % endif
+                    ${ message }
+                </li>
+                % endfor
+            </ul>
+            % endif
+
+            % if form['courses'].errors:
+            <div class="messages messages-error">
+                ${form['courses'].errors.as_ul()|h}
+            </div>
+            % endif
+
+            % if form['students'].errors:
+            <div class="messages messages-error">
+                ${form['students'].errors.as_ul()|h}
+            </div>
+            % endif
+
+            % if form['due_date'].errors:
+            <div class="messages messages-error">
+                ${form['due_date'].errors.as_ul()|h}
+            </div>
+            % endif
+
+            <div class="fields-row">
+                <div class="send_to_students-field field">
+                    <label for="${form['send_to_students'].id_for_label}">${form['send_to_students'].label}</label>
+                    ${form['send_to_students'].as_widget()|h}
+                </div>
+                <div class="send_to_parents-field field">
+                    <label for="${form['send_to_parents'].id_for_label}">${form['send_to_parents'].label}</label>
+                    ${form['send_to_parents'].as_widget()|h}
+                </div>
+                <div class="send_sms-field field">
+                    <label for="${form['send_sms'].id_for_label}">${form['send_sms'].label}</label>
+                    ${form['send_sms'].as_widget()|h}
+                </div>
+            </div>
+            <div class="submit-wrapper">
+                <input id='submit' type="submit" value="Assign Courses">
+            </div>
+        </form>
+    </div>
+
+    <script type="text/javascript" src="${static.url('js/jquery.formstyler.min.js')}"></script>
     <script>
     $(function () {
         $("#id_due_date").datetimepicker({
-        format: 'd/m/Y H:i',
+            format: 'd/m/Y H:i',
         });
+
+        $('.manage-courses-wrapper select, .manage-courses-wrapper input[type="checkbox"]').styler();
     });
     </script>
 </main>
