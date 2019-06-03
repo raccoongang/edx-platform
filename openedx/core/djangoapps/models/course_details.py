@@ -7,10 +7,12 @@ import logging
 from django.conf import settings
 
 from xmodule.fields import Date
+from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError
 from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.lib.courses import course_image_url
-from xmodule.modulestore.django import modulestore
+
+from course_category.models import CourseCategory, CourseCategoryCourse
 
 
 # This list represents the attribute keys for a course's 'about' info.
@@ -72,6 +74,7 @@ class CourseDetails(object):
         self.self_paced = None
         self.learning_info = []
         self.instructor_info = []
+        self.category = ""
 
     @classmethod
     def fetch_about_attribute(cls, course_key, attribute):
@@ -118,7 +121,7 @@ class CourseDetails(object):
         course_details.self_paced = course_descriptor.self_paced
         course_details.learning_info = course_descriptor.learning_info
         course_details.instructor_info = course_descriptor.instructor_info
-
+        course_details.category = map(lambda x: x.id, CourseCategory.objects.filter(coursecategorycourse__course_id=course_key))
         # Default course license is "All Rights Reserved"
         course_details.license = getattr(course_descriptor, "license", "all-rights-reserved")
 
@@ -284,6 +287,13 @@ class CourseDetails(object):
                 cls.update_about_item(descriptor, attribute, jsondict[attribute], user.id)
 
         cls.update_about_video(descriptor, jsondict['intro_video'], user.id)
+
+        if 'category' in jsondict:
+            categories_id = jsondict['category'] or list()
+            CourseCategoryCourse.objects.filter(course_id=course_key).delete()
+            for category_id in categories_id:
+                if CourseCategory.objects.filter(id=category_id).exists():
+                    CourseCategoryCourse.objects.create(course_id=course_key, course_category_id=category_id)
 
         # Could just return jsondict w/o doing any db reads, but I put
         # the reads in as a means to confirm it persisted correctly
