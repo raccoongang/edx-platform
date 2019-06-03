@@ -303,8 +303,7 @@ display: none;
 		border-radius: 5px;
 		border: 1px solid #379c2a;
 		width: 100%;
-		float: left;
-		margin: 5px 0 15px;
+		margin: 20px 0;
 		list-style: none;
 		display: flex;
 		align-items: center;
@@ -348,7 +347,6 @@ display: none;
 		padding-top: 20px;
 		border-top: 1px solid #c3c3c3;
 		margin-top: 5px;
-		float: left;
 		width: 100%;
 		display: flex;
 		justify-content: space-between;
@@ -387,7 +385,6 @@ display: none;
 	}
 
 	.jq-checkbox__div {
-		display: inline-block;
 		width: 16px;
 		height: 16px;
 		border-radius: 5px;
