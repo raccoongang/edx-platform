@@ -55,7 +55,7 @@ class UserProfile(models.Model):
         abstract = True
 
     def __unicode__(self):
-        return u'{}'.format(self.user.profile.name)
+        return u'{}'.format(self.user.profile.name or self.user.username)
 
 
 class InstructorProfile(UserProfile):
