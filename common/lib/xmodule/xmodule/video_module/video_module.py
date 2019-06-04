@@ -965,7 +965,7 @@ class VideoDescriptor(VideoFields, VideoTranscriptsMixin, VideoStudioViewHandler
         if not encoded_videos:
             video_url = self.html5_sources[0] if self.html5_sources else self.source
             if video_url:
-                encoded_videos["fallback"] = {
+                encoded_videos["mobile_high"] = {
                     "url": video_url,
                     "file_size": 0,  # File size is unknown for fallback URLs
                 }
