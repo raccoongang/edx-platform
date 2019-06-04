@@ -6,7 +6,7 @@ import logging
 import uuid
 import json
 import warnings
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 from urlparse import urljoin, urlsplit, parse_qs, urlunsplit
 
 from django.views.generic import TemplateView
@@ -221,19 +221,7 @@ def index(request, extra_context=None, user=AnonymousUser()):
 
     context["programs_list"] = programs_list
 
-    courses_data = OrderedDict()
-    for category in CourseCategory.objects.filter(parent=None):
-        if category.coursecategorycourse_set.all():
-            courses_data[category.name] = {'description': category.description, 'courses': []}
-            for coursecategory in category.coursecategorycourse_set.all():
-                try:
-                    course_id = coursecategory.course_id
-                    courses_data[category.name]['courses'].append(CourseOverview.get_from_id(course_id))
-                except CourseOverview.DoesNotExist:
-                    log.warning(u"Course with key %s doesn't exist", course_id)
-                except InvalidKeyError:
-                    log.warning(u"SiteConfiguration contains invalid course key: %s", course_id)
-    context['courses_data'] = courses_data
+    context['categories'] = CourseCategory.objects.filter(parent=None)
     return render_to_response('index.html', context)
 
 

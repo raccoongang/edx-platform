@@ -5,15 +5,15 @@ from xmodule.modulestore.django import modulestore
 
 
 @task
-def task_reindex_course(course_key):
-    from cms.djangoapps.contentstore.courseware_index import CoursewareSearchIndexer
+def task_reindex_courses(category_id, course_keys=None):
     from course_category.models import CourseCategory
-    course_key = CourseKey.from_string(course_key)
-    CoursewareSearchIndexer.do_course_reindex(modulestore(), course_key)
+    from cms.djangoapps.contentstore.courseware_index import CoursewareSearchIndexer
+    courses = set(course_keys) if course_keys else set()
 
-@task
-def task_reindex_courses(category_id):
-    from course_category.models import CourseCategory
-    from cms.djangoapps.contentstore.courseware_index import CoursewareSearchIndexer
-    for course_key in CourseCategory.objects.get(id=category_id).get_course_ids():
+    if category_id:
+        courses.update(CourseCategory.objects.get(id=category_id).courses.all().values_list('id', flat=True))
+        courses.update(CourseCategory.objects.get(id=category_id).get_descendants().values_list('courses', flat=True))
+
+    for course_key in courses:
+        course_key = CourseKey.from_string(course_key)
         CoursewareSearchIndexer.do_course_reindex(modulestore(), course_key)
