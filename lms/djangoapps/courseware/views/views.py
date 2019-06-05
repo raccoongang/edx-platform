@@ -986,7 +986,8 @@ def _progress(request, course_key, student_id):
         course_id=course_key
     ).values_list('role', flat=True)
 
-    # User that doesn't have is_staff permissions but has staff role can't see 'View Grading in studio' button
+    # is_local_staff == True means that User doesn't have is_staff permissions, but has staff role
+    # and can't see 'View Grading in studio' button
     is_local_staff = False
     if 'staff' in user_role and not request.user.is_staff:
         is_local_staff = True
