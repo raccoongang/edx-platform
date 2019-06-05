@@ -324,9 +324,10 @@ def add_staff_markup(user, disable_staff_debug_info, block, view, frag, context)
                 course_id=block.course_id
             ).values_list('role', flat=True)
 
-            is_local_staff = True
+            # User that doesn't have is_staff permissions but has staff role can't see 'View Grading in studio' button
+            is_local_staff = False
             if 'staff' in user_role and not user.is_staff:
-                is_local_staff = False
+                is_local_staff = True
 
             # return edit link in rendered HTML for display
             return wrap_fragment(
