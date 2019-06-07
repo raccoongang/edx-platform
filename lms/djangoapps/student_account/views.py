@@ -115,7 +115,7 @@ def login_and_registration_form(request, initial_mode="login"):
             'third_party_auth': _third_party_auth_context(request, redirect_to),
             'third_party_auth_hint': third_party_auth_hint or '',
             'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
-            'support_link': configuration_helpers.get_value('SUPPORT_SITE_LINK', settings.SUPPORT_SITE_LINK),
+            'support_link': configuration_helpers.get_value('SUPPORT_SITE_LINK', settings.SUPPORT_SITE_LINK) or settings.SUPPORT_SITE_LINK,
 
             # Include form descriptions retrieved from the user API.
             # We could have the JS client make these requests directly,
