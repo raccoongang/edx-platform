@@ -1,0 +1,44 @@
+@startuml
+autoactivate on
+
+actor paver
+entity Xmodule
+entity django_settings
+
+paver -> Xmodule : static_content.main
+    Xmodule -> django_settings : configure
+    return
+    Xmodule -> Xmodule : write_descriptor_js(output_root)
+        Xmodule -> Xmodule : _list_descriptors
+            Xmodule -> XModuleDescriptor : load_classes
+            return
+        return
+        Xmodule -> Xmodule : _write_js
+            loop for class in classes
+                Xmodule -> XModuleDescriptor : get_javascript -> js_fragments
+                return
+            end
+            loop for fragment in js_fragments
+                Xmodule -> Xmodule : define filename
+                return
+            end
+            Xmodule -> Xmodule : _write_files(root, contents)
+            return
+        return
+    return
+
+    Xmodule -> Xmodule : write_descriptor_styles
+        note right : Flow is basically the same as for above call
+    return
+
+    Xmodule -> Xmodule : write_module_js
+        note right : Flow is basically the same as for above call
+    return
+
+    Xmodule -> Xmodule : write_module_styles
+        note right : Flow is basically the same as for above call
+    return
+
+return
+
+@enduml

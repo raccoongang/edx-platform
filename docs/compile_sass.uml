@@ -1,0 +1,30 @@
+@startuml
+autoactivate on
+hide footbox
+
+control paver
+boundary django
+entity "openedx.core.djangoapps.theming.management.commands.compile_sass" as compile_sass
+
+
+paver -> django : manage.py compile_sass %system% %option%
+
+    django -> compile_sass : handle
+
+        compile_sass -> paver : assets.compile_sass %system% %theme_dirs% %themes% %force% %debug%
+            loop for system in systems
+                loop for theme in themes
+                    paver -> paver : _compile_sass
+                        loop for dir in sass_dirs
+                            paver -> sass : compile(dirname, include_paths, source_comments, output_style)
+                            return
+                        end
+                    return
+                end
+            end
+        return
+    return
+return
+
+
+@enduml

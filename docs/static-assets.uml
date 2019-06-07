@@ -1,0 +1,83 @@
+@startuml
+autoactivate on
+
+actor User
+
+control paver
+entity django
+entity django_settings
+boundary OS
+
+User -> paver : update_assets cms --settings aws
+
+paver -> paver : install_node_prereqs
+return
+
+paver -> paver : parse_args
+return
+
+paver -> django : get_wsgi_application
+return
+
+paver -> django_settings : STATIC_COLLECTOR_ROOT
+return
+
+paver -> OS : mkdir STATIC_COLLECTOR_ROOT
+return
+
+paver -> paver : process_xmodule_assets
+    paver -> OS : xmodule_assets common/static/xmodule
+        note right: see xmodule_static.uml for details
+    return
+return
+
+paver -> paver : process_npm_assets
+    paver -> OS : mkdir %vendor_dir%
+    return
+    loop for library in NPM_INSTALLED_LIBRARIES
+        paver -> OS : cp node_modules/%library% %vendor_dir%
+        return
+    end
+    loop for library in NPM_INSTALLED_DEVELOPER_LIBRARIES
+        paver -> OS : cp node_modules/%library% %vendor_dir%
+        return
+    end
+return
+
+paver -> paver : compile_coffeescript
+    paver -> paver : coffeescript_files
+    return
+    paver -> OS : node/coffee --compile %files%
+    return
+return
+
+paver -> paver : execute_webpack(prod, settings)
+    paver -> OS : $(npm bin)/webpack | NODE_ENV, STATIC_ROOT_LMS, STATIC_ROOT_CMS
+    return
+return
+
+paver -> paver : execute_compile_sass(args)
+    loop for sys in system
+        paver -> OS : manage.py compile_sass %system% %options%
+            note right : see compile_sass.uml for details
+        return
+    end
+return
+
+paver -> paver : collect_assets(system, settings, log_args)
+    loop for sys in system
+        paver -> OS : manage.py collectstatic
+        return
+    end
+return
+
+
+paver -> OS : rsync collector_dir static_dir
+return
+paver -> OS : rsync dir/lms static/lms
+return
+paver -> paver : watch_assets
+return
+return
+
+@enduml
