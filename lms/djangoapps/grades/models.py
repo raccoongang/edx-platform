@@ -666,3 +666,32 @@ class PersistentCourseGrade(DeleteGradesMixin, TimeStampedModel):
                     'grading_policy_hash': unicode(grade.grading_policy_hash),
                 }
             )
+
+
+class InfoTaskRecalculateSubsectionGrade(TimeStampedModel):
+
+    START_TASK = 'start'
+    ERROR_TASK = 'error'
+    SUCCESS_TASK = 'success'
+
+    STATUS_CHOICES = (
+        (START_TASK, 'start'),
+        (ERROR_TASK, 'error'),
+        (SUCCESS_TASK, 'success')
+    )
+
+    course_id = CourseKeyField(max_length=255)
+    user_id = models.IntegerField()
+    task_id = models.CharField(max_length=255)
+    status = models.CharField(max_length=12, choices=STATUS_CHOICES)
+
+    def __unicode__(self):
+        """
+        String representation of this model.
+        """
+        return u"course_id: {}, user_id: {}, task_id: {}, status: {}".format(
+            self.course_id,
+            self.user_id,
+            self.task_id,
+            self.status
+        )
