@@ -11,6 +11,8 @@ from lms.djangoapps.grades.config.models import (
     PersistentGradesEnabledFlag
 )
 
+from lms.djangoapps.grades.models import InfoTaskRecalculateSubsectionGrade
+
 
 class CoursePersistentGradesAdmin(KeyedConfigurationModelAdmin):
     """
@@ -29,3 +31,4 @@ class CoursePersistentGradesAdmin(KeyedConfigurationModelAdmin):
 admin.site.register(CoursePersistentGradesFlag, CoursePersistentGradesAdmin)
 admin.site.register(PersistentGradesEnabledFlag, ConfigurationModelAdmin)
 admin.site.register(ComputeGradesSetting, ConfigurationModelAdmin)
+admin.site.register(InfoTaskRecalculateSubsectionGrade)

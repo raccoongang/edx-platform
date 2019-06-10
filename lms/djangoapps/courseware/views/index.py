@@ -38,6 +38,8 @@ from openedx.core.lib.gating.api import get_required_content
 from openedx.features.course_experience import COURSE_OUTLINE_PAGE_FLAG, default_course_url_name
 from openedx.features.course_experience.views.course_sock import CourseSockFragmentView
 from openedx.features.enterprise_support.api import data_sharing_consent_required
+
+from lms.djangoapps.grades.models import InfoTaskRecalculateSubsectionGrade
 from shoppingcart.models import CourseRegistrationCode
 from student.views import is_course_blocked
 from util.views import ensure_valid_course_key
@@ -526,12 +528,23 @@ def save_positions_recursively_up(user, request, field_data_cache, xmodule, cour
 @ensure_valid_course_key
 def check_prerequisite(request, course_id):
     block_id = request.GET.get('block_id')
-    number_attempts = request.GET.get('number_attempts')
     if not block_id:
         raise Http404()
 
     block_hash = request.GET.get('block_hash', block_id[-32:])
     course_key = CourseKey.from_string(course_id)
+
+    exists_start_info_task = InfoTaskRecalculateSubsectionGrade.objects.filter(
+        course_id=course_key,
+        user_id=request.user.id,
+        status=InfoTaskRecalculateSubsectionGrade.START_TASK
+    ).exists()
+    if exists_start_info_task:
+        return JsonResponse({'exists_start_info_task': exists_start_info_task,
+                             'next': False,
+                             'msg': _('The data is still being counted'),
+                             'url': ''})
+
     with modulestore().bulk_operations(course_key):
         course = get_course(course_key)
 
@@ -617,10 +630,9 @@ def check_prerequisite(request, course_id):
         )
 
         msg = _("Sorry, you've failed the quiz. In order to go Next, you should complete it first")
-        if number_attempts == '3':  # last request
-            if with_randomization and prev_item:
-                reset_library_content(prev_section, request.user, for_all=True)
-            reset_library_content(descriptor, request.user)
+        if with_randomization and prev_item:
+            reset_library_content(prev_section, request.user, for_all=True)
+        reset_library_content(descriptor, request.user)
 
         return JsonResponse({'next': False, 'msg': msg, 'url': url})
 

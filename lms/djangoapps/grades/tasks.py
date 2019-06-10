@@ -20,6 +20,8 @@ from lms.djangoapps.course_blocks.api import get_course_blocks
 from lms.djangoapps.courseware import courses
 from lms.djangoapps.grades.config.models import ComputeGradesSetting
 from openedx.core.djangoapps.monitoring_utils import set_custom_metric, set_custom_metrics_for_course_key
+
+from lms.djangoapps.grades.models import InfoTaskRecalculateSubsectionGrade
 from student.models import CourseEnrollment
 from submissions import api as sub_api
 from track.event_transaction_utils import set_event_transaction_id, set_event_transaction_type
@@ -154,8 +156,9 @@ def _recalculate_subsection_grade(self, **kwargs):
         score_db_table (ScoreDatabaseTableEnum): database table that houses
             the changed score. Used in conjunction with expected_modified_time.
     """
+    course_key = CourseLocator.from_string(kwargs['course_id'])
+
     try:
-        course_key = CourseLocator.from_string(kwargs['course_id'])
         scored_block_usage_key = UsageKey.from_string(kwargs['usage_id']).replace(course_key=course_key)
 
         set_custom_metrics_for_course_key(course_key)
@@ -184,7 +187,21 @@ def _recalculate_subsection_grade(self, **kwargs):
             kwargs['only_if_higher'],
             kwargs['user_id'],
         )
+        InfoTaskRecalculateSubsectionGrade.objects.update_or_create(
+            course_id=course_key,
+            user_id=kwargs['user_id'],
+            task_id=self.request.id,
+            defaults={'status': InfoTaskRecalculateSubsectionGrade.SUCCESS_TASK}
+
+        )
     except Exception as exc:   # pylint: disable=broad-except
+        InfoTaskRecalculateSubsectionGrade.objects.update_or_create(
+            course_id=course_key,
+            user_id=kwargs['user_id'],
+            task_id=self.request.id,
+            defaults={'status': InfoTaskRecalculateSubsectionGrade.ERROR_TASK}
+
+        )
         if not isinstance(exc, KNOWN_RETRY_ERRORS):
             log.info("tnl-6244 grades unexpected failure: {}. task id: {}. kwargs={}".format(
                 repr(exc),
