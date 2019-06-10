@@ -1,9 +1,11 @@
 """ Code to allow module store to interface with courseware index """
+
 from __future__ import absolute_import
-from abc import ABCMeta, abstractmethod
-from datetime import timedelta
+
 import logging
 import re
+from abc import ABCMeta, abstractmethod
+from datetime import timedelta
 from six import add_metaclass
 
 from django.conf import settings
@@ -11,14 +13,14 @@ from django.utils.translation import ugettext_lazy, ugettext as _
 from django.core.urlresolvers import resolve
 
 from cms.djangoapps.contentstore.course_group_config import GroupConfiguration
+from course_category.models import CourseCategory
 from course_modes.models import CourseMode
-from course_category.models import CourseCategoryCourse
 from eventtracking import tracker
 from openedx.core.lib.courses import course_image_url
 from search.search_engine_base import SearchEngine
 from xmodule.annotator_mixin import html_to_text
-from xmodule.modulestore import ModuleStoreEnum
 from xmodule.library_tools import normalize_key_for_search
+from xmodule.modulestore import ModuleStoreEnum
 
 # REINDEX_AGE is the default amount of time that we look back for changes
 # that might have happened. If we are provided with a time at which the
@@ -628,7 +630,7 @@ class CourseAboutSearchIndexer(object):
                     course_info['content'][about_information.property_name] = analyse_content
                 if about_information.index_flags & AboutInfo.PROPERTY:
                     course_info[about_information.property_name] = section_content
-        course_info['category'] = map(lambda x: x.course_category.name, CourseCategoryCourse.objects.filter(course_id=course.id))
+        course_info['category'] = map(lambda x: x.get_root().name, CourseCategory.objects.filter(courses__id=course.id))
 
         # Broad exception handler to protect around and report problems with indexing
         try:
