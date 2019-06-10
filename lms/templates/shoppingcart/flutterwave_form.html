@@ -1,0 +1,86 @@
+<%namespace name='static' file='/static_content.html'/>
+<%! from django.utils.translation import ugettext as _ %>
+<form>
+    <script src="${API_URL}/flwv3-pug/getpaidx/api/flwpbf-inline.js"></script>
+    <button type="button" onClick="payWithRave()">${_('Payment')}<span class="icon fa fa-caret-right" aria-hidden="true"></span></button>
+</form>
+
+<link rel="stylesheet" href="${static.url('css/vendor/ui-lightness/jquery-ui-1.8.22.custom.css')}">
+<script>
+    function paymentSuccessNotification() {
+        $( "#payment-success-notification" ).dialog({
+            dialogClass: "no-close",
+            modal: true,
+            buttons: [
+                {
+                    text: 'OK',
+                    click: function() {
+                        $( this ).dialog( "close" );
+                    }
+                }
+            ],
+            close: function(){
+                window.location.href = '${success_url}';
+            }
+        });
+    }
+
+    function paymentFailureNotification(message) {
+        $("#payment-failure-message").html(message);
+        $( "#payment-failure-notification" ).dialog({
+            dialogClass: "no-close",
+            modal: true,
+            buttons: [
+                {
+                    text: 'OK',
+                    click: function() {
+                        $(this ).dialog( "close" );
+                    }
+                }
+            ],
+            close: function(){
+                window.location.reload();
+            }
+        });
+    }
+</script>
+
+<div id="payment-success-notification" title="${_('Payment successful')}">
+    <p>
+        ${_('Your payment is accepted successfuly.')}
+    </p>
+    <p>
+        ${_('Close this notification to watch the courses you\'ve enrolled to.')}
+    </p>
+</div>
+
+<div id="payment-failure-notification" title="${_('Payment failed')}">
+    <p id="payment-failure-message"></p>
+</div>
+
+<script>
+    function payWithRave() {
+        var x = getpaidSetup({
+            PBFPubKey: "${PBFPubKey}",
+            payment_options: "card",
+        % for pk, pv in params.iteritems():
+            ${pk}: "${pv}",
+        % endfor
+            onclose: function() {},
+            callback: function(response) {
+                if (
+                    response.tx.chargeResponseCode == "00" ||
+                    response.tx.chargeResponseCode == "0"
+                ) {
+                    // @TODO: ENROLLMENT API check in the loop untill the course is enrolled
+                    paymentSuccessNotification();
+                } else {
+                    // redirect to a failure page.
+                    paymentFailureNotification(response);
+                }
+
+                x.close();
+            }
+        });
+    }
+</script>
