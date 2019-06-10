@@ -528,7 +528,6 @@ def save_positions_recursively_up(user, request, field_data_cache, xmodule, cour
 @ensure_valid_course_key
 def check_prerequisite(request, course_id):
     block_id = request.GET.get('block_id')
-    number_attempts = request.GET.get('number_attempts')
     if not block_id:
         raise Http404()
 
@@ -631,10 +630,9 @@ def check_prerequisite(request, course_id):
         )
 
         msg = _("Sorry, you've failed the quiz. In order to go Next, you should complete it first")
-        if number_attempts == '3':  # last request
-            if with_randomization and prev_item:
-                reset_library_content(prev_section, request.user, for_all=True)
-            reset_library_content(descriptor, request.user)
+        if with_randomization and prev_item:
+            reset_library_content(prev_section, request.user, for_all=True)
+        reset_library_content(descriptor, request.user)
 
         return JsonResponse({'next': False, 'msg': msg, 'url': url})
 
