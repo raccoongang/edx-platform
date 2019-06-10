@@ -25655,36 +25655,33 @@ msgstr "קטלוג הקורסים שלנו מציע מבחר של קורסי e-l
 msgid "Log in at any time, from anywhere and on any device to your profile and continue your learning with John Bryce Online Academy."
 msgstr "אתם מוזמנים להתחבר בכל עת, מכל מקום ובכל מכשיר, ולהמשיך את הלמידה עם John Bryce Online Training."
 
-msgid "Looking for a blended/hybrid learning solution for your team or company?"
-msgstr "מתעניינים בפתרון ללמידה היברידית (Hybrid) / מעורבת (Blended) עבור הצוות או החברה"
-
-msgid "We can happily provide you with a tailored solution to your team's needs. Contact us at"
-msgstr "שלכם? נשמח לספק לכם פתרון מותאם בתפירה אישית לצרכיכם. מוזמנים ליצור קשר בכתובת"
+msgid "<b>Looking for a blended/hybrid learning solution for your team or company?</b><br>We can happily provide you with a tailored solution to your team's needs. Contact us at"
+msgstr "<b>מתעניינים בפתרון ללמידה היברידית (Hybrid) / מעורבת (Blended) עבור הצוות או החברה שלכם?</b><br>נשמח לספק לכם פתרון מותאם בתפירה אישית לצרכיכם. מוזמנים ליצור קשר בכתובת"
 
 msgid "John Bryce Training, the training division of <a target='_blank' href='https://www.matrix-globalservices.com/'>Matrix Group</a>, is the leading training company in Israel, providing reskilling courses for Hi-Tech industry and training for technology professionals, training over 10,000 participants in a year, with a verity of over 500 professional courses in 3 training centers located at Tel Aviv, Haifa and Jerusalem."
-msgstr "חברת ג'ון ברייס הדרכה, זרוע ההדרכה של <a target='_blank' href='https://www.matrix-globalservices.com/'>Matrix Group</a>, הינה חברת ההדרכה המובילה בישראל ומהמובילות באירופה בתחום הדרכת המחשוב וטכנולוגיית המידע ובתחום הדרכת מיומנות הניהול, השירות והמכירות. לג'ון ברייס הדרכה 3 מרכזי הדרכה בישראל ומרכזים נוספים באירופה."
+msgstr "חברת ג'ון ברייס הדרכה, זרוע ההדרכה של Matrix, הינה חברת ההדרכה המובילה בישראל ומהמובילות באירופה בתחום הדרכת המחשוב וטכנולוגיית המידע ובתחום הדרכת מיומנות הניהול, השירות והמכירות. לג'ון ברייס הדרכה 3 מרכזי הדרכה בישראל ומרכזים נוספים באירופה.<br>למכללה שני קהלי יעד מרכזיים: אנשי מקצוע מנוסים מהתעשייה בכלל ומתעשיית ההייטק בפרט ותלמידים העושים את צעדיהם הראשונים בעולם ההייטק במסגרת קורסי הסבה והכשרה ייחודיים המועברים בשעות הבוקר והערב.<br>מדי שנה אנו מכשירים למעלה מ- 10,000 אנשי הייטק הבוחרים מתוך מגוון של יותר מ-500 קורסים מקצועיים, החל ממסלולי הכשרה להזנקת הקריירה ועד התמחות בטכנולוגיות מתקדמות עבור אנשי מקצוע מנוסים."
 
-msgid "Interested to know more? Visit us at"
-msgstr "למכללה שני קהלי יעד מרכזיים: אנשי מקצוע מנוסים מהתעשייה בכלל ומתעשיית ההייטק בפרט ותלמידים העושים את צעדיהם הראשונים בעולם ההייטק במסגרת קורסי הסבה והכשרה ייחודיים המועברים בשעות הבוקר והערב.  מדי שנה אנו מכשירים למעלה מ- 10,000 אנשי הייטק הבוחרים מתוך מגוון של יותר מ-500 קורסים מקצועיים, החל ממסלולי הכשרה להזנקת הקריירה ועד התמחות בטכנולוגיות מתקדמות עבור אנשי מקצוע מנוסים. מעוניינים לדעת יותר? בקרו באתר"
+msgid "<b>Interested to know more?</b> Visit us at"
+msgstr "<b>מעוניינים לדעת יותר?</b> בקרו באתר"
 
 #: privacy.html
 msgid "This Privacy Policy by John Bryce Training Ltd, Private Company Number 511449878 ('The Company' Or any appeal in first person), the operator of the site John Bryce Online Academy (online.johnbryce.co.il) (Hereinafter: 'the Site'), will state the general outlines of how we collect and use information about you, through the Site or through other means, within our Services."
-msgstr "מדיניות פרטיות זו היא של חברת ג'ון ברייס הדרכה בע'מ, ח.פ. 511449878 ('החברה' או כל פנייה בגוף ראשון) מפעילת אתר John Bryce Online Academy (להלן: 'האתר'), ויצוינו בה הקווים הכלליים של האופן בו אנו אוספים ומשתמשים במידע אודותיך, באמצעות האתר או באמצעים אחרים, במסגרת השירותים שלנו. פרטיותך חשובה לנו. אנו נפעל כמפורט במדיניות פרטיות זו, בהתאם להוראות הדין, לרבות חוק הגנת הפרטיות, התשמ'א-1981."
+msgstr "מדיניות פרטיות זו היא של חברת ג'ון ברייס הדרכה בע'מ, ח.פ. 511449878 ('החברה' או כל פנייה בגוף ראשון) מפעילת אתר John Bryce Online Academy (להלן: 'האתר'), ויצוינו בה הקווים הכלליים של האופן בו אנו אוספים ומשתמשים במידע אודותיך, באמצעות האתר או באמצעים אחרים, במסגרת השירותים שלנו."
 
 msgid "Your privacy is important to us. We will act as described in this privacy policy, in accordance with the applicable law, including the Privacy Protection Law, 1981."
-msgstr "מדיניות הפרטיות חלה על מידע מזוהה או ניתן לזיהוי באמצעים סבירים. ככלל, לא חלה עלייך חובה חוקית למסור את המידע שיפורט להלן, אולם אי מסירתו עלולה למנוע מאיתנו לספק לך שירותים מסויימים."
+msgstr "פרטיותך חשובה לנו. אנו נפעל כמפורט במדיניות פרטיות זו, בהתאם להוראות הדין, לרבות חוק הגנת הפרטיות, התשמ'א-1981."
 
 msgid "The Privacy Policy applies to identified information or identifiable information by reasonable means. In general, you do not have a legal obligation to provide the information specified below, but failure to provide it may prevent us from providing you with certain services."
-msgstr "המידע ישמר במאגר הלקוחות של החברה ויישמר למשך הזמן הדרוש לחברה למימוש המטרות המותרות לה על פי דין ועל פי מדיניות פרטיות זו."
+msgstr "מדיניות הפרטיות חלה על מידע מזוהה או ניתן לזיהוי באמצעים סבירים. ככלל, לא חלה עלייך חובה חוקית למסור את המידע שיפורט להלן, אולם אי מסירתו עלולה למנוע מאיתנו לספק לך שירותים מסויימים."
 
 msgid "The information will be stored in the Company's customers' database and will be kept for the time required for the Company to execute the objectives permitted to by law and in accordance with this Privacy Policy."
-msgstr "ייתכן שנעדכן את מדיניות פרטיות זו מעת לעת, בהתאם לצורך ולשינויים בחוק. שים לב לשינויים אלו, משום שהם חלים עליך. בכל עת תופיע באתר זה מדיניות הפרטיות המעודכנת שלנו."
+msgstr "המידע ישמר במאגר הלקוחות של החברה ויישמר למשך הזמן הדרוש לחברה למימוש המטרות המותרות לה על פי דין ועל פי מדיניות פרטיות זו."
 
 msgid "We may update this Privacy Policy from time to time, according to necessities and changes in the law. Note these changes, since they apply to you. Our updated Privacy Policy will appear on the Site at all times."
 msgstr "ייתכן שנעדכן את מדיניות פרטיות זו מעת לעת, בהתאם לצורך ולשינויים בחוק. שים לב לשינויים אלו, משום שהם חלים עליך. בכל עת תופיע באתר זה מדיניות הפרטיות המעודכנת שלנו."
 
 msgid "What information do we collect and how do we collect it?"
-msgstr "מידע אנו אוספים וכיצד אנו אוספאיזהים אותו?"
+msgstr "איזה מידע אנו אוספים וכיצד אנו אוספים אותו?"
 
 msgid "Contact Information - We collect information related to the provision of the Services, including name, email address, mobile phone number, passwords, credit card details. Such information will be provided by you directly as part of filling out the details on the site, registering for the site, fill out the details on landing page you reach through social networks, or by contacting our customer service."
 msgstr "פרטי קשר- אנו אוספים מידע הקשור לאספקת השירותים לרבות שם, כתובת דוא'ל, מספר טלפון נייד, סיסמאות, פרטי כרטיסי אשראי. מידע כאמור יימסר על ידך באופן ישיר במסגרת עמוד מילוי הפרטים באתר, הרשמה לאתר, מילוי פרטים בעמודי נחיתה אליהם תגיע דרך רשתות חברתיות, או באמצעות פנייה לשירות הלקוחות שלנו."
@@ -25734,8 +25731,8 @@ msgstr "פרסומות ודיוור ישיר"
 msgid "The information will also be used for marketing, advertising and direct mail purposes by us or anyone on our behalf, as well as information on products and services of third parties provided in cooperation with us, including personalized advertising."
 msgstr "המידע ישמש גם לצרכי שיווק, פרסום ודיוור ישיר שלנו או מי מטעמנו, וכן מידע על מוצרים ושירותים של צדדים שלי''ם שמסופקים בשיתוף פעולה איתנו, לרבות פרסום מותאם אישית. אנו נהיה רשאים לשלוח לך דיוור ישיר ופרסומות בקשר לשירותים שלנו (ובכפוף להסכמתך, גם בקשר לשירותים או מוצרים אחרים), בכל אמצעי תקשורת, ובין היתר באמצעות דואר אלקטרוני, הודעות SMS, מערכת חיוג אוטומטית ורשתות חברתיות."
 
-msgid "We will be allowed to send you direct mail and advertisements regarding our services (and subject to your consent, also in connection with other services or products), by any means of communication, including by e-mail, SMS, automated dialing system and social networks. You can request to unsubscribe from the mailing list for advertisements and direct mail mailing list, also by contacting the service center using the e-mail address: online_academy@johnbryce.co.il. In certain cases, you may contact the e-mail address to have specified information removed. Note that even after unsubscribing, you may still receive some Mailings"
-msgstr "באפשרותך לבקש להימחק מרשימת התפוצה לפרסומות ומרשימת התפוצה לדיוור ישיר, גם באמצעות פנייה למוקד השירות בכתובת הדוא'ל online_academy@johnbryce.co.il במקרים מסויימים תוכל לפנות לכתובת הדוא'ל שצויינה גם כדי למחוק מידע אחר. שים לב כי ייתכן שיישלחו אליך לאחר בקשת ההסרה דיוורים אותם אנו חייבים ו/או רשאים לשלוח לך על פי דין, גם ללא הסכמתך."
+msgid "We will be allowed to send you direct mail and advertisements regarding our services (and subject to your consent, also in connection with other services or products), by any means of communication, including by e-mail, SMS, automated dialing system and social networks. You can request to unsubscribe from the mailing list for advertisements and direct mail mailing list, also by contacting the service center using the e-mail address: <a href='mailto:online_academy@johnbryce.co.il'>online_academy@johnbryce.co.il</a>. In certain cases, you may contact the e-mail address to have specified information removed. Note that even after unsubscribing, you may still receive some Mailings"
+msgstr "באפשרותך לבקש להימחק מרשימת התפוצה לפרסומות ומרשימת התפוצה לדיוור ישיר, גם באמצעות פנייה למוקד השירות בכתובת הדוא'ל <a href='mailto:online_academy@johnbryce.co.il'>online_academy@johnbryce.co.il</a>. במקרים מסויימים תוכל לפנות לכתובת הדוא'ל שצויינה גם כדי למחוק מידע אחר. שים לב כי ייתכן שיישלחו אליך לאחר בקשת ההסרה דיוורים אותם אנו חייבים ו/או רשאים לשלוח לך על פי דין, גם ללא הסכמתך."
 
 msgid "Right of review the Information and amend it"
 msgstr "זכות עיון במידע ותיקונו"
@@ -25762,7 +25759,7 @@ msgid "Contacting the Company's customer service"
 msgstr "פנייה לשירות הלקוחות של החברה"
 
 msgid "You can contact the Company's customer service email address: <a href='mailto:online_academy@johnbryce.co.il'>online_academy@johnbryce.co.il</a> or by phone 03-7100713 in order to clarify details of such rights, and in general."
-msgstr "תוכל לפנות לשירות הלקוחות של החברה בכתובת במייל: online_academy@johnbryce.co.il או בטלפון 03-7100713 על מנת לברר פרטים על זכויות כאמור, ובכלל."
+msgstr "תוכל לפנות לשירות הלקוחות של החברה בכתובת במייל: <a href='mailto:online_academy@johnbryce.co.il'>online_academy@johnbryce.co.il</a> או בטלפון 03-7100713 על מנת לברר פרטים על זכויות כאמור, ובכלל."
 
 #: tos.html
 msgid "Terms and Conditions"

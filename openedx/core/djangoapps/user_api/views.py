@@ -760,16 +760,16 @@ class RegistrationView(APIView):
         # Separate terms of service and honor code checkboxes
         if self._is_field_visible("terms_of_service"):
             terms_label = _(u"Honor Code")
-            terms_link = marketing_link("HONOR")
-            terms_text = _(u"Review the Honor Code")
+            terms_link = marketing_link("PRIVACY")
+            terms_text = _(u"Review the Privacy Policy")
 
         # Combine terms of service and honor code checkboxes
         else:
             # Translators: This is a legal document users must agree to
             # in order to register a new account.
             terms_label = _(u"Terms of Service and Honor Code")
-            terms_link = marketing_link("HONOR")
-            terms_text = _(u"Review the Terms of Service and Honor Code")
+            terms_link = marketing_link("PRIVACY")
+            terms_text = _(u"Review the Privacy Policy")
 
         # Translators: "Terms of Service" is a legal document users must agree to
         # in order to register a new account.
@@ -793,7 +793,9 @@ class RegistrationView(APIView):
             required=required,
             error_messages={
                 "required": error_msg
-            }
+            },
+            supplementalLink = terms_link,
+            supplementalText = terms_text
         )
 
     def _add_terms_of_service_field(self, form_desc, required=True):
