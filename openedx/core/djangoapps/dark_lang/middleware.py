@@ -126,7 +126,10 @@ class DarkLangMiddleware(object):
         preview_lang = None
         if auth_user:
             # Get the request user's dark lang preference
-            preview_lang = get_user_preference(request.user, DARK_LANGUAGE_KEY)
+            pref_lang = request.user.preferences.filter(key='pref-lang').first()
+            preview_lang = pref_lang and pref_lang.value or settings.LANGUAGE_CODE
+        else:
+            preview_lang = settings.LANGUAGE_CODE
 
         # User doesn't have a dark lang preference, so just return
         if not preview_lang:
