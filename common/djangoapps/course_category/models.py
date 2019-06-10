@@ -1,6 +1,5 @@
-import django.dispatch
 from django.db import models
-from django.db.models.signals import m2m_changed, post_delete, post_save
+from django.db.models.signals import m2m_changed, pre_delete, post_delete
 from django.dispatch import Signal, receiver
 from django.utils.translation import ugettext_lazy as _
 
@@ -9,7 +8,7 @@ from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
 
 from .tasks import task_reindex_courses
 
-move_to = django.dispatch.Signal()
+move_to = Signal()
 
 
 class CourseCategory(MPTTModel):
@@ -20,14 +19,13 @@ class CourseCategory(MPTTModel):
     enabled = models.BooleanField(default=True)
     slug = models.SlugField(max_length=255, unique=True)
     url = models.URLField(max_length=200, null=True, blank=True)
-    courses = models.ManyToManyField("course_overviews.CourseOverview", blank=True)
+    courses = models.ManyToManyField("course_overviews.CourseOverview")
 
     class MPTTMeta:
         order_insertion_by = ['name']
 
-    def get_course_ids(self, **kwargs):
-        qs = self.coursecategorycourse_set.filter(**kwargs)
-        return [c.course_id for c in qs]
+    class Meta:
+        verbose_name_plural = 'Course Categories'
 
     def __unicode__(self):
         return self.name
@@ -49,28 +47,27 @@ class CourseCategory(MPTTModel):
         return add_nodes(cls.objects.filter(parent=None, **kwargs))
 
 
-class CourseCategoryCourse(models.Model):
-    course_category = models.ForeignKey(CourseCategory, null=True)
-    course_id = CourseKeyField(max_length=255, db_index=True, verbose_name=_("Course"))
-
-    class Meta:
-        unique_together = ('course_category', 'course_id')
-
-
 @receiver(move_to, sender=CourseCategory)
 def move_reindex_course_category(sender, instance, **kwargs):
-    task_reindex_courses.delay(category_id=instance.id)
+    task_reindex_courses.delay(instance.id)
+
+
+@receiver([pre_delete, post_delete], sender=CourseCategory)
+def delete_reindex_course_category(sender, instance, **kwargs):
+    category_courses = instance.courses.all()
+    if category_courses:
+        instance.courses_list = map(lambda x: str(x.id), category_courses)
+    elif instance.courses_list:
+        task_reindex_courses.delay(course_keys=instance.courses_list)
 
 
 @receiver(m2m_changed, sender=CourseCategory.courses.through)
 def save_reindex_course_category(sender, instance, pk_set, action, **kwargs):
+    courses_set = set()
     if action == 'pre_clear':
         instance.pre_clear_course_keys = set()
-        for courses in instance.courses.all():
-            instance.pre_clear_course_keys.add(str(courses.id))
-    if action == 'post_add':
-        courses_set = set()
-        for courses in instance.courses.all():
-            courses_set.add(str(courses.id))
-        courses_set.update(instance.pre_clear_course_keys)
+        instance.pre_clear_course_keys.update(map(str, instance.courses.all().values_list('id', flat=True)))
+    if action in ['post_add', 'post_clear']:
+        courses_set.update(map(str, instance.courses.all().values_list('id', flat=True)))
+        courses_set.update(getattr(instance, 'pre_clear_course_keys', set()))
         task_reindex_courses.delay(instance.id, list(courses_set))

@@ -630,8 +630,7 @@ class CourseAboutSearchIndexer(object):
                     course_info['content'][about_information.property_name] = analyse_content
                 if about_information.index_flags & AboutInfo.PROPERTY:
                     course_info[about_information.property_name] = section_content
-        for course_category in CourseCategory.objects.filter(courses__id=course.id):
-            course_info['category'].append(course_category.get_root().name)
+        course_info['category'] = map(lambda x: x.get_root().name, CourseCategory.objects.filter(courses__id=course.id))
 
         # Broad exception handler to protect around and report problems with indexing
         try:

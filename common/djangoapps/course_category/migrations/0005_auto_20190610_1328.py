@@ -12,10 +12,22 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AlterUniqueTogether(
+            name='coursecategorycourse',
+            unique_together=set([]),
+        ),
+        migrations.RemoveField(
+            model_name='coursecategorycourse',
+            name='course_category',
+        ),
+        migrations.AlterModelOptions(
+            name='coursecategory',
+            options={'verbose_name_plural': 'Course Categories'},
+        ),
         migrations.AddField(
             model_name='coursecategory',
             name='courses',
-            field=models.ManyToManyField(to='course_overviews.CourseOverview', blank=True),
+            field=models.ManyToManyField(to='course_overviews.CourseOverview'),
         ),
         migrations.AddField(
             model_name='coursecategory',
@@ -26,5 +38,8 @@ class Migration(migrations.Migration):
             model_name='coursecategory',
             name='url',
             field=models.URLField(null=True, blank=True),
+        ),
+        migrations.DeleteModel(
+            name='CourseCategoryCourse',
         ),
     ]

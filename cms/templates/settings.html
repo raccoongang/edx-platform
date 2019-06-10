@@ -112,17 +112,17 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
           </div>
           % endif
 
-          <ol class="list-input course-category">
-            <li class="field" id="field-course-category">
-              <label for="course-category">${_("Course Category")}</label>
-              <select multiple id="course-category">
-                % for id, name in course_category_options:
-                  <option value="${id}">${name}</option>
-                % endfor
-              </select>
-                <span class="tip tip-stacked">${_("You can add course to the category")}</span>
-            </li>
-          </ol>
+          ## <ol class="list-input course-category">
+          ##   <li class="field" id="field-course-category">
+          ##     <label for="course-category">${_("Course Category")}</label>
+          ##     <select multiple id="course-category">
+          ##       % for id, name in course_category_options:
+          ##         <option value="${id}">${name}</option>
+          ##       % endfor
+          ##     </select>
+          ##       <span class="tip tip-stacked">${_("You can add course to the category")}</span>
+          ##   </li>
+          ## </ol>
 
           % if not about_page_editable:
           <div class="notice notice-incontext notice-workflow">
