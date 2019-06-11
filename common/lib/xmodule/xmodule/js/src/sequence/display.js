@@ -407,14 +407,13 @@
                 }
             };
 
-            var checkPrerequisite = function (numberAttempts) {
+            var checkPrerequisite = function () {
                 var that = this;
                 $.ajax({
                     url: '/courses/'+this.courseId+'/check_prerequisite/',
                     cache: false,
                     data: {
                         block_id: this.id,
-                        number_attempts: numberAttempts
                     },
                     success: function(data) {
                         if (data.next) {
@@ -448,10 +447,9 @@
                                 goToNextOrPrevious(data.url);
                             }
                         } else {
-                            if (numberAttempts < 3 && !data.last_subsection) {
-                                numberAttempts++;
+                            if (data.exists_start_info_task && !data.last_subsection) {
                                 setTimeout(function () {
-                                    checkPrerequisite.call(that, numberAttempts);
+                                    checkPrerequisite.call(that);
                                  }, 2000);
                             } else {
                                 $('#next-dialog #msg').html(data.msg);
@@ -483,8 +481,7 @@
             if ((direction === 'next') && (this.position >= this.contents.length)) {
                 if(this.nextUrl === 'None') {
                     $("body").addClass("answer-loading");
-                    var numberAttempts = 1;
-                    checkPrerequisite.call(this, numberAttempts);
+                    checkPrerequisite.call(this);
                 } else {
                     goToNextOrPrevious(this.nextUrl);
                 }

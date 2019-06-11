@@ -11,6 +11,8 @@ from xblock.scorable import ScorableXBlockMixin, Score
 from courseware.model_data import get_score, set_score
 from eventtracking import tracker
 from openedx.core.lib.grade_utils import is_score_higher_or_equal
+
+from lms.djangoapps.grades.models import InfoTaskRecalculateSubsectionGrade
 from student.models import user_by_anonymous_id
 from submissions.models import score_reset, score_set
 from track.event_transaction_utils import (
@@ -229,6 +231,14 @@ def enqueue_subsection_update(sender, **kwargs):  # pylint: disable=unused-argum
         ),
         countdown=RECALCULATE_GRADE_DELAY,
     )
+
+    InfoTaskRecalculateSubsectionGrade.objects.create(
+        course_id=kwargs['course_id'],
+        user_id=kwargs['user_id'],
+        task_id=result.id,
+        status=InfoTaskRecalculateSubsectionGrade.START_TASK
+    )
+
     log.info(
         u'Grades: Request async calculation of subsection grades with args: {}. Task [{}]'.format(
             ', '.join('{}:{}'.format(arg, kwargs[arg]) for arg in sorted(kwargs)),
