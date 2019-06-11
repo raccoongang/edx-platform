@@ -8,14 +8,16 @@ class UserSocialLink(models.Model):
     """
     Represents a user's social platforms links.
     """
-    LINKEDIN = 'linkedin'
+    # LINKEDIN = 'linkedin'
+    FACEBOOK = 'facebook'
 
     PLATFORM_CHOICES = (
-        (LINKEDIN, ugettext_noop('LinkedIn')),
+        # (LINKEDIN, ugettext_noop('LinkedIn')),
+        (FACEBOOK, ugettext_noop('Facebook')),
     )
 
     VALID_URLS = {
-        LINKEDIN: 'linkedin.com/in/'
+        FACEBOOK: 'Facebook.com/'
     }
 
     user_profile = models.ForeignKey(UserProfile, db_index=True, related_name='social_links', on_delete=models.CASCADE)
