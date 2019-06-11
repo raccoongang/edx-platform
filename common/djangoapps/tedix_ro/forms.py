@@ -41,13 +41,13 @@ class RegisterForm(ModelForm):
         'required': 'Please enter your phone number.'
     })
     school_city = forms.ModelChoiceField(
-        label='City', queryset=City.objects.all(),
+        label='City', queryset=City.objects.none(),
         error_messages={
             'required': 'Please select your city.'
         }
     )
     school = forms.ModelChoiceField(
-        label='School', queryset=School.objects.all(),
+        label='School', queryset=School.objects.none(),
         error_messages={
             'required': 'Please select your school.'
         }
@@ -75,7 +75,7 @@ class StudentRegisterForm(RegisterForm):
     instructor = forms.ModelChoiceField(
         required=False,
         label='Teacher',
-        queryset=InstructorProfile.objects.filter(user__is_staff=True, user__is_active=True),
+        queryset=InstructorProfile.objects.none(),
         error_messages={
             'required': 'Please select your teacher.'
         }

@@ -39,6 +39,7 @@ class City(models.Model):
 
 class School(models.Model):
     name = models.CharField(max_length=254, unique=True)
+    city = models.ForeignKey(City, null=True, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['name']

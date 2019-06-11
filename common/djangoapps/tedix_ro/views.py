@@ -15,13 +15,16 @@ from django.urls import reverse
 from edxmako.shortcuts import render_to_response
 from opaque_keys.edx.keys import CourseKey
 from opaque_keys import InvalidKeyError
+from rest_framework import generics, viewsets
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from student.models import CourseEnrollment
 from student.helpers import get_next_url_for_login_page
-from tedix_ro.forms import StudentEnrollForm
-from tedix_ro.models import StudentProfile, StudentCourseDueDate
+
+from .forms import StudentEnrollForm
+from .models import StudentProfile, StudentCourseDueDate, City, School
+from .serializers import CitySerializer, SchoolSerilizer, SingleCitySerializer, SingleSchoolSerilizer
 
 
 def manage_courses(request):
@@ -120,3 +123,25 @@ def manage_courses(request):
     })
 
     return render_to_response('manage_courses.html', context)
+
+
+class CityViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = City.objects.all()
+    paginator = None
+    pagination_class = None
+
+    def get_serializer_class(self):
+        if self.kwargs.get('pk'):
+            return CitySerializer
+        return SingleSchoolSerilizer
+
+
+class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = School.objects.all()
+    paginator = None
+    pagination_class = None
+
+    def get_serializer_class(self):
+        if self.kwargs.get('pk'):
+            return SchoolSerilizer
+        return SingleCitySerializer
