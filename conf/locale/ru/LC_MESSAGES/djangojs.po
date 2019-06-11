@@ -4723,6 +4723,10 @@ msgid "Additional Information"
 msgstr "Дополнительная информация"
 
 #: lms/static/js/student_account/views/account_settings_factory.js
+msgid "Social Media Links"
+msgstr "Ссылки на социальные сети"
+
+#: lms/static/js/student_account/views/account_settings_factory.js
 msgid "Education Completed"
 msgstr "Ваше образование"
 
