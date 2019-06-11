@@ -17,7 +17,7 @@ class UserSocialLink(models.Model):
     )
 
     VALID_URLS = {
-        FACEBOOK: 'Facebook.com/in/'
+        FACEBOOK: 'Facebook.com/'
     }
 
     user_profile = models.ForeignKey(UserProfile, db_index=True, related_name='social_links', on_delete=models.CASCADE)
