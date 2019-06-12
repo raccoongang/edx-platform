@@ -1,17 +1,17 @@
 """
 API end-point for creating a new user without password.
 """
-import logging
+
 from uuid import uuid4
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from opaque_keys import InvalidKeyError
 from social_django.models import UserSocialAuth
 
-from enrollment.api import add_enrollment, get_enrollment
+from enrollment.api import add_enrollment, get_enrollment, update_enrollment
 from enrollment.views import ApiKeyPermissionMixIn
 from lms.djangoapps.instructor.views.tools import get_student_from_identifier
 from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiveUser
@@ -20,146 +20,95 @@ from openedx.core.djangoapps.user_api.accounts.api import check_account_exists
 from student.models import UserProfile
 from third_party_auth.models import OAuth2ProviderConfig
 
-log = logging.getLogger(__name__)
-
 
 class CreateUserAccountWithoutPasswordView(APIView):
     """
-    Create user account.
+    API endpoint for user provisioning.
     """
     authentication_classes = (OAuth2AuthenticationAllowInactiveUser,)
     permission_classes = (ApiKeyHeaderPermission,)
 
-    _error_dict = {
-        "username": "Username is required parameter.",
-        "email": "Email is required parameter.",
-        "uid": "Uid is required parameter."
-    }
-
-    def _check_available_required_params(self, parameter, parameter_name, values_list=None):
-        """
-        Check required parameter is correct.
-        If parameter isn't correct ValueError is raised.
-        :param parameter: object
-        :param parameter_name: string. Parameter's name
-        :param values_list: List of values
-        :return: parameter
-        """
-        if not parameter or (values_list and isinstance(values_list, list) and parameter not in values_list):
-            raise ValueError(self._error_dict[parameter_name].format(value=parameter))
-        return parameter
-
     def post(self, request):
         """
-        Create user by the email and the username.
+        Create user by email, username and uid.
         """
-        data = dict(request.data.iteritems())
-        data['honor_code'] = "True"
-        data['terms_of_service'] = "True"
-        first_name = request.data.get('first_name', '')
-        last_name = request.data.get('last_name', '')
+        data = request.data
+        email = data.get('email')
+        username = data.get('username')
+        uid = data.get('uid')
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        full_name = "{} {}".format(first_name, last_name).strip() if first_name or last_name else username
 
-        try:
-            email = self._check_available_required_params(request.data.get('email'), "email")
-            username = self._check_available_required_params(request.data.get('username'), "username")
-            uid = self._check_available_required_params(request.data.get('uid'), "uid")
-            if check_account_exists(username=username, email=email):
-                return Response(data={"error_message": "User already exists"}, status=status.HTTP_409_CONFLICT)
-            if UserSocialAuth.objects.filter(uid=uid).exists():
+        response_status = status.HTTP_409_CONFLICT
+        if check_account_exists(username=username):
+            data = {"error_message": "Username already exists."}
+        elif check_account_exists(email=email):
+            data = {"error_message": "User email already exists."}
+        elif UserSocialAuth.objects.filter(uid=uid).exists():
+            data = {"error_message": "Parameter 'uid' isn't unique."}
+        else:
+            try:
+                user = User.objects.create_user(username=username, email=email, password=uuid4().hex,
+                                                first_name=first_name, last_name=last_name)
+                user_profile = UserProfile.objects.create(user=user)
+                user_profile.name = full_name
+                user_profile.allow_certificate = True
+                user_profile.save()
+                idp_name = OAuth2ProviderConfig.objects.first().backend_name
+                UserSocialAuth.objects.create(user=user, provider=idp_name, uid=uid)
+                data = {'user_id': user.id, 'username': username}
+                response_status = status.HTTP_200_OK
+            except (ValueError, ValidationError) as e:
                 return Response(
-                        data={"error_message": "Parameter 'uid' isn't unique."},
-                        status=status.HTTP_409_CONFLICT
+                    data={"error_message": e.message},
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
-            data['name'] = "{} {}".format(first_name, last_name).strip() if first_name or last_name else username
-            data['first_name'] = first_name
-            data['last_name'] = last_name
-            data['password'] = uuid4().hex
-            for param in ('is_active', 'allow_certificate'):
-                data[param] = data.get(param, True)
-            user = User.objects.create_user(username=username, email=email, password=data['password'])
-            UserProfile.objects.create(user=user)
-            idp_name = OAuth2ProviderConfig.objects.first().backend_name
-            UserSocialAuth.objects.create(user=user, provider=idp_name, uid=uid)
-        except (ValueError, ValidationError) as e:
-            return Response(
-                data={"error_message": e.message},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        return Response(data={'user_id': user.id, 'username': username}, status=status.HTTP_200_OK)
+        return Response(data=data, status=response_status)
 
 
 class UserEnrollView(APIView, ApiKeyPermissionMixIn):
     """
-    API endpoint for enrolling user on the course.
+    API endpoint for enrolling/unenrolling user on the course.
     """
     authentication_classes = (OAuth2AuthenticationAllowInactiveUser,)
     permission_classes = (ApiKeyHeaderPermission,)
 
     def post(self, request):
         """
-        Enroll user on the course.
-
-        :param course: Course id. string, in the format {key type}:{org}+{course}+{run}.
-                                                        For example, course-v1:edX+DemoX+Demo_2014.
-        :param user_email: User email string
-        :param request: request for Api endpoint
-        :param action: string 'enroll'
-        :param mode: string indicating what kind of enrollment this is: audit or verified.
+        Enroll/unenroll user on the course using user_email, course mode and course_id.
         """
         data = request.data
         user_email = data.get('user_email')
         mode = data.get('mode')
         course_id = data.get('course')
-        action = data.get('action')
-        if action != 'enroll':
-            return Response(
-                data={"error_message": "Action must be enroll"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        is_active = "{}".format(data.get('is_active')) if data.get('is_active') else 'True'
         try:
             user = get_student_from_identifier(user_email)
-
-            if get_enrollment(user, course_id):
-                return Response(
-                    data={
-                        "error_message": "User '{user}' has already enrolled on the course '{course}'".format(
-                            user=user, course=course_id
-                        )
-                    },
-                    status=status.HTTP_409_CONFLICT
-                )
-
-            if mode:
+            if is_active not in ['True', 'False']:
+                raise ValueError("'is_active' parametr must be 'True' or 'False'.")
+            if not eval(is_active) and get_enrollment(user, course_id):
+                update_enrollment(user, course_id, mode, is_active)
+                data = {'user': user_email, 'course': course_id, 'status': "User is unenrolled the course."}
+                request_status = status.HTTP_200_OK
+            elif get_enrollment(user, course_id):
+                data = {"error_message": "User has already enrolled the course"}
+                request_status = status.HTTP_409_CONFLICT
+            elif eval(is_active):
                 add_enrollment(user, course_id, mode)
+                data = {'user': user_email, 'course': course_id, 'status': "User is enrolled successfully"}
+                request_status = status.HTTP_200_OK
             else:
-                return Response(
-                    data={"error_message": "Need user mode - 'audit' or 'verified'"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-            result = {
-                'user': user_email,
-                'course': course_id,
-                'status': "user was enrolled successfully",
-            }
-
+                data = {"error_message": "User did not enroll the course"}
+                request_status = status.HTTP_409_CONFLICT
+            return Response(data=data, status=request_status)
         except User.DoesNotExist:
             return Response(
                 data={"error_message": 'User with email - {user_email} does not exist'.format(user_email=user_email)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        except InvalidKeyError:
-            return Response(
-                data={
-                    "error_message": 'Wrong course_id: {course_id}. Course does not exist'.format(course_id=course_id)
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
         except Exception as ex:
-            log.error(ex)
             return Response(
                 data={"error_message": 'Problem with enrolling user. Error: {ex}'.format(ex=ex.message)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        return Response(data=result, status=status.HTTP_200_OK)
