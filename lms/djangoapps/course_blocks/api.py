@@ -30,9 +30,9 @@ def get_course_block_access_transformers():
     """
     course_block_access_transformers = [
         library_content.ContentLibraryTransformer(),
+        # start_date.StartDateTransformer(),
         user_partitions_date_modificator.UserDatePartitionTransformer(),
         user_partitions.UserPartitionTransformer(),
-        # start_date.StartDateTransformer(),
         visibility.VisibilityTransformer(),
     ]
     if has_individual_student_override_provider():
