@@ -10,6 +10,8 @@ from openedx.core.djangoapps.content.block_structure.transformers import BlockSt
 from .transformers import library_content, start_date, user_partitions, visibility, load_override_data
 from .usage_info import CourseUsageInfo
 
+from rg_odoo_api.transformers import user_partitions_date_modificator
+
 INDIVIDUAL_STUDENT_OVERRIDE_PROVIDER = 'courseware.student_field_overrides.IndividualStudentOverrideProvider'
 
 
@@ -28,12 +30,16 @@ def get_course_block_access_transformers():
     """
     course_block_access_transformers = [
         library_content.ContentLibraryTransformer(),
-        start_date.StartDateTransformer(),
+        # start_date.StartDateTransformer(),
+        user_partitions_date_modificator.UserDatePartitionTransformer(),
         user_partitions.UserPartitionTransformer(),
         visibility.VisibilityTransformer(),
     ]
     if has_individual_student_override_provider():
         course_block_access_transformers += [load_override_data.OverrideDataTransformer()]
+
+    # TODO(yura.braiko@raccoongang) add some tools for autodiscover support. Additional search in docs.
+    # course_block_access_transformers += [user_partitions_date_modificator.UserDatePartitionTransformer()]
 
     return course_block_access_transformers
 
