@@ -97,7 +97,6 @@ from util.bad_request_rate_limiter import BadRequestRateLimiter
 from util.db import outer_atomic
 from util.enterprise_helpers import data_sharing_consent_requirement_at_login
 from util.json_request import JsonResponse
-from util.bad_request_rate_limiter import BadRequestRateLimiter
 from util.milestones_helpers import (
     get_pre_requisite_courses_not_completed,
 )
