@@ -63,7 +63,8 @@ def get_blocks(
         transformers += [MilestonesAndSpecialExamsTransformer(
             include_special_exams=include_special_exams,
             include_gated_sections=include_gated_sections)]
-        transformers += [HiddenContentTransformer()]
+        # TODO(yura.braiko@raccoongang.com): Need to adjust the transformer system.
+        # transformers += [HiddenContentTransformer()]
     transformers += [
         BlocksAPITransformer(
             block_counts,
