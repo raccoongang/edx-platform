@@ -16193,9 +16193,9 @@ msgid ""
 "engaging, high-quality {platform_name} courses. Note that you will not be "
 "able to log back into your account until you have activated it."
 msgstr ""
-"Привет! "
-"Используйте нашу ссылку, чтобы активировать свою учетную запись и получить доступ к курсам {platform_name}. "
-"{platform_name} - это обучение от ведущих преподавателей и высокое качество полученных знаний онлайн. "
+"Привет! \n"
+"Используйте нашу ссылку, чтобы активировать свою учетную запись и получить доступ к курсам {platform_name}. \n"
+"{platform_name} - это обучение от ведущих преподавателей и высокое качество полученных знаний онлайн. \n"
 "Жми на ссылку: "
 
 #: lms/templates/emails/activation_email.txt
