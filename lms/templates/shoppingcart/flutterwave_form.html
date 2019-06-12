@@ -1,6 +1,6 @@
 <%namespace name='static' file='/static_content.html'/>
 <%! from django.utils.translation import ugettext as _ %>
-<form>
+<form id="flutterwave_form">
     <script src="${API_URL}/flwv3-pug/getpaidx/api/flwpbf-inline.js"></script>
     <button type="button" onClick="payWithRave()">${_('Payment')}<span class="icon fa fa-caret-right" aria-hidden="true"></span></button>
 </form>
@@ -9,7 +9,7 @@
 <script>
     function paymentSuccessNotification() {
         $( "#payment-success-notification" ).dialog({
-            dialogClass: "no-close",
+            dialogClass: "no-close payment-modal",
             modal: true,
             buttons: [
                 {
@@ -21,14 +21,16 @@
             ],
             close: function(){
                 window.location.href = '${success_url}';
-            }
+            },
+            resizable: false,
+            draggable: false
         });
     }
 
     function paymentFailureNotification(message) {
         $("#payment-failure-message").html(message);
         $( "#payment-failure-notification" ).dialog({
-            dialogClass: "no-close",
+            dialogClass: "no-close payment-modal",
             modal: true,
             buttons: [
                 {
@@ -40,7 +42,9 @@
             ],
             close: function(){
                 window.location.reload();
-            }
+            },
+            resizable: false,
+            draggable: false
         });
     }
 </script>
