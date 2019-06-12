@@ -63,7 +63,12 @@ def get_blocks(
         transformers += [MilestonesAndSpecialExamsTransformer(
             include_special_exams=include_special_exams,
             include_gated_sections=include_gated_sections)]
-        transformers += [HiddenContentTransformer()]
+        # TODO(yura.braiko@raccoongang.com): Need to adjust the transformer system.
+        # Transformers provides a wide opportunity for extending edX functionality, 
+        # but for now, there is no opportunity to extend the existen list of 
+        # the transformer(this functionality is not completely implemented and not usable). 
+        #So we need to fix the transformer extension mechanism. 
+        # transformers += [HiddenContentTransformer()]
     transformers += [
         BlocksAPITransformer(
             block_counts,
