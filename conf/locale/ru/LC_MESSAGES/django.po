@@ -5923,6 +5923,10 @@ msgstr "через {relative} — {absolute}"
 msgid "Course Starts"
 msgstr "Курс начнётся"
 
+#: lms/templates/course.html
+msgid "Course starts: "
+msgstr "Курс начнётся: "
+
 #: lms/djangoapps/courseware/date_summary.py
 msgid "Course End"
 msgstr "Окончание курса"
