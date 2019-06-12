@@ -66,8 +66,8 @@ def save_reindex_course_category(sender, instance, pk_set, action, **kwargs):
     courses_set = set()
     if action == 'pre_clear':
         instance.pre_clear_course_keys = set()
-        instance.pre_clear_course_keys.update(map(str, instance.courses.all().values_list('id', flat=True)))
+        instance.pre_clear_course_keys.update(instance.courses.all().values_list('id', flat=True))
     if action in ['post_add', 'post_clear']:
-        courses_set.update(map(str, instance.courses.all().values_list('id', flat=True)))
+        courses_set.update(instance.courses.all().values_list('id', flat=True))
         courses_set.update(getattr(instance, 'pre_clear_course_keys', set()))
         task_reindex_courses.delay(instance.id, list(courses_set))
