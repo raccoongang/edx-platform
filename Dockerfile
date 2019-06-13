@@ -48,6 +48,7 @@ RUN apt-get update && apt-get install -y \
     pip install --global-option=build_ext --compile --no-cache-dir -r requirements/edx/paver.txt && \
     pip install --no-cache-dir -r requirements/edx/base.txt && \
     pip install --no-cache-dir git+https://github.com/edx/nltk.git@2.0.6#egg=nltk==2.0.6 && \
+    pip install --no-cache-dir -r requirements/edx/github.txt && \
     rm -rf ~/.cache && \
     apt-get purge -y --auto-remove \
         build-essential \
