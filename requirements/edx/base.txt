@@ -262,4 +262,4 @@ django-tinymce==2.8.0
 django-hvad==1.8.0
 
 # Accel customization
--e git+ssh://git@gitlab.raccoongang.com/rg-developers/rg-odoo-edx-api.git@live_chat_for_odoo#egg=rg-odoo-api==0.0.1
+-e git+ssh://git@gitlab.raccoongang.com/rg-developers/rg-odoo-edx-api.git@release-0.0.1#egg=rg-odoo-api==0.0.1
