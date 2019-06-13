@@ -40,17 +40,18 @@ class CreateUserAccountWithoutPasswordView(APIView):
         last_name = data.get('last_name')
         full_name = "{} {}".format(first_name, last_name).strip() if first_name or last_name else username
 
-        response_status = status.HTTP_409_CONFLICT
-        if check_account_exists(username=username):
-            data = {"error_message": "Username already exists."}
-        elif check_account_exists(email=email):
-            data = {"error_message": "User email already exists."}
+        if check_account_exists(username=username, email=email):
+            check_list = check_account_exists(username=username, email=email)
+            data = {"error_message": "{} already exists".format(" and ".join(check_list).capitalize())}
+            response_status = status.HTTP_409_CONFLICT
         elif UserSocialAuth.objects.filter(uid=uid).exists():
             data = {"error_message": "Parameter 'uid' isn't unique."}
+            response_status = status.HTTP_400_BAD_REQUEST
         else:
             try:
-                user = User.objects.create_user(username=username, email=email, password=uuid4().hex,
-                                                first_name=first_name, last_name=last_name)
+                user = User.objects.create_user(
+                    username=username, email=email, password=uuid4().hex, first_name=first_name, last_name=last_name
+                )
                 user_profile = UserProfile.objects.create(user=user)
                 user_profile.name = full_name
                 user_profile.allow_certificate = True
@@ -87,20 +88,19 @@ class UserEnrollView(APIView, ApiKeyPermissionMixIn):
             user = get_student_from_identifier(user_email)
             if is_active not in ['True', 'False']:
                 raise ValueError("'is_active' parametr must be 'True' or 'False'.")
-            if not eval(is_active) and get_enrollment(user, course_id):
-                update_enrollment(user, course_id, mode, is_active)
-                data = {'user': user_email, 'course': course_id, 'status': "User is unenrolled the course."}
-                request_status = status.HTTP_200_OK
-            elif get_enrollment(user, course_id):
-                data = {"error_message": "User has already enrolled the course"}
-                request_status = status.HTTP_409_CONFLICT
-            elif eval(is_active):
-                add_enrollment(user, course_id, mode)
-                data = {'user': user_email, 'course': course_id, 'status': "User is enrolled successfully"}
-                request_status = status.HTTP_200_OK
             else:
-                data = {"error_message": "User did not enroll the course"}
-                request_status = status.HTTP_409_CONFLICT
+                eval(is_active)
+            if not get_enrollment(user, course_id):
+                add_enrollment(user, course_id, mode, is_active)
+                data = {
+                    'user': user_email, 'course': course_id, 'status': "Success enroll (is_active={})".format(is_active)
+                }
+            else:
+                update_enrollment(user, course_id, mode, is_active)
+                data = {
+                    'user': user_email, 'course': course_id, 'status': "Success enroll (is_active={})".format(is_active)
+                }
+            request_status = status.HTTP_200_OK
             return Response(data=data, status=request_status)
         except User.DoesNotExist:
             return Response(
