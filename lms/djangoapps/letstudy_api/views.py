@@ -89,7 +89,7 @@ class UserEnrollView(APIView, ApiKeyPermissionMixIn):
             if is_active not in ['True', 'False']:
                 raise ValueError("'is_active' parametr must be 'True' or 'False'.")
             else:
-                eval(is_active)
+                is_active = eval(is_active)
             if not get_enrollment(user, course_id):
                 add_enrollment(user, course_id, mode, is_active)
                 data = {
