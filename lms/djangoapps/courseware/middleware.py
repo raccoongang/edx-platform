@@ -7,6 +7,8 @@ from django.core.urlresolvers import reverse
 
 from courseware.courses import UserNotEnrolled
 
+import crum
+
 
 class RedirectUnenrolledMiddleware(object):
     """
@@ -22,3 +24,11 @@ class RedirectUnenrolledMiddleware(object):
                     args=[course_key.to_deprecated_string()]
                 )
             )
+
+class CustomCurrentRequestUserMiddleware(crum.CurrentRequestUserMiddleware):
+    """
+    Overide the process_exception() method in CurrentRequestUserMiddleware class for
+    using custom theme with 404 page.
+    """
+    def process_exception(self, request, exception):
+        pass
