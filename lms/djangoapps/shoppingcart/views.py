@@ -690,6 +690,7 @@ def postpay_callback(request):
     returned.
     """
     params = request.POST.dict()
+    params['verification_hash'] = request.META.get('HTTP_VERIF_HASH')
     result = process_postpay_callback(params)
 
     if result['success']:
