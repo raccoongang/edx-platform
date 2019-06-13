@@ -27,8 +27,8 @@ return
 
 paver -> paver : process_xmodule_assets
     paver -> OS : xmodule_assets common/static/xmodule
+        note right: see xmodule_static.uml for details
     return
-    note right: see xmodule_static.uml for details
 return
 
 paver -> paver : process_npm_assets
@@ -59,6 +59,7 @@ return
 paver -> paver : execute_compile_sass(args)
     loop for sys in system
         paver -> OS : manage.py compile_sass %system% %options%
+            note right : see compile_sass.uml for details
         return
     end
 return
