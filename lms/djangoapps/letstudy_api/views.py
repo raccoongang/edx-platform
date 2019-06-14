@@ -12,10 +12,12 @@ from rest_framework import status
 from social_django.models import UserSocialAuth
 
 from enrollment.api import add_enrollment, get_enrollment, update_enrollment
+from enrollment.errors import CourseModeNotFoundError
 from enrollment.views import ApiKeyPermissionMixIn
 from lms.djangoapps.instructor.views.tools import get_student_from_identifier
 from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiveUser
 from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
+from openedx.core.lib.exceptions import CourseNotFoundError
 from openedx.core.djangoapps.user_api.accounts.api import check_account_exists
 from student.models import UserProfile
 from third_party_auth.models import OAuth2ProviderConfig
@@ -83,32 +85,43 @@ class UserEnrollView(APIView, ApiKeyPermissionMixIn):
         user_email = data.get('user_email')
         mode = data.get('mode')
         course_id = data.get('course')
-        is_active = "{}".format(data.get('is_active')) if data.get('is_active') else 'True'
+        is_active = data.get('is_active', True)
         try:
             user = get_student_from_identifier(user_email)
-            if is_active not in ['True', 'False']:
-                raise ValueError("'is_active' parametr must be 'True' or 'False'.")
-            else:
-                is_active = eval(is_active)
+            if not isinstance(is_active, bool):
+                raise ValidationError("'is_active' parameter must be true or false.")
             if not get_enrollment(user, course_id):
                 add_enrollment(user, course_id, mode, is_active)
                 data = {
-                    'user': user_email, 'course': course_id, 'status': "Success enroll (is_active={})".format(is_active)
+                    'user': user_email,
+                    'course': course_id,
+                    'course_mode': mode,
+                    'enroll_status': is_active,
+                    'result': "Successful enrollment"
                 }
             else:
                 update_enrollment(user, course_id, mode, is_active)
                 data = {
-                    'user': user_email, 'course': course_id, 'status': "Success enroll (is_active={})".format(is_active)
+                    'user': user_email,
+                    'course': course_id,
+                    'course_mode': mode,
+                    'enroll_status': is_active,
+                    'result': "Successful update enrollment"
                 }
             request_status = status.HTTP_200_OK
             return Response(data=data, status=request_status)
-        except User.DoesNotExist:
+        except CourseModeNotFoundError:
             return Response(
-                data={"error_message": 'User with email - {user_email} does not exist'.format(user_email=user_email)},
+                data={"error_message": "Specified course mode '{mode}' unavailable for the course".format(mode=mode)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        except Exception as ex:
+        except User.DoesNotExist:
             return Response(
-                data={"error_message": 'Problem with enrolling user. Error: {ex}'.format(ex=ex.message)},
+                data={"error_message": "User with email '{user_email}' does not exist".format(user_email=user_email)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except (ValidationError, CourseNotFoundError) as error:
+            return Response(
+                data={"error_message": "Problem with enrolling user. Error: {error}".format(error=error.message)},
                 status=status.HTTP_400_BAD_REQUEST,
             )

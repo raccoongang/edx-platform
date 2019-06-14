@@ -142,7 +142,7 @@ urlpatterns = [
     url(r'^api/experiments/', include('experiments.urls', namespace='api_experiments')),
 
     # Provisioning and enrolment API
-    url(r'^api/user/', include('lms.djangoapps.letstudy_api.urls')),
+    url(r'^api/letstudy/user/', include('lms.djangoapps.letstudy_api.urls')),
 ]
 
 # TODO: This needs to move to a separate urls.py once the student_account and
