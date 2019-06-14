@@ -6,6 +6,7 @@ from uuid import uuid4
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from opaque_keys import InvalidKeyError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -18,7 +19,11 @@ from lms.djangoapps.instructor.views.tools import get_student_from_identifier
 from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiveUser
 from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
 from openedx.core.lib.exceptions import CourseNotFoundError
-from openedx.core.djangoapps.user_api.accounts.api import check_account_exists
+from openedx.core.djangoapps.user_api.accounts.api import (
+    check_account_exists,
+    get_email_validation_error,
+    get_username_validation_error
+)
 from student.models import UserProfile
 from third_party_auth.models import OAuth2ProviderConfig
 
@@ -37,18 +42,22 @@ class CreateUserAccountWithoutPasswordView(APIView):
         data = request.data
         email = data.get('email')
         username = data.get('username')
-        uid = data.get('uid')
+        uid = data.get('uid', None)
         first_name = data.get('first_name', '')
         last_name = data.get('last_name', '')
-        full_name = "{} {}".format(first_name, last_name).strip() if first_name or last_name else username
+        full_name = "{} {}".format(first_name, last_name).strip() or username
 
-        if check_account_exists(username=username, email=email):
+        response_status = status.HTTP_400_BAD_REQUEST
+        if uid is None or UserSocialAuth.objects.filter(uid=uid).exists():
+            data = {"error_message": "Parameter 'uid' is unavailable or not unique."}
+        elif get_email_validation_error(email):
+            data = {"error_message": get_email_validation_error(email)}
+        elif get_username_validation_error(username):
+            data = {"error_message": get_username_validation_error(username)}
+        elif check_account_exists(username=username, email=email):
             check_list = check_account_exists(username=username, email=email)
             data = {"error_message": "{} already exists".format(" and ".join(check_list).capitalize())}
             response_status = status.HTTP_409_CONFLICT
-        elif UserSocialAuth.objects.filter(uid=uid).exists():
-            data = {"error_message": "Parameter 'uid' isn't unique."}
-            response_status = status.HTTP_400_BAD_REQUEST
         else:
             try:
                 user = User.objects.create_user(
@@ -83,7 +92,7 @@ class UserEnrollView(APIView, ApiKeyPermissionMixIn):
         """
         data = request.data
         user_email = data.get('user_email')
-        mode = data.get('mode')
+        mode = data.get('mode', 'audit')
         course_id = data.get('course')
         is_active = data.get('is_active', True)
         try:
@@ -113,6 +122,11 @@ class UserEnrollView(APIView, ApiKeyPermissionMixIn):
         except CourseModeNotFoundError:
             return Response(
                 data={"error_message": "Specified course mode '{mode}' unavailable for the course".format(mode=mode)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except InvalidKeyError:
+            return Response(
+                data={"error_message": "Unavailable course_id '{course_id}'".format(course_id=course_id)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         except User.DoesNotExist:
