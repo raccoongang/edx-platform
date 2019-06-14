@@ -5,7 +5,7 @@ This module contains tasks for asynchronous execution of grade updates.
 from logging import getLogger
 
 import six
-from celery import task
+from celery import task, current_app
 from celery_utils.logged_task import LoggedTask
 from celery_utils.persist_on_failure import PersistOnFailureTask
 from django.conf import settings
@@ -20,6 +20,7 @@ from lms.djangoapps.course_blocks.api import get_course_blocks
 from lms.djangoapps.courseware import courses
 from lms.djangoapps.grades.config.models import ComputeGradesSetting
 from openedx.core.djangoapps.monitoring_utils import set_custom_metric, set_custom_metrics_for_course_key
+from openedx.core.lib.gating.api import find_gating_milestones
 
 from lms.djangoapps.grades.models import InfoTaskRecalculateSubsectionGrade
 from student.models import CourseEnrollment
@@ -33,6 +34,8 @@ from .constants import ScoreDatabaseTableEnum
 from .exceptions import DatabaseNotReadyError
 from .new.course_grade_factory import CourseGradeFactory
 from .new.subsection_grade_factory import SubsectionGradeFactory
+from .new.course_data import CourseData
+from .new.course_grade import CourseGrade
 from .signals.signals import SUBSECTION_SCORE_CHANGED
 from .transformer import GradesTransformer
 
@@ -252,6 +255,29 @@ def _has_db_updated_with_new_score(self, scored_block_usage_key, **kwargs):
     return db_is_updated
 
 
+def set_progress(course_key, student):
+    user_milestones = find_gating_milestones(course_key, relationship='requires', user={'id': student.id})
+    user_milestone_ids = [m['namespace'].replace('.gating', '') for m in user_milestones]
+
+    milestones = find_gating_milestones(course_key, relationship='requires')
+    milestone_ids = [m['namespace'].replace('.gating', '') for m in milestones]
+
+    course_grade = CourseGrade(student, CourseData(student, course_key=course_key))
+
+    subsections = []
+    for grade_name, sequentials in course_grade.graded_subsections_by_format.iteritems():
+        if 'quiz' in grade_name.lower() or 'exam' in grade_name.lower():
+            subsections.extend(int(str(q) in milestone_ids and str(q) not in user_milestone_ids) for q in sequentials.keys())
+
+    progress = 0
+    if subsections:
+        progress = int((100.0 / len(subsections)) * sum(subsections))
+    key = '{}_{}_progress'.format(str(course_key), student.id)
+    current_app.backend.set(key, str(progress))
+
+    return progress
+
+
 def _update_subsection_grades(course_key, scored_block_usage_key, only_if_higher, user_id):
     """
     A helper function to update subsection grades in the database
@@ -285,6 +311,8 @@ def _update_subsection_grades(course_key, scored_block_usage_key, only_if_higher
                     user=student,
                     subsection_grade=subsection_grade,
                 )
+
+    set_progress(course_key, student)
 
 
 def _course_task_args(course_key, **kwargs):
