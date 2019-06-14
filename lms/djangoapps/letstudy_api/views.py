@@ -38,8 +38,8 @@ class CreateUserAccountWithoutPasswordView(APIView):
         email = data.get('email')
         username = data.get('username')
         uid = data.get('uid')
-        first_name = data.get('first_name')
-        last_name = data.get('last_name')
+        first_name = data.get('first_name', '')
+        last_name = data.get('last_name', '')
         full_name = "{} {}".format(first_name, last_name).strip() if first_name or last_name else username
 
         if check_account_exists(username=username, email=email):
