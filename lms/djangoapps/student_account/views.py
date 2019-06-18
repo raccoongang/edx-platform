@@ -135,6 +135,8 @@ def login_and_registration_form(request, initial_mode="login"):
 
     # Otherwise, render the combined login/registration page
     context = {
+        'cities_api_url': reverse('city-list'),
+        'schools_api_url': reverse('school-list'),
         'data': {
             'login_redirect_url': redirect_to,
             'initial_mode': initial_mode,

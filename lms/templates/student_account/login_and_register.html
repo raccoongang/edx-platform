@@ -3,7 +3,7 @@
     import json
     from django.utils.translation import ugettext as _
     from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
-    from openedx.core.djangolib.js_utils import dump_js_escaped_json
+    from openedx.core.djangolib.js_utils import dump_js_escaped_json, js_escaped_string
 %>
 <%namespace name='static' file='/static_content.html'/>
 
@@ -14,7 +14,6 @@
 <%block name="js_extra">
     <%static:require_module module_name="js/student_account/logistration_factory" class_name="LogistrationFactory">
         var options = ${data | n, dump_js_escaped_json};
-
         LogistrationFactory(options);
 
         window.exFields = ['parent_email', 'parent_phone', 'classroom', 'instructor'];
@@ -33,6 +32,84 @@
                 }
             });
         });
+
+        $(document).ready(function(){
+            var label_span_school = '<span id="sity-optional-help" class="label-optional">Please select your city first.</span>';
+            var label_span_instructor = '<span id="instructor-optional-help" class="label-optional">Please select your school first.</span>';
+            $.ajax({
+                url: '${cities_api_url | n, js_escaped_string}',
+                success: (cities) => {
+                    var cityField = $('#register-school_city');
+                        $.each(cities, (ind, city) => {
+                            cityField.append(
+                                '<option value="' + city.id + '" >' + city.name + "</option>"
+                            )
+                        })
+                }
+            });
+            $('#register-school, #register-instructor').prop('disabled', 'disabled');
+            $('[for="register-school"]').append(label_span_school);
+            $('[for="register-instructor"]').append(label_span_instructor);
+            $(document).on('change', '#register-school_city', function(event) {
+                var $schoolField = $('#register-school');
+                var cityFieldValue = $(event.currentTarget).val();
+                if (cityFieldValue) {
+                    $schoolField.children('option:not(:first)').remove();
+                    $schoolField.prop('disabled', false);
+                    $.ajax({
+                        type: 'GET',
+                        url: '${cities_api_url}' + cityFieldValue,
+                        success: (sity) => {
+                            var $schoolField = $('#register-school');
+                                $.each(sity.schools, (ind, school) => {
+                                    console.log(sity)
+                                    $schoolField.append(
+                                        '<option value="' + school.id + '" >' + school.name + "</option>"
+                                    )
+                                })
+                        }
+                    });
+                    $('#sity-optional-help').remove();
+                    if (!$('#instructor-optional-help').text()) {
+                        $('[for="register-instructor"]').append(label_span_instructor);
+                    }
+                } else {
+                    $schoolField.prop('disabled', 'disabled');
+                    $('[for="register-school"]').append(label_span_school);
+                }
+                $('#register-school').val('');
+                $('#register-instructor').val('');
+                $('#register-instructor').children('option:not(:first)').remove();
+                $('#register-instructor').prop('disabled', 'disabled');
+            });
+            $(document).on('change', '#register-school', function(event) {
+                var schoolFieldValue = $(event.currentTarget).val();
+                var $instructorField = $('#register-instructor');
+                if (schoolFieldValue) {
+                    $instructorField.children('option:not(:first)').remove();
+                    $instructorField.prop('disabled', false);
+                    $.ajax({
+                        type: 'GET',
+                        url: '${schools_api_url}' + schoolFieldValue,
+                        success: (school) => {
+                            var $instructorField = $('#register-instructor');
+                                $.each(school.instructors, (ind, instructor) => {
+                                    console.log(instructor)
+                                    $instructorField.append(
+                                        '<option value="' + instructor.id + '" >' + instructor.username + "</option>"
+                                    )
+                                })
+                        }
+                    });
+                    $('#instructor-optional-help').remove();
+                }  else {
+                    $instructorField.prop('disabled', 'disabled');
+                    $('[for="register-instructor"]').append(label_span_instructor);
+                    $instructorField.val('');
+                }
+            });
+        });
+
         $('#register-phone, #register-parent_phone').on('change blur keyup', (e)=>{
             var stringLength = e.target.value.length;
             var newString = '';

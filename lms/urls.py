@@ -51,7 +51,6 @@ from static_template_view import views as static_template_view_views
 from staticbook import views as staticbook_views
 from student import views as student_views
 from student_account import views as student_account_views
-from tedix_ro.views import manage_courses
 from track import views as track_views
 from util import views as util_views
 
@@ -65,9 +64,10 @@ if settings.DEBUG or settings.FEATURES.get('ENABLE_DJANGO_ADMIN_SITE'):
 
 
 urlpatterns = [
-    url(r'^manage_courses$', manage_courses, name='manage_courses'),
 
     url(r'^$', branding_views.index, name='root'),   # Main marketing page, or redirect to courseware
+
+    url(r'', include('tedix_ro.urls')),
 
     url(r'', include('student.urls')),
     # TODO: Move lms specific student views out of common code
