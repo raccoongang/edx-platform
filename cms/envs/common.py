@@ -960,6 +960,10 @@ INSTALLED_APPS = (
 
     # Unusual migrations
     'database_fixups',
+
+    'course_category',
+
+    'django_mptt_admin',
 )
 
 

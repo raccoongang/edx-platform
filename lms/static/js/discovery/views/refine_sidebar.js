@@ -34,6 +34,8 @@
             },
 
             renderOptions: function(options) {
+                var optionsSelected = _.filter(options, function(o) { return o.get('selected'); });
+                options = optionsSelected.length ? optionsSelected : options;
                 return HtmlUtils.joinHtml.apply(this, _.map(options, function(option) {
                     var data = _.clone(option.attributes);
                     data.name = this.termName(data.facet, data.term);
