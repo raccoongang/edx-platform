@@ -36,17 +36,6 @@
         $(document).ready(function(){
             var label_span_school = '<span id="sity-optional-help" class="label-optional">Please select your city first.</span>';
             var label_span_instructor = '<span id="instructor-optional-help" class="label-optional">Please select your school first.</span>';
-            $.ajax({
-                url: '${cities_api_url | n, js_escaped_string}',
-                success: (cities) => {
-                    var cityField = $('#register-school_city');
-                        $.each(cities, (ind, city) => {
-                            cityField.append(
-                                '<option value="' + city.id + '" >' + city.name + "</option>"
-                            )
-                        })
-                }
-            });
             $('#register-school, #register-instructor').prop('disabled', 'disabled');
             $('[for="register-school"]').append(label_span_school);
             $('[for="register-instructor"]').append(label_span_instructor);
