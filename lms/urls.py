@@ -1086,3 +1086,13 @@ if settings.FEATURES.get('ENABLE_API_DOCS'):
     ]
 
 urlpatterns.extend(plugin_urls.get_patterns(plugin_constants.ProjectType.LMS))
+# Jupyter Graded XBlock Endpoints
+urlpatterns += (
+    url(r'^api/jupyter_graded/', include('xblock_jupyter_graded.rest.urls', namespace='xblock_jupyter_graded')),
+)
+
+# Jupyter Viewer XBlock Endpoint
+urlpatterns += (
+    url(r'^api/jupyter/', include('xblock_jupyter_viewer.rest.urls',
+                                  namespace='xblock_jupyter_viewer')),
+)
