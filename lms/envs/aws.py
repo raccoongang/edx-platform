@@ -1102,3 +1102,7 @@ plugin_settings.add_plugins(__name__, plugin_constants.ProjectType.LMS, plugin_c
 ########################## Derive Any Derived Settings  #######################
 
 derive_settings(__name__)
+
+##################### Edx OAuth Client #########################
+if FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
+    CUSTOM_OAUTH_PARAMS = ENV_TOKENS.get('CUSTOM_OAUTH_PARAMS', {})
