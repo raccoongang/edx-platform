@@ -691,22 +691,11 @@ def execute_compile_sass(args):
         args: command line argument passed via update_assets command
     """
     for sys in args.system:
-        options = ""
-        options += " --theme-dirs " + " ".join(args.theme_dirs) if args.theme_dirs else ""
-        options += " --themes " + " ".join(args.themes) if args.themes else ""
-        options += " --debug" if args.debug else ""
-
-        sh(
-            django_cmd(
-                sys,
-                args.settings,
-                "compile_sass {system} {options}".format(
-                    system='cms' if sys == 'studio' else sys,
-                    options=options,
-                ),
-            ),
-        )
-
+        options = {
+            'system': sys,
+            'theme-dirs': args.theme_dirs if args.theme_dirs else []
+        }
+        compile_sass(options)
 
 def execute_webpack(prod, settings=None):
     sh(
