@@ -2316,6 +2316,9 @@ INSTALLED_APPS = [
 
     # API Documentation
     'rest_framework_swagger',
+
+    # LETSTUDY related modules
+    'letstudy_api',
 ]
 
 ######################### CSRF #########################################
