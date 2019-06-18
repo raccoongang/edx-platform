@@ -12,6 +12,7 @@
 <%block name="pagetitle">${_("Sign in or Register")}</%block>
 
 <%block name="js_extra">
+    <script type="text/javascript" src="${static.url('js/vendor/select2/4.0.6-rc.0/select2.min.js')}"></script>
     <%static:require_module module_name="js/student_account/logistration_factory" class_name="LogistrationFactory">
         var options = ${data | n, dump_js_escaped_json};
         LogistrationFactory(options);
@@ -51,7 +52,6 @@
                         success: (sity) => {
                             var $schoolField = $('#register-school');
                                 $.each(sity.schools, (ind, school) => {
-                                    console.log(sity)
                                     $schoolField.append(
                                         '<option value="' + school.id + '" >' + school.name + "</option>"
                                     )
@@ -83,7 +83,6 @@
                         success: (school) => {
                             var $instructorField = $('#register-instructor');
                                 $.each(school.instructors, (ind, instructor) => {
-                                    console.log(instructor)
                                     $instructorField.append(
                                         '<option value="' + instructor.id + '" >' + instructor.username + "</option>"
                                     )
@@ -132,7 +131,6 @@
 </%block>
 
 <link href="${static.url('css/vendor/select2/4.0.6-rc.0/select2.min.css')}" rel="stylesheet" />
-<script type="text/javascript" src="${static.url('js/vendor/select2/4.0.6-rc.0/select2.min.js')}"></script>
 
 <div class="section-bkg-wrapper">
     <main id="main" aria-label="Content" tabindex="-1">
