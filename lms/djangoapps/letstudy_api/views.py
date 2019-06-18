@@ -39,12 +39,12 @@ class CreateUserAccountWithoutPasswordView(APIView):
         """
         Create user by email, username and uid.
         """
-        data = request.data
-        email = data.get('email')
-        username = data.get('username')
-        uid = data.get('uid')
-        first_name = data.get('first_name', '')
-        last_name = data.get('last_name', '')
+        payload = request.data
+        email = payload.get('email')
+        username = payload.get('username')
+        uid = payload.get('uid')
+        first_name = payload.get('first_name', '')
+        last_name = payload.get('last_name', '')
         full_name = "{} {}".format(first_name, last_name).strip() or username
 
         data = {}
@@ -90,11 +90,11 @@ class UserEnrollView(APIView, ApiKeyPermissionMixIn):
         """
         Enroll/unenroll user on the course using user_email, course mode and course_id.
         """
-        data = request.data
-        user_email = data.get('user_email')
-        mode = data.get('mode', 'audit')
-        course_id = data.get('course')
-        is_active = data.get('is_active', True)
+        payload = request.data
+        user_email = payload.get('user_email')
+        mode = payload.get('mode', 'audit')
+        course_id = payload.get('course')
+        is_active = payload.get('is_active', True)
         try:
             user = get_student_from_identifier(user_email)
             if not isinstance(is_active, bool):
