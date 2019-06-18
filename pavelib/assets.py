@@ -86,10 +86,6 @@ SASS_LOOKUP_DEPENDENCIES = {
 # Collectstatic log directory setting
 COLLECTSTATIC_LOG_DIR_ARG = "collect_log_dir"
 
-def get_static_collector_root():
-    return os.environ.get('STATIC_COLLECTOR_ROOT', '/edx/var/edxapp/static_collector')
-
-
 def get_sass_directories(system, theme_dir=None):
     """
     Determine the set of SASS directories to be compiled for the specified list of system and theme
@@ -715,11 +711,9 @@ def execute_compile_sass(args):
 def execute_webpack(prod, settings=None):
     sh(
         cmd(
-            "NODE_ENV={node_env} STATIC_ROOT_LMS={static_root_lms} STATIC_ROOT_CMS={static_root_cms} $(npm bin)/webpack"
+            "NODE_ENV={node_env} $(npm bin)/webpack"
             .format(
-                node_env="production" if prod else "development",
-                static_root_lms=Env.get_django_setting("STATIC_ROOT", "lms", settings=settings),
-                static_root_cms=Env.get_django_setting("STATIC_ROOT", "cms", settings=settings)
+                node_env="production" if prod else "development"
             )
         )
     )
@@ -874,13 +868,8 @@ def update_assets(args):
     os.environ.setdefault("SERVICE_VARIANT","{sys}".format(sys=current_sys))
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "{sys}.envs.static_collector".format(sys=current_sys))
 
-    application = get_wsgi_application()  # pylint: disable=invalid-name
-
-    if hasattr(django_settings, 'STATIC_COLLECTOR_ROOT'):
-        STATIC_COLLECTOR_ROOT = django_settings.STATIC_COLLECTOR_ROOT
-    else:
-        STATIC_COLLECTOR_ROOT = get_static_collector_root()
-
+    STATIC_COLLECTOR_ROOT = os.environ.get('STATIC_COLLECTOR_ROOT', '/edx/var/edxapp/static_collector')
+    STATIC_ROOT = os.environ.get('STATIC_ROOT', '/edx/var/edxapp/staticfiles')
     if not os.path.isdir(STATIC_COLLECTOR_ROOT):
         os.mkdir(STATIC_COLLECTOR_ROOT)
         print('\t\tDirectory "STATIC_COLLECTOR_ROOT" has been created to store static files.')
@@ -901,25 +890,22 @@ def update_assets(args):
 
         collect_assets(args.system, args.settings, **collect_log_args)
 
-        STATIC_ROOT_BASE = django_settings.STATIC_ROOT_BASE if django_settings and hasattr(django_settings, 'STATIC_ROOT_BASE') else Env.get_django_setting("STATIC_ROOT_BASE", "lms", settings=args.settings)
-        EDX_PLATFORM_STATIC_ROOT_BASE = django_settings.EDX_PLATFORM_STATIC_ROOT_BASE if django_settings and hasattr(django_settings, 'EDX_PLATFORM_STATIC_ROOT_BASE') else Env.get_django_setting("EDX_PLATFORM_STATIC_ROOT_BASE", "lms", settings=args.settings)
-
         os.system("rsync -av {static_collector_dir}/* {platform_static_dir}/ ".format(
-            static_collector_dir=STATIC_ROOT_BASE,
-            platform_static_dir=EDX_PLATFORM_STATIC_ROOT_BASE
+            static_collector_dir=STATIC_COLLECTOR_ROOT,
+            platform_static_dir=STATIC_ROOT
         ))
         for sys in args.system:
             if sys == 'lms':
                 os.system(
                     "rsync -av {static_collector_dir}/js/i18n/* {platform_static_dir}/cms/js/i18n/ --delete-after".format(
-                        static_collector_dir=STATIC_ROOT_BASE,
-                        platform_static_dir=EDX_PLATFORM_STATIC_ROOT_BASE,
+                        static_collector_dir=STATIC_COLLECTOR_ROOT,
+                        platform_static_dir=STATIC_ROOT,
                         current_sys=sys
                     ))
                 os.system(
                     "rsync -av {static_collector_dir}/{current_sys}/* {platform_static_dir}/{current_sys}/ --delete-after".format(
-                        static_collector_dir=STATIC_ROOT_BASE,
-                        platform_static_dir=EDX_PLATFORM_STATIC_ROOT_BASE,
+                        static_collector_dir=STATIC_COLLECTOR_ROOT,
+                        platform_static_dir=STATIC_ROOT,
                         current_sys=sys
                     ))
 
