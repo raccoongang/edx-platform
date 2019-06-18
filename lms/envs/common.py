@@ -371,6 +371,14 @@ FEATURES = {
     'BULK_EMAIL_FROM_DIFFERENT_ADDRESSES': False,
 }
 
+COURSE_DISCOVERY_FILTERS = ["org", "language", "modes", "category"]
+
+COURSE_DISCOVERY_FACETS = {
+    'category': {
+        'size': 100
+    }
+}
+
 # Ignore static asset files on import which match this pattern
 ASSET_IGNORE_REGEX = r"(^\._.*$)|(^\.DS_Store$)|(^.*~$)"
 
@@ -2155,6 +2163,10 @@ INSTALLED_APPS = (
 
     # Email marketing integration
     'email_marketing',
+
+    'course_category',
+
+    'django_mptt_admin',
 
     # additional release utilities to ease automation
     'release_util',
