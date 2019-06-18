@@ -46,7 +46,13 @@ from social.exceptions import AuthException, AuthAlreadyAssociated
 
 from edxmako.shortcuts import render_to_response, render_to_string
 
-from util.enterprise_helpers import data_sharing_consent_requirement_at_login
+from bulk_email.models import Optout, BulkEmailFlag  # pylint: disable=import-error
+from certificates.api import (  # pylint: disable=import-error
+    get_certificate_url,
+    has_html_certificates_enabled,
+)
+from certificates.models import CertificateStatuses, certificate_status_for_student
+from course_category.models import CourseCategory
 from course_modes.models import CourseMode
 from shoppingcart.api import order_history
 from student.models import (
@@ -59,14 +65,8 @@ from student.models import (
 from student.forms import AccountCreationForm, PasswordResetFormNoActive, get_registration_extension_form
 from student.tasks import send_activation_email
 from lms.djangoapps.commerce.utils import EcommerceService  # pylint: disable=import-error
-from lms.djangoapps.verify_student.models import SoftwareSecurePhotoVerification  # pylint: disable=import-error
-from bulk_email.models import Optout, BulkEmailFlag  # pylint: disable=import-error
-from certificates.models import CertificateStatuses, certificate_status_for_student
-from certificates.api import (  # pylint: disable=import-error
-    get_certificate_url,
-    has_html_certificates_enabled,
-)
 from lms.djangoapps.grades.new.course_grade import CourseGradeFactory
+from lms.djangoapps.verify_student.models import SoftwareSecurePhotoVerification  # pylint: disable=import-error
 
 from xmodule.modulestore.django import modulestore
 from opaque_keys import InvalidKeyError
@@ -92,9 +92,10 @@ import track.views
 
 import dogstats_wrapper as dog_stats_api
 
-from util.db import outer_atomic
-from util.json_request import JsonResponse
 from util.bad_request_rate_limiter import BadRequestRateLimiter
+from util.db import outer_atomic
+from util.enterprise_helpers import data_sharing_consent_requirement_at_login
+from util.json_request import JsonResponse
 from util.milestones_helpers import (
     get_pre_requisite_courses_not_completed,
 )
@@ -218,6 +219,7 @@ def index(request, extra_context=None, user=AnonymousUser()):
 
     context["programs_list"] = programs_list
 
+    context['categories'] = CourseCategory.objects.filter(parent=None)
     return render_to_response('index.html', context)
 
 
