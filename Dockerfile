@@ -35,6 +35,7 @@ RUN apt-get update && apt-get install -y \
         libxml2 \
         libxml2-dev \
         libxmlsec1 \
+        libxmlsec1-openssl \
         libxmlsec1-dev \
         libxslt1.1 \
         libxslt1-dev \
@@ -49,6 +50,7 @@ RUN apt-get update && apt-get install -y \
     pip install --no-cache-dir -r requirements/edx/base.txt && \
     pip install --no-cache-dir git+https://github.com/edx/nltk.git@2.0.6#egg=nltk==2.0.6 && \
     pip install --no-cache-dir -r requirements/edx/github.txt && \
+    pip install --no-cache-dir -r requirements/edx/post.txt && \
     rm -rf ~/.cache && \
     apt-get purge -y --auto-remove \
         build-essential \
