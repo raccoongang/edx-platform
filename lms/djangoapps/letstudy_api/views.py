@@ -22,7 +22,7 @@ from openedx.core.lib.exceptions import CourseNotFoundError
 from openedx.core.djangoapps.user_api.accounts.api import (
     check_account_exists,
     get_email_validation_error,
-    get_username_validation_error
+    get_username_validation_error,
 )
 from student.models import UserProfile
 from third_party_auth.models import OAuth2ProviderConfig
@@ -42,23 +42,23 @@ class CreateUserAccountWithoutPasswordView(APIView):
         data = request.data
         email = data.get('email')
         username = data.get('username')
-        uid = data.get('uid', None)
+        uid = data.get('uid')
         first_name = data.get('first_name', '')
         last_name = data.get('last_name', '')
         full_name = "{} {}".format(first_name, last_name).strip() or username
 
+        data = {}
         response_status = status.HTTP_400_BAD_REQUEST
         if uid is None or UserSocialAuth.objects.filter(uid=uid).exists():
-            data = {"error_message": "Parameter 'uid' is unavailable or not unique."}
-        elif get_email_validation_error(email):
-            data = {"error_message": get_email_validation_error(email)}
-        elif get_username_validation_error(username):
-            data = {"error_message": get_username_validation_error(username)}
-        elif check_account_exists(username=username, email=email):
+            data["uid error"] = "Parameter 'uid' is unavailable or not unique."
+        if get_email_validation_error(email):
+            data["email error"] = get_email_validation_error(email)
+        if get_username_validation_error(username):
+            data["username error"] = get_username_validation_error(username)
+        if check_account_exists(username=username, email=email):
             check_list = check_account_exists(username=username, email=email)
-            data = {"error_message": "{} already exists".format(" and ".join(check_list).capitalize())}
-            response_status = status.HTTP_409_CONFLICT
-        else:
+            data["account error"] = "{} already exists".format(" and ".join(check_list).capitalize())
+        if not data:
             try:
                 user = User.objects.create_user(
                     username=username, email=email, password=uuid4().hex, first_name=first_name, last_name=last_name
