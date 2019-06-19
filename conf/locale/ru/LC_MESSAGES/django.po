@@ -14939,7 +14939,7 @@ msgstr "Вы записаны на этот курс"
 #: lms/templates/dashboard/_dashboard_course_listing.html
 #: lms/templates/shoppingcart/registration_code_receipt.html
 msgid "View Course"
-msgstr "Посмотр курса"
+msgstr "Просмотр курса"
 
 #: lms/templates/courseware/course_about.html
 msgid "This course is in your <a href=\"{cart_link}\">cart</a>."
