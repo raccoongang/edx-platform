@@ -6,6 +6,7 @@ import urllib
 # pylint: disable=attribute-defined-outside-init
 from datetime import datetime
 from time import sleep
+import json
 
 import waffle
 from django.conf import settings
@@ -65,6 +66,7 @@ from .views import (
     check_and_get_upgrade_link,
     get_cosmetic_verified_display_price
 )
+from ..models import StudentModule
 
 log = logging.getLogger("edx.courseware.views.index")
 
@@ -550,11 +552,13 @@ def check_prerequisite(request, course_id):
 
     next_item = None
     prev_item = None
+    current_section = None
     chapters = course.get_children()
     for c, chapter in enumerate(chapters):
         sections = chapter.get_children()
         for s, section in enumerate(sections):
             if section.url_name == block_hash:
+                current_section = section
                 if s < (len(sections) - 1):
                     next_item = sections[s+1]
                 elif c < (len(chapters) - 1):
@@ -631,6 +635,12 @@ def check_prerequisite(request, course_id):
 
         msg = _("Sorry, you've failed the quiz. In order to go Next, you should complete it first")
         if with_randomization and prev_item:
+            sm = StudentModule.objects.filter(student=request.user, module_state_key=current_section.location, course_id=course_key).first()
+            if sm:
+                state = json.loads(sm.state)
+                state.update({'position': 1})
+                sm.state = json.dumps(state)
+                sm.save()
             reset_library_content(prev_section, request.user, for_all=True)
         reset_library_content(descriptor, request.user)
 
