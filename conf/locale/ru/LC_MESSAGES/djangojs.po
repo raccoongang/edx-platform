@@ -4735,7 +4735,7 @@ msgid " username or the URL to your "
 msgstr " или URL-адрес своей страницы "
 
 #: lms/static/js/student_account/views/account_settings_factory.js
-msgid "page. Delete the URL to remove the link."
+msgid " page. Delete the URL to remove the link."
 msgstr "."
 
 #: lms/static/js/student_account/views/account_settings_factory.js
