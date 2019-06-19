@@ -206,9 +206,9 @@
                             title: gettext(platformData[1] + ' Link'),
                             valueAttribute: 'social_links',
                             helpMessage: gettext(
-                                'Enter your ') + platformData[1] + gettext(' username or the URL to your ') +
-                                platformData[1] + gettext(' page. Delete the URL to remove the link.')
-                            ,
+                                'Enter your ' + platformData[1] + ' username or the URL to your ' +
+                                platformData[1] + ' page. Delete the URL to remove the link.'
+                            ),
                             platform: platformData[0],
                             persistChanges: true
                         })
