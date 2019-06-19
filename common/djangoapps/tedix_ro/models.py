@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import models
 from django.dispatch import receiver
@@ -56,7 +57,10 @@ class UserProfile(models.Model):
         abstract = True
 
     def __unicode__(self):
-        return u'{}'.format(self.user.profile.name or self.user.username)
+        try:
+            return u'{}'.format(self.user.profile.name or self.user.username)
+        except ObjectDoesNotExist:
+            return u'{}'.format(self.user.username)
 
 
 class InstructorProfile(UserProfile):
