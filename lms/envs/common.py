@@ -2221,6 +2221,7 @@ MKTG_URL_LINK_MAP = {
     'ROOT': 'root',
     'TOS': 'tos',
     'HONOR': 'honor',  # If your site does not have an honor code, simply delete this line.
+    'TOS_AND_HONOR': 'tos-and-honor',
     'PRIVACY': 'privacy',
     'PRESS': 'press',
     'BLOG': 'blog',
