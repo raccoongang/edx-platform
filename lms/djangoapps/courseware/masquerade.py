@@ -167,7 +167,7 @@ def is_masquerading_as_specific_student(user, course_key):  # pylint: disable=in
     Returns whether the user is a staff member masquerading as a specific student.
     """
     course_masquerade = get_course_masquerade(user, course_key)
-    return bool(course_masquerade and course_masquerade.user_name)
+    return bool(course_masquerade and course_masquerade.user_name and get_masquerade_role(user, course_key) != 'staff')
 
 
 def get_masquerading_group_info(user, course_key):
