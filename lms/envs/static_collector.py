@@ -13,3 +13,5 @@ XQUEUE_INTERFACE = {
     'url': None,
     'django_auth': None
 }
+
+LOCALE_PATHS = os.environ.get('LOCALE_PATHS').split(';')
