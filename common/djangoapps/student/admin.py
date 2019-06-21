@@ -250,9 +250,10 @@ class CourseEnrollmentAdmin(admin.ModelAdmin):
 
 
 class UserProfileForm(forms.ModelForm):
-    year_of_birth = forms.ChoiceField(
-        choices=[(year, year) for year in UserProfile.VALID_YEARS],
-        required=False
+    year_of_birth = forms.TypedChoiceField(
+        choices=[(None, '-'*6)] + [(year, year) for year in UserProfile.VALID_YEARS],
+        required=False,
+        empty_value=None
     )
 
     class Meta:
