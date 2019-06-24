@@ -1,9 +1,11 @@
 <%inherit file="main.html" />
+<%namespace name='static' file='../static_content.html'/>
 <%! from django.core.urlresolvers import reverse %>
 <%! from django.utils.translation import ugettext as _ %>
 <%! from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers %>
 
 <%block name="message">
+<img style="width: 100%; display: block; margin-bottom: 15px;" src="${settings.LMS_ROOT_URL}/static/${settings.DEFAULT_SITE_THEME}/images/email-template-banner.jpg" alt="${_("{platform_name} Home Page").format(platform_name=static.get_platform_name())}"/>
 <p>
 ${_("This is to confirm that you changed the e-mail associated with "
   "{platform_name} from {old_email} to {new_email}. If you "

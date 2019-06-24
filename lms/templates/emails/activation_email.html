@@ -1,8 +1,10 @@
 <%inherit file="main.html" />
+<%namespace name='static' file='../static_content.html'/>
 <%! from django.utils.translation import ugettext as _ %>
 <%! from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers %>
 
 <%block name="message">
+<img style="width: 100%; display: block; margin-bottom: 15px;" src="${settings.LMS_ROOT_URL}/static/${settings.DEFAULT_SITE_THEME}/images/email-template-banner.jpg" alt="${_("{platform_name} Home Page").format(platform_name=static.get_platform_name())}"/>
 <p>
 ${_("Thank you for creating an account with {platform_name}!").format(
     platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
