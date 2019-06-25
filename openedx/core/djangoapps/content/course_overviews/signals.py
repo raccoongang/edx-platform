@@ -3,8 +3,10 @@ Signal handler for invalidating cached course overviews
 """
 from django.dispatch.dispatcher import receiver
 
-from .models import CourseOverview
+from course_category.tasks import task_add_categories
 from xmodule.modulestore.django import SignalHandler
+
+from .models import CourseOverview
 
 
 @receiver(SignalHandler.course_published)
@@ -13,8 +15,14 @@ def _listen_for_course_publish(sender, course_key, **kwargs):  # pylint: disable
     Catches the signal that a course has been published in Studio and
     updates the corresponding CourseOverview cache entry.
     """
-    CourseOverview.objects.filter(id=course_key).delete()
+    course_overview = CourseOverview.objects.filter(id=course_key).first()
+    category_names = []
+    if course_overview:
+        category_names = list(course_overview.coursecategory_set.all().values_list('name', flat=True))
+        course_overview.delete()
     CourseOverview.load_from_module_store(course_key)
+    if category_names:
+        task_add_categories.delay(category_names, str(course_key))
 
 
 @receiver(SignalHandler.course_deleted)
