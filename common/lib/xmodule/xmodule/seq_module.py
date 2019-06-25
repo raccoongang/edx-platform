@@ -9,11 +9,13 @@ from django.utils.timezone import UTC
 import json
 import logging
 from pkg_resources import resource_string
+from celery import current_app
 
 from lxml import etree
 from xblock.core import XBlock
 from xblock.fields import Integer, Scope, Boolean, String
 from xblock.fragment import Fragment
+from django.contrib.auth.models import User
 
 from .exceptions import NotFoundError
 from .fields import Date
@@ -302,7 +304,18 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
         self._update_position(context, len(display_items))
 
         fragment = Fragment()
+
+        key = '{}_{}_progress'.format(str(self.location.course_key), self.runtime.user_id)
+        progress = current_app.backend.get(key)
+        if progress is None:
+            try:
+                from lms.djangoapps.grades.tasks import set_progress
+                progress = set_progress(self.location.course_key, User.objects.get(id=self.runtime.user_id))
+            except Exception:
+                log.info('Course progress work in lms only')
+
         params = {
+            'progress': progress,
             'items': self._render_student_view_for_items(context, display_items, fragment),
             'element_id': self.location.html_id(),
             'item_id': self.location.to_deprecated_string(),
