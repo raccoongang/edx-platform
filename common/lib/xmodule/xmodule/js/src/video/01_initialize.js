@@ -681,12 +681,11 @@ function(VideoPlayer, i18n, moment, _) {
             '1.25': '1.50', // HTML5 or Youtube Flash -> Youtube HTML5
             '2.0': '1.50'   // Youtube HTML5 -> HTML5 or Youtube Flash
         };
-
-        if (_.contains(this.speeds, newSpeed)) {
-            this.speed = newSpeed;
+        if (_.contains(this.speeds, newSpeed.toString())) {
+            this.speed = parseFloat(newSpeed);
         } else {
             newSpeed = map[newSpeed];
-            this.speed = _.contains(this.speeds, newSpeed) ? newSpeed : '1.0';
+            this.speed = _.contains(this.speeds, newSpeed) ? parseFloat(newSpeed) : 1.0;
         }
     }
 
