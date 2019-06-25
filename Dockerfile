@@ -95,4 +95,6 @@ RUN sed -i 's#\(\W\)_(#\1(#g' /usr/local/lib/python2.7/dist-packages/rest_framew
 ENV STATIC_COLLECTOR_ROOT=/static_collector \
     STATIC_ROOT_LMS=/static_collector \
     STATIC_ROOT_CMS=/static_collector/studio \
-    STATIC_ROOT=/staticfiles
+    STATIC_ROOT=/staticfiles \
+    WEBPACK_CONFIG_PATH=webpack.prod.config.js \
+    LOCALE_PATHS=/edx/app/edxapp/edx-platform/conf/locale
