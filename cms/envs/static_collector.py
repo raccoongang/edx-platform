@@ -9,3 +9,5 @@ DATABASES = {
 }
 
 LOCALE_PATHS = os.environ.get('LOCALE_PATHS').split(';')
+
+INSTALLED_APPS.remove('edxmako.apps.EdxMakoConfig')
