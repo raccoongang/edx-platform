@@ -43,31 +43,28 @@ RUN apt-get update && apt-get install -y \
         python-pip \
         swig \
     && \
-    pip install --global-option=build_ext --compile --no-cache-dir numpy==1.6.2 Cython==0.21.2 && \
+    pip install --global-option=build_ext --compile --no-cache-dir numpy==1.6.2 && \
     pip install --global-option=build_ext --compile --no-cache-dir scipy==0.14.0 && \
-    pip install --no-cache-dir -r requirements/edx/pre.txt && \
     pip install --global-option=build_ext --compile --no-cache-dir -r requirements/edx/paver.txt && \
-    pip install --no-cache-dir -r requirements/edx/base.txt && \
-    pip install --no-cache-dir git+https://github.com/edx/nltk.git@2.0.6#egg=nltk==2.0.6 && \
-    pip install --no-cache-dir -r requirements/edx/github.txt && \
-    pip install --no-cache-dir -r requirements/edx/post.txt && \
-    rm -rf ~/.cache && \
-    apt-get purge -y --auto-remove \
-        build-essential \
-        gfortran \
-        graphviz-dev \
-        libffi-dev \
-        libfreetype6-dev \
-        libgeos-dev \
-        libjpeg8-dev \
-        liblapack-dev \
-        libmysqlclient-dev \
-        libpng12-dev \
-        libssl-dev \
-        libxml2-dev \
-        libxmlsec1-dev \
-        libxslt1-dev \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    echo "Done"
+RUN pip install --no-cache-dir -r requirements/edx/base.txt
+#    rm -rf ~/.cache && \
+#    apt-get purge -y --auto-remove \
+#        build-essential \
+#        gfortran \
+#        graphviz-dev \
+#        libffi-dev \
+#        libfreetype6-dev \
+#        libgeos-dev \
+#        libjpeg8-dev \
+#        liblapack-dev \
+#        libmysqlclient-dev \
+#        libpng12-dev \
+#        libssl-dev \
+#        libxml2-dev \
+#        libxmlsec1-dev \
+#        libxslt1-dev \
+#    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
 # Prebuild all node dependciesi to store them in layer cache
