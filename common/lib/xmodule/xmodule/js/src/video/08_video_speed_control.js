@@ -254,6 +254,8 @@
         },
 
         setActiveSpeed: function(speed) {
+            var floatSpeed = parseFloat(speed);
+            speed = Number.isInteger(floatSpeed) ? floatSpeed.toFixed(1) : floatSpeed.toFixed(2);
             var speedOption = this.speedsContainer.find('li[data-speed="' + speed + '"]');
 
             speedOption.addClass('is-active')
