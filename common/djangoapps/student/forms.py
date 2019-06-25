@@ -69,6 +69,7 @@ class PasswordResetFormNoActive(PasswordResetForm):
                 settings.SITE_NAME
             )
             context = {
+                'settings': settings,
                 'email': user.email,
                 'site_name': site_name,
                 'uid': int_to_base36(user.id),
