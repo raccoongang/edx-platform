@@ -742,21 +742,11 @@ def execute_compile_sass(args, system=None):
         args: command line argument passed via update_assets command
     """
     for sys in (system or args.system):
-        options = ""
-        options += " --theme-dirs " + " ".join(args.theme_dirs) if args.theme_dirs else ""
-        options += " --themes " + " ".join(args.themes) if args.themes else ""
-        options += " --debug" if args.debug else ""
-
-        sh(
-            django_cmd(
-                sys,
-                args.settings,
-                "compile_sass {system} {options}".format(
-                    system='cms' if sys == 'studio' else sys,
-                    options=options,
-                ),
-            ),
-        )
+        options = {
+            'system': sys,
+            'theme-dirs': args.theme_dirs if args.theme_dirs else []
+        }
+        compile_sass(options)
 
 
 @task
@@ -941,14 +931,12 @@ def update_assets(args):
     for sys in args.system:
         _update_assets(sys, args, is_devstack=is_devstack)
 
-    if not is_devstack:
-        STATIC_ROOT_BASE = django_settings.STATIC_ROOT_BASE if django_settings and hasattr(django_settings, 'STATIC_ROOT_BASE') else Env.get_django_setting("STATIC_ROOT_BASE", "lms", settings=args.settings)
-        EDX_PLATFORM_STATIC_ROOT_BASE = django_settings.EDX_PLATFORM_STATIC_ROOT_BASE if django_settings and hasattr(django_settings, 'EDX_PLATFORM_STATIC_ROOT_BASE') else Env.get_django_setting("EDX_PLATFORM_STATIC_ROOT_BASE", "lms", settings=args.settings)
-
-        os.system("rsync -av {static_collector_dir}/* {platform_static_dir}/ ".format(
-            static_collector_dir=STATIC_ROOT_BASE,
-            platform_static_dir=EDX_PLATFORM_STATIC_ROOT_BASE
-        ))
+    STATIC_COLLECTOR_ROOT = os.environ.get('STATIC_COLLECTOR_ROOT', '/edx/var/edxapp/static_collector')
+    STATIC_ROOT = os.environ.get('STATIC_ROOT', '/edx/var/edxapp/staticfiles')
+    os.system("rsync -av {static_collector_dir}/* {platform_static_dir}/ ".format(
+        static_collector_dir=STATIC_COLLECTOR_ROOT,
+        platform_static_dir=STATIC_ROOT
+    ))
 
     if args.watch:
         call_task(
