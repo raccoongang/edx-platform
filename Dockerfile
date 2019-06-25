@@ -74,7 +74,8 @@ RUN apt-get update && apt-get install -y nodejs npm
 COPY package.json package.json
 RUN nodeenv --node=6.11.1 --prebuilt --force .node && \
     . .node/bin/activate && \
-    npm install
+    npm install && \
+    npm install -g rtlcss
 
 
 # Copy actual code to image and install dependencies that come along with it
