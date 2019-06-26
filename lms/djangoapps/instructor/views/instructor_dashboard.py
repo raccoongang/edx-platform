@@ -20,6 +20,7 @@ from django.views.decorators.http import require_POST
 from mock import patch
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
+from opaque_keys.edx.locator import BlockUsageLocator
 from xblock.field_data import DictFieldData
 from xblock.fields import ScopeIds
 
@@ -37,6 +38,7 @@ from class_dashboard.dashboard_data import get_array_section_has_problem, get_se
 from course_modes.models import CourseMode, CourseModesArchive
 from courseware.access import has_access
 from courseware.courses import get_course_by_id, get_studio_url
+from courseware.url_helpers import get_redirect_url
 from django_comment_client.utils import available_division_schemes, has_forum_access
 from django_comment_common.models import FORUM_ROLE_ADMINISTRATOR, CourseDiscussionSettings
 from edxmako.shortcuts import render_to_response
@@ -740,23 +742,40 @@ def _section_open_response_assessment(request, course, openassessment_blocks, ac
 
     ora_items = []
     parents = {}
+    units_with_ora = {}
+
+    sections = course.get_children()
+    subsections = []
+
+    for section in sections:
+        subsections.extend([
+            {subsection.display_name: [element.block_id for element in subsection.children]}
+            for subsection in section.get_children()
+        ])
 
     for block in openassessment_blocks:
         block_parent_id = unicode(block.parent)
         result_item_id = unicode(block.location)
         if block_parent_id not in parents:
             parents[block_parent_id] = modulestore().get_item(block.parent)
-
-        ora_items.append({
+            usage_key = BlockUsageLocator.from_string(result_item_id)
+            units_with_ora[block.parent.block_id] = {
             'id': result_item_id,
             'name': block.display_name,
             'parent_id': block_parent_id,
+            'link': get_redirect_url(usage_key.course_key, usage_key),
             'parent_name': parents[block_parent_id].display_name,
             'staff_assessment': 'staff-assessment' in block.assessment_steps,
             'url_base': reverse('xblock_view', args=[course.id, block.location, 'student_view']),
-            'url_grade_available_responses': reverse('xblock_view', args=[course.id, block.location,
-                                                                          'grade_available_responses_view']),
-        })
+            'url_grade_available_responses': reverse('xblock_view', args=[course.id, block.location, 'grade_available_responses_view']),
+        }
+
+    for section in subsections:
+        subsection_name, units_list = section.items().pop()
+        ora_blocks = [units_with_ora[unit_id] for unit_id in units_list if unit_id in units_with_ora]
+        if ora_blocks:
+            ora_items.append({'name': subsection_name, 'type': 'subsection'})
+            ora_items.extend(ora_blocks)
 
     openassessment_block = openassessment_blocks[0]
     block, __ = get_module_by_usage_id(
