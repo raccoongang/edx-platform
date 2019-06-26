@@ -372,6 +372,13 @@ FEATURES = {
 }
 
 COURSE_DISCOVERY_FILTERS = ["category"]
+
+COURSE_DISCOVERY_MEANINGS = {
+    'category': {
+        'name': 'Categories',
+    }
+}
+
 # Ignore static asset files on import which match this pattern
 ASSET_IGNORE_REGEX = r"(^\._.*$)|(^\.DS_Store$)|(^.*~$)"
 
