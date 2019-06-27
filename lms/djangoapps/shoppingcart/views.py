@@ -29,7 +29,7 @@ from opaque_keys.edx.locator import CourseLocator
 
 from course_modes.models import CourseMode
 from courseware.courses import get_course_by_id
-from edxmako.shortcuts import render_to_response
+from edxmako.shortcuts import render_to_response, marketing_link
 from openedx.core.djangoapps.embargo import api as embargo_api
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from shoppingcart.reports import (
@@ -107,6 +107,14 @@ def add_course_to_cart(request, course_id):
     Adds course specified by course_id to the cart.  The model function add_to_order does all the
     heavy lifting (logging, error checking, etc)
     """
+
+    enable_mktg_site = configuration_helpers.get_value(
+        'ENABLE_MKTG_SITE',
+        settings.FEATURES.get('ENABLEMKTG_SITE', False)
+    )
+
+    if enable_mktg_site:
+        return redirect(marketing_link('COURSES'), permanent=True)
 
     assert isinstance(course_id, basestring)
     if not request.user.is_authenticated():
@@ -253,6 +261,15 @@ def show_cart(request):
     """
     This view shows cart items.
     """
+
+    enable_mktg_site = configuration_helpers.get_value(
+        'ENABLE_MKTG_SITE',
+        settings.FEATURES.get('ENABLE_MKTG_SITE', False)
+    )
+
+    if enable_mktg_site:
+        return redirect(marketing_link('COURSES'), permanent=True)
+
     cart = Order.get_cart_for_user(request.user)
     is_any_course_expired, expired_cart_items, expired_cart_item_names, valid_cart_item_tuples = \
         verify_for_closed_enrollment(request.user, cart)

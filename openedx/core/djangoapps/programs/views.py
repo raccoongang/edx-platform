@@ -2,10 +2,12 @@ from django.http import Http404
 from django.views.decorators.http import require_GET
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
 
-from edxmako.shortcuts import render_to_response
+from edxmako.shortcuts import render_to_response, marketing_link
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.programs.models import ProgramsApiConfig
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.programs.utils import (
     ProgramProgressMeter,
     get_program_marketing_url
@@ -36,6 +38,15 @@ def get_program_courses(program):
 @require_GET
 def program_listing(request, user=None):
     """View a list of programs in which the user is engaged."""
+
+    enable_mktg_site = configuration_helpers.get_value(
+        'ENABLE_MKTG_SITE',
+        settings.FEATURES.get('ENABLE_MKTG_SITE', False)
+    )
+
+    if enable_mktg_site:
+        return redirect(marketing_link('PROGRAMS'), permanent=True)
+
     programs_config = ProgramsApiConfig.current()
     if not programs_config.enabled:
         raise Http404
