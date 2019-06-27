@@ -21,7 +21,7 @@ class CourseCategoryForm(forms.ModelForm):
 
     def clean_parent(self):
         parent = self.cleaned_data['parent']
-        if parent in self.instance.get_descendants(include_self=True):
+        if self.instance.id and parent in self.instance.get_descendants(include_self=True):
             self.add_error('parent', "A parent may not be made a child of itself")
         return parent
 
