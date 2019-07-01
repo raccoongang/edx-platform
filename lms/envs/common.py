@@ -372,6 +372,13 @@ FEATURES = {
 }
 
 COURSE_DISCOVERY_FILTERS = ["org", "language", "modes", "category"]
+
+COURSE_DISCOVERY_FACETS = {
+    'category': {
+        'size': 100
+    }
+}
+
 # Ignore static asset files on import which match this pattern
 ASSET_IGNORE_REGEX = r"(^\._.*$)|(^\.DS_Store$)|(^.*~$)"
 
