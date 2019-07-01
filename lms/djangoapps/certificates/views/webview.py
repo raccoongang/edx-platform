@@ -560,6 +560,11 @@ def render_html_view(request, user_id, course_id):
 
     context['certificate_data'] = active_configuration
     course_grade = CourseGradeFactory().create(student, course)
+    context['grades'] = tuple(
+        (g['category'], Decimal(g['percent'] * 100).to_integral_value())
+        for g in course_grade.grade_value['section_breakdown']
+        if g.get('prominent')
+    )
     context['percent'] = Decimal(course_grade.percent * 100).to_integral_value()
 
     # Append/Override the existing view context values with any mode-specific ConfigurationModel values
