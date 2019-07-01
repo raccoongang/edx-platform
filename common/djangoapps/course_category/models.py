@@ -57,7 +57,7 @@ def delete_reindex_course_category(sender, instance, **kwargs):
     category_courses = instance.courses.all()
     if category_courses:
         instance.courses_list = map(lambda x: str(x.id), category_courses)
-    elif instance.courses_list:
+    elif hasattr(instance, 'courses_list'):
         task_reindex_courses.delay(course_keys=instance.courses_list)
 
 
