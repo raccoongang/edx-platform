@@ -375,7 +375,13 @@ COURSE_DISCOVERY_FILTERS = ["category"]
 
 COURSE_DISCOVERY_MEANINGS = {
     'category': {
-        'name': 'Categories',
+        'name': 'Categories'
+    }
+}
+
+COURSE_DISCOVERY_FACETS = {
+    'category': {
+        'size': 100
     }
 }
 
