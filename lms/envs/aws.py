@@ -28,6 +28,7 @@ import os
 
 from path import Path as path
 from xmodule.modulestore.modulestore_settings import convert_module_store_setting_if_needed
+from django.utils.encoding import force_str
 
 # SERVICE_VARIANT specifies name of the variant used, which decides what JSON
 # configuration files are read during startup.
@@ -561,7 +562,7 @@ DOC_STORE_CONFIG = AUTH_TOKENS.get('DOC_STORE_CONFIG', DOC_STORE_CONFIG)
 MONGODB_LOG = AUTH_TOKENS.get('MONGODB_LOG', {})
 
 EMAIL_HOST_USER = AUTH_TOKENS.get('EMAIL_HOST_USER', '')  # django default is ''
-EMAIL_HOST_PASSWORD = AUTH_TOKENS.get('EMAIL_HOST_PASSWORD', '')  # django default is ''
+EMAIL_HOST_PASSWORD = force_str(AUTH_TOKENS.get('EMAIL_HOST_PASSWORD', ''))  # django default is ''
 
 # Datadog for events!
 DATADOG = AUTH_TOKENS.get("DATADOG", {})
@@ -770,7 +771,7 @@ if FEATURES.get('ENABLE_COURSEWARE_SEARCH') or \
    FEATURES.get('ENABLE_COURSE_DISCOVERY') or \
    FEATURES.get('ENABLE_TEAMS'):
     # Use ElasticSearch as the search engine herein
-    SEARCH_ENGINE = "search.elastic.ElasticSearchEngine"
+    SEARCH_ENGINE = "course_category.search_engine.CourseCategorySearchEngine"
 
 ELASTIC_SEARCH_CONFIG = ENV_TOKENS.get('ELASTIC_SEARCH_CONFIG', [{}])
 

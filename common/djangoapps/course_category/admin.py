@@ -19,6 +19,12 @@ class CourseMultipleModelChoiceField(forms.ModelMultipleChoiceField):
 class CourseCategoryForm(forms.ModelForm):
     courses = CourseMultipleModelChoiceField(queryset=CourseOverview.objects.all(), required=False)
 
+    def clean_parent(self):
+        parent = self.cleaned_data['parent']
+        if self.instance.id and parent in self.instance.get_descendants(include_self=True):
+            self.add_error('parent', "A parent may not be made a child of itself")
+        return parent
+
 
 class CourseCategoryAdmin(DjangoMpttAdmin):
     form = CourseCategoryForm
