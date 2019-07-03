@@ -182,11 +182,25 @@ COURSE_DISCOVERY_MEANINGS = {
         },
     },
     'language': LANGUAGE_MAP,
+    'course_category': {
+        'name': 'Category',
+        'terms': {
+            'data_science': 'Data Science',
+            'artificial_intelligence': 'Artificial Intelligence',
+            'internet_of_things': 'Internet of Things (IoT)',
+            'cybersecurity': 'Cybersecurity',
+            'big_data': 'Big Data',
+            'data_analysis': 'Data Analysis',
+            'entry_level_software_development': 'Entry Level Software Development',
+            'it_support': 'IT Support',
+            'devops': 'DevOps',
+        }
+    }
 }
 
 FEATURES['ENABLE_COURSE_DISCOVERY'] = True
 # Setting for overriding default filtering facets for Course discovery
-# COURSE_DISCOVERY_FILTERS = ["org", "language", "modes"]
+COURSE_DISCOVERY_FILTERS = ["org", "language", "modes", "course_category"]
 FEATURES['COURSES_ARE_BROWSEABLE'] = True
 HOMEPAGE_COURSE_MAX = 9
 

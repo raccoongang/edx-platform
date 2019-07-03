@@ -24,6 +24,10 @@ define(['js/views/validation',
                 this.listenTo(this.model, 'invalid', this.handleValidationError);
                 this.render();
             },
+            showChangedFieldNotification: function() {
+                var message = gettext('Your changes will not take effect until you save your progress. Take care with key and value formatting, as validation is not implemented.');
+                this.showNotificationBar(message, _.bind(this.saveView, this), _.bind(this.revertView, this));
+            },
             render: function() {
         // catch potential outside call before template loaded
                 if (!this.template) return this;
@@ -46,6 +50,29 @@ define(['js/views/validation',
 
                 var policyValues = listEle$.find('.json');
                 _.each(policyValues, this.attachJSONEditor, this);
+
+                _.each(listEle$.find('input[type="checkbox"]'), function (checkbox) {
+                    $(checkbox).on('change', function (event) {
+                        self.showChangedFieldNotification();
+                        var $currentTarget = $(event.currentTarget);
+                        var key = $currentTarget.closest('.field-group').children('.key').attr('id');
+                        var modelVal = self.model.get(key);
+
+                        modelVal.value = $currentTarget.closest('.checkbox-group').find('input').fieldValue();
+                        self.model.set(key, modelVal);
+                    })
+                });
+
+                _.each(listEle$.find('select'), function (select) {
+                    $(select).on('change', function (event) {
+                        self.showChangedFieldNotification();
+                        var $currentTarget = $(event.currentTarget);
+                        var key = $currentTarget.closest('.field-group').children('.key').attr('id');
+                        var modelVal = self.model.get(key);
+                        modelVal.value = $currentTarget.val();
+                        self.model.set(key, modelVal);
+                    })
+                });
                 return this;
             },
             attachJSONEditor: function(textarea) {
@@ -65,10 +92,7 @@ define(['js/views/validation',
                     instance.save();
                 // this event's being called even when there's no change :-(
                     if (instance.getValue() !== oldValue) {
-                        var message = gettext('Your changes will not take effect until you save your progress. Take care with key and value formatting, as validation is not implemented.');
-                        self.showNotificationBar(message,
-                                             _.bind(self.saveView, self),
-                                             _.bind(self.revertView, self));
+                        self.showChangedFieldNotification();
                     }
                 });
                 cm.on('focus', function(mirror) {
@@ -164,6 +188,7 @@ define(['js/views/validation',
                 var newKeyId = _.uniqueId('policy_key_'),
                     newEle = this.template({key: key, display_name: model.display_name, help: model.help,
             value: JSON.stringify(model.value, null, 4), deprecated: model.deprecated,
+            values: model.values, editor_type: model.editor_type, valueOrigin: model.value,
             keyUniqueId: newKeyId, valueUniqueId: _.uniqueId('policy_value_')});
 
                 this.fieldToSelectorMap[key] = newKeyId;

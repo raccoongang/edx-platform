@@ -919,3 +919,33 @@ ORA2_FILEUPLOAD_ROOT = ENV_TOKENS.get('ORA2_FILEUPLOAD_ROOT', ORA2_FILEUPLOAD_RO
 SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING = FEATURES.get("SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING", True)
 #### RaccoonGang ####
 
+
+########################## Course Discovery #######################
+LANGUAGE_MAP = {'terms': {lang: display for lang, display in ALL_LANGUAGES}, 'name': 'Language'}
+COURSE_DISCOVERY_MEANINGS = {
+    'modes': {
+        'name': 'Course Type',
+        'terms': {
+            'honor': 'Honor',
+            'verified': 'Verified',
+        },
+    },
+    'language': LANGUAGE_MAP,
+    'course_category': {
+        'name': 'Category',
+        'terms': {
+            'data_science': 'Data Science',
+            'artificial_intelligence': 'Artificial Intelligence',
+            'internet_of_things': 'Internet of Things (IoT)',
+            'cybersecurity': 'Cybersecurity',
+            'big_data': 'Big Data',
+            'data_analysis': 'Data Analysis',
+            'entry_level_software_development': 'Entry Level Software Development',
+            'it_support': 'IT Support',
+            'devops': 'DevOps',
+        }
+    }
+}
+
+# Setting for overriding default filtering facets for Course discovery
+COURSE_DISCOVERY_FILTERS = ["language", "modes", "course_category"]
