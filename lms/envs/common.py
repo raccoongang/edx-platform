@@ -2325,6 +2325,9 @@ INSTALLED_APPS = [
 
     # LETSTUDY related modules
     'letstudy_api',
+
+    # Edx OAuth Client
+    'edx_oauth_client',
 ]
 
 ######################### CSRF #########################################

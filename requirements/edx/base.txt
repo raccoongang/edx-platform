@@ -41,7 +41,6 @@ git+https://github.com/open-craft/xblock-poll@add89e14558c30f3c8dc7431e5cd6536ff
 git+https://github.com/edx/xblock-utils.git@v1.1.1#egg=xblock-utils==1.1.1
 git+https://github.com/ibleducation/jupyter-edx-grader-xblock.git@d39f6ce3f108548e3277ba94da90aaa6530df7e8#egg=jupyter-edx-grader-xblock==0.5.1
 git+https://github.com/ibleducation/jupyter-viewer-xblock.git@f909dbeba52a33b40d78872aaa8992d46bc24375#egg=jupyter-viewer-xblock==1.0.1
-git+https://github.com/raccoongang/edx-oauth-client.git@hawthorn-master#egg=edx_oauth_client
 -e common/lib/xmodule
 amqp==1.4.9               # via kombu
 analytics-python==1.1.0
@@ -242,3 +241,6 @@ wrapt==1.10.5
 xblock-review==1.1.5
 xblock==1.2.1
 zendesk==1.1.1
+
+#SSO Client for Wordpress.
+-e git+https://github.com/raccoongang/edx-oauth-client.git@letstudy-v.0.1.0#egg=edx_oauth_client==letstudy-v.0.1.0
