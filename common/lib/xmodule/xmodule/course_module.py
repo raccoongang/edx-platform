@@ -166,6 +166,14 @@ class TextbookList(List):
         return json_data
 
 
+class CategoryList(List):
+    def from_json(self, value):
+        if value is None or isinstance(value, list):
+            return value
+        else:
+            return [value]
+
+
 class CourseFields(object):
     lti_passports = List(
         display_name=_("LTI Passports"),
@@ -851,6 +859,24 @@ class CourseFields(object):
             "more of the base requirements, such as testing, accessibility, internationalization, and documentation."
         ),
         scope=Scope.settings, default=False
+    )
+
+    course_category = CategoryList(
+        display_name=_("Category"),
+        help="",
+        default=[],
+        scope=Scope.settings,
+        values=(
+            {"display_name": _("Data Science"), "value": "data_science"},
+            {"display_name": _("Artificial Intelligence"), "value": "artificial_intelligence"},
+            {"display_name": _("Internet of Things (IoT)"), "value": "internet_of_things"},
+            {"display_name": _("Cybersecurity"), "value": "cybersecurity"},
+            {"display_name": _("Big Data"), "value": "big_data"},
+            {"display_name": _("Data Analysis"), "value": "data_analysis"},
+            {"display_name": _("Entry Level Software Development"), "value": "entry_level_software_development"},
+            {"display_name": _("IT Support"), "value": "it_support"},
+            {"display_name": _("DevOps"), "value": "devops"},
+        )
     )
 
 

@@ -129,8 +129,16 @@ class CourseMetadata(object):
                 'value': field.read_json(descriptor),
                 'display_name': _(field.display_name),    # pylint: disable=translation-of-non-string
                 'help': _(field.help),                    # pylint: disable=translation-of-non-string
-                'deprecated': field.runtime_options.get('deprecated', False)
+                'deprecated': field.runtime_options.get('deprecated', False),
+                'values': field.values or [],
+                'editor_type': ''
             }
+
+            if field.name == 'course_category':
+                result[field.name].update({
+                    'editor_type': 'checkbox'
+                })
+
         return result
 
     @classmethod
