@@ -4,16 +4,25 @@ import pytz
 import time
 
 from django import forms
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin.widgets import AdminSplitDateTime
 from django.contrib.auth.models import User
-from import_export import resources
+from django.urls import reverse
+from django.http.response import HttpResponseRedirect
+from import_export import resources, widgets
 from import_export.admin import ImportExportModelAdmin
+from import_export.fields import Field
 from import_export.formats import base_formats
+from import_export.forms import ImportForm
+from import_export.signals import post_import
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
-
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.djangoapps.user_api.accounts.utils import generate_password
+
+from student.forms import AccountCreationForm
+from student.helpers import do_create_account
+from student.models import UserProfile
 from tedix_ro.models import (
     City,
     School,
@@ -79,9 +88,93 @@ class ParentProfileAdmin(admin.ModelAdmin):
     form = ParentProfileForm
 
 
+class InstructorProfileImportForm(ImportForm):
+
+    is_send_email = forms.BooleanField(label = "Send emails")
+
+class InstructorProfileResource(resources.ModelResource):
+    import_errors = []
+
+    username = Field(
+        attribute='user',
+        column_name='username',
+        widget=widgets.ForeignKeyWidget(User, 'username')
+    )
+    email = Field(
+        attribute='user',
+        column_name='email',
+        widget=widgets.ForeignKeyWidget(User, 'email')
+    )
+
+    name = Field(
+        attribute='user__profile__name',
+        column_name='name',
+    )
+
+    class Meta:
+        model = InstructorProfile
+        fields = ('username', 'email', 'name', 'school_city', 'school', 'phone')
+        import_id_fields = ('email',)
+        skip_unchanged = True
+
+    def before_import_row(self, row, **kwargs):
+        """
+        Override to add additional logic. Does nothing by default.
+        """
+        print('___________NEW_ROW!!!!!!!!!___________') 
+        row['password'] = generate_password()
+        print(row)
+        form = AccountCreationForm(data=row, tos_required=False)
+        self.import_errors = []
+        if form.is_valid():
+            do_create_account(form)
+        else:
+            self.import_errors.append(form.errors)
+            print(self.import_errors)
+        super(InstructorProfileResource, self).before_import_row(row, **kwargs)
+
+    def after_import_row(self, row, row_result, **kwargs):
+        """
+        Override to add additional logic. Does nothing by default.
+        """
+        for error in self.import_errors:
+            error_message = []
+            for key in error:
+                error_message.append('{} - {}'.format(key, ''.join(error[key])))
+            row_result.errors.append(self.get_error_result_class()('', '\n'.join(error_message), row))
+
+        super(InstructorProfileResource, self).after_import_row(row, row_result, **kwargs)
+
+
 @admin.register(InstructorProfile)
-class InstructorProfileAdmin(admin.ModelAdmin):
+class InstructorProfileAdmin(ImportExportModelAdmin):
     form = InstructorProfileForm
+    resource_class = InstructorProfileResource
+    formats = (
+        base_formats.CSV,
+        base_formats.JSON,
+    )
+
+    def get_import_form(self):
+        return InstructorProfileImportForm
+    
+
+    # def add_error_message(self, result, request):
+    #     for error in self.get_resource_class().import_errors:
+    #         for key in error:
+    #             messages.error(request, '{}. {}'.format(key, '\n'.join(error[key])))
+    #     print(messages)
+
+
+    def process_result(self, result, request):
+        self.generate_log_entries(result, request)
+        # self.add_error_message(result, request)
+        self.add_success_message(result, request)
+        post_import.send(sender=None, model=self.model)
+
+        url = reverse('admin:%s_%s_changelist' % self.get_model_info())
+        return HttpResponseRedirect(url)
+
 
 
 class CityResource(resources.ModelResource):
