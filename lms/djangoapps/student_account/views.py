@@ -70,10 +70,6 @@ def login_and_registration_form(request, initial_mode="login"):
     # Determine the URL to redirect to following login/registration/third_party_auth
     redirect_to = get_next_url_for_login_page(request)
 
-    # always redirect user to the login page, registration is closed
-    if initial_mode != 'login':
-        return redirect(redirect_to)
-
     # If we're already logged in, redirect to the dashboard
     if request.user.is_authenticated():
         return redirect(redirect_to)
