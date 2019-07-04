@@ -1,7 +1,6 @@
 import logging
-from uuid import uuid4
 from django.conf import settings
-from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework import status
@@ -20,26 +19,28 @@ from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiv
 
 log = logging.getLogger(__name__)
 
+
 def string_to_boolean(string):
     return bool(string) and str(string).lower() == 'true'
 
 
-class CreateUserAccountWithoutPasswordView(APIView):
+class CreateUserAccountView(APIView):
     authentication_classes = (OAuth2AuthenticationAllowInactiveUser,)
     permission_classes = ApiKeyHeaderPermission,
 
     def post(self, request):
         """
-        Create user account without password
+        Create user account
 
         Creates a user using mail, login and also name and surname.
-        Sets a random password and sends a user a message to change it.
+        Sets sent in request password and sends a user a message to change it.
         """
         data = request.data
         data['honor_code'] = "True"
         data['terms_of_service'] = "True"
         email = request.data.get('email')
         username = request.data.get('username')
+        password = request.data.get('password')
         prename = request.data.get('prename', '')
         surname = request.data.get('surname', '')
         if not username:
@@ -54,6 +55,12 @@ class CreateUserAccountWithoutPasswordView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        if not password:
+            return Response(
+                data={"user_message": "'password' is required parameter."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         try:
             validate_slug(username)
         except ValidationError:
@@ -64,13 +71,12 @@ class CreateUserAccountWithoutPasswordView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        data['name'] =  "{} {}".format(prename, surname).strip() if prename or surname else username
+        data['name'] = "{} {}".format(prename, surname).strip() if prename or surname else username
 
         if check_account_exists(username=username, email=email):
             return Response(data={"user_message": "User already exists"}, status=status.HTTP_409_CONFLICT)
 
         try:
-            data['password'] = uuid4().hex
             user = create_account_with_params(request, data)
             user.is_active = True
             user.first_name = prename
@@ -115,14 +121,13 @@ class SetActivateUserStatus(APIView):
             user = User.objects.get(id=user_id)
             user.is_active = string_to_boolean(data.get('is_active'))
             user.save()
-        except  User.DoesNotExist:
+        except User.DoesNotExist:
             return Response(
                 data={"user_message": "Wrong 'user_id'. User does not exist"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         return Response(data={'user_id': data['user_id'], 'is_active': user.is_active}, status=status.HTTP_200_OK)
-
 
 
 class EnrollView(APIView, ApiKeyPermissionMixIn):
@@ -153,7 +158,7 @@ class EnrollView(APIView, ApiKeyPermissionMixIn):
 
         try:
             user = User.objects.get(id=user_id)
-        except  User.DoesNotExist:
+        except User.DoesNotExist:
             return Response(
                 data={"user_message": "Wrong 'user_id'. User does not exist"},
                 status=status.HTTP_400_BAD_REQUEST
@@ -175,4 +180,7 @@ class EnrollView(APIView, ApiKeyPermissionMixIn):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        return Response(data={'enrollment_id': enrollment_obj.id}, status=status.HTTP_200_OK)
+        return Response(
+            data={'enrollment_id': enrollment_obj.id, 'mode': data['mode'], 'is_active': data['is_active']},
+            status=status.HTTP_200_OK
+        )
