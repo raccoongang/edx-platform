@@ -537,7 +537,9 @@ TEMPLATES = [
 
                 # Online contextual help
                 'context_processors.doc_url',
-                'openedx.core.djangoapps.site_configuration.context_processors.configuration_context'
+                'openedx.core.djangoapps.site_configuration.context_processors.configuration_context',
+                # Context providers information
+                'student_account.context_processor.context_providers'
             ],
             # Change 'debug' in your environment settings files - not here.
             'debug': False
