@@ -400,7 +400,7 @@ class RegistrationView(APIView):
 
         # Translators: These instructions appear on the registration form, immediately
         # below a field meant to hold the user's email address.
-        email_instructions = _(u"This is what you will use to login.")
+        email_instructions = _(u"This is what you will use to login. Please ensure that this is a working email as you will receive a verification email to activate your account.")
 
         form_desc.add_field(
             "email",
