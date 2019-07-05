@@ -93,13 +93,25 @@ class InstructorProfileImportForm(ImportForm):
     is_send_email = forms.BooleanField(label = "Send emails")
 
 class InstructorProfileResource(resources.ModelResource):
-    import_errors = []
+
+    school = Field(
+        attribute='school',
+        column_name='school',
+        widget=widgets.ForeignKeyWidget(School, 'name')
+    )
+
+    school_city = Field(
+        attribute='school_city',
+        column_name='school_city',
+        widget=widgets.ForeignKeyWidget(City, 'name')
+    )
 
     username = Field(
         attribute='user',
         column_name='username',
         widget=widgets.ForeignKeyWidget(User, 'username')
     )
+
     email = Field(
         attribute='user',
         column_name='email',
@@ -117,64 +129,11 @@ class InstructorProfileResource(resources.ModelResource):
         import_id_fields = ('email',)
         skip_unchanged = True
 
-    def before_import_row(self, row, **kwargs):
-        """
-        Override to add additional logic. Does nothing by default.
-        """
-        print('___________NEW_ROW!!!!!!!!!___________') 
-        row['password'] = generate_password()
-        print(row)
-        form = AccountCreationForm(data=row, tos_required=False)
-        self.import_errors = []
-        if form.is_valid():
-            do_create_account(form)
-        else:
-            self.import_errors.append(form.errors)
-            print(self.import_errors)
-        super(InstructorProfileResource, self).before_import_row(row, **kwargs)
-
-    def after_import_row(self, row, row_result, **kwargs):
-        """
-        Override to add additional logic. Does nothing by default.
-        """
-        for error in self.import_errors:
-            error_message = []
-            for key in error:
-                error_message.append('{} - {}'.format(key, ''.join(error[key])))
-            row_result.errors.append(self.get_error_result_class()('', '\n'.join(error_message), row))
-
-        super(InstructorProfileResource, self).after_import_row(row, row_result, **kwargs)
-
 
 @admin.register(InstructorProfile)
 class InstructorProfileAdmin(ImportExportModelAdmin):
     form = InstructorProfileForm
     resource_class = InstructorProfileResource
-    formats = (
-        base_formats.CSV,
-        base_formats.JSON,
-    )
-
-    def get_import_form(self):
-        return InstructorProfileImportForm
-    
-
-    # def add_error_message(self, result, request):
-    #     for error in self.get_resource_class().import_errors:
-    #         for key in error:
-    #             messages.error(request, '{}. {}'.format(key, '\n'.join(error[key])))
-    #     print(messages)
-
-
-    def process_result(self, result, request):
-        self.generate_log_entries(result, request)
-        # self.add_error_message(result, request)
-        self.add_success_message(result, request)
-        post_import.send(sender=None, model=self.model)
-
-        url = reverse('admin:%s_%s_changelist' % self.get_model_info())
-        return HttpResponseRedirect(url)
-
 
 
 class CityResource(resources.ModelResource):

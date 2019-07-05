@@ -1,5 +1,6 @@
 import datetime
 import pytz
+import tablib
 from urlparse import urljoin
 
 from django.apps import apps
@@ -8,7 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -19,10 +20,16 @@ from rest_framework import generics, viewsets
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.core.djangoapps.user_api.accounts.utils import generate_password
 from student.models import CourseEnrollment
-from student.helpers import get_next_url_for_login_page
+from student.helpers import get_next_url_for_login_page, do_create_account
 
-from .forms import StudentEnrollForm
+from .forms import (
+    StudentEnrollForm,
+    InstructorProfileImportForm,
+    get_tedix_registration_form,
+    AccountImportValidationForm,
+)
 from .models import StudentProfile, StudentCourseDueDate, City, School
 from .serializers import CitySerializer, SchoolSerilizer, SingleCitySerializer, SingleSchoolSerilizer
 
@@ -145,3 +152,52 @@ class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
         if self.kwargs.get('pk'):
             return SchoolSerilizer
         return SingleCitySerializer
+
+
+def teacher_import(request):
+    from .forms import InstructorImportValidationForm
+    role = 'instructor'
+    form = InstructorProfileImportForm(request.POST, request.FILES)
+    context = {'form': form}
+    if request.POST and form.is_valid():
+        data = tablib.Dataset()
+        error_rows_data = []
+        valid_rows_data = []
+        input_format = form.cleaned_data['input_format']
+        import_file = form.cleaned_data['import_file']
+        if input_format == 'json':
+            data.json = import_file.read()
+            ## add validate format
+        if input_format == 'csv':
+            data.csv = import_file.read()
+            ## add validate format
+        for i, row in enumerate(data.dict, 1):
+            row['password'] = generate_password()
+            row['role'] = role
+            user_validation_form = AccountImportValidationForm(data=row, tos_required=False)
+            errors = None
+            profile_validation_form = InstructorImportValidationForm(data=row)
+            ## add validate username
+            if user_validation_form.is_valid() and profile_validation_form.is_valid():
+                if profile_validation_form.user_exists():
+                    profile_validation_form.update_profile()
+                else:
+                    do_create_account(user_validation_form, profile_validation_form)
+                    profile_validation_form.status = 'created'
+                row.pop('password')
+                row.pop('role')
+                valid_rows_data.append([i, profile_validation_form.status, row])
+            else:
+                errors = {}
+                errors_key = user_validation_form.errors.keys() + profile_validation_form.errors.keys()
+                errors.update(user_validation_form.errors)
+                errors.update(profile_validation_form.errors)
+                row.pop('password')
+                row.pop('role')
+                error_rows_data.append([i, row, errors_key, errors])
+        context.update({
+            'error_rows_data': error_rows_data,
+            'valid_rows_data': valid_rows_data,
+            'headers': row.keys() ## dataset.headers
+        })
+    return render(request, 'teacher_import.html', context)

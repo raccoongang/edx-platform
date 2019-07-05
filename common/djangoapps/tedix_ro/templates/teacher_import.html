@@ -1,0 +1,103 @@
+{% extends "admin/import_export/base.html" %}
+{% load i18n %}
+{% load admin_urls %}
+{% load import_export_tags %}
+{% load static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "import_export/import.css" %}" />{% endblock %}
+
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+{% comment %} &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a> {% endcomment %}
+{% comment %} &rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a> {% endcomment %}
+&rsaquo; {% block breadcrumbs_last %}{% trans "Import" %}{% endblock %}
+</div>
+{% endblock %}
+
+{% block content %}
+
+    <form action="" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <p>
+        {% trans "This importer will import the following fields: " %}
+        <code>{{ fields|join:", " }}</code>
+      </p>
+
+      <fieldset class="module aligned">
+        {% for field in form %}
+          <div class="form-row">
+            {{ field.errors }}
+
+            {{ field.label_tag }}
+
+            {{ field }}
+
+            {% if field.field.help_text %}
+            <p class="help">{{ field.field.help_text|safe }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </fieldset>
+
+      <div class="submit-row">
+        <input type="submit" class="default" value="{% trans "Submit" %}">
+      </div>
+    </form>
+
+    {% if error_rows_data %}
+    <div style="float: left">
+      <h2>{% trans "not successfully import" %}</h2>
+      <table class="import-preview">
+            <tr>
+              <th>#</th>
+              {% for header in headers %}
+              <th>{{ header }}</th>
+              {% endfor %}
+            </tr>
+          {% for index, row, errors_key, errors in error_rows_data %}
+            <tr>
+              <td>{{ index }}</td>
+              {% for key, value in row.items %}
+                <td {% if key in errors_key %}style="color: red"{% endif %}>{{ value }}</td>
+              {% endfor %}
+            </tr>
+            <tr>
+              <td>Errors:</td>
+              <td colspan={{ row.items | length }}>
+              {% for key, value in errors.items %}
+                {{key}}: {{ value }}
+              {% endfor %}
+              </td>
+            </tr>
+          {% endfor %}
+      </table>
+    </div>
+    {% endif %}
+
+    {% if valid_rows_data %}
+    <div style="float: left">
+      <h2>{% trans "successful import" %}</h2>
+      <table class="import-preview">
+            <tr>
+              <th>#</th>
+              {% for header in headers %}
+              <th>{{ header }}</th>
+              {% endfor %}
+            </tr>
+          {% for index, status, row in valid_rows_data %}
+            <tr>
+              <td>{{ index }} {{ status }} </td>
+              {% for key, value in row.items %}
+                <td>{{ value }}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+      </table>
+    </div>
+    {% endif %}
+
+
+{% endblock %}

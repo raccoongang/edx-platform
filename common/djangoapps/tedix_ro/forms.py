@@ -1,9 +1,11 @@
 import datetime
 import pytz
+import re
 import time
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils import six, timezone
 from django.utils.encoding import force_text
@@ -18,6 +20,8 @@ from student.models import (
 )
 
 from tedix_ro.models import City, School, StudentProfile, InstructorProfile, ParentProfile, Classroom
+from student.forms import AccountCreationForm, CourseEnrollmentAllowed
+
 
 ROLE_CHOICES = (
     ('student', 'Student'),
@@ -285,3 +289,87 @@ class StudentEnrollForm(forms.Form):
             if error_course_list:
                 self.add_error('due_date', 'This due date is not valid for the following courses: "{}".'.format('", "'.join(error_course_list)))
         return due_date_utc
+
+
+class AccountImportValidationForm(AccountCreationForm):
+
+    def clean_email(self):
+        """ Enforce email restrictions (if applicable) """
+        email = self.cleaned_data["email"]
+        if settings.REGISTRATION_EMAIL_PATTERNS_ALLOWED is not None:
+            # This Open edX instance has restrictions on what email addresses are allowed.
+            allowed_patterns = settings.REGISTRATION_EMAIL_PATTERNS_ALLOWED
+            # We append a '$' to the regexs to prevent the common mistake of using a
+            # pattern like '.*@edx\\.org' which would match 'bob@edx.org.badguy.com'
+            if not any(re.match(pattern + "$", email) for pattern in allowed_patterns):
+                # This email is not on the whitelist of allowed emails. Check if
+                # they may have been manually invited by an instructor and if not,
+                # reject the registration.
+                if not CourseEnrollmentAllowed.objects.filter(email=email).exists():
+                    raise ValidationError(_("Unauthorized email address."))
+        return email
+
+    def clean_username(self):
+        username = self.cleaned_data["username"]
+        if User.objects.filter(username=username).exists():
+            raise ValidationError('Public Username "{}" already exists.'.format(username))
+        return username
+
+
+class InstructorImportValidationForm(InstructorRegisterForm):
+
+    def __init__(self, *args, **kwargs):
+        super(InstructorImportValidationForm, self).__init__(*args, **kwargs)
+        self.fields['school_city'].to_field_name = 'name'
+        self.fields['school'].to_field_name = 'name'
+        self.kwargs = kwargs.get('data')
+        self.status = ''
+
+    def clean(self):
+        cleaned_data = super(InstructorImportValidationForm, self).clean()
+        school = cleaned_data.get('school')
+        school_city = cleaned_data.get('school_city')
+        if school_city and school and not (school.city == school_city):
+            self.add_error('school', u'School {} is not in the city {}.'.format(school.name, school_city.name))
+
+    def user_exists(self):
+        email = self.kwargs.get('email')
+        return InstructorProfile.objects.filter(user__email=email)
+
+    def update_profile(self):
+        instructor_profie = self.user_exists().first()
+        if instructor_profie:
+            self.status = 'skiped'
+            school = School.objects.filter(name=self.kwargs.get('school')).first()
+            school_city = City.objects.filter(name=self.kwargs.get('school_city')).first()
+            if school and school_city:
+                if not (instructor_profie.school == school or instructor_profie.school_city == school_city):
+                    instructor_profie.school = school
+                    instructor_profie.school_city = school_city
+                    instructor_profie.save()
+                    self.status = 'updated'
+
+
+class InstructorProfileImportForm(forms.Form):
+    import_file = forms.FileField(
+        label='File to import'
+    )
+    input_format = forms.ChoiceField(
+        label='Format',
+        choices=[
+            (None,'---'),
+            ('csv','CSV'),
+            ('json','JSON')
+        ]
+    )
+    is_send_email = forms.BooleanField(
+        label = "Send emails",
+        required=False
+    )
+
+    def clean_input_format(self):
+        input_format = self.cleaned_data["input_format"]
+        import_file = self.cleaned_data["import_file"]
+        if not import_file.name.endswith(input_format):
+            raise ValidationError('Invalid format for File to import')
+        return input_format
