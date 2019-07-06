@@ -5,9 +5,9 @@ import time
 from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django.forms import ModelForm
 from django.utils import six, timezone
 from django.utils.encoding import force_text
-from django.forms import ModelForm
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
@@ -285,3 +285,13 @@ class StudentEnrollForm(forms.Form):
             if error_course_list:
                 self.add_error('due_date', 'This due date is not valid for the following courses: "{}".'.format('", "'.join(error_course_list)))
         return due_date_utc
+
+
+class StudentImportForm(forms.Form):
+    file_to_import = forms.FileField()
+    format = forms.ChoiceField(choices=[
+        ('', '------'),
+        ('csv', 'csv'),
+        ('json', 'json')
+    ])
+    send_emails = forms.BooleanField(required=False)

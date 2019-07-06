@@ -1,0 +1,49 @@
+{% extends "admin/import_export/base.html" %}
+{% load i18n %}
+{% load admin_urls %}
+{% load import_export_tags %}
+{% load static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "import_export/import.css" %}" />{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+<a href="{% url 'admin:app_list' app_label='tedix_ro' %}">Tedix_Ro</a>
+&rsaquo; <a href="{% url 'admin:tedix_ro_studentprofile_changelist' %}">Student profiles</a>
+&rsaquo; {% trans "Import" %}
+</div>
+{% endblock %}
+
+{% block content %}
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <p>
+      {% trans "This importer will import the following fields: " %}
+      <code>{{ form.fields|join:", " }}</code>
+    </p>
+
+    <fieldset class="module aligned">
+      {% for field in form %}
+        <div class="form-row">
+          {{ field.errors }}
+
+          {{ field.label_tag }}
+
+          {{ field }}
+
+          {% if field.field.help_text %}
+          <p class="help">{{ field.field.help_text|safe }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </fieldset>
+
+    <div class="submit-row">
+      <input type="submit" class="default" value="{% trans "Submit" %}">
+    </div>
+  </form>
+{% endblock %}
+
+

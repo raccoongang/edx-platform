@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -22,7 +22,7 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
 from student.models import CourseEnrollment
 from student.helpers import get_next_url_for_login_page
 
-from .forms import StudentEnrollForm
+from .forms import StudentEnrollForm, StudentImportForm
 from .models import StudentProfile, StudentCourseDueDate, City, School
 from .serializers import CitySerializer, SchoolSerilizer, SingleCitySerializer, SingleSchoolSerilizer
 
@@ -145,3 +145,11 @@ class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
         if self.kwargs.get('pk'):
             return SchoolSerilizer
         return SingleCitySerializer
+
+
+def students_import(request):
+    form = StudentImportForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'students_import.html', context)
