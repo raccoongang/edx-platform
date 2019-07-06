@@ -9,6 +9,7 @@ from django.contrib.admin.widgets import AdminSplitDateTime
 from django.contrib.auth.models import User
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
+from import_export.fields import Field
 from import_export.formats import base_formats
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
@@ -69,11 +70,6 @@ class ParentProfileForm(ProfileForm):
         fields = '__all__'
 
 
-@admin.register(StudentProfile)
-class StudentProfileAdmin(admin.ModelAdmin):
-    form = StudentProfileForm
-
-
 @admin.register(ParentProfile)
 class ParentProfileAdmin(admin.ModelAdmin):
     form = ParentProfileForm
@@ -82,6 +78,80 @@ class ParentProfileAdmin(admin.ModelAdmin):
 @admin.register(InstructorProfile)
 class InstructorProfileAdmin(admin.ModelAdmin):
     form = InstructorProfileForm
+
+
+class StudentProfileResource(resources.ModelResource):
+
+    school = Field(
+        attribute='school__name',
+        column_name='school'
+    )
+
+    city = Field(
+        attribute='school_city__name',
+        column_name='city',
+    )
+
+    username = Field(
+        attribute='user__username',
+        column_name='username',
+    )
+
+    email = Field(
+        attribute='user__email',
+        column_name='email',
+    )
+
+    public_name = Field(
+        attribute='user__profile__name',
+        column_name='public_name',
+    )
+    teacher = Field(
+        attribute='instructor__user__email',
+        column_name='teacher_email'
+    )
+    classroom = Field(
+        attribute='classroom__name',
+        column_name='classroom',
+    )
+    parent_email = Field()
+    parent_phone = Field()
+
+    class Meta:
+        model = StudentProfile
+        fields = (
+            'username',
+            'email',
+            'public_name',
+            'phone',
+            'parent_email',
+            'parent_phone',
+            'city',
+            'school',
+            'classroom'
+        )
+        export_order = (
+            'username',
+            'email',
+            'public_name',
+            'phone',
+            'parent_email',
+            'parent_phone',
+            'city',
+            'school',
+            'teacher',
+            'classroom'
+        )
+    def dehydrate_parent_email(self, student_profile):
+        return student_profile.parents.all().first().user.email
+    
+    def dehydrate_parent_phone(self, student_profile):
+        return student_profile.parents.all().first().phone
+
+
+@admin.register(StudentProfile)
+class StudentProfileImportExportAdmin(ImportExportModelAdmin):
+    resource_class = StudentProfileResource
 
 
 class CityResource(resources.ModelResource):
