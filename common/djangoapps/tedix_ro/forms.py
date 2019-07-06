@@ -11,6 +11,8 @@ from django.utils.encoding import force_text
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
+from student.forms import AccountCreationForm, CourseEnrollmentAllowed
+
 from student.models import (
     PasswordHistory,
     Registration,
@@ -295,3 +297,45 @@ class StudentImportForm(forms.Form):
         ('json', 'json')
     ])
     send_emails = forms.BooleanField(required=False)
+
+    def clean(self):
+        cleaned_data = super(StudentImportForm, self).clean()
+        file_to_import = cleaned_data['file_to_import']
+        format = cleaned_data['format']
+        if not file_to_import.name.endswith(format):
+            raise ValidationError('Invalid format of file for choosen format')
+
+
+class AccountImportValidationForm(AccountCreationForm):
+
+    def clean_email(self):
+        """ Enforce email restrictions (if applicable) """
+        email = self.cleaned_data["email"]
+        if settings.REGISTRATION_EMAIL_PATTERNS_ALLOWED is not None:
+            # This Open edX instance has restrictions on what email addresses are allowed.
+            allowed_patterns = settings.REGISTRATION_EMAIL_PATTERNS_ALLOWED
+            # We append a '$' to the regexs to prevent the common mistake of using a
+            # pattern like '.*@edx\\.org' which would match 'bob@edx.org.badguy.com'
+            if not any(re.match(pattern + "$", email) for pattern in allowed_patterns):
+                # This email is not on the whitelist of allowed emails. Check if
+                # they may have been manually invited by an instructor and if not,
+                # reject the registration.
+                if not CourseEnrollmentAllowed.objects.filter(email=email).exists():
+                    raise ValidationError(_("Unauthorized email address."))
+        return email
+
+    def clean_username(self):
+        username = self.cleaned_data["username"]
+        if User.objects.filter(username=username).exists():
+            raise ValidationError('Public Username "{}" already exists.'.format(username))
+        return username
+
+
+class StudentImportRegisterForm(StudentRegisterForm):
+
+    def __init__(self, *args, **kwargs):
+        super(StudentImportForm, self).__init__(*args, **kwargs)
+        self.fields['school_city'].to_field_name = 'name'
+        self.fields['school'].to_field_name = 'name'
+        self.kwargs = kwargs.get('data')
+        self.status = ''

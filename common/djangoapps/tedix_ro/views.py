@@ -1,5 +1,6 @@
 import datetime
 import pytz
+import tablib
 from urlparse import urljoin
 
 from django.apps import apps
@@ -22,7 +23,7 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
 from student.models import CourseEnrollment
 from student.helpers import get_next_url_for_login_page
 
-from .forms import StudentEnrollForm, StudentImportForm
+from .forms import StudentEnrollForm, StudentImportForm, AccountImportValidationForm, StudentImportRegisterForm
 from .models import StudentProfile, StudentCourseDueDate, City, School
 from .serializers import CitySerializer, SchoolSerilizer, SingleCitySerializer, SingleSchoolSerilizer
 
@@ -148,7 +149,25 @@ class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 def students_import(request):
-    form = StudentImportForm()
+    import_form = StudentImportForm()
+    if request.method == 'POST':
+        import_form = StudentImportForm(request.POST)
+        if import_form.is_valid():
+            dataset = tablib.Dataset()
+            setattr(dataset, import_form.format, import_form.file_to_import.read())
+            role = 'student'
+            for i, row in enumerate(data.dict, 1):
+                row['role'] = role
+                row['password'] = User.objects.make_random_password()
+                user_form = AccountImportValidationForm(row)
+                student_profile_form = StudentImportRegisterForm(row)
+                if user_form.is_valid() and student_profile_form.is_valid():
+                    # to be continued
+            
+            
+            
+            
+        
     context = {
         'form': form
     }
