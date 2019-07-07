@@ -154,6 +154,10 @@ class StudentProfileResource(resources.ModelResource):
 @admin.register(StudentProfile)
 class StudentProfileImportExportAdmin(ImportExportModelAdmin):
     resource_class = StudentProfileResource
+    formats = (
+        base_formats.CSV,
+        base_formats.JSON,
+    )
 
 
 class CityResource(resources.ModelResource):

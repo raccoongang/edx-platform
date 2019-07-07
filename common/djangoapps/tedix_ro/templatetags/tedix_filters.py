@@ -1,13 +1,25 @@
 from django import template
+from tedix_ro.forms import StudentImportRegisterForm
 
 register = template.Library()
 
 
 @register.filter
 def get_errors_value(data, key_name):
-    form_fields_map = {
-        'city': 'school_city',
-        'teacher_email': 'instructor',
-        'public_name': 'name'
+    return data.get(StudentImportRegisterForm.form_fields_map.get(key_name, key_name), '')
+
+
+@register.filter
+def get_item(data, key_name):
+    return data.get(key_name, '')
+
+@register.simple_tag
+def get_color(state):
+    state_color_map = {
+        'new': '#a0cca0',
+        'skipped': '#d2d2d2',
+        'updated': '#f7f7a3',
+        'error': '#e29898'
     }
-    return data.get(form_fields_map.get(key_name, key_name), '')
+    
+    return state_color_map[state]

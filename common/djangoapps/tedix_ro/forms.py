@@ -335,6 +335,12 @@ class AccountImportValidationForm(AccountCreationForm):
 
 class StudentImportRegisterForm(StudentRegisterForm):
 
+    form_fields_map = {
+        'city': 'school_city',
+        'teacher_email': 'instructor',
+        'public_name': 'name'
+    }
+
     def __init__(self, *args, **kwargs):
         super(StudentImportRegisterForm, self).__init__(*args, **kwargs)
         self.fields['school_city'].to_field_name = 'name'
@@ -346,4 +352,24 @@ class StudentImportRegisterForm(StudentRegisterForm):
         return StudentProfile.objects.filter(user__email=data['email']).exists()
     
     def update(self, data):
-        pass
+        email = data['email']
+        school_city = self.cleaned_data['school_city']
+        school = self.cleaned_data['school']
+        if StudentProfile.objects.filter(
+            user__email=email,
+            school_city=school_city, school=school):
+            return 'skipped'
+        StudentProfile.objects.filter(user__email=email).update(school_city=school_city, school=school)
+        return 'updated'
+    
+    def clean(self):
+        cleaned_data = super(StudentImportRegisterForm, self).clean()
+        school_city = cleaned_data['school_city']
+        school = cleaned_data['school']
+        instructor = cleaned_data['instructor']
+        if school.city != school_city:
+            self.add_error('school', "School doesn't belong the specified city")
+        if instructor and instructor.school != school:
+            self.add_error('instructor', "Specified instructor belongs to another school")
+        return cleaned_data
+

@@ -22,7 +22,7 @@
 
     <p>
       {% trans "This importer will import the following fields: " %}
-      <code>{{ import_form.fields|join:", " }}</code>
+      <code>{{ row_headers|join:", " }}</code>
     </p>
 
     <fieldset class="module aligned">
@@ -45,23 +45,35 @@
       <input type="submit" class="default" value="{% trans "Submit" %}">
     </div>
   </form>
-  <table>
-    <tr>
-        <td>#</td>
-        {% for field_name in row_data.keys %}
-            <td>{{ field_name }}</td>
+  {% if errors_list %}
+    <table>
+        <tr>
+            <td>#</td>
+            <td></td>
+            {% for field_name in row_headers %}
+                <td>{{ field_name }}</td>
+            {% endfor %}
+        </tr>
+        {% for row_number, errors, state, row in errors_list %}
+            <tr style="background-color: {% get_color state %};">
+                <td>{{ row_number }}</td>
+                <td>{{ state }}</td>
+                {% for val in row_headers %}
+                    <td>{{ row|get_item:val }}</td>
+                {% endfor %}
+            </tr>
+            {% if errors %}
+                <tr>
+                    <td></td>
+                    <td>Errors:</td>
+                    {% for field_name in row_headers %}
+                        <td>{{ errors|get_errors_value:field_name }}</td>
+                    {% endfor %}
+                </tr>
+            {% endif %}
         {% endfor %}
-    </tr>
-
-    {% for row_number, errors in errors_list %}
-    <tr>
-        <td>{{ row_number }}</td>
-        {% for field_name in row_data.keys %}
-            <td>{{ errors|get_errors_value:field_name }}</td>
-        {% endfor %}
-    </tr>
-    {% endfor %}
-  </table>
+    </table>
+  {% endif %}
 {% endblock %}
 
 
