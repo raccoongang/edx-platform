@@ -25,6 +25,18 @@ from tedix_ro.models import (
     StudentCourseDueDate
 )
 
+STUDENT_PARENT_EXPORT_FIELD_NAMES = (
+    'username',
+    'email',
+    'public_name',
+    'phone',
+    'parent_email',
+    'parent_phone',
+    'city',
+    'school',
+    'classroom'
+)
+
 
 admin.site.register(Classroom)
 
@@ -119,17 +131,7 @@ class StudentProfileResource(resources.ModelResource):
 
     class Meta:
         model = StudentProfile
-        fields = (
-            'username',
-            'email',
-            'public_name',
-            'phone',
-            'parent_email',
-            'parent_phone',
-            'city',
-            'school',
-            'classroom'
-        )
+        fields = STUDENT_PARENT_EXPORT_FIELD_NAMES
         export_order = (
             'username',
             'email',

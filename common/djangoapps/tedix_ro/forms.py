@@ -3,8 +3,9 @@ import pytz
 import time
 
 from django import forms
-from django.core.exceptions import ValidationError
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from django.utils import six, timezone
 from django.utils.encoding import force_text
@@ -300,6 +301,7 @@ class StudentImportForm(forms.Form):
 
     def clean(self):
         cleaned_data = super(StudentImportForm, self).clean()
+        print(cleaned_data)
         file_to_import = cleaned_data['file_to_import']
         format = cleaned_data['format']
         if not file_to_import.name.endswith(format):
@@ -334,8 +336,14 @@ class AccountImportValidationForm(AccountCreationForm):
 class StudentImportRegisterForm(StudentRegisterForm):
 
     def __init__(self, *args, **kwargs):
-        super(StudentImportForm, self).__init__(*args, **kwargs)
+        super(StudentImportRegisterForm, self).__init__(*args, **kwargs)
         self.fields['school_city'].to_field_name = 'name'
         self.fields['school'].to_field_name = 'name'
-        self.kwargs = kwargs.get('data')
-        self.status = ''
+        self.fields['classroom'].to_field_name = 'name'
+        self.fields['instructor'].to_field_name = 'user__email'
+    
+    def exists(self, data):
+        return StudentProfile.objects.filter(user__email=data['email']).exists()
+    
+    def update(self, data):
+        pass

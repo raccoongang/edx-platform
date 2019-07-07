@@ -1,4 +1,5 @@
 import datetime
+from collections import OrderedDict
 import pytz
 import tablib
 from urlparse import urljoin
@@ -21,8 +22,9 @@ from rest_framework import generics, viewsets
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from student.models import CourseEnrollment
-from student.helpers import get_next_url_for_login_page
+from student.helpers import get_next_url_for_login_page, do_create_account
 
+from .admin import STUDENT_PARENT_EXPORT_FIELD_NAMES
 from .forms import StudentEnrollForm, StudentImportForm, AccountImportValidationForm, StudentImportRegisterForm
 from .models import StudentProfile, StudentCourseDueDate, City, School
 from .serializers import CitySerializer, SchoolSerilizer, SingleCitySerializer, SingleSchoolSerilizer
@@ -149,26 +151,43 @@ class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 def students_import(request):
+    from csv import DictReader
     import_form = StudentImportForm()
-    if request.method == 'POST':
-        import_form = StudentImportForm(request.POST)
-        if import_form.is_valid():
-            dataset = tablib.Dataset()
-            setattr(dataset, import_form.format, import_form.file_to_import.read())
-            role = 'student'
-            for i, row in enumerate(data.dict, 1):
-                row['role'] = role
-                row['password'] = User.objects.make_random_password()
-                user_form = AccountImportValidationForm(row)
-                student_profile_form = StudentImportRegisterForm(row)
-                if user_form.is_valid() and student_profile_form.is_valid():
-                    # to be continued
-            
-            
-            
-            
-        
+    errors_list = []
     context = {
-        'form': form
+        'import_form': import_form,
+        'errors_list': errors_list
     }
+    if request.method == 'POST':
+        import_form = StudentImportForm(request.POST, request.FILES)
+        if import_form.is_valid():
+            dataset = DictReader(import_form.cleaned_data['file_to_import'])
+            role = 'student'
+            for i, row in enumerate(dataset, 1):
+                form_fields_map = {
+                    'city': 'school_city',
+                    'teacher_email': 'instructor',
+                    'public_name': 'name'
+                }
+                form_data = {form_fields_map.get(k, k):v for k,v in row.items()}
+                form_data['role'] = role
+                form_data['password'] = User.objects.make_random_password()
+                print(form_data)
+                user_form = AccountImportValidationForm(form_data, tos_required=False)
+                student_profile_form = StudentImportRegisterForm(form_data)
+                if user_form.is_valid() and student_profile_form.is_valid():
+                    if not student_profile_form.exists(form_data):
+                        user, profile, registration = do_create_account(user_form, student_profile_form)
+
+                else:
+                    errors = {}
+                    errors.update(dict(user_form.errors.items()))
+                    errors.update(dict(student_profile_form.errors.items()))
+                    print(errors)
+                    errors_list.append((i, errors))
+                    # error_list.append((i, user_form.errors.items() + student_profile_form.errors.items()))
+        context.update(dict(
+            row_data=row,
+            # errors_list=errors_list
+        ))
     return render(request, 'students_import.html', context)
