@@ -4,25 +4,19 @@ import pytz
 import time
 
 from django import forms
-from django.contrib import admin, messages
+from django.contrib import admin
 from django.contrib.admin.widgets import AdminSplitDateTime
 from django.contrib.auth.models import User
-from django.urls import reverse
 from django.http.response import HttpResponseRedirect
-from import_export import resources, widgets
+from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from import_export.fields import Field
 from import_export.formats import base_formats
 from import_export.forms import ImportForm
-from import_export.signals import post_import
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-from openedx.core.djangoapps.user_api.accounts.utils import generate_password
 
-from student.forms import AccountCreationForm
-from student.helpers import do_create_account
-from student.models import UserProfile
 from tedix_ro.models import (
     City,
     School,
@@ -40,9 +34,19 @@ STUDENT_PARENT_EXPORT_FIELD_NAMES = (
     'phone',
     'parent_email',
     'parent_phone',
+    'teacher_email',
     'city',
     'school',
     'classroom'
+)
+
+INSTRUCTOR_EXPORT_FIELD_NAMES = (
+    'username',
+    'email',
+    'public_name',
+    'phone',
+    'city',
+    'school'
 )
 
 
@@ -99,40 +103,38 @@ class InstructorProfileImportForm(ImportForm):
 
     is_send_email = forms.BooleanField(label = "Send emails")
 
+
 class InstructorProfileResource(resources.ModelResource):
 
     school = Field(
-        attribute='school',
-        column_name='school',
-        widget=widgets.ForeignKeyWidget(School, 'name')
+        attribute='school__name',
+        column_name='school'
     )
 
-    school_city = Field(
-        attribute='school_city',
-        column_name='school_city',
-        widget=widgets.ForeignKeyWidget(City, 'name')
+    city = Field(
+        attribute='school_city__name',
+        column_name='city',
     )
 
     username = Field(
-        attribute='user',
+        attribute='user__username',
         column_name='username',
-        widget=widgets.ForeignKeyWidget(User, 'username')
     )
 
     email = Field(
-        attribute='user',
+        attribute='user__email',
         column_name='email',
-        widget=widgets.ForeignKeyWidget(User, 'email')
     )
 
-    name = Field(
+    public_name = Field(
         attribute='user__profile__name',
-        column_name='name',
+        column_name='public_name',
     )
 
     class Meta:
         model = InstructorProfile
-        fields = ('username', 'email', 'name', 'school_city', 'school', 'phone')
+        fields = INSTRUCTOR_EXPORT_FIELD_NAMES
+        export_order = INSTRUCTOR_EXPORT_FIELD_NAMES
         import_id_fields = ('email',)
         skip_unchanged = True
 
@@ -169,7 +171,7 @@ class StudentProfileResource(resources.ModelResource):
         attribute='user__profile__name',
         column_name='public_name',
     )
-    teacher = Field(
+    teacher_email = Field(
         attribute='instructor__user__email',
         column_name='teacher_email'
     )
@@ -183,18 +185,8 @@ class StudentProfileResource(resources.ModelResource):
     class Meta:
         model = StudentProfile
         fields = STUDENT_PARENT_EXPORT_FIELD_NAMES
-        export_order = (
-            'username',
-            'email',
-            'public_name',
-            'phone',
-            'parent_email',
-            'parent_phone',
-            'city',
-            'school',
-            'teacher',
-            'classroom'
-        )
+        export_order = STUDENT_PARENT_EXPORT_FIELD_NAMES
+
     def dehydrate_parent_email(self, student_profile):
         return student_profile.parents.all().first().user.email
     

@@ -15,15 +15,12 @@ from django.utils.encoding import force_text
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 from student.forms import AccountCreationForm, CourseEnrollmentAllowed
-
 from student.models import (
     PasswordHistory,
     Registration,
     UserProfile
 )
-
 from tedix_ro.models import City, School, StudentProfile, InstructorProfile, ParentProfile, Classroom
-from student.forms import AccountCreationForm, CourseEnrollmentAllowed
 
 
 ROLE_CHOICES = (
@@ -65,6 +62,7 @@ class StudentRegisterForm(RegisterForm):
     """
     The fields on this form are derived from the StudentProfile and ParentProfile models
     """
+    admin_import_action = False
     classroom = forms.ModelChoiceField(
         label='Classroom', queryset=Classroom.objects.all(),
         error_messages={
@@ -135,7 +133,7 @@ class StudentRegisterForm(RegisterForm):
             parent_user, created = User.objects.get_or_create(
                 username=parent_email.split('@')[0],
                 email=parent_email,
-                defaults={'is_active': False}
+                defaults={'is_active': False if not self.admin_import_action else True}
             )
             if created:
                 # add this account creation to password history
@@ -294,9 +292,9 @@ class StudentEnrollForm(forms.Form):
         return due_date_utc
 
 
-class StudentImportForm(forms.Form):
+class ProfileImportForm(forms.Form):
     file_to_import = forms.FileField()
-    format = forms.ChoiceField(choices=[
+    file_format = forms.ChoiceField(choices=[
         ('', '------'),
         ('csv', 'csv'),
         ('json', 'json')
@@ -304,12 +302,12 @@ class StudentImportForm(forms.Form):
     send_emails = forms.BooleanField(required=False)
 
     def clean(self):
-        cleaned_data = super(StudentImportForm, self).clean()
-        print(cleaned_data)
+        cleaned_data = super(ProfileImportForm, self).clean()
         file_to_import = cleaned_data['file_to_import']
-        format = cleaned_data['format']
-        if not file_to_import.name.endswith(format):
-            raise ValidationError('Invalid format of file for choosen format')
+        file_format = cleaned_data['file_format']
+        if not file_to_import.name.endswith(file_format):
+            self.add_error('file_format', 'Invalid format of file for choosen format.')
+        return cleaned_data
 
 
 class AccountImportValidationForm(AccountCreationForm):
@@ -330,71 +328,53 @@ class AccountImportValidationForm(AccountCreationForm):
                     raise ValidationError(_("Unauthorized email address."))
         return email
 
-    def clean_username(self):
-        username = self.cleaned_data["username"]
-        if User.objects.filter(username=username).exists():
-            raise ValidationError('Public Username "{}" already exists.'.format(username))
-        return username
+    def clean(self):
+        cleaned_data = super(AccountImportValidationForm, self).clean()
+        username = cleaned_data.get('username')
+        email = cleaned_data.get('email')
+        if not User.objects.filter(email=email, username=username).exists() and User.objects.filter(username=username).exists():
+            self.add_error('username', u'Public Username "{}" already exists.'.format(username))
 
 
 class InstructorImportValidationForm(InstructorRegisterForm):
 
+    form_fields_map = {
+        'city': 'school_city',
+        'public_name': 'name'
+    }
+
     def __init__(self, *args, **kwargs):
         super(InstructorImportValidationForm, self).__init__(*args, **kwargs)
         self.fields['school_city'].to_field_name = 'name'
+        self.fields['school_city'].error_messages.update({'invalid_choice': "Such city doesn't exists in DB",})
         self.fields['school'].to_field_name = 'name'
-        self.kwargs = kwargs.get('data')
-        self.status = ''
+        self.fields['school'].error_messages.update({'invalid_choice': "Such school doesn't exists in DB"})
 
     def clean(self):
         cleaned_data = super(InstructorImportValidationForm, self).clean()
         school = cleaned_data.get('school')
         school_city = cleaned_data.get('school_city')
-        if school_city and school and not (school.city == school_city):
+        if school_city and school and school.city != school_city:
             self.add_error('school', u'School {} is not in the city {}.'.format(school.name, school_city.name))
 
-    def user_exists(self):
-        email = self.kwargs.get('email')
-        return InstructorProfile.objects.filter(user__email=email)
-
-    def update_profile(self):
-        instructor_profie = self.user_exists().first()
-        if instructor_profie:
-            self.status = 'skiped'
-            school = School.objects.filter(name=self.kwargs.get('school')).first()
-            school_city = City.objects.filter(name=self.kwargs.get('school_city')).first()
-            if school and school_city:
-                if not (instructor_profie.school == school or instructor_profie.school_city == school_city):
-                    instructor_profie.school = school
-                    instructor_profie.school_city = school_city
-                    instructor_profie.save()
-                    self.status = 'updated'
+    def exists(self, data):
+        return InstructorProfile.objects.filter(user__email=data['email']).exists()
+    
+    def update(self, data):
+        email = data['email']
+        school_city = self.cleaned_data['school_city']
+        school = self.cleaned_data['school']
+        if InstructorProfile.objects.filter(
+            user__email=email,
+            school_city=school_city, school=school):
+            return 'skipped'
+        InstructorProfile.objects.filter(user__email=email).update(school_city=school_city, school=school)
+        return 'updated'
 
 
-class InstructorProfileImportForm(forms.Form):
-    import_file = forms.FileField(
-        label='File to import'
-    )
-    input_format = forms.ChoiceField(
-        label='Format',
-        choices=[
-            (None,'---'),
-            ('csv','CSV'),
-            ('json','JSON')
-        ]
-    )
-    is_send_email = forms.BooleanField(
-        label = "Send emails",
-        required=False
-    )
-
-    def clean_input_format(self):
-        input_format = self.cleaned_data["input_format"]
-        import_file = self.cleaned_data["import_file"]
-        if not import_file.name.endswith(input_format):
-            raise ValidationError('Invalid format for File to import')
-        return input_format
 class StudentImportRegisterForm(StudentRegisterForm):
+
+    admin_import_action = True
 
     form_fields_map = {
         'city': 'school_city',
@@ -405,12 +385,13 @@ class StudentImportRegisterForm(StudentRegisterForm):
     def __init__(self, *args, **kwargs):
         super(StudentImportRegisterForm, self).__init__(*args, **kwargs)
         self.fields['school_city'].to_field_name = 'name'
-        self.fields['school_city'].error_messages = {'invalid_choice': "Such city doesn't exists in DB"}
+        self.fields['school_city'].error_messages.update({'invalid_choice': "Such city doesn't exists in DB",})
         self.fields['school'].to_field_name = 'name'
-        self.fields['school'].error_messages = {'invalid_choice': "Such school doesn't exists in DB"}
+        self.fields['school'].error_messages.update({'invalid_choice': "Such school doesn't exists in DB"})
         self.fields['classroom'].to_field_name = 'name'
         self.fields['instructor'].to_field_name = 'user__email'
-    
+        self.fields['instructor'].error_messages.update({'invalid_choice': "Such instructor doesn't exists in DB"})
+
     def exists(self, data):
         return StudentProfile.objects.filter(user__email=data['email']).exists()
     
@@ -418,20 +399,21 @@ class StudentImportRegisterForm(StudentRegisterForm):
         email = data['email']
         school_city = self.cleaned_data['school_city']
         school = self.cleaned_data['school']
+        instructor = self.cleaned_data['instructor']
         if StudentProfile.objects.filter(
             user__email=email,
-            school_city=school_city, school=school):
+            school_city=school_city, school=school, instructor=instructor):
             return 'skipped'
-        StudentProfile.objects.filter(user__email=email).update(school_city=school_city, school=school)
+        StudentProfile.objects.filter(user__email=email).update(school_city=school_city, school=school, instructor=instructor)
         return 'updated'
     
     def clean(self):
         cleaned_data = super(StudentImportRegisterForm, self).clean()
-        school_city = cleaned_data['school_city']
-        school = cleaned_data['school']
-        instructor = cleaned_data['instructor']
-        if school.city != school_city:
-            self.add_error('school', "School doesn't belong the specified city")
+        school = cleaned_data.get('school')
+        school_city = cleaned_data.get('school_city')
+        instructor = cleaned_data.get('instructor')
+        if school_city and school and school.city != school_city:
+            self.add_error('school', u'School {} is not in the city {}.'.format(school.name, school_city.name))
         if instructor and instructor.school != school:
             self.add_error('instructor', "Specified instructor belongs to another school")
         return cleaned_data

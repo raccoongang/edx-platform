@@ -13,6 +13,7 @@ def get_errors_value(data, key_name):
 def get_item(data, key_name):
     return data.get(key_name, '')
 
+
 @register.simple_tag
 def get_color(state):
     state_color_map = {

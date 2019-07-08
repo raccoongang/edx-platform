@@ -10,8 +10,8 @@
 {% block breadcrumbs %}
 <div class="breadcrumbs">
 <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-<a href="{% url 'admin:app_list' app_label='tedix_ro' %}">Tedix_Ro</a>
-&rsaquo; <a href="{% url 'admin:tedix_ro_studentprofile_changelist' %}">Student profiles</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label='tedix_ro' %}">Tedix_Ro</a>
+&rsaquo; <a href="{{ changelist_url }}">{{ text_changelist_url }}</a>
 &rsaquo; {% trans "Import" %}
 </div>
 {% endblock %}

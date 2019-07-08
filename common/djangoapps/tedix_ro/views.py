@@ -1,9 +1,7 @@
 import datetime
-from collections import OrderedDict
 from csv import DictReader
 import json
 import pytz
-import tablib
 from urlparse import urljoin
 
 from django.apps import apps
@@ -15,7 +13,8 @@ from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from django.views import View
 from edxmako.shortcuts import render_to_response
 from opaque_keys.edx.keys import CourseKey
 from opaque_keys import InvalidKeyError
@@ -27,12 +26,12 @@ from openedx.core.djangoapps.user_api.accounts.utils import generate_password
 from student.models import CourseEnrollment
 from student.helpers import get_next_url_for_login_page, do_create_account
 
+from .admin import STUDENT_PARENT_EXPORT_FIELD_NAMES, INSTRUCTOR_EXPORT_FIELD_NAMES
 from .forms import (
     StudentEnrollForm,
-    StudentImportForm,
     StudentImportRegisterForm,
-    InstructorProfileImportForm,
-    get_tedix_registration_form,
+    InstructorImportValidationForm,
+    ProfileImportForm,
     AccountImportValidationForm,
 )
 from .models import StudentProfile, StudentCourseDueDate, City, School
@@ -159,102 +158,81 @@ class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
         return SingleCitySerializer
 
 
-def teacher_import(request):
-    from .forms import InstructorImportValidationForm
-    role = 'instructor'
-    form = InstructorProfileImportForm(request.POST, request.FILES)
-    context = {'form': form}
-    if request.POST and form.is_valid():
-        data = tablib.Dataset()
-        error_rows_data = []
-        valid_rows_data = []
-        input_format = form.cleaned_data['input_format']
-        import_file = form.cleaned_data['import_file']
-        if input_format == 'json':
-            data.json = import_file.read()
-            ## add validate format
-        if input_format == 'csv':
-            data.csv = import_file.read()
-            ## add validate format
-        for i, row in enumerate(data.dict, 1):
-            row['password'] = generate_password()
-            row['role'] = role
-            user_validation_form = AccountImportValidationForm(data=row, tos_required=False)
-            errors = None
-            profile_validation_form = InstructorImportValidationForm(data=row)
-            ## add validate username
-            if user_validation_form.is_valid() and profile_validation_form.is_valid():
-                if profile_validation_form.user_exists():
-                    profile_validation_form.update_profile()
-                else:
-                    do_create_account(user_validation_form, profile_validation_form)
-                    profile_validation_form.status = 'created'
-                row.pop('password')
-                row.pop('role')
-                valid_rows_data.append([i, profile_validation_form.status, row])
-            else:
-                errors = {}
-                errors_key = user_validation_form.errors.keys() + profile_validation_form.errors.keys()
-                errors.update(user_validation_form.errors)
-                errors.update(profile_validation_form.errors)
-                row.pop('password')
-                row.pop('role')
-                error_rows_data.append([i, row, errors_key, errors])
-        context.update({
-            'error_rows_data': error_rows_data,
-            'valid_rows_data': valid_rows_data,
-            'headers': row.keys() ## dataset.headers
-        })
-    return render(request, 'teacher_import.html', context)
+class ProfileImportView(View):
+    import_form = ProfileImportForm
+    headers = []
+    profile_form = None
+    template_name = None
+    role = None
+    text_changelist_url = None
+    changelist_url = None
 
-def students_import(request):
-    import_form = StudentImportForm()
-    errors_list = []
-    headers = [
-        'email',
-        'public_name',
-        'username',
-        'phone',
-        'parent_phone',
-        'parent_email',
-        'city',
-        'school',
-        'teacher_email',
-        'classroom',
-    ]
-    context = {
-        'import_form': import_form,
-        'errors_list': errors_list,
-        'site_header': 'LMS Administration'
-    }
-    if request.method == 'POST':
-        import_form = StudentImportForm(request.POST, request.FILES)
+    def get(self, request, *args, **kwargs):
+        context = {
+            'text_changelist_url': self.text_changelist_url,
+            'changelist_url': self.changelist_url,
+            'import_form': self.import_form,
+            'site_header': 'LMS Administration',
+            'row_headers': self.headers
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        errors_list = []
+        import_form = self.import_form(request.POST, request.FILES)
         if import_form.is_valid():
-            if import_form.cleaned_data['format'] == 'csv':
+            if import_form.cleaned_data['file_format'] == 'csv':
                 dataset = DictReader(import_form.cleaned_data['file_to_import'])
-            if import_form.cleaned_data['format'] == 'json':
+            if import_form.cleaned_data['file_format'] == 'json':
                 dataset = json.loads(import_form.cleaned_data['file_to_import'].read())
-            role = 'student'
             for i, row in enumerate(dataset, 1):
                 errors = {}
-                form_data = {StudentImportRegisterForm.form_fields_map.get(k, k):v for k,v in row.items()}
-                form_data['role'] = role
+                form_data = {self.profile_form.form_fields_map.get(k, k):v for k,v in row.items()}
+                form_data['role'] = self.role
                 form_data['password'] = User.objects.make_random_password()
-                print(form_data)
                 user_form = AccountImportValidationForm(form_data, tos_required=False)
-                student_profile_form = StudentImportRegisterForm(form_data)
+                profile_form = self.profile_form(form_data)
                 state = 'new'
-                if user_form.is_valid() and student_profile_form.is_valid():
-                    if student_profile_form.exists(form_data):
-                        state = student_profile_form.update(form_data)
+                if user_form.is_valid() and profile_form.is_valid():
+                    if profile_form.exists(form_data):
+                        state = profile_form.update(form_data)
                     else:
-                        user, profile, registration = do_create_account(user_form, student_profile_form)
+                        user, profile, registration = do_create_account(user_form, profile_form)
+                        registration.activate()
+                        if self.role == 'instructor':
+                            user.is_staff = True
+                            user.save()
                 else:
                     state = 'error'
                     errors.update(dict(user_form.errors.items()))
-                    errors.update(dict(student_profile_form.errors.items()))
+                    errors.update(dict(profile_form.errors.items()))
                 errors_list.append((i, errors, state, row))
-        context.update(dict(
-            row_headers=headers
-        ))
-    return render(request, 'students_import.html', context)
+        context = {
+            'text_changelist_url': self.text_changelist_url,
+            'changelist_url': self.changelist_url,
+            'import_form': import_form,
+            'errors_list': errors_list,
+            'site_header': 'LMS Administration',
+            'row_headers': self.headers
+        }
+        return render(request, self.template_name, context)
+
+
+class InstructorProfileImportView(ProfileImportView):
+    import_form = ProfileImportForm
+    headers = INSTRUCTOR_EXPORT_FIELD_NAMES
+    profile_form = InstructorImportValidationForm
+    template_name = 'profiles_import.html'
+    role = 'instructor'
+    changelist_url = reverse_lazy('admin:tedix_ro_instructorprofile_changelist')
+    text_changelist_url = 'Instructor_profiles'
+
+
+class StudentProfileImportView(ProfileImportView):
+    import_form = ProfileImportForm
+    headers = STUDENT_PARENT_EXPORT_FIELD_NAMES
+    profile_form = StudentImportRegisterForm
+    template_name = 'profiles_import.html'
+    role = 'student'
+    changelist_url = reverse_lazy('admin:tedix_ro_studentprofile_changelist')
+    text_changelist_url = 'Student profiles'
