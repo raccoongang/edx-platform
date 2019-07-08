@@ -7,11 +7,14 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.forms import ModelForm
 from django.utils import six, timezone
 from django.utils.encoding import force_text
-from django.forms import ModelForm
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+
+from student.forms import AccountCreationForm, CourseEnrollmentAllowed
 
 from student.models import (
     PasswordHistory,
@@ -291,6 +294,24 @@ class StudentEnrollForm(forms.Form):
         return due_date_utc
 
 
+class StudentImportForm(forms.Form):
+    file_to_import = forms.FileField()
+    format = forms.ChoiceField(choices=[
+        ('', '------'),
+        ('csv', 'csv'),
+        ('json', 'json')
+    ])
+    send_emails = forms.BooleanField(required=False)
+
+    def clean(self):
+        cleaned_data = super(StudentImportForm, self).clean()
+        print(cleaned_data)
+        file_to_import = cleaned_data['file_to_import']
+        format = cleaned_data['format']
+        if not file_to_import.name.endswith(format):
+            raise ValidationError('Invalid format of file for choosen format')
+
+
 class AccountImportValidationForm(AccountCreationForm):
 
     def clean_email(self):
@@ -373,3 +394,45 @@ class InstructorProfileImportForm(forms.Form):
         if not import_file.name.endswith(input_format):
             raise ValidationError('Invalid format for File to import')
         return input_format
+class StudentImportRegisterForm(StudentRegisterForm):
+
+    form_fields_map = {
+        'city': 'school_city',
+        'teacher_email': 'instructor',
+        'public_name': 'name'
+    }
+
+    def __init__(self, *args, **kwargs):
+        super(StudentImportRegisterForm, self).__init__(*args, **kwargs)
+        self.fields['school_city'].to_field_name = 'name'
+        self.fields['school_city'].error_messages = {'invalid_choice': "Such city doesn't exists in DB"}
+        self.fields['school'].to_field_name = 'name'
+        self.fields['school'].error_messages = {'invalid_choice': "Such school doesn't exists in DB"}
+        self.fields['classroom'].to_field_name = 'name'
+        self.fields['instructor'].to_field_name = 'user__email'
+    
+    def exists(self, data):
+        return StudentProfile.objects.filter(user__email=data['email']).exists()
+    
+    def update(self, data):
+        email = data['email']
+        school_city = self.cleaned_data['school_city']
+        school = self.cleaned_data['school']
+        if StudentProfile.objects.filter(
+            user__email=email,
+            school_city=school_city, school=school):
+            return 'skipped'
+        StudentProfile.objects.filter(user__email=email).update(school_city=school_city, school=school)
+        return 'updated'
+    
+    def clean(self):
+        cleaned_data = super(StudentImportRegisterForm, self).clean()
+        school_city = cleaned_data['school_city']
+        school = cleaned_data['school']
+        instructor = cleaned_data['instructor']
+        if school.city != school_city:
+            self.add_error('school', "School doesn't belong the specified city")
+        if instructor and instructor.school != school:
+            self.add_error('instructor', "Specified instructor belongs to another school")
+        return cleaned_data
+

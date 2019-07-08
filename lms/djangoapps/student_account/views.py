@@ -115,7 +115,7 @@ def login_and_registration_form(request, initial_mode="login"):
     # Themed sites can use the new logistration page by setting
     # 'ENABLE_COMBINED_LOGIN_REGISTRATION' in their
     # configuration settings.
-    if is_request_in_themed_site() and not configuration_helpers.get_value('ENABLE_COMBINED_LOGIN_REGISTRATION', False):
+    if False:
         if initial_mode == "login":
             return old_login_view(request)
         elif initial_mode == "register":
