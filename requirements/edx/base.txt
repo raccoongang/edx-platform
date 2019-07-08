@@ -243,4 +243,4 @@ xblock==1.2.1
 zendesk==1.1.1
 
 #SSO Client for Wordpress.
--e git+https://github.com/raccoongang/edx-oauth-client.git@letstudy-v.0.1.1#egg=edx_oauth_client==letstudy-v.0.1.1
+-e git+https://github.com/raccoongang/edx-oauth-client.git@letstudy-v.0.1.2#egg=edx_oauth_client==letstudy-v.0.1.2
