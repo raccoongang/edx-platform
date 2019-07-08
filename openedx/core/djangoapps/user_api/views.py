@@ -165,7 +165,18 @@ class RegistrationView(APIView):
         "confirm_email",
         "first_name",
         "last_name",
+        "extra__phone",
+        "extra__address",
         "city",
+        "extra__usa_state",
+        "extra__zip_code",
+        "extra__header_for_licenses",
+        "extra__state_1",
+        "extra__license_1",
+        "extra__state_2",
+        "extra__license_2",
+        "extra__state_3",
+        "extra__license_3",
         "state",
         "country",
         "gender",
@@ -209,7 +220,7 @@ class RegistrationView(APIView):
 
         # Map field names to the instance method used to add the field to the form
         self.field_handlers = {}
-        valid_fields = self.DEFAULT_FIELDS + self.EXTRA_FIELDS
+        valid_fields = self.DEFAULT_FIELDS + [f for f in self.EXTRA_FIELDS if not f.startswith('extra__')]
         for field_name in valid_fields:
             handler = getattr(self, "_add_{field_name}_field".format(field_name=field_name))
             self.field_handlers[field_name] = handler
@@ -257,7 +268,8 @@ class RegistrationView(APIView):
             for field_name in self.DEFAULT_FIELDS:
                 self.field_handlers[field_name](form_desc, required=True)
 
-            for field_name, field in custom_form.fields.items():
+            def add_extra_field(name, custom_form):
+                field = custom_form.fields.get(name)
                 restrictions = {}
                 if getattr(field, 'max_length', None):
                     restrictions['max_length'] = field.max_length
@@ -265,17 +277,17 @@ class RegistrationView(APIView):
                     restrictions['min_length'] = field.min_length
                 field_options = getattr(
                     getattr(custom_form, 'Meta', None), 'serialization_options', {}
-                ).get(field_name, {})
+                ).get(name, {})
                 field_type = field_options.get('field_type', FormDescription.FIELD_TYPE_MAP.get(field.__class__))
                 if not field_type:
                     raise ImproperlyConfigured(
                         "Field type '{}' not recognized for registration extension field '{}'.".format(
                             field_type,
-                            field_name
+                            name
                         )
                     )
                 form_desc.add_field(
-                    field_name, label=field.label,
+                    name, label=field.label,
                     default=field_options.get('default'),
                     field_type=field_options.get('field_type', FormDescription.FIELD_TYPE_MAP.get(field.__class__)),
                     placeholder=field.initial, instructions=field.help_text, required=field.required,
@@ -284,9 +296,15 @@ class RegistrationView(APIView):
                     include_default_option=field_options.get('include_default_option'),
                 )
 
+            if not [True for f in self.EXTRA_FIELDS if f.startswith('extra__')]:
+                for field_name in custom_form.fields:
+                    add_extra_field(field_name, custom_form)
+
             # Extra fields configured in Django settings
             # may be required, optional, or hidden
             for field_name in self.EXTRA_FIELDS:
+                if field_name.startswith('extra__'):
+                    add_extra_field(field_name[7:], custom_form)
                 if self._is_field_visible(field_name):
                     self.field_handlers[field_name](
                         form_desc,
