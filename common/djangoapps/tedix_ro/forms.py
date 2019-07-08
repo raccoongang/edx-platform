@@ -344,7 +344,9 @@ class StudentImportRegisterForm(StudentRegisterForm):
     def __init__(self, *args, **kwargs):
         super(StudentImportRegisterForm, self).__init__(*args, **kwargs)
         self.fields['school_city'].to_field_name = 'name'
+        self.fields['school_city'].error_messages = {'invalid_choice': "Such city doesn't exists in DB"}
         self.fields['school'].to_field_name = 'name'
+        self.fields['school'].error_messages = {'invalid_choice': "Such school doesn't exists in DB"}
         self.fields['classroom'].to_field_name = 'name'
         self.fields['instructor'].to_field_name = 'user__email'
     
