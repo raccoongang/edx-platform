@@ -1,0 +1,19 @@
+<%page expression_filter="h"/>
+<%!
+from django.utils.translation import ugettext as _
+from edxmako.shortcuts import marketing_link
+%>
+<%inherit file="../main.html" />
+
+<%block name="pagetitle">${_("Index page")}</%block>
+
+<main id="main" aria-label="Content" tabindex="-1">
+    <section class="container about">
+        <p>${_("Calypso Continuing Education™ provides state-of-the-art accredited e-learning courses directly to your desktop, or on the go to any of your mobile devices.")}</p>
+        <p>${_("All you need is an internet connection.")}</p>
+        <p>${_("Sign up now and you can earn your license renewal credits wherever and whenever it's convenient.")}</p>
+        <p>${_("When you’re done with the course, just print your accredited course certificate.")}</p>
+        <p>${_("It’s that easy!")}</p>
+        <p><a href="${marketing_link('COURSES')}">${_("Explore Calypso Continuing Education™ courses")}</a></p>
+    </section>
+</main>

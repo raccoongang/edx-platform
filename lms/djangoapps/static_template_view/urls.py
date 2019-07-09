@@ -4,6 +4,9 @@ URLs for static_template_view app
 
 from django.conf import settings
 from django.conf.urls import patterns, url
+from django.views.generic.base import RedirectView
+from edxmako.shortcuts import marketing_link
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 
 urlpatterns = (
     'static_template_view.views',
@@ -17,7 +20,7 @@ urlpatterns = (
     url(r'^404$', 'render_404'),  # Can this be deleted? Test test_404_microsites fails with this.
     url(r'^500$', 'render_500'),
 
-    url(r'^blog$', 'render', {'template': 'blog.html'}, name="blog"),
+    #url(r'^blog$', 'render', {'template': 'blog.html'}, name="blog"),
     url(r'^contact$', 'render', {'template': 'contact.html'}, name="contact"),
     url(r'^donate$', 'render', {'template': 'donate.html'}, name="donate"),
     url(r'^faq$', 'render', {'template': 'faq.html'}, name="faq"),
@@ -31,6 +34,13 @@ urlpatterns = (
     # Press releases
     url(r'^press/([_a-zA-Z0-9-]+)$', 'render_press_release', name='press_release'),
 )
+
+
+enable_mktg_site = configuration_helpers.get_value(
+    'ENABLE_MKTG_SITE',
+    settings.FEATURES.get('ENABLE_MKTG_SITE', False)
+)
+
 
 # Only enable URLs for those marketing links actually enabled in the
 # settings. Disable URLs by marking them as None.
@@ -52,6 +62,9 @@ for key, value in settings.MKTG_URL_LINK_MAP.items():
 
     # Make the assumption that the URL we want is the lowercased
     # version of the map key
-    urlpatterns += (url(r'^%s$' % key.lower(), 'render', {'template': template}, name=value),)
+    if enable_mktg_site and key in settings.MKTG_URLS:
+        urlpatterns += (url(r'^%s$' % key.lower(), RedirectView.as_view(url=marketing_link(key), permanent=False), name=value),)
+    else:
+        urlpatterns += (url(r'^%s$' % key.lower(), 'render', {'template': template}, name=value),)
 
 urlpatterns = patterns(*urlpatterns)
