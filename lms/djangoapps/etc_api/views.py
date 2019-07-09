@@ -64,6 +64,7 @@ class CreateUserAccountView(APIView):
 
         try:
             validate_slug(username)
+            _validate_password(password=password, username=username)
         except ValidationError:
             return Response(
                 data={
@@ -71,16 +72,13 @@ class CreateUserAccountView(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-        data['name'] = "{} {}".format(prename, surname).strip() if prename or surname else username
+        except AccountPasswordInvalid as pass_err:
+            return Response(data={"user_message": pass_err.message}, status=status.HTTP_400_BAD_REQUEST)
 
         if check_account_exists(username=username, email=email):
             return Response(data={"user_message": "User already exists"}, status=status.HTTP_409_CONFLICT)
 
-        try:
-            _validate_password(password=password, username=username)
-        except AccountPasswordInvalid as pass_err:
-            return Response(data={"user_message": pass_err.message}, status=status.HTTP_400_BAD_REQUEST)
+        data['name'] = "{} {}".format(prename, surname).strip() if prename or surname else username
 
         try:
             user = create_account_with_params(request, data)
