@@ -5,7 +5,8 @@ from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from openedx.core.djangoapps.user_api.accounts.api import check_account_exists
+from openedx.core.djangoapps.user_api.errors import AccountPasswordInvalid
+from openedx.core.djangoapps.user_api.accounts.api import check_account_exists, _validate_password
 from student.views import create_account_with_params
 from student.models import CourseEnrollment, EnrollmentClosedError, CourseFullError, AlreadyEnrolledError, UserProfile
 from enrollment.views import EnrollmentCrossDomainSessionAuth, EnrollmentUserThrottle, ApiKeyPermissionMixIn
@@ -75,6 +76,11 @@ class CreateUserAccountView(APIView):
 
         if check_account_exists(username=username, email=email):
             return Response(data={"user_message": "User already exists"}, status=status.HTTP_409_CONFLICT)
+
+        try:
+            _validate_password(password=password, username=username)
+        except AccountPasswordInvalid as pass_err:
+            return Response(data={"user_message": pass_err.message}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             user = create_account_with_params(request, data)
