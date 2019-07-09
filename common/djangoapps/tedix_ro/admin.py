@@ -7,13 +7,16 @@ from django import forms
 from django.contrib import admin
 from django.contrib.admin.widgets import AdminSplitDateTime
 from django.contrib.auth.models import User
+from django.http.response import HttpResponseRedirect
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
+from import_export.fields import Field
 from import_export.formats import base_formats
+from import_export.forms import ImportForm
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
-
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+
 from tedix_ro.models import (
     City,
     School,
@@ -22,6 +25,28 @@ from tedix_ro.models import (
     InstructorProfile,
     Classroom,
     StudentCourseDueDate
+)
+
+STUDENT_PARENT_EXPORT_FIELD_NAMES = (
+    'username',
+    'email',
+    'public_name',
+    'phone',
+    'parent_email',
+    'parent_phone',
+    'teacher_email',
+    'city',
+    'school',
+    'classroom'
+)
+
+INSTRUCTOR_EXPORT_FIELD_NAMES = (
+    'username',
+    'email',
+    'public_name',
+    'phone',
+    'city',
+    'school'
 )
 
 
@@ -69,19 +94,113 @@ class ParentProfileForm(ProfileForm):
         fields = '__all__'
 
 
-@admin.register(StudentProfile)
-class StudentProfileAdmin(admin.ModelAdmin):
-    form = StudentProfileForm
-
-
 @admin.register(ParentProfile)
 class ParentProfileAdmin(admin.ModelAdmin):
     form = ParentProfileForm
 
 
+class InstructorProfileImportForm(ImportForm):
+
+    is_send_email = forms.BooleanField(label = "Send emails")
+
+
+class InstructorProfileResource(resources.ModelResource):
+
+    school = Field(
+        attribute='school__name',
+        column_name='school'
+    )
+
+    city = Field(
+        attribute='school_city__name',
+        column_name='city',
+    )
+
+    username = Field(
+        attribute='user__username',
+        column_name='username',
+    )
+
+    email = Field(
+        attribute='user__email',
+        column_name='email',
+    )
+
+    public_name = Field(
+        attribute='user__profile__name',
+        column_name='public_name',
+    )
+
+    class Meta:
+        model = InstructorProfile
+        fields = INSTRUCTOR_EXPORT_FIELD_NAMES
+        export_order = INSTRUCTOR_EXPORT_FIELD_NAMES
+        import_id_fields = ('email',)
+        skip_unchanged = True
+
+
 @admin.register(InstructorProfile)
-class InstructorProfileAdmin(admin.ModelAdmin):
+class InstructorProfileAdmin(ImportExportModelAdmin):
     form = InstructorProfileForm
+    resource_class = InstructorProfileResource
+
+
+class StudentProfileResource(resources.ModelResource):
+
+    school = Field(
+        attribute='school__name',
+        column_name='school'
+    )
+
+    city = Field(
+        attribute='school_city__name',
+        column_name='city',
+    )
+
+    username = Field(
+        attribute='user__username',
+        column_name='username',
+    )
+
+    email = Field(
+        attribute='user__email',
+        column_name='email',
+    )
+
+    public_name = Field(
+        attribute='user__profile__name',
+        column_name='public_name',
+    )
+    teacher_email = Field(
+        attribute='instructor__user__email',
+        column_name='teacher_email'
+    )
+    classroom = Field(
+        attribute='classroom__name',
+        column_name='classroom',
+    )
+    parent_email = Field()
+    parent_phone = Field()
+
+    class Meta:
+        model = StudentProfile
+        fields = STUDENT_PARENT_EXPORT_FIELD_NAMES
+        export_order = STUDENT_PARENT_EXPORT_FIELD_NAMES
+
+    def dehydrate_parent_email(self, student_profile):
+        return student_profile.parents.all().first().user.email
+    
+    def dehydrate_parent_phone(self, student_profile):
+        return student_profile.parents.all().first().phone
+
+
+@admin.register(StudentProfile)
+class StudentProfileImportExportAdmin(ImportExportModelAdmin):
+    resource_class = StudentProfileResource
+    formats = (
+        base_formats.CSV,
+        base_formats.JSON,
+    )
 
 
 class CityResource(resources.ModelResource):
