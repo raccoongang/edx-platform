@@ -917,7 +917,6 @@ ORA2_FILEUPLOAD_CACHE_NAME = ENV_TOKENS.get('ORA2_FILEUPLOAD_CACHE_NAME', 'defau
 ORA2_FILEUPLOAD_ROOT = os.path.join(MEDIA_ROOT, 'submissions_attachments/')
 ORA2_FILEUPLOAD_ROOT = ENV_TOKENS.get('ORA2_FILEUPLOAD_ROOT', ORA2_FILEUPLOAD_ROOT)
 SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING = FEATURES.get("SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING", True)
-#### RaccoonGang ####
 
 if FEATURES.get("ENABLE_RG_INSTRUCTOR_ANALYTICS", False):
     INSTALLED_APPS += ('rg_instructor_analytics',)
@@ -937,3 +936,16 @@ if FEATURES.get("ENABLE_RG_INSTRUCTOR_ANALYTICS", False):
         'day_of_month': '*',
         'month_of_year': '*',
     })
+
+if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
+    import raven
+    INSTALLED_APPS += ( 'raven.contrib.django.raven_compat', )
+    RAVEN_CONFIG = {
+        'dsn': AUTH_TOKENS.get('RG_SENTRY_DSN'),
+    }
+    raven.fetch_git_sha(REPO_ROOT)
+
+# Variable for overriding standard MKTG_URLS
+EXTERNAL_MKTG_URLS = ENV_TOKENS.get('EXTERNAL_MKTG_URLS', {})
+
+#### RaccoonGang ####
