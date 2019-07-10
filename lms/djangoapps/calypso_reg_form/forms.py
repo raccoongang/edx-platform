@@ -10,26 +10,50 @@ US_STATE_FORM_CHOICES.insert(0, ('', '--'))
 
 
 class ExtraInfoForm(forms.ModelForm):
+    # This is fake field just for represent the label,
+    # because EDX registration form does not support fieldsets
+    header_for_licenses = forms.CharField(label=_('State and License Information'),
+                              required=False)
 
-    state = forms.ChoiceField(choices=US_STATE_FORM_CHOICES,
-                              label=_('U.S. State'),
+    state_1 = forms.ChoiceField(choices=US_STATE_FORM_CHOICES,
+                              label=_('License State'),
                               required=True,
-                              error_messages={'required': _('Please select your U.S. State')})
+                              error_messages={'required': _('Please select your License State')})
 
-    license = forms.CharField(label=_('License'),
+    license_1 = forms.CharField(label=_('License Number'),
                               required=True,
                               error_messages={'required': _('Please enter your License')})
+    state_2 = forms.ChoiceField(choices=US_STATE_FORM_CHOICES,
+                              label=_('License State #2'),
+                              required=False)
+
+    license_2 = forms.CharField(label=_('License Number'),
+                              required=False)
+    state_3 = forms.ChoiceField(choices=US_STATE_FORM_CHOICES,
+                              label=_('License State #3'),
+                              required=False)
+
+    license_3 = forms.CharField(label=_('License Number'),
+                              required=False)
 
     class Meta:
         model = ExtraInfo
         exclude = ['user', ]
+        serialization_options = {
+            'header_for_licenses': {
+                'field_type': 'hidden'
+            }
+        }
 
     def save_extra(self, commit=True):
-        state = self.cleaned_data.get('state')
-        license = self.cleaned_data.get('license')
-
-        StateExtraInfo.objects.create(extra_info=self.instance,
-                                      state=state,
-                                      license=license.strip())
+        for n in [1, 2, 3]:
+            state = self.cleaned_data.get('state_{}'.format(n))
+            license = self.cleaned_data.get('license_{}'.format(n))
+            if state and license:
+                StateExtraInfo.objects.create(
+                    extra_info=self.instance,
+                    state=state,
+                    license=license.strip()
+                )
 
         return self.instance
