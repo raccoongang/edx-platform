@@ -45,7 +45,7 @@
       <input type="submit" class="default" value="{% trans "Submit" %}">
     </div>
   </form>
-  {% if errors_list %}
+  {% if data_list %}
     <table>
         <tr>
             <td>#</td>
@@ -54,7 +54,7 @@
                 <td>{{ field_name }}</td>
             {% endfor %}
         </tr>
-        {% for row_number, errors, state, row in errors_list %}
+        {% for row_number, errors, state, row in data_list %}
             <tr style="background-color: {% get_color state %};">
                 <td>{{ row_number }}</td>
                 <td>{{ state }}</td>

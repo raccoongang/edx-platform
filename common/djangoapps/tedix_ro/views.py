@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.db import transaction
 from django.shortcuts import redirect, render
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
@@ -34,6 +35,12 @@ from .forms import (
     ProfileImportForm,
     StudentProfileImportForm,
     AccountImportValidationForm,
+    StudentProfileImportForm,
+    CityImportForm,
+    AccountImportValidationForm,
+    CityImportValidationForm,
+    SchoolImportValidationForm,
+    FORM_FIELDS_MAP
 )
 from .models import StudentProfile, StudentCourseDueDate, City, School
 from .serializers import CitySerializer, SchoolSerilizer, SingleCitySerializer, SingleSchoolSerilizer
@@ -179,44 +186,50 @@ class ProfileImportView(View):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        errors_list = []
+        data_list = []
         import_form = self.import_form(request.POST, request.FILES)
+        context = {'data_list': data_list}
         if import_form.is_valid():
             if import_form.cleaned_data['file_format'] == 'csv':
                 dataset = DictReader(import_form.cleaned_data['file_to_import'])
             if import_form.cleaned_data['file_format'] == 'json':
                 dataset = json.loads(import_form.cleaned_data['file_to_import'].read())
-            for i, row in enumerate(dataset, 1):
-                errors = {}
-                form_data = {self.profile_form.form_fields_map.get(k, k):v for k,v in row.items()}
-                form_data['role'] = self.role
-                form_data['password'] = User.objects.make_random_password()
-                user_form = AccountImportValidationForm(form_data, tos_required=False)
-                profile_form = self.profile_form(form_data)
-                state = 'new'
-                if user_form.is_valid() and profile_form.is_valid():
-                    if profile_form.exists(form_data):
-                        state = profile_form.update(form_data)
-                    else:
-                        user, profile, registration = do_create_account(user_form, profile_form)
-                        registration.activate()
-                        if self.role == 'instructor':
-                            user.is_staff = True
-                            user.save()
-                        self.send_email(user, form_data, import_form.cleaned_data['send_payment_link'])
-                else:
-                    state = 'error'
-                    errors.update(dict(user_form.errors.items()))
-                    errors.update(dict(profile_form.errors.items()))
-                errors_list.append((i, errors, state, row))
-        context = {
+            with transaction.atomic():
+                try:
+                    for i, row in enumerate(dataset, 1):
+                        errors = {}
+                        form_data = {FORM_FIELDS_MAP.get(k, k):v for k,v in row.items()}
+                        form_data['role'] = self.role
+                        form_data['password'] = User.objects.make_random_password()
+                        user_form = AccountImportValidationForm(form_data, tos_required=False)
+                        profile_form = self.profile_form(form_data)
+                        state = 'new'
+                        if user_form.is_valid() and profile_form.is_valid():
+                            if profile_form.exists(form_data):
+                                state = profile_form.update(form_data)
+                            else:
+                                user, profile, registration = do_create_account(user_form, profile_form)
+                                registration.activate()
+                                if self.role == 'instructor':
+                                    user.is_staff = True
+                                    user.save()
+                                self.send_email(user, form_data, import_form.cleaned_data['send_payment_link'])
+                        else:
+                            state = 'error'
+                            errors.update(dict(user_form.errors.items()))
+                            errors.update(dict(profile_form.errors.items()))
+                        data_list.append((i, errors, state, row))
+                except Exception as e:
+                    messages.error(request, u'Oops! Something went wrong. Please check that the file structure is correct.')
+                    context.pop('data_list')
+                    transaction.set_rollback(True)
+        context.update({
             'text_changelist_url': self.text_changelist_url,
             'changelist_url': self.changelist_url,
             'import_form': import_form,
-            'errors_list': errors_list,
             'site_header': 'LMS Administration',
             'row_headers': self.headers
-        }
+        })
         return render(request, self.template_name, context)
 
     def send_email(self, user, data, send_payment_link):
@@ -250,7 +263,7 @@ class InstructorProfileImportView(ProfileImportView):
     import_form = ProfileImportForm
     headers = INSTRUCTOR_EXPORT_FIELD_NAMES
     profile_form = InstructorImportValidationForm
-    template_name = 'profiles_import.html'
+    template_name = 'admin_import.html'
     role = 'instructor'
     changelist_url = reverse_lazy('admin:tedix_ro_instructorprofile_changelist')
     text_changelist_url = 'Instructor_profiles'
@@ -260,7 +273,75 @@ class StudentProfileImportView(ProfileImportView):
     import_form = StudentProfileImportForm
     headers = STUDENT_PARENT_EXPORT_FIELD_NAMES
     profile_form = StudentImportRegisterForm
-    template_name = 'profiles_import.html'
+    template_name = 'admin_import.html'
     role = 'student'
     changelist_url = reverse_lazy('admin:tedix_ro_studentprofile_changelist')
     text_changelist_url = 'Student profiles'
+
+
+def city_import(request):
+    headers = ['city_name', 'school_name', 'school_type']
+    import_form = CityImportForm()
+    context = {
+        'import_form': import_form,
+        'text_changelist_url': 'Cities',
+        'changelist_url': reverse_lazy('admin:tedix_ro_city_changelist'),
+        'site_header': 'LMS Administration',
+        'row_headers': headers
+    }
+    status_map = {
+        'Publica': 'Public',
+        'Privata': 'Private'
+    }
+    if request.method == 'POST':
+        import_form = CityImportForm(request.POST, request.FILES)
+        if import_form.is_valid():
+            dataset = json.loads(import_form.cleaned_data['file_to_import'].read())
+            data_list = []
+            context.update({'data_list': data_list})
+            with transaction.atomic():
+                try:
+                    for city_name, schools in dataset.items():
+                        errors = {}
+                        state = 'new'
+                        status = ''
+                        city_form = CityImportValidationForm({"name": city_name})
+                        if city_form.is_valid():
+                            if not city_form.exists(city_name):
+                                city_form.save()
+                            for school_name, status in [(school, status) for x in schools for (school, status) in x.items()]:
+                                school_type = status_map[status]
+                                school_form = SchoolImportValidationForm({
+                                    'name': school_name,
+                                    'city': city_name,
+                                    'school_type': school_type
+                                })
+
+                                if school_form.is_valid():
+                                    if school_form.exists(school_name):
+                                        state = school_form.update(school_name, school_type)
+                                    else:
+                                        school_form.save()
+                                else:
+                                    errors.update(dict(school_form.errors.items()))
+                                    state = 'error'
+                                
+                                data_list.append((errors, state, {
+                                    'city_name': city_name,
+                                    'school_name': school_name,
+                                    'school_type': status
+                                }))
+                        else:
+                            for value in city_form.errors.values():
+                                errors.update({'city': value})
+                            state = 'error'
+                            data_list.append((errors, state, {
+                                'city_name': city_name
+                            }))
+
+                except Exception as e:
+                    messages.error(request, e)
+                    context.pop('data_list')
+                    transaction.set_rollback(True)
+        context.update({'import_form': import_form})
+    return render(request, 'city_import.html', context)

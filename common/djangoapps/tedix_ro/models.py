@@ -39,8 +39,13 @@ class City(models.Model):
 
 
 class School(models.Model):
+    TYPE_CHOICES = [
+        ('Public', 'Public'),
+        ('Private', 'Private')
+    ]
     name = models.CharField(max_length=254, unique=True)
-    city = models.ForeignKey(City, null=True, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, related_name='schools', null=True, on_delete=models.CASCADE)
+    school_type = models.CharField(max_length=55, choices=TYPE_CHOICES)
 
     class Meta:
         ordering = ['name']

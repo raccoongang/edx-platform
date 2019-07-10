@@ -1,12 +1,12 @@
 from django import template
-from tedix_ro.forms import StudentImportRegisterForm
+from tedix_ro.forms import FORM_FIELDS_MAP
 
 register = template.Library()
 
 
 @register.filter
 def get_errors_value(data, key_name):
-    return data.get(StudentImportRegisterForm.form_fields_map.get(key_name, key_name), '')
+    return data.get(FORM_FIELDS_MAP.get(key_name, key_name), '')
 
 
 @register.filter
