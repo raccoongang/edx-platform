@@ -93,6 +93,18 @@
                     return this.$('input[name="cohort-assignment-type"]:checked').val();
                 },
 
+                getManualStart: function() {
+                    return this.$('input[name="cohort-manual-start"]').prop('checked');
+                },
+
+                getCohortDuration: function() {
+                    return parseInt(this.$('input[name="cohort-duration"]').val())
+                },
+
+                getCohortStarted: function() {
+                    return this.$('input[name="cohort-started"]').prop('checked');
+                },
+
                 showMessage: function(message, type, details) {
                     this.showNotification(
                         {type: type || 'confirmation', title: message, details: details},
@@ -122,18 +134,26 @@
                         cohort = this.model,
                         saveOperation = $.Deferred(),
                         isUpdate = !_.isUndefined(this.model.id),
-                        fieldData, selectedContentGroup, selectedAssignmentType, errorMessages, showErrorMessage;
+                        fieldData, selectedContentGroup, selectedAssignmentType,
+                        manualStart, cohortDuration, cohortStarted,
+                        errorMessages, showErrorMessage;
                     showErrorMessage = function(message, details) {
                         self.showMessage(message, 'error', details);
                     };
                     this.removeNotification();
                     selectedContentGroup = this.getSelectedContentGroup();
                     selectedAssignmentType = this.getAssignmentType();
+                    manualStart = this.getManualStart();
+                    cohortDuration = this.getCohortDuration();
+                    cohortStarted = this.getCohortStarted();
                     fieldData = {
                         name: this.getUpdatedCohortName(),
                         group_id: selectedContentGroup ? selectedContentGroup.id : null,
                         user_partition_id: selectedContentGroup ? selectedContentGroup.get('user_partition_id') : null,
-                        assignment_type: selectedAssignmentType
+                        assignment_type: selectedAssignmentType,
+                        manual_start: manualStart,
+                        duration: cohortDuration,
+                        started: cohortStarted
                     };
                     errorMessages = this.validate(fieldData);
 

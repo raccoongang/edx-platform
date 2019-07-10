@@ -4,6 +4,7 @@
 from django.utils.translation import ugettext as _
 from openedx.core.djangolib.markup import HTML, Text
 from course_modes.models import CourseMode
+from django.core.urlresolvers import reverse
 %>
 <%namespace name='static' file='../static_content.html'/>
 
@@ -20,7 +21,7 @@ from course_modes.models import CourseMode
 <%
 if cert_status['status'] == 'generating':
     status_css_class = 'course-status-certrendering'
-elif cert_status['status'] == 'ready':
+elif cert_status['status'] == 'ready' or cert_status['status'] == 'processing' and cert_status.get('passed'):
     status_css_class = 'course-status-certavailable'
 elif cert_status['status'] == 'notpassing':
     status_css_class = 'course-status-certnotavailable'
@@ -28,8 +29,10 @@ else:
     status_css_class = 'course-status-processing'
 %>
 <div class="message message-status ${status_css_class} is-shown">
-% if cert_status['status'] == 'processing':
+% if cert_status['status'] == 'processing' and not cert_status.get('passed'):
   <p class="message-copy">${_("Final course details are being wrapped up at this time. Your final standing will be available shortly.")}</p>
+% elif cert_status['status'] == 'processing' and cert_status.get('passed'):
+  <p class="message-copy">${_("You are finished this course.")}</p>
 % elif cert_status['status'] in ('generating', 'ready', 'notpassing', 'restricted', 'auditing', 'unverified'):
   <p class="message-copy">${_("Your final grade:")}
   <span class="grade-value">${"{0:.0f}%".format(float(cert_status['grade'])*100)}</span>.
@@ -57,7 +60,7 @@ else:
   </p>
 % endif
 
-% if cert_status['show_disabled_download_button'] or cert_status['show_download_url'] or cert_status['show_survey_button']:
+% if cert_status['show_disabled_download_button'] or cert_status['show_download_url'] or cert_status['show_survey_button'] or cert_status.get('passed'):
   <div class="wrapper-message-primary">
     <ul class="actions actions-primary">
       % if cert_status['show_disabled_download_button']:
@@ -83,6 +86,12 @@ else:
         <a class="btn" href="${cert_status['download_url']}"
            title="${_('This link will open/download a PDF document of your verified {cert_name_long}.').format(cert_name_long=cert_name_long)}">
            ${_("Download Your ID Verified {cert_name_short} (PDF)").format(cert_name_short=cert_name_short)}</a></li>
+      % elif cert_status.get('passed'):
+        <script type="text/javascript" src="${static.url('js/courseware/certificates_api.js')}"></script>
+        <% post_url = reverse('generate_user_cert', args=[unicode(course_overview.id)]) %>
+        <li class="action action-certificate">
+        <button class="btn generate_certs" data-endpoint="${post_url}" id="btn_generate_cert">
+           ${_('Request Certificate')}</button></li>
       % endif
 
       % if cert_status['show_survey_button']:
