@@ -299,7 +299,6 @@ class ProfileImportForm(forms.Form):
         ('csv', 'csv'),
         ('json', 'json')
     ])
-    send_emails = forms.BooleanField(required=False)
 
     def clean(self):
         cleaned_data = super(ProfileImportForm, self).clean()
@@ -308,6 +307,10 @@ class ProfileImportForm(forms.Form):
         if not file_to_import.name.endswith(file_format):
             self.add_error('file_format', 'Invalid format of file for choosen format.')
         return cleaned_data
+
+
+class StudentProfileImportForm(ProfileImportForm):
+    send_payment_link = forms.BooleanField(required=False)
 
 
 class AccountImportValidationForm(AccountCreationForm):
