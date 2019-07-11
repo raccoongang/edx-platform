@@ -32,6 +32,7 @@ from .forms import (
     StudentImportRegisterForm,
     InstructorImportValidationForm,
     ProfileImportForm,
+    StudentProfileImportForm,
     AccountImportValidationForm,
 )
 from .models import StudentProfile, StudentCourseDueDate, City, School
@@ -202,6 +203,7 @@ class ProfileImportView(View):
                         if self.role == 'instructor':
                             user.is_staff = True
                             user.save()
+                        self.send_email(user, form_data, import_form.cleaned_data['send_payment_link'])
                 else:
                     state = 'error'
                     errors.update(dict(user_form.errors.items()))
@@ -217,6 +219,32 @@ class ProfileImportView(View):
         }
         return render(request, self.template_name, context)
 
+    def send_email(self, user, data, send_payment_link):
+        to_address = user.email
+        email_context = {
+            'email': to_address,
+            'password': data['password']
+        }
+        from_address = configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
+        message = render_to_string('emails/import_profile.txt', email_context)
+        send_mail('subject', message, from_address, [to_address])
+        if self.role == 'student':
+            parent_user = user.studentprofile.parents.first()
+            if parent_user and parent_user.user and not parent_user.user.has_usable_password():
+                password = User.objects.make_random_password()
+                parent_user.user.set_password(password)
+                parent_user.user.save()
+                email_context = {
+                    'email': parent_user.user.email,
+                    'password': password
+                }
+                message = render_to_string('emails/import_profile.txt', email_context)
+                send_mail('subject', message, from_address, [parent_user.user.email])
+                if send_payment_link:
+                    email_context = {'student_name': user.username}
+                    message = render_to_string('emails/payment_link_email_parent.txt', email_context)
+                    send_mail('pay link', message, from_address, [parent_user.user.email])
+
 
 class InstructorProfileImportView(ProfileImportView):
     import_form = ProfileImportForm
@@ -229,7 +257,7 @@ class InstructorProfileImportView(ProfileImportView):
 
 
 class StudentProfileImportView(ProfileImportView):
-    import_form = ProfileImportForm
+    import_form = StudentProfileImportForm
     headers = STUDENT_PARENT_EXPORT_FIELD_NAMES
     profile_form = StudentImportRegisterForm
     template_name = 'profiles_import.html'
