@@ -6357,6 +6357,18 @@ msgstr "Завершить сдачу экзамена"
 msgid "Hide Timer"
 msgstr ""
 
+#: /lms/templates/courseware/proctored-exam-status.underscore
+msgid "You are taking \"{exam_link}\" as a {exam_type} exam. The timer on the right shows the time remaining in the exam."
+msgstr "Обратите внимание на таймер справа, он отображает время, оставшееся до конца экзамена."
+
+#: /lms/templates/courseware/proctored-exam-status.underscore
+msgid ""
+"To receive credit on a problem, you must click \"Check\" or \"Final Check\" "
+"on it before you select \"End My Exam\"."
+msgstr ""
+"Для того, чтобы ваши ответы были оценены, нажмите: "
+"\"Завершить сдачу экзамена\"."
+
 #: lms/templates/discovery/course_card.underscore
 msgid "LEARN MORE"
 msgstr "ПОДРОБНЕЕ"
