@@ -25454,3 +25454,188 @@ msgstr ""
 
 msgid "You can keep working for a higher grade, or request your certificate now."
 msgstr "Вы можете продолжать работать для получения более высокой оценки или запросить свой сертификат сейчас."
+
+#: common/lib/edx-proctoring/edx_proctoring/templates/timed_exam/submitted.html:6
+msgid ""
+"\n"
+"        The time allotted for this exam has expired. Your exam has been "
+"submitted and any work you completed will be graded.\n"
+"      "
+msgstr ""
+
+#: /edx_proctoring/templates/timed_exam/submitted.html:10
+msgid ""
+"\n"
+"        You have submitted your timed exam.\n"
+"      "
+msgstr ""
+"\n"
+"Выполнение задания завершено, вы отправили задание на проверку.\n"
+"      "
+
+#: /edx_proctoring/templates/timed_exam/submitted.html:18
+msgid ""
+"\n"
+"      Your grade for this timed exam will be immediately available on the <a "
+"href=\"%(progress_page_url)s\">Progress</a> page.\n"
+"    "
+msgstr ""
+"\n"
+"      Вы можете ознакомиться с вашим текущим статусом по курсу на странице <a "
+"href=\"%(progress_page_url)s\">Прогресс</a>.\n"
+"    "
+
+#: /edx_proctoring/templates/timed_exam/submitted.html:22
+msgid ""
+"\n"
+"        After the due date has passed, you can review the exam, but you "
+"cannot change your answers.\n"
+"      "
+msgstr ""
+"\n"
+"        После прохождения экзамена вы сможете просматривать ответы, но не сможете их "
+"изменять.\n"
+"      "
+
+#: common/lib/edx-proctoring/edx_proctoring/utils.py
+msgid "{num_of_hours} hour"
+msgstr "{num_of_hours} час"
+
+#: common/lib/edx-proctoring/edx_proctoring/utils.py
+msgid "{num_of_hours} hours"
+msgstr "{num_of_hours} часа"
+
+#: common/lib/edx-proctoring/edx_proctoring/utils.py
+msgid "{num_of_minutes} minute"
+msgstr "{num_of_minutes} минута"
+
+#: common/lib/edx-proctoring/edx_proctoring/utils.py
+msgid "{num_of_minutes} minutes"
+msgstr "{num_of_minutes} минут"
+
+#: common/lib/edx-proctoring/edx_proctoring/utils.py
+msgid " and {num_of_minutes} minute"
+msgstr " и {num_of_minutes} минута"
+
+#: common/lib/edx-proctoring/edx_proctoring/utils.py
+msgid " and {num_of_minutes} minutes"
+msgstr " и {num_of_minutes} минут"
+
+#: /edx_proctoring/templates/timed_exam/entrance.html:4
+msgid ""
+"\n"
+"    %(exam_name)s is a Timed Exam (%(total_time)s)\n"
+"    "
+msgstr ""
+"\n"
+"    Это контрольное задание с лимитом по времени (%(total_time)s)\n"
+"    "
+
+#: /edx_proctoring/templates/timed_exam/entrance.html:9
+msgid "This exam has a time limit associated with it."
+msgstr " "
+
+#: /edx_proctoring/templates/timed_exam/entrance.html:11
+msgid "To pass this exam, you must complete the problems in the time allowed."
+msgstr "Для сдачи экзамена необходимо решить задания за отведенное время."
+
+#: /edx_proctoring/templates/timed_exam/entrance.html:13
+msgid "After you select "
+msgstr "Когда "
+
+#: /edx_proctoring/templates/timed_exam/entrance.html:15
+msgid "I am ready to start this timed exam,"
+msgstr "вы приступите к выполнению задания,"
+
+#: /edx_proctoring/templates/timed_exam/entrance.html:17
+msgid "you will have "
+msgstr "у вас будет "
+
+#: /edx_proctoring/templates/timed_exam/entrance.html:17
+msgid " to complete and submit the exam."
+msgstr " для его выполнения."
+
+#: /edx_proctoring/templates/timed_exam/entrance.html:21
+msgid ""
+"\n"
+"        I am ready to start this timed exam.\n"
+"      "
+msgstr ""
+"\n"
+"        Начать выполнение задания.\n"
+"      "
+
+#: /edx_proctoring/templates/timed_exam/footer.html:3
+msgid "Can I request additional time to complete my exam?"
+msgstr "Внимание! У вас будет одна попытка на прохождение экзамена."
+
+#: /edx_proctoring/templates/timed_exam/footer.html:4
+msgid ""
+"\n"
+"      If you have disabilities,\n"
+"      you might be eligible for an additional time allowance on timed "
+"exams.\n"
+"      Ask your course team for information about additional time "
+"allowances.\n"
+"    "
+msgstr ""
+"\n"
+"      Не нажимайте на эту кнопку,\n"
+"      если вы не собираетесь проходить задание прямо "
+"сейчас.\n"
+"      При переходе на следующий экран ваша попытка сдачи теста будет "
+"использована.\n"
+"    "
+
+#: /edx_proctoring/templates/timed_exam/ready_to_submit.html:4
+msgid ""
+"\n"
+"      Are you sure that you want to submit your timed exam?\n"
+"    "
+msgstr ""
+"\n"
+"      Вы уверены, что хотите завершить выполнение контрольного задания?\n"
+"    "
+
+#: common/lib/edx-proctoring/edx_proctoring/templates/proctored_exam/ready_to_submit.html:9
+#: common/lib/edx-proctoring/edx_proctoring/templates/timed_exam/ready_to_submit.html:9
+msgid ""
+"\n"
+"      Make sure that you have selected \"Check\" or \"Final Check\" for each "
+"problem before you submit your exam.\n"
+"    "
+msgstr ""
+"\n"
+"      Убедитесь, что вы нажали \"Отправить\" на всех заданиях до завершения "
+"экзамена.\n"
+"    "
+
+#: /edx_proctoring/templates/timed_exam/ready_to_submit.html:14
+msgid ""
+"\n"
+"      After you submit your exam, your exam will be graded.\n"
+"    "
+msgstr ""
+"\n"
+"После отправки вашего задания на проверку, ваши ответы будут оценены.\n"
+"    "
+
+#: /edx_proctoring/templates/timed_exam/ready_to_submit.html:19
+msgid ""
+"\n"
+"      Yes, submit my timed exam.\n"
+"    "
+msgstr ""
+"\n"
+"Да, завершить выполнение задания.\n"
+"    "
+
+#: /edx_proctoring/templates/timed_exam/ready_to_submit.html:25
+msgid ""
+"\n"
+"        No, I want to continue working.\n"
+"      "
+msgstr ""
+"\n"
+"        Нет, я продолжу выполнение задания.\n"
+"      "
