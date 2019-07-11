@@ -167,6 +167,12 @@ if settings.FEATURES.get('ENABLE_COMBINED_LOGIN_REGISTRATION'):
         url(r'^register$', student_account_views.login_and_registration_form,
             {'initial_mode': 'register'}, name='register_user'),
     ]
+elif settings.FEATURES['ENABLE_EXTERNAL_LOGIN_AND_REGISTRATION']:
+    # RG improvement for enabling login and registration on the Odoo side
+    urlpatterns += [
+        url(r'^login$', RedirectView.as_view(url=settings.LOGIN_REDIRECT_URL), name='signin_user'),
+        url(r'^register$', RedirectView.as_view(url=settings.LOGIN_URL), name='register_user'),
+    ]
 else:
     # Serve the old views
     urlpatterns += [

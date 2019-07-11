@@ -2,6 +2,7 @@
 Instructor Dashboard Views
 """
 
+from collections import defaultdict
 import datetime
 import logging
 import uuid
@@ -741,9 +742,8 @@ def _section_open_response_assessment(request, course, openassessment_blocks, ac
     course_key = course.id
 
     ora_items = []
-    parents = {}
-    units_with_ora = {}
-
+    units_with_ora = defaultdict(dict)
+    units_problem_sort = defaultdict(list)
     sections = course.get_children()
     subsections = []
 
@@ -756,23 +756,34 @@ def _section_open_response_assessment(request, course, openassessment_blocks, ac
     for block in openassessment_blocks:
         block_parent_id = unicode(block.parent)
         result_item_id = unicode(block.location)
-        if block_parent_id not in parents:
-            parents[block_parent_id] = modulestore().get_item(block.parent)
-            usage_key = BlockUsageLocator.from_string(result_item_id)
-            units_with_ora[block.parent.block_id] = {
+        usage_key = BlockUsageLocator.from_string(result_item_id)
+        parent = modulestore().get_item(block.parent)
+
+        if block.parent.block_id not in units_problem_sort:
+            units_problem_sort[block.parent.block_id] = [problem.block_id for problem in parent.children]
+
+        units_with_ora[block.parent.block_id][block.location.block_id] = {
             'id': result_item_id,
             'name': block.display_name,
             'parent_id': block_parent_id,
             'link': get_redirect_url(usage_key.course_key, usage_key),
-            'parent_name': parents[block_parent_id].display_name,
+            'parent_name': parent.display_name,
             'staff_assessment': 'staff-assessment' in block.assessment_steps,
             'url_base': reverse('xblock_view', args=[course.id, block.location, 'student_view']),
-            'url_grade_available_responses': reverse('xblock_view', args=[course.id, block.location, 'grade_available_responses_view']),
+            'url_grade_available_responses': reverse(
+                'xblock_view',
+                args=[course.id, block.location, 'grade_available_responses_view']
+            ),
         }
 
     for section in subsections:
         subsection_name, units_list = section.items().pop()
-        ora_blocks = [units_with_ora[unit_id] for unit_id in units_list if unit_id in units_with_ora]
+
+        ora_blocks = [
+            units_with_ora[unit_id][problem_block_id] for unit_id in units_list if unit_id in units_with_ora
+            for problem_block_id in units_problem_sort[unit_id] if problem_block_id in units_with_ora[unit_id]
+        ]
+
         if ora_blocks:
             ora_items.append({'name': subsection_name, 'type': 'subsection'})
             ora_items.extend(ora_blocks)
