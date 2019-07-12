@@ -322,7 +322,7 @@ def get_course_enrollments(user, org_to_include, orgs_to_exclude):
             yield enrollment
 
 
-def curse_is_passed(student, course_overview):
+def course_is_passed(student, course_overview):
     course = modulestore().get_course(course_overview.id, depth=2)
     nonzero_cutoffs = [cutoff for cutoff in course.grade_cutoffs.values() if cutoff > 0]
     success_cutoff = min(nonzero_cutoffs) if nonzero_cutoffs else None
@@ -438,7 +438,7 @@ def _cert_info(user, course_overview, cert_status, course_mode):  # pylint: disa
             return default_info
 
     if status == default_status:
-        status_dict['passed'] = curse_is_passed(user, course_overview)
+        status_dict['passed'] = course_is_passed(user, course_overview)
 
     return status_dict
 
