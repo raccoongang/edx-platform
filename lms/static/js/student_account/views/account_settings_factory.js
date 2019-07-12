@@ -47,7 +47,7 @@
                             })
                         },
                         {
-                            view: new AccountSettingsFieldViews.TextFieldView({
+                            view: new AccountSettingsFieldViews.ReadonlyFieldView({
                                 model: userAccountModel,
                                 title: gettext('Full Name'),
                                 valueAttribute: 'name',
@@ -58,7 +58,7 @@
                             })
                         },
                         {
-                            view: new AccountSettingsFieldViews.EmailFieldView({
+                            view: new AccountSettingsFieldViews.ReadonlyFieldView({
                                 model: userAccountModel,
                                 title: gettext('Email Address'),
                                 valueAttribute: 'email',
@@ -70,7 +70,7 @@
                             })
                         },
                         {
-                            view: new AccountSettingsFieldViews.PasswordFieldView({
+                            view: new AccountSettingsFieldViews.ReadonlyFieldView({
                                 model: userAccountModel,
                                 title: gettext('Password'),
                                 screenReaderTitle: gettext('Reset Your Password'),
