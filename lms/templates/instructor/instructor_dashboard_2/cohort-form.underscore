@@ -17,6 +17,10 @@
             var cohort_name = cohort.get('name');
             var cohort_name_value = isNewCohort ? '' : cohort_name;
             var placeholder_value = isNewCohort ? gettext('Enter the name of the cohort') : '';
+            var manualStart = cohort.get('manual_start');
+            var cohortDuration = cohort.get('duration');
+            var cohortStarted = cohort.get('started');
+            var cohortEnded = cohort.get('ended');
             %>
             <div class="form-field">
                 <div class="cohort-management-settings-form-name field field-text">
@@ -136,6 +140,15 @@
                         <% } %>
                     </div>
                 </div>
+                <hr class="divider divider-lv1">
+                <div class="cohort-management-details-time field field-checkbox">
+                    <h4 class="form-label">
+                        <%- gettext('Cohort Time Management') %>
+                    </h4>
+                    <label for="cohort-duration"><%- gettext("Duration") %></label>
+                    <input type="text" name="cohort-duration" id="cohort-duration" value="<%- cohortDuration %>" <%- cohortEnded ? 'disabled="disabled"' : '' %>/>
+                    <label><input type="checkbox" name="cohort-manual-start" value="1" <%- manualStart ? 'checked="checked"' : '' %> <%- cohortStarted ? 'disabled="disabled"' : '' %>/> <%- gettext("Manual Start") %></label>
+                    <label><input type="checkbox" name="cohort-started" value="1" <%- cohortStarted ? 'checked="checked" disabled="disabled"' : '' %>/> <%- gettext("Started") %></label>
             </div>
         </div>
         <% if (isNewCohort) { %>

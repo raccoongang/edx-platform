@@ -322,6 +322,15 @@ def get_course_enrollments(user, org_to_include, orgs_to_exclude):
             yield enrollment
 
 
+def course_is_passed(student, course_overview):
+    course = modulestore().get_course(course_overview.id, depth=2)
+    nonzero_cutoffs = [cutoff for cutoff in course.grade_cutoffs.values() if cutoff > 0]
+    success_cutoff = min(nonzero_cutoffs) if nonzero_cutoffs else None
+    grade_summary = CourseGradeFactory().create(student, course).summary
+
+    return success_cutoff and grade_summary['percent'] >= success_cutoff
+
+
 def _cert_info(user, course_overview, cert_status, course_mode):  # pylint: disable=unused-argument
     """
     Implements the logic for cert_info -- split out for testing.
@@ -427,6 +436,9 @@ def _cert_info(user, course_overview, cert_status, course_mode):  # pylint: disa
             # who need to be regraded (we weren't tracking 'notpassing' at first).
             # We can add a log.warning here once we think it shouldn't happen.
             return default_info
+
+    if status == default_status:
+        status_dict['passed'] = course_is_passed(user, course_overview)
 
     return status_dict
 

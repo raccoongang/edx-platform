@@ -4,6 +4,7 @@ Django models related to course groups functionality.
 
 import json
 import logging
+from datetime import datetime, timedelta
 
 from django.contrib.auth.models import User
 from django.db import models, transaction
@@ -11,6 +12,7 @@ from util.db import outer_atomic
 from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
+from django.utils.timezone import UTC
 from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
 
 log = logging.getLogger(__name__)
@@ -200,6 +202,22 @@ class CourseCohort(models.Model):
     MANUAL = 'manual'
     ASSIGNMENT_TYPE_CHOICES = ((RANDOM, 'Random'), (MANUAL, 'Manual'),)
     assignment_type = models.CharField(max_length=20, choices=ASSIGNMENT_TYPE_CHOICES, default=MANUAL)
+    manual_start = models.BooleanField(default=False)
+    duration = models.PositiveIntegerField(default=45)
+    start_datetime = models.DateTimeField(null=True, default=None)
+
+    @property
+    def started(self):
+        return self.start_datetime is not None
+
+    @property
+    def ended(self):
+        now = datetime.now(UTC())
+        _ended = (
+            self.started
+            and (now - self.start_datetime) >= timedelta(minutes=self.duration)
+        )
+        return _ended
 
     @classmethod
     def create(cls, cohort_name=None, course_id=None, course_user_group=None, assignment_type=MANUAL):

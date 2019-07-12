@@ -2,6 +2,8 @@
 Views related to course groups functionality.
 """
 
+from datetime import datetime
+
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
@@ -13,6 +15,7 @@ from util.json_request import expect_json, JsonResponse
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext
+from django.utils.timezone import UTC
 
 import logging
 import re
@@ -94,6 +97,10 @@ def _get_cohort_representation(cohort, course):
         'assignment_type': assignment_type,
         'user_partition_id': partition_id,
         'group_id': group_id,
+        'manual_start': cohort.cohort.manual_start,
+        'duration': cohort.cohort.duration,
+        'started': cohort.cohort.started,
+        'ended': cohort.cohort.ended,
     }
 
 
@@ -248,6 +255,28 @@ def cohort_handler(request, course_key_string, cohort_id=None):
             existing_group_id, _ = cohorts.get_group_info_for_cohort(cohort)
             if existing_group_id is not None:
                 unlink_cohort_partition_group(cohort)
+
+        manual_start = request.json.get('manual_start')
+        if manual_start is not None:
+            if not cohort.cohort.started:
+                cohort.cohort.manual_start = bool(manual_start)
+            else:
+                return JsonResponse({"error": _("Cohort already started")}, 400)
+
+        duration = request.json.get('duration')
+        if duration is not None:
+            if duration in (0, '0'):
+                return JsonResponse({"error": _("Duration cannot be zero")}, 400)
+            if not cohort.cohort.ended:
+                cohort.cohort.duration = abs(int(duration))
+            else:
+                return JsonResponse({"error": _("Cohort already ended")}, 400)
+
+        started = request.json.get('started')
+        if started and cohort.cohort.manual_start and not cohort.cohort.started:
+            cohort.cohort.start_datetime = datetime.now(UTC())
+
+        cohort.cohort.save()
 
         return JsonResponse(_get_cohort_representation(cohort, course))
 

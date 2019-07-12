@@ -36,6 +36,7 @@ from xmodule.partitions.partitions import NoSuchUserPartitionError, NoSuchUserPa
 from openedx.core.djangoapps.external_auth.models import ExternalAuthMap
 from courseware.masquerade import get_masquerade_role, is_masquerading_as_student
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.djangoapps.course_groups.models import CourseUserGroup
 from student import auth
 from student.models import CourseEnrollmentAllowed
 from student.roles import (
@@ -425,7 +426,7 @@ def _has_access_course(user, action, courselike):
     checkers = {
         'load': can_load,
         'view_courseware_with_prerequisites':
-            lambda: _can_view_courseware_with_prerequisites(user, courselike),
+            lambda: _can_view_courseware_with_prerequisites(user, courselike) and _can_view_timed_cohort(user, courselike),
         'load_mobile': lambda: can_load() and _can_load_course_on_mobile(user, courselike),
         'enroll': can_enroll,
         'see_exists': see_exists,
@@ -436,6 +437,20 @@ def _has_access_course(user, action, courselike):
     }
 
     return _dispatch(checkers, action, user, courselike)
+
+
+def _can_view_timed_cohort(user, course):
+    cohorts = CourseUserGroup.objects.prefetch_related().filter(
+        users=user.id,
+        course_id=course.id,
+        cohort__manual_start=True
+    )
+    if cohorts.exists():
+        for cohort in cohorts:
+            if cohort.cohort.started and not cohort.cohort.ended:
+                return ACCESS_GRANTED
+        return ACCESS_DENIED
+    return ACCESS_GRANTED
 
 
 def _has_access_error_desc(user, action, descriptor, course_key):
