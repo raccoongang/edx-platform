@@ -45,7 +45,7 @@ class CitySerializer(serializers.ModelSerializer):
     schools = serializers.SerializerMethodField()
 
     def get_schools(self, obj):
-        return SingleSchoolSerilizer(obj.school_set.all(), many=True).data
+        return SingleSchoolSerilizer(obj.schools.all(), many=True).data
 
     class Meta:
         model = City
