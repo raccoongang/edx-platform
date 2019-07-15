@@ -46,44 +46,45 @@
                                 )
                             })
                         },
-                        {
-                            view: new AccountSettingsFieldViews.ReadonlyFieldView({
-                                model: userAccountModel,
-                                title: gettext('Full Name'),
-                                valueAttribute: 'name',
-                                helpMessage: gettext(
-                                    'The name that is used for ID verification and appears on your certificates. Other learners never see your full name. Make sure to enter your name exactly as it appears on your government-issued photo ID, including any non-Roman characters.'  // eslint-disable-line max-len
-                                ),
-                                persistChanges: true
-                            })
-                        },
-                        {
-                            view: new AccountSettingsFieldViews.ReadonlyFieldView({
-                                model: userAccountModel,
-                                title: gettext('Email Address'),
-                                valueAttribute: 'email',
-                                helpMessage: StringUtils.interpolate(
-                                    gettext('The email address you use to sign in. Communications from {platform_name} and your courses are sent to this address.'),  // eslint-disable-line max-len
-                                    {platform_name: platformName}
-                                ),
-                                persistChanges: true
-                            })
-                        },
-                        {
-                            view: new AccountSettingsFieldViews.ReadonlyFieldView({
-                                model: userAccountModel,
-                                title: gettext('Password'),
-                                screenReaderTitle: gettext('Reset Your Password'),
-                                valueAttribute: 'password',
-                                emailAttribute: 'email',
-                                linkTitle: gettext('Reset Your Password'),
-                                linkHref: fieldsData.password.url,
-                                helpMessage: StringUtils.interpolate(
-                                    gettext('When you select "Reset Your Password", a message will be sent to the email address for your {platform_name} account. Click the link in the message to reset your password.'),  // eslint-disable-line max-len
-                                    {platform_name: platformName}
-                                )
-                            })
-                        },
+                        // Due to this task https://youtrack.raccoongang.com/issue/SU-78 disable next fields
+                        // {
+                        //     view: new AccountSettingsFieldViews.ReadonlyFieldView({
+                        //         model: userAccountModel,
+                        //         title: gettext('Full Name'),
+                        //         valueAttribute: 'name',
+                        //         helpMessage: gettext(
+                        //             'The name that is used for ID verification and appears on your certificates. Other learners never see your full name. Make sure to enter your name exactly as it appears on your government-issued photo ID, including any non-Roman characters.'  // eslint-disable-line max-len
+                        //         ),
+                        //         persistChanges: true
+                        //     })
+                        // },
+                        // {
+                        //     view: new AccountSettingsFieldViews.ReadonlyFieldView({
+                        //         model: userAccountModel,
+                        //         title: gettext('Email Address'),
+                        //         valueAttribute: 'email',
+                        //         helpMessage: StringUtils.interpolate(
+                        //             gettext('The email address you use to sign in. Communications from {platform_name} and your courses are sent to this address.'),  // eslint-disable-line max-len
+                        //             {platform_name: platformName}
+                        //         ),
+                        //         persistChanges: true
+                        //     })
+                        // },
+                        // {
+                        //     view: new AccountSettingsFieldViews.ReadonlyFieldView({
+                        //         model: userAccountModel,
+                        //         title: gettext('Password'),
+                        //         screenReaderTitle: gettext('Reset Your Password'),
+                        //         valueAttribute: 'password',
+                        //         emailAttribute: 'email',
+                        //         linkTitle: gettext('Reset Your Password'),
+                        //         linkHref: fieldsData.password.url,
+                        //         helpMessage: StringUtils.interpolate(
+                        //             gettext('When you select "Reset Your Password", a message will be sent to the email address for your {platform_name} account. Click the link in the message to reset your password.'),  // eslint-disable-line max-len
+                        //             {platform_name: platformName}
+                        //         )
+                        //     })
+                        // },
                         {
                             view: new AccountSettingsFieldViews.LanguagePreferenceFieldView({
                                 model: userPreferencesModel,
