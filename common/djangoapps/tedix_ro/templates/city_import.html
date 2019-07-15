@@ -1,0 +1,79 @@
+{% extends "admin/import_export/base.html" %}
+{% load i18n %}
+{% load admin_urls %}
+{% load import_export_tags %}
+{% load static %}
+{% load tedix_filters %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "import_export/import.css" %}" />{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label='tedix_ro' %}">Tedix_Ro</a>
+&rsaquo; <a href="{{ changelist_url }}">{{ text_changelist_url }}</a>
+&rsaquo; {% trans "Import" %}
+</div>
+{% endblock %}
+
+{% block content %}
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <p>
+      {% trans "This importer will import the following fields: " %}
+      <code>{{ row_headers|join:", " }}</code>
+    </p>
+
+    <fieldset class="module aligned">
+      {% for field in import_form %}
+        <div class="form-row">
+          {{ field.errors }}
+
+          {{ field.label_tag }}
+
+          {{ field }}
+
+          {% if field.field.help_text %}
+          <p class="help">{{ field.field.help_text|safe }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </fieldset>
+
+    <div class="submit-row">
+      <input type="submit" class="default" value="{% trans "Submit" %}">
+    </div>
+  </form>
+  {% if data_list %}
+    <table>
+        <tr>
+            <td>#</td>
+            <td></td>
+            {% for field_name in row_headers %}
+                <td>{{ field_name }}</td>
+            {% endfor %}
+        </tr>
+        {% for errors, state, row in data_list %}
+            <tr style="background-color: {% get_color state %};">
+                <td>{{ forloop.counter }}</td>
+                <td>{{ state }}</td>
+                {% for val in row_headers %}
+                    <td>{{ row|get_item:val }}</td>
+                {% endfor %}
+            </tr>
+            {% if errors %}
+                <tr>
+                    <td></td>
+                    <td>Errors:</td>
+                    {% for field_name in row_headers %}
+                        <td>{{ errors|get_errors_value:field_name }}</td>
+                    {% endfor %}
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+  {% endif %}
+{% endblock %}
+
+

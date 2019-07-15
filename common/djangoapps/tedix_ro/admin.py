@@ -9,7 +9,7 @@ from django.contrib.admin.widgets import AdminSplitDateTime
 from django.contrib.auth.models import User
 from django.http.response import HttpResponseRedirect
 from import_export import resources
-from import_export.admin import ImportExportModelAdmin
+from import_export.admin import ImportExportModelAdmin, ImportMixin
 from import_export.fields import Field
 from import_export.formats import base_formats
 from import_export.forms import ImportForm
@@ -97,11 +97,6 @@ class ParentProfileForm(ProfileForm):
 @admin.register(ParentProfile)
 class ParentProfileAdmin(admin.ModelAdmin):
     form = ParentProfileForm
-
-
-class InstructorProfileImportForm(ImportForm):
-
-    is_send_email = forms.BooleanField(label = "Send emails")
 
 
 class InstructorProfileResource(resources.ModelResource):
@@ -204,18 +199,21 @@ class StudentProfileImportExportAdmin(ImportExportModelAdmin):
 
 
 class CityResource(resources.ModelResource):
+    schools_name = Field(
+        attribute='schools',
+        column_name='schools_name'
+    )
 
     class Meta:
         model = City
-        fields = ('name',)
+        fields = ('name', 'schools_name')
         import_id_fields = ('name',)
 
 
 @admin.register(City)
-class CityAdmin(ImportExportModelAdmin):
+class CityAdmin(ImportMixin, admin.ModelAdmin):
     resource_class = CityResource
     formats = (
-        base_formats.CSV,
         base_formats.JSON,
     )
 

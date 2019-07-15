@@ -1,13 +1,14 @@
 import datetime
+import json
 import pytz
 import re
 import time
 
 from django import forms
-from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.forms import ModelForm
 from django.utils import six, timezone
 from django.utils.encoding import force_text
@@ -27,6 +28,20 @@ ROLE_CHOICES = (
     ('student', 'Student'),
     ('instructor', 'Instructor'),
 )
+
+
+FORM_FIELDS_MAP = {
+    # fields for InstructorImportValidationForm
+    'city': 'school_city',
+    'public_name': 'name',
+
+    # fields for StudentImportRegisterForm
+    'teacher_email': 'instructor',
+
+    # fields for SchoolImportValidationForm
+    'city_name': 'city',
+    'schools_name': 'name'
+}
 
 
 def get_tedix_registration_form(role):
@@ -305,8 +320,21 @@ class ProfileImportForm(forms.Form):
         file_to_import = cleaned_data['file_to_import']
         file_format = cleaned_data['file_format']
         if not file_to_import.name.endswith(file_format):
-            self.add_error('file_format', 'Invalid format of file for choosen format.')
+            self.add_error('file_format', 'The file you are going to import has another extension.')
         return cleaned_data
+
+
+class CityImportForm(forms.Form):
+    file_to_import = forms.FileField()
+
+    def clean_file_to_import(self):
+        file_to_import = self.cleaned_data['file_to_import']
+        try:
+            file_data = json.loads(file_to_import.read())
+        except Exception as e:
+            raise ValidationError('The file extension is not supported. Please use a file with .json extension.')
+        file_to_import.seek(0)
+        return file_to_import
 
 
 class StudentProfileImportForm(ProfileImportForm):
@@ -341,11 +369,6 @@ class AccountImportValidationForm(AccountCreationForm):
 
 class InstructorImportValidationForm(InstructorRegisterForm):
 
-    form_fields_map = {
-        'city': 'school_city',
-        'public_name': 'name'
-    }
-
     def __init__(self, *args, **kwargs):
         super(InstructorImportValidationForm, self).__init__(*args, **kwargs)
         self.fields['school_city'].to_field_name = 'name'
@@ -378,12 +401,6 @@ class InstructorImportValidationForm(InstructorRegisterForm):
 class StudentImportRegisterForm(StudentRegisterForm):
 
     admin_import_action = True
-
-    form_fields_map = {
-        'city': 'school_city',
-        'teacher_email': 'instructor',
-        'public_name': 'name'
-    }
 
     def __init__(self, *args, **kwargs):
         super(StudentImportRegisterForm, self).__init__(*args, **kwargs)
@@ -421,3 +438,43 @@ class StudentImportRegisterForm(StudentRegisterForm):
             self.add_error('instructor', "Specified instructor belongs to another school")
         return cleaned_data
 
+
+class SchoolImportValidationForm(ModelForm):
+
+    class Meta(object):
+        model = School
+        fields = ('name', 'city', 'school_type')
+
+    def __init__(self, *args, **kwargs):
+        super(SchoolImportValidationForm, self).__init__(*args, **kwargs)
+        self.fields['city'].to_field_name = 'name'
+
+
+    def exists(self, name):
+        return School.objects.filter(name=name).exists()
+
+    def update(self, school_name, school_type):
+        if School.objects.filter(name=school_name, school_type=school_type).exists():
+            return 'skipped'
+        School.objects.filter(name=school_name).update(school_type=school_type)
+        return 'updated'
+
+    def clean(self):
+        city = self.cleaned_data.get('city')
+        name = self.cleaned_data.get('name')
+        if city and name and School.objects.exclude(city=city).filter(name=name).exists():
+            self.add_error('name', u'The school you are trying to add is located in another city. School name: {}'.format(name))
+        return self.cleaned_data
+
+
+class CityImportValidationForm(ModelForm):
+
+    class Meta(object):
+        model = City
+        fields = ('name',)
+
+    def exists(self, name):
+        return City.objects.filter(name=name).exists()
+
+    def clean(self):
+        return self.cleaned_data
