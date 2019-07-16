@@ -260,17 +260,17 @@ def cohort_handler(request, course_key_string, cohort_id=None):
         if manual_start is not None:
             if not cohort.cohort.started:
                 cohort.cohort.manual_start = bool(manual_start)
-            else:
-                return JsonResponse({"error": _("Cohort already started")}, 400)
+            elif not manual_start:
+                return JsonResponse({"error": ugettext("Cohort already started")}, 400)
 
         duration = request.json.get('duration')
         if duration is not None:
             if duration in (0, '0'):
-                return JsonResponse({"error": _("Duration cannot be zero")}, 400)
+                return JsonResponse({"error": ugettext("Duration cannot be zero")}, 400)
             if not cohort.cohort.ended:
                 cohort.cohort.duration = abs(int(duration))
             else:
-                return JsonResponse({"error": _("Cohort already ended")}, 400)
+                return JsonResponse({"error": ugettext("Cohort already ended")}, 400)
 
         started = request.json.get('started')
         if started and cohort.cohort.manual_start and not cohort.cohort.started:
