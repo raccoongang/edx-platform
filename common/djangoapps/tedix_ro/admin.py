@@ -97,6 +97,7 @@ class ParentProfileForm(ProfileForm):
 @admin.register(ParentProfile)
 class ParentProfileAdmin(admin.ModelAdmin):
     form = ParentProfileForm
+    search_fields = ['user__username', 'user__profile__name']
 
 
 class InstructorProfileResource(resources.ModelResource):
@@ -138,6 +139,7 @@ class InstructorProfileResource(resources.ModelResource):
 class InstructorProfileAdmin(ImportExportModelAdmin):
     form = InstructorProfileForm
     resource_class = InstructorProfileResource
+    search_fields = ['user__username', 'user__profile__name']
 
 
 class StudentProfileResource(resources.ModelResource):
@@ -196,6 +198,7 @@ class StudentProfileImportExportAdmin(ImportExportModelAdmin):
         base_formats.CSV,
         base_formats.JSON,
     )
+    search_fields = ['user__username', 'user__profile__name']
 
 
 class CityResource(resources.ModelResource):
@@ -216,11 +219,13 @@ class CityAdmin(ImportMixin, admin.ModelAdmin):
     formats = (
         base_formats.JSON,
     )
+    search_fields = ['name']
 
 
 @admin.register(School)
 class SchoolAdmin(admin.ModelAdmin):
     list_display = ('name',)
+    search_fields = ['name']
 
 
 class CustomAdminSplitDateTime(AdminSplitDateTime):
@@ -271,6 +276,8 @@ class StudentCourseDueDateForm(forms.ModelForm):
 class StudentCourseDueDateAdmin(admin.ModelAdmin):
     list_display = ('student', 'course_id', 'format_date')
     form = StudentCourseDueDateForm
+    search_fields = ['student__user__username', 'student__user__profile__name', 'course_id']
+    date_hierarchy = 'due_date'
     
     def format_date(self, obj):
         return obj.due_date.strftime('%d %b %Y %H:%M')
