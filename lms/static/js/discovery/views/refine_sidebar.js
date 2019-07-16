@@ -15,6 +15,7 @@
                 'click .show-less': 'collapse',
                 'click .show-more': 'expand'
             },
+            initialized: false,
 
             initialize: function(options) {
                 this.meanings = options.meanings || {};
@@ -60,6 +61,14 @@
                 }, this)
             );
                 HtmlUtils.setHtml(this.$container, htmlSnippet);
+                var pageUrl = new URL(window.location.href),
+                    facet = pageUrl.searchParams.get("facet"),
+                    term = pageUrl.searchParams.get("term");
+
+                if (!this.initialized && facet in this.meanings) {
+                    this.trigger('selectOption', facet, term, term);
+                }
+                this.initialized = true;
                 return this;
             },
 
