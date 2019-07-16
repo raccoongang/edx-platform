@@ -303,12 +303,14 @@ def city_import(request):
                 try:
                     for city_name, schools in dataset.items():
                         errors = {}
-                        state = 'new'
                         status = ''
                         city_form = CityImportValidationForm({"name": city_name})
                         if city_form.is_valid():
                             if not city_form.exists(city_name):
                                 city_form.save()
+                                state = 'new'
+                            else:
+                                state = 'skipped'
                             for school_name, status in [(school, status) for x in schools for (school, status) in x.items()]:
                                 school_type = status_map[status]
                                 school_form = SchoolImportValidationForm({
@@ -322,6 +324,7 @@ def city_import(request):
                                         state = school_form.update(school_name, school_type)
                                     else:
                                         school_form.save()
+                                        state = 'new'
                                 else:
                                     errors.update(dict(school_form.errors.items()))
                                     state = 'error'
@@ -329,6 +332,12 @@ def city_import(request):
                                 data_list.append((errors, state, {
                                     'city_name': city_name,
                                     'school_name': school_name,
+                                    'school_type': status
+                                }))
+                            if not schools:
+                                data_list.append((errors, state, {
+                                    'city_name': city_name,
+                                    'school_name': '',
                                     'school_type': status
                                 }))
                         else:
@@ -340,7 +349,7 @@ def city_import(request):
                             }))
 
                 except Exception as e:
-                    messages.error(request, e)
+                    messages.error(request, u'Oops! Something went wrong. Please check that the file structure is correct.')
                     context.pop('data_list')
                     transaction.set_rollback(True)
         context.update({'import_form': import_form})

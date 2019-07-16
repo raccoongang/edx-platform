@@ -40,7 +40,7 @@ FORM_FIELDS_MAP = {
 
     # fields for SchoolImportValidationForm
     'city_name': 'city',
-    'schools_name': 'name'
+    'school_name': 'name'
 }
 
 
@@ -463,7 +463,7 @@ class SchoolImportValidationForm(ModelForm):
         city = self.cleaned_data.get('city')
         name = self.cleaned_data.get('name')
         if city and name and School.objects.exclude(city=city).filter(name=name).exists():
-            self.add_error('name', u'The school you are trying to add is located in another city. School name: {}'.format(name))
+            self.add_error('name', u'The school is already added to another city.')
         return self.cleaned_data
 
 
