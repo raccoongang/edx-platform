@@ -169,9 +169,12 @@ if settings.FEATURES.get('ENABLE_COMBINED_LOGIN_REGISTRATION'):
     ]
 elif settings.FEATURES['ENABLE_EXTERNAL_LOGIN_AND_REGISTRATION']:
     # RG improvement for enabling login and registration on the Odoo side
+    from rg_odoo_api.views import auth_views
+
     urlpatterns += [
         url(r'^login$', RedirectView.as_view(url=settings.LOGIN_REDIRECT_URL), name='signin_user'),
         url(r'^register$', RedirectView.as_view(url=settings.LOGIN_URL), name='register_user'),
+        url(r'^logout/$', auth_views.LogoutUserView.as_view(), name='logout'),
     ]
 else:
     # Serve the old views
