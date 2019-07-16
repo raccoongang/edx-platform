@@ -312,6 +312,7 @@ def city_import(request):
                             else:
                                 state = 'skipped'
                             for school_name, status in [(school, status) for x in schools for (school, status) in x.items()]:
+                                errors = {}
                                 school_type = status_map[status]
                                 school_form = SchoolImportValidationForm({
                                     'name': school_name,
