@@ -625,7 +625,8 @@ derive_settings(__name__)
 
 if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
     import sentry_sdk
-    from sentry_sdk.integrations.django import DjangoIntegration, CeleryIntegration
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.celery import CeleryIntegration
     sentry_sdk.init(
         AUTH_TOKENS.get('RG_SENTRY_DSN'),
         integrations = [
