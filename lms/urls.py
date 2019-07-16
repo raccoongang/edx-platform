@@ -174,7 +174,7 @@ elif settings.FEATURES['ENABLE_EXTERNAL_LOGIN_AND_REGISTRATION']:
     urlpatterns += [
         url(r'^login$', RedirectView.as_view(url=settings.LOGIN_REDIRECT_URL), name='signin_user'),
         url(r'^register$', RedirectView.as_view(url=settings.LOGIN_URL), name='register_user'),
-        url(r'^logout/$', auth_views.LogoutUserView.as_view(), name='logout')
+        url(r'^logout/$', auth_views.LogoutUserView.as_view(), name='logout'),
     ]
 else:
     # Serve the old views
