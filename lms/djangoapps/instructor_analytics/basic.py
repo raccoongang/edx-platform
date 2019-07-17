@@ -31,9 +31,8 @@ from shoppingcart.models import (
 from student.models import CourseEnrollment, CourseEnrollmentAllowed
 
 STUDENT_FEATURES = ('id', 'username', 'first_name', 'last_name', 'is_staff', 'email')
-PROFILE_FEATURES = ('name', 'language', 'location', 'year_of_birth', 'gender',
-                    'level_of_education', 'mailing_address', 'goals', 'meta',
-                    'city', 'country')
+PROFILE_FEATURES = ('name', 'language', 'user_age', 'gender', 'meta', 'profession', 'region')
+
 ORDER_ITEM_FEATURES = ('list_price', 'unit_cost', 'status')
 ORDER_FEATURES = ('purchase_time',)
 
@@ -257,8 +256,16 @@ def enrolled_students_features(course_key, features):
                             for feature in student_features)
         profile = student.profile
         if profile is not None:
-            profile_dict = dict((feature, extract_attr(profile, feature))
-                                for feature in profile_features)
+            profile_dict = dict()
+
+            for feature in profile_features:
+                if feature in ['user_age', 'region', 'profession', 'gender']:
+                    profile_attr = getattr(profile, "get_{field_name}_display".format(field_name=feature))()
+                else:
+                    profile_attr = extract_attr(profile, feature)
+
+                profile_dict[feature] = profile_attr
+
             student_dict.update(profile_dict)
 
             # now fetch the requested meta fields
