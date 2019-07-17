@@ -1219,9 +1219,8 @@ def get_students_features(request, course_id, csv=False):  # pylint: disable=red
 
     if not query_features:
         query_features = [
-            'id', 'username', 'name', 'email', 'language', 'location',
-            'year_of_birth', 'gender', 'level_of_education', 'mailing_address',
-            'goals', 'enrollment_mode', 'verification_status',
+            'id', 'username', 'name', 'email', 'language',
+            'user_age', 'gender', 'enrollment_mode', 'verification_status',
         ]
 
     # Provide human-friendly and translatable names for these features. These names
@@ -1233,12 +1232,8 @@ def get_students_features(request, course_id, csv=False):  # pylint: disable=red
         'name': _('Name'),
         'email': _('Email'),
         'language': _('Language'),
-        'location': _('Location'),
-        'year_of_birth': _('Birth Year'),
+        'year_of_birth': _('User Age'),
         'gender': _('Gender'),
-        'level_of_education': _('Level of Education'),
-        'mailing_address': _('Mailing Address'),
-        'goals': _('Goals'),
         'enrollment_mode': _('Enrollment Mode'),
         'verification_status': _('Verification Status'),
     }
@@ -1252,11 +1247,11 @@ def get_students_features(request, course_id, csv=False):  # pylint: disable=red
         query_features.append('team')
         query_features_names['team'] = _('Team')
 
-    # For compatibility reasons, city and country should always appear last.
-    query_features.append('city')
-    query_features_names['city'] = _('City')
-    query_features.append('country')
-    query_features_names['country'] = _('Country')
+    query_features.append('profession')
+    query_features_names['profession'] = _('Profession')
+
+    query_features.append('region')
+    query_features_names['region'] = _('Region')
 
     if not csv:
         student_data = instructor_analytics.basic.enrolled_students_features(course_key, query_features)
