@@ -1,0 +1,30 @@
+<%page expression_filter="h"/>
+<%inherit file="/main.html" />
+<%def name="online_help_token()"><% return "profile" %></%def>
+<%namespace name='static' file='/static_content.html'/>
+<%!
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
+%>
+
+<%block name="pagetitle">${_("Learner Profile")}</%block>
+
+<%block name="bodyclass">view-profile</%block>
+
+<div class="message-banner" aria-live="polite"></div>
+<main id="main" aria-label="Content" tabindex="-1">
+    <div class="wrapper-profile">
+        <div class="ui-loading-indicator" style="width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;">
+            <iframe src="${reverse('learner_performance')}" width="1140px" height="500"></iframe>
+        </div>
+    </div>
+</main>
+<%block name="headextra">
+    <%static:css group='style-course'/>
+</%block>
+<%block name="js_extra">
+
+</%block>

@@ -22,6 +22,7 @@ from openedx.features.enterprise_support.api import enterprise_enabled
 from openassessment.fileupload import views_filesystem
 
 from student.views import LogoutView
+from student_profile.views import learner_performance
 import referrals.views
 
 
@@ -454,6 +455,14 @@ urlpatterns += (
         'courseware.views.views.progress',
         name='student_progress',
     ),
+     # Takes optional student_id for instructor use--shows profile_perfomance iframe from mybitize.
+    url(
+        r'^courses/{}/progress/(?P<student_id>[^/]*)/performance$'.format(
+            settings.COURSE_ID_PATTERN,
+        ),
+        'student_profile.views.learner_performance',
+        name='learner_performance_progress',
+    ),
 
     url(
         r'^programs/{}/about'.format(
@@ -630,6 +639,22 @@ urlpatterns += (
         ),
         'student_profile.views.learner_profile',
         name='learner_profile',
+    ),
+        # Student performance
+    url(
+        r'^/performance/'.format(
+            username_pattern=settings.USERNAME_PATTERN,
+        ),
+        'student_profile.views.learner_performance',
+        name='learner_performance',
+    ),
+    # Student profile_statistics
+    url(
+        r'^u/{username_pattern}/profile_statistics'.format(
+            username_pattern=settings.USERNAME_PATTERN,
+        ),
+        'student_profile.views.profile_statistics',
+        name='profile_statistics',
     ),
 
     # Student Notes
@@ -1049,4 +1074,3 @@ if settings.FEATURES.get('ENABLE_FINANCIAL_ASSISTANCE_FORM'):
             name='submit_financial_assistance_request'
         )
     )
-
