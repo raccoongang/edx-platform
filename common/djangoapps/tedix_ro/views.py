@@ -213,14 +213,16 @@ class ProfileImportView(View):
                                 if self.role == 'instructor':
                                     user.is_staff = True
                                     user.save()
-                                self.send_email(user, form_data, import_form.cleaned_data['send_payment_link'])
+                                    self.send_email(user, form_data)
+                                elif self.role == 'student':
+                                    self.send_email(user, form_data, import_form.cleaned_data['send_payment_link'])
                         else:
                             state = 'error'
                             errors.update(dict(user_form.errors.items()))
                             errors.update(dict(profile_form.errors.items()))
                         data_list.append((i, errors, state, row))
                 except Exception as e:
-                    messages.error(request, u'Oops! Something went wrong. Please check that the file structure is correct.')
+                    messages.error(request, e)
                     context.pop('data_list')
                     transaction.set_rollback(True)
         context.update({
@@ -232,7 +234,7 @@ class ProfileImportView(View):
         })
         return render(request, self.template_name, context)
 
-    def send_email(self, user, data, send_payment_link):
+    def send_email(self, user, data, send_payment_link=False):
         to_address = user.email
         email_context = {
             'email': to_address,
