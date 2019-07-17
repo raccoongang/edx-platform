@@ -260,8 +260,7 @@ def enrolled_students_features(course_key, features):
 
             for feature in profile_features:
                 if feature in ['user_age', 'region', 'profession', 'gender']:
-                    get_display_name = getattr(profile, "get_{field_name}_display".format(field_name=feature))
-                    profile_attr = get_display_name()
+                    profile_attr = getattr(profile, "get_{field_name}_display".format(field_name=feature))()
                 else:
                     profile_attr = extract_attr(profile, feature)
 
