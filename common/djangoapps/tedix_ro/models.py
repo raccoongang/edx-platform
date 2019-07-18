@@ -43,12 +43,13 @@ class School(models.Model):
         ('Public', 'Public'),
         ('Private', 'Private')
     ]
-    name = models.CharField(max_length=254, unique=True)
+    name = models.CharField(max_length=254)
     city = models.ForeignKey(City, related_name='schools', null=True, on_delete=models.CASCADE)
     school_type = models.CharField(max_length=55, choices=TYPE_CHOICES)
 
     class Meta:
         ordering = ['name']
+        unique_together = ['name', 'city']
 
     def __unicode__(self):
         return self.name

@@ -450,20 +450,22 @@ class SchoolImportValidationForm(ModelForm):
         self.fields['city'].to_field_name = 'name'
 
 
-    def exists(self, name):
-        return School.objects.filter(name=name).exists()
+    def exists(self, name, city_name):
+        city = City.objects.filter(name=city_name).first()
+        return School.objects.filter(name=name, city=city).exists()
 
-    def update(self, school_name, school_type):
-        if School.objects.filter(name=school_name, school_type=school_type).exists():
+    def update(self, school_name, city_name, school_type):
+        city = City.objects.filter(name=city_name).first()
+        if School.objects.filter(name=school_name, city=city, school_type=school_type).exists():
             return 'skipped'
-        School.objects.filter(name=school_name).update(school_type=school_type)
+        School.objects.filter(name=school_name, city=city).update(school_type=school_type)
         return 'updated'
 
     def clean(self):
-        city = self.cleaned_data.get('city')
-        name = self.cleaned_data.get('name')
-        if city and name and School.objects.exclude(city=city).filter(name=name).exists():
-            self.add_error('name', u'The school is already added to another city.')
+        """
+        Override clean to skip unique validation for fields `name` and `city`
+        so as not to raise error but update the instance
+        """
         return self.cleaned_data
 
 
@@ -477,4 +479,8 @@ class CityImportValidationForm(ModelForm):
         return City.objects.filter(name=name).exists()
 
     def clean(self):
+        """
+        Override clean to skip unique validation for field `name`
+        so as not to raise error but update the instance
+        """
         return self.cleaned_data
