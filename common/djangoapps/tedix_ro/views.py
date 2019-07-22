@@ -190,12 +190,12 @@ class ProfileImportView(View):
         import_form = self.import_form(request.POST, request.FILES)
         context = {'data_list': data_list}
         if import_form.is_valid():
-            if import_form.cleaned_data['file_format'] == 'csv':
-                dataset = DictReader(import_form.cleaned_data['file_to_import'])
-            if import_form.cleaned_data['file_format'] == 'json':
-                dataset = json.loads(import_form.cleaned_data['file_to_import'].read())
             with transaction.atomic():
                 try:
+                    if import_form.cleaned_data['file_format'] == 'csv':
+                        dataset = DictReader(import_form.cleaned_data['file_to_import'])
+                    if import_form.cleaned_data['file_format'] == 'json':
+                        dataset = json.loads(import_form.cleaned_data['file_to_import'].read())
                     for i, row in enumerate(dataset, 1):
                         errors = {}
                         form_data = {FORM_FIELDS_MAP.get(k, k):v for k,v in row.items()}
@@ -221,8 +221,8 @@ class ProfileImportView(View):
                             errors.update(dict(user_form.errors.items()))
                             errors.update(dict(profile_form.errors.items()))
                         data_list.append((i, errors, state, row))
-                except Exception as e:
-                    messages.error(request, e)
+                except Exception:
+                    messages.error(request, 'Oops! Something went wrong. Please check that the file structure is correct.')
                     context.pop('data_list')
                     transaction.set_rollback(True)
         context.update({
@@ -351,7 +351,7 @@ def city_import(request):
                                 'city_name': city_name
                             }))
 
-                except Exception as e:
+                except Exception:
                     messages.error(request, u'Oops! Something went wrong. Please check that the file structure is correct.')
                     context.pop('data_list')
                     transaction.set_rollback(True)
