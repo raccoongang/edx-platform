@@ -45,6 +45,7 @@ from search.search_engine_base import SearchEngine
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from courseware import models
 
 log = logging.getLogger(__name__)
 
@@ -504,23 +505,35 @@ class Courses(SysadminDashboardView):
                 # donload csv list of cource students
                 data = []
                 org_filter_out_set = configuration_helpers.get_all_orgs()
-                # Remove current site orgs from the "filter out" list, if applicable.
-                # We want to filter and only show enrollments for courses within
-                # the organizations defined in configuration for the current site.
                 course_org_filter = configuration_helpers.get_current_site_orgs()
                 if course_org_filter:
                     org_filter_out_set = org_filter_out_set - set(course_org_filter)
                 enrolled_students = User.objects.filter(
                     courseenrollment__course_id=course_key)
-                header = [_('username'), _('email'), _('registration date'), _('enrolled courses'), _('last login'), _('visited in course')]
+                header = [_('username'), _('email'), _('registration date'), _('enrolled courses'),
+                         _('last login'), _('visited in course'), _('last visited'),]
                 for u in enrolled_students:
+
+                    db_query = models.StudentModule.objects.filter(
+                        course_id__exact=course_key,
+                        student_id=u.id
+                    ).values('module_state_key')
+                    visited_in_course = []
+                    for block in db_query.all():
+                        msk = block['module_state_key']
+                        visited_in_course.append(msk)
+                    try:
+                        curr_problem = visited_in_course[-1]
+                    except:
+                        curr_problem = 'none'
+                    visited = ', '.join(visited_in_course)
+
                     enrollments = list(get_course_enrollments(u, course_org_filter, org_filter_out_set))
                     enrolled_ids = ', '.join([enrollment.course_id.course for enrollment in enrollments])
-                    d = (u.profile.name, u.email, u.date_joined, enrolled_ids, u.last_login, 'XXX',)
+                    d = (u.profile.name, u.email, u.date_joined, enrolled_ids, u.last_login, visited, curr_problem,)
                     data.append(d)
                 return self.return_csv('users_{0}.csv'.format(
                         request.META['SERVER_NAME']), header, data)
-                
 
         elif action == 'del_course':
             course_id = request.POST.get('course_id', '').strip()
