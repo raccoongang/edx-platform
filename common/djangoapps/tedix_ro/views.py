@@ -323,8 +323,8 @@ def city_import(request):
                                 })
 
                                 if school_form.is_valid():
-                                    if school_form.exists(school_name):
-                                        state = school_form.update(school_name, school_type)
+                                    if school_form.exists(school_name, city_name):
+                                        state = school_form.update(school_name, city_name, school_type)
                                     else:
                                         school_form.save()
                                         state = 'new'
