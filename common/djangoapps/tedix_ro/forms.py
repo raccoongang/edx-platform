@@ -477,4 +477,7 @@ class CityImportValidationForm(ModelForm):
         return City.objects.filter(name=name).exists()
 
     def clean(self):
+        '''
+        Override to skip validation
+        '''
         return self.cleaned_data
