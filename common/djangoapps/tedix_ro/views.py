@@ -44,6 +44,7 @@ from .forms import (
 )
 from .models import StudentProfile, StudentCourseDueDate, City, School
 from .serializers import CitySerializer, SchoolSerilizer, SingleCitySerializer, SingleSchoolSerilizer
+from .utils import get_payment_link
 
 
 def manage_courses(request):
@@ -110,27 +111,40 @@ def manage_courses(request):
                             'courses': courses_list,
                             'due_date': '{} UTC'.format(due_date.astimezone(pytz.UTC).strftime('%b %d, %Y, %H:%M %P'))
                         }
-                html_message = render_to_string(
-                    'emails/student_enroll_email_message.html',
-                    context
-                )
-                txt_message = render_to_string(
-                    'emails/student_enroll_email_message.txt',
-                    context
-                )
+                context.update({
+                    'lms_url': configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
+                    'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
+                    'support_url': configuration_helpers.get_value('SUPPORT_SITE_LINK', settings.SUPPORT_SITE_LINK),
+                    'support_email': configuration_helpers.get_value('CONTACT_EMAIL', settings.CONTACT_EMAIL)
+                })
                 from_address = configuration_helpers.get_value(
                     'email_from_address',
                     settings.DEFAULT_FROM_EMAIL
                 )
-                recipient_list = []
+                subject = u"TEDIX - Tema de casa - Data limita: {}".format(due_date.astimezone(pytz.UTC).strftime('%d %b %Y'))
                 if form.cleaned_data['send_to_students']:
-                    recipient_list.append(student.user.email)
+                    html_message = render_to_string(
+                        'emails/student_enroll_email_message.html',
+                        context
+                    )
+                    txt_message = render_to_string(
+                        'emails/student_enroll_email_message.txt',
+                        context
+                    )
+                    send_mail(subject, txt_message, from_address, [student.user.email], html_message=html_message)
                 if form.cleaned_data['send_to_parents']:
-                    recipient_list.append(student.parents.first().user.email)
+                    parent = student.parents.first()
+                    if parent and parent.user:
+                        html_message = render_to_string(
+                            'emails/parent_enroll_email_message.html',
+                            context
+                        )
+                        txt_message = render_to_string(
+                            'emails/parent_enroll_email_message.txt',
+                            context
+                        )
+                        send_mail(subject, txt_message, from_address, [parent.user.email], html_message=html_message)
 
-                if recipient_list:
-                    send_mail("Due Date", txt_message, from_address, recipient_list, html_message=html_message)
-                
                 if form.cleaned_data['send_sms']:
                     # sending sms logic to be here
                     pass
@@ -236,29 +250,40 @@ class ProfileImportView(View):
 
     def send_email(self, user, data, send_payment_link=False):
         to_address = user.email
+        status = 'Elev' if self.role == 'student' else 'Profesor'
         email_context = {
+            'status': status,
+            'lms_url': configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
+            'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
+            'support_url': configuration_helpers.get_value('SUPPORT_SITE_LINK', settings.SUPPORT_SITE_LINK),
+            'support_email': configuration_helpers.get_value('CONTACT_EMAIL', settings.CONTACT_EMAIL),
             'email': to_address,
             'password': data['password']
         }
+        subject = 'Bine ati venit pe platforma TEDIX'
         from_address = configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
         message = render_to_string('emails/import_profile.txt', email_context)
-        send_mail('subject', message, from_address, [to_address])
+        send_mail(subject, message, from_address, [to_address])
         if self.role == 'student':
             parent_user = user.studentprofile.parents.first()
             if parent_user and parent_user.user and not parent_user.user.has_usable_password():
                 password = User.objects.make_random_password()
                 parent_user.user.set_password(password)
                 parent_user.user.save()
-                email_context = {
+                email_context.update({
+                    'status': 'Parinte',
                     'email': parent_user.user.email,
                     'password': password
-                }
+                })
                 message = render_to_string('emails/import_profile.txt', email_context)
-                send_mail('subject', message, from_address, [parent_user.user.email])
+                send_mail(subject, message, from_address, [parent_user.user.email])
                 if send_payment_link:
-                    email_context = {'student_name': user.username}
+                    email_context.update({
+                        'payment_link': get_payment_link(parent_user.user),
+                    })
                     message = render_to_string('emails/payment_link_email_parent.txt', email_context)
-                    send_mail('pay link', message, from_address, [parent_user.user.email])
+                    subject = 'Plata abonament TEDIX'
+                    send_mail(subject, message, from_address, [parent_user.user.email])
 
 
 class InstructorProfileImportView(ProfileImportView):

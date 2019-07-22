@@ -1,6 +1,6 @@
 {% extends "emails/base_email.txt" %}
 {% block body %}
-Ati primit:
+Copilul dumneavoastra a primit:
     {% for course_url, course_name in courses %}
     {{ course_name }}: {{ course_url }}
     {% endfor %}

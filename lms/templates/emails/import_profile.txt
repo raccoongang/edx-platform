@@ -1,2 +1,17 @@
+{% extends "emails/base_email.txt" %}
+{% block body %}
+Va multumim ca ati ales platforma {{ platform_name }}!
+Un cont de {{ status }} a fost creat automat pentru dumneavoastra. Il puteti accesa folosind datele de mai jos:
 
-email - {{ email }}, password - {{ password }}
+Adresa:  {{ lms_url }}/login
+Nume utilizator:  {{ email }}
+Parola:  {{ password }}
+
+Va uram succes{% if status != "Profesor" %} la invatatura{% endif %}!
+
+Echipa {{ platform_name }}.
+
+Daca intampinati dificultati, va rugam sa ne contactati utilizand datele de la sectiunea de contact ({{ lms_url }}/support/contact_us) sau pe e-mail email la {{ support_email }}
+
+Acest e-mail a fost trimis automat de catre {{ lms_url }}.
+{% endblock %}
