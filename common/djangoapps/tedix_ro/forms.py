@@ -319,7 +319,7 @@ class ProfileImportForm(forms.Form):
         cleaned_data = super(ProfileImportForm, self).clean()
         file_to_import = cleaned_data['file_to_import']
         file_format = cleaned_data['file_format']
-        if not file_to_import.name.endswith(file_format):
+        if not file_to_import.name.endswith('.{}'.format(file_format)):
             self.add_error('file_format', 'The file you are going to import has another extension.')
         return cleaned_data
 
@@ -329,10 +329,12 @@ class CityImportForm(forms.Form):
 
     def clean_file_to_import(self):
         file_to_import = self.cleaned_data['file_to_import']
+        if not file_to_import.name.endswith('.json'):
+            raise ValidationError('The file extension is not supported. Please use a file with .json extension.')
         try:
             file_data = json.loads(file_to_import.read())
         except Exception as e:
-            raise ValidationError('The file extension is not supported. Please use a file with .json extension.')
+            raise ValidationError('Oops! Something went wrong. Please check that the file structure is correct.')
         file_to_import.seek(0)
         return file_to_import
 
