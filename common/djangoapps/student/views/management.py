@@ -30,6 +30,7 @@ from django.dispatch import Signal, receiver
 from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import redirect
 from django.template.context_processors import csrf
+from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import base36_to_int, urlsafe_base64_encode
@@ -54,7 +55,7 @@ import openedx.core.djangoapps.external_auth.views
 import third_party_auth
 import track.views
 from course_modes.models import CourseMode
-from edxmako.shortcuts import render_to_response, render_to_string
+from edxmako.shortcuts import render_to_response
 from entitlements.models import CourseEntitlement
 from openedx.core.djangoapps import monitoring_utils
 from openedx.core.djangoapps.catalog.utils import (
@@ -265,7 +266,14 @@ def compose_and_send_activation_email(user, profile, user_registration=None):
     if user_registration is None:
         user_registration = Registration.objects.get(user=user)
     context = generate_activation_email_context(user, user_registration)
+    context.update({
+        'student': True if hasattr(user, 'studentprofile') else False
+    })
     activation_email_template = 'emails/activation_email.txt'
+    if hasattr(user, 'studentprofile'):
+        subject = 'Activati-va contul de Elev TEDIX urmand linkul din acest e-mail'
+    else:
+        subject = 'Activati-va contul de Profesor TEDIX urmand linkul din acest e-mail'
     try:
         if user.parentprofile and not user.has_usable_password():
             password = User.objects.make_random_password()
@@ -273,13 +281,14 @@ def compose_and_send_activation_email(user, profile, user_registration=None):
             user.save()
 
             context.update({
+                'email': user.email,
                 'password': password
             })
             activation_email_template = 'emails/parent_activation_email.txt'
+            subject = 'Activati-va contul de Parinte TEDIX urmand linkul din acest e-mail'
     except ObjectDoesNotExist:  # catching tedix_ro.models.ParentProfile.DoesNotExist exception
         password = None
 
-    subject = render_to_string('emails/activation_email_subject.txt', context)
     # Email subject *must not* contain newlines
     subject = ''.join(subject.splitlines())
     message_for_activation = render_to_string(activation_email_template, context)

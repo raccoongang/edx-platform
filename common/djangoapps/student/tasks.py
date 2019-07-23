@@ -10,9 +10,11 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core import mail
+from django.template.loader import render_to_string
 
-from edxmako.shortcuts import render_to_response, render_to_string
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+
+from tedix_ro.utils import get_payment_link
 
 log = logging.getLogger('edx.celery.task')
 
@@ -31,18 +33,19 @@ def send_payment_link_to_parent(user_id):
             settings.DEFAULT_FROM_EMAIL
         )
         context = {
-            'pay_link': 'link',
-            'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
+            'payment_link': get_payment_link(user),
+            'lms_url': configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
+            'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
+            'support_url': configuration_helpers.get_value('SUPPORT_SITE_LINK', settings.SUPPORT_SITE_LINK),
+            'support_email': configuration_helpers.get_value('CONTACT_EMAIL', settings.CONTACT_EMAIL),
         }
 
         if user.is_active and parent:
             for student in parent.students.filter(paid=False, user__is_active=True):
-                context.update({
-                    'student_name': student.user.username,
-                })
                 message = render_to_string('emails/payment_link_email_parent.txt', context)
+                subject = 'Plata abonament TEDIX'
                 mail.send_mail(
-                        'pay link',
+                        subject,
                         message,
                         from_address,
                         [user.email]

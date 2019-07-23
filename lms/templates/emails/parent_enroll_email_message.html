@@ -2,7 +2,7 @@
 {% extends "emails/base_email.html" %}
 {% block body %}
 <p>
-Ati primit:
+Copilul dumneavoastra a primit:
     {% for course_url, course_name in courses %}
     <br><a href="{{ course_url }}">{{ course_name }}</a>
     {% endfor %}
@@ -12,15 +12,12 @@ Ati primit:
     {% endif %}
 </p>
 
-<br>Va uram spor la lucru!
-
 <br>Echipa {{ platform_name }}.
 
 
 
 <p>
-Daca intampinati dificultati in utilizarea sistemului, va rugam sa ne contactati utilizand datele 
-de la <a href="{{ lms_url }}/support/contact_us">sectiunea de contact</a> sau pe e-mail email la {{ support_email }}
+Daca intampinati dificultati in utilizarea sistemului, va rugam sa ne contactati utilizand datele de la <a href="{{ lms_url }}/support/contact_us">sectiunea de contact</a> sau pe e-mail email la {{ support_email }}
 
 <br>Acest e-mail a fost trimis automat de catre {{ lms_url }}
 </p>
