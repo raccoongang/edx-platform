@@ -103,6 +103,7 @@ class CoursewareIndex(View):
 
         if not (request.user.is_authenticated or self.enable_anonymous_courseware_access):
             return redirect_to_login(request.get_full_path())
+        StudentProfile = apps.get_model('tedix_ro', 'StudentProfile')
         try:
             student_course_due_date = request.user.studentprofile.course_due_dates.filter(course_id=self.course_key).first()
             if student_course_due_date:
