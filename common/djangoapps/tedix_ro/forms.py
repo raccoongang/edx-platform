@@ -21,7 +21,15 @@ from student.models import (
     Registration,
     UserProfile
 )
-from tedix_ro.models import City, School, StudentProfile, InstructorProfile, ParentProfile, Classroom
+from tedix_ro.models import (
+    City,
+    School,
+    StudentProfile,
+    InstructorProfile,
+    ParentProfile,
+    Classroom,
+    phone_validator
+)
 
 
 ROLE_CHOICES = (
@@ -84,11 +92,15 @@ class StudentRegisterForm(RegisterForm):
             'required': 'Please select your classroom.'
         }
     )
-    parent_phone = forms.CharField(label='Parent Phone Number', error_messages={
-        'required': 'Please enter your parent phone number.',
-        'min_length': 9,
-        'max_length': 15,
-    })
+    parent_phone = forms.CharField(
+        label='Parent Phone Number',
+        validators=[phone_validator],
+        error_messages={
+            'required': 'Please enter your parent phone number.',
+            'min_length': 9,
+            'max_length': 15,
+        }
+    )
     parent_email = forms.EmailField(label='Parent Email', error_messages={
         'required': 'Please enter your parent email.'
     })
@@ -110,6 +122,8 @@ class StudentRegisterForm(RegisterForm):
         """
         Validate phone number
         """
+        # TODO: there is a validator field, remove the additional validation of
+        # the length of the phone number in the future
         phone = self.cleaned_data['phone']
         if len(phone) < 10 or len(phone) > 15:
             raise forms.ValidationError('The phone number length must be from 10 to 15 digits.')
@@ -132,6 +146,8 @@ class StudentRegisterForm(RegisterForm):
         parent_email = self.cleaned_data.get('parent_email', '')
         parent_phone = self.cleaned_data['parent_phone']
         user = User.objects.filter(email=parent_email).first() if parent_email else None
+        # TODO: there is a validator field, remove the additional validation of
+        # the length of the phone number in the future
         if len(parent_phone) < 10 or len(parent_phone) > 15:
             raise forms.ValidationError('The parent phone number length must be from 10 to 15 digits.')
         if user and getattr(user, 'parentprofile', None) and parent_phone != user.parentprofile.phone:
