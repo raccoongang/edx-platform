@@ -37,6 +37,8 @@ from dashboard.models import CourseImportLog
 from edxmako.shortcuts import render_to_response
 from openedx.core.djangoapps.external_auth.models import ExternalAuthMap
 from openedx.core.djangoapps.external_auth.views import generate_password
+from openedx.core.djangoapps.content.course_structures.models import CourseStructure
+from ccx.utils import get_course_chapters
 from student.views import get_course_enrollments
 from student.models import CourseEnrollment, Registration, UserProfile
 from student.roles import CourseInstructorRole, CourseStaffRole
@@ -482,7 +484,7 @@ class Courses(SysadminDashboardView):
             gitloc = request.POST.get('repo_location', '').strip().replace(' ', '').replace(';', '')
             branch = request.POST.get('repo_branch', '').strip().replace(' ', '').replace(';', '')
             self.msg += self.get_course_from_git(gitloc, branch)
-
+            
         elif action == 'download_course_users':
             course_id = request.POST.get('course_id', '').strip()
             course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
@@ -504,33 +506,75 @@ class Courses(SysadminDashboardView):
             if course_found:
                 # donload csv list of cource students
                 data = []
+                # Remove current site orgs from the "filter out" list, if applicable.
+                # We want to filter and only show enrollments for courses within
+                # the organizations defined in configuration for the current site.
                 org_filter_out_set = configuration_helpers.get_all_orgs()
                 course_org_filter = configuration_helpers.get_current_site_orgs()
                 if course_org_filter:
                     org_filter_out_set = org_filter_out_set - set(course_org_filter)
+
                 enrolled_students = User.objects.filter(
                     courseenrollment__course_id=course_key)
-                header = [_('username'), _('email'), _('registration date'), _('enrolled courses'),
-                         _('last login'), _('visited in course'), _('last visited'),]
-                for u in enrolled_students:
 
+                # returns a list of chapters ids
+                #for parsing children (sequentials) in course tree
+                course_chapters = get_course_chapters(course_key)
+
+                course_obj = CourseStructure.objects.get(course_id=course_key) # course content tree, serialised
+
+                # deserialising and converting to OrderedDict with the blocks in the order that they appear in the course
+                course_ordered = course_obj.ordered_blocks # OrderedDict
+
+                # getting list of all sequentials (child for chapter)
+                sequentials = [] # The subsections defined in the course outline
+                for chapter in course_chapters:
+                    one_chapter_seqs = course_ordered[chapter].get('children', [])
+                    for seq in one_chapter_seqs:
+                        sequentials.append(seq)
+
+                # getting list of all verticals (child for sequential)
+                verticals = [] # The units defined in the course outline
+                for sequential in sequentials:
+                    one_seq_verts = course_ordered[sequential].get('children', [])
+                    for vert in one_seq_verts:
+                        verticals.append(vert)
+
+                # getting vertical (unit) names
+                unit_names = []
+                for vertical in verticals:
+                    unit_name = course_ordered[vertical].get('display_name')
+                    unit_names.append(unit_name)
+                header = [_('username'), _('email'), _('registration date'), _('enrolled courses'),
+                         _('last login'), ]
+                for name in unit_names:
+                    header.append(name) # adding unit names to the table header
+
+                for u in enrolled_students: # u - User object, enrolled to current course
                     db_query = models.StudentModule.objects.filter(
                         course_id__exact=course_key,
                         student_id=u.id
-                    ).values('module_state_key')
+                    ).values('module_state_key') # querySet with dictionary consist of module_state_key s
                     visited_in_course = []
                     for block in db_query.all():
                         msk = block['module_state_key']
-                        visited_in_course.append(msk)
-                    try:
-                        curr_problem = visited_in_course[-1]
-                    except:
-                        curr_problem = 'none'
-                    visited = ', '.join(visited_in_course)
+                        visited_in_course.append(msk) # usageKeys for course parts where student have been
 
+                    # getting other student enrollments
                     enrollments = list(get_course_enrollments(u, course_org_filter, org_filter_out_set))
                     enrolled_ids = ', '.join([enrollment.course_id.course for enrollment in enrollments])
-                    d = (u.profile.name, u.email, u.date_joined, enrolled_ids, u.last_login, visited, curr_problem,)
+
+                    # comparing course structure chunks (problem, video, html) with units visited in course
+                    status_list = []
+                    for unit in verticals: # usageKeys for getting childrens (problem, video, html) from course tree
+                        for problem in course_ordered[unit].get('children', []):
+                            if problem in visited_in_course:
+                                status = '+'
+                                break   # if we have visit in any of vertical children - it marks '+'
+                            else:
+                                status = '-'
+                        status_list.append(status)
+                    d = [u.profile.name, u.email, u.date_joined, enrolled_ids, u.last_login,]+status_list
                     data.append(d)
                 return self.return_csv('users_{0}.csv'.format(
                         request.META['SERVER_NAME']), header, data)
