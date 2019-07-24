@@ -534,17 +534,6 @@ def check_prerequisite(request, course_id):
     block_hash = request.GET.get('block_hash', block_id[-32:])
     course_key = CourseKey.from_string(course_id)
 
-    exists_start_info_task = InfoTaskRecalculateSubsectionGrade.objects.filter(
-        course_id=course_key,
-        user_id=request.user.id,
-        status=InfoTaskRecalculateSubsectionGrade.START_TASK
-    ).exists()
-    if exists_start_info_task:
-        return JsonResponse({'exists_start_info_task': exists_start_info_task,
-                             'next': False,
-                             'msg': _('The data is still being counted'),
-                             'url': ''})
-
     with modulestore().bulk_operations(course_key):
         course = get_course(course_key)
 
@@ -565,18 +554,53 @@ def check_prerequisite(request, course_id):
                     prev_item = children and children[0] or prev_section
 
     if not next_item:
-        url = reverse(
+        return JsonResponse({
+            'next': False,
+            'msg': _('Is last subsection'),
+            'url': ''
+        })
+
+    else:
+        next_url = reverse(
             'jump_to',
             kwargs={
                 'course_id': course_id,
-                'location': block_id,
+                'location': next_item.location.to_deprecated_string(),
             }
         )
-        return JsonResponse({'next': False, 'last_subsection': True, 'msg': _('Is last subsection'), 'url': url})
 
     prereq = get_required_content(course_key, next_item.location)
     if not prereq:
-        return JsonResponse({'next': True, 'msg': _('Go to next subsection')})
+        return JsonResponse({
+            'next': True,
+            'msg': _('Go to next subsection'),
+            'url': next_url
+        })
+
+    if course_has_entrance_exam(course) and block_id == unicode(course.get_children()[0].get_children()[0].location):
+        if user_has_passed_entrance_exam(request.user, course):
+            return JsonResponse({
+                'next': True,
+                'msg': _('You have completed the pre-exam'),
+                'url': next_url
+            })
+        else:
+            return JsonResponse({
+                'next': False,
+                'msg': _('Please answer all the questions to complete the pre-exam'),
+                'url': ''
+            })
+
+    exists_start_info_task = InfoTaskRecalculateSubsectionGrade.objects.filter(
+        course_id=course_key,
+        user_id=request.user.id,
+        status=InfoTaskRecalculateSubsectionGrade.START_TASK
+    ).exists()
+    if exists_start_info_task:
+        return JsonResponse({'exists_start_info_task': exists_start_info_task,
+                             'next': False,
+                             'msg': _('The data is still being counted'),
+                             'url': ''})
 
     field_data_cache = FieldDataCache.cache_for_descriptor_descendents(
         course_key,
@@ -634,13 +658,21 @@ def check_prerequisite(request, course_id):
             reset_library_content(prev_section, request.user, for_all=True)
         reset_library_content(descriptor, request.user)
 
-        return JsonResponse({'next': False, 'msg': msg, 'url': url})
+        return JsonResponse({
+            'next': False,
+            'msg': msg,
+            'url': url
+        })
 
     msg = ''
     if has_library_content(descriptor):
         msg = _("Congratulations, you've passed the quiz")
 
-    return JsonResponse({'next': True, 'msg': msg, 'url': next_url})
+    return JsonResponse({
+        'next': True,
+        'msg': msg,
+        'url': next_url
+    })
 
 
 def reset_library_content(sequential, user, for_all=False):
