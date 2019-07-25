@@ -142,6 +142,10 @@ def is_touch_all_problem_in_entrance_exam(entrance_exam, user, course):
                         unicode(xblock.location)
                     )
 
+                    if not library_content.selected:
+                        is_touch = False
+                        break
+
                     for block_type, block_id in library_content.selected:
                         if block_type == 'problem':
                             usage_key = library_content.location.course_key.make_usage_key(block_type, block_id)
