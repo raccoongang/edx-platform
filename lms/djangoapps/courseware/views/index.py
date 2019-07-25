@@ -3,9 +3,9 @@ View for Courseware Index
 """
 import logging
 import urllib
+import json
 # pylint: disable=attribute-defined-outside-init
 from datetime import datetime
-from time import sleep
 
 import waffle
 from django.conf import settings
@@ -24,6 +24,7 @@ from django.utils.translation import ugettext as _
 from opaque_keys.edx.keys import CourseKey, UsageKey
 from web_fragments.fragment import Fragment
 
+from courseware.models import StudentModule
 from edxmako.shortcuts import render_to_response, render_to_string
 from lms.djangoapps.courseware.exceptions import CourseAccessRedirect
 from lms.djangoapps.instructor.enrollment import reset_student_attempts
@@ -464,7 +465,53 @@ class CoursewareIndex(View):
             section_context['next_url'] = _compute_section_url(next_of_active_section, 'first')
         # sections can hide data that masquerading staff should see when debugging issues with specific students
         section_context['specific_masquerade'] = self._is_masquerading_as_specific_student()
+        section_context['is_error_in_pre_exam'] = self.section_has_error_in_pre_exam()
         return section_context
+
+    def section_has_error_in_pre_exam(self):
+        is_error_in_pre_exam = False
+        if course_has_entrance_exam(self.course):
+            entrance_exam_key = self.course.location.course_key.make_usage_key_from_deprecated_string(self.course.entrance_exam_id)
+            exam_chapter = modulestore().get_item(entrance_exam_key)
+            if exam_chapter and exam_chapter.get_children():
+                exam_section = exam_chapter.get_children()[0]
+                if exam_section:
+                    # Pre-fetch all descendant data
+                    self.field_data_cache.add_descriptor_descendents(exam_section, depth=None)
+
+                    # Bind section to user
+                    exam_section = get_module_for_descriptor(
+                        self.effective_user,
+                        self.request,
+                        exam_section,
+                        self.field_data_cache,
+                        self.course_key,
+                        1,
+                        course=self.course,
+                    )
+
+                    for vertical in exam_section.get_display_items():
+                        if is_error_in_pre_exam:
+                            break
+
+                        for xblock in vertical.get_display_items():
+                            if is_error_in_pre_exam:
+                                break
+
+                            if xblock.location.block_type == 'library_content' and xblock.chapter_id == self.section.location.block_id:
+                                for block_type, block_id in xblock.selected:
+                                    if block_type == 'problem':
+                                        usage_key = xblock.location.course_key.make_usage_key(block_type, block_id)
+                                        student_module = StudentModule.objects.filter(
+                                            module_type='problem',
+                                            student=self.effective_user,
+                                            module_state_key=usage_key,
+                                        ).first()
+
+                                        if student_module is None or student_module.grade != student_module.max_grade:
+                                            is_error_in_pre_exam = True
+                                            break
+        return is_error_in_pre_exam
 
 
 def render_accordion(request, course, table_of_contents):
@@ -534,27 +581,18 @@ def check_prerequisite(request, course_id):
     block_hash = request.GET.get('block_hash', block_id[-32:])
     course_key = CourseKey.from_string(course_id)
 
-    exists_start_info_task = InfoTaskRecalculateSubsectionGrade.objects.filter(
-        course_id=course_key,
-        user_id=request.user.id,
-        status=InfoTaskRecalculateSubsectionGrade.START_TASK
-    ).exists()
-    if exists_start_info_task:
-        return JsonResponse({'exists_start_info_task': exists_start_info_task,
-                             'next': False,
-                             'msg': _('The data is still being counted'),
-                             'url': ''})
-
     with modulestore().bulk_operations(course_key):
         course = get_course(course_key)
 
     next_item = None
     prev_item = None
+    current_section = None
     chapters = course.get_children()
     for c, chapter in enumerate(chapters):
         sections = chapter.get_children()
         for s, section in enumerate(sections):
             if section.url_name == block_hash:
+                current_section = section
                 if s < (len(sections) - 1):
                     next_item = sections[s+1]
                 elif c < (len(chapters) - 1):
@@ -565,18 +603,58 @@ def check_prerequisite(request, course_id):
                     prev_item = children and children[0] or prev_section
 
     if not next_item:
-        url = reverse(
+        return JsonResponse({
+            'next': False,
+            'msg': _('Is last subsection'),
+            'url': ''
+        })
+
+    else:
+        next_url = reverse(
             'jump_to',
             kwargs={
                 'course_id': course_id,
-                'location': block_id,
+                'location': next_item.location.to_deprecated_string(),
             }
         )
-        return JsonResponse({'next': False, 'last_subsection': True, 'msg': _('Is last subsection'), 'url': url})
 
     prereq = get_required_content(course_key, next_item.location)
     if not prereq:
-        return JsonResponse({'next': True, 'msg': _('Go to next subsection')})
+        return JsonResponse({
+            'next': True,
+            'msg': _('Go to next subsection'),
+            'url': next_url
+        })
+
+    if course_has_entrance_exam(course):
+        entrance_exam_key = course.location.course_key.make_usage_key_from_deprecated_string(course.entrance_exam_id)
+        exam_chapter = modulestore().get_item(entrance_exam_key)
+        if exam_chapter and exam_chapter.get_children():
+            exam_section = exam_chapter.get_children()[0]
+            if exam_section and block_id == unicode(exam_section.location):
+                if user_has_passed_entrance_exam(request.user, course):
+                    return JsonResponse({
+                        'next': True,
+                        'msg': _('You have completed the pre-exam'),
+                        'url': next_url
+                    })
+                else:
+                    return JsonResponse({
+                        'next': False,
+                        'msg': _('Please answer all the questions to complete the pre-exam'),
+                        'url': ''
+                    })
+
+    exists_start_info_task = InfoTaskRecalculateSubsectionGrade.objects.filter(
+        course_id=course_key,
+        user_id=request.user.id,
+        status=InfoTaskRecalculateSubsectionGrade.START_TASK
+    ).exists()
+    if exists_start_info_task:
+        return JsonResponse({'exists_start_info_task': exists_start_info_task,
+                             'next': False,
+                             'msg': _('The data is still being counted'),
+                             'url': ''})
 
     field_data_cache = FieldDataCache.cache_for_descriptor_descendents(
         course_key,
@@ -631,16 +709,35 @@ def check_prerequisite(request, course_id):
 
         msg = _("Sorry, you've failed the quiz. In order to go Next, you should complete it first")
         if with_randomization and prev_item:
+            student_module = StudentModule.objects.filter(
+                student=request.user,
+                module_state_key=current_section.location,
+                course_id=course_key
+            ).first()
+            if student_module:
+                state = json.loads(student_module.state)
+                state.update({'position': 1})
+                student_module.state = json.dumps(state)
+                student_module.save()
             reset_library_content(prev_section, request.user, for_all=True)
+
         reset_library_content(descriptor, request.user)
 
-        return JsonResponse({'next': False, 'msg': msg, 'url': url})
+        return JsonResponse({
+            'next': False,
+            'msg': msg,
+            'url': url
+        })
 
     msg = ''
     if has_library_content(descriptor):
         msg = _("Congratulations, you've passed the quiz")
 
-    return JsonResponse({'next': True, 'msg': msg, 'url': next_url})
+    return JsonResponse({
+        'next': True,
+        'msg': msg,
+        'url': next_url
+    })
 
 
 def reset_library_content(sequential, user, for_all=False):
