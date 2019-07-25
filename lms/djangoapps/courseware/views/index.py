@@ -626,6 +626,17 @@ def check_prerequisite(request, course_id):
             'url': next_url
         })
 
+    exists_start_info_task = InfoTaskRecalculateSubsectionGrade.objects.filter(
+        course_id=course_key,
+        user_id=request.user.id,
+        status=InfoTaskRecalculateSubsectionGrade.START_TASK
+    ).exists()
+    if exists_start_info_task:
+        return JsonResponse({'exists_start_info_task': exists_start_info_task,
+                             'next': False,
+                             'msg': _('The data is still being counted'),
+                             'url': ''})
+
     if course_has_entrance_exam(course):
         entrance_exam_key = course.location.course_key.make_usage_key_from_deprecated_string(course.entrance_exam_id)
         exam_chapter = modulestore().get_item(entrance_exam_key)
@@ -644,17 +655,6 @@ def check_prerequisite(request, course_id):
                         'msg': _('Please answer all the questions to complete the pre-exam'),
                         'url': ''
                     })
-
-    exists_start_info_task = InfoTaskRecalculateSubsectionGrade.objects.filter(
-        course_id=course_key,
-        user_id=request.user.id,
-        status=InfoTaskRecalculateSubsectionGrade.START_TASK
-    ).exists()
-    if exists_start_info_task:
-        return JsonResponse({'exists_start_info_task': exists_start_info_task,
-                             'next': False,
-                             'msg': _('The data is still being counted'),
-                             'url': ''})
 
     field_data_cache = FieldDataCache.cache_for_descriptor_descendents(
         course_key,
