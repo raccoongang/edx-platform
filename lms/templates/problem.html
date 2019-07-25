@@ -13,6 +13,13 @@ from openedx.core.djangolib.markup import HTML
 
 <div class="problem">
   ${ HTML(problem['html']) }
+
+  % if not is_correct and related_chapter:
+    <div>
+        ${_("Sorry, your answer is incorrect. Please pay attention to '{related_chapter}' of the course to find the correct answer.").format(related_chapter=related_chapter)}
+    </div>
+  % endif
+
   <div class="action">
     <input type="hidden" name="problem_id" value="${ problem['name'] }" />
     % if demand_hint_possible:

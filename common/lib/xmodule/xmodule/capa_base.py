@@ -713,6 +713,12 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
                 u"Your answers were previously saved. Click '{button_name}' to grade them."
             ).format(button_name=self.submit_button_name())
 
+        related_chapter = ''
+        parent_xblock = self.get_parent()
+        if parent_xblock.location.block_type == 'library_content' and parent_xblock.chapter_id:
+            usage_key = self.location.course_key.make_usage_key('sequential', parent_xblock.chapter_id)
+            related_chapter = self.runtime.modulestore.get_item(usage_key).display_name
+
         context = {
             'problem': content,
             'id': self.location.to_deprecated_string(),
@@ -731,6 +737,8 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
             'answer_notification_message': answer_notification_message,
             'has_saved_answers': self.has_saved_answers,
             'save_message': save_message,
+            'is_correct': self.is_correct(),
+            'related_chapter': related_chapter,
         }
 
         html = self.runtime.render_template('problem.html', context)

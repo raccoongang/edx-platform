@@ -19,6 +19,14 @@
     </div>
   % endif
 
+  % if is_error_in_pre_exam:
+    <div class="pre-exam-error">
+      <p class="sequential-status-message">
+          ${_('Unfortunately, you failed this topic in your Pre-Exam. Please pay attention to this Chapter.')}
+      </p>
+    </div>
+  % endif
+
   <div class="sequence-nav">
     <button class="sequence-nav-button button-previous" aria-hidden="true">
       <span class="icon fa fa-chevron-prev" aria-hidden="true"></span>
