@@ -3,9 +3,9 @@ View for Courseware Index
 """
 import logging
 import urllib
+import json
 # pylint: disable=attribute-defined-outside-init
 from datetime import datetime
-from time import sleep
 
 import waffle
 from django.conf import settings
@@ -586,11 +586,13 @@ def check_prerequisite(request, course_id):
 
     next_item = None
     prev_item = None
+    current_section = None
     chapters = course.get_children()
     for c, chapter in enumerate(chapters):
         sections = chapter.get_children()
         for s, section in enumerate(sections):
             if section.url_name == block_hash:
+                current_section = section
                 if s < (len(sections) - 1):
                     next_item = sections[s+1]
                 elif c < (len(chapters) - 1):
@@ -707,7 +709,18 @@ def check_prerequisite(request, course_id):
 
         msg = _("Sorry, you've failed the quiz. In order to go Next, you should complete it first")
         if with_randomization and prev_item:
+            student_module = StudentModule.objects.filter(
+                student=request.user,
+                module_state_key=current_section.location,
+                course_id=course_key
+            ).first()
+            if student_module:
+                state = json.loads(student_module.state)
+                state.update({'position': 1})
+                student_module.state = json.dumps(state)
+                student_module.save()
             reset_library_content(prev_section, request.user, for_all=True)
+
         reset_library_content(descriptor, request.user)
 
         return JsonResponse({
