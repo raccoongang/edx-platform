@@ -584,7 +584,7 @@ DOC_STORE_CONFIG = AUTH_TOKENS.get('DOC_STORE_CONFIG', DOC_STORE_CONFIG)
 MONGODB_LOG = AUTH_TOKENS.get('MONGODB_LOG', {})
 
 EMAIL_HOST_USER = AUTH_TOKENS.get('EMAIL_HOST_USER', '')  # django default is ''
-# force_str ised to fix this issue - https://code.djangoproject.com/ticket/27131
+# convert from unicode to ascii to fix this issue - https://code.djangoproject.com/ticket/27131
 EMAIL_HOST_PASSWORD = force_str(AUTH_TOKENS.get('EMAIL_HOST_PASSWORD', '')) # django default is ''
 
 # Datadog for events!

@@ -290,7 +290,7 @@ if 'DJFS' in AUTH_TOKENS and AUTH_TOKENS['DJFS'] is not None:
         DJFS['url_root'] = DJFS['url_root'].format(platform_revision=EDX_PLATFORM_REVISION)
 
 EMAIL_HOST_USER = AUTH_TOKENS.get('EMAIL_HOST_USER', EMAIL_HOST_USER)
-# force_str ised to fix this issue - https://code.djangoproject.com/ticket/27131
+# convert from unicode to ascii to fix this issue - https://code.djangoproject.com/ticket/27131
 EMAIL_HOST_PASSWORD = force_str(AUTH_TOKENS.get('EMAIL_HOST_PASSWORD', EMAIL_HOST_PASSWORD))
 
 AWS_SES_REGION_NAME = ENV_TOKENS.get('AWS_SES_REGION_NAME', 'us-east-1')
