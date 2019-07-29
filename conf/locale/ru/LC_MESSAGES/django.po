@@ -19695,6 +19695,10 @@ msgstr "Войти или зарегистрироваться"
 msgid "Learner Profile"
 msgstr "Профиль слушателя"
 
+#: lms/templates/student_profile/learner_profile.underscore
+msgid "Profile Statistics"
+msgstr "Статистика Профиля"
+
 #. Translators: this section lists all the third-party authentication
 #. providers
 #. (for example, Google and LinkedIn) the user can link with or unlink from

@@ -12,7 +12,7 @@ import requests
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-
+from simplejson import JSONDecodeError
 
 log = logging.getLogger(__name__)
 
@@ -24,7 +24,8 @@ ALLOWED_EDEOS_API_ENDPOINTS_NAMES = [
     "transactions",
     "transactions_store",
     "referrals_store",
-    "statistics"
+    "statistics",
+    "profile_statistics"
 ]
 
 
@@ -142,7 +143,11 @@ class EdeosBaseApiClient(object):
         resp = requests.post(url, json=payload, headers=headers_)
         log.info("Edeos response: status {}, content {}".format(resp.status_code, resp.content))
         if resp.status_code in (httplib.OK, httplib.CREATED):
-            return resp.json()
+            try:
+                return resp.json()
+            except JSONDecodeError:
+                return resp
+
         elif resp.status_code == httplib.UNAUTHORIZED and can_retry:
             self.access_token = self._refresh_access_token()
             return self.post(url, payload, headers, can_retry=False)
@@ -247,3 +252,6 @@ class EdeosApiClient(EdeosBaseApiClient):
 
     def statistics(self, payload):
         return self.call_api("statistics", payload)
+    
+    def profile_statistics(self, payload):
+        return self.call_api("profile_statistics", payload)
