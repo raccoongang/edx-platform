@@ -466,6 +466,9 @@ class SchoolImportValidationForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(SchoolImportValidationForm, self).__init__(*args, **kwargs)
         self.fields['city'].to_field_name = 'name'
+        self.fields['school_type'].error_messages.update({
+            'required': "The value is invalid. Valid school types are 'Privata' and 'Publica'.",
+        })
 
 
     def exists(self, name, city_name):
