@@ -1,18 +1,19 @@
-
 {% extends "emails/base_email.html" %}
 {% block body %}
 <p>
-Copilul dumneavoastra a primit:
-    {% for course_url, course_name in courses %}
-    <br><a href="{{ course_url }}">{{ course_name }}</a>
-    {% endfor %}
-    <br>ca si tema de casa.
+Copilul dumneavoastra a primit tema de casa.<br>
     {% if due_date %}
     <br>Data limita pentru aceasta tema de casa este: {{ due_date }}
     {% endif %}
+    <br>Puteti accesa tema de casa aici:
+    {% for course_url, course_name in courses %}
+    <br><a href="{{ course_url }}">{{ course_name }}</a>
+    {% endfor %}
 </p>
 
-<br>Echipa {{ platform_name }}.
+<br>Va uram spor la lucru!
+
+<br>Echipa {{ platform_name }}.<br>
 
 
 

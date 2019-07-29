@@ -1,13 +1,15 @@
 {% extends "emails/base_email.txt" %}
 {% block body %}
-Copilul dumneavoastra a primit:
-    {% for course_url, course_name in courses %}
-    {{ course_name }}: {{ course_url }}
-    {% endfor %}
-    ca si tema de casa.
-    {% if due_date %}
-    Data limita pentru aceasta tema de casa este: {{ due_date }}
-    {% endif %}
+Copilul dumneavoastra a primit tema de casa.
+{% if due_date %}
+Data limita pentru aceasta tema de casa este: {{ due_date }}
+{% endif %}
+Puteti accesa tema de casa aici:
+{% for course_url, course_name in courses %}
+{{ course_name }}:
+{{ course_url }}
+{% endfor %}
+
 
 Va uram spor la lucru!
 

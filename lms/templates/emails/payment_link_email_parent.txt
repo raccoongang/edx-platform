@@ -6,7 +6,8 @@ Urmati linkul de mai jos pentru a efectua plata abonamentului anual:
 
 Va multimim si va uram succes la invatatura!
 
-Echipa TEDIX.
+Echipa {{ platform_name }}.
+
 
 
 Daca aveti probleme legate de plata urmand linkul de mai sus, va rugam sa ne contactati utilizand datele de la sectiunea de contact ({{ lms_url }}/support/contact_us) sau pe e-mail la {{ support_email }}
