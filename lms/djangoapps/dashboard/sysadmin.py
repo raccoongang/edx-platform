@@ -542,11 +542,22 @@ class Courses(SysadminDashboardView):
 
                 # getting vertical (unit) names
                 unit_names = []
+                active_verticals = [] # excluding verticals with only html and discussions
                 for vertical in verticals:
-                    unit_name = course_ordered[vertical].get('display_name')
-                    unit_names.append(unit_name)
+                    v_children = course_ordered[vertical].get('children')
+                    # getting only units with video or problem type
+                    for v_child in v_children:
+                        if course_ordered[v_child]['block_type'] in ['video', 'problem']:
+                            unit_name = course_ordered[vertical].get('display_name')
+                            break
+                        else:
+                            unit_name = None
+                    if unit_name != None:
+                        unit_names.append(unit_name)
+                        active_verticals.append(vertical)
+
                 header = [_('username'), _('email'), _('registration date'), _('enrolled courses'),
-                         _('last login'), ]
+                            _('last login'), 'last visit']
                 for name in unit_names:
                     header.append(name) # adding unit names to the table header
 
@@ -554,7 +565,13 @@ class Courses(SysadminDashboardView):
                     db_query = models.StudentModule.objects.filter(
                         course_id__exact=course_key,
                         student_id=u.id
-                    ).values('module_state_key') # querySet with dictionary consist of module_state_key s
+                    ).order_by('-modified').values('module_state_key') # querySet with dictionary consist of module_state_key s
+                    last_visit_id = db_query.all().values_list('module_state_key', flat=True)[:1]
+                    try:
+                        last_visit = course_ordered[last_visit_id[0]].get('display_name')
+                    except:
+                        last_visit = 'New to course'
+
                     visited_in_course = []
                     for block in db_query.all():
                         msk = block['module_state_key']
@@ -566,7 +583,7 @@ class Courses(SysadminDashboardView):
 
                     # comparing course structure chunks (problem, video, html) with units visited in course
                     status_list = []
-                    for unit in verticals: # usageKeys for getting childrens (problem, video, html) from course tree
+                    for unit in active_verticals: # usageKeys for getting childrens (problem, video, html) from course tree
                         for problem in course_ordered[unit].get('children', []):
                             if problem in visited_in_course:
                                 status = '+'
@@ -574,7 +591,7 @@ class Courses(SysadminDashboardView):
                             else:
                                 status = '-'
                         status_list.append(status)
-                    d = [u.profile.name, u.email, u.date_joined, enrolled_ids, u.last_login,]+status_list
+                    d = [u.profile.name, u.email, u.date_joined, enrolled_ids, u.last_login, last_visit]+status_list
                     data.append(d)
                 return self.return_csv('users_{0}.csv'.format(
                         request.META['SERVER_NAME']), header, data)
