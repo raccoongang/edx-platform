@@ -636,13 +636,13 @@ def check_prerequisite(request, course_id):
                              'next': False,
                              'msg': _('The data is still being counted'),
                              'url': ''})
-
     if course_has_entrance_exam(course):
         entrance_exam_key = course.location.course_key.make_usage_key_from_deprecated_string(course.entrance_exam_id)
         exam_chapter = modulestore().get_item(entrance_exam_key)
         if exam_chapter and exam_chapter.get_children():
             exam_section = exam_chapter.get_children()[0]
             if exam_section and block_id == unicode(exam_section.location):
+                CourseGradeFactory().create(request.user, course)
                 if user_has_passed_entrance_exam(request.user, course):
                     return JsonResponse({
                         'next': True,

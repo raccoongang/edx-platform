@@ -266,7 +266,7 @@ def set_progress(course_key, student):
 
     subsections = []
     for grade_name, sequentials in course_grade.graded_subsections_by_format.iteritems():
-        if 'quiz' in grade_name.lower() or 'exam' in grade_name.lower():
+        if 'quiz' == grade_name.lower() or 'final exam' == grade_name.lower():
             subsections.extend(int(str(q) in milestone_ids and str(q) not in user_milestone_ids) for q in sequentials.keys())
 
     progress = 0
