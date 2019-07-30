@@ -305,8 +305,8 @@ class Users(SysadminDashboardView):
 
         if action == 'download_users':
             header = [_('username'), _('email'), ]
-            data = ([u.username, u.email] for u in
-                    (User.objects.all().iterator()))
+            data = ([u.name, u.user.email] for u in
+                    (UserProfile.objects.all().iterator()))
             return self.return_csv('users_{0}.csv'.format(
                 request.META['SERVER_NAME']), header, data)
         elif action == 'repair_eamap':
