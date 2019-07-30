@@ -133,7 +133,7 @@ def learner_profile_statistics_context(profile_username, profile_statistics):
 
     Args:
         profile_username (str): username of user whose profile is requested.
-        profile_statistics (str): html in string 
+        profile_statistics (str): html in string
 
     Returns:
         dict
@@ -159,7 +159,7 @@ def learner_performance(request, course_id=None, student_id=None):
         student = request.user
 
     date_from = CourseEnrollment.objects.filter(user=student.id).filter(is_active=True).order_by('created').first().created
-    
+
     if date_from:
         date_to = datetime.today()
         date_to = date_to.strftime("%Y-%m-%d")
@@ -176,7 +176,7 @@ def learner_performance(request, course_id=None, student_id=None):
         "api_endpoint": "profile_statistics",
         "key": getattr(settings, 'EDEOS_API_KEY'),
         "secret": getattr(settings, 'EDEOS_API_SECRET'),
-        "base_url": 'http://195.160.222.156/api/point/v1/'
+        "base_url": getattr(settings, 'EDEOS_API_STATISTICS_URL')
     }
 
     response = send_edeos_api_request(**edeos_post_data)
@@ -188,11 +188,10 @@ def learner_performance(request, course_id=None, student_id=None):
         )
     except (UserNotAuthorized, UserNotFound, ObjectDoesNotExist):
         raise Http404
-    
+
 def profile_statistics(request, username):
     """ view render profile statistics page where will be iframe with  """
     return render_to_response(
         'student_profile/profile_statistics.html',
         learner_profile_statistics_context(username, request)
     )
-    

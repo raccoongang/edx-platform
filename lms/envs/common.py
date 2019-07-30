@@ -2945,7 +2945,7 @@ ACCOUNT_VISIBILITY_CONFIGURATION = {
         "requires_parental_consent",
         "account_privacy",
         "accomplishments_shared",
-        "mobytize_id", 
+        "mobytize_id",
         "mobytize_token",
     ]
 }
@@ -3237,3 +3237,6 @@ COURSES_API_CACHE_TIMEOUT = 3600  # Value is in seconds
 
 ############## Settings for CourseGraph ############################
 COURSEGRAPH_JOB_QUEUE = LOW_PRIORITY_QUEUE
+
+############## Settings User Statistics ############################
+EDEOS_API_STATISTICS_URL = ''
