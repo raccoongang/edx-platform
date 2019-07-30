@@ -1,17 +1,19 @@
 {% extends "emails/base_email.txt" %}
 {% block body %}
 Bine ati venit pe platforma {{ platform_name }}!
-Pentru a va activa contul TEDIX dati clic pe linkul de mai jos:
+Pentru a va activa contul {{ platform_name }} dati clic pe linkul de mai jos:
 
 {{ lms_url }}/activate/{{ key }}
 
-Nota: Va veti putea putea loga in sistem si accesa cursurile, doar dupa ce activati contul utilizand linkul de mai sus.
+Nota: Va veti putea putea loga in sistem si accesa cursurile, {% if not student %}statisticile si rapoartele {% endif %}doar dupa ce activati contul utilizand linkul de mai sus.
 
-Va uram succes!
-Echipa TEDIX.
+Va uram succes{% if student %} si note mari{% endif %}!
+
+Echipa {{ platform_name }}.
+
+
 
 Daca aveti probleme cu activarea va rugam sa ne contactati utilizand datele de la sectiunea de contact ({{ lms_url }}/support/contact_us) sau pe e-mail la {{ support_email }}
 
 Acest e-mail a fost trimis automat de catre {{ lms_url }} in urma inregistrarii unui cont de {% if student %}Elev {% else %}Profesor {% endif %}utilizand adresa dumneavoastra de e-mail.
-
 {% endblock %}

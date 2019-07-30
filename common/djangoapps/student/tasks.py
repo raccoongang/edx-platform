@@ -43,7 +43,9 @@ def send_payment_link_to_parent(user_id):
         if user.is_active and parent:
             for student in parent.students.filter(paid=False, user__is_active=True):
                 message = render_to_string('emails/payment_link_email_parent.txt', context)
-                subject = 'Plata abonament TEDIX'
+                subject = 'Plata abonament {}'.format(
+                    configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
+                )
                 mail.send_mail(
                         subject,
                         message,

@@ -1,13 +1,15 @@
 {% extends "emails/base_email.txt" %}
 {% block body %}
-Ati primit:
-    {% for course_url, course_name in courses %}
-    {{ course_name }}: {{ course_url }}
-    {% endfor %}
-    ca si tema de casa.
-    {% if due_date %}
-    Data limita pentru aceasta tema de casa este: {{ due_date }}
-    {% endif %}
+Ati primit tema de casa.
+{% if due_date %}
+Data limita pentru aceasta tema de casa este: {{ due_date }}
+{% endif %}
+Puteti accesa tema de casa aici:
+{% for course_url, course_name in courses %}
+{{ course_name }}:
+{{ course_url }}
+{% endfor %}
+
 
 Va uram spor la lucru!
 
@@ -19,4 +21,5 @@ Echipa {{ platform_name }}.
 Daca intampinati dificultati in utilizarea sistemului, va rugam sa ne contactati utilizand datele de la sectiunea de contact ({{ lms_url }}/support/contact_us) sau pe e-mail email la {{ support_email }}
 
 Acest e-mail a fost trimis automat de catre {{ lms_url }}
+
 {% endblock %}

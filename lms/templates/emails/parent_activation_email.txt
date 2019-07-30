@@ -6,12 +6,13 @@ Bine ati venit pe platforma {{ platform_name }}!
   Parola:  {{ password }}
 
 Va uram succes si note mari!
-Echipa TEDIX.
+Echipa {{ platform_name }}.
 
-Nota:  Aveti posibilitatea sa schimbati parola cu una aleasa de dumneastra dand clic pe acest link ({{ lms_url }}/account/settings)
 
-Daca aveti probleme cu activarea va rugam sa ne contactati utilizand datele de la sectiunea de contact {{ lms_url }}/support/contact_us) sau pe e-mail la {{ support_email }}
+
+Nota:  Aveti posibilitatea sa schimbati parola cu una aleasa de dumneastra dand clic pe acest link: {{ lms_url }}/account/settings
+
+Daca aveti probleme cu activarea va rugam sa ne contactati utilizand datele de la sectiunea de contact ({{ lms_url }}/support/contact_us) sau pe e-mail la {{ support_email }}
 
 Acest e-mail a fost trimis automat de catre {{ lms_url }} in urma inregistrarii unui cont de Parinte utilizand adresa dumneavoastra de e-mail.
-
 {% endblock %}

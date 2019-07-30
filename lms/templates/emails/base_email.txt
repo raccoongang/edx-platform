@@ -3,5 +3,5 @@
 {% endblock %}
 
 Copyright (c) ABCData SRL
-Politica de confidentialitate ({{ lms_url }}/privacy)
-Conditii de utilizare ({{ lms_url }}/tos)
+Politica de confidentialitate: {{ lms_url }}/privacy
+Conditii de utilizare: {{ lms_url }}/tos

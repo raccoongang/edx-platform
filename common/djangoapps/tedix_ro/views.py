@@ -121,7 +121,10 @@ def manage_courses(request):
                     'email_from_address',
                     settings.DEFAULT_FROM_EMAIL
                 )
-                subject = u"TEDIX - Tema de casa - Data limita: {}".format(due_date.astimezone(pytz.UTC).strftime('%d %b %Y'))
+                subject = u"{} - Tema de casa - Data limita: {}".format(
+                    configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
+                    due_date.astimezone(pytz.UTC).strftime('%d %b %Y')
+                )
                 if form.cleaned_data['send_to_students']:
                     html_message = render_to_string(
                         'emails/student_enroll_email_message.html',
@@ -260,7 +263,9 @@ class ProfileImportView(View):
             'email': to_address,
             'password': data['password']
         }
-        subject = 'Bine ati venit pe platforma TEDIX'
+        subject = 'Bine ati venit pe platforma {}'.format(
+            configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
+        )
         from_address = configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
         message = render_to_string('emails/import_profile.txt', email_context)
         send_mail(subject, message, from_address, [to_address])
@@ -282,7 +287,9 @@ class ProfileImportView(View):
                         'payment_link': get_payment_link(parent_user.user),
                     })
                     message = render_to_string('emails/payment_link_email_parent.txt', email_context)
-                    subject = 'Plata abonament TEDIX'
+                    subject = 'Plata abonament {}'.format(
+                        configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
+                    )
                     send_mail(subject, message, from_address, [parent_user.user.email])
 
 
