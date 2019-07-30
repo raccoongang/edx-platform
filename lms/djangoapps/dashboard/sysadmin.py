@@ -484,7 +484,7 @@ class Courses(SysadminDashboardView):
             gitloc = request.POST.get('repo_location', '').strip().replace(' ', '').replace(';', '')
             branch = request.POST.get('repo_branch', '').strip().replace(' ', '').replace(';', '')
             self.msg += self.get_course_from_git(gitloc, branch)
-            
+
         elif action == 'download_course_users':
             course_id = request.POST.get('course_id', '').strip()
             course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
@@ -518,83 +518,118 @@ class Courses(SysadminDashboardView):
                     courseenrollment__course_id=course_key)
 
                 # returns a list of chapters ids
-                #for parsing children (sequentials) in course tree
+                # for parsing children (sequentials) in course tree
                 course_chapters = get_course_chapters(course_key)
 
-                course_obj = CourseStructure.objects.get(course_id=course_key) # course content tree, serialised
+                course_obj = CourseStructure.objects.get(course_id=course_key)  # course content tree, serialised
 
-                # deserialising and converting to OrderedDict with the blocks in the order that they appear in the course
-                course_ordered = course_obj.ordered_blocks # OrderedDict
+                # deserialising and converting to OrderedDict with the blocks in the order that they appear in the
+                # course
+                course_ordered = course_obj.ordered_blocks  # OrderedDict
+
+                def get_children(parent):
+                    """
+                    Getting children method
+                    """
+                    children = course_ordered[parent].get('children', [])
+                    return children
 
                 # getting list of all sequentials (child for chapter)
-                sequentials = [] # The subsections defined in the course outline
+                sequentials = []  # The subsections defined in the course outline
                 for chapter in course_chapters:
-                    one_chapter_seqs = course_ordered[chapter].get('children', [])
+                    one_chapter_seqs = get_children(chapter)
                     for seq in one_chapter_seqs:
                         sequentials.append(seq)
 
                 # getting list of all verticals (child for sequential)
-                verticals = [] # The units defined in the course outline
+                verticals = []  # The units defined in the course outline
                 for sequential in sequentials:
-                    one_seq_verts = course_ordered[sequential].get('children', [])
+                    one_seq_verts = get_children(sequential)
                     for vert in one_seq_verts:
                         verticals.append(vert)
 
                 # getting vertical (unit) names
                 unit_names = []
-                active_verticals = [] # excluding verticals with only html and discussions
                 for vertical in verticals:
-                    v_children = course_ordered[vertical].get('children')
-                    # getting only units with video or problem type
-                    for v_child in v_children:
-                        if course_ordered[v_child]['block_type'] in ['video', 'problem']:
-                            unit_name = course_ordered[vertical].get('display_name')
-                            break
-                        else:
-                            unit_name = None
-                    if unit_name != None:
-                        unit_names.append(unit_name)
-                        active_verticals.append(vertical)
+                    unit_name = course_ordered[vertical].get('display_name')
+                    unit_names.append(unit_name)
 
-                header = [_('username'), _('email'), _('registration date'), _('enrolled courses'),
-                            _('last login'), 'last visit']
+                header = [_('username'), _('email'), _('registration date'), _('enrolled courses'), ('last login'), 'last visit', ]
                 for name in unit_names:
-                    header.append(name) # adding unit names to the table header
+                    header.append(name)  # adding unit names to the table header
 
-                for u in enrolled_students: # u - User object, enrolled to current course
+                for u in enrolled_students:  # u - User object, enrolled to current course
                     db_query = models.StudentModule.objects.filter(
                         course_id__exact=course_key,
                         student_id=u.id
-                    ).order_by('-modified').values('module_state_key') # querySet with dictionary consist of module_state_key s
-                    last_visit_id = db_query.all().values_list('module_state_key', flat=True)[:1]
+                    )   # querySet StudentModule
+                    last_visit_id = db_query.all().order_by('-modified').values_list('module_state_key', flat=True)[:1]
                     try:
                         last_visit = course_ordered[last_visit_id[0]].get('display_name')
-                    except:
+                    except Exception:
                         last_visit = 'New to course'
 
                     visited_in_course = []
-                    for block in db_query.all():
+                    for block in db_query.all().values('module_state_key'):
                         msk = block['module_state_key']
-                        visited_in_course.append(msk) # usageKeys for course parts where student have been
+                        visited_in_course.append(msk)  # usageKeys for course parts where student have been
 
                     # getting other student enrollments
                     enrollments = list(get_course_enrollments(u, course_org_filter, org_filter_out_set))
                     enrolled_ids = ', '.join([enrollment.course_id.course for enrollment in enrollments])
 
                     # comparing course structure chunks (problem, video, html) with units visited in course
+                    seq_positions = {}  # getting positions for sequential module_types
+                    visited_in_seq = db_query.filter(module_type='sequential')
+                    for v in visited_in_seq.values('module_state_key', 'state'):
+                        # structure example: v = {
+                        # 'module_state_key': u'block-v1:edX+DemoX+Demo_Course+type@sequential+block@edx_introduction', # 'state': u'{"position": 1}'
+                        # }
+                        key = v['module_state_key']
+                        val = json.loads(v['state']).get('position')
+                        seq_positions[key] = val
                     status_list = []
-                    for unit in active_verticals: # usageKeys for getting childrens (problem, video, html) from course tree
-                        for problem in course_ordered[unit].get('children', []):
-                            if problem in visited_in_course:
-                                status = '+'
-                                break   # if we have visit in any of vertical children - it marks '+'
-                            else:
-                                status = '-'
-                        status_list.append(status)
-                    d = [u.profile.name, u.email, u.date_joined, enrolled_ids, u.last_login, last_visit]+status_list
+                    for sequential in sequentials:
+                        for vertical in get_children(sequential):
+                            for unit in get_children(vertical):
+                                if course_ordered[unit]['block_type'] in ['video', 'problem']:
+                                    if unit in visited_in_course:
+                                        status = '+'
+                                        break   # if we have visit in any of vertical children - it marks '+'
+                                # scipping discussion units
+                                elif course_ordered[unit]['block_type'] in ['discussion']:
+                                    continue
+                                # for html-only pages:
+                                else:
+                                    current_seq_children_list = get_children(sequential)
+                                    vert_position_in_seq = current_seq_children_list.index(vertical)
+                                    try:
+                                        last_visit_in_seq_position = seq_positions[sequential]
+                                        if (vert_position_in_seq < last_visit_in_seq_position):
+                                            status = '+'
+                                            break
+                                        else:
+                                            status = '-'
+                                    except Exception:
+                                        status = '-'
+                            status_list.append(status)
+                    # some default users could be without last_login, so:
+                    try:
+                        last_login = u.last_login.strftime('%Y-%m-%d %H:%M')
+                    except Exception:
+                        last_login = '-'
+                    d = [
+                        u.profile.name,
+                        u.email,
+                        u.date_joined.strftime('%Y-%m-%d %H:%M'),
+                        enrolled_ids,
+                        last_login,
+                        last_visit,
+                    ] + status_list
                     data.append(d)
-                return self.return_csv('users_{0}.csv'.format(
-                        request.META['SERVER_NAME']), header, data)
+                return self.return_csv(
+                    'users_{0}_{1}.csv'.format(request.META['SERVER_NAME'], course_id), header, data
+                )
 
         elif action == 'del_course':
             course_id = request.POST.get('course_id', '').strip()
@@ -625,7 +660,7 @@ class Courses(SysadminDashboardView):
                     result_ids = [result["data"]["id"] for result in response["results"]]
                     self._searcher.remove('courseware_content', result_ids)
                     self._searcher.remove('course_info', [course_id])
-                except Exception as e: # pragma: no cover
+                except Exception as e:  # pragma: no cover
                     log.error(e.message)
 
                 CourseOverview.objects.filter(id=course.id).delete()
