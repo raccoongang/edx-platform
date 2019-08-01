@@ -135,7 +135,7 @@ class StudentRegisterForm(RegisterForm):
         Validate parent email
         """
         parent_email = self.cleaned_data['parent_email']
-        if parent_email == self.data['email']:
+        if self.data['email'] and parent_email == self.data['email']:
             raise forms.ValidationError('Student and parent emails must be different.')
         user = User.objects.filter(email=parent_email).first()
         if user and (getattr(user, 'studentprofile', None) or not getattr(user, 'parentprofile', None)) or user and not user.is_active:
