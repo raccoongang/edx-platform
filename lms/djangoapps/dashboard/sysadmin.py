@@ -523,13 +523,13 @@ class Courses(SysadminDashboardView):
 
                 course_obj = CourseStructure.objects.get(course_id=course_key)  # course content tree, serialised
 
-                # deserialising and converting to OrderedDict with the blocks in the order that they appear in the
-                # course
+                # deserialising and converting to OrderedDict with the blocks
+                # in the order that they appear in the course
                 course_ordered = course_obj.ordered_blocks  # OrderedDict
 
                 def get_children(parent):
                     """
-                    Getting children method
+                    Method for getting children from course structure object
                     """
                     children = course_ordered[parent].get('children', [])
                     return children
@@ -555,8 +555,13 @@ class Courses(SysadminDashboardView):
                     unit_names.append(unit_name)
 
                 header = [_('username'), _('email'), _('registration date'), _('enrolled courses'), ('last login'), 'last visit', ]
+
+                # preparing list for counting visits for course units (last raw in the table)
+                visit_count = ['', '', '', '', '', 'Visits:', ]
+
                 for name in unit_names:
                     header.append(name)  # adding unit names to the table header
+                    visit_count.append(0)
 
                 for u in enrolled_students:  # u - User object, enrolled to current course
                     db_query = models.StudentModule.objects.filter(
@@ -578,17 +583,22 @@ class Courses(SysadminDashboardView):
                     enrollments = list(get_course_enrollments(u, course_org_filter, org_filter_out_set))
                     enrolled_ids = ', '.join([enrollment.course_id.course for enrollment in enrollments])
 
-                    # comparing course structure chunks (problem, video, html) with units visited in course
+                    # Comparing course structure chunks (problem, video, html) with units visited in course
+                    # Need to get positions for sequentials because this is the
+                    # only one method to check whether student visit html-only lesson or no
                     seq_positions = {}  # getting positions for sequential module_types
                     visited_in_seq = db_query.filter(module_type='sequential')
                     for v in visited_in_seq.values('module_state_key', 'state'):
                         # structure example: v = {
-                        # 'module_state_key': u'block-v1:edX+DemoX+Demo_Course+type@sequential+block@edx_introduction', # 'state': u'{"position": 1}'
+                        # 'module_state_key': u'block-v1:edX+DemoX+Demo_Course+type@sequential+block@edx_introduction',
+                        # 'state': u'{"position": 1}'
                         # }
                         key = v['module_state_key']
                         val = json.loads(v['state']).get('position')
                         seq_positions[key] = val
+
                     status_list = []
+                    # Need to go through parent-children structure again for catching html-only lessons
                     for sequential in sequentials:
                         for vertical in get_children(sequential):
                             for unit in get_children(vertical):
@@ -596,7 +606,7 @@ class Courses(SysadminDashboardView):
                                     if unit in visited_in_course:
                                         status = '+'
                                         break   # if we have visit in any of vertical children - it marks '+'
-                                # scipping discussion units
+                                # skipping discussion units
                                 elif course_ordered[unit]['block_type'] in ['discussion']:
                                     continue
                                 # for html-only pages:
@@ -627,6 +637,17 @@ class Courses(SysadminDashboardView):
                         last_visit,
                     ] + status_list
                     data.append(d)
+
+                    # Counting visits for every course lesson (vertical)
+                    index = 6
+                    for stat in status_list:
+                        if stat == '+':
+                            visit_count[index] += 1
+                            index += 1
+                        else:
+                            index += 1
+                            continue
+                data.append(visit_count)
                 return self.return_csv(
                     'users_{0}_{1}.csv'.format(request.META['SERVER_NAME'], course_id), header, data
                 )

@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 
 
 @ensure_csrf_cookie
-@cache_if_anonymous() 
+@cache_if_anonymous()
 def index(request):
     '''
     Redirects to main page -- info page if user authenticated, or marketing if not
@@ -41,8 +41,8 @@ def index(request):
                 'ALWAYS_REDIRECT_HOMEPAGE_TO_DASHBOARD_FOR_AUTHENTICATED_USER',
                 settings.FEATURES.get('ALWAYS_REDIRECT_HOMEPAGE_TO_DASHBOARD_FOR_AUTHENTICATED_USER', True)):
             return redirect(reverse('dashboard'))
-            
-    if settings.FEATURES.get('AUTH_USE_CERTIFICATES'):       
+
+    if settings.FEATURES.get('AUTH_USE_CERTIFICATES'):
         from openedx.core.djangoapps.external_auth.views import ssl_login
         # Set next URL to dashboard if it isn't set to avoid
         # caching a redirect to / that causes a redirect loop on logout
