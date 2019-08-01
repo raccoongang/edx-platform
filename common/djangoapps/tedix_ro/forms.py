@@ -59,6 +59,19 @@ def get_tedix_registration_form(role):
         return StudentRegisterForm
 
 
+def get_username_by_email(email):
+    """
+    Return a unique username by email
+    """
+    username = email.split('@')[0]
+    x = 1
+    new_username = username
+    while User.objects.filter(username=new_username).exists():
+        new_username = "{0}_{1}".format(username, x)
+        x += 1
+    return new_username
+
+
 class RegisterForm(ModelForm):
     """
     Abstract register form
@@ -161,11 +174,16 @@ class StudentRegisterForm(RegisterForm):
         if self.cleaned_data['role'] == 'student':
             # Make user for parent
             parent_email = self.cleaned_data['parent_email']
-            parent_user, created = User.objects.get_or_create(
-                username=parent_email.split('@')[0],
-                email=parent_email,
-                defaults={'is_active': False if not self.admin_import_action else True}
-            )
+            parent_user = User.objects.filter(email=parent_email).first()
+            if parent_user:
+                created = False
+            else:
+                parent_user = User.objects.create(
+                    username=get_username_by_email(parent_email),
+                    email=parent_email,
+                    is_active=False if not self.admin_import_action else True
+                )
+                created = True
             if created:
                 # add this account creation to password history
                 # NOTE, this will be a NOP unless the feature has been turned on in configuration
