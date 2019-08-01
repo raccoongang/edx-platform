@@ -3239,4 +3239,4 @@ COURSES_API_CACHE_TIMEOUT = 3600  # Value is in seconds
 COURSEGRAPH_JOB_QUEUE = LOW_PRIORITY_QUEUE
 
 ############## Settings User Statistics ############################
-EDEOS_API_STATISTICS_URL = ''
+EDEOS_API_URL = ''

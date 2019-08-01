@@ -176,7 +176,7 @@ def learner_performance(request, course_id=None, student_id=None):
         "api_endpoint": "profile_statistics",
         "key": getattr(settings, 'EDEOS_API_KEY'),
         "secret": getattr(settings, 'EDEOS_API_SECRET'),
-        "base_url": getattr(settings, 'EDEOS_API_STATISTICS_URL')
+        "base_url": getattr(settings, 'EDEOS_API_URL')
     }
 
     response = send_edeos_api_request(**edeos_post_data)
