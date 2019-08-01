@@ -138,6 +138,40 @@
                     this.render(html.join(''));
                 },
 
+                matchStart: function (params, data) {
+                    // If there are no search terms, return all of the data
+                    if (!params.term) {
+                      return data;
+                    }
+
+                    let characters = {
+                        a: '([aăâ]{1})',
+                        ă: '([aăâ]{1})',
+                        â: '([aăâ]{1})',
+                        i: '([iî]{1})',
+                        î: '([iî]{1})',
+                        s: '([sş]{1})',
+                        ş: '([sş]{1})',
+                        ţ: '([tţ]{1})',
+                        t: '([tţ]{1})',
+                        ' ': '\ '
+                    };
+
+                    let template = '^';
+
+                    for(let i=0; i < params.term.length;i++) {
+                        template += characters[params.term[i].toLowerCase()] || params.term[i].toLowerCase();
+                    }
+
+                    template += '.*';
+                    var reg = new RegExp(template);
+
+                    if (data.text.toLowerCase().match(reg)) {
+                        return data;
+                    }
+                    return null;
+                },
+
                 render: function(html) {
                     var fields = html || '',
                         formErrorsTitle = gettext('An error occurred.');
@@ -159,6 +193,25 @@
                     }));
 
                     this.postRender();
+
+                    $("#register-school_city").css('width', '100%');
+                    // selectjs initializing for the #register-school_city select
+                    $("#register-school_city").select2({
+                        matcher: this.matchStart,
+                        minimumInputLength: 1
+                    });
+                    // handling selectjs events and triggering RegisterView events to stick the validation errors displaying
+                    $('#register-school_city').on('select2:select select2:close', function (e) {
+                        $('#register-school_city').trigger('blur');
+                    });
+
+                    $('#register-school, #register-instructor').prop('disabled', 'disabled');
+                    $('[for="register-school"]').append(
+                        '<span id="sity-optional-help" class="label-optional">Please select your city first.</span>'
+                    );
+                    $('[for="register-instructor"]').append(
+                        '<span id="instructor-optional-help" class="label-optional">Please select your school first.</span>'
+                    );
 
                     // Must be called after postRender, since postRender sets up $formFeedback.
                     if (this.errorMessage) {
