@@ -5,6 +5,18 @@ from openedx.core.djangolib.markup import HTML
 %>
 
 <%namespace name='static' file='static_content.html'/>
+
+% if show_start_view_question:
+<div class="proctored-exam">
+  <p>
+    ${_("This question has a time limit. After you select 'Start question', you will have {seconds} seconds to complete it.").format(seconds=seconds_for_attempt)}
+  </p>
+  <button type="button" class="js-start-question-button btn-brand">${_("Start Question")}</button>
+</div>
+% else:
+% if seconds_for_attempt and not time_is_over and not attempts_used:
+  <div class="problem-timer" data-time-remaining=${time_remaining_seconds}></div>
+% endif
 <h3 class="hd hd-3 problem-header" id="${ short_id }-problem-title" aria-describedby="${ id }-problem-progress" tabindex="-1">
   ${ problem['name'] }
 </h3>
@@ -130,3 +142,4 @@ from openedx.core.djangolib.markup import HTML
       is_hidden=True"
     />
 </div>
+% endif

@@ -68,7 +68,9 @@ class CapaModule(CapaMixin, XModule):
             'problem_show': self.get_answer,
             'score_update': self.update_score,
             'input_ajax': self.handle_input_ajax,
-            'ungraded_response': self.handle_ungraded_response
+            'ungraded_response': self.handle_ungraded_response,
+            'problem_start': self.start_question,
+            'check_time_remaining': self.check_time_remaining
         }
 
         _ = self.runtime.service(self, "i18n").ugettext
@@ -336,3 +338,5 @@ class CapaDescriptor(CapaFields, RawDescriptor):
     should_show_reset_button = module_attr('should_show_reset_button')
     should_show_save_button = module_attr('should_show_save_button')
     update_score = module_attr('update_score')
+    start_question = module_attr('start_question')
+    check_time_remaining = module_attr('check_time_remaining')

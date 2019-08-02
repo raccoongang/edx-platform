@@ -641,6 +641,16 @@ html.video-fullscreen {
     border: 0;
     background: transparent !important;
   }
+
+  .problem-timer {
+    text-align: right;
+    background: #F2F8FB;
+    display: inline-block;
+    float: right;
+    padding: 10px;
+    border: 1px solid #ccc;
+    font-size: 18px;
+  }
 }
 
 .xmodule_VideoModule {

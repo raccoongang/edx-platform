@@ -83,6 +83,9 @@
             this.submit_internal = function() {
                 return Problem.prototype.submit_internal.apply(that, arguments);
             };
+            this.start_question = function() {
+                return Problem.prototype.start_question.apply(that, arguments);
+            };
             this.submit = function() {
                 return Problem.prototype.submit.apply(that, arguments);
             };
@@ -128,6 +131,12 @@
             };
             this.bind = function() {
                 return Problem.prototype.bind.apply(that, arguments);
+            };
+            this.getFormattedRemainingTime = function() {
+                return Problem.prototype.getFormattedRemainingTime.apply(that, arguments);
+            };
+            this.updateRemainingTime = function() {
+                return Problem.prototype.updateRemainingTime.apply(that, arguments);
             };
             this.el = $(element).find('.problems-wrapper');
             this.id = this.el.data('problem-id');
@@ -178,6 +187,17 @@
             this.saveButton.click(this.save);
             this.gentleAlertNotification = this.$('.notification-gentle-alert');
             this.submitNotification = this.$('.notification-submit');
+            this.startQuestionButton = this.$('.js-start-question-button');
+            this.startQuestionButton.click(this.start_question);
+            this.problemTimer = this.$('.problem-timer');
+            this.timeRemaining = 0;
+            this.timerTick = 0;
+            if (this.problemTimer.length > 0) {
+                this.timeRemaining = this.problemTimer.data('time-remaining');
+                this.updateRemainingTime();
+                this.timerId = setInterval(this.updateRemainingTime, 1000);
+
+            }
 
             // Accessibility helper for sighted keyboard users to show <clarification> tooltips on focus:
             this.$('.clarification').focus(function(ev) {
@@ -628,6 +648,9 @@
                 case 'submitted':
                 case 'incorrect':
                 case 'correct':
+                    if (that.timerId) {
+                        clearInterval(that.timerId);
+                    }
                     window.SR.readTexts(that.get_sr_status(response.contents));
                     that.el.trigger('contentChanged', [that.id, response.contents, response]);
                     that.render(response.contents, that.focus_on_submit_notification);
@@ -642,6 +665,21 @@
                     that.gentle_alert(response.success);
                 }
                 return Logger.log('problem_graded', [that.answers, response.contents], that.id);
+            });
+        };
+
+        Problem.prototype.start_question = function() {
+            var that = this;
+            this.startQuestionButton.prop("disabled", true);
+            return $.postWithPrefix('' + this.url + '/problem_start', function(response) {
+                if (response.success) {
+                    that.el.trigger('contentChanged', [that.id, response.html, response]);
+                    that.render(response.html, that.scroll_to_problem_meta);
+                    that.updateProgress(response);
+                    return window.SR.readText(gettext('This problem has been reset.'));
+                } else {
+                    return that.gentle_alert(response.msg);
+                }
             });
         };
 
@@ -1320,6 +1358,39 @@
                     that.gentle_alert(response.msg);
                 }
             });
+        };
+
+        Problem.prototype.getFormattedRemainingTime = function(secondsLeft) {
+            if (secondsLeft < 0)
+                secondsLeft = 0;
+
+            var hours = parseInt(secondsLeft / 3600);
+            var minutes = parseInt(secondsLeft / 60) % 60;
+            var seconds = Math.floor(secondsLeft % 60);
+
+            return hours + ":" + (minutes < 10 ? "0" + minutes : minutes)
+                + ":" + (seconds < 10 ? "0" + seconds : seconds);
+        };
+
+        Problem.prototype.updateRemainingTime = function() {
+            this.timerTick ++;
+            this.timeRemaining --;
+            if (this.timerTick % 60 === 0 || this.timeRemaining <= 0) {
+                var that = this;
+                $.postWithPrefix('' + this.url + '/check_time_remaining', function(response) {
+                    if (response.success) {
+                        that.timeRemaining = response.time_remaining_seconds;
+                    } else {
+                        clearInterval(that.timerId);
+                        that.el.trigger('contentChanged', [that.id, response.html, response]);
+                        that.render(response.html, that.scroll_to_problem_meta);
+                        that.updateProgress(response);
+                        return window.SR.readText(gettext('This problem has been reset.'));
+                    }
+                });
+            }
+
+            this.problemTimer.html(this.getFormattedRemainingTime(this.timeRemaining));
         };
 
         return Problem;
