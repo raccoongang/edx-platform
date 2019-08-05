@@ -673,10 +673,10 @@
             this.startQuestionButton.prop("disabled", true);
             return $.postWithPrefix('' + this.url + '/problem_start', function(response) {
                 if (response.success) {
-                    that.el.trigger('contentChanged', [that.id, response.html, response]);
-                    that.render(response.html, that.scroll_to_problem_meta);
-                    that.updateProgress(response);
-                    return window.SR.readText(gettext('This problem has been reset.'));
+                    window.SR.readTexts(that.get_sr_status(response.contents));
+                    that.el.trigger('contentChanged', [that.id, response.contents, response]);
+                    that.render(response.contents);
+                    return that.updateProgress(response);
                 } else {
                     return that.gentle_alert(response.msg);
                 }
@@ -1382,10 +1382,10 @@
                         that.timeRemaining = response.time_remaining_seconds;
                     } else {
                         clearInterval(that.timerId);
-                        that.el.trigger('contentChanged', [that.id, response.html, response]);
-                        that.render(response.html, that.scroll_to_problem_meta);
-                        that.updateProgress(response);
-                        return window.SR.readText(gettext('This problem has been reset.'));
+                        window.SR.readTexts(that.get_sr_status(response.contents));
+                        that.el.trigger('contentChanged', [that.id, response.contents, response]);
+                        that.render(response.contents);
+                        return that.updateProgress(response);
                     }
                 });
             }
