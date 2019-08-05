@@ -1,0 +1,15 @@
+<%page expression_filter="h"/>
+<%namespace name='static' file='../static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+from openedx.core.djangolib.markup import HTML
+%>
+<%inherit file="../main.html" />
+
+<%block name="pagetitle">${_("Forbidden")}</%block>
+
+<main id="main" aria-label="Content" tabindex="-1">
+    <section class="outside-app">
+    <h1>${_("Forbidden")}</h1>
+    </section>
+</main>

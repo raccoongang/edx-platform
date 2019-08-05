@@ -158,12 +158,14 @@ def learner_performance(request, course_id=None, student_id=None):
     else:
         student = request.user
 
-    date_from = CourseEnrollment.objects.filter(user=student.id).filter(is_active=True).order_by('created').first().created
+    date_from = CourseEnrollment.objects.filter(user=student.id).filter(is_active=True).order_by('created').first()
 
     if date_from:
         date_to = datetime.today()
         date_to = date_to.strftime("%Y-%m-%d")
-        date_from = date_from.strftime("%Y-%m-%d")
+        date_from = date_from.created.strftime("%Y-%m-%d")
+    else:
+        return render_to_response('static_templates/403.html')
 
     edeos_post_data = {
         "payload": {
@@ -190,8 +192,11 @@ def learner_performance(request, course_id=None, student_id=None):
         raise Http404
 
 def profile_statistics(request, username):
-    """ view render profile statistics page where will be iframe with  """
-    return render_to_response(
-        'student_profile/profile_statistics.html',
-        learner_profile_statistics_context(username, request)
-    )
+    """
+        view render profile statistics page where will be iframe with user statistics
+    """
+    if request.user.get_username() == username:
+        return render_to_response('student_profile/profile_statistics.html',
+                                  learner_profile_statistics_context(username, request))
+    else:
+        return render_to_response('static_templates/403.html')
