@@ -918,7 +918,7 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
             return self.seconds_for_attempt
 
     def show_start_view_question(self):
-        return self.seconds_for_attempt and self.start_view_question is None
+        return self.seconds_for_attempt and self.start_view_question is None and not self.is_attempted()
 
     def answer_available(self):
         """
@@ -1738,7 +1738,7 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
         html = ''
         time_remaining_seconds = self.time_remaining()
 
-        if time_remaining_seconds <= 0:
+        if time_remaining_seconds <= 0 or self.is_attempted():
             success = False
             html = self.get_problem_html(encapsulate=False, submit_notification=True)
 
