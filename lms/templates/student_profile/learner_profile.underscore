@@ -8,6 +8,9 @@
                 <span><%- gettext("Balance -") %> <%- balance %> </span>
             </div>
         </div>
+        <% if (account_settings_data.username && account_settings_data.mobytize_token && account_settings_data.mobytize_id && active_course) { %>
+            <a style="margin-left: 400px; href="<%- account_settings_data.username + '/profile_statistics' %>"><%- gettext("Profile Statistics") %></a>
+        <% } %>
         <div class="ui-loading-error is-hidden">
             <span class="fa fa-exclamation-triangle message-error" aria-hidden="true"></span>
             <span class="copy"><%- gettext("An error occurred. Try loading the page again.") %></span>
