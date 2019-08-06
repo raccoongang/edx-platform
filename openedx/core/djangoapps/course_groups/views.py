@@ -226,8 +226,12 @@ def cohort_handler(request, course_key_string, cohort_id=None):
                 if cohorts.is_cohort_exists(course_key, name):
                     err_msg = ugettext("A cohort with the same name already exists.")
                     return JsonResponse({"error": unicode(err_msg)}, 400)
-                cohort.name = name
-                cohort.save()
+                if not cohort.cohort.ended:
+                    cohort.name = name
+                    cohort.save()
+                else:
+                    return JsonResponse({"error": ugettext("Cohort already ended")}, 400)
+
             try:
                 cohorts.set_assignment_type(cohort, assignment_type)
             except ValueError as err:
