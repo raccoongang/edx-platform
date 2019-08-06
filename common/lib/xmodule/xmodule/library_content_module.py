@@ -107,6 +107,14 @@ class LibraryContentFields(object):
         default=[],
         scope=Scope.user_state,
     )
+    chapter_id = String(
+        display_name=_("Chapter"),
+        help=_("Please choose a Chapter you want to link to this library. Applicable for Pre-Exam questions only."),
+        scope=Scope.settings,
+        default='',
+        values_provider=lambda instance: instance.source_chapter_values(),
+    )
+
     has_children = True
 
     @property
@@ -582,6 +590,17 @@ class LibraryContentDescriptor(LibraryContentFields, MakoModuleDescriptor, XmlDe
             all_libraries.append((self.source_library_id, _(u"Invalid Library")))
         all_libraries = [(u"", _("No Library Selected"))] + all_libraries
         values = [{"display_name": name, "value": unicode(key)} for key, name in all_libraries]
+        return values
+
+    def source_chapter_values(self):
+        values = [{"display_name": _("No Chapter Selected"), "value": ''}]
+        for section in self.runtime.modulestore.get_course(self.location.course_key).get_children():
+            if not section.is_entrance_exam:
+                for subsection in section.get_children():
+                    values.append({
+                        "display_name": subsection.display_name,
+                        "value": subsection.location.block_id
+                    })
         return values
 
     def editor_saved(self, user, old_metadata, old_content):

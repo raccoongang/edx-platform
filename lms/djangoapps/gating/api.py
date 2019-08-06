@@ -8,7 +8,11 @@ from collections import defaultdict
 from opaque_keys.edx.keys import UsageKey
 
 from lms.djangoapps.courseware.entrance_exams import get_entrance_exam_content
+from courseware.models import StudentModule
 from openedx.core.lib.gating import api as gating_api
+
+from courseware.module_render import get_module_by_usage_id
+from request_cache import get_request
 from util import milestones_helpers
 
 log = logging.getLogger(__name__)
@@ -80,10 +84,10 @@ def evaluate_entrance_exam(course_grade, user):
     """
     course = course_grade.course_data.course
     if milestones_helpers.is_entrance_exams_enabled() and getattr(course, 'entrance_exam_enabled', False):
-        if get_entrance_exam_content(user, course):
-            exam_chapter_key = get_entrance_exam_usage_key(course)
-            exam_score_ratio = get_entrance_exam_score_ratio(course_grade, exam_chapter_key)
-            if exam_score_ratio >= course.entrance_exam_minimum_score_pct:
+        entrance_exam_content = get_entrance_exam_content(user, course)
+        if entrance_exam_content:
+            if is_touch_all_problem_in_entrance_exam(entrance_exam_content, user, course):
+                exam_chapter_key = get_entrance_exam_usage_key(course)
                 relationship_types = milestones_helpers.get_milestone_relationship_types()
                 content_milestones = milestones_helpers.get_course_content_milestones(
                     course.id,
@@ -114,3 +118,55 @@ def get_entrance_exam_score_ratio(course_grade, exam_chapter_key):
         earned, possible = 0.0, 0.0
         log.warning(u'Gating: Unexpectedly failed to find chapter_grade for %s.', exam_chapter_key)
     return _calculate_ratio(earned, possible)
+
+
+def is_touch_all_problem_in_entrance_exam(entrance_exam, user, course):
+    is_touch = True
+
+    for subsection in entrance_exam.get_children():
+        if not is_touch:
+            break
+
+        for unit in subsection.get_children():
+            if not is_touch:
+                break
+
+            for xblock in unit.get_children():
+                if not is_touch:
+                    break
+
+                if xblock.location.block_type == 'library_content':
+                    library_content, _ = get_module_by_usage_id(
+                        get_request(),
+                        unicode(course.id),
+                        unicode(xblock.location)
+                    )
+
+                    if not library_content.selected:
+                        is_touch = False
+                        break
+
+                    for block_type, block_id in library_content.selected:
+                        if block_type == 'problem':
+                            usage_key = library_content.location.course_key.make_usage_key(block_type, block_id)
+                            student_module = StudentModule.objects.filter(
+                                module_type='problem',
+                                student=user,
+                                module_state_key=usage_key,
+                                grade__isnull=False
+                            )
+                            if not student_module.exists():
+                                is_touch = False
+                                break
+
+                elif xblock.location.block_type == 'problem':
+                    student_module = StudentModule.objects.filter(
+                        module_type='problem',
+                        student=user,
+                        module_state_key=xblock.location,
+                        grade__isnull=False
+                    )
+                    if not student_module.exists():
+                        is_touch = False
+                        break
+    return is_touch

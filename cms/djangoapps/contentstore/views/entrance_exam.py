@@ -136,7 +136,7 @@ def _create_entrance_exam(request, course_key, entrance_exam_minimum_score_pct=N
         parent_locator=parent_locator,
         user=request.user,
         category='chapter',
-        display_name=_('Entrance Exam'),
+        display_name=_('Pre-Exam'),
         is_entrance_exam=True
     )
 
@@ -155,7 +155,7 @@ def _create_entrance_exam(request, course_key, entrance_exam_minimum_score_pct=N
         parent_locator=unicode(created_block.location),
         user=request.user,
         category='sequential',
-        display_name=_('Entrance Exam - Subsection')
+        display_name=_('Pre-Exam - Subsection')
     )
     add_entrance_exam_milestone(course.id, created_block)
 

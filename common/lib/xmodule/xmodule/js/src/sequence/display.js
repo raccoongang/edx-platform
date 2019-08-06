@@ -216,11 +216,11 @@
         };
 
         Sequence.prototype.updateButtonState = function(buttonClass, buttonAction, isAtBoundary, boundaryUrl) {
-            //if (isAtBoundary && boundaryUrl === 'None') {
-            //    this.disableButton(buttonClass);
-            //} else {
+            if (buttonClass === '.sequence-nav-button.button-previous' && isAtBoundary && boundaryUrl === 'None') {
+               this.disableButton(buttonClass);
+            } else {
                 this.enableButton(buttonClass, buttonAction);
-            //}
+            }
         };
 
         Sequence.prototype.toggleArrows = function() {
@@ -447,7 +447,7 @@
                                 goToNextOrPrevious(data.url);
                             }
                         } else {
-                            if (data.exists_start_info_task && !data.last_subsection) {
+                            if (data.exists_start_info_task) {
                                 setTimeout(function () {
                                     checkPrerequisite.call(that);
                                  }, 2000);
@@ -461,7 +461,7 @@
                                         {
                                             text: gettext("OK"),
                                             click: function() {
-                                                if (!data.last_subsection) {
+                                                if (data.url) {
                                                    window.location.href = data.url;
                                                    $("body").addClass("answer-loading");
                                                 }

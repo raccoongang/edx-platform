@@ -5,6 +5,18 @@ from openedx.core.djangolib.markup import HTML
 %>
 
 <%namespace name='static' file='static_content.html'/>
+
+% if show_start_view_question:
+<div class="proctored-exam">
+  <p>
+    ${_("This question has a time limit. After you select 'Start question', you will have {seconds} seconds to complete it.").format(seconds=seconds_for_attempt)}
+  </p>
+  <button type="button" class="js-start-question-button btn-brand">${_("Start Question")}</button>
+</div>
+% else:
+% if seconds_for_attempt and not time_is_over and not attempts_used:
+  <div class="problem-timer" data-time-remaining=${time_remaining_seconds}></div>
+% endif
 <h3 class="hd hd-3 problem-header" id="${ short_id }-problem-title" aria-describedby="${ id }-problem-progress" tabindex="-1">
   ${ problem['name'] }
 </h3>
@@ -13,6 +25,13 @@ from openedx.core.djangolib.markup import HTML
 
 <div class="problem">
   ${ HTML(problem['html']) }
+
+  % if attempts_used and not is_correct and related_chapter:
+    <div>
+        ${_("Sorry, your answer is incorrect. Please pay attention to '{related_chapter}' of the course to find the correct answer.").format(related_chapter=related_chapter)}
+    </div>
+  % endif
+
   <div class="action">
     <input type="hidden" name="problem_id" value="${ problem['name'] }" />
     % if demand_hint_possible:
@@ -123,3 +142,4 @@ from openedx.core.djangolib.markup import HTML
       is_hidden=True"
     />
 </div>
+% endif

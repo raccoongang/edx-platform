@@ -219,6 +219,13 @@ class CapaFields(object):
                "or to report an issue, please contact moocsupport@mathworks.com"),
         scope=Scope.settings
     )
+    seconds_for_attempt = Integer(
+        display_name=_("Timer for Attempt"),
+        help=_("Seconds student have to answer the question. Begins as soon as student clicks 'Start Question'"),
+        scope=Scope.settings,
+        default=0
+    )
+    start_view_question = Date(scope=Scope.user_state)
 
 
 class CapaMixin(ScorableXBlockMixin, CapaFields):
@@ -713,6 +720,12 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
                 u"Your answers were previously saved. Click '{button_name}' to grade them."
             ).format(button_name=self.submit_button_name())
 
+        related_chapter = ''
+        parent_xblock = self.get_parent()
+        if parent_xblock.location.block_type == 'library_content' and parent_xblock.chapter_id:
+            usage_key = self.location.course_key.make_usage_key('sequential', parent_xblock.chapter_id)
+            related_chapter = self.runtime.modulestore.get_item(usage_key).display_name
+
         context = {
             'problem': content,
             'id': self.location.to_deprecated_string(),
@@ -731,6 +744,12 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
             'answer_notification_message': answer_notification_message,
             'has_saved_answers': self.has_saved_answers,
             'save_message': save_message,
+            'is_correct': self.is_correct(),
+            'related_chapter': related_chapter,
+            'seconds_for_attempt': self.seconds_for_attempt,
+            'time_is_over': self.time_is_over(),
+            'show_start_view_question': self.show_start_view_question(),
+            'time_remaining_seconds': self.time_remaining(),
         }
 
         html = self.runtime.render_template('problem.html', context)
@@ -853,6 +872,10 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
             return True
         if self.is_past_due():
             return True
+        if self.time_is_over():
+            return True
+        if self.seconds_for_attempt and self.is_attempted():
+            return True
 
         return False
 
@@ -880,6 +903,22 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
         True iff full points
         """
         return self.score.raw_earned == self.score.raw_possible
+
+    def time_is_over(self):
+        if (self.seconds_for_attempt and self.start_view_question and
+                (datetime.datetime.now(utc) - self.start_view_question).total_seconds() > self.seconds_for_attempt):
+            return True
+        return False
+
+    def time_remaining(self):
+        if self.start_view_question:
+            time_remaining = self.seconds_for_attempt - (datetime.datetime.now(utc) - self.start_view_question).total_seconds()
+            return time_remaining if time_remaining > 0 else 0
+        else:
+            return self.seconds_for_attempt
+
+    def show_start_view_question(self):
+        return self.seconds_for_attempt and self.start_view_question is None and not self.is_attempted()
 
     def answer_available(self):
         """
@@ -1681,3 +1720,30 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
         """
         lcp_score = self.lcp.calculate_score()
         return Score(raw_earned=lcp_score['score'], raw_possible=lcp_score['total'])
+
+    def start_question(self, data):
+        if self.start_view_question is None:
+            self.start_view_question = datetime.datetime.now(utc)
+
+        # render problem into HTML
+        html = self.get_problem_html(encapsulate=False, submit_notification=True)
+
+        return {
+            'success': 'start',
+            'contents': html
+        }
+
+    def check_time_remaining(self, data):
+        success = True
+        html = ''
+        time_remaining_seconds = self.time_remaining()
+
+        if time_remaining_seconds <= 0 or self.is_attempted():
+            success = False
+            html = self.get_problem_html(encapsulate=False, submit_notification=True)
+
+        return {
+            'success': success,
+            'time_remaining_seconds': time_remaining_seconds,
+            'contents': html
+        }
