@@ -334,7 +334,10 @@ class StudentEnrollForm(forms.Form):
             utcnow = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
             error_course_list = list()
             for course in courses:
-                if not (course.start < due_date_utc < course.end and utcnow < due_date_utc):
+                if course.end:
+                    if due_date_utc < course.start or due_date_utc > course.end or due_date_utc < utcnow:
+                        error_course_list.append(course.display_name)
+                elif due_date_utc < course.start or due_date_utc < utcnow:
                     error_course_list.append(course.display_name)
             if error_course_list:
                 self.add_error('due_date', 'This due date is not valid for the following courses: "{}".'.format('", "'.join(error_course_list)))
