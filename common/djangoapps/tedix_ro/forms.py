@@ -252,7 +252,7 @@ class CustomDateTimeField(forms.DateTimeField):
 class CourseMultipleModelChoiceField(forms.ModelMultipleChoiceField):
 
     def label_from_instance(self, obj):
-        return "{}".format(obj.display_name)
+        return u"{}".format(obj.display_name)
 
     def _check_values(self, value):
         """
@@ -299,7 +299,7 @@ class CourseMultipleModelChoiceField(forms.ModelMultipleChoiceField):
 class StudentMultipleModelChoiceField(forms.ModelMultipleChoiceField):
 
     def label_from_instance(self, obj):
-        return "{}".format(obj.user.profile.name) if obj.user.profile.name else obj.user.username
+        return u"{}".format(obj.user.profile.name) if obj.user.profile.name else obj.user.username
 
 
 class StudentEnrollForm(forms.Form):
