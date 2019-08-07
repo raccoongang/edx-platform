@@ -252,7 +252,7 @@ class CustomDateTimeField(forms.DateTimeField):
 class CourseMultipleModelChoiceField(forms.ModelMultipleChoiceField):
 
     def label_from_instance(self, obj):
-        return "{}".format(obj.display_name)
+        return u"{}".format(obj.display_name)
 
     def _check_values(self, value):
         """
@@ -299,7 +299,7 @@ class CourseMultipleModelChoiceField(forms.ModelMultipleChoiceField):
 class StudentMultipleModelChoiceField(forms.ModelMultipleChoiceField):
 
     def label_from_instance(self, obj):
-        return "{}".format(obj.user.profile.name) if obj.user.profile.name else obj.user.username
+        return u"{}".format(obj.user.profile.name) if obj.user.profile.name else obj.user.username
 
 
 class StudentEnrollForm(forms.Form):
@@ -334,7 +334,10 @@ class StudentEnrollForm(forms.Form):
             utcnow = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
             error_course_list = list()
             for course in courses:
-                if not (course.start < due_date_utc < course.end and utcnow < due_date_utc):
+                if course.end:
+                    if due_date_utc < course.start or due_date_utc > course.end or due_date_utc < utcnow:
+                        error_course_list.append(course.display_name)
+                elif due_date_utc < course.start or due_date_utc < utcnow:
                     error_course_list.append(course.display_name)
             if error_course_list:
                 self.add_error('due_date', 'This due date is not valid for the following courses: "{}".'.format('", "'.join(error_course_list)))

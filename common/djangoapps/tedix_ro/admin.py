@@ -139,6 +139,10 @@ class InstructorProfileResource(resources.ModelResource):
 class InstructorProfileAdmin(ImportExportModelAdmin):
     form = InstructorProfileForm
     resource_class = InstructorProfileResource
+    formats = (
+        base_formats.CSV,
+        base_formats.JSON,
+    )
     search_fields = ['user__username', 'user__profile__name']
 
 
