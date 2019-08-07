@@ -587,6 +587,14 @@ RETIREMENT_SERVICE_WORKER_USERNAME = ENV_TOKENS.get(
 )
 RETIREMENT_STATES = ENV_TOKENS.get('RETIREMENT_STATES', RETIREMENT_STATES)
 
+#RACCOONGANG
+MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB = FEATURES.get("MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB", 200)
+if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    sentry_sdk.init(AUTH_TOKENS.get('RG_SENTRY_DSN'), integrations=[DjangoIntegration()])
+#RACCOONGANG
+
 ####################### Plugin Settings ##########################
 
 from openedx.core.djangoapps.plugins import plugin_settings, constants as plugin_constants
