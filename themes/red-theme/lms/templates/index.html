@@ -13,8 +13,152 @@ from openedx.core.djangolib.markup import HTML, Text
       <header style="background: transparent;box-shadow: none;">
 <iframe width="50vh" height="auto" style="width: 50%;margin: 0 auto;display: block;min-height: 50vh;" src="https://www.youtube.com/embed/6KA-f1ISzSQ?autoplay=1&showinfo=0&rel=0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </header>
-      <%include file="${courses_list}" />
 
+    <section class="find-courses" style="background:transparent!important;">
+      <section class="courses-container">
+        % if course_discovery_enabled:
+        <div id="discovery-form" role="search" aria-label="course" class="wrapper-search-context">
+          <div id="discovery-message" class="search-status-label"></div>
+          <form class="wrapper-search-input">
+            <label for="discovery-input" class="sr">${_('Search for a course')}</label>
+            <input id="discovery-input" class="discovery-input" placeholder="${_('Search for a course')}" type="text"/>
+            <button type="submit" class="button postfix discovery-submit" title="${_('Search')}">
+              <span class="icon fa fa-search" aria-hidden="true"></span>
+              <div aria-live="polite" aria-relevant="all">
+                <div id="loading-indicator" class="loading-spinner hidden">
+                  <span class="icon fa fa-spinner fa-spin" aria-hidden="true"></span>
+                  <span class="sr">${_('Loading')}</span>
+                </div>
+              </div>
+            </button>
+          </form>
+        </div>
+
+        <div id="filter-bar" class="filters hide-phone is-collapsed">
+        </div>
+        % endif
+
+        <div class="courses${'' if course_discovery_enabled else ' no-course-discovery'}" role="region" aria-label="${_('List of Courses')}">
+          <ul class="courses-listing">
+            <li class="courses-listing-item">
+				<article class="course" id="course-v1:Tedix+5+v1" role="region" aria-label="Curs clasa a V-a">
+				  <a href="/courses_cl5">
+					<header class="course-image">
+					  <div class="cover-image">
+						<img src="${static.url("images/cl5.png")}">
+						<div class="learn-more" aria-hidden="true">Vezi Cursuri</div>
+					  </div>
+					</header>
+					<div class="course-info" aria-hidden="true">
+					  <h2 class="course-name">
+						<span class="course-organization">Tedix</span>
+						<span class="course-code">5</span>
+						<span class="course-title">Lista cursuri clasa a V-a</span>
+					  </h2>
+					</div>
+					<div class="sr">
+					  <ul>
+						<li>Tedix</li>
+						<li>5</li>
+							<li>Starts: <time class="localized_datetime" itemprop="startDate" data-format="shortDate" data-datetime="2018-12-07T00:00:00+0000">Dec 7, 2018</time></li>
+					  </ul>
+					</div>
+				  </a>
+				</article>
+            </li>
+			            <li class="courses-listing-item">
+				<article class="course" id="course-v1:Tedix+5+v1" role="region" aria-label="Curs clasa a V-a">
+				  <a href="/courses_cl6">
+					<header class="course-image">
+					  <div class="cover-image">
+						<img src="/static/red-theme/images/cl6.png">
+						<div class="learn-more" aria-hidden="true">Vezi Cursuri</div>
+					  </div>
+					</header>
+					<div class="course-info" aria-hidden="true">
+					  <h2 class="course-name">
+						<span class="course-organization">Tedix</span>
+						<span class="course-code">5</span>
+						<span class="course-title">Lista cursuri clasa a VI-a</span>
+					  </h2>
+					</div>
+					<div class="sr">
+					  <ul>
+						<li>Tedix</li>
+						<li>5</li>
+							<li>Starts: <time class="localized_datetime" itemprop="startDate" data-format="shortDate" data-datetime="2018-12-07T00:00:00+0000">Dec 7, 2018</time></li>
+					  </ul>
+					</div>
+				  </a>
+				</article>
+            </li>
+			            <li class="courses-listing-item">
+				<article class="course" id="course-v1:Tedix+5+v1" role="region" aria-label="Curs clasa a V-a">
+				  <a href="/courses_cl7">
+					<header class="course-image">
+					  <div class="cover-image">
+						<img src="${static.url("images/cl7.png")}">
+						<div class="learn-more" aria-hidden="true">Vezi Cursuri</div>
+					  </div>
+					</header>
+					<div class="course-info" aria-hidden="true">
+					  <h2 class="course-name">
+						<span class="course-organization">Tedix</span>
+						<span class="course-code">5</span>
+						<span class="course-title">Lista cursuri clasa a VII-a</span>
+					  </h2>
+					</div>
+					<div class="sr">
+					  <ul>
+						<li>Tedix</li>
+						<li>5</li>
+							<li>Starts: <time class="localized_datetime" itemprop="startDate" data-format="shortDate" data-datetime="2018-12-07T00:00:00+0000">Dec 7, 2018</time></li>
+					  </ul>
+					</div>
+				  </a>
+				</article>
+            </li>
+			            <li class="courses-listing-item">
+				<article class="course" id="course-v1:Tedix+5+v1" role="region" aria-label="Curs clasa a V-a">
+				  <a href="/courses_cl8">
+					<header class="course-image">
+					  <div class="cover-image">
+						<img src="${static.url("images/cl8.png")}">
+						<div class="learn-more" aria-hidden="true">Vezi Cursuri</div>
+					  </div>
+					</header>
+					<div class="course-info" aria-hidden="true">
+					  <h2 class="course-name">
+						<span class="course-organization">Tedix</span>
+						<span class="course-code">5</span>
+						<span class="course-title">Lista cursuri clasa a VIII-a</span>
+					  </h2>
+					</div>
+					<div class="sr">
+					  <ul>
+						<li>Tedix</li>
+						<li>5</li>
+							<li>Starts: <time class="localized_datetime" itemprop="startDate" data-format="shortDate" data-datetime="2018-12-07T00:00:00+0000">Dec 7, 2018</time></li>
+					  </ul>
+					</div>
+				  </a>
+				</article>
+            </li>
+		
+          </ul>
+        </div>
+
+
+        % if course_discovery_enabled:
+        <aside aria-label="${_('Refine Your Search')}" class="search-facets phone-menu">
+          <h2 class="header-search-facets">${_('Refine Your Search')}</h2>
+          <section class="search-facets-lists">
+          </section>
+        </aside>
+        % endif
+
+      </section>
+    </section>	  
     </section>
 </main>
 </div>

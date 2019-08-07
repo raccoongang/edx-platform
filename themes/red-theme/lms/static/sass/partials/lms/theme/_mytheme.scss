@@ -9,6 +9,13 @@ display: none;
     padding: 10px 15px;
 	margin: -15px -15px 15px -15px!important;
 }
+@media (min-width: 768px){
+.content-wrapper {
+    padding: 0 20px 10px;
+    max-width: 100%;
+	margin: 0 auto;
+}
+}
 .course-wrapper .course-content .vert-mod .vert, .course-wrapper .courseware-results-wrapper .vert-mod .vert {
     border-radius: 5px;
     overflow: hidden;
@@ -55,422 +62,162 @@ display: none;
 #footer-openedx .wrapper-logo img{
 	max-height:60px;	
 }
+@media screen and (max-width: 320px) {
+	.hd-2, .xblock .xblock h2{
+	    font-size: 0.9em !important;	
+	}
+}
+@media screen and (max-width: 768px) {
+	.hd-2, .xblock .xblock h2{
+	    font-size: 1.1em !important;	
+	}
+}
+@media screen and (max-width: 768px) {
+	#footer-openedx .wrapper-logo img{
+		max-height:40px;	
+	}
+	.wrapper-footer footer#footer-openedx .wrapper-logo a {
+		text-align:center;
+		display: block;
+	}
+}
 .home-bg {
+	margin-top:0px !important;
     margin: -20px -20px;
     background-image: url("../red-theme/images/bkg_homepage.png");
 	padding-top: 20px;
 	background-repeat:no-repeat;
+	background-size: cover;
 }
 .homepage{
 	padding:0 20px 10px;
 }
-
-.select2-container--default .select2-selection--single {
-	border-radius: 0 !important;
-    height: 32px !important;
+.xmodule_display.xmodule_CapaModule div.problem div div.equation{
+	display:inline-block !important;
 }
-
-.select2-container--default .select2-selection--single.error {
-	outline-color: #d9534f !important;
-	border-color: #d9534f !important;
+.xmodule_display.xmodule_HtmlModule img{
+    margin: 0 auto;
+    display: block;
 }
-
-.select2-container--default .select2-selection--single.success {
-	outline-color: #24ad97 !important;
-	border-color: #24ad97 !important;
+.videoContainer {
+	position: relative;
+	padding-bottom: 85%;
+	height: 0;
+	overflow: hidden;
 }
-
-.select2-results__option {
-	min-height: 20px;
+.videoContainer iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	overflow: scroll;
 }
-
-.register-form select:not(.forum-nav-filter-main-control):not(.forum-nav-sort-control),
-.select2-container--default .select2-selection--single {
-	height: 32px !important;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-	box-shadow: 0 1px 0 0 rgba(255,255,255,0.6), inset 0 0 3px 0 rgba(0,0,0,0.1);
-	border-radius: 0;
-	border: none !important;
-	font-size: 15px;
-	box-sizing: border-box;
-	color: #222;
-	background: #fff url(../images/select-arrow.png) no-repeat 100% 50% !important;
-	background-size: 27px 7px !important;
-	padding: 0 30px 0 9px !important;
-	outline: 1px solid #c8c8c8;
-	opacity: .85;
-
-	&.error {
-		outline-color: #d9534f !important;
-	}
-
-	&.success {
-		outline-color: #24ad97 !important;
-	}
+.xmodule_display.xmodule_CapaModule .problem .capa_inputtype.textline>.incorrect input, .xmodule_display.xmodule_CapaModule .problem .inputtype.formulaequationinput>.incorrect input{
+	min-width:80px !important;
+	width:80px;
 }
-
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-	display: none;
+.xmodule_display.xmodule_CapaModule .problem .capa_inputtype.textline input, .xmodule_display.xmodule_CapaModule .problem .inputtype.formulaequationinput input{
+	min-width:80px !important;
+	width:80px;
 }
-
-.register-form .select2-container--default .select2-selection--single .select2-selection__rendered {
-	color: #222;
-	line-height: 24px;
-	font-size: 15px;
-	font-weight: 500;
-	padding: 5px 0 0 0;
-	text-shadow: 0 1px rgba(255,255,255,0.4);
+.xmodule_display.xmodule_CapaModule div.problem table tr, .xmodule_display.xmodule_CapaModule div.problem table td, .xmodule_display.xmodule_CapaModule div.problem table th {
+	display:inline-block;
 }
-
-.manage-courses-wrapper {
-	max-width: 790px;
-	margin: 0 auto 30px;
-	padding: 0 20px;
-
-	select[multiple] option:checked {
-		background: #00bbb4 linear-gradient(0deg, #00bbb4 0%, #00bbb4 100%);
-		color: #fff;
-		text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
-	}
-
-	form {
-		@media (max-width: 768px) {
-			text-align: center;
-		}
-	}
-
-	input,
-	select {
-		border: 1px solid #999;
-		border-radius: 4px;
-		font-size: 16px;
-		color: #313131;
-		box-sizing: border-box;
-		padding: 5px 20px;
-		line-height: 16px;
-		width: 100%;
-	}
-
-	select {
-		padding: 0;
-
-		@media (max-width: 768px) {
-			height: auto;
-			background: #fff;
-			padding: 5px 0;
-		}
-	}
-
-	option {
-		padding: 5px 20px;
-		line-height: 16px;
-	}
-
-	label {
-		font: normal 700 16px/normal "Open Sans";
-		margin-bottom: 5px;
-		display: inline-block;
-	}
-
-	.field {
-		margin-top: 0;
-		float: left;
+.xmodule_display.xmodule_CapaModule div.problem div div.equation span.MathJax_CHTML,
+.xmodule_display.xmodule_CapaModule div.problem div div.equation span.MathJax, .xmodule_display.xmodule_CapaModule div.problem div div.equation span.MathJax_SVG {
+	min-height:32px !important;
+}
+*{
+    -webkit-overflow-scrolling: touch;
+}
+.inline-list{
+	display:inline-block;
+	margin-left: 0!important;
+    padding-left: 0px!important;
+	list-style:none;
+}
+.inline-list-item{
+	display: list-item;
+	list-style: none;
+}
+.inline-span{
+	display:inline-block;
+	padding-bottom:2px;
+}
+.inline-div{
+	display:inline-block;
+	padding-bottom:2px;
+}
+.xmodule_display.xmodule_CapaModule div.problem div div.equation img.loading {
+	padding-left: 0px !important;
+	width: 10px !important;
+    height: 10px !important;
+}
+.xmodule_display.xmodule_CapaModule .problem .capa_inputtype.textline>.incorrect .status .status-icon::after, .xmodule_display.xmodule_CapaModule .problem .inputtype.formulaequationinput>.incorrect .status .status-icon::after{
+	font-size: 0.8em !important;
+}
+@media (max-width: 768px){
+	.xmodule_display.xmodule_CapaModule .problem .capa_inputtype.textline>.incorrect input, .xmodule_display.xmodule_CapaModule .problem .inputtype.formulaequationinput>.incorrect input{
+	min-width:50px !important;
+	width:50px;
+}
+.xmodule_display.xmodule_CapaModule .problem .capa_inputtype.textline input, .xmodule_display.xmodule_CapaModule .problem .inputtype.formulaequationinput input{
+	min-width:50px !important;
+	width:50px;
+}
+}
+.col-left{
+	width:50%;
+	float:left;
+	display:inline-block;
+}
+.col-left p{
+	padding:5px;
+}
+.col-right p{
+	padding:5px;
+}
+.col-right{
+	width:50%;
+	float:left;
+	display:inline-block;
+}
+.page-content-container{
+	border: 1px solid #e7e7e7;
+    background-color: #fff;
+    max-width: 1920px;
+    margin: 0 auto;
+}
+.page-content{
+	padding: 40px;
+	display: block;
+}
+.page-header {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #e7e7e7;
+    padding: 20px 40px;
+}
+.course-section{
+	.section-title{
+		border-bottom:1px solid #e7e7e7;
 		margin-bottom: 15px;
-		box-sizing: border-box;
-
-		@media (max-width: 768px) {
-			text-align: left;
-			float: none;
-			width: 475px;
-			margin: 0 auto 15px;
-			max-width: 100%;
-		}
-
-	}
-
-	.courses-field {
-		margin-right: 40px;
-		width: calc(100% - 315px);
-
-		@media (max-width: 768px) {
-			margin-right: 0;
-		}
-
-		.jq-select-multiple,
-		select {
-			height: 345px;
-
-			@media (max-width: 768px) {
-				height: auto;
-			}
+		margin-top: 15px;
+		H2{
+		padding-bottom: 5px;
+		font-size: 18px;
+		margin: 0;
+		font:normal 1.6em/1.2em "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
 		}
 	}
-
-	.students-field,
-	.due_date-field {
-		width: 275px;
-	}
-
-	.students-field {
-		.jq-select-multiple,
-		select {
-			height: 267px;
-
-			@media (max-width: 768px) {
-				height: auto;
-			}
-		}
-	}
-
-	.send_to_students-field {
-		clear: left;
-	}
-
-	.send_to_students-field,
-	.send_to_parents-field,
-	.send_sms-field {
-		display: flex;
-		justify-content: revert;
-		padding-left: 30px;
-		position: relative;
-
-		@media (max-width: 768px) {
-			width: auto;
-			text-align: center;
-		}
-
-		label {
-			font-weight: 400;
-			order: 2;
-			margin-bottom: 0;
-		}
-	}
-
-	.courses-field,
-	.students-field,
-	.due_date-field {
-		@media (max-width: 768px) {
-			width: 475px;
-			max-width: 100%;
-		}
-	}
-
-	.submit-wrapper {
-		width: 100%;
-		clear: both;
-		text-align: center;
-		padding-top: 23px;
-		margin-top: 5px;
-
-		&:before {
-			content: '';
-			display: block;
-			width: 100%;
-			height: 1px;
-			background: #c3c3c3;
-			position: relative;
-			top: -20px;
-		}
-	}
-
-	#submit {
-		font-size: 16px;
-		line-height: 16px;
-		color: #fff;
-		padding: 10px 45px;
-		background: #00bbb4;
-		text-shadow: none;
-		box-shadow: none;
-		border: 1px solid #00bbb4;
-		letter-spacing: 0;
-		width: auto;
-
-		&:hover,
-		&:focus {
-			background-color: #fff;
-			color: #00bbb4;
-		}
-	}
-
-	.messages {
-		background: #fff;
-		min-height: 70px;
-		padding: 15px 35px;
-		border-radius: 5px;
-		border: 1px solid #379c2a;
-		width: 100%;
-		margin: 20px 0;
+	.course-list{
 		list-style: none;
-		display: flex;
-		align-items: center;
-		font-size: 16px;
-		font-weight: 700;
-		color: #379c2a;
-		position: relative;
-		box-sizing: border-box;
-
-		@media (max-width: 768px) {
-			padding: 15px;
-		}
-
-		&:before {
-			content: '';
-			display: inline-block;
-			margin-right: 10px;
-			width: 34px;
-			min-width: 34px;
-			height: 34px;
-			border: 3px solid #c3c3c3;
-			border-radius: 50%;
-			background: url('../images/exclamation.svg') no-repeat center center;
-			background-size: auto 65%;
-			box-sizing: border-box;
-		}
-
-		ul {
-			list-style: none;
-			margin: 0;
-			padding: 0;
-		}
+		margin: 0px;
+		padding-left: 15px;
+		li{
+			font-size:18px;
+			line-height:1.2;
+		}		
 	}
-
-	.messages-error {
-		border-color: #d34141;
-		color: #d34141;
-	}
-
-	.fields-row {
-		padding-top: 20px;
-		border-top: 1px solid #c3c3c3;
-		margin-top: 5px;
-		width: 100%;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-
-		@media (max-width: 768px) {
-			flex-wrap: wrap;
-			align-items: center;
-			justify-content: center;
-		}
-
-		&:after {
-			content: '';
-			display: table;
-			clear: both;
-		}
-
-		.field {
-			@media (max-width: 768px) {
-				margin: 0 5px 15px;
-			}
-		}
-	}
-
-	.jq-checkbox {
-		order: 1;
-		margin-right: 2px;
-
-		input {
-			position: absolute;
-			width: 1px;
-			height: 1px;
-			overflow: hidden;
-			clip: rect(0 0 0 0);
-		}
-	}
-
-	.jq-checkbox__div {
-		width: 16px;
-		height: 16px;
-		border-radius: 5px;
-		border: 2px solid #999;
-		position: absolute;
-		left: 0;
-		top: 0;
-	}
-
-	.checked .jq-checkbox__div {
-		top: -1px;
-		left: -1px;
-		width: 25px;
-		height: 23px;
-		border: none;
-		background: transparent url('../images/check-icon.svg') no-repeat center center;
-		background-size: contain;
-	}
-
-	.jq-select-multiple {
-		width: 100%;
-		position: relative;
-		display: inline-block;
-		box-sizing: border-box;
-		padding: 0;
-		background: #fff;
-		cursor: default;
-		border: 1px solid #999;
-		border-radius: 4px;
-		font-size: 16px;
-		color: #313131;
-		overflow: hidden;
-
-		@media (max-width: 768px) {
-			height: 340px;
-		}
-
-		select {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			margin: 0;
-			padding: 0;
-			opacity: 0;
-		}
-
-		li {
-			-webkit-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			user-select: none;
-			white-space: nowrap;
-			padding: 5px 20px;
-			line-height: 14px;
-
-			& + li {
-				margin-top: 2px;
-			}
-
-			&:hover {
-				cursor: pointer;
-				background: rgba(0, 187, 180, .5);
-			}
-
-			&.selected {
-				background: #00bbb4;
-				color: #fff;
-			}
-		}
-
-		ul {
-			position: relative;
-			overflow-x: hidden;
-			-webkit-overflow-scrolling: touch;
-			margin: 0;
-			padding: 10px 0 0;
-			height: 100% !important;
-			box-sizing: border-box;
-		}
-	}
-}
-
-.xdsoft_datetimepicker .xdsoft_label i,
-.xdsoft_datetimepicker .xdsoft_prev,
-.xdsoft_datetimepicker .xdsoft_next,
-.xdsoft_datetimepicker .xdsoft_today_button {
-	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAeCAYAAADaW7vzAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6Q0NBRjI1NjM0M0UwMTFFNDk4NkFGMzJFQkQzQjEwRUIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6Q0NBRjI1NjQ0M0UwMTFFNDk4NkFGMzJFQkQzQjEwRUIiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpDQ0FGMjU2MTQzRTAxMUU0OTg2QUYzMkVCRDNCMTBFQiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpDQ0FGMjU2MjQzRTAxMUU0OTg2QUYzMkVCRDNCMTBFQiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PoNEP54AAAIOSURBVHja7Jq9TsMwEMcxrZD4WpBYeKUCe+kTMCACHZh4BFfHO/AAIHZGFhYkBBsSEqxsLCAgXKhbXYOTxh9pfJVP+qutnZ5s/5Lz2Y5I03QhWji2GIcgAokWgfCxNvcOCCGKqiSqhUp0laHOne05vdEyGMfkdxJDVjgwDlEQgYQBgx+ULJaWSXXS6r/ER5FBVR8VfGftTKcITNs+a1XpcFoExREIDF14AVIFxgQUS+h520cdud6wNkC0UBw6BCO/HoCYwBhD8QCkQ/x1mwDyD4plh4D6DDV0TAGyo4HcawLIBBSLDkHeH0Mg2yVP3l4TQMZQDDsEOl/MgHQqhMNuE0D+oBh0CIr8MAKyazBH9WyBuKxDWgbXfjNf32TZ1KWm/Ap1oSk/R53UtQ5xTh3LUlMmT8gt6g51Q9p+SobxgJQ/qmsfZhWywGFSl0yBjCLJCMgXail3b7+rumdVJ2YRss4cN+r6qAHDkPWjPjdJCF4n9RmAD/V9A/Wp4NQassDjwlB6XBiCxcJQWmZZb8THFilfy/lfrTvLghq2TqTHrRMTKNJ0sIhdo15RT+RpyWwFdY96UZ/LdQKBGjcXpcc1AlSFEfLmouD+1knuxBDUVrvOBmoOC/rEcN7OQxKVeJTCiAdUzUJhA2Oez9QTkp72OTVcxDcXY8iKNkxGAJXmJCOQwOa6dhyXsOa6XwEGAKdeb5ET3rQdAAAAAElFTkSuQmCC) !important;
-	box-shadow: none !important;
 }
