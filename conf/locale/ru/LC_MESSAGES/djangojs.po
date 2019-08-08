@@ -688,7 +688,7 @@ msgstr "Компоненты"
 #: common/static/bundles/js/factories/library.js
 #: cms/templates/js/group-configuration-editor.underscore
 msgid "Groups"
-msgstr "Группы"
+msgstr "Когорты"
 
 #: cms/static/js/views/move_xblock_list.js
 #: common/static/bundles/js/factories/container.js
@@ -5069,7 +5069,7 @@ msgstr ""
 
 #: lms/static/js/discussions_management/views/discussions.js
 msgid "Cohorts"
-msgstr "Группы"
+msgstr "Когорты"
 
 #: lms/static/js/discussions_management/views/discussions.js
 msgid ""
@@ -5286,27 +5286,27 @@ msgstr "Выбранная группа по изучаемым материал
 
 #: lms/static/js/groups/views/cohort_form.js
 msgid "The cohort cannot be saved"
-msgstr "Невозможно сохранить группу"
+msgstr "Невозможно сохранить когорту"
 
 #: lms/static/js/groups/views/cohort_form.js
 msgid "The cohort cannot be added"
-msgstr "Невозможно добавить группу"
+msgstr "Невозможно добавить когорту"
 
 #: lms/static/js/groups/views/cohorts.js
 msgid "You currently have no cohorts configured"
-msgstr "У вас пока нет групп"
+msgstr "У вас пока нет когорт"
 
 #: lms/static/js/groups/views/cohorts.js
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid "Add Cohort"
-msgstr "Добавить группу"
+msgstr "Добавить когорту"
 
 #: lms/static/js/groups/views/cohorts.js
 msgid ""
 "The {cohortGroupName} cohort has been created. You can manually add students"
 " to this cohort below."
 msgstr ""
-"Группа {cohortGroupName} создана. Ниже вы можете вручную добавить "
+"Когорта {cohortGroupName} создана. Ниже вы можете вручную добавить "
 "обучающихся в эту группу."
 
 #: lms/static/js/groups/views/cohorts.js
@@ -5332,11 +5332,11 @@ msgstr "Ваш файл '{file}' загружен. Обработка продл
 
 #: lms/static/js/groups/views/course_cohort_settings_notification.js
 msgid "Cohorts Enabled"
-msgstr "Группы включены"
+msgstr "Когорты включены"
 
 #: lms/static/js/groups/views/course_cohort_settings_notification.js
 msgid "Cohorts Disabled"
-msgstr "Группы отключены"
+msgstr "Когорты отключены"
 
 #: lms/static/js/groups/views/verified_track_settings_notification.js
 msgid ""
@@ -8895,15 +8895,15 @@ msgstr "Управление слушателями"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 msgid "Add learners to this cohort"
-msgstr "Добавить слушателей в эту группу"
+msgstr "Добавить слушателей в эту когорту"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 msgid ""
 "Note: Learners can be in only one cohort. Adding learners to this group "
 "overrides any previous group assignment."
 msgstr ""
-"Примечание: слушатель может состоять только в одной группе. Если вы добавите"
-" его в эту группу, он будет исключен из любой другой."
+"Примечание: слушатель может состоять только в одной когорте. Если вы добавите"
+" его в эту когорту, он будет исключен из любой другой."
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-editor.underscore
 msgid ""
@@ -8937,19 +8937,19 @@ msgstr "Добавить слушателей"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
 msgid "Add a New Cohort"
-msgstr "Добавить группу"
+msgstr "Добавить когорту"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
 msgid "Enter the name of the cohort"
-msgstr "Введите название группы"
+msgstr "Введите название когорты"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
 msgid "Cohort Name"
-msgstr "Название группы"
+msgstr "Название когорты"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
 msgid "Cohort Assignment Method"
-msgstr "Способ распределения по группам"
+msgstr "Способ распределения по когортам"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
 msgid "Automatic"
@@ -8963,12 +8963,12 @@ msgstr "Вручную"
 msgid ""
 "There must be one cohort to which students can automatically be assigned."
 msgstr ""
-"Необходимо создать хотя бы одну группу, в которую будут автоматически "
+"Необходимо создать хотя бы одну когорту, в которую будут автоматически "
 "добавляться слушатели."
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
 msgid "Associated Content Group"
-msgstr "Соответствующие группы по изучаемому материалу"
+msgstr "Соответствующие когорты по изучаемому материалу"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
 msgid "No Content Group"
@@ -9029,7 +9029,7 @@ msgid ""
 "Learners are added to this cohort only when you provide their email "
 "addresses or usernames on this page."
 msgstr ""
-"Слушатели будут добавлены в группу, когда вы введёте их адреса электронной "
+"Слушатели будут добавлены в когорту, когда вы введёте их адреса электронной "
 "почты или имена пользователей на этой странице."
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-group-header.underscore
@@ -9038,11 +9038,11 @@ msgstr "Что это значит?"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-group-header.underscore
 msgid "Learners are added to this cohort automatically."
-msgstr "Слушатели добавляются в эту группу автоматически."
+msgstr "Слушатели добавляются в эту когорту автоматически."
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-selector.underscore
 msgid "Select a cohort"
-msgstr "Выбрать группу"
+msgstr "Выбрать когорту"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-selector.underscore
 #, python-format
@@ -9051,7 +9051,7 @@ msgstr "%(cohort_name)s (%(user_count)s)"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid "Enable Cohorts"
-msgstr "Включить группы"
+msgstr "Включить когорты"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid "Select a cohort to manage"
@@ -9063,7 +9063,7 @@ msgstr "Посмотреть группу"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid "Assign learners to cohorts by uploading a CSV file"
-msgstr "Распределить слушателей по группам, загрузив файл CSV"
+msgstr "Распределить слушателей по когортам, загрузив файл CSV"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohorts.underscore
 msgid ""
@@ -9071,9 +9071,9 @@ msgid ""
 "file, download course profile information or cohort results on the "
 "{link_start}Data Download{link_end} page."
 msgstr ""
-"Чтобы просмотреть распределение слушателей по группам или результаты "
+"Чтобы просмотреть распределение слушателей по когортам или результаты "
 "загрузки файла в формате CSV, скачайте список личных данных слушателей или "
-"результаты группы на странице «{link_start}Скачивание данных{link_end}»."
+"результаты когорты на странице «{link_start}Скачивание данных{link_end}»."
 
 #: lms/templates/instructor/instructor_dashboard_2/discussions.underscore
 msgid "Specify whether discussion topics are divided"
