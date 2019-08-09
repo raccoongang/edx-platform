@@ -161,8 +161,21 @@ textarea {
   <div class="form-actions">
 	<button type="submit" name="action" value="del_course">${_('Delete course from site')}</button>
   </div>
+  <hr />
+  <ul class="list-input">
+	<li class="field text">
+	  <label for="course_id">
+	        ## Translators: 'dir' is short for 'directory'
+		${_('Course ID or dir')}:
+	  </label>
+	  <input type="text" name="course_id" style="width:60%" />
+	</li>
+  </ul>
+  <div class="form-actions">
+	<button type="submit" name="action" value="download_course_users">${_('Download course user list')}</button>
+  </div>
 </form>
-<hr style="width:40%" />
+
 %endif
 
 %if msg:
