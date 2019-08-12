@@ -8,15 +8,17 @@ from collections import OrderedDict
 from datetime import datetime
 from time import time
 
-import unicodecsv
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files.storage import DefaultStorage
-from openassessment.data import OraAggregateData
 from pytz import UTC
 
+import unicodecsv
+from courseware.courses import get_course_with_access
 from instructor_analytics.basic import get_proctored_exam_results
 from instructor_analytics.csvs import format_dictlist
+from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
+from openassessment.data import OraAggregateData
 from openedx.core.djangoapps.course_groups.cohorts import add_user_to_cohort
 from openedx.core.djangoapps.course_groups.models import CourseUserGroup
 from survey.models import SurveyAnswer
@@ -297,6 +299,129 @@ def upload_ora2_data(
     upload_csv_to_report_store(rows, 'ORA_data', course_id, start_date)
 
     curr_step = {'step': 'Finalizing ORA data report'}
+    task_progress.update_task_state(extra_meta=curr_step)
+    TASK_LOG.info(u'%s, Task type: %s, Upload complete.', task_info_string, action_name)
+
+    return UPDATE_STATUS_SUCCEEDED
+
+
+def upload_students_grades_data(
+        _xmodule_instance_args, _entry_id, course_id, _task_input, action_name
+):
+    """
+    Collect student grades and upload them to S3 as a CSV.
+    """
+
+    headers = ['email', 'cohort']
+
+    students = User.objects.filter(
+        courseenrollment__course_id=course_id,
+        courseenrollment__is_active=1,
+    ).order_by('id').prefetch_related('course_groups')
+
+    output = list()
+
+    # Log information
+    start_date = datetime.now(UTC)
+    start_time = time()
+
+    num_attempted = 1
+    num_total = 1
+
+    fmt = u'Task: {task_id}, InstructorTask ID: {entry_id}, Course: {course_id}, Input: {task_input}'
+    task_info_string = fmt.format(
+        task_id=_xmodule_instance_args.get('task_id') if _xmodule_instance_args is not None else None,
+        entry_id=_entry_id,
+        course_id=course_id,
+        task_input=_task_input
+    )
+    TASK_LOG.info(u'%s, Task type: %s, Starting task execution', task_info_string, action_name)
+
+    task_progress = TaskProgress(action_name, num_total, start_time)
+    task_progress.attempted = num_attempted
+
+    curr_step = {'step': "Collecting responses"}
+    TASK_LOG.info(
+        u'%s, Task type: %s, Current step: %s for all submissions',
+        task_info_string,
+        action_name,
+        curr_step,
+    )
+
+    task_progress.update_task_state(extra_meta=curr_step)
+
+    try:
+        for student in students:
+            # Check student access
+            course = get_course_with_access(student, 'load', course_id, check_if_enrolled=True)
+
+            # Get students grade
+            course_grade = CourseGradeFactory().read(student, course)
+            courseware_summary = course_grade.chapter_grades.values()
+
+            # Add headers for csv report
+            if len(headers) == 2:
+                for chapter in courseware_summary:
+                    if chapter['sections']:
+                        for section in chapter['sections']:
+                            if section.problem_scores.values():
+                                headers += [
+                                    '{chapter} / {section} ({score})'.format(
+                                        chapter=chapter['display_name'],
+                                        section=section.display_name,
+                                        score=float(score.possible)
+                                    )
+                                    for score in section.problem_scores.values()]
+                            else:
+                                headers += [
+                                    '{chapter} / {section} (n/g)'.format(
+                                        chapter=chapter['display_name'],
+                                        section=section.display_name,
+                                    )
+                                ]
+                    else:
+                        headers += ['{} (n/g)'.format(chapter['display_name'])]
+
+                output.append(headers)
+
+            student_cohort = student.course_groups.first().name if student.course_groups.first() else '-'
+            rows = [student.email, student_cohort]
+
+            for chapter in courseware_summary:
+                if not chapter['display_name'] == "hidden":
+                    if chapter['sections']:
+                        for section in chapter['sections']:
+                            if section.problem_scores.values():
+                                rows += [float(score.earned) for score in section.problem_scores.values()]
+                            else:
+                                rows.append('-')
+                    else:
+                        rows.append('-')
+            output.append(rows)
+
+    except Exception:
+        TASK_LOG.exception('Failed to get students grades.')
+        task_progress.failed = 1
+        curr_step = {'step': "Error while collecting data"}
+
+        task_progress.update_task_state(extra_meta=curr_step)
+
+        return UPDATE_STATUS_FAILED
+
+    task_progress.succeeded = 1
+    curr_step = {'step': "Uploading CSV"}
+    TASK_LOG.info(
+        u'%s, Task type: %s, Current step: %s',
+        task_info_string,
+        action_name,
+        curr_step,
+    )
+    task_progress.update_task_state(extra_meta=curr_step)
+
+    # Generate csv
+    upload_csv_to_report_store(output, 'students_grade', course_id, start_date)
+
+    curr_step = {'step': 'Finalizing students grades data report'}
     task_progress.update_task_state(extra_meta=curr_step)
     TASK_LOG.info(u'%s, Task type: %s, Upload complete.', task_info_string, action_name)
 

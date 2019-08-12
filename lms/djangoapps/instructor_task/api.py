@@ -14,8 +14,8 @@ from celery.states import READY_STATES
 from bulk_email.models import CourseEmail
 from lms.djangoapps.certificates.models import CertificateGenerationHistory
 from lms.djangoapps.instructor_task.api_helper import (
-    check_arguments_for_rescoring,
     check_arguments_for_overriding,
+    check_arguments_for_rescoring,
     check_entrance_exam_problems_for_rescoring,
     encode_entrance_exam_and_student_input,
     encode_problem_and_student_input,
@@ -23,7 +23,6 @@ from lms.djangoapps.instructor_task.api_helper import (
 )
 from lms.djangoapps.instructor_task.models import InstructorTask
 from lms.djangoapps.instructor_task.tasks import (
-    override_problem_score,
     calculate_grades_csv,
     calculate_may_enroll_csv,
     calculate_problem_grade_report,
@@ -35,11 +34,13 @@ from lms.djangoapps.instructor_task.tasks import (
     enrollment_report_features_csv,
     exec_summary_report_csv,
     export_ora2_data,
+    export_students_grades_data,
     generate_certificates,
+    override_problem_score,
     proctored_exam_results_csv,
     rescore_problem,
     reset_problem_attempts,
-    send_bulk_course_email
+    send_bulk_course_email,
 )
 from util import milestones_helpers
 from xmodule.modulestore.django import modulestore
@@ -465,6 +466,18 @@ def submit_export_ora2_data(request, course_key):
     """
     task_type = 'export_ora2_data'
     task_class = export_ora2_data
+    task_input = {}
+    task_key = ''
+
+    return submit_task(request, task_type, task_class, course_key, task_input, task_key)
+
+
+def submit_students_grades_data(request, course_key):
+    """
+    AlreadyRunningError is raised if an students grades report is already being generated.
+    """
+    task_type = 'export_students_grades_data'
+    task_class = export_students_grades_data
     task_input = {}
     task_key = ''
 
