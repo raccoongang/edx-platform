@@ -16,6 +16,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import IntegrityError
+from django.db import transaction
 from django.http import HttpResponse, Http404
 from django.utils.decorators import method_decorator
 from django.utils.html import escape
@@ -27,6 +28,8 @@ from django.views.decorators.http import condition
 from django.views.decorators.csrf import ensure_csrf_cookie
 from edxmako.shortcuts import render_to_response
 import mongoengine
+from opaque_keys import InvalidKeyError
+from opaque_keys.edx.locator import CourseLocator
 from path import Path as path
 
 from courseware.courses import get_course_by_id
@@ -42,7 +45,6 @@ from xmodule.modulestore.django import modulestore
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from search.search_engine_base import SearchEngine
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-
 
 log = logging.getLogger(__name__)
 
@@ -195,11 +197,12 @@ class Users(SysadminDashboardView):
         user = User(username=uname, email=email, is_active=True)
         user.set_password(new_password)
         try:
-            user.save()
+            with transaction.atomic():
+                user.save()
         except IntegrityError:
             msg += _('Oops, failed to create user {user}, {error}').format(
                 user=user,
-                error="IntegrityError"
+                error="IntegrityError: one of the provided parameters: username or email, is already registered"
             )
             return msg
 
@@ -336,6 +339,7 @@ class Courses(SysadminDashboardView):
     This manages adding/updating courses from git, deleting courses, and
     provides course listing information.
     """
+    _searcher = SearchEngine.get_search_engine(getattr(settings, "COURSEWARE_INDEX_NAME", "courseware_index"))
 
     def git_info_for_course(self, cdir):
         """This pulls out some git info like the last commit"""
@@ -475,24 +479,15 @@ class Courses(SysadminDashboardView):
 
         elif action == 'del_course':
             course_id = request.POST.get('course_id', '').strip()
-            course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
-            course_found = False
-            if course_key in courses:
-                course_found = True
-                course = courses[course_key]
-            else:
-                try:
-                    course = get_course_by_id(course_key)
-                    course_found = True
-                except Exception, err:   # pylint: disable=broad-except
-                    self.msg += _(
-                        'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
-                    ).format(
-                        course_key,
-                        escape(str(err))
-                    )
 
-            if course_found:
+            try:
+                course_key = CourseLocator.from_string(course_id)
+                course = courses[course_key] if course_key in courses else get_course_by_id(course_key)
+            except (InvalidKeyError, Http404):
+                self.msg += _('<font color="red">Error - cannot get course with ID {0}</font>').format(course_id)
+                course = None
+
+            if course:
                 # delete course that is stored with mongodb backend
                 self.def_ms.delete_course(course.id, request.user.id)
 
@@ -501,8 +496,9 @@ class Courses(SysadminDashboardView):
                     result_ids = [result["data"]["id"] for result in response["results"]]
                     self._searcher.remove('courseware_content', result_ids)
                     self._searcher.remove('course_info', [course_id])
-                except Exception as e:
+                except Exception as e: # pragma: no cover
                     log.error(e.message)
+
                 CourseOverview.objects.filter(id=course.id).delete()
 
                 # don't delete user permission groups, though

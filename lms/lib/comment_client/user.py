@@ -3,7 +3,11 @@ from .utils import merge_dict, perform_request, CommentClientRequestError, Comme
 
 import models
 import settings
+import time
 
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
+from django.contrib.auth.models import User as django_user
 
 class User(models.Model):
 
@@ -166,6 +170,15 @@ class User(models.Model):
                 raise
         self._update_from_response(response)
 
+    def delete(self):
+        hash = hex(int(time.time()))[2:]
+        self.username = "{0}_{1}".format(self.username, hash)
+        self.save()
+
+@receiver(pre_delete, sender=django_user)
+def user_delete_handler(sender, **kwargs):
+    forum_user = User.from_django_user(kwargs['instance'])
+    forum_user.delete()
 
 def _url_for_vote_comment(comment_id):
     return "{prefix}/comments/{comment_id}/votes".format(prefix=settings.PREFIX, comment_id=comment_id)
@@ -192,3 +205,5 @@ def _url_for_read(user_id):
     Returns cs_comments_service url endpoint to mark thread as read for given user_id
     """
     return "{prefix}/users/{user_id}/read".format(prefix=settings.PREFIX, user_id=user_id)
+
+

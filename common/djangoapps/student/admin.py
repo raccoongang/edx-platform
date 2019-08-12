@@ -1,5 +1,7 @@
 """ Django admin pages for student app """
 from django import forms
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import ugettext_lazy as _
@@ -16,6 +18,9 @@ from student.models import (
 )
 from student.roles import REGISTERED_ACCESS_ROLES
 from xmodule.modulestore.django import modulestore
+
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django import forms
 
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
@@ -175,6 +180,39 @@ class UserChangeFormExtended(UserChangeForm):
         super(UserChangeFormExtended, self).__init__(*args, **kwargs)
         self.fields['email'] = forms.EmailField(label=_("E-mail"), max_length=75)
 
+def validate_unique_email(value, user_id=None):
+    if User.objects.filter(email=value).exclude(id=user_id).exists():
+        raise ValidationError(
+            _('Email "%(value)s" is already taken.'),
+            params={'value': value}
+        )
+
+
+class UserCreationFormExtended(UserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super(UserCreationFormExtended, self).__init__(*args, **kwargs)
+        self.fields['email'] = forms.EmailField(
+            label=_("E-mail"),
+            max_length=75,
+            validators=[validate_email, validate_unique_email]
+        )
+
+
+class UserChangeFormExtended(UserChangeForm):
+    def __init__(self, *args, **kwargs):
+        super(UserChangeFormExtended, self).__init__(*args, **kwargs)
+        self.fields['email'] = forms.EmailField(
+            label=_("E-mail"),
+            max_length=75,
+            validators=[validate_email]
+        )
+
+    def clean_email(self):
+        value = self.cleaned_data['email']
+        validate_unique_email(value, user_id=self.instance.id)
+        return value
+
+
 class UserAdmin(BaseUserAdmin):
     """ Admin interface for the User model. """
     inlines = (UserProfileInline,)
@@ -209,6 +247,7 @@ UserAdmin.fieldsets = (
     (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
 )
 
+
 admin.site.register(UserTestGroup)
 admin.site.register(CourseEnrollmentAllowed)
 admin.site.register(Registration)
@@ -220,3 +259,4 @@ admin.site.register(RegistrationCookieConfiguration, ConfigurationModelAdmin)
 
 # We must first un-register the User model since it may also be registered by the auth app.
 admin.site.register(User, UserAdmin)
+

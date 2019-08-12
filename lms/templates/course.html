@@ -22,7 +22,7 @@ from django.core.urlresolvers import reverse
       <%
       if course.start is not None:
           course_date_string = course.start.strftime('%Y-%m-%dT%H:%M:%S%z')
-          course_date_string_format = course.start.strftime('%d %b. %Y')
+          course_date_string_format = course.start.strftime('%B %-d, %Y')
       else:
           course_date_string = ''
       %>
