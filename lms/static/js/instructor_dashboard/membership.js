@@ -112,8 +112,12 @@ such that the value can be defined later than this assignment (file load order).
             this.rolename = rolename;
             this.$errorSection = $errorSection;
             this.list_enabled = true;
+            this.is_cohort_enable = $container.data('is-cohort-enabled');
             if (this.rolename === 'Group Moderator') {
                 labelsList = [gettext('Username'), gettext('Email'), gettext('Group'), gettext('Revoke access')];
+            }
+            if (this.is_cohort_enable) {
+                labelsList.push(gettext('Cohort Management'))
             }
             AuthListWidget.__super__.constructor.call(this, $container, {  // eslint-disable-line no-underscore-dangle
                 title: $container.data('display-name'),
@@ -128,6 +132,8 @@ such that the value can be defined later than this assignment (file load order).
             this.debug = true;
             this.list_endpoint = $container.data('list-endpoint');
             this.modify_endpoint = $container.data('modify-endpoint');
+
+            this.update_cohort_assignment_url = $container.data('update-cohort-assignment-url');
             if (this.rolename == null) {
                 msg = 'AuthListWidget missing @rolename';
                 throw msg;
@@ -206,10 +212,72 @@ such that the value can be defined later than this assignment (file load order).
                             );
                         }
                     } else {
-                        authListWidgetReloadList.add_row([member.username, member.email, $revokeBtn]);
+
+                        var row = [member.username, member.email, $revokeBtn];
+                        if (authListWidgetReloadList.is_cohort_enable) {
+                            row = [
+                                ...row,
+                                authListWidgetReloadList.render_cohort_settings_control(member)
+                            ];
+                        }
+                        authListWidgetReloadList.add_row(row);
                     }
                 });
             });
+        };
+
+        AuthListWidget.prototype.render_cohort_settings_control = function (member) {
+            var authListWidgetReloadList = this;
+            var assigment_info = member.cohorts_assignment;
+            let all_cohort_decorator = function (cohort_assignment) {
+                return [
+                    {
+                        id: -1,
+                        name: gettext('All'),
+                        is_assignment: cohort_assignment.every(info => info.is_assignment)
+                    },
+                    ...cohort_assignment
+                ]
+            };
+
+            var checkers_list = all_cohort_decorator(assigment_info).map(cohort_info => `
+                        <div>
+                            <label> 
+                                <input 
+                                    type="checkbox" 
+                                    class="cohorts-state" 
+                                    value="Cohorts-State"
+                                    data-cohort-id=${cohort_info.id} 
+                                    ${cohort_info.is_assignment ? 'checked' : ''} 
+                                > 
+                                ${cohort_info.name} 
+                            </label>
+                        </div>
+                        `);
+            var $cohort_checker = $(`
+                            <div  class="cohort_management cohorts-state-section" aria-disabled="false">
+                                ${checkers_list.join('')}
+                            <div>
+                        `, {
+                class: 'cohort_management'
+            });
+            $cohort_checker.find('input:checkbox').change(function (e) {
+                console.log(this);
+                authListWidgetReloadList.update_cohort_assignment(
+                    member.email,
+                    this.dataset.cohortId,
+                    this.checked,
+                    err => {
+                        if (err !== null) {
+                            authListWidgetReloadList.show_errors(err);
+                            return;
+                        }
+                        authListWidgetReloadList.clear_errors();
+                        authListWidgetReloadList.reload_list();
+                    }
+                )
+            });
+            return $cohort_checker
         };
 
         AuthListWidget.prototype.clear_errors = function() {
@@ -270,7 +338,32 @@ such that the value can be defined later than this assignment (file load order).
             });
         };
 
-        AuthListWidget.prototype.member_response = function(data) {
+        AuthListWidget.prototype.update_cohort_assignment = function (
+            uniqueStudentIdentifier, cohort_id, is_assignment, cb
+        ) {
+
+            var authlistwidgetmemberaccess = this;
+            var callback = (typeof cb === 'function') && cb || function () {
+            };
+            return $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: this.update_cohort_assignment_url,
+                data: {
+                    unique_student_identifier: uniqueStudentIdentifier,
+                    cohort_id: cohort_id,
+                    is_assignment: is_assignment,
+                },
+                success: function (data) {
+                    return authlistwidgetmemberaccess.member_response(data);
+                },
+                error: statusAjaxError(function () {
+                    return callback(gettext("Error changing user's cohort."));
+                })
+            });
+        };
+
+        AuthListWidget.prototype.member_response = function (data) {
             var msg;
             this.clear_errors();
             this.clear_input();
