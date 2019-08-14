@@ -215,7 +215,7 @@ def get_report_data_for_course_users(courses, course_id):
     # getting vertical (unit) names
     unit_names = [course_ordered[v].get('display_name') for v in verticals]
 
-    header = [_('username'), _('email'), _('registration date'), _('enrolled courses'), ('last login'), 'last visit', ]
+    header = ['username', 'email', 'registration date', 'enrolled courses', 'last login', 'last visit', ]
 
     # preparing list for counting visits for course units (last row in the table)
     visit_count = ['', '', '', '', '', 'Visits:', ]

@@ -3,31 +3,31 @@
 # Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2017.
-# 
+#
 # #-#-#-#-#  django-studio.po (0.1a)  #-#-#-#-#
 # edX translation file.
 # Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2017.
-# 
+#
 # #-#-#-#-#  mako.po (0.1a)  #-#-#-#-#
 # edX translation file
 # Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2017.
-# 
+#
 # #-#-#-#-#  mako-studio.po (0.1a)  #-#-#-#-#
 # edX translation file
 # Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2017.
-# 
+#
 # #-#-#-#-#  wiki.po (0.1a)  #-#-#-#-#
 # edX translation file
 # Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2017.
-# 
+#
 # Translators:
 # Natalia Vavilina <nfgenius@gmail.com>, 2017
 # Evgeniya <eugenia000@gmail.com>, 2017
@@ -87,7 +87,7 @@
 # Olga Filipova <olga.filipova@feedzai.com>, 2017
 # Liubov Fomicheva <liubov.nelapa@gmail.com>, 2018
 # Валентина Пицик <lushalusha007@gmail.com>, 2019
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
@@ -13169,6 +13169,10 @@ msgstr "Загрузить новый курс с GitHub"
 #: lms/templates/sysadmin_dashboard.html
 msgid "Course ID or dir"
 msgstr "ID или каталог курса "
+
+#: lms/templates/sysadmin_dashboard.html
+msgid "Download course user list"
+msgstr "Скачать список пользователей курса"
 
 #: lms/templates/sysadmin_dashboard.html
 msgid "Delete course from site"
