@@ -13178,6 +13178,10 @@ msgstr "ID или каталог курса "
 msgid "Delete course from site"
 msgstr "Удалить курс с сайта"
 
+#: lms/templates/sysadmin_dashboard.html
+msgid "Download course user list"
+msgstr "Скачать список пользователей курса"
+
 #. Translators: A version number appears after this string
 #: lms/templates/sysadmin_dashboard.html
 msgid "Platform Version"

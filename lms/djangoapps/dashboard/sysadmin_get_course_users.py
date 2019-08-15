@@ -190,8 +190,8 @@ def get_report_data_for_course_users(courses, course_id):
     course = _find_course(course_key, courses)
 
     if course is None:
-        message = 'Error - cannot get course with ID {}'.format(course_key)
-        return message
+        log.info('Cannot find course %s', course_id)
+        raise Http404  # replace with sth
 
     data = []
     enrolled_students = User.objects.filter(
@@ -215,7 +215,7 @@ def get_report_data_for_course_users(courses, course_id):
     # getting vertical (unit) names
     unit_names = [course_ordered[v].get('display_name') for v in verticals]
 
-    header = [_('username'), _('email'), _('registration date'), _('enrolled courses'), ('last login'), 'last visit', ]
+    header = ['username', 'email', 'registration date', 'enrolled courses', 'last login', 'last visit', ]
 
     # preparing list for counting visits for course units (last row in the table)
     visit_count = ['', '', '', '', '', 'Visits:', ]
