@@ -28,6 +28,7 @@ from django.views.decorators.http import condition
 from django.views.generic.base import TemplateView
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from path import Path as path
+from .sysadmin_get_course_users import get_report_data_for_course_users
 
 import dashboard.git_import as git_import
 import track.views
@@ -305,8 +306,8 @@ class Users(SysadminDashboardView):
 
         if action == 'download_users':
             header = [_('username'), _('email'), ]
-            data = ([u.username, u.email] for u in
-                    (User.objects.all().iterator()))
+            data = ([u.name, u.user.email] for u in
+                    (UserProfile.objects.all().iterator()))
             return self.return_csv('users_{0}.csv'.format(
                 request.META['SERVER_NAME']), header, data)
         elif action == 'repair_eamap':
@@ -480,6 +481,18 @@ class Courses(SysadminDashboardView):
             branch = request.POST.get('repo_branch', '').strip().replace(' ', '').replace(';', '')
             self.msg += self.get_course_from_git(gitloc, branch)
 
+        elif action == 'download_course_users':
+            course_id = request.POST.get('course_id', '').strip()
+            report_data = get_report_data_for_course_users(courses, course_id)
+            try:
+                return self.return_csv('users_{0}_{1}.csv'.format(
+                    request.META['SERVER_NAME'], course_id),
+                    report_data['header'],
+                    report_data['data']
+                )
+            except Exception:
+                self.msg += data
+
         elif action == 'del_course':
             course_id = request.POST.get('course_id', '').strip()
             course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
@@ -509,7 +522,7 @@ class Courses(SysadminDashboardView):
                     result_ids = [result["data"]["id"] for result in response["results"]]
                     self._searcher.remove('courseware_content', result_ids)
                     self._searcher.remove('course_info', [course_id])
-                except Exception as e: # pragma: no cover
+                except Exception as e:  # pragma: no cover
                     log.error(e.message)
 
                 CourseOverview.objects.filter(id=course.id).delete()

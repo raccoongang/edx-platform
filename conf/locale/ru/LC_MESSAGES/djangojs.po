@@ -3,25 +3,25 @@
 # Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2017.
-# 
+#
 # #-#-#-#-#  djangojs-studio.po (0.1a)  #-#-#-#-#
 # edX translation file.
 # Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2017.
-# 
+#
 # #-#-#-#-#  underscore.po (0.1a)  #-#-#-#-#
 # edX translation file
 # Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2017.
-# 
+#
 # #-#-#-#-#  underscore-studio.po (0.1a)  #-#-#-#-#
 # edX translation file
 # Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2017.
-# 
+#
 # Translators:
 # SpaceOyster, 2017
 # Romanov Aleksei, 2017
@@ -73,7 +73,7 @@
 # Liubov Fomicheva <liubov.nelapa@gmail.com>, 2018
 # Андрей Гусев <gaussgss@gmail.com>, 2018
 # Валентина Пицик <lushalusha007@gmail.com>, 2019
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
@@ -4705,7 +4705,7 @@ msgid ""
 "Select the time zone for displaying course dates. If you do not specify a "
 "time zone, course dates, including assignment deadlines, will be displayed "
 "in your browser's local time zone."
-msgstr "" 
+msgstr ""
 "Выберите часовой пояс для отображения дат курса. Если вы не укажете"
 "часовой пояс, даты курса, включая сроки выполнения, будут отображаться"
 "в часовом поясе вашего браузера."
@@ -8045,6 +8045,10 @@ msgstr "Произошла ошибка.  Попробуйте перезагр�
 msgid "Balance -"
 msgstr "На вашем счету -"
 
+#: lms/templates/student_profile/learner_profile.underscore
+msgid "Profile Statistics"
+msgstr "Статистика Профиля"
+
 #: lms/templates/student_profile/section_two.underscore
 msgid "You are currently sharing a limited profile."
 msgstr "Сейчас сокурсникам разрешён ограниченный доступ к вашему профилю."
@@ -10217,5 +10221,3 @@ msgstr ""
 #: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 msgid "Use Current Transcript"
 msgstr "Использовать субтитры"
-
-

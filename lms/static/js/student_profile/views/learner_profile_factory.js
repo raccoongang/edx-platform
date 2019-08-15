@@ -150,6 +150,8 @@
 
             var learnerProfileView = new LearnerProfileView({
                 el: learnerProfileElement,
+                account_settings_data: options.account_settings_data,
+                active_course: options.active_course,
                 ownProfile: options.own_profile,
                 has_preferences_access: options.has_preferences_access,
                 accountSettingsModel: accountSettingsModel,

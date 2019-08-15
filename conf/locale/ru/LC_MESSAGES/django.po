@@ -3,31 +3,31 @@
 # Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2017.
-# 
+#
 # #-#-#-#-#  django-studio.po (0.1a)  #-#-#-#-#
 # edX translation file.
 # Copyright (C) 2017 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2017.
-# 
+#
 # #-#-#-#-#  mako.po (0.1a)  #-#-#-#-#
 # edX translation file
 # Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2017.
-# 
+#
 # #-#-#-#-#  mako-studio.po (0.1a)  #-#-#-#-#
 # edX translation file
 # Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2017.
-# 
+#
 # #-#-#-#-#  wiki.po (0.1a)  #-#-#-#-#
 # edX translation file
 # Copyright (C) 2017 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2017.
-# 
+#
 # Translators:
 # Natalia Vavilina <nfgenius@gmail.com>, 2017
 # Evgeniya <eugenia000@gmail.com>, 2017
@@ -87,7 +87,7 @@
 # Olga Filipova <olga.filipova@feedzai.com>, 2017
 # Liubov Fomicheva <liubov.nelapa@gmail.com>, 2018
 # Валентина Пицик <lushalusha007@gmail.com>, 2019
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
@@ -11506,6 +11506,10 @@ msgstr "Словарь тегов"
 msgid "Page Not Found"
 msgstr "Страница не найдена"
 
+#: lms/templates/static_templates/403.html
+msgid "Forbidden"
+msgstr "Запрещено"
+
 #: cms/templates/404.html lms/templates/static_templates/404.html
 msgid "Page not found"
 msgstr "Страница не найдена"
@@ -19694,6 +19698,10 @@ msgstr "Войти или зарегистрироваться"
 #: lms/templates/student_profile/learner_profile.html
 msgid "Learner Profile"
 msgstr "Профиль слушателя"
+
+#: lms/templates/student_profile/learner_profile.underscore
+msgid "Profile Statistics"
+msgstr "Статистика Профиля"
 
 #. Translators: this section lists all the third-party authentication
 #. providers

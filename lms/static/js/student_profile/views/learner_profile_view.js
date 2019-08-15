@@ -52,7 +52,9 @@
                         username: self.options.accountSettingsModel.get('username'),
                         balance: self.options.accountSettingsModel.get('balance'),
                         ownProfile: self.options.ownProfile,
-                        showFullProfile: self.showFullProfile()
+                        showFullProfile: self.showFullProfile(),
+                        account_settings_data: this.options.account_settings_data,
+                        active_course: this.options.active_course
                     }));
                     this.renderFields();
 

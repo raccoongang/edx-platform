@@ -530,7 +530,6 @@ def account_settings_context(request):
         # Return empty order list as account settings page expect a list and
         # it will be broken if exception raised
         user_orders = []
-
     context = {
         'auth': {},
         'duplicate_provider': None,
@@ -552,7 +551,9 @@ def account_settings_context(request):
                 'options': all_languages(),
             }, 'time_zone': {
                 'options': TIME_ZONE_CHOICES,
-            }
+            }, 
+            'mobytize_id': user.profile.mobytize_id,
+            'mobytize_token': user.profile.mobytize_token
         },
         'social_platforms': UserSocialLink.PLATFORM_CHOICES,
         'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
@@ -564,6 +565,7 @@ def account_settings_context(request):
         'disable_courseware_js': True,
         'show_program_listing': ProgramsApiConfig.is_enabled(),
         'order_history': user_orders
+
     }
 
     if third_party_auth.is_enabled():
