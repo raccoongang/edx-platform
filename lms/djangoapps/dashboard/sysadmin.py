@@ -490,8 +490,13 @@ class Courses(SysadminDashboardView):
                     report_data['header'],
                     report_data['data']
                 )
-            except Exception:
-                self.msg += data
+            except Exception, err:   # as e: log.error(e.message)?
+                self.msg += _(
+                    'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
+                ).format(
+                    course_id,
+                    escape(str(err))
+                )
 
         elif action == 'del_course':
             course_id = request.POST.get('course_id', '').strip()
