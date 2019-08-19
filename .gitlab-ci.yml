@@ -1,0 +1,17 @@
+stages:
+    - build
+
+before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+
+build-base-image:
+    stage: build
+    tags:
+        - dind
+    variables:
+        BASE_IMAGE: registry-gitlab.raccoongang.com/edx/edx-platform:$CI_COMMIT_REF_SLUG
+    script:
+        - docker build -t $BASE_IMAGE .
+        - docker push $BASE_IMAGE
+    only:
+        - hawthorn-rg

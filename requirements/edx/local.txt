@@ -1,0 +1,10 @@
+-e common/lib/calc
+-e common/lib/capa
+-e common/lib/chem
+-e common/lib/xmodule
+-e common/lib/safe_lxml
+-e common/lib/sandbox-packages
+-e common/lib/symmath
+-e common/lib/dogstats
+-e openedx/core/lib/xblock_builtin/xblock_discussion
+-e .

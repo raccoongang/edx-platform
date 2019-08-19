@@ -26,7 +26,6 @@ from .utils.process import run_background_process
 from .utils.timer import timed
 
 from pwd import getpwnam
-from django.core.wsgi import get_wsgi_application
 from django.conf import settings as django_settings
 
 # setup baseline paths
@@ -771,19 +770,13 @@ def webpack(options):
     Run a Webpack build.
     """
     settings = getattr(options, 'settings', Env.DEVSTACK_SETTINGS)
-    static_root_lms = Env.get_django_setting("STATIC_ROOT", "lms", settings=settings)
-    static_root_cms = Env.get_django_setting("STATIC_ROOT", "cms", settings=settings)
-    config_path = Env.get_django_setting("WEBPACK_CONFIG_PATH", "lms", settings=settings)
-    environment = 'NODE_ENV={node_env} STATIC_ROOT_LMS={static_root_lms} STATIC_ROOT_CMS={static_root_cms}'.format(
-        node_env="production" if settings != Env.DEVSTACK_SETTINGS else "development",
-        static_root_lms=static_root_lms,
-        static_root_cms=static_root_cms
+    environment = 'NODE_ENV={node_env}'.format(
+        node_env="production" if settings != Env.DEVSTACK_SETTINGS else "development"
     )
     sh(
         cmd(
-            '{environment} $(npm bin)/webpack --config={config_path}'.format(
-                environment=environment,
-                config_path=config_path
+            '{environment} $(npm bin)/webpack --config=$WEBPACK_CONFIG_PATH'.format(
+                environment=environment
             )
         )
     )
@@ -975,20 +968,8 @@ def _update_assets(sys, args, is_devstack=True):
     if sys == 'studio':
         sys = 'cms'
 
-    if not is_devstack:
-        os.environ.setdefault("SERVICE_VARIANT","{sys}".format(sys=sys))
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "{sys}.envs.static_collector".format(sys=sys))
-
-        application = get_wsgi_application()  # pylint: disable=invalid-name
-
-        if hasattr(django_settings, 'STATIC_COLLECTOR_ROOT'):
-            STATIC_COLLECTOR_ROOT = django_settings.STATIC_COLLECTOR_ROOT
-        else:
-            STATIC_COLLECTOR_ROOT = get_static_collector_root()
-
-        if not os.path.isdir(STATIC_COLLECTOR_ROOT):
-            os.mkdir(STATIC_COLLECTOR_ROOT)
-            print('\t\tDirectory "STATIC_COLLECTOR_ROOT" has been created to store static files.')
+    os.environ.setdefault("SERVICE_VARIANT","{sys}".format(sys=sys))
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "{sys}.envs.static_collector".format(sys=sys))
 
     process_xmodule_assets()
     process_npm_assets()

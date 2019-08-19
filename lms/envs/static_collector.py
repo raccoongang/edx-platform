@@ -1,7 +1,17 @@
-from .aws import *
-from django.conf import settings
+import os
+from .common import *
 
-EDX_PLATFORM_STATIC_ROOT_BASE = settings.STATIC_ROOT_BASE
 
-STATIC_ROOT_BASE=os.environ.get('STATIC_COLLECTOR_ROOT', '/edx/var/edxapp/static_collector')
-STATIC_ROOT = path(STATIC_ROOT_BASE)
+STATIC_ROOT = os.environ.get('STATIC_ROOT')
+
+# hacks to overcome edx habbit to create objects in import time
+DATABASES = {
+    'default': {'ENGINE': None}
+}
+
+XQUEUE_INTERFACE = {
+    'url': None,
+    'django_auth': None
+}
+
+LOCALE_PATHS = os.environ.get('LOCALE_PATHS').split(';')
