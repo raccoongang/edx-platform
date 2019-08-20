@@ -12,6 +12,8 @@ build-base-image:
         BASE_IMAGE: registry-gitlab.raccoongang.com/edx/edx-platform:$CI_COMMIT_REF_SLUG
     script:
         - docker build -t $BASE_IMAGE .
+        - docker build --target=static_compile -t $BASE_IMAGE-static-builder .
         - docker push $BASE_IMAGE
+        - docker push $BASE_IMAGE-static-builder
     only:
         - hawthorn-rg
