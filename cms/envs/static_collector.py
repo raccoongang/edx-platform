@@ -1,4 +1,5 @@
 import os
+from openedx.core.lib.derived import derive_settings
 from .common import *
 
 
@@ -9,3 +10,4 @@ DATABASES = {
 }
 
 LOCALE_PATHS = os.environ.get('LOCALE_PATHS').split(';')
+derive_settings(__name__)
