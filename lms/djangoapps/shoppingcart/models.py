@@ -19,7 +19,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
-from django.core.mail.message import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 from django.urls import reverse
 from django.db import models, transaction
 from django.db.models import Count, F, Q, Sum
@@ -378,34 +378,46 @@ class Order(models.Model):
             )
             # Send a unique email for each recipient. Don't put all email addresses in a single email.
             for recipient in recipient_list:
+                email_context = {
+                    'order': self,
+                    'recipient_name': recipient[0],
+                    'recipient_type': recipient[2],
+                    'site_name': site_name,
+                    'order_items': orderitems,
+                    'course_names': ", ".join(course_names),
+                    'dashboard_url': dashboard_url,
+                    'currency_symbol': settings.PAID_COURSE_REGISTRATION_CURRENCY[1],
+                    'order_placed_by': '{username} ({email})'.format(
+                        username=self.user.username, email=self.user.email
+                    ),
+                    'has_billing_info': settings.FEATURES['STORE_BILLING_INFO'],
+                    'platform_name': configuration_helpers.get_value('platform_name', settings.PLATFORM_NAME),
+                    'payment_support_email': configuration_helpers.get_value(
+                        'payment_support_email', settings.PAYMENT_SUPPORT_EMAIL,
+                    ),
+                    'payment_email_signature': configuration_helpers.get_value('payment_email_signature'),
+                }
+
                 message = render_to_string(
                     'emails/business_order_confirmation_email.txt' if is_order_type_business else 'emails/order_confirmation_email.txt',
-                    {
-                        'order': self,
-                        'recipient_name': recipient[0],
-                        'recipient_type': recipient[2],
-                        'site_name': site_name,
-                        'order_items': orderitems,
-                        'course_names': ", ".join(course_names),
-                        'dashboard_url': dashboard_url,
-                        'currency_symbol': settings.PAID_COURSE_REGISTRATION_CURRENCY[1],
-                        'order_placed_by': '{username} ({email})'.format(
-                            username=self.user.username, email=self.user.email
-                        ),
-                        'has_billing_info': settings.FEATURES['STORE_BILLING_INFO'],
-                        'platform_name': configuration_helpers.get_value('platform_name', settings.PLATFORM_NAME),
-                        'payment_support_email': configuration_helpers.get_value(
-                            'payment_support_email', settings.PAYMENT_SUPPORT_EMAIL,
-                        ),
-                        'payment_email_signature': configuration_helpers.get_value('payment_email_signature'),
-                    }
+                    email_context
                 )
-                email = EmailMessage(
+                email = EmailMultiAlternatives(
                     subject=subject,
                     body=message,
                     from_email=from_address,
                     to=[recipient[1]]
                 )
+
+                try:
+                    html_message = render_to_string(
+                        'emails/business_order_confirmation_email.html' if is_order_type_business else 'emails/order_confirmation_email.html',
+                        email_context
+                    )
+                except:
+                    pass
+                else:
+                    email.attach_alternative(html_message, "text/html")
 
                 # Only the business order is HTML formatted. A single seat order confirmation is plain text.
                 if is_order_type_business:

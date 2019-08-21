@@ -1077,7 +1077,12 @@ class SubmitPhotosView(View):
         to_address = user.email
 
         try:
-            send_mail(subject, message, from_address, [to_address], fail_silently=False)
+            html_message = render_to_string('emails/photo_submission_confirmation.html', context)
+        except:
+            html_message = None
+
+        try:
+            send_mail(subject, message, from_address, [to_address], fail_silently=False, html_message=html_message)
         except:  # pylint: disable=bare-except
             # We catch all exceptions and log them.
             # It would be much, much worse to roll back the transaction due to an uncaught
