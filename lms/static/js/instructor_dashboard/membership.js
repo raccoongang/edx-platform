@@ -215,10 +215,7 @@ such that the value can be defined later than this assignment (file load order).
 
                         var row = [member.username, member.email, $revokeBtn];
                         if (authListWidgetReloadList.is_cohort_enable) {
-                            row = [
-                                ...row,
-                                authListWidgetReloadList.render_cohort_settings_control(member)
-                            ];
+                            row = row.concat(authListWidgetReloadList.render_cohort_settings_control(member));
                         }
                         authListWidgetReloadList.add_row(row);
                     }
@@ -229,45 +226,43 @@ such that the value can be defined later than this assignment (file load order).
         AuthListWidget.prototype.render_cohort_settings_control = function (member) {
             var authListWidgetReloadList = this;
             var assigment_info = member.cohorts_assignment;
-            let all_cohort_decorator = function (cohort_assignment) {
-                return [
+            var all_cohort_decorator = function (cohort_assignment) {
+                var result = [
                     {
                         id: -1,
                         name: gettext('All'),
-                        is_assignment: cohort_assignment.every(info => info.is_assignment)
-                    },
-                    ...cohort_assignment
-                ]
+                        is_assignment: cohort_assignment.every(function (info) {
+                            return info.is_assignment
+                        })
+                    }
+                ];
+                return result.concat(cohort_assignment);
             };
 
-            var checkers_list = all_cohort_decorator(assigment_info).map(cohort_info => `
-                        <div>
-                            <label> 
-                                <input 
-                                    type="checkbox" 
-                                    class="cohorts-state" 
-                                    value="Cohorts-State"
-                                    data-cohort-id=${cohort_info.id} 
-                                    ${cohort_info.is_assignment ? 'checked' : ''} 
-                                > 
-                                ${cohort_info.name} 
-                            </label>
-                        </div>
-                        `);
-            var $cohort_checker = $(`
-                            <div  class="cohort_management cohorts-state-section" aria-disabled="false">
-                                ${checkers_list.join('')}
-                            <div>
-                        `, {
-                class: 'cohort_management'
+            var checkers_list = all_cohort_decorator(assigment_info).map(function (cohort_info) {
+                return '<div>' +
+                    '<label>' +
+                    '<input ' +
+                    'type="checkbox" ' +
+                    'class="cohorts-state" ' +
+                    'value="Cohorts-State" ' +
+                    'data-cohort-id= ' + cohort_info.id + ' ' + (cohort_info.is_assignment ? 'checked' : '') +
+                    '> ' +
+                    cohort_info.name +
+                    ' </label>' +
+                    '</div>';
             });
+            var checker = '<div  class="cohort_management cohorts-state-section" aria-disabled="false">' +
+                checkers_list.join('') +
+                '<div>';
+            var $cohort_checker = $(checker, {class: 'cohort_management'});
             $cohort_checker.find('input:checkbox').change(function (e) {
                 console.log(this);
                 authListWidgetReloadList.update_cohort_assignment(
                     member.email,
                     this.dataset.cohortId,
                     this.checked,
-                    err => {
+                    function(err){
                         if (err !== null) {
                             authListWidgetReloadList.show_errors(err);
                             return;
@@ -1161,3 +1156,4 @@ such that the value can be defined later than this assignment (file load order).
         Membership: Membership
     });
 }).call(this);
+
