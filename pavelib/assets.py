@@ -941,26 +941,6 @@ def update_assets(args):
     for sys in args.system:
         _update_assets(sys, args, is_devstack=is_devstack)
 
-    if not is_devstack:
-        STATIC_ROOT_BASE = django_settings.STATIC_ROOT_BASE if django_settings and hasattr(django_settings, 'STATIC_ROOT_BASE') else Env.get_django_setting("STATIC_ROOT_BASE", "lms", settings=args.settings)
-        EDX_PLATFORM_STATIC_ROOT_BASE = django_settings.EDX_PLATFORM_STATIC_ROOT_BASE if django_settings and hasattr(django_settings, 'EDX_PLATFORM_STATIC_ROOT_BASE') else Env.get_django_setting("EDX_PLATFORM_STATIC_ROOT_BASE", "lms", settings=args.settings)
-
-        os.system("rsync -av {static_collector_dir}/* {platform_static_dir}/ ".format(
-            static_collector_dir=STATIC_ROOT_BASE,
-            platform_static_dir=EDX_PLATFORM_STATIC_ROOT_BASE
-        ))
-
-    if args.watch:
-        call_task(
-            'pavelib.assets.watch_assets',
-            options={
-                'background': not args.debug,
-                'theme_dirs': args.theme_dirs,
-                'themes': args.themes,
-                'wait': [float(args.wait)]
-            },
-        )
-
 
 def _update_assets(sys, args, is_devstack=True):
     collect_log_args = {}

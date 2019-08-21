@@ -86,6 +86,7 @@ RUN pip install -e common/lib/xmodule
 # Build static files for final image
 FROM nodejs_base as static_compile
 
+RUN npm install -g rtlcss
 COPY . .
 RUN pip install --no-cache-dir -r requirements/edx/local.txt
 
