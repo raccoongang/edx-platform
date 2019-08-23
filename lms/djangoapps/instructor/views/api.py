@@ -27,7 +27,7 @@ from django.core.exceptions import (
 from django.core.mail.message import EmailMessage
 from django.urls import reverse
 from django.core.validators import validate_email
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError, models, transaction
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import redirect
 from django.utils.html import strip_tags
@@ -75,13 +75,15 @@ from lms.djangoapps.instructor.enrollment import (
     send_mail_to_student,
     unenroll_email
 )
+from lms.djangoapps.instructor.models import CohortAssigment
 from lms.djangoapps.instructor.views import INVOICE_KEY
 from lms.djangoapps.instructor.views.instructor_task_helpers import extract_email_features, extract_task_features
 from lms.djangoapps.instructor_task.api import submit_override_score
 from lms.djangoapps.instructor_task.api_helper import AlreadyRunningError, QueueConnectionError
 from lms.djangoapps.instructor_task.models import ReportStore
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-from openedx.core.djangoapps.course_groups.cohorts import is_course_cohorted
+from openedx.core.djangoapps.course_groups.cohorts import is_course_cohorted, migrate_cohort_settings
+from openedx.core.djangoapps.course_groups.models import CourseUserGroup
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preference, set_user_preference
 from openedx.core.djangolib.markup import HTML, Text
@@ -965,15 +967,39 @@ def list_course_role_members(request, course_id):
     if rolename not in ROLES:
         return HttpResponseBadRequest()
 
+    course_cohort = None
+    if is_course_cohorted(course_id) and rolename == 'staff':
+        migrate_cohort_settings(course)
+
+        course_cohort = CourseUserGroup.objects.filter(
+            course_id=course.location.course_key,
+            group_type=CourseUserGroup.COHORT
+        )
+
     def extract_user_info(user):
         """ convert user into dicts for json view """
 
-        return {
+        result = {
             'username': user.username,
             'email': user.email,
             'first_name': user.first_name,
             'last_name': user.last_name,
         }
+        if course_cohort is not None and rolename == 'staff':
+            assigment_checker = models.Case(
+                models.When(cohort_mangers__contains=request.user.id,then=models.Value(True)),
+                default=models.Value(False),
+                output_field=models.BooleanField()
+            )
+            result['cohorts_assignment'] = list(
+                course_cohort
+                    .annotate(cohort_mangers=models.F('cohortassigment__user'))
+                    .annotate(is_assignment=assigment_checker)
+                    .order_by('name')
+                    .distinct()
+                    .values('id', 'name', 'is_assignment')
+            )
+        return result
 
     response_payload = {
         'course_id': text_type(course_id),
@@ -3329,6 +3355,45 @@ def certificate_invalidation_view(request, course_id):
             return JsonResponse({'message': text_type(error)}, status=400)
 
         return JsonResponse({}, status=204)
+
+
+@transaction.non_atomic_requests
+@ensure_csrf_cookie
+@cache_control(no_cache=True, no_store=True, must_revalidate=True)
+@require_global_staff
+@require_http_methods(['POST'])
+def update_cohort_assignment(request, course_id):
+    """
+    Api endpoint for Cohort Managers updating.
+    """
+    course_id = CourseKey.from_string(course_id)
+    course = get_course_with_access(
+        request.user, 'instructor', course_id, depth=None
+    )
+
+    is_assignment = json.loads(request.POST.get('is_assignment').lower())
+    cohort_id = int(request.POST.get('cohort_id'))
+    user =get_student_from_identifier(request.POST.get('unique_student_identifier'))
+
+    #Note (yura.braiko@gmail.com): if cohort id is `-1` it equal to `All` cohort.
+    if cohort_id == -1:
+        migrate_cohort_settings(course)
+
+        cohort_for_change = CourseUserGroup.objects.filter(
+            course_id=course.location.course_key,
+            group_type=CourseUserGroup.COHORT
+        ).values_list('id', flat=True)
+    else:
+        cohort_for_change = [cohort_id]
+
+    if is_assignment:
+        cohort_to_incert = [CohortAssigment(cohort_id=cohort, user=user) for cohort in cohort_for_change]
+        CohortAssigment.objects.bulk_create(cohort_to_incert)
+    else:
+        CohortAssigment.objects.filter(cohort__id__in=cohort_for_change, user=user).delete()
+
+    # Note(yura.braiko@raccoongang.com): return empty success response.
+    return JsonResponse({})
 
 
 def invalidate_certificate(request, generated_certificate, certificate_invalidation_data):

@@ -11944,3 +11944,12 @@ msgstr ""
 #: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 msgid "Use Current Transcript"
 msgstr "Использовать субтитры"
+
+msgid "Cohort Management"
+msgstr "Руководитель когорты"
+
+msgid "Error changing user's cohort."
+msgstr "Ошибка при изминении руковидителя когорты"
+
+msgid "All"
+msgstr "Все"

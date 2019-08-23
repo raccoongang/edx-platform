@@ -171,6 +171,8 @@ from openedx.core.djangolib.markup import HTML, Text
             "Insights. You can only give course team roles to enrolled users."
         )}"
       data-list-endpoint="${ section_data['list_course_role_members_url'] }"
+      data-update-cohort-assignment-url="${ section_data['update_cohort_assignment_url'] }"
+      data-is-cohort-enabled="${ section_data['is_cohort_enable'] }"
       data-modify-endpoint="${ section_data['modify_access_url'] }"
       data-add-button-label="${_("Add Staff")}"
     ></div>
@@ -186,6 +188,8 @@ from openedx.core.djangolib.markup import HTML, Text
           "beta tester role to manage course team membership. You can only give "
           "course team roles to enrolled users.")}"
       data-list-endpoint="${ section_data['list_course_role_members_url'] }"
+      data-update-cohort-assignment-url="${ section_data['update_cohort_assignment_url'] }"
+      data-is-cohort-enabled="${ section_data['is_cohort_enable'] }"
       data-modify-endpoint="${ section_data['modify_access_url'] }"
       data-add-button-label="${_("Add Admin")}"
     >
@@ -199,6 +203,8 @@ from openedx.core.djangolib.markup import HTML, Text
         "They can make sure that the content works, but have no additional "
         "privileges. You can only give course team roles to enrolled users.")}"
       data-list-endpoint="${ section_data['list_course_role_members_url'] }"
+      data-update-cohort-assignment-url="${ section_data['update_cohort_assignment_url'] }"
+      data-is-cohort-enabled="${ section_data['is_cohort_enable'] }"
       data-modify-endpoint="${ section_data['modify_access_url'] }"
       data-add-button-label="${_("Add Beta Tester")}"
     ></div>

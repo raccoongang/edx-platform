@@ -6,6 +6,7 @@ from collections import defaultdict
 import datetime
 import logging
 import uuid
+import json
 
 import pytz
 from django.conf import settings
@@ -503,7 +504,9 @@ def _section_membership(course, access):
         'modify_access_url': reverse('modify_access', kwargs={'course_id': unicode(course_key)}),
         'list_forum_members_url': reverse('list_forum_members', kwargs={'course_id': unicode(course_key)}),
         'update_forum_role_membership_url': reverse('update_forum_role_membership', kwargs={'course_id': unicode(course_key)}),
-        'enrollment_role_choices': enrollment_role_choices
+        'enrollment_role_choices': enrollment_role_choices,
+        'update_cohort_assignment_url': reverse('update_cohort_assignment', kwargs={'course_id': unicode(course_key)}),
+        'is_cohort_enable': json.dumps(is_course_cohorted(course_key)),
     }
     return section_data
 
