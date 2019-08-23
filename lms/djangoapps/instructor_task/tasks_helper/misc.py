@@ -8,22 +8,21 @@ from collections import OrderedDict
 from datetime import datetime
 from time import time
 
+import unicodecsv
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files.storage import DefaultStorage
+from openassessment.data import OraAggregateData
 from pytz import UTC
 
-import unicodecsv
-from courseware.courses import get_course_with_access
 from instructor_analytics.basic import get_proctored_exam_results
 from instructor_analytics.csvs import format_dictlist
-from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
-from openassessment.data import OraAggregateData
 from openedx.core.djangoapps.course_groups.cohorts import add_user_to_cohort
 from openedx.core.djangoapps.course_groups.models import CourseUserGroup
 from survey.models import SurveyAnswer
 from util.file import UniversalNewlineIterator
 
+from .grade_utils import calculate_students_grades_report
 from .runner import TaskProgress
 from .utils import UPDATE_STATUS_FAILED, UPDATE_STATUS_SUCCEEDED, upload_csv_to_report_store
 
@@ -312,15 +311,6 @@ def upload_students_grades_data(
     Collect student grades and upload them to S3 as a CSV.
     """
 
-    headers = ['email', 'cohort']
-
-    students = User.objects.filter(
-        courseenrollment__course_id=course_id,
-        courseenrollment__is_active=1,
-    ).order_by('id').prefetch_related('course_groups')
-
-    output = list()
-
     # Log information
     start_date = datetime.now(UTC)
     start_time = time()
@@ -351,54 +341,7 @@ def upload_students_grades_data(
     task_progress.update_task_state(extra_meta=curr_step)
 
     try:
-        for student in students:
-            # Check student access
-            course = get_course_with_access(student, 'load', course_id, check_if_enrolled=True)
-
-            # Get students grade
-            course_grade = CourseGradeFactory().read(student, course)
-            courseware_summary = course_grade.chapter_grades.values()
-
-            # Add headers for csv report
-            if len(headers) == 2:
-                for chapter in courseware_summary:
-                    if chapter['sections']:
-                        for section in chapter['sections']:
-                            if section.problem_scores.values():
-                                headers += [
-                                    '{chapter} / {section} ({score})'.format(
-                                        chapter=chapter['display_name'],
-                                        section=section.display_name,
-                                        score=float(score.possible)
-                                    )
-                                    for score in section.problem_scores.values()]
-                            else:
-                                headers += [
-                                    '{chapter} / {section} (n/g)'.format(
-                                        chapter=chapter['display_name'],
-                                        section=section.display_name,
-                                    )
-                                ]
-                    else:
-                        headers += ['{} (n/g)'.format(chapter['display_name'])]
-
-                output.append(headers)
-
-            student_cohort = student.course_groups.first().name if student.course_groups.first() else '-'
-            rows = [student.email, student_cohort]
-
-            for chapter in courseware_summary:
-                if not chapter['display_name'] == "hidden":
-                    if chapter['sections']:
-                        for section in chapter['sections']:
-                            if section.problem_scores.values():
-                                rows += [float(score.earned) for score in section.problem_scores.values()]
-                            else:
-                                rows.append('-')
-                    else:
-                        rows.append('-')
-            output.append(rows)
-
+        output = calculate_students_grades_report(course_id)
     except Exception:
         TASK_LOG.exception('Failed to get students grades.')
         task_progress.failed = 1
