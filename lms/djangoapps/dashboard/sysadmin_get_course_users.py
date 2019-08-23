@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.contrib.auth.models import User
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
@@ -16,6 +17,7 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
 from courseware import models
 from ccx.utils import get_course_chapters
 
+log = logging.getLogger(__name__)
 
 """
 This module creates data for csv report with list of course users. Returns dictionary {'header':header, 'data':data}
@@ -38,12 +40,11 @@ def _find_course(course_key, courses):
     if course_key in courses:
         course = courses[course_key]
         return course
-    else:
-        try:
-            course = get_course_by_id(course_key)
-            return course
-        except Exception:   # pylint: disable=broad-except
-            return None
+    try:
+        course = get_course_by_id(course_key)
+        return course
+    except Exception:   # pylint: disable=broad-except
+        return None
 
 
 def _get_children(parent, course_ordered):
@@ -186,12 +187,17 @@ def get_report_data_for_course_users(courses, course_id):
     Returns:
         course_users: dictionary {'header':header, 'data':data}
     """
-    course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+    try:
+        course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+    except:
+        log.info('Cannot find course %s', course_id)
+        return None
+
     course = _find_course(course_key, courses)
 
     if course is None:
         log.info('Cannot find course %s', course_id)
-        raise Http404  # replace with sth
+        return None
 
     data = []
     enrolled_students = User.objects.filter(

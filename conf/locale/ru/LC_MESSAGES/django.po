@@ -13174,6 +13174,11 @@ msgstr "Загрузить новый курс с GitHub"
 msgid "Course ID or dir"
 msgstr "ID или каталог курса "
 
+#. Translators: 'dir' is short for 'directory'
+#: lms/templates/sysadmin_dashboard.html
+msgid "Field Course ID or dir filled incorrectly"
+msgstr "Неправильно заполнено поле 'ID или каталог курса'"
+
 #: lms/templates/sysadmin_dashboard.html
 msgid "Delete course from site"
 msgstr "Удалить курс с сайта"
