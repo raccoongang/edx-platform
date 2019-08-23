@@ -482,21 +482,25 @@ class Courses(SysadminDashboardView):
             self.msg += self.get_course_from_git(gitloc, branch)
 
         elif action == 'download_course_users':
+            msg_course_users = u''
             course_id = request.POST.get('course_id', '').strip()
             report_data = get_report_data_for_course_users(courses, course_id)
-            try:
-                return self.return_csv('users_{0}_{1}.csv'.format(
-                    request.META['SERVER_NAME'], course_id),
-                    report_data['header'],
-                    report_data['data']
-                )
-            except Exception, err:   # as e: log.error(e.message)?
-                self.msg += _(
-                    'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
-                ).format(
-                    course_id,
-                    escape(str(err))
-                )
+            if report_data == None:
+                msg_course_users += _('Field Course ID or dir filled incorrectly')
+            else:
+                try:
+                    return self.return_csv('users_{0}_{1}.csv'.format(
+                        request.META['SERVER_NAME'], course_id),
+                        report_data['header'],
+                        report_data['data']
+                    )
+                except Exception, err:   # as e: log.error(e.message)?
+                    self.msg += _(
+                        'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
+                    ).format(
+                        course_id,
+                        escape(str(err))
+                    )
 
         elif action == 'del_course':
             course_id = request.POST.get('course_id', '').strip()
@@ -540,6 +544,7 @@ class Courses(SysadminDashboardView):
         context = {
             'datatable': self.make_datatable(),
             'msg': self.msg,
+            'msg_course_users': msg_course_users,
             'djangopid': os.getpid(),
             'modeflag': {'courses': 'active-section'},
             'edx_platform_version': getattr(settings, 'EDX_PLATFORM_VERSION_STRING', ''),
