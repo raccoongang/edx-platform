@@ -22,6 +22,7 @@ from openedx.core.djangoapps.course_groups.models import CourseUserGroup
 from survey.models import SurveyAnswer
 from util.file import UniversalNewlineIterator
 
+from .grade_utils import calculate_students_grades_report
 from .runner import TaskProgress
 from .utils import UPDATE_STATUS_FAILED, UPDATE_STATUS_SUCCEEDED, upload_csv_to_report_store
 
@@ -297,6 +298,73 @@ def upload_ora2_data(
     upload_csv_to_report_store(rows, 'ORA_data', course_id, start_date)
 
     curr_step = {'step': 'Finalizing ORA data report'}
+    task_progress.update_task_state(extra_meta=curr_step)
+    TASK_LOG.info(u'%s, Task type: %s, Upload complete.', task_info_string, action_name)
+
+    return UPDATE_STATUS_SUCCEEDED
+
+
+def upload_students_grades_data(
+        _xmodule_instance_args, _entry_id, course_id, _task_input, action_name
+):
+    """
+    Collect student grades and upload them to S3 as a CSV.
+    """
+
+    # Log information
+    start_date = datetime.now(UTC)
+    start_time = time()
+
+    num_attempted = 1
+    num_total = 1
+
+    fmt = u'Task: {task_id}, InstructorTask ID: {entry_id}, Course: {course_id}, Input: {task_input}'
+    task_info_string = fmt.format(
+        task_id=_xmodule_instance_args.get('task_id') if _xmodule_instance_args is not None else None,
+        entry_id=_entry_id,
+        course_id=course_id,
+        task_input=_task_input
+    )
+    TASK_LOG.info(u'%s, Task type: %s, Starting task execution', task_info_string, action_name)
+
+    task_progress = TaskProgress(action_name, num_total, start_time)
+    task_progress.attempted = num_attempted
+
+    curr_step = {'step': "Collecting responses"}
+    TASK_LOG.info(
+        u'%s, Task type: %s, Current step: %s for all submissions',
+        task_info_string,
+        action_name,
+        curr_step,
+    )
+
+    task_progress.update_task_state(extra_meta=curr_step)
+
+    try:
+        output = calculate_students_grades_report(course_id)
+    except Exception:
+        TASK_LOG.exception('Failed to get students grades.')
+        task_progress.failed = 1
+        curr_step = {'step': "Error while collecting data"}
+
+        task_progress.update_task_state(extra_meta=curr_step)
+
+        return UPDATE_STATUS_FAILED
+
+    task_progress.succeeded = 1
+    curr_step = {'step': "Uploading CSV"}
+    TASK_LOG.info(
+        u'%s, Task type: %s, Current step: %s',
+        task_info_string,
+        action_name,
+        curr_step,
+    )
+    task_progress.update_task_state(extra_meta=curr_step)
+
+    # Generate csv
+    upload_csv_to_report_store(output, 'students_grade', course_id, start_date)
+
+    curr_step = {'step': 'Finalizing students grades data report'}
     task_progress.update_task_state(extra_meta=curr_step)
     TASK_LOG.info(u'%s, Task type: %s, Upload complete.', task_info_string, action_name)
 

@@ -2473,6 +2473,24 @@ def export_ora2_data(request, course_id):
 @cache_control(no_cache=True, no_store=True, must_revalidate=True)
 @require_level('staff')
 @common_exceptions_400
+def get_students_grades_data(request, course_id):
+    """
+    Pushes a Celery task which will aggregate students grades responses for a course into a .csv
+    """
+    course_key = CourseKey.from_string(course_id)
+    report_type = _('Students grades')
+    lms.djangoapps.instructor_task.api.submit_students_grades_data(request, course_key)
+    success_status = SUCCESS_MESSAGE_TEMPLATE.format(report_type=report_type)
+
+    return JsonResponse({"status": success_status})
+
+
+@transaction.non_atomic_requests
+@require_POST
+@ensure_csrf_cookie
+@cache_control(no_cache=True, no_store=True, must_revalidate=True)
+@require_level('staff')
+@common_exceptions_400
 def calculate_grades_csv(request, course_id):
     """
     AlreadyRunningError is raised if the course's grades are already being updated.

@@ -67,6 +67,7 @@ urlpatterns = [
     url(r'get_exec_summary_report$', api.get_exec_summary_report, name='get_exec_summary_report'),
     url(r'get_course_survey_results$', api.get_course_survey_results, name='get_course_survey_results'),
     url(r'export_ora2_data', api.export_ora2_data, name='export_ora2_data'),
+    url(r'get_students_grades_data', api.get_students_grades_data, name='get_students_grades_data'),
 
     # Coupon Codes..
     url(r'get_coupon_codes', api.get_coupon_codes, name='get_coupon_codes'),

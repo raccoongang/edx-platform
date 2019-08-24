@@ -19046,6 +19046,14 @@ msgid "The status for any active tasks appears in a table below."
 msgstr ""
 "Состояние всех активных процессов отображается в нижеприведённой таблице."
 
+#: lms/templates/instructor/instructor_dashboard_2/data_download.html
+msgid "Click to create a student assessment document in CSV format."
+msgstr "Нажмите, чтобы создать документ с оценками студентов в формате CSV."
+
+#: lms/templates/instructor/instructor_dashboard_2/data_download.html
+msgid "Download students grades"
+msgstr "Загрузить оценки студентов"
+
 #: lms/templates/instructor/instructor_dashboard_2/certificates.html
 msgid "Regenerate Certificates"
 msgstr "Повторно выдать сертификаты"

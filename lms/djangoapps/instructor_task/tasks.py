@@ -22,11 +22,11 @@ of the query for traversing StudentModule objects.
 import logging
 from functools import partial
 
-from celery import task
 from django.conf import settings
 from django.utils.translation import ugettext_noop
 
 from bulk_email.tasks import perform_delegate_email_batches
+from celery import task
 from lms.djangoapps.instructor_task.tasks_base import BaseInstructorTask
 from lms.djangoapps.instructor_task.tasks_helper.certs import generate_students_certificates
 from lms.djangoapps.instructor_task.tasks_helper.enrollments import (
@@ -40,14 +40,15 @@ from lms.djangoapps.instructor_task.tasks_helper.misc import (
     cohort_students_and_upload,
     upload_course_survey_report,
     upload_ora2_data,
-    upload_proctored_exam_results_report
+    upload_proctored_exam_results_report,
+    upload_students_grades_data,
 )
 from lms.djangoapps.instructor_task.tasks_helper.module_state import (
     delete_problem_module_state,
-    perform_module_state_update,
     override_score_module_state,
+    perform_module_state_update,
     rescore_problem_module_state,
-    reset_attempts_module_state
+    reset_attempts_module_state,
 )
 from lms.djangoapps.instructor_task.tasks_helper.runner import run_main_task
 
@@ -311,4 +312,14 @@ def export_ora2_data(entry_id, xmodule_instance_args):
     """
     action_name = ugettext_noop('generated')
     task_fn = partial(upload_ora2_data, xmodule_instance_args)
+    return run_main_task(entry_id, task_fn, action_name)
+
+
+@task(base=BaseInstructorTask)  # pylint: disable=not-callable
+def export_students_grades_data(entry_id, xmodule_instance_args):
+    """
+    Generate a CSV of students grades responses and push it to S3.
+    """
+    action_name = ugettext_noop('generated')
+    task_fn = partial(upload_students_grades_data, xmodule_instance_args)
     return run_main_task(entry_id, task_fn, action_name)

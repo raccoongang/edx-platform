@@ -32,6 +32,10 @@ from openedx.core.djangolib.markup import HTML, Text
 
     <p><input type="button" name="list-profiles-csv" value="${_("Download profile information as a CSV")}" data-endpoint="${ section_data['get_students_features_url'] }" data-csv="true"></p>
 
+    <p>${_("Click to create a student assessment document in CSV format.")}</p>
+
+    <p><input type="button" name="list-students-grades-csv" value="${_("Download students grades")}" data-endpoint="${ section_data['get_students_grades_data_url'] }" data-csv="true"></p>
+
     <p>${_("Click to generate a CSV file that lists learners who can enroll in the course but have not yet done so.")}</p>
 
     <p><input type="button" name="list-may-enroll-csv" value="${_("Download a CSV of learners who can enroll")}" data-endpoint="${ section_data['get_students_who_may_enroll_url'] }" data-csv="true"></p>
