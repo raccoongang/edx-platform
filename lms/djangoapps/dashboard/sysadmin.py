@@ -468,6 +468,8 @@ class Courses(SysadminDashboardView):
     def post(self, request):
         """Handle all actions from courses view"""
 
+        msg_course_users = u''
+
         if not request.user.is_staff:
             raise Http404
 
@@ -482,7 +484,6 @@ class Courses(SysadminDashboardView):
             self.msg += self.get_course_from_git(gitloc, branch)
 
         elif action == 'download_course_users':
-            msg_course_users = u''
             course_id = request.POST.get('course_id', '').strip()
             report_data = get_report_data_for_course_users(courses, course_id)
             if report_data == None:

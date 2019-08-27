@@ -4,7 +4,7 @@ import logging
 from django.contrib.auth.models import User
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from django.utils.translation import ugettext as _
-
+from django.utils.timezone import localtime, activate, deactivate
 
 from courseware.courses import get_course_by_id
 from openedx.core.djangoapps.content.course_structures.models import CourseStructure
@@ -194,6 +194,8 @@ def get_report_data_for_course_users(courses, course_id):
         return None
 
     course = _find_course(course_key, courses)
+    # for localizing report timezone
+    activate('Europe/Kiev')
 
     if course is None:
         log.info('Cannot find course %s', course_id)
@@ -268,12 +270,13 @@ def get_report_data_for_course_users(courses, course_id):
                         break
                 status_list.append(status)
         # some default users could be without last_login, so:
-        try:
-            last_login = u.last_login.strftime('%Y-%m-%d %H:%M')
-        except Exception:
+        if u.last_login is None:
             last_login = '-'
+        else:
+            last_login = localtime(u.last_login).strftime('%Y-%m-%d %H:%M')
+
         d = [
-            u.profile.name, u.email, u.date_joined.strftime('%Y-%m-%d %H:%M'), enroll_names, last_login, last_visit,
+            u.profile.name, u.email, localtime(u.date_joined).strftime('%Y-%m-%d %H:%M'), enroll_names, last_login, last_visit,
         ] + status_list
         data.append(d)
         # Counting visits for every course lesson (vertical)
@@ -292,4 +295,5 @@ def get_report_data_for_course_users(courses, course_id):
         'header': header,
         'data': data,
     }
+    deactivate()
     return course_users
