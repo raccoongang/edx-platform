@@ -35,6 +35,7 @@ setup(
             "teams = lms.djangoapps.teams.plugins:TeamsTab",
             "textbooks = lms.djangoapps.courseware.tabs:TextbookTabs",
             "wiki = lms.djangoapps.course_wiki.tab:WikiTab",
+            "cohort_management_dashboard = lms.djangoapps.cohort_management_dashboard.tab:CohortManagementDashboardTab",
         ],
         "openedx.course_tool": [
             "course_bookmarks = openedx.features.course_bookmarks.plugins:CourseBookmarksTool",
@@ -76,6 +77,7 @@ setup(
             "zendesk_proxy = openedx.core.djangoapps.zendesk_proxy.apps:ZendeskProxyConfig",
             "instructor = lms.djangoapps.instructor.apps:InstructorConfig",
             "password_policy = openedx.core.djangoapps.password_policy.apps:PasswordPolicyConfig",
+            "cohort_management_dashboard = lms.djangoapps.cohort_management_dashboard.apps:CohortManagementDashboardApp",
         ],
         "cms.djangoapp": [
             "ace_common = openedx.core.djangoapps.ace_common.apps:AceCommonConfig",

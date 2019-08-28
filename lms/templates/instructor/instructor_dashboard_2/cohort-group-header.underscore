@@ -1,13 +1,15 @@
-<h3 class="hd hd-3 group-header-title" tabindex="-1">
-    <span class="title-value"><%- cohort.get('name') %></span>
-    <span class="group-count"><%-
-        interpolate(
-            ngettext('(contains %(student_count)s student)', '(contains %(student_count)s students)', cohort.get('user_count')),
-            { student_count: cohort.get('user_count') },
-            true
-        )
-    %></span>
-</h3>
+<a href="<%- cohortDashboardUrl %>">
+    <h3 class="hd hd-3 group-header-title" tabindex="-1">
+        <span class="title-value"><%- cohort.get('name') %></span>
+        <span class="group-count"><%-
+            interpolate(
+                ngettext('(contains %(student_count)s student)', '(contains %(student_count)s students)', cohort.get('user_count')),
+                { student_count: cohort.get('user_count') },
+                true
+            )
+        %></span>
+    </h3>
+</a>
 <div class="cohort-management-group-setup">
     <div class="setup-value">
         <% if (cohort.get('assignment_type') == "manual") { %>
