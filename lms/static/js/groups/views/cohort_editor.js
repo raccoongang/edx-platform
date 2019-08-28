@@ -19,6 +19,10 @@
                     this.cohorts = options.cohorts;
                     this.contentGroups = options.contentGroups;
                     this.context = options.context;
+                    this.dashboardUrl = this.context.cohortDashboardUrl.replace(
+                        this.context.cohortIdStub,
+                        this.model.id
+                    );
                 },
 
                 // Any errors that are currently being displayed to the instructor (for example, unknown email addresses).
@@ -45,7 +49,8 @@
 
                 renderGroupHeader: function() {
                     this.$('.cohort-management-group-header').html(this.groupHeaderTemplate({
-                        cohort: this.model
+                        cohort: this.model,
+                        cohortDashboardUrl: this.dashboardUrl,
                     }));
                 },
 

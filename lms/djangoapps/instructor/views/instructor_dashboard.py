@@ -515,6 +515,7 @@ def _section_cohort_management(course, access):
     """ Provide data for the corresponding cohort management section """
     course_key = course.id
     ccx_enabled = hasattr(course_key, 'ccx')
+    cohort_id_stub = 123123123
     section_data = {
         'section_key': 'cohort_management',
         'section_display_name': _('Cohorts'),
@@ -529,6 +530,11 @@ def _section_cohort_management(course, access):
         'verified_track_cohorting_url': reverse(
             'verified_track_cohorting', kwargs={'course_key_string': unicode(course_key)}
         ),
+        'cohort_id_stub': cohort_id_stub,
+        'cohort_dashboard_url': reverse(
+                'cohort_management_dashboard:dashboard_with_cohort',
+                kwargs={'course_id': unicode(course_key), 'cohort_id': cohort_id_stub}
+            ),
     }
     return section_data
 
