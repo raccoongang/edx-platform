@@ -515,7 +515,7 @@ class Courses(SysadminDashboardView):
                     try:
                         course = get_course_by_id(course_key)
                         course_found = True
-                    except Http404 as err:   # pylint: disable=broad-except
+                    except Http404 as err:
                         self.msg += _('Error - cannot get course with ID {0}<br/><pre>{1}</pre>').format(
                             course_key, escape(str(err))
                         )
