@@ -33,7 +33,7 @@ from .. import LATEST_UPDATE_FLAG, SHOW_UPGRADE_MSG_ON_COURSE_HOME, USE_BOOTSTRA
 from ..utils import get_course_outline_block_tree, get_resume_block
 from .course_dates import CourseDatesFragmentView
 from .course_home_messages import CourseHomeMessageFragmentView
-from .course_outline import CourseOutlineFragmentView
+from .course_outline import CourseOutlineFragmentView, SelectionPageOutlineFragmentView
 from .course_sock import CourseSockFragmentView
 from .latest_update import LatestUpdateFragmentView
 from .welcome_message import WelcomeMessageFragmentView
@@ -121,7 +121,8 @@ class CourseHomeFragmentView(EdxFragmentView):
             'is_staff': has_access(request.user, 'staff', course_key),
         }
         if user_access['is_enrolled'] or user_access['is_staff']:
-            outline_fragment = CourseOutlineFragmentView().render_to_fragment(request, course_id=course_id, **kwargs)
+            outline_fragment_view = getattr(self, 'outline_fragment_view', CourseOutlineFragmentView)
+            outline_fragment = outline_fragment_view().render_to_fragment(request, course_id=course_id, **kwargs)
             if LATEST_UPDATE_FLAG.is_enabled(course_key):
                 update_message_fragment = LatestUpdateFragmentView().render_to_fragment(
                     request, course_id=course_id, **kwargs
@@ -202,3 +203,18 @@ class CourseHomeFragmentView(EdxFragmentView):
         }
         html = render_to_string('course_experience/course-home-fragment.html', context)
         return Fragment(html)
+
+
+class SelectionPageFragmentView(CourseHomeFragmentView):
+    outline_fragment_view = SelectionPageOutlineFragmentView
+
+
+class SelectionPageView(CourseHomeView):
+    """
+    The home page for the first two lessons
+    """
+
+    def render_to_fragment(self, request, course=None, tab=None, **kwargs):
+        course_id = unicode(course.id)
+        home_fragment_view = SelectionPageFragmentView()
+        return home_fragment_view.render_to_fragment(request, course_id=course_id, **kwargs)

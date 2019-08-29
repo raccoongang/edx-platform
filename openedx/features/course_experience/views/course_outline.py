@@ -26,6 +26,7 @@ DEFAULT_COMPLETION_TRACKING_START = datetime.datetime(2018, 1, 24, tzinfo=UTC)
 
 
 class CourseOutlineFragmentView(EdxFragmentView):
+
     """
     Course outline fragment to be shown in the unified course view.
     """
@@ -136,3 +137,37 @@ class CourseOutlineFragmentView(EdxFragmentView):
         if children:
             children[0]['resume_block'] = True
             self.mark_first_unit_to_resume(children[0])
+
+class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
+
+    def render_to_fragment(self, request, course_id=None, page_context=None, **kwargs):
+        """
+        Renders the course outline as a fragment.
+        """
+        course_key = CourseKey.from_string(course_id)
+        course_overview = get_course_overview_with_access(request.user, 'load', course_key, check_if_enrolled=True)
+        course = modulestore().get_course(course_key)
+
+        course_block_tree = get_course_outline_block_tree(request, course_id)
+        if not course_block_tree:
+            return None
+
+        context = {
+            'csrf': csrf(request)['csrf_token'],
+            'course': course_overview,
+            'due_date_display_format': course.due_date_display_format,
+            'blocks': course_block_tree
+        }
+
+        resume_block = get_resume_block(course_block_tree)
+        if not resume_block:
+            self.mark_first_unit_to_resume(course_block_tree)
+
+        xblock_display_names = self.create_xblock_id_and_name_dict(course_block_tree)
+        gated_content = self.get_content_milestones(request, course_key)
+
+        context['gated_content'] = gated_content
+        context['xblock_display_names'] = xblock_display_names
+
+        html = render_to_string('course_experience/course-lessons-outline-fragment.html', context)
+        return Fragment(html)

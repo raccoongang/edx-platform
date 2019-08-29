@@ -5,7 +5,7 @@ Defines URLs for the course experience.
 from django.conf.urls import url
 
 from .views.course_dates import CourseDatesFragmentMobileView
-from .views.course_home import CourseHomeFragmentView, CourseHomeView
+from .views.course_home import CourseHomeFragmentView, CourseHomeView, SelectionPageView
 from .views.course_outline import CourseOutlineFragmentView
 from .views.course_reviews import CourseReviewsView
 from .views.course_updates import CourseUpdatesFragmentView, CourseUpdatesView
@@ -68,5 +68,11 @@ urlpatterns = [
         r'^mobile_dates_fragment',
         CourseDatesFragmentMobileView.as_view(),
         name='openedx.course_experience.mobile_dates_fragment_view',
+    ),
+    url(
+        r'^selection_page',
+        SelectionPageView.as_view(),
+        # CourseLessonsHomeView.as_view(),
+        name='openedx.selection_page',
     ),
 ]
