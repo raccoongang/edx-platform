@@ -989,7 +989,7 @@ def list_course_role_members(request, course_id):
         if course_cohort is not None and rolename == 'staff':
             assigment_checker = models.Case(
                 models.When(
-                    cohortassigment__in=CohortAssigment.objects.filter(user=user).all() ,then=models.Value(True)
+                    cohortassigment__in=CohortAssigment.objects.filter(user=user) ,then=models.Value(True)
                 ),
                 default=models.Value(False),
                 output_field=models.BooleanField()
