@@ -4,6 +4,7 @@ Provide tests for sysadmin dashboard feature in sysadmin.py
 import glob
 import shutil
 import unittest
+from mock import Mock
 from datetime import datetime
 from uuid import uuid4
 
@@ -16,6 +17,7 @@ from django.core.urlresolvers import reverse
 from django.test.client import Client
 from django.test.utils import override_settings
 from django.utils.timezone import utc as UTC
+from django.utils import timezone
 from nose.plugins.attrib import attr
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from xmodule.modulestore.django import modulestore
@@ -25,6 +27,7 @@ from xmodule.modulestore.tests.mongo_connection import MONGO_HOST, MONGO_PORT_NU
 from dashboard.git_import import GitImportErrorNoDir
 from dashboard.models import CourseImportLog
 from dashboard.sysadmin import Users
+from dashboard.sysadmin_get_course_users import get_report_data_for_course_users
 from student.roles import CourseStaffRole, GlobalStaff
 from student.tests.factories import UserFactory
 from util.date_utils import DEFAULT_DATE_TIME_FORMAT, get_time_display
@@ -437,3 +440,28 @@ class TestUserCreation(SysadminBaseTestCase):
             'This email already taken',
             users_api.create_user(**data)
         )
+
+
+@unittest.skipUnless(settings.FEATURES.get('ENABLE_SYSADMIN_DASHBOARD'),
+                     "ENABLE_SYSADMIN_DASHBOARD not set")
+class TestCourseUsersReport(SysadminBaseTestCase):
+    '''
+    Test creation of course users report
+    '''
+
+    def test_report_creation_through_request(self):
+        """
+        Test creation of course users report through the post request.
+        """
+        tz_default = timezone.get_default_timezone()
+        tz_before = timezone.get_current_timezone()
+
+        courses = Mock()
+        course_id = Mock()
+
+        get_report_data_for_course_users(courses, course_id)
+
+        tz_after = timezone.get_current_timezone()
+
+        self.assertEqual(tz_before, tz_default)
+        self.assertEqual(tz_before, tz_after)
