@@ -27,6 +27,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import condition
 from django.views.generic.base import TemplateView
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
+from opaque_keys import InvalidKeyError
 from path import Path as path
 from .sysadmin_get_course_users import get_report_data_for_course_users
 
@@ -42,7 +43,6 @@ from student.models import CourseEnrollment, Registration, UserProfile
 from student.roles import CourseInstructorRole, CourseStaffRole
 from xmodule.modulestore.django import modulestore
 from search.search_engine_base import SearchEngine
-from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 log = logging.getLogger(__name__)
@@ -484,7 +484,7 @@ class Courses(SysadminDashboardView):
             self.msg += self.get_course_from_git(gitloc, branch)
 
         elif action == 'download_course_users':
-            course_id = request.POST.get('course_id', '').strip()
+            course_id = request.POST.get('course_id_or_dir', '').strip()
             report_data = get_report_data_for_course_users(courses, course_id)
             if report_data == None:
                 msg_course_users += _('Field Course ID or dir filled incorrectly')
@@ -495,52 +495,50 @@ class Courses(SysadminDashboardView):
                         report_data['header'],
                         report_data['data']
                     )
-                except Exception, err:   # as e: log.error(e.message)?
-                    self.msg += _(
-                        'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
-                    ).format(
-                        course_id,
-                        escape(str(err))
+                except Exception as err:
+                    self.msg += _('Error - cannot get course with ID {0}<br/><pre>{1}</pre>').format(
+                        course_id, escape(str(err))
                     )
 
         elif action == 'del_course':
             course_id = request.POST.get('course_id', '').strip()
-            course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
-            course_found = False
-            if course_key in courses:
-                course_found = True
-                course = courses[course_key]
+            try:
+                course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+            except InvalidKeyError as e:
+                self.msg += _('Field Course ID or dir filled incorrectly')
             else:
-                try:
-                    course = get_course_by_id(course_key)
+                course_found = False
+                if course_key in courses:
                     course_found = True
-                except Exception, err:   # pylint: disable=broad-except
-                    self.msg += _(
-                        'Error - cannot get course with ID {0}<br/><pre>{1}</pre>'
-                    ).format(
-                        course_key,
-                        escape(str(err))
-                    )
+                    course = courses[course_key]
+                else:
+                    try:
+                        course = get_course_by_id(course_key)
+                        course_found = True
+                    except Http404 as err:
+                        self.msg += _('Error - cannot get course with ID {0}<br/><pre>{1}</pre>').format(
+                            course_key, escape(str(err))
+                        )
 
-            if course_found:
-                # delete course that is stored with mongodb backend
-                self.def_ms.delete_course(course.id, request.user.id)
+                if course_found:
+                    # delete course that is stored with mongodb backend
+                    self.def_ms.delete_course(course.id, request.user.id)
 
-                # delete search index
-                try:
-                    response = self._searcher.search(doc_type="courseware_content", field_dictionary={'course': course_id})
-                    result_ids = [result["data"]["id"] for result in response["results"]]
-                    self._searcher.remove('courseware_content', result_ids)
-                    self._searcher.remove('course_info', [course_id])
-                except Exception as e:  # pragma: no cover
-                    log.error(e.message)
+                    # delete search index
+                    try:
+                        response = self._searcher.search(doc_type="courseware_content", field_dictionary={'course': course_id})
+                        result_ids = [result["data"]["id"] for result in response["results"]]
+                        self._searcher.remove('courseware_content', result_ids)
+                        self._searcher.remove('course_info', [course_id])
+                    except Exception as e:  # pragma: no cover
+                        log.error(e.message)
 
-                CourseOverview.objects.filter(id=course.id).delete()
+                    CourseOverview.objects.filter(id=course.id).delete()
 
-                # don't delete user permission groups, though
-                self.msg += \
-                    u"<font color='red'>{0} {1} = {2} ({3})</font>".format(
-                        _('Deleted'), course.location.to_deprecated_string(), course.id.to_deprecated_string(), course.display_name)
+                    # don't delete user permission groups, though
+                    self.msg += \
+                        u"<font color='red'>{0} {1} = {2} ({3})</font>".format(
+                            _('Deleted'), course.location.to_deprecated_string(), course.id.to_deprecated_string(), course.display_name)
 
         context = {
             'datatable': self.make_datatable(),
