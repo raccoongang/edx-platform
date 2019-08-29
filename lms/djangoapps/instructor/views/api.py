@@ -25,6 +25,7 @@ from django.core.exceptions import (
     ValidationError
 )
 from django.core.mail.message import EmailMessage
+from django.db.models import Sum
 from django.urls import reverse
 from django.core.validators import validate_email
 from django.db import IntegrityError, models, transaction
@@ -987,16 +988,16 @@ def list_course_role_members(request, course_id):
         }
         if course_cohort is not None and rolename == 'staff':
             assigment_checker = models.Case(
-                models.When(cohort_mangers__contains=request.user.id,then=models.Value(True)),
+                models.When(
+                    cohortassigment__in=CohortAssigment.objects.filter(user=user).all() ,then=models.Value(True)
+                ),
                 default=models.Value(False),
                 output_field=models.BooleanField()
             )
             result['cohorts_assignment'] = list(
                 course_cohort
-                    .annotate(cohort_mangers=models.F('cohortassigment__user'))
-                    .annotate(is_assignment=assigment_checker)
                     .order_by('name')
-                    .distinct()
+                    .annotate(is_assignment=Sum(assigment_checker))
                     .values('id', 'name', 'is_assignment')
             )
         return result
