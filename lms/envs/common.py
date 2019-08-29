@@ -1855,7 +1855,8 @@ REQUIRE_JS_PATH_OVERRIDES = {
     'js/groups/views/cohorts_dashboard_factory': 'js/groups/views/cohorts_dashboard_factory.js',
     'js/groups/discussions_management/discussions_dashboard_factory': 'js/discussions_management/views/discussions_dashboard_factory.js',
     'draggabilly': 'js/vendor/draggabilly.js',
-    'hls': 'common/js/vendor/hls.js'
+    'hls': 'common/js/vendor/hls.js',
+    'cohort_management_dashboard/js/index': 'cohort_management_dashboard/js/index.js',
 }
 
 ########################## DJANGO WEBPACK LOADER ##############################
