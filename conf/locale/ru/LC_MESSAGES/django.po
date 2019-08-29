@@ -27188,3 +27188,8 @@ msgid ""
 "A new revision was created: Merge between Revision #%(r1)d and Revision "
 "#%(r2)d"
 msgstr "Создана новая версия: слияние версий #%(r1)d и #%(r2)d"
+
+#: lms/djangoapps/cohort_management_dashboard/tab.py
+msgid "Cohort Management Dashboard"
+msgstr "Панель Управления Когортами"
+

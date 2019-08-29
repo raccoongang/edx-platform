@@ -58,8 +58,8 @@ dump_js_escaped_json, js_escaped_string
 <%block name="js_extra">
 
 
-<%static:require_module module_name="cohort_management_dashboard/js/index" class_name="CohortManagement">
-new CohortManagement({
+<%static:require_module_async module_name="cohort_management_dashboard/js/index" class_name="CohortManagement">
+CohortManagement({
     courseID: '${unicode(course.id) | n, js_escaped_string}',
     'cohorts_url': '${cohorts_url}',
     'list_cohort_url':'${list_cohort_url}',
@@ -70,6 +70,6 @@ new CohortManagement({
     'empty_user_list_redirect':'${empty_user_list_redirect}',
     'self_page_url':'${self_page_url}',
 });
-</%static:require_module>
+</%static:require_module_async>
 
 </%block>
