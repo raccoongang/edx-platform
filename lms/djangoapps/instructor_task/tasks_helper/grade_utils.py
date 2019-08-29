@@ -60,7 +60,7 @@ def calculate_students_grades_report(course_id):
 
             output.append(headers)
 
-        student_cohort = student.course_groups.first().name if student.course_groups.first() else '-'
+        student_cohort = student.course_groups.last().name if student.course_groups.last() else '-'
         rows = [student.email, student_cohort]
 
         for chapter in courseware_summary:
