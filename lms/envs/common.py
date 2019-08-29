@@ -3480,6 +3480,13 @@ FERNET_KEYS = [
 # Maximum number of rows to fetch in XBlockUserStateClient calls. Adjust for performance
 USER_STATE_BATCH_SIZE = 5000
 
+
+### This enables RG Gamification plugin ##############
+if FEATURES.get('RG_GAMIFICATION', {}).get('ENABLED'):
+    # We should place bridge like this due to the apps ordering
+    INSTALLED_APPS.insert(0, 'gamma_bridge')
+
+
 ############## Plugin Django Apps #########################
 
 from openedx.core.djangoapps.plugins import plugin_apps, plugin_settings, constants as plugin_constants

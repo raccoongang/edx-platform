@@ -55,3 +55,6 @@
 # Info pages requirements
 django-tinymce==2.8.0
 django-hvad==1.8.0
+
+# Gamification
+-e git+https://github.com/cmltaWt0/edx-gamma-bridge.git@master#egg=gamma-bridge==0.0.1

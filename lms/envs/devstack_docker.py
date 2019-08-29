@@ -79,3 +79,20 @@ COURSE_CATALOG_API_URL = 'http://edx.devstack.discovery:18381/api/v1/'
 # Uncomment the lines below if you'd like to see SQL statements in your devstack LMS log.
 # LOGGING['handlers']['console']['level'] = 'DEBUG'
 # LOGGING['loggers']['django.db.backends'] = {'handlers': ['console'], 'level': 'DEBUG', 'propagate': False}
+
+
+FEATURES.update({
+    "RG_GAMIFICATION": {
+        "ENABLED": True,
+        "RG_GAMIFICATION_ENDPOINT": "",
+        "KEY": "key",
+        "SECRET": "secret",
+        "IGNORED_EVENT_TYPES": []
+    }
+})
+
+
+### This enables RG Gamification plugin ##############
+if FEATURES.get('RG_GAMIFICATION', {}).get('ENABLED'):
+    # We should place bridge like this due to the apps ordering
+    INSTALLED_APPS.insert(0, 'gamma_bridge')

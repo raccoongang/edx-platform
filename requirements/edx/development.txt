@@ -375,3 +375,4 @@ zope.interface==4.6.0
 -e git+https://github.com/raccoongang/RecommenderXBlock.git@v1.4.1#egg=recommender-xblock==1.4.1
 django-tinymce==2.8.0
 django-hvad==1.8.0
+-e git+https://github.com/cmltaWt0/edx-gamma-bridge.git@master#egg=gamma-bridge==0.0.1
