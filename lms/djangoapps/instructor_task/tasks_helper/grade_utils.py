@@ -42,7 +42,7 @@ def calculate_students_grades_report(course_id):
                     for section in chapter['sections']:
                         if section.problem_scores.values():
                             headers += [
-                                '{chapter} / {section} ({score})'.format(
+                                u'{chapter} / {section} ({score})'.format(
                                     chapter=chapter['display_name'],
                                     section=section.display_name,
                                     score=float(score.possible)
@@ -50,13 +50,13 @@ def calculate_students_grades_report(course_id):
                                 for score in section.problem_scores.values()]
                         else:
                             headers += [
-                                '{chapter} / {section} (n/g)'.format(
+                                u'{chapter} / {section} (n/g)'.format(
                                     chapter=chapter['display_name'],
                                     section=section.display_name,
                                 )
                             ]
                 else:
-                    headers += ['{} (n/g)'.format(chapter['display_name'])]
+                    headers += [u'{} (n/g)'.format(chapter['display_name'])]
 
             output.append(headers)
 
