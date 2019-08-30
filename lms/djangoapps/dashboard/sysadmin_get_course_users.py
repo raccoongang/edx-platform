@@ -1,9 +1,10 @@
 import json
+import logging
 
 from django.contrib.auth.models import User
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from django.utils.translation import ugettext as _
-
+from django.utils.timezone import localtime, activate, deactivate
 
 from courseware.courses import get_course_by_id
 from openedx.core.djangoapps.content.course_structures.models import CourseStructure
@@ -16,6 +17,7 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
 from courseware import models
 from ccx.utils import get_course_chapters
 
+log = logging.getLogger(__name__)
 
 """
 This module creates data for csv report with list of course users. Returns dictionary {'header':header, 'data':data}
@@ -38,12 +40,11 @@ def _find_course(course_key, courses):
     if course_key in courses:
         course = courses[course_key]
         return course
-    else:
-        try:
-            course = get_course_by_id(course_key)
-            return course
-        except Exception:   # pylint: disable=broad-except
-            return None
+    try:
+        course = get_course_by_id(course_key)
+        return course
+    except Exception:   # pylint: disable=broad-except
+        return None
 
 
 def _get_children(parent, course_ordered):
@@ -186,12 +187,19 @@ def get_report_data_for_course_users(courses, course_id):
     Returns:
         course_users: dictionary {'header':header, 'data':data}
     """
-    course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+    try:
+        course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
+    except:
+        log.info('Cannot find course %s', course_id)
+        return None
+
     course = _find_course(course_key, courses)
+    # for localizing report timezone
+    activate('Europe/Kiev')
 
     if course is None:
-        message = 'Error - cannot get course with ID {}'.format(course_key)
-        return message
+        log.info('Cannot find course %s', course_id)
+        return None
 
     data = []
     enrolled_students = User.objects.filter(
@@ -215,7 +223,7 @@ def get_report_data_for_course_users(courses, course_id):
     # getting vertical (unit) names
     unit_names = [course_ordered[v].get('display_name') for v in verticals]
 
-    header = [_('username'), _('email'), _('registration date'), _('enrolled courses'), ('last login'), 'last visit', ]
+    header = ['username', 'email', 'registration date', 'enrolled courses', 'last login', 'last visit', ]
 
     # preparing list for counting visits for course units (last row in the table)
     visit_count = ['', '', '', '', '', 'Visits:', ]
@@ -262,12 +270,13 @@ def get_report_data_for_course_users(courses, course_id):
                         break
                 status_list.append(status)
         # some default users could be without last_login, so:
-        try:
-            last_login = u.last_login.strftime('%Y-%m-%d %H:%M')
-        except Exception:
+        if u.last_login is None:
             last_login = '-'
+        else:
+            last_login = localtime(u.last_login).strftime('%Y-%m-%d %H:%M')
+
         d = [
-            u.profile.name, u.email, u.date_joined.strftime('%Y-%m-%d %H:%M'), enroll_names, last_login, last_visit,
+            u.profile.name, u.email, localtime(u.date_joined).strftime('%Y-%m-%d %H:%M'), enroll_names, last_login, last_visit,
         ] + status_list
         data.append(d)
         # Counting visits for every course lesson (vertical)
@@ -286,4 +295,5 @@ def get_report_data_for_course_users(courses, course_id):
         'header': header,
         'data': data,
     }
+    deactivate()
     return course_users

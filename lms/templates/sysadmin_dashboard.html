@@ -164,11 +164,14 @@ textarea {
   <hr />
   <ul class="list-input">
 	<li class="field text">
-	  <label for="course_id">
-	        ## Translators: 'dir' is short for 'directory'
+	  <label for="course_id_or_dir">
+		## Translators: 'dir' is short for 'directory'
 		${_('Course ID or dir')}:
+		%if msg_course_users:
+			<span style="color:red">${msg_course_users}</span>
+		%endif
 	  </label>
-	  <input type="text" name="course_id" style="width:60%" />
+	  <input type="text" name="course_id_or_dir" style="width:60%" />
 	</li>
   </ul>
   <div class="form-actions">
