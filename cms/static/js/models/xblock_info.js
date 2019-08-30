@@ -115,6 +115,8 @@ function(Backbone, _, str, ModuleUtils) {
              * True iff this xblock is explicitly staff locked.
              */
             has_explicit_staff_lock: null,
+
+            unit_level: "middle",
             /**
              * True iff this any of this xblock's ancestors are staff locked.
              */

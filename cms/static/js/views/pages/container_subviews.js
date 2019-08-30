@@ -146,6 +146,7 @@ define(['jquery', 'underscore', 'gettext', 'js/views/baseview', 'common/js/compo
                             releaseDate: this.model.get('release_date'),
                             releaseDateFrom: this.model.get('release_date_from'),
                             hasExplicitStaffLock: this.model.get('has_explicit_staff_lock'),
+                            unitLevel: this.model.get('unit_level'),
                             staffLockFrom: this.model.get('staff_lock_from'),
                             course: window.course,
                             HtmlUtils: HtmlUtils

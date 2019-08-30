@@ -51,6 +51,12 @@ class InheritanceMixin(XBlockMixin):
         default=False,
         scope=Scope.settings,
     )
+
+    unit_level = String(
+        display_name="The difficulty level of the unit",
+        default="middle",
+        scope=Scope.settings
+    )
     course_edit_method = String(
         display_name=_("Course Editor"),
         help=_("Enter the method by which this course is edited (\"XML\" or \"Studio\")."),

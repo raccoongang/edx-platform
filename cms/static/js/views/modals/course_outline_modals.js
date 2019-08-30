@@ -681,6 +681,10 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
             return this.model.get('has_explicit_staff_lock');
         },
 
+        getUnitLevel: function() {
+            return this.model.get('unit_level');
+        },
+
         isAncestorLocked: function() {
             return this.model.get('ancestor_has_staff_lock');
         },
@@ -699,18 +703,32 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
         afterRender: function() {
             AbstractVisibilityEditor.prototype.afterRender.call(this);
             this.setLock(this.isModelLocked());
+            this.setLevel(this.getUnitLevel());
         },
 
         setLock: function(value) {
             this.$('#staff_lock').prop('checked', value);
         },
 
+        setLevel: function(value) {
+            var that = this;
+            this.$('#unit_level option').each(function(index, el) {
+                if (el.value === value) {
+                    that.$(el).prop('selected', 'selected');
+                }
+            });
+        },
+
         isLocked: function() {
             return this.$('#staff_lock').is(':checked');
         },
 
+        currentUnitLevel: function() {
+            return this.$('#unit_level').val();
+        },
+
         hasChanges: function() {
-            return this.isModelLocked() !== this.isLocked();
+            return this.isModelLocked() !== this.isLocked() || this.getUnitLevel() !== this.currentUnitLevel();
         },
 
         getRequestData: function() {
@@ -718,7 +736,8 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
                 return {
                     publish: 'republish',
                     metadata: {
-                        visible_to_staff_only: this.isLocked() ? true : null
+                        visible_to_staff_only: this.isLocked() ? true : null,
+                        unit_level: this.$('#unit_level').val()
                     }
                 };
             } else {

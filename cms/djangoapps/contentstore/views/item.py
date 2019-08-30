@@ -1183,6 +1183,7 @@ def create_xblock_info(xblock, data=None, metadata=None, include_ancestor_info=F
             'release_date': release_date,
             'visibility_state': visibility_state,
             'has_explicit_staff_lock': xblock.fields['visible_to_staff_only'].is_set_on(xblock),
+            'unit_level': xblock.unit_level,
             'start': xblock.fields['start'].to_json(xblock.start),
             'graded': xblock.graded,
             'due_date': get_default_time_display(xblock.due),
