@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db.models.base import ObjectDoesNotExist
 
 from courseware.courses import get_course_with_access
 from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
@@ -59,8 +60,11 @@ def calculate_students_grades_report(course_id):
                     headers += [u'{} (n/g)'.format(chapter['display_name'])]
 
             output.append(headers)
+        try:
+            student_cohort = student.course_groups.get(course_id=course_id).name
+        except ObjectDoesNotExist:
+            student_cohort = ''
 
-        student_cohort = student.course_groups.last().name if student.course_groups.last() else '-'
         rows = [student.email, student_cohort]
 
         for chapter in courseware_summary:
