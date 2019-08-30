@@ -1,0 +1,636 @@
+<%page expression_filter="h"/>
+<%inherit file="main.html" />
+<%namespace name='static' file='static_content.html'/>
+<%!
+from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
+from openedx.core.djangolib.js_utils import js_escaped_string
+%>
+
+
+<%block name="pagetitle">${_("Gamification")}</%block>
+<%block name="bodyclass">view-dashboard is-authenticated</%block>
+
+<%block name="js_extra">
+  <script src="${static.url('js/commerce/credit.js')}"></script>
+  <%static:js group='dashboard'/>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      edx.dashboard.legacy.init({
+        dashboard: "${reverse('dashboard') | n, js_escaped_string}",
+        signInUser: "${reverse('signin_user') | n, js_escaped_string}",
+        changeEmailSettings: "${reverse('change_email_settings') | n, js_escaped_string}"
+      });
+    });
+  </script>
+
+<script type="text/javascript">
+  $(function() {
+    function inIframe() {
+      try {
+        return window.self !== window.top;
+      } catch (e) {
+        return true;
+      }
+    }
+    if(inIframe()) {
+      $('.header-nav-wrap').css('display', 'none');
+      $('.footer').css('display', 'none');
+    }
+  });
+</script>
+<script>
+Highcharts.setOptions({
+     colors: [
+         '#419e4d',
+         '#4599C3',
+         '#FFCD00',
+         '#E87722',
+         '#00B5E2',
+         '#6244BB',
+         '#888B8D',
+         '#FF0000',
+     ],
+     chart: {
+        style: {
+            fontFamily: "'Open Sans', sans-serif",
+        }
+    }
+});
+
+var chartTitleStyles = {
+  color: '#3caada',
+  fontSize: '18px',
+  textTransform: 'uppercase',
+  fontFamily: 'Exo2',
+  fontWeight: 600,
+};
+
+var chartSubtitleStyles = {
+  color: '#bcbcbc',
+  fontSize: '16px',
+  lineHeight: '20px',
+  fontFamily: 'Exo2',
+  fontWeight: 300,
+};
+
+var chartTitleOptions = {
+  buttonOptions: {
+    x: -2,
+    y: -5,
+    symbolStroke: '#00abd9',
+    theme: {
+      fill: 'transparent',
+      states: {
+        hover: {
+          fill: 'transparent',
+        },
+        select: {
+          fill: 'transparent',
+        }
+      }
+    }
+  }
+};
+
+var legendOptions = {
+  itemStyle: {
+    color: '#bcbcbc',
+    fontWeight: 'bold',
+    fontSize: '12px',
+    textTransform: 'uppercase'
+  },
+  itemHoverStyle: {
+    color: '#aaa'
+  }
+};
+
+$(function() {
+    $.get(
+        "${public_url}"+"points/",
+        data={"username": "${ user.username | h }"},
+        function( points ) {
+            $.get(
+                "${public_url}"+"chart/",
+                data={"username": "${ user.username | h }"},
+                function( data ) {
+                    var events = [];
+                    for (var key in data) {
+                        events.splice(data[key][0], 0, {name: key, y : data[key][1]});
+                    }
+                    chartTitleOptions.buttonOptions.x = -2;
+                    $('#container-chart').highcharts({
+                        chart: {
+                            plotBackgroundColor: null,
+                            plotBorderWidth: 0,
+                            plotShadow: false
+                        },
+                        title: {
+                            text: 'Achievement',
+                            align: 'left',
+                            widthAdjust: 0,
+                            x: 7,
+                            margin: 50,
+                            style: chartTitleStyles,
+                        },
+                        subtitle: {
+                            text: 'Here you can see what actions caused your current points portfolio',
+                            align: 'left',
+                            widthAdjust: 7,
+                            x: 7,
+                            y: 55,
+                            style: chartSubtitleStyles,
+                        },
+                        navigation: chartTitleOptions,
+                        tooltip: {
+                            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                        },
+                        plotOptions: {
+                            pie: {
+                              dataLabels: {
+                                enabled: true,
+                                distance: 30,
+                                style: {
+                                  fontWeight: 'bold',
+                                  color: 'white',
+                                  textShadow: 'unset'
+                                }
+                              },
+                              center: ['50%', '50%'],
+                              showInLegend: true,
+                            },
+                            series: {
+                                dataLabels: {
+                                    enabled: true,
+                                    color: '#bcbcbc',
+                                    borderWidth: 0,
+                                    shadow: false,
+                                    style: {
+                                      fontWeight: '700',
+                                      fontSize: '12px',
+                                      textShadow: false,
+                                      textOutline: 0
+                                    },
+                                    formatter: function(){
+                                        var pcnt = (this.y / this.series.data.map(p => p.y).reduce((a, b) => a + b, 0)) * 100;
+                                        return Highcharts.numberFormat(pcnt, 0) + '%';
+                                    }
+                                }
+                            }
+                        },
+                        legend: legendOptions,
+                        series: [{
+                            type: 'pie',
+                            name: 'Points share',
+                            innerSize: '50%',
+                            data: events
+                        }]
+                    });
+                }
+            );
+            $.get(
+                "${public_url}"+"badges/",
+                data={"username": "${ user.username | h }"},
+                function( data ) {
+                    var badge_count = Object.keys(data).length;
+                    if (badge_count < 3) {
+                        $('#badge-count').text(badge_count + ' of ' + badge_count);
+                    }
+                    else {
+                        $('#badge-count').text("3 of " + badge_count);
+                    }
+                    for (let i=0; i<badge_count; i++) {
+                      var key = Object.keys(data)[i];
+                      if (data[key].done) {
+                        $('#container-badges').append(
+                          '<div class="BadgeItem"><div class="BadgeItemFigure"><img src="' + data[key].url + '" alt="" class="BadgeItemFigure-Image"></div><div class="BadgeItem-Name">' + key + '</div></div>'
+                        );
+                      }
+                      else {
+                        var dumped = JSON.stringify(data[key].progress);
+                        $('#container-badges').append(
+                          '<div class="BadgeItem"><div class="BadgeItemFigure BadgeItemFigure_disable" data-progress="'+ dumped +'"><img src="'+data[key].url+'" alt="" class="BadgeItemFigure-Image"></div><div class="BadgeItem-Name">'+key+'</div></div>'
+                        );
+                      }
+                    }
+                }
+            );
+          $.get(
+            "${public_url}"+"user-statuses/",
+            data={"username": "${ user.username | h }"},
+            function( data ) {
+              var user_badge_count = data.length;
+              if (user_badge_count < 3) {
+                $('#user-statuses-count').text(user_badge_count + ' of ' + user_badge_count);
+              }
+              else {
+                $('#user-statuses-count').text("3 of " + user_badge_count)
+              }
+              for (var i=0; i < user_badge_count; i++) {
+                $('#container-statuses').append(
+                  '<div class="BadgeItem"><div class="BadgeItemFigure"><img src="'+data[i].url+'" alt="" class="BadgeItemFigure-Image"></div><div class="BadgeItem-Name">'+data[i].slug+'</div><div class="BadgeItemPopup"><div class="BadgeItemPopup-Head">Badge Name</div><div class="BadgeItemPopup-Body"><ul class="BadgeItemPopupList"><li class="BadgeItemPopupList-Item"><span class="BadgeItemPopupList-Counter">4/15</span>  Problems</li><li class="BadgeItemPopupList-Item"><span class="BadgeItemPopupList-Counter">8/30</span>  Videos</li><li class="BadgeItemPopupList-Item"><span class="BadgeItemPopupList-Counter">1/3</span>  Course Completions</li> <li class="BadgeItemPopupList-Item"><span class="BadgeItemPopupList-Counter">1/1</span>  Referrals</li></ul></div></div></div>'
+                );
+              }
+            }
+          );
+            $.get(
+                "${public_url}"+"statuses/",
+                function( data ) {
+                    var status_lines = [];
+                    var left = [];
+                    var right = [];
+                    for (i in data) {
+                        if (data[i].status_points <= points.points) {
+                            left.push(data[i].status_points);
+                        }
+                        else if (data[i].status_points > points.points) {
+                            right.push(data[i].status_points);
+                        }
+                        status_lines.push({
+                          color: data[i].status_color,
+                          dashStyle: 'longdashdot',
+                          value: data[i].status_points,
+                          width: 1,
+                          label: {text: data[i].title, rotation: 0, x: -15, y: -10, style: {color: '#bcbcbc',fontFamily: 'Exo2'}}
+                        });
+                    }
+                    if (left.length == 0) {
+                        var min_value = points.points - 40;
+                    }
+                    else {
+                        var min_value = Math.max(...left) - 40;
+                    }
+                    if (right.length == 0) {
+                        var max_value = points.points + 20;
+                    }
+                    else {
+                        var max_value = Math.min(...right) + 20;
+                        var points_to_status = max_value - points.points - 20;
+                    }
+                    if (min_value < 0) {
+                        min_value = 0;
+                    }
+                    chartTitleOptions.buttonOptions.x = -2;
+                    $('#container-progress').highcharts({
+                        chart: {
+                            type: 'bar'
+                        },
+                        title: {
+                            text: 'Your status tracker',
+                            align: 'left',
+                            widthAdjust: 0,
+                            x: 7,
+                            margin: 50,
+                            style: chartTitleStyles,
+                        },
+                        subtitle: {
+                            text: 'Here you can track your status progress: see how many points you have so far and how much is left for each status',
+                            align: 'left',
+                            widthAdjust: -7,
+                            x: 7,
+                            y: 55,
+                            style: chartSubtitleStyles,
+                        },
+                        navigation: chartTitleOptions,
+                        xAxis: {
+                        categories: [''],
+                            title: {
+                                text: null
+                            },
+                            tickWidth: 0,
+                            lineColor: '#aaa',
+                        },
+                        yAxis: {
+                            min: min_value,
+                            max: max_value,
+                            title: {
+                                text: null
+                            },
+                            labels: {
+                                overflow: 'justify',
+                                style: {
+                                    color: '#bcbcbc'
+                                }
+                            },
+                            plotLines: status_lines,
+                            gridLineColor: '#6c6d6e',
+                            gridLineDashStyle: 'dash',
+                            lineColor: '#aaa',
+                            lineWidth: 1,
+                        },
+                        tooltip: {
+                            shared: true,
+                            useHTML: true,
+                            formatter: function() {
+                                tooltip_html = 'Points to next status: '+'<b>'+points_to_status+'</b>';
+                                tooltip_html += "<table>";
+
+                                this.points.forEach(function(entry) {
+                                    tooltip_html += '<tr><td style="font-weight:bold; color:'+ entry.series.color +'">'+ entry.series.name +':</td><td style="text-align: right"> '+entry.y+'</td></tr>';
+                                });
+
+                                tooltip_html += "</table>";
+
+                                return tooltip_html;
+                            },
+                        },
+                        plotOptions: {
+                            bar: {
+                                dataLabels: {
+                                    enabled: true,
+                                    style: {
+                                        fill: 'transparent'
+                                    }
+                                }
+                            },
+                            series: {
+                                borderColor: '#aaa',
+                                borderRadius: 3,
+                                dataLabels: {
+                                    enabled: true,
+                                    color: '#fafafa',
+                                    style: {
+                                        fontWeight: 'bold',
+                                        textOutline: 'none',
+                                        fontFamily: 'Exo2',
+                                    }
+                                }
+                            }
+                        },
+                        credits: {
+                            enabled: false
+                        },
+                        legend: legendOptions,
+                        series: [{
+                            name: 'Progress',
+                            data: [points.points],
+                            borderColor: '#aaa',
+                            borderRadius: 3,
+                            dataLabels: {
+                                enabled: true,
+                                color: '#fafafa',
+                                style: {
+                                    fontWeight: 'bold',
+                                    textOutline: 'none',
+                                    fontFamily: 'Exo2',
+                                    textShadow: '-1px 0px 2.75px rgba(0, 0, 0, 0.6)',
+                                }
+                            }
+                        }]
+                    });
+                }
+            );
+        }
+    );
+});
+</script>
+<script>
+$(function () {
+    $.get(
+        "${public_url}"+"progress/",
+        data={"username": "${ user.username | h }"},
+        function( data ) {
+            var points_by_day = [];
+            var accumulative_data = [];
+            for (var i in data) {
+                points_by_day.push([Date.parse(data[i].date), data[i].points]);
+                var accum = 0;
+                if (accumulative_data.length != 0) {
+                    accum = accumulative_data[accumulative_data.length-1][1] + data[i].points;
+                }
+                else {
+                    accum = data[i].points;
+                }
+                accumulative_data.push([Date.parse(data[i].date), accum]);
+            }
+            chartTitleOptions.buttonOptions.x = 86;
+            $('#container-progress-accumulated').highcharts({
+                chart: {
+                    type: 'spline',
+                    spacingLeft: 100,
+                    spacingRight: 100
+                },
+                title: {
+                    text: 'Your Progress',
+                    align: 'left',
+                    widthAdjust: 0,
+                    x: -86,
+                    margin: 50,
+                    style: chartTitleStyles,
+                },
+                subtitle: {
+                    text: 'See the dynamics of your activities and points acquisition through time  ',
+                    align: 'left',
+                    widthAdjust: -7,
+                    x: -86,
+                    y: 55,
+                    style: chartSubtitleStyles,
+                },
+                navigation: chartTitleOptions,
+                xAxis: {
+                    type: 'datetime',
+                    dateTimeLabelFormats: {
+                        month: '%e. %b',
+                        year: '%b'
+                    },
+                    title: {
+                        text: null
+                    },
+                    tickWidth: 0,
+                    lineColor: '#aaa',
+                    labels: {
+                        style: {
+                        color: '#bcbcbc',
+                        textTransform: 'uppercase'
+                        }
+                    }
+                },
+                yAxis: [{
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        align: 'left',
+                        x: -40,
+                        y: 5,
+                        format: '{value:.,0f}',
+                        style: {
+                            color: '#bcbcbc'
+                        }
+                    },
+                    showFirstLabel: false,
+                    gridLineColor: '#6c6d6e',
+                    gridLineDashStyle: 'dash',
+                    lineColor: '#aaa',
+                    lineWidth: 1,
+                }, {
+                    gridLineWidth: 0,
+                    opposite: true,
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        align: 'right',
+                        x: 40,
+                        y: 5,
+                        format: '{value:.,0f}',
+                        style: {
+                            color: '#bcbcbc'
+                        }
+                    },
+                    showFirstLabel: false
+                }],
+                tooltip: {
+                    headerFormat: '<b>{series.name}</b><br>',
+                    pointFormat: '{point.x:%e. %b}: {point.y:.2f}'
+                },
+                plotOptions: {
+                    spline: {
+                        marker: {
+                            enabled: true
+                         }
+                     }
+                },
+                legend: legendOptions,
+                series: [{
+                    name: 'Points',
+                    type: 'column',
+                    data: points_by_day,
+                    borderColor: '#aaa',
+                    borderRadius: 3,
+                    dataLabels: {
+                        enabled: false,
+                        color: '#fafafa',
+                        style: {
+                            fontWeight: 'bold',
+                            textOutline: 'none',
+                            fontFamily: 'Exo2',
+                        }
+                    }
+                },
+                {
+                    name: 'Progress',
+                    type: 'area',
+                    yAxis: 1,
+                    data: accumulative_data,
+                    borderColor: '#aaa',
+                    borderRadius: 3,
+                    dataLabels: {
+                        enabled: false,
+                        color: '#fafafa',
+                        style: {
+                            fontWeight: 'bold',
+                            textOutline: 'none',
+                            fontFamily: 'Exo2',
+                        }
+                    }
+                }]
+            });
+        }
+    );
+});
+</script>
+</%block>
+
+<div class="dashboard-notifications" tabindex="-1">
+    %if message:
+        <div class="dashboard-banner">
+            ${message | n, decode.utf8}
+        </div>
+    %endif
+
+    %if enrollment_message:
+        <div class="dashboard-banner">
+            ${enrollment_message | n,  decode.utf8}
+        </div>
+    %endif
+</div>
+
+<div class="ChartHolder">
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <div class="ChartHolderRow">
+      <div id="container-chart" class="ChartBlock ChartBlock_first"></div>
+      <div id="container-progress" class="ChartBlock ChartBlock_second"></div>
+    </div>
+    <div class="ChartHolderRow">
+        <div class="ChartBlock">
+            <div class="ChartBlockHeader">
+                <div class="ChartBlock-Title">Your badge pack</div>
+                <div class="ChartBlock-Status"><span id="badge-count"></span></div>
+                <div class="ChartBlock-Description"></div>
+            </div>
+            <div class="BadgesList" id="container-badges"></div>
+            <div class="ChartControls">
+                <a href="#more/badges/${ user.username | h }" class="Btn Btn_info Btn_medium">More badges</a>
+            </div>
+        </div>
+        <div class="ChartBlock">
+            <div class="ChartBlockHeader">
+                <div class="ChartBlock-Title">Your badge pack</div>
+                <div class="ChartBlock-Status"><span id="user-statuses-count"></span></div>
+                <div class="ChartBlock-Description"></div>
+            </div>
+            <div class="BadgesList" id="container-statuses"></div>
+            <div class="ChartControls">
+                <a href="#more/user-statuses/${ user.username | h }" class="Btn Btn_info Btn_medium">More badges</a>
+            </div>
+        </div>
+    </div>
+    <div id="container-progress-accumulated" class="ChartBlock ChartBlock_full ChartBlock_last"></div>
+</div>
+
+<div class="LeaderboardModal">
+    <div class="LeaderboardModalWrapper LeaderboardModalWrapper_collection">
+        <button class="LeaderboardModal-Close"></button>
+        <div class="LeaderboardModal-BadgeList"></div>
+    </div>
+</div>
+
+
+<script>
+    $('.LeaderboardModal-Close').on('click', function () {
+      $('.LeaderboardModal').fadeOut();
+    });
+
+    $('#container-badges + .ChartControls .Btn').on('click', function () {
+      $.get(
+        "${public_url}"+"badges/",
+        data={"username": "${ user.username | h }"},
+        function( data ) {
+          var badge_count = Object.keys(data).length;
+          $('.LeaderboardModal-BadgeList').html('');
+          for (let i=0; i<badge_count; i++) {
+            var key = Object.keys(data)[i];
+            if (data[key].done) {
+              $('.LeaderboardModal-BadgeList').append(
+                '<div class="BadgeItem BadgeItem_center"><div class="BadgeItemFigure"><img src="'+data[key].url+'" alt="" class="BadgeItemFigure-Image"></div><div class="BadgeItem-Name">'+key+'</div></div>'
+              );
+            }
+            else {
+              $('.LeaderboardModal-BadgeList').append(
+                '<div class="BadgeItem BadgeItem_center"><div class="BadgeItemFigure"><img src="'+data[key].url+'" alt="" class="BadgeItemFigure-Image"></div><div class="BadgeItem-Name">'+key+'</div></div>'
+              );
+            }
+          }
+        }
+      );
+      $('.LeaderboardModal').fadeIn();
+    });
+
+    $('#container-statuses + .ChartControls .Btn').on('click', function () {
+      $.get(
+        "${public_url}"+"user-statuses/",
+        data={"username": "${ user.username | h }"},
+        function( data ) {
+          var user_badge_count = data.length;
+          for (var i=0; i < user_badge_count; i++) {
+            $('.LeaderboardModal-BadgeList').html(
+              '<div class="BadgeItem BadgeItem_center"><div class="BadgeItemFigure"><img src="'+data[i].url+'" alt="" class="BadgeItemFigure-Image"></div><div class="BadgeItem-Name">'+data[i].slug+'</div></div>'
+            );
+          }
+        }
+      );
+      $('.LeaderboardModal').fadeIn();
+    });
+</script>
