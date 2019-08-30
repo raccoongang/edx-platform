@@ -344,10 +344,26 @@ AWS_BUCKET_ACL = AWS_DEFAULT_ACL
 AWS_QUERYSTRING_EXPIRE = 7 * 24 * 60 * 60  # 7 days
 AWS_S3_CUSTOM_DOMAIN = AUTH_TOKENS.get('AWS_S3_CUSTOM_DOMAIN', 'edxuploads.s3.amazonaws.com')
 
+#
+# To support Azure Storage via the Django-Storages library
+#
+AZURE_ACCOUNT_NAME = AUTH_TOKENS.get('AZURE_ACCOUNT_NAME', None)
+AZURE_ACCOUNT_KEY = AUTH_TOKENS.get('AZURE_ACCOUNT_KEY', None)
+AZURE_CONTAINER = AUTH_TOKENS.get('AZURE_CONTAINER', None)
+
+# Disabling querystring auth instructs Boto to exclude the querystring parameters (e.g. signature, access key) it
+# normally appends to every returned URL.
+AWS_QUERYSTRING_AUTH = AUTH_TOKENS.get('AWS_QUERYSTRING_AUTH', True)
+AWS_S3_CUSTOM_DOMAIN = AUTH_TOKENS.get('AWS_S3_CUSTOM_DOMAIN', 'edxuploads.s3.amazonaws.com')
+
 if AUTH_TOKENS.get('DEFAULT_FILE_STORAGE'):
     DEFAULT_FILE_STORAGE = AUTH_TOKENS.get('DEFAULT_FILE_STORAGE')
 elif AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY:
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+elif AZURE_ACCOUNT_NAME and AZURE_ACCOUNT_KEY and AZURE_CONTAINER:
+    DEFAULT_FILE_STORAGE = 'openedx.core.storage.AzureStorageExtended'
+    os.environ["AZURE_STORAGE_ACCOUNT"] = AZURE_ACCOUNT_NAME
+    os.environ["AZURE_STORAGE_ACCESS_KEY"] = AZURE_ACCOUNT_KEY
 else:
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
@@ -589,10 +605,20 @@ RETIREMENT_STATES = ENV_TOKENS.get('RETIREMENT_STATES', RETIREMENT_STATES)
 
 #RACCOONGANG
 MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB = FEATURES.get("MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB", 200)
+
+ORA2_FILEUPLOAD_BACKEND = ENV_TOKENS.get('ORA2_FILEUPLOAD_BACKEND', 'filesystem')
+ORA2_FILEUPLOAD_ROOT = ENV_TOKENS.get('ORA2_FILEUPLOAD_ROOT',  os.path.join(MEDIA_ROOT, 'submissions_attachments/'))
+ORA2_FILEUPLOAD_CACHE_NAME = ENV_TOKENS.get('ORA2_FILEUPLOAD_CACHE_NAME', 'default')
+
 if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
-    sentry_sdk.init(AUTH_TOKENS.get('RG_SENTRY_DSN'), integrations=[DjangoIntegration()])
+    from sentry_sdk.integrations.celery import CeleryIntegration
+    sentry_sdk.init(
+            AUTH_TOKENS.get('RG_SENTRY_DSN'),
+            integrations=[DjangoIntegration(),CeleryIntegration()],
+            environment=ENV_TOKENS.get('RG_SENTRY_ENVIRONMENT', '')
+            )
 #RACCOONGANG
 
 ####################### Plugin Settings ##########################
