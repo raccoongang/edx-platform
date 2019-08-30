@@ -1114,10 +1114,19 @@ plugin_settings.add_plugins(__name__, plugin_constants.ProjectType.LMS, plugin_c
 derive_settings(__name__)
 
 #RACCOONGANG
+ORA2_FILEUPLOAD_BACKEND = ENV_TOKENS.get('ORA2_FILEUPLOAD_BACKEND', 'filesystem')
+ORA2_FILEUPLOAD_ROOT = ENV_TOKENS.get('ORA2_FILEUPLOAD_ROOT',  os.path.join(MEDIA_ROOT, 'submissions_attachments/'))
+ORA2_FILEUPLOAD_CACHE_NAME = ENV_TOKENS.get('ORA2_FILEUPLOAD_CACHE_NAME', 'default')
+
 if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
-    sentry_sdk.init(AUTH_TOKENS.get('RG_SENTRY_DSN'), integrations=[DjangoIntegration()])
+    from sentry_sdk.integrations.celery import CeleryIntegration
+    sentry_sdk.init(
+            AUTH_TOKENS.get('RG_SENTRY_DSN'),
+            integrations=[DjangoIntegration(),CeleryIntegration()],
+            environment=ENV_TOKENS.get('RG_SENTRY_ENVIRONMENT', '')
+            )
 
 # Variable for overriding standard MKTG_URLS
 EXTERNAL_MKTG_URLS = ENV_TOKENS.get('EXTERNAL_MKTG_URLS', {})
