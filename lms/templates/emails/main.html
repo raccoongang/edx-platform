@@ -1,3 +1,129 @@
 <!-- {% block message %} -->
-<%block name="message"></%block>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body style="background: #efefef; padding: 0; margin: 0;">
+<table border="0" cellpadding="0" cellspacing="0" style="background: #efefef; margin: 0 auto; padding: 0; width: 100%">
+    <tbody>
+    <tr>
+        <td>
+            <table border="0" cellpadding="0" cellspacing="0" style="background: #424242; height: 94px; margin: 0; padding: 0; width: 100%">
+                <tbody>
+                <tr>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table border="0" cellpadding="0" cellspacing="0" style="margin: -68px auto 12px; padding: 0 12px; width: 100%;">
+                <tbody>
+                <tr>
+                    <td>
+                        <div style="width: 100%;">
+                            <img src="https://${ site }/static/${settings.DEFAULT_SITE_THEME}/images/logo.png" border="0" width="220" height="110" style="display: block; margin: 0 auto 0" alt="Lakeside_logo">
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; margin: 0 0 28px; padding: 0;">
+                <tbody>
+                <tr>
+                    <td style="text-align: center">
+                        <div style="display: inline-block; width: 220px; height: 2px; background: #a8ddce;"></div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; max-width: 600px; margin: 0 auto; padding: 0 12px;">
+                <tbody>
+                <tr>
+                    <td style="text-align: center;">
+                        <%block name="message"></%block>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; max-width: 600px; margin: 22px auto 32px; padding: 0 12px;">
+                <tbody>
+                <tr>
+                    <td style="text-align: center">
+                        <div style="display: inline-block; width: 100%; height: 2px; background: #a8ddce;"></div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table border="0" cellpadding="0" cellspacing="0" style="background: #42bbe4; width: 100%; margin: 0; padding: 58px 36px 28px;">
+                <tbody>
+                <tr>
+                    <td>
+                        <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; margin: 0 auto; padding: 0; position: relative; text-align: center;">
+                            <tr>
+                                <td style="text-align: center; padding: 0 6px 6px; display: inline-block;">
+                                    <a href="mailto:LakesideLearning@fastlaneus.com" target="_blank" style="color: #ffffff; text-transform: uppercase; text-decoration: none; font-size: 12px; font-weight: 700; -webkit-text-size-adjust: none;">
+                                        Contact us
+                                    </a>
+                                </td>
+                                <td style="text-align: center; padding: 0 6px 6px; display: inline-block;">
+                                    <a href="https://www.fastlaneus.com/privacystatement" target="_blank" style="color: #ffffff; text-transform: uppercase; text-decoration: none; font-size: 12px; font-weight: 700; -webkit-text-size-adjust: none;">
+                                        Privacy Policy
+                                    </a>
+                                </td>
+                                <td style="text-align: center; padding: 0 6px 6px; display: inline-block;">
+                                    <a href="https://www.fastlaneus.com/cos" target="_blank" style="color: #ffffff; text-transform: uppercase; text-decoration: none; font-size: 12px; font-weight: 700; -webkit-text-size-adjust: none;">
+                                        Terms of service
+                                    </a>
+                                </td>
+                                <td style="text-align: center; padding: 0 6px 6px; display: inline-block;">
+                                    <a href="https://lakesidelink.com/blog" target="_blank" style="color: #ffffff; text-transform: uppercase; text-decoration: none; font-size: 12px; font-weight: 700; -webkit-text-size-adjust: none;">
+                                        Blog
+                                    </a>
+                                </td>
+                                <td style="text-align: center; padding: 0 6px 6px; display: inline-block;">
+                                    <a href="https://lakesidelink.com/donations" target="_blank" style="color: #ffffff; text-transform: uppercase; text-decoration: none; font-size: 12px; font-weight: 700; -webkit-text-size-adjust: none;">
+                                        Donate
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <img src="https://${ site }/static/${settings.DEFAULT_SITE_THEME}/images/footer-logo.svg" border="0" width="176" height="32" style="display: block; margin: 18px auto 0" alt="Lakeside_logo">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
 <!-- {% endblock %} -->
