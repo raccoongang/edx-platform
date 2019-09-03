@@ -1111,3 +1111,6 @@ if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
 # Variable for overriding standard MKTG_URLS
 EXTERNAL_MKTG_URLS = ENV_TOKENS.get('EXTERNAL_MKTG_URLS', {})
 #RACCOONGANG
+
+# Get Schedule parameters for RG Analytics
+RG_ANALYTICS_GRADE_STAT_UPDATE = ENV_TOKENS.get('RG_ANALYTICS_GRADE_STAT_UPDATE', {})
