@@ -7,10 +7,14 @@ from django.conf import settings
 from openedx.core.djangoapps.content.block_structure.api import get_block_structure_manager
 from openedx.core.djangoapps.content.block_structure.transformers import BlockStructureTransformers
 
-from .transformers import library_content, start_date, user_partitions, visibility, load_override_data
+from .transformers import library_content, user_partitions, visibility, load_override_data
 from .usage_info import CourseUsageInfo
 
-from rg_odoo_api.transformers import user_partitions_date_modificator
+# course_date_offsets is transformer that enable work with disable Subsection content
+# for which due date is out for special cohort which we setup.
+# It is installable plugin which locate in gitlab repository by url
+# https://gitlab.raccoongang.com/hippoteam/edx/course_date_offsets
+from course_date_offsets.transformers import user_partitions_date_modificator
 
 INDIVIDUAL_STUDENT_OVERRIDE_PROVIDER = 'courseware.student_field_overrides.IndividualStudentOverrideProvider'
 
@@ -30,7 +34,6 @@ def get_course_block_access_transformers():
     """
     course_block_access_transformers = [
         library_content.ContentLibraryTransformer(),
-        # start_date.StartDateTransformer(),
         user_partitions_date_modificator.UserDatePartitionTransformer(),
         user_partitions.UserPartitionTransformer(),
         visibility.VisibilityTransformer(),
