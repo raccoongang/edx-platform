@@ -803,10 +803,17 @@ def _section_open_response_assessment(request, course, openassessment_blocks, ac
         request, unicode(course_key), unicode(openassessment_block.location),
         disable_staff_debug_info=True, course=course
     )
+
+    cohort_info = [
+        {'name': cohort.name, 'id': cohort.id}
+        for cohort in (is_course_cohorted(course_key) and get_course_cohorts(course) or [])
+    ]
+
     section_data = {
         'fragment': block.render('ora_blocks_listing_view', context={
             'ora_items': ora_items,
-            'ora_item_view_enabled': settings.FEATURES.get('ENABLE_XBLOCK_VIEW_ENDPOINT', False)
+            'ora_item_view_enabled': settings.FEATURES.get('ENABLE_XBLOCK_VIEW_ENDPOINT', False),
+            'cohort_info': cohort_info,
         }),
         'section_key': 'open_response_assessment',
         'section_display_name': _('Open Responses'),
