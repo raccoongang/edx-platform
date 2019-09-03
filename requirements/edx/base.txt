@@ -264,3 +264,6 @@ django-hvad==1.8.0
 # Accel customization
 -e git+ssh://git@gitlab.raccoongang.com/rg-developers/rg-odoo-edx-api.git@release-0.0.1#egg=rg-odoo-api==0.0.1
 -e git+ssh://git@gitlab.raccoongang.com/hippoteam/accel/edx-plugin-for-odoos-chat.git@release-0.1#egg=edx-plugin-for-odoos-chat==0.1
+
+# Course date offsets transformer
+-e git+ssh://git@gitlab.raccoongang.com/hippoteam/edx/course_date_offsets.git@release-0.0.1#egg=course_date_offsets
