@@ -38,6 +38,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods, require_POST
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
+from openedx.core.djangoapps.course_groups.views import cohort_handler
 from six import text_type
 
 import instructor_analytics.basic
@@ -3374,7 +3375,7 @@ def update_cohort_assignment(request, course_id):
 
     is_assignment = json.loads(request.POST.get('is_assignment').lower())
     cohort_id = int(request.POST.get('cohort_id'))
-    user =get_student_from_identifier(request.POST.get('unique_student_identifier'))
+    user = get_student_from_identifier(request.POST.get('unique_student_identifier'))
 
     #Note (yura.braiko@gmail.com): if cohort id is `-1` it equal to `All` cohort.
     if cohort_id == -1:
@@ -3395,6 +3396,29 @@ def update_cohort_assignment(request, course_id):
 
     # Note(yura.braiko@raccoongang.com): return empty success response.
     return JsonResponse({})
+
+
+@transaction.non_atomic_requests
+@ensure_csrf_cookie
+@cache_control(no_cache=True, no_store=True, must_revalidate=True)
+@require_global_staff
+@require_http_methods(['POST', 'GET'])
+def cohorts_list_with_assignment(request, course_id):
+    cohort_info = json.loads(cohort_handler(request,course_id).content)
+    course_id = CourseKey.from_string(course_id)
+    cohort_assigments = (
+        CourseUserGroup.objects.filter(course_id=course_id).values_list('id', 'cohortassigment__user__email')
+    )
+    cohort_assigments_dict = {}
+    for key, value in cohort_assigments:
+        if key not in cohort_assigments_dict:
+            cohort_assigments_dict[key] = set()
+        cohort_assigments_dict[key].add(value)
+
+    for cohort in cohort_info['cohorts']:
+        cohort['cohort_admins'] = list(cohort_assigments_dict.get(cohort['id'], []))
+    return JsonResponse(cohort_info)
+
 
 
 def invalidate_certificate(request, generated_certificate, certificate_invalidation_data):

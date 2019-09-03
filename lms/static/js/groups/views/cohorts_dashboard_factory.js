@@ -30,7 +30,9 @@
                         studioGroupConfigurationsUrl: studioGroupConfigurationsUrl,
                         isCcxEnabled: $cohortManagementElement.data('is_ccx_enabled'),
                         cohortIdStub: $cohortManagementElement.data('cohort_id_stub'),
-                        cohortDashboardUrl: $cohortManagementElement.data('cohort_dashboard_url')
+                        cohortDashboardUrl: $cohortManagementElement.data('cohort_dashboard_url'),
+                        updateCohortAssigmentUrl: $cohortManagementElement.data('update_cohort_assignment_url')
+
                     }
                 });
 

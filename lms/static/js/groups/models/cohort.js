@@ -19,7 +19,11 @@
                 * If this cohort is associated with a user partition group, the ID of the group within the
                 * partition associated with user_partition_id.
                 */
-                group_id: null
+                group_id: null,
+                /**
+                 *
+                 */
+                cohort_admins: null
             }
         });
         return CohortModel;
