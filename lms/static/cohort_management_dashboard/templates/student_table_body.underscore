@@ -2,19 +2,17 @@
   <tr class="row row_number_<%- i%2 %>">
     <td><%- users[i].username %></td>
       <td>
-
         <select class="action-cohort-select" name="select">
-            <% for ( var j = 0; j < cohorts.length; j++ ) { %>
-                <option
-                    value="<%- cohorts[j].id %>" <%- (cohorts[j].id == currentCohortID) ? 'selected' : '' %> >
-                        <%- cohorts[j].name %>
-                </option>
-            <% } %>
+          <% for ( var j = 0; j < cohorts.length; j++ ) { %>
+            <option value="<%- cohorts[j].id %>" <%- (cohorts[j].id == currentCohortID) ? 'selected' : '' %> >
+              <%- cohorts[j].name %>
+            </option>
+          <% } %>
         </select>
         <input type="button" value="<%- gettext('Ok')%>" class="btn btn-primary change-cohort-btn" data-username="<%- users[i].username %>">
       </td>
       <td>
-            <div class="remove-user" data-username="<%- users[i].username %>" ><span class="icon fa fa-times-circle" aria-hidden="true"></span> <%- gettext('Delete') %></div>
+        <button class="remove-user" data-username="<%- users[i].username %>" ><span class="icon fa fa-times-circle" aria-hidden="true"></span> <%- gettext('Delete') %></button>
       </td>
   </tr>
 <% } %>
