@@ -1,0 +1,120 @@
+<%page expression_filter="h"/>
+<%inherit file="/main.html" />
+
+
+
+% for page in pages:
+
+    <div class="page-holder" data-page-name="${page['name']}" style="display: ${'block' if page['name'] == current_page else 'none'}; ">
+        ${page['content'] | n}
+    </div>
+
+% endfor
+
+
+<br>
+
+<button id="next_button" data-current-page="${current_page}">Next</button>
+<button id="previous_button" data-current-page="${current_page}" style="display: ${'none' if current_page == 'page_1' else 'block'}; ">Previous</button>
+
+
+
+<script type="text/javascript">
+
+    var currentLocation = "{% url 'hera:onboarding' %}";
+
+    function thirdPageButtonTitle(currentPage){
+        if (currentPage === 'page_3'){
+            $('#next_button').text('Lets Learn Some Science!');
+        } else {
+            $('#next_button').text('Next');
+        }
+    }
+
+    function firstPageButtonHide(currentPage){
+        if (currentPage === 'page_1'){
+            $('#previous_button').hide();
+        } else {
+            $('#previous_button').show();
+        }
+    }
+
+    function changeCurrentPageContent(currentPage){
+        $('.page-holder').each( function(ind, el) {
+            if ($(el).data('pageName') === currentPage) {
+                $(el).show();
+            } else {
+                $(el).hide();
+            }
+        });
+    }
+
+    thirdPageButtonTitle("${current_page}");
+
+
+    $('#next_button').click(function(event){
+
+        var currentPage = $(this).data('currentPage');
+
+        if (currentPage === 'page_3'){
+            // TODO: add redirect by pass
+        }
+
+        data = {
+            "csrfmiddlewaretoken": "${csrf_token}",
+            "page": currentPage
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: currentLocation,
+            data: data,
+            dataType: 'json',
+            success: function (data) {
+                if (data.next_page){
+
+                    $('#next_button').data('currentPage', data.next_page);
+                    $('#previous_button').data('currentPage', data.next_page);
+
+                    $('.page-holder').each( function(ind, el) {
+                        if ($(el).data('pageName') === data.next_page) {
+                            $(el).show()
+                        } else {
+                            $(el).hide()
+                        }
+                    });
+
+                    changeCurrentPageContent(data.next_page);
+                    firstPageButtonHide(data.next_page);
+                    thirdPageButtonTitle(data.next_page);
+
+                }
+            },
+            error: function(data){
+                console.log('error', data);
+            }
+         });
+
+    });
+
+    $('#previous_button').click(function(event) {
+
+        var previousPage = parseInt($(this).data('currentPage').split('_')[1]) - 1;
+
+        if (previousPage > 0){
+
+            var currentPage = 'page_' + previousPage;
+            $('#next_button').data('currentPage', currentPage);
+            $('#previous_button').data('currentPage', currentPage);
+
+            changeCurrentPageContent(currentPage);
+            firstPageButtonHide(currentPage);
+            thirdPageButtonTitle(currentPage);
+
+        } else if (previousPage === 0) {
+            $('#next_button').data('currentPage', 'page_1');
+        }
+
+    });
+
+</script>
