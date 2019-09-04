@@ -169,7 +169,14 @@ class SendEmailWithMockedUgettextMixin(object):
 
 
 @attr(shard=1)
-@patch.dict(settings.FEATURES, {'ENABLE_INSTRUCTOR_EMAIL': True, 'REQUIRE_COURSE_EMAIL_AUTH': False})
+@patch.dict(
+    settings.FEATURES,
+    {
+        'ENABLE_INSTRUCTOR_EMAIL': True,
+        'REQUIRE_COURSE_EMAIL_AUTH': False,
+        'BULK_EMAIL_FROM_DIFFERENT_ADDRESSES': True
+    }
+)
 @ddt.ddt
 class LocalizedFromAddressPlatformLangTestCase(SendEmailWithMockedUgettextMixin, EmailSendFromDashboardTestCase):
     """
@@ -195,7 +202,14 @@ class LocalizedFromAddressPlatformLangTestCase(SendEmailWithMockedUgettextMixin,
 
 
 @attr(shard=1)
-@patch.dict(settings.FEATURES, {'ENABLE_INSTRUCTOR_EMAIL': True, 'REQUIRE_COURSE_EMAIL_AUTH': False})
+@patch.dict(
+    settings.FEATURES,
+    {
+        'ENABLE_INSTRUCTOR_EMAIL': True,
+        'REQUIRE_COURSE_EMAIL_AUTH': False,
+        'BULK_EMAIL_FROM_DIFFERENT_ADDRESSES': True
+    }
+)
 @ddt.ddt
 class LocalizedFromAddressCourseLangTestCase(SendEmailWithMockedUgettextMixin, EmailSendFromDashboardTestCase):
     """
@@ -249,6 +263,7 @@ class TestEmailSendFromDashboardMockedHtmlToText(EmailSendFromDashboardTestCase)
         self.assertContains(response, "Email is not enabled for this course.", status_code=403)
 
     @patch('bulk_email.models.html_to_text', Mock(return_value='Mocking CourseEmail.text_message', autospec=True))
+    @patch.dict(settings.FEATURES, {'BULK_EMAIL_FROM_DIFFERENT_ADDRESSES': True})
     def test_send_to_self(self):
         """
         Make sure email send to myself goes to myself.
@@ -500,6 +515,7 @@ class TestEmailSendFromDashboardMockedHtmlToText(EmailSendFromDashboardTestCase)
         )
 
     @override_settings(BULK_EMAIL_DEFAULT_FROM_EMAIL="no-reply@courseupdates.edx.org")
+    @patch.dict(settings.FEATURES, {'BULK_EMAIL_FROM_DIFFERENT_ADDRESSES': True})
     def test_long_course_display_name(self):
         """
         This test tests that courses with exorbitantly large display names

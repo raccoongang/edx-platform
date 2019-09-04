@@ -38,10 +38,11 @@ class TestExpireOldEntitlementsTask(TestCase):
         """
         make_entitlement()
         make_entitlement()
+        init_call_count = mock_datetime.call_count
 
         tasks.expire_old_entitlements.delay(1, 3).get()
 
-        self.assertEqual(mock_datetime.call_count, 2)
+        self.assertEqual(mock_datetime.call_count, init_call_count+2)
 
     def test_only_unexpired(self, mock_datetime):
         """
