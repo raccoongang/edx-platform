@@ -814,6 +814,15 @@ urlpatterns += [
     ),
 ]
 
+urlpatterns += [
+    url(
+        r'^courses/{}/course/'.format(
+            settings.COURSE_ID_PATTERN,
+        ),
+        include('lms.djangoapps.onboarding.urls'),
+    ),
+]
+
 if settings.FEATURES.get('ENABLE_STUDENT_HISTORY_VIEW'):
     urlpatterns += [
         url(

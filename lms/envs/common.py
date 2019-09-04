@@ -2106,6 +2106,9 @@ INSTALLED_APPS = [
     # Student support tools
     'support',
 
+    # User onboarding
+    'lms.djangoapps.onboarding.apps.OnboardingConfig',
+
     # External auth (OpenID, shib)
     'openedx.core.djangoapps.external_auth',
     'django_openid_auth',
