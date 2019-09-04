@@ -1087,9 +1087,6 @@ INSTALLED_APPS = [
 
     'xblock_django',
 
-    # edX Proctoring
-    'edx_proctoring',
-
     # Catalog integration
     'openedx.core.djangoapps.catalog',
 
