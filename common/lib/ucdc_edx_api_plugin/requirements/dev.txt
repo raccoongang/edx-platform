@@ -1,0 +1,14 @@
+# Requirements, needed for the development.
+
+-r base.txt
+
+#Tools for testing and style checking
+coverage
+edx_lint
+pytest
+pytest-django
+pytest-cov
+pytest-runner
+pylint-fail-under
+
+mock>=1.0.1
