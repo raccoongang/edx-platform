@@ -27,7 +27,6 @@ class BlockSerializer(serializers.Serializer):  # pylint: disable=abstract-metho
                 pass
         else:
             value = self.context['block_structure'].get_transformer_block_field(block_key, transformer, field_name)
-
         return value if (value is not None) else default
 
     def to_representation(self, block_key):

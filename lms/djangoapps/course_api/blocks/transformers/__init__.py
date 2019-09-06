@@ -66,6 +66,10 @@ SUPPORTED_FIELDS = [
         requested_field_name='visible_to_staff_only',
     ),
     SupportedFieldType(
+        'unit_level',
+        requested_field_name='unit_level',
+    ),
+    SupportedFieldType(
         BlockCompletionTransformer.COMPLETION,
         BlockCompletionTransformer,
         'completion'
