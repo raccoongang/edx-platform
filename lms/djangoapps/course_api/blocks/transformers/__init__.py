@@ -69,5 +69,10 @@ SUPPORTED_FIELDS = [
         BlockCompletionTransformer.COMPLETION,
         BlockCompletionTransformer,
         'completion'
+    ),
+    SupportedFieldType(
+        'unit_level',
+        serializer_field_name='unit_level',
     )
+
 ]

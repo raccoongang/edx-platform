@@ -1,4 +1,18 @@
 <form>
+<div>
+    <% if (!xblockInfo.isVertical()) { %>
+        <h3 class="modal-section-title"> <%- gettext('Unit Level') %>
+        <div class="modal-section-content">
+            <label class="label">
+                <select name="level" id="unit_level">
+                    <option value="low" <%- xblockInfo.unitLevel === 'low' ? 'selected' : null %> >Low</option>
+                    <option value="middle" <%- xblockInfo.unitLevel === 'middle' ? 'selected' : null %> >Middle</option>
+                    <option value="hight" <%- xblockInfo.unitLevel === 'hight' ? 'selected' : null %> >Hight</option>
+                </select>
+            </label>
+        </div>
+    <% } %>
+</div>
 <h3 class="modal-section-title" id="content_visibility_label"><%- gettext('Subsection Visibility') %></h3>
 <div class="modal-section-content staff-lock">
     <div class="list-fields list-input content-visibility" role="group" aria-labelledby="content_visibility_label">

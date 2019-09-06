@@ -14,6 +14,11 @@ from waffle.models import Switch
 from web_fragments.fragment import Fragment
 
 from courseware.courses import get_course_overview_with_access
+from courseware.model_data import FieldDataCache
+from courseware.module_render import  get_module_for_descriptor
+from courseware.courses import get_current_child
+
+from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
 from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
 from student.models import CourseEnrollment
 
@@ -152,6 +157,72 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
         if not course_block_tree:
             return None
 
+        course_block_id = ''
+
+        course_grade = CourseGradeFactory().read(request.user, course)
+        courseware_summary = course_grade.chapter_grades.values()
+
+        field_data_cache = FieldDataCache.cache_for_descriptor_descendents(
+            course.id, request.user, course, depth=2
+        )
+        course_module = get_module_for_descriptor(
+            request.user, request, course, field_data_cache, course.id, course=course
+        )
+
+        chapter_module = get_current_child(course_module)
+        section_module = get_current_child(chapter_module)
+        active_block_id = section_module.scope_ids.usage_id.block_id
+        section_active = ''
+
+        for section in course_block_tree.get('children'):
+            for subsection in section.get('children', []):
+                if active_block_id == subsection['block_id']:
+                    course_block_id = subsection['block_id']
+                    section_active = subsection
+                    break
+
+        earned = 0
+        for chapter in courseware_summary:
+            if not chapter['display_name'] == "hidden":
+                    for section in chapter['sections']:
+                        if course_block_id == section.location.block_id:
+                            earned = section.all_total.earned
+                            total = section.all_total.possible
+                            break
+
+
+        def unit_grade_level(earned, course_block_tree, section_active):
+            """
+                Checking the level of the lasst visited lesson
+                and filter the by level next lessons
+            """
+
+            subsection_vertical = {}
+            subsection_vertical['children']=[]
+
+            unit_level = ''
+
+            if 0<= earned <=4.9:
+                if section_active['unit_level'] == 'hight':
+                    unit_level = 'middle'
+                else:
+                    unit_level = 'low'
+            elif 5<= earned <=7.9:
+                    unit_level = section_active['unit_level']
+            elif 8<= earned <=10:
+                if section_active['unit_level'] == 'low':
+                    unit_level = 'middle'
+                else:
+                    unit_level = 'hight'
+
+            for section in course_block_tree.get('children'):
+
+                # for subsection in section.get('children', []):
+                for subsection in section.get('children', []):
+                    if unit_level == subsection['unit_level']:
+                        subsection_vertical['children'].append(subsection)
+                return subsection_vertical
+
         context = {
             'csrf': csrf(request)['csrf_token'],
             'course': course_overview,
@@ -168,6 +239,7 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
 
         context['gated_content'] = gated_content
         context['xblock_display_names'] = xblock_display_names
+        context['subsection_vertical'] = unit_grade_level(round(earned/total*10, 1), course_block_tree, section_active)
 
         html = render_to_string('course_experience/course-lessons-outline-fragment.html', context)
         return Fragment(html)
