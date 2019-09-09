@@ -6,6 +6,7 @@ import logging
 import mimetypes
 import urllib
 import urlparse
+from copy import copy
 from datetime import datetime
 
 from django.conf import settings
@@ -680,3 +681,64 @@ def do_create_account(form, custom_form=None):
         raise
 
     return user, profile, registration
+
+
+def group_courses_by_program(course_objects, courses_sorter, programs):
+    """
+    Put courses in to groups by programs sorted appropriately within each program.
+
+    Arguments:
+        course_objects (list[CourseOverviews]): A list of courses that should be visible in this branded instance.
+        courses_sorter (function): A function to sort the grouped courses for each program.
+        programs (list(dict)): A list of dictionaries representing the cached data from discovery API.
+
+    Returns:
+        list: List of dictionaries representing programs incorporating relevant courses from `course_objects` list.
+            The dictionaries have these keys:
+                * title (str): Program title.
+                * subtitle (str): Program subtitle.
+                * courses (str): list(CourseOverview): A list of courses relevant to these program.
+    """
+    grouped_list = list()
+    course_objects = copy(course_objects)
+
+    print('programs:')
+    from pprint import pprint
+    pprint(programs)
+
+
+    for program in programs:
+        _program = dict()
+        _program['title'] = program.get('title')
+        _program['subtitle'] = program.get('subtitle')
+
+        program_courses = program.get('courses')
+
+        for program_course in program_courses:
+            course_runs = program_course.get('course_runs')
+
+            for course_run in course_runs:
+                print('Course run id (key): {}'.format(course_run.get('key')))
+                _program['courses'] = list()
+
+                for course_obj in course_objects:
+                    from django.forms import model_to_dict
+                    print('Course obj id:')
+                    pprint(model_to_dict(course_obj))
+                    if str(course_obj.id).startswith(course_run.get('key')):
+                        _program['courses'].append(course_obj)
+
+                        course_objects.remove(course_obj)
+                        break
+
+        if _program['courses']:
+            _program['courses'] = courses_sorter(_program['courses'])
+            grouped_list.append(_program)
+
+    grouped_list.append({
+        'title': '',
+        'subtitle': '',
+        'courses': course_objects,
+    })
+
+    return grouped_list
