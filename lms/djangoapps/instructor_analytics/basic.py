@@ -34,6 +34,8 @@ STUDENT_FEATURES = ('id', 'username', 'first_name', 'last_name', 'is_staff', 'em
 PROFILE_FEATURES = ('name', 'language', 'location', 'year_of_birth', 'gender',
                     'level_of_education', 'mailing_address', 'goals', 'meta',
                     'city', 'country')
+EXTRA_INFO_FEATURES = ('usa_state',)
+
 ORDER_ITEM_FEATURES = ('list_price', 'unit_cost', 'status')
 ORDER_FEATURES = ('purchase_time',)
 
@@ -243,6 +245,7 @@ def enrolled_students_features(course_key, features):
         """ convert student to dictionary """
         student_features = [x for x in STUDENT_FEATURES if x in features]
         profile_features = [x for x in PROFILE_FEATURES if x in features]
+        extra_info_features = [x for x in EXTRA_INFO_FEATURES if x in features]
 
         # For data extractions on the 'meta' field
         # the feature name should be in the format of 'meta.foo' where
@@ -265,6 +268,15 @@ def enrolled_students_features(course_key, features):
             meta_dict = json.loads(profile.meta) if profile.meta else {}
             for meta_feature, meta_key in meta_features:
                 student_dict[meta_feature] = meta_dict.get(meta_key)
+
+        extra_info = getattr(student, 'extrainfo', None)
+        extra_info_dict = dict(
+            (
+                feature,
+                hasattr(extra_info, feature) and extract_attr(extra_info, feature) or 'N/A'
+            ) for feature in extra_info_features
+        )
+        student_dict.update(extra_info_dict)
 
         if include_cohort_column:
             # Note that we use student.course_groups.all() here instead of
