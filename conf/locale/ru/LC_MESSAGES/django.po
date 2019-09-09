@@ -27193,3 +27193,11 @@ msgstr "Создана новая версия: слияние версий #%(r
 msgid "Cohort Management Dashboard"
 msgstr "Панель Управления Когортами"
 
+msgid "View Cohort:"
+msgstr "Отображается когорта:"
+
+msgid "Switch cohort to:"
+msgstr "Сменить когорту на:"
+
+msgid "Remove from cohort"
+msgstr "Удаление из когорты"
