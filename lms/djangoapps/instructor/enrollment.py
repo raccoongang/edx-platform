@@ -179,11 +179,14 @@ def unenroll_email(course_id, student_email, email_students=False, email_params=
     previous_state = EmailEnrollmentState(course_id, student_email)
     if previous_state.enrollment:
         CourseEnrollment.unenroll_by_email(student_email, course_id)
+        CourseEnrollmentAllowed.objects.get(course_id=course_id, email=student_email).delete()
         if email_students:
             email_params['message'] = 'enrolled_unenroll'
             email_params['email_address'] = student_email
             email_params['full_name'] = previous_state.full_name
             send_mail_to_student(student_email, email_params, language=language)
+
+    previous_state = EmailEnrollmentState(course_id, student_email)
 
     if previous_state.allowed:
         CourseEnrollmentAllowed.objects.get(course_id=course_id, email=student_email).delete()
