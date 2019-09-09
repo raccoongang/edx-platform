@@ -1,0 +1,25 @@
+<article class="program" role="region" aria-label="<%- content.display_name %>">
+    <section class="program-info" aria-hidden="true">
+        <div class="program-name">
+            <div class="program-title"><%- title %></div>
+            <div class="program-subtitle"><%- subtitle %></div>
+        </div>
+        <section class="program-courses">
+            <section class="courses-container">
+                <section class="highlighted-courses">
+                    <section class="courses">
+                        <ul class="courses-listing">
+
+                        </ul>
+                    </section>
+                </section>
+            </section>
+        </section>
+    </section>
+    <div class="sr">
+        <ul>
+            <li><%- title %></li>
+            <li><%- subtitle %></li>
+        </ul>
+    </div>
+</article>

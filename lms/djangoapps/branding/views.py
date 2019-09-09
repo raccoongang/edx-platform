@@ -78,7 +78,7 @@ def index(request):
 
 
 @ensure_csrf_cookie
-@cache_if_anonymous()
+# @cache_if_anonymous()
 def courses(request):
     """
     Render the "find courses" page. If the marketing site is enabled, redirect

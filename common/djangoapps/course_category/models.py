@@ -12,7 +12,6 @@ from .tasks import task_reindex_courses
 move_to = Signal()
 
 
-
 class Program(models.Model):
     title = models.CharField(max_length=100)
     uuid = models.CharField(primary_key=True, max_length=50)

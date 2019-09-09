@@ -1,0 +1,63 @@
+(function(define) {
+    define([
+        'jquery',
+        'underscore',
+        'backbone',
+        'gettext',
+        'edx-ui-toolkit/js/utils/date-utils'
+    ], function($, _, Backbone, gettext, DateUtils) {
+        'use strict';
+
+        function formatDate(date, userLanguage, userTimezone) {
+            var context;
+            context = {
+                datetime: date,
+                language: userLanguage,
+                timezone: userTimezone,
+                format: DateUtils.dateFormatEnum.shortDate
+            };
+            return DateUtils.localize(context);
+        }
+
+        return Backbone.View.extend({
+
+            tagName: 'li',
+            templateId: '#course_card-tpl',
+            className: 'courses-listing-item',
+
+            initialize: function() {
+                console.log('Initializing course card!');
+                this.tpl = _.template($(this.templateId).html());
+            },
+
+            render: function() {
+                var data = _.clone(this.model.attributes);
+
+                var userLanguage = '',
+                    userTimezone = '';
+                if (this.model.userPreferences !== undefined) {
+                    userLanguage = this.model.userPreferences.userLanguage;
+                    userTimezone = this.model.userPreferences.userTimezone;
+                }
+                if (data.advertised_start !== undefined) {
+                    data.start = data.advertised_start;
+                } else {
+                    data.start = formatDate(
+                        new Date(data.start),
+                        userLanguage,
+                        userTimezone
+                    );
+                }
+                data.enrollment_start = formatDate(
+                    new Date(data.enrollment_start),
+                    userLanguage,
+                    userTimezone
+                );
+                this.$el.html(this.tpl(data));
+                this.$el.attr('test-attr', 'attr');
+                return this;
+            }
+
+        });
+    });
+}(define || RequireJS.define));
