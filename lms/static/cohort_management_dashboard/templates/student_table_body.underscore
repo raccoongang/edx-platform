@@ -1,6 +1,6 @@
 <% for ( var i = 0; i < users.length; i++ ) { %>
   <tr class="row row_number_<%- i%2 %>">
-    <td><%- users[i].username %></td>
+    <td><%- users[i].email %></td>
       <td>
         <select class="action-cohort-select" name="select">
           <% for ( var j = 0; j < cohorts.length; j++ ) { %>
