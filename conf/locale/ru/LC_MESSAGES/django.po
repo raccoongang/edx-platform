@@ -27201,3 +27201,6 @@ msgstr "Сменить когорту на:"
 
 msgid "Remove from cohort"
 msgstr "Удаление из когорты"
+
+msgid "User email"
+msgstr "Email пользователя"
