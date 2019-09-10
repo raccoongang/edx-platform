@@ -293,8 +293,8 @@ def enrolled_students_features(course_key, features):
             if include_enrollment_mode:
                 student_dict['enrollment_mode'] = enrollment_mode
 
-        preferred_lang = list(profile.language_proficiencies.values('code'))
-        student_dict['language'] = preferred_lang[0]['code'] if preferred_lang else profile.language
+        preferred_lang = profile.language_proficiencies.values_list('code', flat=True)
+        student_dict['language'] = preferred_lang[0] if preferred_lang else profile.language
 
         return student_dict
 
