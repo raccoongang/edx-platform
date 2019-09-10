@@ -24,6 +24,6 @@ class CourseCategoryAdmin(DjangoMpttAdmin):
     tree_auto_open = True
     prepopulated_fields = {'slug': ('name',)}
     # for DjangoMpttAdmin fields = '__all__' doesn't work
-    fields = ['name', 'slug', 'description', 'courses']
+    fields = ['name', 'slug', 'img', 'description', 'courses']
 
 admin.site.register(CourseCategory, CourseCategoryAdmin)
