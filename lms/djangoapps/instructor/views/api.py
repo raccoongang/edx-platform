@@ -1256,8 +1256,10 @@ def get_students_features(request, course_id, csv=False):  # pylint: disable=red
     # For compatibility reasons, city and country should always appear last.
     query_features.append('city')
     query_features_names['city'] = _('City')
-    query_features.append('country')
-    query_features_names['country'] = _('Country')
+    #query_features.append('country')
+    #query_features_names['country'] = _('Country')
+    query_features.append('usa_state')
+    query_features_names['usa_state'] = _('State')
 
     if not csv:
         student_data = instructor_analytics.basic.enrolled_students_features(course_key, query_features)
