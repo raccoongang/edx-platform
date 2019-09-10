@@ -1,5 +1,6 @@
 from django.utils.translation import ugettext as _
 
+from courseware.access import has_access
 from courseware.tabs import EnrolledTab
 
 class CohortManagementDashboardTab(EnrolledTab):
@@ -11,5 +12,10 @@ class CohortManagementDashboardTab(EnrolledTab):
 
     @classmethod
     def is_enabled(cls, course, user=None):
-        return super(CohortManagementDashboardTab, cls).is_enabled(course, user)
+        if (
+            has_access(user, 'staff', course, course.id) or has_access(user, 'instructor', course, course.id)
+            or user.is_staff or user.is_superuser
+        ):
+            return super(CohortManagementDashboardTab, cls).is_enabled(course, user)
+        return False
 
