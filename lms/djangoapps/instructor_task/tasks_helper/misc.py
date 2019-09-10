@@ -9,7 +9,9 @@ from datetime import datetime, timedelta
 from time import time
 
 import json
+
 import unicodecsv
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files.storage import DefaultStorage
@@ -18,7 +20,7 @@ from lms.djangoapps.grades.new.course_grade_factory import CourseGradeFactory
 from openassessment.data import OraAggregateData
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.lib.gating.api import get_required_content
-from pytz import UTC
+from pytz import UTC, timezone
 from xmodule.modulestore.django import modulestore
 
 from certificates.models import GeneratedCertificate, CertificateStatuses
@@ -369,7 +371,7 @@ def get_certificates_report(courses):
         )
         for generated_certificate in generated_certificates:
             row = []
-            row.append(generated_certificate.modified_date.strftime("%d/%m/%Y"))
+            row.append(generated_certificate.created_date.astimezone(timezone(settings.TIME_ZONE)).strftime("%d/%m/%Y"))
             row.append(course_overview.display_name)
 
             if hasattr(generated_certificate.user, 'profile'):
