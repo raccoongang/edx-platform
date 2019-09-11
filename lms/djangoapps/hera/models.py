@@ -42,6 +42,12 @@ class Onboarding(models.Model):
             return render_to_string(get_template('page_3'))
         return self.page_3
 
+    @property
+    def fourth(self):
+        if not self.page_4:
+            return render_to_string(get_template('page_4'))
+        return self.page_4
+
     class Meta:
         app_label = 'hera'
 
@@ -57,11 +63,12 @@ class UserOnboarding(models.Model):
     page_3 = models.BooleanField(default=False)
     page_4 = models.BooleanField(default=False)
 
-    @classmethod
-    def is_passed(cls, user):
-        user_onboarding = cls.objects.filter(user=user).first()
-        if user_onboarding:
-            return user_onboarding.page_1 and user_onboarding.page_2 and user_onboarding.page_3
+    def is_passed(self):
+        """
+        Checks if user pass onboarding.
+        """
+        if self.page_1 and self.page_2 and self.page_3 and self.page_4:
+            return True
         return False
 
     @classmethod
@@ -77,7 +84,7 @@ class UserOnboarding(models.Model):
         """
         Return last passed user page.
         """
-        for _, num in enumerate(reversed(range(1,4))):
+        for _, num in enumerate(reversed(range(1, 5))):
             field_name = 'page_{}'.format(num)
             if getattr(self, field_name):
                 return field_name
@@ -86,7 +93,7 @@ class UserOnboarding(models.Model):
         """
         Return current page for current user.
         """
-        for num, _ in enumerate(range(3), 1):
+        for num, _ in enumerate(range(4), 1):
             field_name = 'page_{}'.format(num)
             if not getattr(self, field_name):
                 return field_name
@@ -94,7 +101,7 @@ class UserOnboarding(models.Model):
 
     def are_all_passed(self):
         return all([
-            getattr(self, 'page_{}'.format(ind)) for ind, _ in enumerate(range(3), 1)
+            getattr(self, 'page_{}'.format(ind)) for ind, _ in enumerate(range(4), 1)
         ])
 
     def get_next_page(self, current=None):
@@ -103,13 +110,13 @@ class UserOnboarding(models.Model):
         """
         if current:
             page_number = int(current.split('_')[-1])
-            if page_number < 3:
+            if page_number < 4:
                 return 'page_{}'.format(page_number+1)
             else:
                 return 'page_1'
         if self.get_last_passed():
             last_passed_number = int(self.get_last_passed().split('_')[-1])
-            if last_passed_number < 3:
+            if last_passed_number < 4:
                 return 'page_{}'.format(last_passed_number+1)
         return 'page_1'
 
@@ -132,6 +139,11 @@ class UserOnboarding(models.Model):
                 'content': self.onboarding.third if self.onboarding else render_to_string(get_template('page_3')),
                 'passed': self.page_3,
                 'name': 'page_3'
+            },
+            {
+                'content': self.onboarding.third if self.onboarding else render_to_string(get_template('page_4')),
+                'passed': self.page_4,
+                'name': 'page_4'
             }
         ]
 

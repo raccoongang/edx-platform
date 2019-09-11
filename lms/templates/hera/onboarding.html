@@ -14,7 +14,7 @@
 
 <br>
 
-<button id="next_button" data-current-page="${current_page}">Next</button>
+<button id="next_button" data-current-page="${current_page}"  data-is-passed="${is_passed}">Next</button>
 <button id="previous_button" data-current-page="${current_page}" style="display: ${'none' if current_page == 'page_1' else 'block'}; ">Previous</button>
 
 
@@ -23,10 +23,13 @@
 
     var currentLocation = "{% url 'hera:onboarding' %}";
 
-    function thirdPageButtonTitle(currentPage){
-        if (currentPage === 'page_3'){
+    function fourthPageButtonTitle(currentPage, isPassed){
+        $('#next_button').show();
+        if (currentPage === 'page_4' && !isPassed) {
             $('#next_button').text('Lets Learn Some Science!');
-        } else {
+        } else if (currentPage === 'page_4' && isPassed) {
+            $('#next_button').hide();
+        } else{
             $('#next_button').text('Next');
         }
     }
@@ -49,14 +52,13 @@
         });
     }
 
-    thirdPageButtonTitle("${current_page}");
-
+    fourthPageButtonTitle("${current_page}", $('#next_button').data('is-passed'));
 
     $('#next_button').click(function(event){
 
         var currentPage = $(this).data('currentPage');
 
-        if (currentPage === 'page_3'){
+        if (currentPage === 'page_4'){
             // TODO: add redirect by pass
         }
 
@@ -72,8 +74,8 @@
             dataType: 'json',
             success: function (data) {
                 if (data.next_page){
-
                     $('#next_button').data('currentPage', data.next_page);
+                    $('#next_button').data('is-passed', data.is_passed);
                     $('#previous_button').data('currentPage', data.next_page);
 
                     $('.page-holder').each( function(ind, el) {
@@ -86,7 +88,7 @@
 
                     changeCurrentPageContent(data.next_page);
                     firstPageButtonHide(data.next_page);
-                    thirdPageButtonTitle(data.next_page);
+                    fourthPageButtonTitle(data.next_page, data.is_passed);
 
                 }
             },
@@ -109,7 +111,7 @@
 
             changeCurrentPageContent(currentPage);
             firstPageButtonHide(currentPage);
-            thirdPageButtonTitle(currentPage);
+            fourthPageButtonTitle(currentPage);
 
         } else if (previousPage === 0) {
             $('#next_button').data('currentPage', 'page_1');
