@@ -16,7 +16,7 @@ from web_fragments.fragment import Fragment
 from courseware.courses import get_course_overview_with_access
 from courseware.model_data import FieldDataCache
 from courseware.module_render import  get_module_for_descriptor
-from courseware.courses import get_current_child
+from courseware.courses import get_current_child, get_problems_in_section
 
 from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
 from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
@@ -25,6 +25,7 @@ from student.models import CourseEnrollment
 from util.milestones_helpers import get_course_content_milestones
 from xmodule.modulestore.django import modulestore
 from ..utils import get_course_outline_block_tree, get_resume_block
+from lms.djangoapps.selection_page.models import c_selection_page, USER, COURSE_KEY, BLOCK_ID, NEXT_ID, LEVEL
 
 
 DEFAULT_COMPLETION_TRACKING_START = datetime.datetime(2018, 1, 24, tzinfo=UTC)
@@ -171,14 +172,17 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
 
         chapter_module = get_current_child(course_module)
         section_module = get_current_child(chapter_module)
+
+
+
         active_block_id = section_module.scope_ids.usage_id.block_id
-        section_active = ''
+        subsection_active = ''
 
         for section in course_block_tree.get('children'):
             for subsection in section.get('children', []):
                 if active_block_id == subsection['block_id']:
                     course_block_id = subsection['block_id']
-                    section_active = subsection
+                    subsection_active = subsection
                     break
 
         earned = 0
@@ -191,7 +195,7 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
                             break
 
 
-        def unit_grade_level(earned, course_block_tree, section_active):
+        def unit_grade_level(earned, course_block_tree, subsection_active):
             """
                 Checking the level of the lasst visited lesson
                 and filter the by level next lessons
@@ -200,27 +204,118 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
             subsection_vertical = {}
             subsection_vertical['children']=[]
 
-            unit_level = ''
+            subsection_level = ''
+            next_id = None
+            block_id = subsection_active['block_id']
 
             if 0<= earned <=4.9:
-                if section_active['unit_level'] == 'hight':
-                    unit_level = 'middle'
+                if subsection_active['unit_level'] == 'hight':
+                    subsection_level = 'middle'
                 else:
-                    unit_level = 'low'
+                    subsection_level = 'low'
             elif 5<= earned <=7.9:
-                    unit_level = section_active['unit_level']
+                    subsection_level = subsection_active['unit_level']
             elif 8<= earned <=10:
-                if section_active['unit_level'] == 'low':
-                    unit_level = 'middle'
+                if subsection_active['unit_level'] == 'low':
+                    subsection_level = 'middle'
                 else:
-                    unit_level = 'hight'
+                    subsection_level = 'hight'
 
+            lesson_pair = c_selection_page().find_one({
+                COURSE_KEY: course_id,
+                USER: request.user.id,
+                LEVEL: subsection_level,
+                BLOCK_ID: subsection_active['block_id']
+            })
+
+            if lesson_pair:
+                next_id = lesson_pair.get(NEXT_ID)
+            else:
+                # lesson_pair = c_selection_page().find_one({
+                #     COURSE_KEY: course_id,
+                #     USER: request.user.id,
+                #     LEVEL: subsection_level,
+                #     NEXT_ID: subsection_active['block_id']
+                # })
+                c_selection_page().delete_one({
+                    COURSE_KEY: course_id,
+                    USER: request.user.id,
+                    LEVEL: subsection_level
+                })
             for section in course_block_tree.get('children'):
 
-                # for subsection in section.get('children', []):
+
+
+
+
+
+
+
+
+
+
                 for subsection in section.get('children', []):
-                    if unit_level == subsection['unit_level']:
+
+                    if next_id and subsection['block_id'] == next_id:
+                        subsection_vertical['children'].append(subsection_active)
                         subsection_vertical['children'].append(subsection)
+                        break
+
+
+                    if len(subsection_vertical['children']) >= 2:
+                        c_selection_page().update({
+                            COURSE_KEY: course_id,
+                            USER: request.user.id,
+                            LEVEL: subsection_level},
+                            {
+                                '$set': {
+                                    BLOCK_ID: subsection_vertical['children'][0]['block_id'],
+                                    NEXT_ID: subsection_vertical['children'][1]['block_id']
+                                }
+                            }
+                        , upsert=True)
+                        break
+
+
+
+
+
+
+
+
+                    if subsection_level == subsection['unit_level'] and subsection['complete']== False:
+                        subsection_vertical['children'].append(subsection)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    # if subsection_level == subsection['unit_level'] and subsection['complete']== False :
+                    #     subsection_vertical['children'].append(subsection)
+                    # elif subsection['resume_block'] and subsection['complete']== True and len(subsection_vertical['children']) <2:
+                    #     subsection_vertical['children'].append(subsection)
+
+
+
+
+
+
+
+
+
+
+                print('MONGO DATA - ', list(c_selection_page().find({})))
                 return subsection_vertical
 
         context = {
@@ -239,7 +334,12 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
 
         context['gated_content'] = gated_content
         context['xblock_display_names'] = xblock_display_names
-        context['subsection_vertical'] = unit_grade_level(round(earned/total*10, 1), course_block_tree, section_active)
+        earned = 0
+        try:
+            earned = round(earned/total*10, 1)
+        except ZeroDivisionError:
+            pass
+        context['subsection_vertical'] = unit_grade_level(earned, course_block_tree, subsection_active)
 
         html = render_to_string('course_experience/course-lessons-outline-fragment.html', context)
         return Fragment(html)
