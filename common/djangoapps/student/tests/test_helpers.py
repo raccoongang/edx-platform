@@ -10,10 +10,10 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
 from django.utils import http
-from mock import patch
+from mock import Mock, patch
 from testfixtures import LogCapture
 
-from student.helpers import get_next_url_for_login_page
+from student.helpers import get_next_url_for_login_page, group_courses_by_program
 from openedx.core.djangoapps.site_configuration.tests.test_util import with_site_configuration_context
 
 LOGGER_NAME = "student.helpers"
@@ -110,3 +110,57 @@ class TestLoginHelper(TestCase):
 
         with with_site_configuration_context(configuration=dict(THIRD_PARTY_AUTH_HINT=tpa_hint)):
             validate_login()
+
+    @ddt.data(
+        (
+            ['key+Demo+one', 'key+Demo+two', 'key+Demo+four'],
+            [
+                {
+                    'title': 'Test Program One',
+                    'subtitle': '',
+                    'courses': [
+                        {
+                            'course_runs': [{'key': 'key+Demo+one'}],
+                        }
+                    ]
+                },
+                {
+                    'title': 'Test Program Two',
+                    'subtitle': '',
+                    'courses': [
+                        {
+                            'course_runs': [{'key': 'key+Demo+two'}],
+                        }
+                    ]
+                },
+                {
+                    'title': 'Test Program Three',
+                    'subtitle': '',
+                    'courses': [
+                        {
+                            'course_runs': [{'key': 'key+Demo+three'}],
+                        }
+                    ]
+                },
+            ],
+            lambda x: x,
+            {
+                'program_groups_count': 3,
+                'named_program_groups_count': 2,
+            }
+        )
+    )
+    @ddt.unpack
+    def test_group_courses_by_program(self, courses_keys, programs, courses_sorter, expected):
+        courses = list()
+        for key in courses_keys:
+            course = Mock()
+            course.id = key
+
+            courses.append(course)
+
+        program_groups = group_courses_by_program(courses, courses_sorter, programs)
+        self.assertEqual(expected.get('program_groups_count'), len(program_groups))
+
+        named_program_groups = [pg for pg in program_groups if pg.get('title') != 'Without program']
+        self.assertEqual(expected.get('named_program_groups_count'), len(named_program_groups))

@@ -702,15 +702,11 @@ def group_courses_by_program(course_objects, courses_sorter, programs):
     grouped_list = list()
     course_objects = copy(course_objects)
 
-    print('programs:')
-    from pprint import pprint
-    pprint(programs)
-
-
     for program in programs:
         _program = dict()
         _program['title'] = program.get('title')
         _program['subtitle'] = program.get('subtitle')
+        _program['courses'] = list()
 
         program_courses = program.get('courses')
 
@@ -718,27 +714,22 @@ def group_courses_by_program(course_objects, courses_sorter, programs):
             course_runs = program_course.get('course_runs')
 
             for course_run in course_runs:
-                print('Course run id (key): {}'.format(course_run.get('key')))
-                _program['courses'] = list()
-
                 for course_obj in course_objects:
-                    from django.forms import model_to_dict
-                    print('Course obj id:')
-                    pprint(model_to_dict(course_obj))
                     if str(course_obj.id).startswith(course_run.get('key')):
                         _program['courses'].append(course_obj)
-
                         course_objects.remove(course_obj)
+
                         break
 
-        if _program['courses']:
-            _program['courses'] = courses_sorter(_program['courses'])
+        if _program.get('courses'):
+            _program['courses'] = courses_sorter(_program.get('courses'))
             grouped_list.append(_program)
 
-    grouped_list.append({
-        'title': '',
-        'subtitle': '',
-        'courses': course_objects,
-    })
+    if course_objects:
+        grouped_list.append({
+            'title': 'Without program',
+            'subtitle': '',
+            'courses': course_objects,
+        })
 
     return grouped_list
