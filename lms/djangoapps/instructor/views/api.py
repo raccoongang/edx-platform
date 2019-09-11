@@ -10,6 +10,8 @@ import decimal
 import json
 import logging
 import random
+from collections import defaultdict
+
 import re
 import string
 import StringIO
@@ -3406,19 +3408,18 @@ def update_cohort_assignment(request, course_id):
 def cohorts_list_with_assignment(request, course_id):
     cohort_info = json.loads(cohort_handler(request, course_id).content)
     course_id = CourseKey.from_string(course_id)
-    cohort_assigments = (
+    cohort_assignments = (
         CourseUserGroup.objects.filter(course_id=course_id).values_list('id', 'cohortassigment__user__email')
     )
-    cohort_assignments_dict = {}
-    for key, value in cohort_assigments:
-        if key not in cohort_assignments_dict:
-            cohort_assignments_dict[key] = set()
+
+    cohort_assignments_dict = defaultdict(set)
+
+    for key, value in cohort_assignments:
         cohort_assignments_dict[key].add(value)
 
     for cohort in cohort_info['cohorts']:
         cohort['cohort_admins'] = list(cohort_assignments_dict.get(cohort['id'], []))
     return JsonResponse(cohort_info)
-
 
 
 def invalidate_certificate(request, generated_certificate, certificate_invalidation_data):
