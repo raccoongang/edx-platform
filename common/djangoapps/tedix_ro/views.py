@@ -17,13 +17,15 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from edxmako.shortcuts import render_to_response
+from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiveUser
 from opaque_keys.edx.keys import CourseKey
 from opaque_keys import InvalidKeyError
-from rest_framework import generics, viewsets
+from rest_framework import generics, viewsets, permissions
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.user_api.accounts.utils import generate_password
+from openedx.core.djangoapps.user_api.accounts.permissions import CanRetireUser
 from student.models import CourseEnrollment
 from student.helpers import get_next_url_for_login_page, do_create_account
 
@@ -42,8 +44,8 @@ from .forms import (
     SchoolImportValidationForm,
     FORM_FIELDS_MAP
 )
-from .models import StudentProfile, StudentCourseDueDate, City, School
-from .serializers import CitySerializer, SchoolSerilizer, SingleCitySerializer, SingleSchoolSerilizer
+from .models import StudentProfile, StudentCourseDueDate, City, School, VideoLesson
+from .serializers import CitySerializer, SchoolSerilizer, SingleCitySerializer, SingleSchoolSerilizer, VideoLessonSerializer
 from .utils import get_payment_link
 
 
@@ -181,6 +183,21 @@ class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
         if self.kwargs.get('pk'):
             return SchoolSerilizer
         return SingleCitySerializer
+
+
+class VideoLessonViewSet(viewsets.ModelViewSet):
+    authentication_classes = (OAuth2AuthenticationAllowInactiveUser,)
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = VideoLessonSerializer
+    queryset = VideoLesson.objects.all()
+    paginator = None
+    pagination_class = None
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, context=self.get_serializer_context())
+        serializer.is_valid()
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class ProfileImportView(View):
