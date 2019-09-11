@@ -86,7 +86,6 @@
                             if(!isAdd) {
                                 self.model.set('cohort_admins', self.model.get('cohort_admins').filter(function (value, index, arr) {
                                     return value !== user;
-
                                 }));
                             }else {
                                 var newCohortAdmins = self.model.get('cohort_admins');

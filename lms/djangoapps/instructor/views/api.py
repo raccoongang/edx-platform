@@ -38,7 +38,6 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods, require_POST
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
-from openedx.core.djangoapps.course_groups.views import cohort_handler
 from six import text_type
 
 import instructor_analytics.basic
@@ -86,6 +85,7 @@ from lms.djangoapps.instructor_task.models import ReportStore
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.course_groups.cohorts import is_course_cohorted, migrate_cohort_settings
 from openedx.core.djangoapps.course_groups.models import CourseUserGroup
+from openedx.core.djangoapps.course_groups.views import cohort_handler
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preference, set_user_preference
 from openedx.core.djangolib.markup import HTML, Text
@@ -3404,19 +3404,19 @@ def update_cohort_assignment(request, course_id):
 @require_global_staff
 @require_http_methods(['POST', 'GET'])
 def cohorts_list_with_assignment(request, course_id):
-    cohort_info = json.loads(cohort_handler(request,course_id).content)
+    cohort_info = json.loads(cohort_handler(request, course_id).content)
     course_id = CourseKey.from_string(course_id)
     cohort_assigments = (
         CourseUserGroup.objects.filter(course_id=course_id).values_list('id', 'cohortassigment__user__email')
     )
-    cohort_assigments_dict = {}
+    cohort_assignments_dict = {}
     for key, value in cohort_assigments:
-        if key not in cohort_assigments_dict:
-            cohort_assigments_dict[key] = set()
-        cohort_assigments_dict[key].add(value)
+        if key not in cohort_assignments_dict:
+            cohort_assignments_dict[key] = set()
+        cohort_assignments_dict[key].add(value)
 
     for cohort in cohort_info['cohorts']:
-        cohort['cohort_admins'] = list(cohort_assigments_dict.get(cohort['id'], []))
+        cohort['cohort_admins'] = list(cohort_assignments_dict.get(cohort['id'], []))
     return JsonResponse(cohort_info)
 
 

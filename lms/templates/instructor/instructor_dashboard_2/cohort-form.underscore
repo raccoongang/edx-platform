@@ -152,7 +152,6 @@
     </form>
 
     <div>
-
         <% for ( var i = 0; i < cohort_admins.length; i++ ) { %>
             <div class="revoke" data-user="<%- cohort_admins[i] %>">
                 <%- gettext("Remove access for ") + ' '+ cohort_admins[i] %>
@@ -161,12 +160,6 @@
         <% } %>
     </div>
 
-
-
-
-
-
-
     <div class="new_user field field-text">
         <label for="cohort-name" class="form-label"> <%- gettext('Username') %> * </label>
         <input name="admin-user-name" class="input admin-user-name" id="admin-user-name-input" placeholder="<%- gettext('Username') %>"type="text">
@@ -174,6 +167,4 @@
             <%- gettext('Add') %>
         </div>
     </div>
-
-
 </div>
