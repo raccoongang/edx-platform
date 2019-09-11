@@ -155,8 +155,7 @@ def index(request, extra_context=None, user=AnonymousUser()):
     if extra_context is None:
         extra_context = {}
 
-    context = {'courses': []}
-    # context = {}
+    context = dict(courses=list())
 
     context['homepage_overlay_html'] = configuration_helpers.get_value('homepage_overlay_html')
 
