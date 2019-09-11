@@ -701,6 +701,7 @@ def group_courses_by_program(course_objects, courses_sorter, programs):
     """
     grouped_list = list()
     course_objects = copy(course_objects)
+    already_grouped_course_objects = set()
 
     for program in programs:
         _program = dict()
@@ -714,10 +715,11 @@ def group_courses_by_program(course_objects, courses_sorter, programs):
             course_runs = program_course.get('course_runs')
 
             for course_run in course_runs:
-                for course_obj in course_objects:
-                    if str(course_obj.id).startswith(course_run.get('key')):
-                        _program['courses'].append(course_obj)
-                        course_objects.remove(course_obj)
+                for course_object in course_objects:
+                    if str(course_object.id).startswith(course_run.get('key')):
+                        _program['courses'].append(course_object)
+
+                        already_grouped_course_objects.add(course_object)
 
                         break
 
@@ -725,11 +727,13 @@ def group_courses_by_program(course_objects, courses_sorter, programs):
             _program['courses'] = courses_sorter(_program.get('courses'))
             grouped_list.append(_program)
 
-    if course_objects:
+    ungrouped_course_objects = list(set(course_objects) - already_grouped_course_objects)
+
+    if ungrouped_course_objects:
         grouped_list.append({
             'title': 'Without program',
             'subtitle': '',
-            'courses': course_objects,
+            'courses': ungrouped_course_objects,
         })
 
     return grouped_list
