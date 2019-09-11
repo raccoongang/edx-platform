@@ -2106,6 +2106,9 @@ INSTALLED_APPS = [
     # Student support tools
     'support',
 
+    # Hera onboarding
+    'lms.djangoapps.hera.apps.HeraConfig',
+
     # External auth (OpenID, shib)
     'openedx.core.djangoapps.external_auth',
     'django_openid_auth',

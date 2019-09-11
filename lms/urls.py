@@ -802,6 +802,15 @@ urlpatterns += [
     ),
 ]
 
+urlpatterns += [
+    url(
+        r'^courses/{}/course/'.format(
+            settings.COURSE_ID_PATTERN,
+        ),
+        include('lms.djangoapps.hera.urls', namespace='hera'),
+    ),
+]
+
 if settings.FEATURES.get('ENABLE_STUDENT_HISTORY_VIEW'):
     urlpatterns += [
         url(
