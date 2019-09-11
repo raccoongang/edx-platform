@@ -677,6 +677,8 @@ if FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
         'third_party_auth.lti.LTIAuthBackend',
     ])
 
+    CUSTOM_OAUTH_PARAMS = ENV_TOKENS.get('CUSTOM_OAUTH_PARAMS', {})
+
     AUTHENTICATION_BACKENDS = list(tmp_backends) + list(AUTHENTICATION_BACKENDS)
     del tmp_backends
 
