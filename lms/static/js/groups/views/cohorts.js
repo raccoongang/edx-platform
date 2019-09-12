@@ -152,9 +152,9 @@
                     cohortSettings.save(
                         fieldData, {patch: true, wait: true}
                     ).done(function() {
-                        self.render();
-                        self.renderCourseCohortSettingsNotificationView();
-                        self.pubSub.trigger('cohorts:state', fieldData);
+                        // Reloads page for hides cohort management dashboard
+                        //  which checks if course is cohorted
+                        location.reload();
                     }).fail(function(result) {
                         self.showNotification({
                             type: 'error',
