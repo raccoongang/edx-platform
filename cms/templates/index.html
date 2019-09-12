@@ -1,8 +1,9 @@
 <%page expression_filter="h"/>
 <%!
 from django.utils.translation import ugettext as _
-
+from django.core.urlresolvers import reverse
 from openedx.core.djangolib.markup import HTML, Text
+from openedx.core.djangolib.js_utils import dump_js_escaped_json, js_escaped_string
 %>
 
 <%inherit file="base.html" />
@@ -311,6 +312,28 @@ from openedx.core.djangolib.markup import HTML, Text
             %endfor
           </ul>
       </div>
+
+      <%
+         courses_processing = [course['course_key'] for course in in_process_course_actions]
+      %>
+
+      <script>
+        var rerun_courses_for_post = ${courses_processing | n, dump_js_escaped_json};
+        var intervalID = setInterval(function(){
+            $.ajax({
+                 url: "${reverse('courses_api:check_rerun_courses')}",
+                 type: "POST",
+                 data: {
+                      courses: JSON.stringify(rerun_courses_for_post)
+                 },
+                 success: function(res){
+                    if(res['is_reload'] == true) location.reload();
+                 }
+            })
+        }, 60000);
+
+      </script>
+
       %endif
 
       % if libraries_enabled:
@@ -322,7 +345,8 @@ from openedx.core.djangolib.markup import HTML, Text
 
       %if len(courses) > 0 or optimization_enabled:
       <div class="courses courses-tab active">
-        <ul class="list-courses">
+        <input class="search index-search-input" data-list="courses-list" type="text" placeholder=${_('Search')} value="" />
+        <ul class="list-courses courses-list">
           %for course_info in sorted(courses, key=lambda s: s['display_name'].lower() if s['display_name'] is not None else ''):
           <li class="course-item" data-course-key="${course_info['course_key']}">
             <a class="course-link" href="${course_info['url']}">
@@ -474,7 +498,8 @@ from openedx.core.djangolib.markup import HTML, Text
 
       %if len(libraries) > 0:
       <div class="libraries libraries-tab">
-        <ul class="list-courses">
+        <input class="search index-search-input" data-list="libraries-list" type="text" placeholder=${_('Search')} value="" />
+        <ul class="list-courses libraries-list">
           %for library_info in sorted(libraries, key=lambda s: s['display_name'].lower() if s['display_name'] is not None else ''):
           <li class="course-item">
             <a class="library-link" href="${library_info['url']}">

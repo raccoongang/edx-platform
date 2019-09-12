@@ -517,4 +517,12 @@ MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB = FEATURES.get("MAX_ASSET_UPLOAD_FILE_SIZE_IN_M
 ORA2_FILEUPLOAD_BACKEND = ENV_TOKENS.get('ORA2_FILEUPLOAD_BACKEND', 'filesystem')
 ORA2_FILEUPLOAD_ROOT = ENV_TOKENS.get('ORA2_FILEUPLOAD_BACKEND',  os.path.join(MEDIA_ROOT, 'submissions_attachments/'))
 ORA2_FILEUPLOAD_CACHE_NAME = ENV_TOKENS.get('ORA2_FILEUPLOAD_CACHE_NAME', 'default')
+
+if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
+    import raven
+    INSTALLED_APPS += ( 'raven.contrib.django.raven_compat', )
+    RAVEN_CONFIG = {
+        'dsn': AUTH_TOKENS.get('RG_SENTRY_DSN'),
+    }
+    raven.fetch_git_sha(REPO_ROOT)
 #RACCOONGANG

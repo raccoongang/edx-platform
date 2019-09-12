@@ -63,6 +63,14 @@ class ShortcutsTests(UrlResetMixin, TestCase):
             self.assertTrue(is_any_marketing_link_set(['ABOUT', 'NOT_CONFIGURED']))
             self.assertFalse(is_any_marketing_link_set(['NOT_CONFIGURED']))
 
+    @override_settings(EXTERNAL_MKTG_URLS={'HONOR': 'https://example.com'})
+    def test_external_marketing_links(self):
+        # test marketing site off
+        with patch.dict('django.conf.settings.FEATURES', {'ENABLE_MKTG_SITE': False}):
+            result = marketing_link('HONOR')
+            expected_result = settings.EXTERNAL_MKTG_URLS.get('HONOR')
+            self.assertEqual(result, expected_result)
+
 
 class AddLookupTests(TestCase):
     """

@@ -785,11 +785,19 @@ def verify_for_closed_enrollment(user, cart=None):
     for cart_item in cart_items:
         course_key = getattr(cart_item, 'course_id', None)
         if course_key is not None:
-            course = get_course_by_id(course_key, depth=0)
-            if CourseEnrollment.is_enrollment_closed(user, course):
+            try:
+                course = get_course_by_id(course_key, depth=0)
+            except Http404:
+                course_exist = False
+                course_display_name = course_key.to_deprecated_string()
+            else:
+                course_exist = True
+                course_display_name = course.display_name
+
+            if not course_exist or CourseEnrollment.is_enrollment_closed(user, course):
                 is_any_course_expired = True
                 expired_cart_items.append(cart_item)
-                expired_cart_item_names.append(course.display_name)
+                expired_cart_item_names.append(course_display_name)
             else:
                 valid_cart_item_tuples.append((cart_item, course))
 

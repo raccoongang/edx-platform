@@ -705,6 +705,8 @@ if FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
             'third_party_auth.lti.LTIAuthBackend',
         ]) + list(AUTHENTICATION_BACKENDS)
     )
+    if FEATURES.get('ENABLE_CUSTOM_OAUTH_BACKEND'):
+        AUTHENTICATION_BACKENDS += ['edx_oauth_client.backends.generic_oauth_client.GenericOAuthBackend']
 
     # The reduced session expiry time during the third party login pipeline. (Value in seconds)
     SOCIAL_AUTH_PIPELINE_TIMEOUT = ENV_TOKENS.get('SOCIAL_AUTH_PIPELINE_TIMEOUT', 600)
@@ -1026,6 +1028,18 @@ LOCALESET_FROM_REQUEST = ENV_TOKENS.get('LOCALESET_FROM_REQUEST', {"en": "en_US.
 ORA2_FILEUPLOAD_BACKEND = ENV_TOKENS.get('ORA2_FILEUPLOAD_BACKEND', 'filesystem')
 ORA2_FILEUPLOAD_ROOT = ENV_TOKENS.get('ORA2_FILEUPLOAD_BACKEND',  os.path.join(MEDIA_ROOT, 'submissions_attachments/'))
 ORA2_FILEUPLOAD_CACHE_NAME = ENV_TOKENS.get('ORA2_FILEUPLOAD_CACHE_NAME', 'default')
+
+if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
+    import raven
+    INSTALLED_APPS += ( 'raven.contrib.django.raven_compat', )
+    RAVEN_CONFIG = {
+        'dsn': AUTH_TOKENS.get('RG_SENTRY_DSN'),
+    }
+    raven.fetch_git_sha(REPO_ROOT)
+
+# Variable for overriding standard MKTG_URLS
+EXTERNAL_MKTG_URLS = ENV_TOKENS.get('EXTERNAL_MKTG_URLS', {})
+
 #RACCOONGANG
 
 ############## Settings for CourseGraph ############################
