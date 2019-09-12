@@ -119,14 +119,6 @@ textarea {
   <button type="submit" name="action" value="get_staff_csv">${_('Download staff and instructor list (csv file)')}</button>
 </form>
 
-<hr />
-
-<h3>${_('Learners courses status report')}</h3><br/>
-<form name="action" method="POST">
-  <input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }" />
-  <button type="submit" name="action" value="get_user_enrolls_exel">${_('Download learners courses status report (excel file)')}</button>
-</form>
-
 %endif
 
 %if modeflag.get('courses'):

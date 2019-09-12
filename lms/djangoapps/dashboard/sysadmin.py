@@ -31,14 +31,12 @@ import mongoengine
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.locator import CourseLocator
 from path import Path as path
-import xlwt
 
 from courseware.courses import get_course_by_id
 import dashboard.git_import as git_import
 from dashboard.git_import import GitImportError
 from student.roles import CourseStaffRole, CourseInstructorRole
 from dashboard.models import CourseImportLog
-from lms.djangoapps.grades.new.course_grade import CourseGradeFactory
 from openedx.core.djangoapps.external_auth.models import ExternalAuthMap
 from openedx.core.djangoapps.external_auth.views import generate_password
 from student.models import CourseEnrollment, UserProfile, Registration
@@ -79,35 +77,6 @@ class SysadminDashboardView(TemplateView):
         """ Get an iterable list of courses."""
 
         return self.def_ms.get_courses()
-
-    def return_xls(self, header, data):
-        """
-        Xls file generation
-        """
-        xls_file = StringIO.StringIO()
-        wb = xlwt.Workbook()
-        ws = wb.add_sheet('Courses')
-
-        style = xlwt.XFStyle()
-        pattern = xlwt.Pattern()
-        pattern.pattern = xlwt.Pattern.SOLID_PATTERN
-        pattern.pattern_fore_colour = xlwt.Style.colour_map['gray25']
-        style.pattern = pattern
-
-        row_num = 0
-        for col_num in range(len(header)):
-            ws.write(row_num, col_num, header[col_num][0], style)
-            ws.col(col_num).width = header[col_num][1]
-
-        for row in data:
-            row_num += 1
-            for col_num in range(len(row)):
-                ws.write(row_num, col_num, row[col_num])
-
-        ws.set_panes_frozen(True)
-        ws.set_horz_split_pos(1)
-        wb.save(xls_file)
-        return xls_file
 
     def return_csv(self, filename, header, data):
         """
@@ -605,39 +574,6 @@ class Staffing(SysadminDashboardView):
                       _('email'), _('full_name'), ]
             return self.return_csv('staff_{0}.csv'.format(
                 request.META['SERVER_NAME']), header, data)
-
-        if action == 'get_user_enrolls_exel':
-            data = []
-            roles = [CourseInstructorRole, CourseStaffRole]
-
-            for user in User.objects.all():
-                for courseenrollment in user.courseenrollment_set.all():
-                    course = courseenrollment.course
-                    persisted_grade = CourseGradeFactory().get_persisted(user, course)
-                    datum = [
-                        user.username,
-                        user.email,
-                        str(course.id),
-                        course.display_name,
-                        course.created.strftime("%m/%d/%Y"),
-                        persisted_grade.course_edited_timestamp.strftime("%m/%d/%Y") if persisted_grade else '',
-                        persisted_grade.letter_grade if persisted_grade else ''
-                    ]
-                    data.append(datum)
-            header = [
-                (_('username'),5000),
-                (_('email'),5000),
-                (_('course_id'),10000),
-                (_('course_name'),10000),
-                (_('date_enrolled'),5000),
-                (_('date_completed'),5000),
-                (_('letter_grade'),4000)
-            ]
-
-            xls_file = self.return_xls(header, data)
-            response = HttpResponse(xls_file.getvalue(), content_type='application/vnd.ms-excel')
-            response['Content-Disposition'] = 'attachment; filename=Courses_{0}.xls'.format(request.META['SERVER_NAME'])
-            return response
 
         return self.get(request)
 
