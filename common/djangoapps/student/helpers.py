@@ -685,7 +685,7 @@ def do_create_account(form, custom_form=None):
 
 def group_courses_by_program(course_objects, courses_sorter, programs):
     """
-    Put courses in to groups by programs sorted appropriately within each program.
+    Put courses into groups by programs sorted appropriately within each program.
 
     Arguments:
         course_objects (list[CourseOverviews]): A list of courses that should be visible in this branded instance.
