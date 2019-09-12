@@ -610,20 +610,22 @@ class Staffing(SysadminDashboardView):
             data = []
             roles = [CourseInstructorRole, CourseStaffRole]
 
-            for user in User.objects.all():
-                for courseenrollment in user.courseenrollment_set.all():
-                    course = courseenrollment.course
-                    persisted_grade = CourseGradeFactory().get_persisted(user, course)
-                    datum = [
-                        user.username,
-                        user.email,
-                        str(course.id),
-                        course.display_name,
-                        course.created.strftime("%m/%d/%Y"),
-                        persisted_grade.course_edited_timestamp.strftime("%m/%d/%Y") if persisted_grade else '',
-                        persisted_grade.letter_grade if persisted_grade else ''
-                    ]
-                    data.append(datum)
+            for course in CourseOverview.objects.all():
+                for courseenrollment in CourseEnrollment.objects.filter(course_id=course.id):
+                    user = courseenrollment.user
+                    if user:
+                        persisted_grade = CourseGradeFactory().get_persisted(user, course)
+                        datum = [
+                            user.username,
+                            user.email,
+                            str(course.id),
+                            course.display_name,
+                            courseenrollment.created.strftime("%m/%d/%Y"),
+                            persisted_grade.course_edited_timestamp.strftime("%m/%d/%Y") if persisted_grade else '',
+                            persisted_grade.letter_grade if persisted_grade else ''
+                        ]
+                        data.append(datum)
+
             header = [
                 (_('username'),5000),
                 (_('email'),5000),
