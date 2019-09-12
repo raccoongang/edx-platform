@@ -188,6 +188,7 @@
                     ]
                 }
             ];
+
             tabSections['aboutTabSections'] = aboutSectionsData;
 
             // set TimeZoneField to listen to CountryField
