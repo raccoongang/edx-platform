@@ -27,6 +27,7 @@ class OnboardingPagesView(View):
         context = {
             'pages': user_onboarding.get_pages(),
             'current_page': user_onboarding.get_current_page(),
+            'is_passed': user_onboarding.is_passed()
         }
         return render_to_response("hera/onboarding.html", context)
 
@@ -42,5 +43,6 @@ class OnboardingPagesView(View):
                 'success': True,
                 'next_page': user_onboarding.get_next_page(page),
                 'current_page': page,
+                'is_passed': user_onboarding.is_passed()
             })
         return HttpResponseForbidden()
