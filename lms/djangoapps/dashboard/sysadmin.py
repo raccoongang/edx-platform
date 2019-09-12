@@ -609,6 +609,7 @@ class Staffing(SysadminDashboardView):
         if action == 'get_user_enrolls_exel':
             data = []
             roles = [CourseInstructorRole, CourseStaffRole]
+
             for course in CourseOverview.objects.all():
                 for courseenrollment in CourseEnrollment.objects.filter(course_id=course.id):
                     user = courseenrollment.user
@@ -624,6 +625,7 @@ class Staffing(SysadminDashboardView):
                             persisted_grade.letter_grade if persisted_grade else ''
                         ]
                         data.append(datum)
+
             header = [
                 (_('username'),5000),
                 (_('email'),5000),
