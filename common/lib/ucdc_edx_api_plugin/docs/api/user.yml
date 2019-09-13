@@ -31,7 +31,7 @@ paths:
               description: The user email.
             uuid:
               type: string
-              description: User ID for UCDC potral. Also is as OAuth privider ID since UCDC potral is OAuth privider for Edx.
+              description: User ID for UCDC portal. Also is as OAuth provider ID since UCDC portal is OAuth provider for Edx.
     post:
       description: User registration. Create user and his profile.
       responses:
