@@ -262,4 +262,4 @@ django-tinymce==2.8.0
 django-hvad==1.8.0
 
 # UCDC SSO and API integration
-git+https://github.com/raccoongang/edx-oauth-client.git@ucdc-hawthorn-master#egg=edx_oauth_client
+git+https://github.com/raccoongang/edx-oauth-client.git@ucdc-v.0.1.0#egg=edx_oauth_client==ucdc-v.0.1.0
