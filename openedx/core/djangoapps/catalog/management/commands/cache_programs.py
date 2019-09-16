@@ -126,9 +126,18 @@ class Command(BaseCommand):
             uuid = program.get('uuid')
             title = program.get('title')
             subtitle = program.get('subtitle')
+            courses = list()
+
+            program_courses = program.get('courses')
+            for program_course in program_courses:
+                course_runs = program_course.get('course_runs')
+
+                for course_run in course_runs:
+                    courses.append(course_run)
+
 
             if uuid not in current_programs:
-                Program.objects.create(uuid=uuid, title=title, subtitle=subtitle)
+                Program.objects.create(uuid=uuid, title=title, subtitle=subtitle, courses=courses)
 
             else:
                 existing_program = Program.objects.get(uuid=uuid)
@@ -138,6 +147,8 @@ class Command(BaseCommand):
 
                 if existing_program.subtitle != subtitle:
                     existing_program.subtitle = subtitle
+
+                existing_program.courses = courses
 
                 existing_program.save()
 

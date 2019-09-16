@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.signals import m2m_changed, pre_delete, post_delete
 from django.dispatch import Signal, receiver
 from django.utils.translation import ugettext_lazy as _
+from jsonfield.fields import JSONField
 
 from mptt.models import MPTTModel, TreeForeignKey
 from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
@@ -16,6 +17,7 @@ class Program(models.Model):
     title = models.CharField(max_length=100)
     uuid = models.CharField(primary_key=True, max_length=50)
     subtitle = models.TextField(default='')
+    courses = JSONField(default=[])
 
     def __unicode__(self):
         """Represent ourselves with the course key."""
