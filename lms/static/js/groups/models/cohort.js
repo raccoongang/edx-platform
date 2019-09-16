@@ -21,7 +21,7 @@
                 */
                 group_id: null,
                 /**
-                 *
+                 * List of users' emails with admin access for particular cohort.
                  */
                 cohort_admins: null
             }
