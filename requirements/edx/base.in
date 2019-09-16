@@ -94,7 +94,7 @@ futures ; python_version == "2.7"   # via django-pipeline, python-swift-client, 
 glob2==0.3                          # Enhanced glob module, used in openedx.core.lib.rooted_paths
 gunicorn==0.17.4
 help-tokens
-html5lib==0.999                     # HTML parser, used for capa problems
+html5lib==1.0.1                     # HTML parser, used for capa problems
 ipaddr==2.1.11                      # Ip network support for Embargo feature
 jsonfield                           # Django model field for validated JSON; used in several apps
 mailsnake==1.6.2                    # Needed for mailchimp (mailing djangoapp)
