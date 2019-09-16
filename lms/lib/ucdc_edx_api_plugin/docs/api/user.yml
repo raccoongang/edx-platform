@@ -48,18 +48,18 @@ paths:
 
 
 definitions:
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: The user ID.
-        username:
-          type: string
-          description: The user name.
-        email:
-          type: string
-          description: The user email.
-        auth_uid:
-          type: string
-          description: The OAuth provider user ID.
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: The user ID.
+      username:
+        type: string
+        description: The user name.
+      email:
+        type: string
+        description: The user email.
+      auth_uid:
+        type: string
+        description: The OAuth provider user ID.
