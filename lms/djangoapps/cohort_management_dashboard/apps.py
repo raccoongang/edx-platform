@@ -16,7 +16,7 @@ class CohortManagementDashboardApp(AppConfig):
         PluginURLs.CONFIG: {
             ProjectType.LMS: {
                 PluginURLs.NAMESPACE: u'cohort_management_dashboard',
-                PluginURLs.REGEX: u'courses/{}/cohort_dashboard'.format(COURSE_ID_PATTERN),
+                PluginURLs.REGEX: u'courses/{}/cohort/'.format(COURSE_ID_PATTERN),
                 PluginURLs.RELATIVE_PATH: u'urls',
             }
         }
