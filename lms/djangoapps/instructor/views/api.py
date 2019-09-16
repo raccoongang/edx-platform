@@ -3418,7 +3418,7 @@ def cohorts_list_with_assignment(request, course_id):
         cohort_assignments_dict[key].add(value)
 
     for cohort in cohort_info['cohorts']:
-        cohort['cohort_admins'] = list(cohort_assignments_dict.get(cohort['id'], []))
+        cohort['cohort_admins'] = list(cohort_assignments_dict[cohort['id']])
     return JsonResponse(cohort_info)
 
 
