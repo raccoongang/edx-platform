@@ -1,3 +1,6 @@
 # RACCOONGANG
 sentry-sdk==0.7.8
 # RACCOONGANG
+
+# UCDC integration
+-e lms/lib/ucdc_edx_api_plugin
