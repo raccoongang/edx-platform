@@ -89,6 +89,7 @@ from xmodule.modulestore import EdxJSONEncoder
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import DuplicateCourseError, ItemNotFoundError
 from xmodule.tabs import CourseTab, CourseTabList, InvalidTabsException
+from course_category.models import CourseCategory
 
 from .component import ADVANCED_COMPONENT_TYPES
 from .item import create_xblock_info
@@ -1058,6 +1059,19 @@ def settings_handler(request, course_key_string):
             sidebar_html_enabled = course_experience_waffle().is_enabled(ENABLE_COURSE_ABOUT_SIDEBAR_HTML)
             # self_paced_enabled = SelfPacedConfiguration.current().enabled
 
+            course_category_nodes = CourseCategory.objects.filter(parent=None)
+            course_category_options = []
+
+            def add_nodes(nodes, prefix):
+                for node in nodes:
+                    path = prefix and u'{}/{}'.format(prefix, node.name) or node.name
+                    course_category_options.append([node.id, path])
+                    if not node.is_leaf_node():
+
+                        add_nodes(node.children.all(), path)
+
+            add_nodes(course_category_nodes, u'')
+
             settings_context = {
                 'context_course': course_module,
                 'course_locator': course_key,
@@ -1078,7 +1092,9 @@ def settings_handler(request, course_key_string):
                 'enrollment_end_editable': enrollment_end_editable,
                 'is_prerequisite_courses_enabled': is_prerequisite_courses_enabled(),
                 'is_entrance_exams_enabled': is_entrance_exams_enabled(),
-                'enable_extended_course_details': enable_extended_course_details
+                # 'self_paced_enabled': self_paced_enabled,
+                'enable_extended_course_details': enable_extended_course_details,
+                'course_category_options': course_category_options,
             }
             if is_prerequisite_courses_enabled():
                 courses, in_process_course_actions = get_courses_accessible_to_user(request)

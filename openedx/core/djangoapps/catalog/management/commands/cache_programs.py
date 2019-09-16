@@ -6,12 +6,13 @@ from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.management import BaseCommand
 
+from course_category.models import Program
 from openedx.core.djangoapps.catalog.cache import (
     PROGRAM_CACHE_KEY_TPL,
     SITE_PROGRAM_UUIDS_CACHE_KEY_TPL
 )
 from openedx.core.djangoapps.catalog.models import CatalogIntegration
-from openedx.core.djangoapps.catalog.utils import create_catalog_api_client
+from openedx.core.djangoapps.catalog.utils import create_catalog_api_client, get_programs
 
 logger = logging.getLogger(__name__)
 User = get_user_model()  # pylint: disable=invalid-name
@@ -69,6 +70,8 @@ class Command(BaseCommand):
         logger.info('Caching details for {successful} programs.'.format(successful=successful))
         cache.set_many(programs, None)
 
+        self.update_db_programs()
+
         if failure:
             # This will fail a Jenkins job running this command, letting site
             # operators know that there was a problem.
@@ -110,3 +113,34 @@ class Command(BaseCommand):
                 failure = True
                 continue
         return programs, failure
+
+    def update_db_programs(self):
+
+        site = Site.objects.get_current()
+        pms = get_programs(site)
+
+        current_programs = [p for p in Program.objects.values_list('uuid', flat=True)]
+
+        for i in range(len(pms)):
+            program = pms[i]
+            uuid = program.get('uuid')
+            title = program.get('title')
+            subtitle = program.get('subtitle')
+
+            if uuid not in current_programs:
+                Program.objects.create(uuid=uuid, title=title, subtitle=subtitle)
+
+            else:
+                existing_program = Program.objects.get(uuid=uuid)
+
+                if existing_program.title != title:
+                    existing_program.title = title
+
+                if existing_program.subtitle != subtitle:
+                    existing_program.subtitle = subtitle
+
+                existing_program.save()
+
+        for current_program in current_programs:
+            if current_program not in [pm['uuid'] for pm in pms]:
+                Program.objects.filter(uuid=current_program).delete()
