@@ -4592,7 +4592,7 @@ msgstr "Внешнее обсуждение"
 
 #: common/lib/xmodule/xmodule/tabs.py lms/djangoapps/courseware/tabs.py
 msgid "Home"
-msgstr "Главная страница"
+msgstr "Программа"
 
 #: common/lib/xmodule/xmodule/textannotation_module.py
 msgid "Text Annotation"
@@ -6023,7 +6023,7 @@ msgstr "Программа обучения"
 #: lms/djangoapps/courseware/tabs.py
 #: lms/templates/peer_grading/peer_grading.html
 msgid "Progress"
-msgstr "Прогресс"
+msgstr "Ваш результат"
 
 #. #-#-#-#-#  django-partial.po (0.1a)  #-#-#-#-#
 #. Translators: 'Textbooks' refers to the tab in the course that leads to the
@@ -11905,7 +11905,7 @@ msgstr "Начало курса: {date}"
 
 #: lms/templates/courses_list.html
 msgid "View all Courses"
-msgstr "Посмотреть все курсы"
+msgstr "Все курсы"
 
 #: lms/templates/dashboard.html lms/templates/user_dropdown.html
 #: themes/edx.org/lms/templates/dashboard.html
