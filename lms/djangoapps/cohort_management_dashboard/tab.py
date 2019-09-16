@@ -1,4 +1,4 @@
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_noop as _
 
 from courseware.access import has_access
 from courseware.tabs import EnrolledTab
