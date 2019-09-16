@@ -4,16 +4,14 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from social_django.models import UserSocialAuth
 
-from openedx.core.djangoapps.user_api.accounts import (
-    EMAIL_CONFLICT_MSG,
-    USERNAME_CONFLICT_MSG,
-)
-from openedx.core.djangoapps.user_api.accounts.api import check_account_exists
+from openedx.core.djangoapps.user_api.accounts import EMAIL_CONFLICT_MSG, USERNAME_CONFLICT_MSG
 from openedx.core.djangoapps.user_api.accounts.api import (
+    check_account_exists,
     get_email_validation_error,
     get_username_validation_error,
 )
-from ucdc_edx_api.api.exceptions import ResourceConflicts
+from third_party_auth.models import OAuth2ProviderConfig
+from ucdc_edx_api.api.exceptions import ResourceConflicts, UserSocialOAuthMisconfiguration
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -25,9 +23,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_auth_uid(obj):
-        qs = UserSocialAuth.objects.filter(user_id=obj.id)
-        if qs.count() == 1:
-            return qs.first().uid
+        provider_name = OAuth2ProviderConfig.objects.first().backend_name
+        qs = UserSocialAuth.objects.filter(user_id=obj.id, provider=provider_name)
+        if not qs.exists():
+            msg = "There is no social auth provider for user {0}. Given provider{1}".format(obj.id, provider_name)
+            raise UserSocialOAuthMisconfiguration(msg)
+
+        return qs.first().uid
 
     @staticmethod
     def validate_email(value):
@@ -54,19 +56,14 @@ class UserRegisterSerializer(serializers.ModelSerializer):
                 "email": EMAIL_CONFLICT_MSG.format(email_address=_email),
                 "username": USERNAME_CONFLICT_MSG.format(username=_username),
             }
-            errors = {
-                field: [{"user_message": conflict_messages[field]}]
-                for field in conflicts
-            }
+            errors = {field: [{"user_message": conflict_messages[field]}] for field in conflicts}
             raise ResourceConflicts(errors)
 
         return data
 
     def create(self, validated_data):
         user_obj = User.objects.create_user(
-            username=validated_data.get("username"),
-            email=validated_data.get("email"),
-            password=uuid4().hex,
+            username=validated_data.get("username"), email=validated_data.get("email"), password=uuid4().hex
         )
 
         return user_obj
@@ -80,17 +77,13 @@ class UserSocialAuthSerializer(serializers.ModelSerializer):
     @staticmethod
     def validate_uid(value):
         if not value or UserSocialAuth.objects.filter(uid=value).exists():
-            raise serializers.ValidationError(
-                "'uid' %s is unavailable or not unique." % value
-            )
+            raise serializers.ValidationError("'uid' %s is unavailable or not unique." % value)
 
         return value
 
     def create(self, validated_data):
         user_social_auth_obj = UserSocialAuth.objects.create(
-            user=validated_data["user"],
-            provider=validated_data["provider"],
-            uid=validated_data["uid"],
+            user=validated_data["user"], provider=validated_data["provider"], uid=validated_data["uid"]
         )
         user_social_auth_obj.save()
 

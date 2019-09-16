@@ -24,27 +24,20 @@ def package_data(pkg, roots):
     return {pkg: data}
 
 
-with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
+with open(os.path.join(os.path.dirname(__file__), "README.md")) as readme:
     README = readme.read()
 
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
-    name='ucdc_edx_api',
-    version='0.1.0',
-    description='Edx plugin to provide public API for UCDC portal.',
+    name="ucdc_edx_api",
+    version="0.1.0",
+    description="Edx plugin to provide public API for UCDC portal.",
     long_description=README,
-    packages=[
-        'ucdc_edx_api',
-    ],
+    packages=["ucdc_edx_api"],
     install_requires=[],
     requires=[],
     entry_points={
-        "lms.djangoapp": [
-            "ucdc_edx_api = ucdc_edx_api.apps:ApiConfig",
-        ],
-        "cms.djangoapp": [
-            "ucdc_edx_api = ucdc_edx_api.apps:ApiConfig",
-        ],
-    }
+        "lms.djangoapp": ["ucdc_edx_api = ucdc_edx_api.apps:ApiConfig"],
+    },
 )

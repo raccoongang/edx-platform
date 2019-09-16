@@ -9,3 +9,7 @@ class ResourceConflicts(APIException):
         "Request could not be completed due to a conflict with the current state of the target resource."
     )
     default_code = "resource_conflict"
+
+
+class UserSocialOAuthMisconfiguration(Exception):
+    pass
