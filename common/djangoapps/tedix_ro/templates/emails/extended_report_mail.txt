@@ -1,0 +1,35 @@
+<%!
+from django.utils.translation import ugettext as _
+
+from openedx.features.enterprise_support.utils import get_enterprise_learner_generic_name
+%>
+<%!
+from django.utils.translation import ugettext as _
+%>
+<%
+roll = _('Superuser') if student.is_superuser else _('Teacher')
+%>
+%if student.is_superuser or student.is_staff and hasattr(student, 'instructorprofile'):
+${_("Students Progress for {roll} '{username}'").format(roll=roll, username=student.username)}
+%endif
+
+%for lesson_report in lesson_reports:
+%for user_data in lesson_report.get('report_data'):
+
+${_("Student name")}: ${ user_data['full_name'] }
+${_("Activity report for lesson")}: ${ lesson_report['course'].display_name }
+${_("Lesson completed")}: ${'Yes' if user_data['completion'] == 1 else 'No'}
+${_("Number of question completed from first attempt")}: ${ user_data['percent'] }% (${user_data['count_answer_first_attempt']} out of ${len(user_data['questions'])})
+
+    %for question_name, question_count_answer in user_data['questions']:
+    ${_("Question")} ${loop.index + 1}: ${ question_name }
+        %if question_count_answer == 1:
+        ${ ('First attempt') }
+        %else:
+        ${ question_count_answer } ${ _("attempts") }
+        %endif
+    %endfor
+%endfor
+
+External report: ${ lesson_report['report_url'] }
+%endfor

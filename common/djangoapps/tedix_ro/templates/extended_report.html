@@ -1,0 +1,41 @@
+<%page expression_filter="h"/>
+<%inherit file="/main.html" />
+<%namespace name='static' file='/static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+
+from openedx.features.enterprise_support.utils import get_enterprise_learner_generic_name
+%>
+
+<%
+username = get_enterprise_learner_generic_name(request) or student.username
+roll = _('Superuser') if student.is_superuser else _('Teacher')
+%>
+
+<%block name="bodyclass">view-in-course view-progress</%block>
+
+<%block name="headextra">
+<%static:css group='style-course-vendor'/>
+<%static:css group='style-course'/>
+</%block>
+
+
+<%namespace name="progress_graph" file="/courseware/progress_graph.js"/>
+
+<main id="main" aria-label="Content" tabindex="-1">
+    <div class="container">
+        <div class="profile-wrapper">
+            <section class="course-info" id="course-info-progress">
+            %if report_data:
+                %if student.is_superuser or student.is_staff and hasattr(student, 'instructorprofile'):
+                    <h2 class="hd hd-2 progress-certificates-title">
+                        ${_("Students Progress for {roll} '{username}'").format(roll=roll, username=username)}
+                    </h2>
+                    <%include file="includes/teacher_extended_report.html" />
+                %else:
+                    <%include file="includes/student_extended_report.html" />
+                %endif
+            %endif
+        </div>
+    </div>
+</main>

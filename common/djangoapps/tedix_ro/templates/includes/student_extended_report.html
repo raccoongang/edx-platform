@@ -1,0 +1,28 @@
+<%page args="report_data, course"/>
+<%!
+from django.utils.translation import ugettext as _
+%>
+
+%for user_data in report_data:
+    <h2 class="hd hd-2 progress-certificates-title">
+        <h4 class="hd hd-4">
+            <p>${_("Student name")}: <span style="color: red;">${ user_data['full_name'] }</span><p>
+            <p>${_("Activity report for lesson")}: ${ course.display_name }<p>
+            <p>${_("Lesson completed")}: <span style="color: ${'green' if user_data['completion'] == 1 else 'red'};">${'Yes' if user_data['completion'] == 1 else 'No'}</span><p>
+            <p>${_("Number of question completed from first attempt")}:<span style="color: green"> ${ user_data['percent'] }% (${user_data['count_answer_first_attempt']} out of ${len(user_data['questions'])})</span><p>
+        </h4>
+    </h2>
+    <section class="chapters">
+    <br>
+    <div>
+    %for question_name, question_count_answer in user_data['questions']:
+        <p>
+            ${_("Question")} ${loop.index + 1}: ${ question_name }<br>
+            %if question_count_answer == 1:
+                <span style="color: green;">${ ('First attempt') }</span>
+            %else:
+                <span style="color: red;">${ question_count_answer } ${ _("attempts") }</span>
+            %endif
+        </p>
+    %endfor
+%endfor
