@@ -525,7 +525,7 @@ def _section_cohort_management(course, access):
             'course_cohort_settings',
             kwargs={'course_key_string': unicode(course_key)}
         ),
-        'cohorts_url': reverse('cohorts', kwargs={'course_key_string': unicode(course_key)}),
+        'cohorts_url': reverse('cohorts_list_with_assignment', kwargs={'course_id': unicode(course_key)}),
         'upload_cohorts_csv_url': reverse('add_users_to_cohorts', kwargs={'course_id': unicode(course_key)}),
         'verified_track_cohorting_url': reverse(
             'verified_track_cohorting', kwargs={'course_key_string': unicode(course_key)}
@@ -535,6 +535,7 @@ def _section_cohort_management(course, access):
                 'cohort_management_dashboard:dashboard_with_cohort',
                 kwargs={'course_id': unicode(course_key), 'cohort_id': cohort_id_stub}
             ),
+        'update_cohort_assignment_url': reverse('update_cohort_assignment', kwargs={'course_id': unicode(course_key)}),
     }
     return section_data
 

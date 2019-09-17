@@ -5,7 +5,9 @@
         function($, _, Backbone, gettext, HtmlUtils) {
             var CohortFormView = Backbone.View.extend({
                 events: {
-                    'change .cohort-management-details-association-course input': 'onRadioButtonChange'
+                    'change .cohort-management-details-association-course input': 'onRadioButtonChange',
+                    'click .revoke': 'onRevokeAdminClick',
+                    'click .add-new-admin-button': 'onCohortAdminAdded',
                 },
 
                 initialize: function(options) {
@@ -60,6 +62,42 @@
                     }
                     // Enable the select if the user has chosen groups, else disable it
                     this.$('.input-cohort-group-association').prop('disabled', !groupsEnabled);
+                },
+
+                onRevokeAdminClick: function(event) {
+                    this.updateCohortAssigment(this, event.target.closest('.revoke').dataset.user, false);
+                },
+
+                onCohortAdminAdded: function(event){
+                    this.updateCohortAssigment(this, $(event.target.parentElement).find('input')[0].value, true)
+                },
+
+                updateCohortAssigment: function(self, user, isAdd){
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'json',
+                        url: this.context.updateCohortAssigmentUrl,
+                        data: {
+                            unique_student_identifier: user,
+                            cohort_id: this.model.id,
+                            is_assignment: isAdd,
+                        },
+                        success: function(data) {
+                            if(!isAdd) {
+                                self.model.set('cohort_admins', self.model.get('cohort_admins').filter(function (value, index, arr) {
+                                    return value !== user;
+                                }));
+                            }else {
+                                var newCohortAdmins = self.model.get('cohort_admins');
+                                newCohortAdmins.push(user);
+                                self.model.set('cohort_admins', newCohortAdmins);
+                            }
+                            self.render();
+                        },
+                        error: statusAjaxError(function () {
+                            // TODO(yurabraiko@raccoongang.com) add error render.
+                        })
+                    });
                 },
 
                 hasAssociatedContentGroup: function() {

@@ -10,6 +10,8 @@ import decimal
 import json
 import logging
 import random
+from collections import defaultdict
+
 import re
 import string
 import StringIO
@@ -85,6 +87,7 @@ from lms.djangoapps.instructor_task.models import ReportStore
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.course_groups.cohorts import is_course_cohorted, migrate_cohort_settings
 from openedx.core.djangoapps.course_groups.models import CourseUserGroup
+from openedx.core.djangoapps.course_groups.views import cohort_handler
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preference, set_user_preference
 from openedx.core.djangolib.markup import HTML, Text
@@ -3374,7 +3377,7 @@ def update_cohort_assignment(request, course_id):
 
     is_assignment = json.loads(request.POST.get('is_assignment').lower())
     cohort_id = int(request.POST.get('cohort_id'))
-    user =get_student_from_identifier(request.POST.get('unique_student_identifier'))
+    user = get_student_from_identifier(request.POST.get('unique_student_identifier'))
 
     #Note (yura.braiko@gmail.com): if cohort id is `-1` it equal to `All` cohort.
     if cohort_id == -1:
@@ -3395,6 +3398,28 @@ def update_cohort_assignment(request, course_id):
 
     # Note(yura.braiko@raccoongang.com): return empty success response.
     return JsonResponse({})
+
+
+@transaction.non_atomic_requests
+@ensure_csrf_cookie
+@cache_control(no_cache=True, no_store=True, must_revalidate=True)
+@require_global_staff
+@require_http_methods(['POST', 'GET'])
+def cohorts_list_with_assignment(request, course_id):
+    cohort_info = json.loads(cohort_handler(request, course_id).content)
+    course_id = CourseKey.from_string(course_id)
+    cohort_assignments = (
+        CourseUserGroup.objects.filter(course_id=course_id).values_list('id', 'cohortassigment__user__email')
+    )
+
+    cohort_assignments_dict = defaultdict(set)
+
+    for key, value in cohort_assignments:
+        cohort_assignments_dict[key].add(value)
+
+    for cohort in cohort_info['cohorts']:
+        cohort['cohort_admins'] = list(cohort_assignments_dict[cohort['id']])
+    return JsonResponse(cohort_info)
 
 
 def invalidate_certificate(request, generated_certificate, certificate_invalidation_data):
