@@ -7,6 +7,7 @@ variables:
     EDX_THEME_NAME: rg-theme
 
 before_script:
+    - apk add git
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
 
 build-base-image:
@@ -21,5 +22,3 @@ build-base-image:
         - docker build --target=static_compile -t $BASE_IMAGE-static-builder .
         - docker push $BASE_IMAGE
         - docker push $BASE_IMAGE-static-builder
-    only:
-        - hawthorn-rg
