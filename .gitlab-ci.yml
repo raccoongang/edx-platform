@@ -1,6 +1,11 @@
 stages:
     - build
 
+variables:
+    EDX_THEME_REPO: https://github.com/raccoongang/edx-theme.git
+    EDX_THEME_BRANCH: base-hawthorn-stage
+    EDX_THEME_NAME: rg-theme
+
 before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
 
@@ -11,6 +16,7 @@ build-base-image:
     variables:
         BASE_IMAGE: registry-gitlab.raccoongang.com/edx/edx-platform:$CI_COMMIT_REF_SLUG
     script:
+        - git clone --depth 1 $EDX_THEME_REPO -b $EDX_THEME_BRANCH themes/$EDX_THEME_NAME
         - docker build -t $BASE_IMAGE .
         - docker build --target=static_compile -t $BASE_IMAGE-static-builder .
         - docker push $BASE_IMAGE
