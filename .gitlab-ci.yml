@@ -19,6 +19,6 @@ build-base-image:
     script:
         - git clone --depth 1 $EDX_THEME_REPO -b $EDX_THEME_BRANCH themes/$EDX_THEME_NAME
         - docker build -t $BASE_IMAGE .
-        - docker build --target=static_compile -t $BASE_IMAGE-static-builder .
+        - docker build --build-arg base_image=$BASE_IMAGE -t $BASE_IMAGE-static - < static.Dockerfile
         - docker push $BASE_IMAGE
-        - docker push $BASE_IMAGE-static-builder
+        - docker push $BASE_IMAGE-static
