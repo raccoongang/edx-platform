@@ -25,6 +25,32 @@ class CourseCategorySearchEngine(ElasticSearchEngine):
                         terms[category.name] = facets_category_terms.get(category.name)
                 results['facets']['category']['terms'] = terms
         programs = _search_programs(**kwargs)
+        courses = list(results.get('results', []))
+        already_grouped_courses_ids = set()
+
+        for program in programs:
+            program_courses = program.get('courses')
+            elastics_program_courses = list()
+            for course in courses:
+                course_data = course.get('data')
+
+                for program_course in program_courses:
+                    if course_data.get('id') == program_course.get('key'):
+                        elastics_program_courses.append(course)
+                        already_grouped_courses_ids.add(course_data.get('id'))
+                        break
+
+            program['courses'] = elastics_program_courses
+        courses_ids = [course.get('data', {}).get('id') for course in courses]
+        ungrouped_courses_ids = set(courses_ids) - already_grouped_courses_ids
+
+        if ungrouped_courses_ids:
+            ungrouped_courses = list(filter(lambda c: c.get('data', {}).get('id') in ungrouped_courses_ids, courses))
+            programs.append({
+                'title': 'Without program',
+                'subtitle': '',
+                'courses': ungrouped_courses
+            })
         results['programs'] = programs
         return results
 
@@ -48,6 +74,6 @@ def _search_programs(**kwargs):
 
     result_intersection = title_qs & category_qs
 
-    result = [{'title':p.title, 'subtitle':p.subtitle} for p in result_intersection]
+    result = [{'title':p.title, 'subtitle':p.subtitle, 'courses':p.courses} for p in result_intersection]
 
     return result
