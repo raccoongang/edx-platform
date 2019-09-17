@@ -1356,6 +1356,9 @@ PIPELINE_UGLIFYJS_BINARY = 'node_modules/.bin/uglifyjs'
 
 from openedx.core.lib.rooted_paths import rooted_glob
 
+# SeamlessAuthorization shouldn't to work for Django administration
+SOCIAL_AUTH_EXCLUDE_URL_PATTERN = r'^/admin'
+
 courseware_js = [
     'js/ajax-error.js',
     'js/courseware.js',
