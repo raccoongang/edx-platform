@@ -3,15 +3,15 @@ Views related to course groups functionality.
 """
 
 import logging
-import re
 
+import re
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, Paginator
-from django.urls import reverse
 from django.db import transaction
 from django.http import Http404, HttpResponseBadRequest
+from django.urls import reverse
 from django.utils.translation import ugettext
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods, require_POST
@@ -20,8 +20,7 @@ from six import text_type
 
 from courseware.courses import get_course_with_access
 from edxmako.shortcuts import render_to_response
-from util.json_request import JsonResponse, expect_json
-
+from util.json_request import expect_json, JsonResponse
 from . import cohorts
 from .models import CohortMembership, CourseUserGroup, CourseUserGroupPartitionGroup
 
@@ -78,11 +77,11 @@ def _get_cohort_representation(cohort, course):
     """
     group_id, partition_id = cohorts.get_group_info_for_cohort(cohort)
     assignment_type = cohorts.get_assignment_type(cohort)
+    enrolled_students = cohorts.get_enrolled_students_by_cohort_and_course_key(cohort, course.location.course_key)
     return {
         'name': cohort.name,
         'id': cohort.id,
-        'user_count': cohort.users.filter(courseenrollment__course_id=course.location.course_key,
-                                          courseenrollment__is_active=1).count(),
+        'user_count': enrolled_students.count(),
         'assignment_type': assignment_type,
         'user_partition_id': partition_id,
         'group_id': group_id,
@@ -226,8 +225,9 @@ def users_in_cohort(request, course_key_string, cohort_id):
     # this will error if called with a non-int cohort_id.  That's ok--it
     # shouldn't happen for valid clients.
     cohort = cohorts.get_cohort_by_id(course_key, int(cohort_id))
+    enrolled_students = cohorts.get_enrolled_students_by_cohort_and_course_key(cohort, course_key)
 
-    paginator = Paginator(cohort.users.all(), 100)
+    paginator = Paginator(enrolled_students, 100)
     try:
         page = int(request.GET.get('page'))
     except (TypeError, ValueError):
