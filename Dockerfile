@@ -99,4 +99,8 @@ ENV STATIC_COLLECTOR_ROOT=/static_collector \
     WEBPACK_CONFIG_PATH=webpack.prod.config.js \
     LOCALE_PATHS=/edx/app/edxapp/edx-platform/conf/locale
 
+RUN ./compile.sh
+
 FROM edxapp
+
+COPY --from=static_compile /staticfiles /staticfiles
