@@ -9,6 +9,8 @@ import uuid
 import warnings
 from collections import namedtuple
 
+from course_category.models import CourseCategory
+
 import analytics
 import dogstats_wrapper as dog_stats_api
 from bulk_email.models import Optout
@@ -196,6 +198,7 @@ def index(request, extra_context=None, user=AnonymousUser()):
 
     programs = group_courses_by_program(get_courses(user), courses_sorter, get_programs(request.site))
     context['programs'] = programs
+    context['categories'] = CourseCategory.objects.filter(parent=None)
 
     return render_to_response('index.html', context)
 

@@ -1,10 +1,12 @@
 """ Code to allow module store to interface with courseware index """
+
 from __future__ import absolute_import
 
 import logging
 import re
 from abc import ABCMeta, abstractmethod
 from datetime import timedelta
+from six import add_metaclass
 
 from django.conf import settings
 from django.urls import resolve
@@ -13,7 +15,8 @@ from django.utils.translation import ugettext_lazy
 from search.search_engine_base import SearchEngine
 from six import add_metaclass
 
-from contentstore.course_group_config import GroupConfiguration
+from cms.djangoapps.contentstore.course_group_config import GroupConfiguration
+from course_category.models import CourseCategory
 from course_modes.models import CourseMode
 from eventtracking import tracker
 from openedx.core.lib.courses import course_image_url
@@ -594,6 +597,8 @@ class CourseAboutSearchIndexer(object):
             'course': course_id,
             'content': {},
             'image_url': course_image_url(course),
+            'catalog_visibility': course.catalog_visibility,
+            'category': []
         }
 
         # load data for all of the 'about' modules for this course into a dictionary
@@ -628,6 +633,7 @@ class CourseAboutSearchIndexer(object):
                     course_info['content'][about_information.property_name] = analyse_content
                 if about_information.index_flags & AboutInfo.PROPERTY:
                     course_info[about_information.property_name] = section_content
+        course_info['category'] = map(lambda x: x.get_root().name, CourseCategory.objects.filter(courses__id=course.id))
 
         # Broad exception handler to protect around and report problems with indexing
         try:
