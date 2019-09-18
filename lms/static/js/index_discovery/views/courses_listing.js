@@ -5,25 +5,20 @@
         'backbone',
         'gettext',
         'js/index_discovery/views/course_card',
-        'js/index_discovery/views/program_card'
-    ], function($, _, Backbone, gettext, CourseCardView, ProgramCardView) {
+    ], function($, _, Backbone, gettext, CourseCardView) {
         'use strict';
 
         return Backbone.View.extend({
 
-            el: 'div.courses',
+            el: 'section.courses',
             $window: $(window),
             $document: $(document),
 
             initialize: function() {
-                this.$list = this.$el.find('.courses-listing');
                 this.attachScrollHandler();
             },
 
             render: function() {
-                console.log('Rendering course listing...');
-                console.log('Something else is going on...');
-
                 this.$list.empty();
                 this.renderItems();
                 return this;
@@ -36,20 +31,14 @@
 
             renderItems: function() {
                 /* eslint no-param-reassign: [2, { "props": true }] */
-                var latest = this.model.latest();
-                console.log('Rendering items (latest): ', latest);
-                var programs = this.model.getPrograms();
-                console.log('Rendering items (programs): ', programs);
-
-                var items = latest.map(function(result) {
-                    result.userPreferences = this.model.userPreferences;
-                    var item = new CourseCardView({model: result});
-                    return item.render().el;
+                var items = this.model.models.map(function(item) {
+                    item.userPreferences = this.model.userPreferences;
+                    var courseItem = new CourseCardView({model: item});
+                    return courseItem.render().el;
                 }, this);
 
-                console.log('Rendering items: ', items);
-
-                this.$list.append(items);
+                this.$list.append(items)
+                return this.el;
                 /* eslint no-param-reassign: [2, { "props": false }] */
             },
 

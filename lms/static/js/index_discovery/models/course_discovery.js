@@ -19,42 +19,23 @@
 
             initialize: function() {
                 this.programCards = new Backbone.Collection([], {model: ProgramCard})
-                this.courseCards = new Backbone.Collection([], {model: CourseCard});
+
                 this.facetOptions = new Backbone.Collection([], {model: FacetOption});
             },
 
             parse: function(response) {
-                console.log('Parsing Course Discovery: ', response);
-
-                var programs_dummies = [
-                    {
-                        'title': 'Test Program',
-                        'subtitle': 'Test Program subtitle',
-                        'courses': [
-                            'course-v1:edX+DemoX+2019_Kirill_Test_2',
-                            'course-v1:edX+DemoX+2019_Kirill_Test_3',
-                        ]
-                    },
-                    {
-                        'title': 'Second Test Program',
-                        'subtitle': 'Second Test Program subtitle',
-                        'courses': [
-                            'course-v1:TestRG+TestRG+TestRG',
-                            'course-v1:edX+DemoX+2019_Kirill_Test_4',
-                            'course-v1:edX+DemoX+2019_Kirill_Test_5',
-                            'course-v1:edX+DemoX+2019_Kirill_Test_5',
-                        ]
-                    },
-                ]
                 var courses = response.results || [];
                 var facets = response.facets || {};
-                var programs = response.programs || programs_dummies || [];
+                var programs = response.programs || [];
 
-                this.courseCards.add(_.pluck(courses, 'data'));
+                _(programs).each(function(program, idx) {
+                    program.courses = _.pluck(program.courses, 'data');
+                });
+
                 this.programCards.add(programs);
 
                 this.set({
-                    totalCount: response.total,
+                    totalCount: response.total + response.programs_total,
                     latestCount: courses.length
                 });
 
@@ -68,11 +49,6 @@
                         }, {merge: true});
                     });
                 });
-
-                console.log('Course cards: ', this.courseCards);
-                console.log('Program cards: ', this.programCards);
-                console.log('Facets: ', facets);
-                console.log('this.facetOptions(options): ', options);
             },
             
 
@@ -81,7 +57,6 @@
                     totalCount: 0,
                     latestCount: 0
                 });
-                this.courseCards.reset();
                 this.programCards.reset();
                 this.facetOptions.reset();
             },

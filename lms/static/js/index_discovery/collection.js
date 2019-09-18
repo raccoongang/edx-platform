@@ -72,7 +72,7 @@
             parse: function(response) {
                 var results = response.results || [];
                 this.latestModelsCount = results.length;
-                this.totalCount = response.total;
+                this.totalCount = response.total + response.programs_total;
                 if (typeof response.facets !== 'undefined') {
                     this.facets = response.facets;
                 } else {

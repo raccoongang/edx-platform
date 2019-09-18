@@ -26,7 +26,6 @@
             className: 'courses-listing-item',
 
             initialize: function() {
-                console.log('Initializing course card!');
                 this.tpl = _.template($(this.templateId).html());
             },
 
