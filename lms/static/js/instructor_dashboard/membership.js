@@ -257,7 +257,6 @@ such that the value can be defined later than this assignment (file load order).
                 '<div>';
             var $cohort_checker = $(checker, {class: 'cohort_management'});
             $cohort_checker.find('input:checkbox').change(function (e) {
-                console.log(this);
                 authListWidgetReloadList.update_cohort_assignment(
                     member.email,
                     this.dataset.cohortId,
