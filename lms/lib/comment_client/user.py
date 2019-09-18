@@ -1,8 +1,14 @@
 """ User model wrapper for comment service"""
+
+import time
+
+from django.contrib.auth.models import User as django_user
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 from six import text_type
 
-import settings
 import models
+import settings
 import utils
 
 
@@ -116,7 +122,9 @@ class User(models.Model):
 
     def subscribed_threads(self, query_params={}):
         if not self.course_id:
-            raise utils.CommentClientRequestError("Must provide course_id when retrieving subscribed threads for the user")
+            raise utils.CommentClientRequestError(
+                "Must provide course_id when retrieving subscribed threads for the user"
+                )
         url = _url_for_user_subscribed_threads(self.id)
         params = {'course_id': text_type(self.course_id)}
         params.update(query_params)
@@ -179,6 +187,20 @@ class User(models.Model):
             metric_action='user.retire',
             metric_tags=self._metric_tags
         )
+
+    def update_username(self):
+        hashed = hex(int(time.time()))[2:]
+        self.username = "{0}_{1}".format(self.username, hashed)
+        self.save()
+
+
+@receiver(pre_delete, sender=django_user)
+def user_update_username_handler(sender, **kwargs):
+    """
+    Updates forum username for deleted user
+    """
+    forum_user = User.from_django_user(kwargs['instance'])
+    forum_user.update_username()
 
 
 def _url_for_vote_comment(comment_id):
