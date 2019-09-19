@@ -1106,3 +1106,14 @@ derive_settings(__name__)
 ##################### Edx OAuth Client #########################
 if FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
     CUSTOM_OAUTH_PARAMS = ENV_TOKENS.get('CUSTOM_OAUTH_PARAMS', {})
+
+##################### EDX-ORA2 #########################
+S3_USE_SIGV4 = ENV_TOKENS.get('S3_USE_SIGV4', False)
+S3_HOST = ENV_TOKENS.get('S3_HOST')
+
+if S3_USE_SIGV4 and S3_HOST:
+    os.environ['S3_USE_SIGV4'] = 'True'
+
+ORA2_FILEUPLOAD_BACKEND = ENV_TOKENS.get('ORA2_FILEUPLOAD_BACKEND', 'filesystem')
+ORA2_FILEUPLOAD_ROOT = ENV_TOKENS.get('ORA2_FILEUPLOAD_BACKEND',  os.path.join(MEDIA_ROOT, 'submissions_attachments/'))
+ORA2_FILEUPLOAD_CACHE_NAME = ENV_TOKENS.get('ORA2_FILEUPLOAD_CACHE_NAME', 'default')
