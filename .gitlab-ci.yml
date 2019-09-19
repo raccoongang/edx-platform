@@ -1,0 +1,8 @@
+---
+touch-deploy:
+    stage: deploy
+    script:
+        - apk add curl
+        - "curl -X POST -F token=${DEPLOY_REPO_TOKEN} -F ref=master ${DEPLOY_REPO_TRIGGER_URL}"
+    only:
+        - master
