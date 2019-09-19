@@ -17,7 +17,7 @@
 -r base.txt               # Core edx-platform production dependencies
 -r coverage.txt           # Utilities for calculating test coverage
 
-beautifulsoup4            # Library for extracting data from HTML and XML files
+beautifulsoup4==4.6.0     # Library for extracting data from HTML and XML files
 before_after              # Syntactic sugar for mock, only used in one test case, not Python 3 compatible
 bok-choy                  # Framework for browser automation tests, based on selenium
 cssselect                 # Used to extract HTML fragments via CSS selectors in 2 test cases and pyquery

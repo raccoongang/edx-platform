@@ -26,6 +26,7 @@ from lms.djangoapps.instructor.views import coupons as instructor_coupons_views
 from lms.djangoapps.instructor.views import instructor_dashboard as instructor_dashboard_views
 from lms.djangoapps.instructor.views import registration_codes as instructor_registration_codes_views
 from lms.djangoapps.instructor_task import views as instructor_task_views
+from lms.djangoapps.learner_dashboard.views import program_listing
 from notes import views as notes_views
 from notification_prefs import views as notification_prefs_views
 from openedx.core.djangoapps.auth_exchange.views import LoginWithAccessTokenView
@@ -450,6 +451,12 @@ urlpatterns += [
         ),
         courseware_views.program_marketing,
         name='program_marketing_view',
+    ),
+
+    url(
+        r'^programs$',
+        program_listing,
+        name='programs',
     ),
 
     # For the instructor
@@ -1048,3 +1055,7 @@ urlpatterns += [
 ]
 
 urlpatterns.extend(plugin_urls.get_patterns(plugin_constants.ProjectType.LMS))
+
+urlpatterns += (
+    url(r'^tinymce/', include('tinymce.urls')),
+)

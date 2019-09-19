@@ -1,4 +1,7 @@
 """Learner dashboard views"""
+import urlparse
+
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET
 
@@ -48,3 +51,13 @@ def program_details(request, program_uuid):
     }
 
     return render_to_response('learner_dashboard/program_details.html', context)
+
+@login_required
+@require_GET
+def gamification_dashboard(request):
+    context = {
+        'public_url': urlparse.urljoin(
+            settings.FEATURES.get('RG_GAMIFICATION', {}).get('RG_GAMIFICATION_ENDPOINT'),
+            '/api/v0/')
+    }
+    return render_to_response('gamification.html', context)

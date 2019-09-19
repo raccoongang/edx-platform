@@ -620,3 +620,20 @@ plugin_settings.add_plugins(__name__, plugin_constants.ProjectType.CMS, plugin_c
 ########################## Derive Any Derived Settings  #######################
 
 derive_settings(__name__)
+
+#RACCOONGANG
+
+if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.celery import CeleryIntegration
+    sentry_sdk.init(
+        AUTH_TOKENS.get('RG_SENTRY_DSN'),
+        integrations = [
+            DjangoIntegration(),
+            CeleryIntegration()
+        ],
+        environment = AUTH_TOKENS.get('RG_SENTRY_ENVIRONMENT', '')
+    )
+
+#RACCOONGANG

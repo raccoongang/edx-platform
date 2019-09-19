@@ -15,6 +15,8 @@
 -r local.in               # Packages in edx-platform which have their own setup.py
 -r paver.txt              # Requirements for running paver commands
 
+-r raccoongang.in
+
 # Please follow these guidelines whenever you change this file:
 #
 # 1. When adding a new dependency, add a comment to the end of the line
@@ -35,7 +37,7 @@ boto3==1.4.8                        # Amazon Web Services SDK for Python
 botocore==1.8.17                    # via boto3, s3transfer
 celery==3.1.25                      # Asynchronous task execution library
 defusedxml==0.4.1                   # XML bomb protection for common XML parsers
-Django==1.11.20                     # Web application framework
+Django==1.11.21                     # Web application framework
 django-babel-underscore             # underscore template extractor for django-babel (internationalization utilities)
 django-config-models>=0.2.2         # Configuration models for Django allowing config management with auditing
 django-cors-headers==2.1.0          # Used to allow to configure CORS headers for cross-domain requests
@@ -151,5 +153,4 @@ user-util                           # Functionality for retiring users (GDPR com
 web-fragments                       # Provides the ability to render fragments of web pages
 XBlock                              # Courseware component architecture
 xblock-review                       # XBlock which displays problems from earlier in the course for ungraded retries
-xblock-utils                        # Provides utilities used by the Discussion XBlock
 zendesk                             # Python API for the Zendesk customer support system
