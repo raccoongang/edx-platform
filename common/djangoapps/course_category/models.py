@@ -1,15 +1,12 @@
 from django.db import models
-from django.db.models.signals import m2m_changed, pre_delete, post_delete
-from django.dispatch import Signal, receiver
+from django.db.models.signals import m2m_changed, post_delete, pre_delete
+from django.dispatch import receiver, Signal
 from django.utils.translation import ugettext_lazy as _
-
 from mptt.models import MPTTModel, TreeForeignKey
-from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
 
 from .tasks import task_reindex_courses
 
-
-move_to = Signal()
+move_to_notification = Signal()
 
 
 class CourseCategory(MPTTModel):
@@ -33,7 +30,7 @@ class CourseCategory(MPTTModel):
 
     def move_to(self, target, position='first-child'):
         self._tree_manager.move_node(self, target, position)
-        move_to.send(sender=self.__class__, instance=self)
+        move_to_notification.send(sender=self.__class__, instance=self)
 
     @classmethod
     def get_category_tree(cls, **kwargs):
@@ -48,7 +45,7 @@ class CourseCategory(MPTTModel):
         return add_nodes(cls.objects.filter(parent=None, **kwargs))
 
 
-@receiver(move_to, sender=CourseCategory)
+@receiver(move_to_notification, sender=CourseCategory)
 def move_reindex_course_category(sender, instance, **kwargs):
     task_reindex_courses.delay(instance.id)
 
