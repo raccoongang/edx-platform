@@ -721,12 +721,6 @@ def group_courses_by_program(course_objects, courses_sorter, programs):
 
                         already_grouped_course_objects.add(course_object)
 
-                for course_object in course_objects:
-                    if str(course_object.id).startswith(course_run.get('key')):
-                        _program['courses'].append(course_object)
-
-                        already_grouped_course_objects.add(course_object)
-
                         break
 
         if _program.get('courses'):

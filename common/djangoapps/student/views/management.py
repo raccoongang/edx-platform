@@ -200,17 +200,6 @@ def index(request, extra_context=None, user=AnonymousUser()):
     context['programs'] = programs
     context['categories'] = CourseCategory.objects.filter(parent=None)
 
-    if configuration_helpers.get_value(
-            "ENABLE_COURSE_SORTING_BY_START_DATE",
-            settings.FEATURES["ENABLE_COURSE_SORTING_BY_START_DATE"],
-    ):
-        courses_sorter = sort_by_start_date
-    else:
-        courses_sorter = sort_by_announcement
-
-    programs = group_courses_by_program(get_courses(user), courses_sorter, get_programs(request.site))
-    context['programs'] = programs
-
     context['courses'] = get_courses(user)
     context['course_discovery_meanings'] = getattr(settings, 'COURSE_DISCOVERY_MEANINGS', {})
 
