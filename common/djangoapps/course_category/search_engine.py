@@ -21,9 +21,8 @@ class CourseCategorySearchEngine(ElasticSearchEngine):
 
         programs = _search_programs(**kwargs)
 
-        programs_uuids = [program.uuid for program in programs]
-
         if 'category' in settings.COURSE_DISCOVERY_FILTERS:
+            programs_uuids = [program.uuid for program in programs]
             programs_categories = CourseCategory.objects.filter(
                 parent=None, programs__uuid__in=programs_uuids,
             ).annotate(programs_count=Count('programs'))
@@ -110,11 +109,13 @@ def _group_ungrouped_courses(programs, courses, already_grouped_courses_ids):
         dict: A dictionary of programs data with extra `Without group` program
               in case `courses` contains courses that does not belong to any program.
     """
-    courses_ids = [course.get('data').get('id') for course in courses]
+    courses_ids = [c.get('data', {}).get('id') for c in courses if c.get('data', {}).get('id') is not None]
     ungrouped_courses_ids = set(courses_ids) - already_grouped_courses_ids
 
     if ungrouped_courses_ids:
-        ungrouped_courses = list(filter(lambda c: c.get('data', {}).get('id') in ungrouped_courses_ids, courses))
+        ungrouped_courses = [
+            c.get('data', {}).get('id') for c in courses if c.get('data', {}).get('id') in ungrouped_courses_ids
+        ]
 
         programs.append({
             'title': 'Without program',
@@ -128,27 +129,24 @@ def _group_ungrouped_courses(programs, courses, already_grouped_courses_ids):
 def _search_programs(**kwargs):
     query_string = kwargs.get('query_string', '')
 
-    if query_string:
-        title_qs = Program.objects.filter(Q(title__icontains=query_string) | Q(subtitle__icontains=query_string))
+    search_results = Program.objects.all()
 
-    else:
-        title_qs = Program.objects.all()
+    if query_string:
+        search_results = search_results.filter(Q(title__icontains=query_string) | Q(subtitle__icontains=query_string))
 
     category = kwargs.get('field_dictionary', {}).get('category', '')
 
     if category:
-        category_qs = Program.objects.filter(coursecategory__name__iexact=category)
-    else:
-        category_qs = Program.objects.all()
+        search_results = search_results.filter(coursecategory__name__iexact=category)
 
-    result_intersection = title_qs & category_qs
-
-    return result_intersection
+    return search_results
 
 
 def _format_programs(programs):
     """
-    Format programs list accordingly to the scheme:
+    Format programs list.
+
+    Each program data is presented according to the scheme:
         {
             'title': ...,
             'subtitle': ...,
