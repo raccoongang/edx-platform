@@ -216,6 +216,20 @@ class CourseListView(DeveloperErrorViewMixin, ListAPIView):
                     "name": "Course Image"
                   }
                 },
+                "categories": [
+                    {
+                        "id": 4,
+                        "name": "sport",
+                        "description": "",
+                        "slug": "sport"
+                    },
+                    {
+                        "id": 5,
+                        "name": "technologies",
+                        "description": "",
+                        "slug": "technologies"
+                    }
+                ],
                 "description": "An example course.",
                 "end": "2015-09-19T18:00:00Z",
                 "enrollment_end": "2015-07-15T00:00:00Z",

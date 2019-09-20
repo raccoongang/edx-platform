@@ -261,5 +261,11 @@ zendesk==1.1.1
 django-tinymce==2.8.0
 django-hvad==1.8.0
 
+# Note this pinned version of azure-storage is important. While there are newer versions, i.e. v.0.33.0,
+# only this version works with django-storages
+azure-storage==v0.20.3
+pip==9.0.1
+django-mptt-admin==0.4.2
+
 # UCDC SSO and API integration
 git+https://github.com/raccoongang/edx-oauth-client.git@ucdc-v.0.1.0#egg=edx_oauth_client==ucdc-v.0.1.0

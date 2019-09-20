@@ -1,21 +1,23 @@
 """ Code to allow module store to interface with courseware index """
+
 from __future__ import absolute_import
 
 import logging
 import re
-from abc import ABCMeta, abstractmethod
+
 from datetime import timedelta
 
+from abc import ABCMeta, abstractmethod
 from django.conf import settings
 from django.urls import resolve
-from django.utils.translation import ugettext as _
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import ugettext as _, ugettext_lazy
+from eventtracking import tracker
 from search.search_engine_base import SearchEngine
 from six import add_metaclass
 
-from contentstore.course_group_config import GroupConfiguration
+from cms.djangoapps.contentstore.course_group_config import GroupConfiguration
+from course_category.models import CourseCategory
 from course_modes.models import CourseMode
-from eventtracking import tracker
 from openedx.core.lib.courses import course_image_url
 from xmodule.annotator_mixin import html_to_text
 from xmodule.library_tools import normalize_key_for_search
@@ -63,16 +65,14 @@ class SearchIndexerBase(object):
     """
     Base class to perform indexing for courseware or library search from different modulestores
     """
+
     __metaclass__ = ABCMeta
 
     INDEX_NAME = None
     DOCUMENT_TYPE = None
     ENABLE_INDEXING_KEY = None
 
-    INDEX_EVENT = {
-        'name': None,
-        'category': None
-    }
+    INDEX_EVENT = {'name': None, 'category': None}
 
     @classmethod
     def indexing_is_enabled(cls):
@@ -110,7 +110,7 @@ class SearchIndexerBase(object):
         response = searcher.search(
             doc_type=cls.DOCUMENT_TYPE,
             field_dictionary=cls._get_location_info(structure_key),
-            exclude_dictionary={"id": list(exclude_items)}
+            exclude_dictionary={"id": list(exclude_items)},
         )
         result_ids = [result["data"]["id"] for result in response["results"]]
         searcher.remove(cls.DOCUMENT_TYPE, result_ids)
@@ -144,9 +144,7 @@ class SearchIndexerBase(object):
         location_info = cls._get_location_info(structure_key)
 
         # Wrap counter in dictionary - otherwise we seem to lose scope inside the embedded function `prepare_item_index`
-        indexed_count = {
-            "count": 0
-        }
+        indexed_count = {"count": 0}
 
         # indexed_items is a list of all the items that we wish to remain in the
         # index, whether or not we are planning to actually update their index.
@@ -196,13 +194,9 @@ class SearchIndexerBase(object):
                             group_id = unicode(group.id)
                             child_location = item.group_id_to_child.get(group_id, None)
                             if child_location == split_test_child.location:
-                                groups_usage_info.update({
-                                    unicode(get_item_location(split_test_child)): [group_id],
-                                })
+                                groups_usage_info.update({unicode(get_item_location(split_test_child)): [group_id]})
                                 for component in split_test_child.get_children():
-                                    groups_usage_info.update({
-                                        unicode(get_item_location(component)): [group_id]
-                                    })
+                                    groups_usage_info.update({unicode(get_item_location(component)): [group_id]})
 
             if groups_usage_info:
                 item_location = get_item_location(item)
@@ -212,8 +206,9 @@ class SearchIndexerBase(object):
             indexed_items.add(item_id)
             if item.has_children:
                 # determine if it's okay to skip adding the children herein based upon how recently any may have changed
-                skip_child_index = skip_index or \
-                    (triggered_at is not None and (triggered_at - item.subtree_edited_on) > reindex_age)
+                skip_child_index = skip_index or (
+                        triggered_at is not None and (triggered_at - item.subtree_edited_on) > reindex_age
+                )
                 children_groups_usage = []
                 for child_item in item.get_children():
                     if modulestore.has_published_version(child_item):
@@ -263,11 +258,7 @@ class SearchIndexerBase(object):
                 cls.remove_deleted_items(searcher, structure_key, indexed_items)
         except Exception as err:  # pylint: disable=broad-except
             # broad exception so that index operation does not prevent the rest of the application from working
-            log.exception(
-                "Indexing error encountered, courseware index may be out of date %s - %r",
-                structure_key,
-                err
-            )
+            log.exception("Indexing error encountered, courseware index may be out of date %s - %r", structure_key, err)
             error_list.append(_('General indexing error occurred'))
 
         if error_list:
@@ -298,15 +289,9 @@ class SearchIndexerBase(object):
             None
 
         """
-        data = {
-            "indexed_count": indexed_count,
-            'category': category,
-        }
+        data = {"indexed_count": indexed_count, 'category': category}
 
-        tracker.emit(
-            event_name,
-            data
-        )
+        tracker.emit(event_name, data)
 
     @classmethod
     def fetch_group_usage(cls, modulestore, structure):  # pylint: disable=unused-argument
@@ -343,14 +328,12 @@ class CoursewareSearchIndexer(SearchIndexerBase):
     """
     Class to perform indexing for courseware search from different modulestores
     """
+
     INDEX_NAME = "courseware_index"
     DOCUMENT_TYPE = "courseware_content"
     ENABLE_INDEXING_KEY = 'ENABLE_COURSEWARE_INDEX'
 
-    INDEX_EVENT = {
-        'name': 'edx.course.index.reindexed',
-        'category': 'courseware_index'
-    }
+    INDEX_EVENT = {'name': 'edx.course.index.reindexed', 'category': 'courseware_index'}
 
     UNNAMED_MODULE_NAME = ugettext_lazy("(Unnamed)")
 
@@ -380,12 +363,7 @@ class CoursewareSearchIndexer(SearchIndexerBase):
     def fetch_group_usage(cls, modulestore, structure):
         groups_usage_dict = {}
         groups_usage_info = GroupConfiguration.get_partitions_usage_info(modulestore, structure).items()
-        groups_usage_info.extend(
-            GroupConfiguration.get_content_groups_items_usage_info(
-                modulestore,
-                structure
-            ).items()
-        )
+        groups_usage_info.extend(GroupConfiguration.get_content_groups_items_usage_info(modulestore, structure).items())
         if groups_usage_info:
             for name, group in groups_usage_info:
                 for module in group:
@@ -423,24 +401,19 @@ class CoursewareSearchIndexer(SearchIndexerBase):
             location_path.append(path_component_name)
             parent = parent.get_parent()
         location_path.reverse()
-        return {
-            "course_name": location_path[0],
-            "location": location_path[1:4]
-        }
+        return {"course_name": location_path[0], "location": location_path[1:4]}
 
 
 class LibrarySearchIndexer(SearchIndexerBase):
     """
     Base class to perform indexing for library search from different modulestores
     """
+
     INDEX_NAME = "library_index"
     DOCUMENT_TYPE = "library_content"
     ENABLE_INDEXING_KEY = 'ENABLE_LIBRARY_INDEX'
 
-    INDEX_EVENT = {
-        'name': 'edx.library.index.reindexed',
-        'category': 'library_index'
-    }
+    INDEX_EVENT = {'name': 'edx.library.index.reindexed', 'category': 'library_index'}
 
     @classmethod
     def normalize_structure_key(cls, structure_key):
@@ -476,6 +449,7 @@ class AboutInfo(object):
        2) Where to add in the index (using flags above)
        3) Where to source the properties value
     """
+
     # Bitwise Flags for where to index the information
     #
     # ANALYSE - states that the property text contains content that we wish to be able to find matched within
@@ -539,6 +513,7 @@ class CourseAboutSearchIndexer(object):
     """
     Class to perform indexing of about information from course object
     """
+
     DISCOVERY_DOCUMENT_TYPE = "course_info"
     INDEX_NAME = CoursewareSearchIndexer.INDEX_NAME
 
@@ -594,6 +569,8 @@ class CourseAboutSearchIndexer(object):
             'course': course_id,
             'content': {},
             'image_url': course_image_url(course),
+            'catalog_visibility': course.catalog_visibility,
+            'category': [],
         }
 
         # load data for all of the 'about' modules for this course into a dictionary
@@ -602,10 +579,7 @@ class CourseAboutSearchIndexer(object):
             for item in modulestore.get_items(course.id, qualifiers={"category": "about"})
         }
 
-        about_context = {
-            "course": course,
-            "about_dictionary": about_dictionary,
-        }
+        about_context = {"course": course, "about_dictionary": about_dictionary}
 
         for about_information in cls.ABOUT_INFORMATION_TO_INCLUDE:
             # Broad exception handler so that a single bad property does not scupper the collection of others
@@ -628,21 +602,18 @@ class CourseAboutSearchIndexer(object):
                     course_info['content'][about_information.property_name] = analyse_content
                 if about_information.index_flags & AboutInfo.PROPERTY:
                     course_info[about_information.property_name] = section_content
+        course_info['category'] = [x.get_root().name for x in CourseCategory.objects.filter(courses__id=course.id)]
 
         # Broad exception handler to protect around and report problems with indexing
         try:
             searcher.index(cls.DISCOVERY_DOCUMENT_TYPE, [course_info])
         except:  # pylint: disable=bare-except
             log.exception(
-                "Course discovery indexing error encountered, course discovery index may be out of date %s",
-                course_id,
+                "Course discovery indexing error encountered, course discovery index may be out of date %s", course_id
             )
             raise
 
-        log.debug(
-            "Successfully added %s course to the course discovery index",
-            course_id
-        )
+        log.debug("Successfully added %s course to the course discovery index", course_id)
 
     @classmethod
     def _get_location_info(cls, normalized_structure_key):
@@ -657,8 +628,7 @@ class CourseAboutSearchIndexer(object):
             return
 
         response = searcher.search(
-            doc_type=cls.DISCOVERY_DOCUMENT_TYPE,
-            field_dictionary=cls._get_location_info(structure_key)
+            doc_type=cls.DISCOVERY_DOCUMENT_TYPE, field_dictionary=cls._get_location_info(structure_key)
         )
         result_ids = [result["data"]["id"] for result in response["results"]]
         searcher.remove(cls.DISCOVERY_DOCUMENT_TYPE, result_ids)

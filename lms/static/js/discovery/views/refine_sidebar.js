@@ -34,6 +34,8 @@
             },
 
             renderOptions: function(options) {
+                var optionsSelected = _.filter(options, function(o) { return o.get('selected'); });
+                options = optionsSelected.length ? optionsSelected : options;
                 return HtmlUtils.joinHtml.apply(this, _.map(options, function(option) {
                     var data = _.clone(option.attributes);
                     data.name = this.termName(data.facet, data.term);
@@ -42,11 +44,13 @@
             },
 
             renderFacet: function(facetKey, options) {
+                var optionsSelected = _.filter(options, function(o) { return o.get('selected'); });
+                var listIsHuge = optionsSelected.length ? false : (options.length > 9);
                 return this.facetTpl({
                     name: facetKey,
                     displayName: this.facetName(facetKey),
                     optionsHtml: this.renderOptions(options),
-                    listIsHuge: (options.length > 9)
+                    listIsHuge: listIsHuge
                 });
             },
 

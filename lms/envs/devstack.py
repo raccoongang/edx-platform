@@ -161,7 +161,7 @@ FEATURES['LICENSING'] = True
 
 ########################## Courseware Search #######################
 FEATURES['ENABLE_COURSEWARE_SEARCH'] = True
-SEARCH_ENGINE = "search.elastic.ElasticSearchEngine"
+SEARCH_ENGINE = "course_category.search_engine.CourseCategorySearchEngine"
 
 
 ########################## Dashboard Search #######################
@@ -174,19 +174,6 @@ FEATURES['CERTIFICATES_HTML_VIEW'] = True
 
 ########################## Course Discovery #######################
 LANGUAGE_MAP = {'terms': {lang: display for lang, display in ALL_LANGUAGES}, 'name': 'Language'}
-COURSE_DISCOVERY_MEANINGS = {
-    'org': {
-        'name': 'Organization',
-    },
-    'modes': {
-        'name': 'Course Type',
-        'terms': {
-            'honor': 'Honor',
-            'verified': 'Verified',
-        },
-    },
-    'language': LANGUAGE_MAP,
-}
 
 FEATURES['ENABLE_COURSE_DISCOVERY'] = True
 # Setting for overriding default filtering facets for Course discovery
