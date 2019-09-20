@@ -104,3 +104,4 @@ RUN ./compile.sh
 FROM edxapp
 
 COPY --from=static_compile /staticfiles /staticfiles
+COPY --from=static_compile /static_collector/webpack-stats.json /staticfiles/webpack-stats.json
