@@ -1,2 +1,4 @@
 .git
 Dockerfile
+static.Dockerfile
+.gitlab-ci.yml
