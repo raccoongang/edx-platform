@@ -113,9 +113,7 @@ def _group_ungrouped_courses(programs, courses, already_grouped_courses_ids):
     ungrouped_courses_ids = set(courses_ids) - already_grouped_courses_ids
 
     if ungrouped_courses_ids:
-        ungrouped_courses = [
-            c.get('data', {}).get('id') for c in courses if c.get('data', {}).get('id') in ungrouped_courses_ids
-        ]
+        ungrouped_courses = [course for course in courses if course.get('data', {}).get('id') in ungrouped_courses_ids]
 
         programs.append({
             'title': 'Without program',
