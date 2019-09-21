@@ -7,6 +7,7 @@ import urllib
 from django.urls import reverse
 from rest_framework import serializers
 
+from course_category.models import CourseCategory
 from openedx.core.djangoapps.models.course_details import CourseDetails
 from openedx.core.lib.api.fields import AbsoluteURLField
 
@@ -36,6 +37,7 @@ class ImageSerializer(serializers.Serializer):  # pylint: disable=abstract-metho
     The URLs will be absolute URLs with the host set to the host of the current request. If the values to be
     serialized are already absolute URLs, they will be unchanged.
     """
+
     raw = AbsoluteURLField()
     small = AbsoluteURLField()
     large = AbsoluteURLField()
@@ -45,9 +47,16 @@ class _CourseApiMediaCollectionSerializer(serializers.Serializer):  # pylint: di
     """
     Nested serializer to represent a collection of media objects
     """
+
     course_image = _MediaSerializer(source='*', uri_attribute='course_image_url')
     course_video = _MediaSerializer(source='*', uri_attribute='course_video_url')
     image = ImageSerializer(source='image_urls')
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseCategory
+        fields = ('id', 'name', 'description', 'slug')
 
 
 class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-method
@@ -62,6 +71,7 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
     enrollment_start = serializers.DateTimeField()
     enrollment_end = serializers.DateTimeField()
     id = serializers.CharField()  # pylint: disable=invalid-name
+    categories = serializers.SerializerMethodField()
     media = _CourseApiMediaCollectionSerializer(source='*')
     name = serializers.CharField(source='display_name_with_default_escaped')
     number = serializers.CharField(source='display_number_with_default')
@@ -77,6 +87,10 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
 
     # 'course_id' is a deprecated field, please use 'id' instead.
     course_id = serializers.CharField(source='id', read_only=True)
+
+    def get_categories(self, course_overview):
+        qs = course_overview.coursecategory_set.all()
+        return CategorySerializer(qs, many=True, context=self.context).data
 
     def get_hidden(self, course_overview):
         """

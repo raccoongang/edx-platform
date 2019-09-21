@@ -677,6 +677,8 @@ if FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
         'third_party_auth.lti.LTIAuthBackend',
     ])
 
+    CUSTOM_OAUTH_PARAMS = ENV_TOKENS.get('CUSTOM_OAUTH_PARAMS', {})
+
     AUTHENTICATION_BACKENDS = list(tmp_backends) + list(AUTHENTICATION_BACKENDS)
     del tmp_backends
 
@@ -790,7 +792,7 @@ if FEATURES.get('ENABLE_COURSEWARE_SEARCH') or \
    FEATURES.get('ENABLE_COURSE_DISCOVERY') or \
    FEATURES.get('ENABLE_TEAMS'):
     # Use ElasticSearch as the search engine herein
-    SEARCH_ENGINE = "search.elastic.ElasticSearchEngine"
+    SEARCH_ENGINE = "course_category.search_engine.CourseCategorySearchEngine"
 
 ELASTIC_SEARCH_CONFIG = ENV_TOKENS.get('ELASTIC_SEARCH_CONFIG', [{}])
 

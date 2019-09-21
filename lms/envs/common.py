@@ -411,6 +411,20 @@ COURSE_REVIEWS_TOOL_PROVIDER_PLATFORM_KEY = 'edx'
 COURSE_TALK_READ_ONLY_SOURCE = '//d3q6qq2zt8nhwv.cloudfront.net/s/js/widgets/coursetalk-read-reviews.js'
 COURSE_TALK_WRITE_ONLY_SOURCE = '//d3q6qq2zt8nhwv.cloudfront.net/s/js/widgets/coursetalk-write-reviews.js'
 
+COURSE_DISCOVERY_FILTERS = ["category"]
+
+COURSE_DISCOVERY_MEANINGS = {
+    'category': {
+        'name': 'Categories'
+    }
+}
+
+COURSE_DISCOVERY_FACETS = {
+    'category': {
+        'size': 100
+    }
+}
+
 # Ignore static asset files on import which match this pattern
 ASSET_IGNORE_REGEX = r"(^\._.*$)|(^\.DS_Store$)|(^.*~$)"
 
@@ -1341,6 +1355,9 @@ PIPELINE_DISABLE_WRAPPER = True
 PIPELINE_UGLIFYJS_BINARY = 'node_modules/.bin/uglifyjs'
 
 from openedx.core.lib.rooted_paths import rooted_glob
+
+# SeamlessAuthorization shouldn't to work for Django administration
+SOCIAL_AUTH_EXCLUDE_URL_PATTERN = r'^/admin'
 
 courseware_js = [
     'js/ajax-error.js',
@@ -2284,6 +2301,10 @@ INSTALLED_APPS = [
 
     # Email marketing integration
     'email_marketing.apps.EmailMarketingConfig',
+
+    'course_category',
+
+    'django_mptt_admin',
 
     # additional release utilities to ease automation
     'release_util',

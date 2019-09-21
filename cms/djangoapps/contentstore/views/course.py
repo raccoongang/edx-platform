@@ -5,37 +5,14 @@ import copy
 import json
 import logging
 import random
-import re
 import string  # pylint: disable=deprecated-module
 
 import django.utils
+import re
 import six
 from ccx_keys.locator import CCXLocator
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied, ValidationError
-from django.urls import reverse
-from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
-from django.shortcuts import redirect
-from django.utils.translation import ugettext as _
-from django.views.decorators.csrf import ensure_csrf_cookie
-from django.views.decorators.http import require_GET, require_http_methods
-from opaque_keys import InvalidKeyError
-from opaque_keys.edx.keys import CourseKey
-from opaque_keys.edx.locator import BlockUsageLocator
-from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-from openedx.core.djangoapps.waffle_utils import WaffleSwitchNamespace
-from openedx.features.course_experience.waffle import waffle as course_experience_waffle
-from openedx.features.course_experience.waffle import ENABLE_COURSE_ABOUT_SIDEBAR_HTML
-from six import text_type
-
-from contentstore.course_group_config import (
-    COHORT_SCHEME,
-    ENROLLMENT_SCHEME,
-    RANDOM_SCHEME,
-    GroupConfiguration,
-    GroupConfigurationsValidationError
-)
+from contentstore.course_group_config import (COHORT_SCHEME, ENROLLMENT_SCHEME, GroupConfiguration,
+                                              GroupConfigurationsValidationError, RANDOM_SCHEME)
 from contentstore.course_info_model import delete_course_update, get_course_updates, update_course_updates
 from contentstore.courseware_index import CoursewareSearchIndexer, SearchIndexingError
 from contentstore.push_notification import push_notification_enabled
@@ -51,27 +28,49 @@ from contentstore.utils import (
     reverse_usage_url
 )
 from contentstore.views.entrance_exam import create_entrance_exam, delete_entrance_exam, update_entrance_exam
-from course_action_state.managers import CourseActionStateItemNotFoundError
-from course_action_state.models import CourseRerunState, CourseRerunUIStateManager
 from course_creators.views import add_user_with_status_unrequested, get_course_creator_status
-from edxmako.shortcuts import render_to_response
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.http import require_GET, require_http_methods
 from milestones import api as milestones_api
 from models.settings.course_grading import CourseGradingModel
 from models.settings.course_metadata import CourseMetadata
 from models.settings.encoder import CourseSettingsEncoder
+from opaque_keys import InvalidKeyError
+from opaque_keys.edx.keys import CourseKey
+from opaque_keys.edx.locator import BlockUsageLocator
+from six import text_type
+
+from course_action_state.managers import CourseActionStateItemNotFoundError
+from course_action_state.models import CourseRerunState, CourseRerunUIStateManager
+from course_category.models import CourseCategory
+from course_category.utils import add_nodes
+from edxmako.shortcuts import render_to_response
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.credit.api import get_credit_requirements, is_credit_course
 from openedx.core.djangoapps.credit.tasks import update_credit_course_requirements
 from openedx.core.djangoapps.models.course_details import CourseDetails
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.core.djangoapps.waffle_utils import WaffleSwitchNamespace
 from openedx.core.djangolib.js_utils import dump_js_escaped_json
 from openedx.core.lib.course_tabs import CourseTabPluginManager
 from openedx.core.lib.courses import course_image_url
+from openedx.features.course_experience.waffle import (
+    ENABLE_COURSE_ABOUT_SIDEBAR_HTML,
+    waffle as course_experience_waffle,
+)
 from student import auth
 from student.auth import has_course_author_access, has_studio_read_access, has_studio_write_access
 from student.roles import CourseCreatorRole, CourseInstructorRole, CourseStaffRole, GlobalStaff, UserBasedRole
 from util.course import get_link_for_about_page
 from util.date_utils import get_default_time_display
-from util.json_request import JsonResponse, JsonResponseBadRequest, expect_json
+from util.json_request import expect_json, JsonResponse, JsonResponseBadRequest
 from util.milestones_helpers import (
     is_entrance_exams_enabled,
     is_prerequisite_courses_enabled,
@@ -83,16 +82,15 @@ from util.organizations_helpers import add_organization_course, get_organization
 from util.string_utils import _has_non_ascii_characters
 from xblock_django.api import deprecated_xblocks
 from xmodule.contentstore.content import StaticContent
-from xmodule.course_module import DEFAULT_START_DATE, CourseFields
+from xmodule.course_module import CourseFields, DEFAULT_START_DATE
 from xmodule.error_module import ErrorDescriptor
 from xmodule.modulestore import EdxJSONEncoder
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import DuplicateCourseError, ItemNotFoundError
 from xmodule.tabs import CourseTab, CourseTabList, InvalidTabsException
-
 from .component import ADVANCED_COMPONENT_TYPES
 from .item import create_xblock_info
-from .library import LIBRARIES_ENABLED, get_library_creator_status
+from .library import get_library_creator_status, LIBRARIES_ENABLED
 
 log = logging.getLogger(__name__)
 
@@ -370,6 +368,7 @@ def _accessible_courses_summary_iter(request, org=None):
             string will result in no courses, and otherwise only courses with the
             specified org will be returned. The default value is None.
     """
+
     def course_filter(course_summary):
         """
         Filter out unusable and inaccessible courses
@@ -380,6 +379,7 @@ def _accessible_courses_summary_iter(request, org=None):
             return False
 
         return has_studio_read_access(request.user, course_summary.id)
+
     if org is not None:
         courses_summary = [] if org == '' else CourseOverview.get_all_courses(orgs=[org])
     else:
@@ -393,6 +393,7 @@ def _accessible_courses_iter(request):
     """
     List all courses available to the logged in user by iterating through all the courses.
     """
+
     def course_filter(course):
         """
         Filter out unusable and inaccessible courses
@@ -424,6 +425,7 @@ def _accessible_courses_iter_for_tests(request):
     CourseSummary objects are used for listing purposes.
     This method is only used by tests.
     """
+
     def course_filter(course):
         """
         Filter out unusable and inaccessible courses
@@ -451,6 +453,7 @@ def _accessible_courses_list_from_groups(request):
     """
     List all courses available to the logged in user by reversing access group names
     """
+
     def filter_ccx(course_access):
         """ CCXs cannot be edited in Studio and should not be shown in this dashboard """
         return not isinstance(course_access.course_id, CCXLocator)
@@ -497,8 +500,10 @@ def course_listing(request):
     List all courses and libraries available to the logged in user
     """
 
-    optimization_enabled = GlobalStaff().has_user(request.user) and \
-        WaffleSwitchNamespace(name=WAFFLE_NAMESPACE).is_enabled(u'enable_global_staff_optimization')
+    is_enabled_global_staff_optimization = WaffleSwitchNamespace(name=WAFFLE_NAMESPACE).is_enabled(
+        u'enable_global_staff_optimization'
+    )
+    optimization_enabled = GlobalStaff().has_user(request.user) and is_enabled_global_staff_optimization
 
     org = request.GET.get('org', '') if optimization_enabled else None
     courses_iter, in_process_course_actions = get_courses_accessible_to_user(request, org)
@@ -625,7 +630,8 @@ def course_index(request, course_key):
         sections = course_module.get_children()
         course_structure = _course_outline_json(request, course_module)
         locator_to_show = request.GET.get('show', None)
-        course_release_date = get_default_time_display(course_module.start) if course_module.start != DEFAULT_START_DATE else _("Unscheduled")
+        course_release_date = get_default_time_display(
+            course_module.start) if course_module.start != DEFAULT_START_DATE else _("Unscheduled")
         settings_url = reverse_course_url('settings_handler', course_key)
 
         try:
@@ -642,7 +648,8 @@ def course_index(request, course_key):
             'lms_link': lms_link,
             'sections': sections,
             'course_structure': course_structure,
-            'initial_state': course_outline_initial_state(locator_to_show, course_structure) if locator_to_show else None,
+            'initial_state': course_outline_initial_state(locator_to_show,
+                                                          course_structure) if locator_to_show else None,
             'rerun_notification_id': current_action.id if current_action else None,
             'course_release_date': course_release_date,
             'settings_url': settings_url,
@@ -693,6 +700,7 @@ def _process_courses_list(courses_iter, in_process_course_actions, split_archive
       Archived courses have has_ended() == True.
     * Formats the returned courses (in both lists) to prepare them for rendering to the view.
     """
+
     def format_course_for_view(course):
         """
         Return a dict of the data which the view requires for each course
@@ -731,6 +739,7 @@ def course_outline_initial_state(locator_to_show, course_structure):
     was provided, then the view's initial state will be to have the desired item fully expanded
     and to scroll to see the new item.
     """
+
     def find_xblock_info(xblock_info, locator):
         """
         Finds the xblock info for the specified locator.
@@ -1056,7 +1065,11 @@ def settings_handler(request, course_key_string):
                 settings.FEATURES.get('EDITABLE_SHORT_DESCRIPTION', True)
             )
             sidebar_html_enabled = course_experience_waffle().is_enabled(ENABLE_COURSE_ABOUT_SIDEBAR_HTML)
-            # self_paced_enabled = SelfPacedConfiguration.current().enabled
+
+            course_category_nodes = CourseCategory.objects.filter(parent=None)
+            course_category_options = []
+
+            add_nodes(course_category_nodes, u'', course_category_options)
 
             settings_context = {
                 'context_course': course_module,
@@ -1078,7 +1091,8 @@ def settings_handler(request, course_key_string):
                 'enrollment_end_editable': enrollment_end_editable,
                 'is_prerequisite_courses_enabled': is_prerequisite_courses_enabled(),
                 'is_entrance_exams_enabled': is_entrance_exams_enabled(),
-                'enable_extended_course_details': enable_extended_course_details
+                'enable_extended_course_details': enable_extended_course_details,
+                'course_category_options': course_category_options,
             }
             if is_prerequisite_courses_enabled():
                 courses, in_process_course_actions = get_courses_accessible_to_user(request)
@@ -1129,7 +1143,10 @@ def settings_handler(request, course_key_string):
                         set_prerequisite_courses(course_key, prerequisite_course_keys)
                     else:
                         # None is chosen, so remove the course prerequisites
-                        course_milestones = milestones_api.get_course_milestones(course_key=course_key, relationship="requires")
+                        course_milestones = milestones_api.get_course_milestones(
+                            course_key=course_key,
+                            relationship="requires",
+                        )
                         for milestone in course_milestones:
                             remove_prerequisite_course(course_key, milestone)
 
@@ -1499,7 +1516,7 @@ def textbooks_detail_handler(request, course_key_string, textbook_id):
                 return JsonResponse(status=404)
             return JsonResponse(textbook)
         elif request.method in ('POST', 'PUT'):  # can be either and sometimes
-                                            # django is rewriting one to the other
+            # django is rewriting one to the other
             try:
                 new_textbook = validate_textbook_json(request.body)
             except TextbookValidationError as err:
@@ -1672,9 +1689,10 @@ def group_configurations_detail_handler(request, course_key_string, group_config
             configuration = None
 
         if request.method in ('POST', 'PUT'):  # can be either and sometimes
-                                            # django is rewriting one to the other
+            # django is rewriting one to the other
             try:
-                new_configuration = GroupConfiguration(request.body, course, group_configuration_id).get_user_partition()
+                new_configuration = GroupConfiguration(request.body, course,
+                                                       group_configuration_id).get_user_partition()
             except GroupConfigurationsValidationError as err:
                 return JsonResponse({"error": text_type(err)}, status=400)
 
@@ -1706,8 +1724,8 @@ def are_content_experiments_enabled(course):
     Returns True if content experiments have been enabled for the course.
     """
     return (
-        'split_test' in ADVANCED_COMPONENT_TYPES and
-        'split_test' in course.advanced_modules
+            'split_test' in ADVANCED_COMPONENT_TYPES and
+            'split_test' in course.advanced_modules
     )
 
 

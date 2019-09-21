@@ -48,6 +48,7 @@ class TestCourseSerializer(CourseApiFactoryMixin, ModuleStoreTestCase):
             'number': u'toy',
             'org': u'edX',
             'short_description': u'A course about toys.',
+            'categories': [],
             'media': {
                 'course_image': {
                     'uri': image_path,
