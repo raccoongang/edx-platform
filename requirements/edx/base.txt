@@ -261,5 +261,5 @@ zendesk==1.1.1
 django-tinymce==2.8.0
 django-hvad==1.8.0
 
-# UCDC integration
+# UCDC integration. Plugin that describes the REST-full api through which UCDC portal interacts with the EDX platform.
 -e common/lib/ucdc_edx_api_plugin
