@@ -21,6 +21,7 @@
                 this.programCards = new Backbone.Collection([], {model: ProgramCard})
 
                 this.facetOptions = new Backbone.Collection([], {model: FacetOption});
+                this.originalFacetOptions = new Backbone.Collection([], {model: FacetOption})
             },
 
             parse: function(response) {
@@ -40,6 +41,8 @@
                 });
 
                 var options = this.facetOptions;
+                var originalOptions = this.originalFacetOptions;
+
                 _(facets).each(function(obj, key) {
                     _(obj.terms).each(function(count, term) {
                         options.add({
@@ -47,10 +50,32 @@
                             term: term,
                             count: count
                         }, {merge: true});
+                        originalOptions.add({
+                            facet: key,
+                            term: term,
+                            count: count
+                        }, {merge: true})
                     });
                 });
             },
-            
+
+            filterFacetOptions: function(filterWord) {
+                var filteredFacets = this.originalFacetOptions.filter(function(facet) {
+                    if (facet.id.toLowerCase().includes(filterWord)) {
+                        return facet;
+                    }
+                });
+
+                this.facetOptions.set(filteredFacets);
+            },
+
+            resetFacetOptions: function() {
+                var originalFacetOptionsCollection = this.originalFacetOptions.filter(function(facet) {
+                    return facet;
+                });
+
+                this.facetOptions.reset(originalFacetOptionsCollection);
+            },
 
             reset: function() {
                 this.set({
@@ -59,6 +84,7 @@
                 });
                 this.programCards.reset();
                 this.facetOptions.reset();
+                this.originalFacetOptions.reset()
             },
 
             latest: function() {
