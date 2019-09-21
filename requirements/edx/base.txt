@@ -260,3 +260,6 @@ xblock==1.2.1
 zendesk==1.1.1
 django-tinymce==2.8.0
 django-hvad==1.8.0
+
+# UCDC integration
+-e common/lib/ucdc_edx_api_plugin
