@@ -115,7 +115,6 @@ class Command(BaseCommand):
         return programs, failure
 
     def update_db_programs(self):
-
         site = Site.objects.get_current()
         pms = get_programs(site)
 
