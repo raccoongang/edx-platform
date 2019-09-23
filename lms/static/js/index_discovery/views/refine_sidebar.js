@@ -57,13 +57,20 @@
             render: function() {
                 var grouped = this.collection.groupBy('facet');
                 var htmlSnippet = HtmlUtils.joinHtml.apply(
-                this, _.map(grouped, function(options, facetKey) {
-                    if (options.length > 0) {
-                        return this.renderFacet(facetKey, options);
-                    }
-                }, this)
-            );
+                    this,
+                    _.map(
+                        grouped,
+                        function(options, facetKey) {
+                            if (options.length > 0) {
+                                return this.renderFacet(facetKey, options);
+                            }
+                        },
+                        this
+                    )
+                );
+
                 HtmlUtils.setHtml(this.$container, htmlSnippet);
+
                 return this;
             },
 

@@ -43,6 +43,14 @@
                 }
             },
 
+            filterFacets: function(filterWord) {
+                this.discovery.filterFacetOptions(filterWord);
+            },
+
+            resetFacets: function() {
+                this.discovery.resetFacetOptions();
+            },
+
         // private
 
             hasNextPage: function() {
