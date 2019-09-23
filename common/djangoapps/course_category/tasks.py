@@ -15,8 +15,8 @@ def task_reindex_courses(category_id=None, course_keys=None):
             courses.update(category.courses.all().values_list('id', flat=True))
             courses.update(category.get_descendants().values_list('courses', flat=True))
     for course_key in courses:
+        course_key = CourseKey.from_string(course_key)
         CoursewareSearchIndexer.do_course_reindex(modulestore(), course_key)
-
 
 @task
 def task_add_categories(category_names, course_id):

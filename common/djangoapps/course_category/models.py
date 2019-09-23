@@ -71,17 +71,17 @@ def delete_reindex_course_category(sender, instance, **kwargs):
     category_courses = instance.courses.all()
     if category_courses:
         instance.courses_list = map(lambda x: str(x.id), category_courses)
-    elif instance.courses_list:
+    elif getattr(instance, 'courses_list', []):
         task_reindex_courses.delay(course_keys=instance.courses_list)
-
 
 @receiver(m2m_changed, sender=CourseCategory.courses.through)
 def save_reindex_course_category(sender, instance, pk_set, action, **kwargs):
     courses_set = set()
     if action == 'pre_remove':
         instance.pre_clear_course_keys = set()
-        instance.pre_clear_course_keys.update(instance.courses.all().values_list('id', flat=True))
+        instance.pre_clear_course_keys.update(str(x.id) for x in instance.courses.all())
+
     if action in ['post_add', 'post_remove']:
-        courses_set.update(instance.courses.all().values_list('id', flat=True))
+        courses_set.update(str(x.id) for x in instance.courses.all())
         courses_set.update(getattr(instance, 'pre_clear_course_keys', set()))
         task_reindex_courses.delay(instance.id, list(courses_set))
