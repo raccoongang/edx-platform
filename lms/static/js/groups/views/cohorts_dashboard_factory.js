@@ -25,6 +25,7 @@
                     contentGroups: contentGroupModels,
                     cohortSettings: courseCohortSettings,
                     context: {
+                        addToCohortUrl: $cohortManagementElement.data('add_to_cohort_url'),
                         uploadCohortsCsvUrl: $cohortManagementElement.data('upload_cohorts_csv_url'),
                         verifiedTrackCohortingUrl: $cohortManagementElement.data('verified_track_cohorting_url'),
                         studioGroupConfigurationsUrl: studioGroupConfigurationsUrl,

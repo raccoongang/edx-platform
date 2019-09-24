@@ -2,7 +2,7 @@
 (function(define) {
     'use strict';
     define(['backbone', 'underscore', 'jquery', 'gettext', 'js/groups/views/cohort_form', 'string_utils',
-        'js/models/notification', 'js/views/notification'],
+            'js/models/notification', 'js/views/notification'],
         function(Backbone, _, $, gettext, CohortFormView) {
             var CohortEditorView = Backbone.View.extend({
 
@@ -97,7 +97,10 @@
                     var self = this,
                         cohorts = this.cohorts,
                         input = this.$('.cohort-management-group-add-students'),
-                        add_url = this.model.url() + '/add',
+                        add_url = this.context.addToCohortUrl.replace(
+                            this.context.cohortIdStub,
+                            this.model.id
+                        ),
                         students = input.val().trim(),
                         cohortId = this.model.id;
 
@@ -130,8 +133,8 @@
                 },
 
                 /**
-                * Refresh the cohort collection to get the latest set as well as up-to-date counts.
-                */
+                 * Refresh the cohort collection to get the latest set as well as up-to-date counts.
+                 */
                 refreshCohorts: function() {
                     return this.cohorts.fetch();
                 },

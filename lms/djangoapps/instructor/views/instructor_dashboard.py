@@ -526,6 +526,10 @@ def _section_cohort_management(course, access):
             kwargs={'course_key_string': unicode(course_key)}
         ),
         'cohorts_url': reverse('cohorts_list_with_assignment', kwargs={'course_id': unicode(course_key)}),
+        'add_to_cohort_url': reverse(
+            'add_to_cohort',
+            kwargs={'course_key_string': unicode(course_key), 'cohort_id': cohort_id_stub}
+        ),
         'upload_cohorts_csv_url': reverse('add_users_to_cohorts', kwargs={'course_id': unicode(course_key)}),
         'verified_track_cohorting_url': reverse(
             'verified_track_cohorting', kwargs={'course_key_string': unicode(course_key)}
