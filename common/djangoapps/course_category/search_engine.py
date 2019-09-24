@@ -19,6 +19,12 @@ class CourseCategorySearchEngine(ElasticSearchEngine):
         """
         results = super(CourseCategorySearchEngine, self).search(**kwargs)
 
+        # In case of changing category in admin page task 'task_reindex_courses'
+        # calls SearchEngine, but results dict has no 'facets' key and looks like
+        # {'total': 0, 'max_score': None, 'took': 4, 'results': []}, and that rises KeyError: 'facets'.
+        if not results.get('facets'):
+            return results
+
         programs = _search_programs(**kwargs)
 
         if 'category' in settings.COURSE_DISCOVERY_FILTERS:
@@ -33,7 +39,6 @@ class CourseCategorySearchEngine(ElasticSearchEngine):
 
             courses_category_terms = results.get('facets', {}).get('category', {}).get('terms')
             courses_facets_total_terms = results.get('facets', {}).get('category', {}).get('total')
-
             facets_category_terms = dict()
             for category_term in set(courses_category_terms.keys() + programs_category_terms.keys()):
                 courses_term_count = courses_category_terms.get(category_term, 0)
