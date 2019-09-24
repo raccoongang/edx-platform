@@ -69,7 +69,7 @@ def move_reindex_course_category(sender, instance, **kwargs):
 def delete_reindex_course_category(sender, instance, **kwargs):
     category_courses = instance.courses.all()
     if category_courses:
-        instance.courses_list = (x.id for x in category_courses)
+        instance.courses_list = (str(x.id) for x in category_courses)
     elif getattr(instance, 'courses_list', []):
         task_reindex_courses.delay(course_keys=instance.courses_list)
 
@@ -79,9 +79,9 @@ def save_reindex_course_category(sender, instance, pk_set, action, **kwargs):
     courses_set = set()
     if action == 'pre_remove':
         instance.pre_clear_course_keys = set()
-        instance.pre_clear_course_keys.update(x.id for x in instance.courses.all())
+        instance.pre_clear_course_keys.update(str(x.id) for x in instance.courses.all())
 
     if action in ['post_add', 'post_remove']:
-        courses_set.update(x.id for x in instance.courses.all())
+        courses_set.update(str(x.id) for x in instance.courses.all())
         courses_set.update(getattr(instance, 'pre_clear_course_keys', set()))
         task_reindex_courses.delay(instance.id, list(courses_set))

@@ -11,7 +11,7 @@ def task_reindex_courses(category_id=None, course_keys=None):
 
         Args:
             category_id: int
-            course_keys: set of CourseLocators
+            course_keys: list of course ids (str)
 
     """
     from course_category.models import CourseCategory
@@ -20,10 +20,14 @@ def task_reindex_courses(category_id=None, course_keys=None):
     if category_id:
         category = CourseCategory.objects.filter(id=category_id).first()
         if category:
-            courses.update(category.courses.all().values_list('id', flat=True))
-            courses.update(category.get_descendants().values_list('courses', flat=True))
+            category_ids = category.courses.all().values_list('id', flat=True)
+            courses.update(str(x) for x in category_ids)
+            descendants_ids = category.courses.all().values_list('id', flat=True)
+            courses.update(str(x) for x in descendants_ids)
     for course_key in courses:
+        course_key = CourseKey.from_string(course_key)
         CoursewareSearchIndexer.do_course_reindex(modulestore(), course_key)
+
 
 @task
 def task_add_categories(category_names, course_id):
