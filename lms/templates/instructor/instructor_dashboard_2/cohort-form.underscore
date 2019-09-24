@@ -151,20 +151,21 @@
         </div>
     </form>
 
-    <div>
+    <div class="cohort-leaders-management">
+        <h4 class="cohort-leaders-management__title"><%- gettext('Associate Cohort Leaders') %></h4>
         <% for ( var i = 0; i < cohort_admins.length; i++ ) { %>
             <div class="revoke" data-user="<%- cohort_admins[i] %>">
                 <%- gettext("Remove access for ") + ' '+ cohort_admins[i] %>
                 <span class="icon fa fa-times-circle" aria-hidden="true"></span>
             </div>
         <% } %>
-    </div>
 
-    <div class="new_user field field-text">
-        <label for="cohort-name" class="form-label"> <%- gettext('Username') %> * </label>
-        <input name="admin-user-name" class="input admin-user-name" id="admin-user-name-input" placeholder="<%- gettext('Username') %>"type="text">
-        <div class="form-submit button action-primary add-new-admin-button">
-            <%- gettext('Add') %>
+        <div class="new_user field field-text">
+            <label for="admin-user-name" class="form-label"> <%- gettext('Username') %> * </label>
+            <input name="admin-user-name" class="input admin-user-name" id="admin-user-name-input" placeholder="<%- gettext('Username') %>"type="text">
+            <div class="form-submit button action-primary add-new-admin-button">
+                <%- gettext('Add') %>
+            </div>
         </div>
     </div>
 </div>
