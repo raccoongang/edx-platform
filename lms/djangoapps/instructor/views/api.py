@@ -3407,7 +3407,7 @@ def update_cohort_assignment(request, course_id):
 @require_http_methods(['POST', 'GET'])
 def cohorts_list_with_assignment(request, course_id):
     cohort_info = json.loads(cohort_handler(request, course_id).content)
-    cohorts = cohort_info.get('cohorts', list())
+    cohorts = cohort_info.get('cohorts', [])
     course_id = CourseKey.from_string(course_id)
     cohort_assignments = (
         CourseUserGroup.objects.filter(course_id=course_id).values_list('id', 'cohortassigment__user__email')
