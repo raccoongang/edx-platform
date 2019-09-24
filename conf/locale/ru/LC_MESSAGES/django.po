@@ -309,8 +309,13 @@ msgstr ""
 
 #: common/djangoapps/course_modes/models.py
 #: lms/templates/instructor/instructor_dashboard_2/course_info.html
-msgid "Honor"
-msgstr "Сертификат Кодекса чести"
+#: themes/edx-theme/lms/templates/footer.html
+msgid "Terms of use"
+msgstr "Пользовательское соглашение"
+
+#: themes/edx-theme/lms/templates/index.html
+msgid "Our telegram"
+msgstr "Мы в телеграм"
 
 #: common/djangoapps/course_modes/models.py
 msgid ""
@@ -3360,7 +3365,11 @@ msgstr "Выбрать оба"
 #: themes/stanford-style/lms/templates/footer.html
 #: themes/stanford-style/lms/templates/static_templates/about.html
 msgid "About"
-msgstr "О нас"
+msgstr "О проекте"
+
+#: themes/edx-theme/lms/templates/footer.html
+msgid "About us"
+msgstr "О проекте"
 
 #: common/lib/xmodule/xmodule/course_module.py cms/templates/settings.html
 msgid "None"
@@ -4593,6 +4602,10 @@ msgstr "Внешнее обсуждение"
 #: common/lib/xmodule/xmodule/tabs.py lms/djangoapps/courseware/tabs.py
 msgid "Home"
 msgstr "Программа"
+
+#: themes/edx-theme/lms/templates/navigation/navbar-not-authenticated.html
+msgid "Main page"
+msgstr "Главная"
 
 #: common/lib/xmodule/xmodule/textannotation_module.py
 msgid "Text Annotation"
@@ -11589,6 +11602,8 @@ msgstr "Номер курса:"
 #: lms/templates/navigation/bootstrap/navbar-not-authenticated.html
 #: themes/edx.org/lms/templates/header.html
 #: themes/red-theme/lms/templates/header.html
+#: themes/edx-theme/lms/templates/footer.html
+#: themes/edx-theme/lms/templates/navigation/navbar-not-authenticated.html
 msgid "Courses"
 msgstr "Курсы"
 
