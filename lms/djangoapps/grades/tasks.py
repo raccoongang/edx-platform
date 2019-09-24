@@ -255,14 +255,14 @@ def _has_db_updated_with_new_score(self, scored_block_usage_key, **kwargs):
     return db_is_updated
 
 
-def set_progress(course_key, student):
+def set_progress(course_key, student, structure=None):
     user_milestones = find_gating_milestones(course_key, relationship='requires', user={'id': student.id})
     user_milestone_ids = [m['namespace'].replace('.gating', '') for m in user_milestones]
 
     milestones = find_gating_milestones(course_key, relationship='requires')
     milestone_ids = [m['namespace'].replace('.gating', '') for m in milestones]
 
-    course_grade = CourseGrade(student, CourseData(student, course_key=course_key))
+    course_grade = CourseGrade(student, CourseData(student, course_key=course_key, structure=structure))
 
     subsections = []
     for grade_name, sequentials in course_grade.graded_subsections_by_format.iteritems():
@@ -311,8 +311,7 @@ def _update_subsection_grades(course_key, scored_block_usage_key, only_if_higher
                     user=student,
                     subsection_grade=subsection_grade,
                 )
-
-    set_progress(course_key, student)
+        set_progress(course_key, student, structure=course_structure)
 
 
 def _course_task_args(course_key, **kwargs):
