@@ -8952,6 +8952,11 @@ msgid "Cohort Assignment Method"
 msgstr "Способ распределения по когортам"
 
 #: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
+#: test_root/staticfiles/templates/instructor/instructor_dashboard_2/cohort-form.underscore
+msgid "Associate Cohort Leaders"
+msgstr "Выбор руководителей когорты"
+
+#: lms/templates/instructor/instructor_dashboard_2/cohort-form.underscore
 msgid "Automatic"
 msgstr "Автоматически"
 
