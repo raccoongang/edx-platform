@@ -2,20 +2,20 @@
 Instructor Dashboard Views
 """
 
-from collections import defaultdict
 import datetime
+import json
 import logging
 import uuid
-import json
+from collections import defaultdict
 
 import pytz
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse
+from django.db.models import F
 from django.http import Http404, HttpResponseServerError
+from django.urls import reverse
 from django.utils.html import escape
-from django.utils.translation import ugettext as _
-from django.utils.translation import ugettext_noop
+from django.utils.translation import ugettext as _, ugettext_noop
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
@@ -27,6 +27,14 @@ from xblock.field_data import DictFieldData
 from xblock.fields import ScopeIds
 
 from bulk_email.models import BulkEmailFlag
+from class_dashboard.dashboard_data import get_array_section_has_problem, get_section_display_name
+from course_modes.models import CourseMode, CourseModesArchive
+from courseware.access import has_access
+from courseware.courses import get_course_by_id, get_studio_url
+from courseware.url_helpers import get_redirect_url
+from django_comment_client.utils import available_division_schemes, has_forum_access
+from django_comment_common.models import CourseDiscussionSettings, FORUM_ROLE_ADMINISTRATOR
+from edxmako.shortcuts import render_to_response
 from lms.djangoapps.certificates import api as certs_api
 from lms.djangoapps.certificates.models import (
     CertificateGenerationConfiguration,
@@ -36,15 +44,8 @@ from lms.djangoapps.certificates.models import (
     CertificateWhitelist,
     GeneratedCertificate
 )
-from class_dashboard.dashboard_data import get_array_section_has_problem, get_section_display_name
-from course_modes.models import CourseMode, CourseModesArchive
-from courseware.access import has_access
-from courseware.courses import get_course_by_id, get_studio_url
-from courseware.url_helpers import get_redirect_url
-from django_comment_client.utils import available_division_schemes, has_forum_access
-from django_comment_common.models import FORUM_ROLE_ADMINISTRATOR, CourseDiscussionSettings
-from edxmako.shortcuts import render_to_response
 from lms.djangoapps.courseware.module_render import get_module_by_usage_id
+from lms.djangoapps.instructor.models import CohortAssigment
 from openedx.core.djangoapps.course_groups.cohorts import DEFAULT_COHORT_NAME, get_course_cohorts, is_course_cohorted
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.verified_track_content.models import VerifiedTrackCohortedCourse
@@ -53,12 +54,11 @@ from openedx.core.lib.url_utils import quote_slashes
 from openedx.core.lib.xblock_utils import wrap_xblock
 from shoppingcart.models import Coupon, CourseRegCodeItem, PaidCourseRegistration
 from student.models import CourseEnrollment
-from student.roles import CourseFinanceAdminRole, CourseSalesAdminRole, CourseStaffRole, CourseInstructorRole
+from student.roles import CourseFinanceAdminRole, CourseInstructorRole, CourseSalesAdminRole, CourseStaffRole
 from util.json_request import JsonResponse
 from xmodule.html_module import HtmlDescriptor
 from xmodule.modulestore.django import modulestore
 from xmodule.tabs import CourseTab
-
 from .tools import get_units_with_due_date, title_or_url
 
 log = logging.getLogger(__name__)
@@ -72,7 +72,7 @@ class InstructorDashboardTab(CourseTab):
     type = "instructor"
     title = ugettext_noop('Instructor')
     view_name = "instructor_dashboard"
-    is_dynamic = True    # The "Instructor" tab is instead dynamically added when it is enabled
+    is_dynamic = True  # The "Instructor" tab is instead dynamically added when it is enabled
 
     @classmethod
     def is_enabled(cls, course, user=None):
@@ -279,7 +279,8 @@ def _section_e_commerce(course, access, paid_mode, coupons_enabled, reports_enab
         'currency_symbol': settings.PAID_COURSE_REGISTRATION_CURRENCY[1],
         'ajax_remove_coupon_url': reverse('remove_coupon', kwargs={'course_id': unicode(course_key)}),
         'ajax_get_coupon_info': reverse('get_coupon_info', kwargs={'course_id': unicode(course_key)}),
-        'get_user_invoice_preference_url': reverse('get_user_invoice_preference', kwargs={'course_id': unicode(course_key)}),
+        'get_user_invoice_preference_url': reverse('get_user_invoice_preference',
+                                                   kwargs={'course_id': unicode(course_key)}),
         'sale_validation_url': reverse('sale_validation', kwargs={'course_id': unicode(course_key)}),
         'ajax_update_coupon': reverse('update_coupon', kwargs={'course_id': unicode(course_key)}),
         'ajax_add_coupon': reverse('add_coupon', kwargs={'course_id': unicode(course_key)}),
@@ -287,9 +288,12 @@ def _section_e_commerce(course, access, paid_mode, coupons_enabled, reports_enab
         'get_sale_order_records_url': reverse('get_sale_order_records', kwargs={'course_id': unicode(course_key)}),
         'instructor_url': reverse('instructor_dashboard', kwargs={'course_id': unicode(course_key)}),
         'get_registration_code_csv_url': reverse('get_registration_codes', kwargs={'course_id': unicode(course_key)}),
-        'generate_registration_code_csv_url': reverse('generate_registration_codes', kwargs={'course_id': unicode(course_key)}),
-        'active_registration_code_csv_url': reverse('active_registration_codes', kwargs={'course_id': unicode(course_key)}),
-        'spent_registration_code_csv_url': reverse('spent_registration_codes', kwargs={'course_id': unicode(course_key)}),
+        'generate_registration_code_csv_url': reverse('generate_registration_codes',
+                                                      kwargs={'course_id': unicode(course_key)}),
+        'active_registration_code_csv_url': reverse('active_registration_codes',
+                                                    kwargs={'course_id': unicode(course_key)}),
+        'spent_registration_code_csv_url': reverse('spent_registration_codes',
+                                                   kwargs={'course_id': unicode(course_key)}),
         'set_course_mode_url': reverse('set_course_mode_price', kwargs={'course_id': unicode(course_key)}),
         'download_coupon_codes_url': reverse('get_coupon_codes', kwargs={'course_id': unicode(course_key)}),
         'enrollment_report_url': reverse('get_enrollment_report', kwargs={'course_id': unicode(course_key)}),
@@ -498,12 +502,14 @@ def _section_membership(course, access):
         'ccx_is_enabled': ccx_enabled,
         'enroll_button_url': reverse('students_update_enrollment', kwargs={'course_id': unicode(course_key)}),
         'unenroll_button_url': reverse('students_update_enrollment', kwargs={'course_id': unicode(course_key)}),
-        'upload_student_csv_button_url': reverse('register_and_enroll_students', kwargs={'course_id': unicode(course_key)}),
+        'upload_student_csv_button_url': reverse('register_and_enroll_students',
+                                                 kwargs={'course_id': unicode(course_key)}),
         'modify_beta_testers_button_url': reverse('bulk_beta_modify_access', kwargs={'course_id': unicode(course_key)}),
         'list_course_role_members_url': reverse('list_course_role_members', kwargs={'course_id': unicode(course_key)}),
         'modify_access_url': reverse('modify_access', kwargs={'course_id': unicode(course_key)}),
         'list_forum_members_url': reverse('list_forum_members', kwargs={'course_id': unicode(course_key)}),
-        'update_forum_role_membership_url': reverse('update_forum_role_membership', kwargs={'course_id': unicode(course_key)}),
+        'update_forum_role_membership_url': reverse('update_forum_role_membership',
+                                                    kwargs={'course_id': unicode(course_key)}),
         'enrollment_role_choices': enrollment_role_choices,
         'update_cohort_assignment_url': reverse('update_cohort_assignment', kwargs={'course_id': unicode(course_key)}),
         'is_cohort_enable': json.dumps(is_course_cohorted(course_key)),
@@ -536,9 +542,9 @@ def _section_cohort_management(course, access):
         ),
         'cohort_id_stub': cohort_id_stub,
         'cohort_dashboard_url': reverse(
-                'cohort_management_dashboard:dashboard_with_cohort',
-                kwargs={'course_id': unicode(course_key), 'cohort_id': cohort_id_stub}
-            ),
+            'cohort_management_dashboard:dashboard_with_cohort',
+            kwargs={'course_id': unicode(course_key), 'cohort_id': cohort_id_stub}
+        ),
         'update_cohort_assignment_url': reverse('update_cohort_assignment', kwargs={'course_id': unicode(course_key)}),
     }
     return section_data
@@ -624,8 +630,8 @@ def _section_data_download(course, access):
     course_key = course.id
 
     show_proctored_report_button = (
-        settings.FEATURES.get('ENABLE_SPECIAL_EXAMS', False) and
-        course.enable_proctored_exams
+            settings.FEATURES.get('ENABLE_SPECIAL_EXAMS', False) and
+            course.enable_proctored_exams
     )
 
     section_data = {
@@ -809,10 +815,17 @@ def _section_open_response_assessment(request, course, openassessment_blocks, ac
         disable_staff_debug_info=True, course=course
     )
 
-    cohort_info = [
-        {'name': cohort.name, 'id': cohort.id}
-        for cohort in (is_course_cohorted(course_key) and get_course_cohorts(course) or [])
-    ]
+    user_cohorts = CohortAssigment.objects.filter(user=request.user)
+    if request.user.is_staff and user_cohorts.exists():
+        cohort_info = user_cohorts.values('cohort__id', 'cohort__name').annotate(
+            id=F('cohort__id'),
+            name=F('cohort__name')
+        )
+    else:
+        cohort_info = [
+            {'name': cohort.name, 'id': cohort.id}
+            for cohort in (is_course_cohorted(course_key) and get_course_cohorts(course) or [])
+        ]
 
     section_data = {
         'fragment': block.render('ora_blocks_listing_view', context={
