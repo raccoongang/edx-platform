@@ -1,0 +1,65 @@
+swagger: "2.0"
+info:
+  title: External API for UCDC portal. User managment (CRUD).
+  version: "1.0.0"
+host: "localhost:18000"
+schemes:
+  - https
+basePath: /api/ucdc/user
+produces:
+  - application/json
+consumes:
+  - application/json
+paths:
+  /create:
+    parameters:
+      - name: HTTP_X_EDX_API_KEY
+        in: header
+        required: true
+        type: string
+        description: Edx api key to be able authorize external consumer. (Like auth token)
+      - name: body
+        in: body
+        required: true
+        schema:
+          properties:
+            username:
+              type: string
+              description: The user name.
+            email:
+              type: string
+              description: The user email.
+            uuid:
+              type: string
+              description: User ID for UCDC portal. Also is as OAuth provider ID since UCDC portal is OAuth provider for Edx.
+    post:
+      description: User registration. Create user and his profile.
+      responses:
+        201:
+          description: User has been created successfully.
+          schema:
+            $ref: '#/definitions/User'
+        401:
+          description: Authentication credentials were not provided.
+        400:
+          description: Request data is not valid.
+        409:
+          description: User profile already exists.
+
+
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: The user ID.
+      username:
+        type: string
+        description: The user name.
+      email:
+        type: string
+        description: The user email.
+      auth_uid:
+        type: string
+        description: The OAuth provider user ID.

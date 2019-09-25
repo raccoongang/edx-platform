@@ -10,3 +10,6 @@
 -e common/lib/xmodule
 
 -e openedx/core/lib/xblock_builtin/xblock_discussion
+
+# UCDC integration. Plugin that describes the REST-full api through which UCDC portal interacts with the EDX platform.
+-e common/lib/ucdc_edx_api_plugin
