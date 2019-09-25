@@ -5,7 +5,7 @@
         'backbone',
         'gettext',
         'js/index_discovery/views/course_card',
-    ], function($, _, Backbone, gettext, CourseCardView) {
+    ], function($, _, Backbone, gettext, IndexCourseCardView) {
         'use strict';
 
         return Backbone.View.extend({
@@ -33,7 +33,7 @@
                 /* eslint no-param-reassign: [2, { "props": true }] */
                 var items = this.model.models.map(function(item) {
                     item.userPreferences = this.model.userPreferences;
-                    var courseItem = new CourseCardView({model: item});
+                    var courseItem = new IndexCourseCardView({model: item});
                     return courseItem.render().el;
                 }, this);
 

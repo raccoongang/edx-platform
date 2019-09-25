@@ -5,7 +5,7 @@
         'js/index_discovery/models/program_card',
         'js/index_discovery/models/course_card',
         'js/index_discovery/models/facet_option'
-    ], function(_, Backbone, ProgramCard, CourseCard, FacetOption) {
+    ], function(_, Backbone, IndexProgramCard, IndexCourseCard, IndexFacetOption) {
         'use strict';
 
         return Backbone.Model.extend({
@@ -18,10 +18,10 @@
             },
 
             initialize: function() {
-                this.programCards = new Backbone.Collection([], {model: ProgramCard})
+                this.programCards = new Backbone.Collection([], {model: IndexProgramCard})
 
-                this.facetOptions = new Backbone.Collection([], {model: FacetOption});
-                this.originalFacetOptions = new Backbone.Collection([], {model: FacetOption})
+                this.facetOptions = new Backbone.Collection([], {model: IndexFacetOption});
+                this.originalFacetOptions = new Backbone.Collection([], {model: IndexFacetOption})
             },
 
             parse: function(response) {

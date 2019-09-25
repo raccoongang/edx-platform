@@ -2,12 +2,12 @@
     define([
         'backbone',
         'js/index_discovery/models/course_card'
-    ], function(Backbone, CourseCard) {
+    ], function(Backbone, IndexCourseCard) {
         'use strict';
 
         return Backbone.Collection.extend({
 
-            model: CourseCard,
+            model: IndexCourseCard,
             pageSize: 20,
             totalCount: 0,
             latestModelsCount: 0,

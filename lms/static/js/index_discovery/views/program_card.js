@@ -7,7 +7,7 @@
         'edx-ui-toolkit/js/utils/date-utils',
         'js/index_discovery/models/course_card',
         'js/index_discovery/views/courses_listing'
-    ], function($, _, Backbone, gettext, DateUtils, CourseCard, CoursesListing) {
+    ], function($, _, Backbone, gettext, DateUtils, IndexCourseCard, IndexCoursesListing) {
         'use strict';
 
         function formatDate(date, userLanguage, userTimezone) {
@@ -45,11 +45,11 @@
             },
 
             renderCourseCards: function(courses) {
-                var programCoursesCards = new Backbone.Collection([], CourseCard);
+                var programCoursesCards = new Backbone.Collection([], IndexCourseCard);
 
                 programCoursesCards.add(courses);
 
-                var programCoursesCardsListing = new CoursesListing({model: programCoursesCards});
+                var programCoursesCardsListing = new IndexCoursesListing({model: programCoursesCards});
                 programCoursesCardsListing.$list = this.$('.courses-listing');
 
                 programCoursesCardsListing.render();

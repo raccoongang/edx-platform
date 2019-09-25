@@ -3,8 +3,7 @@
         'underscore',
         'backbone',
         'js/index_discovery/models/course_discovery',
-        'js/index_discovery/collections/filters'
-    ], function(_, Backbone, CourseDiscovery, Filters) {
+    ], function(_, Backbone, IndexCourseDiscovery) {
         'use strict';
 
 
@@ -17,7 +16,7 @@
             jqhxr: null,
 
             initialize: function() {
-                this.discovery = new CourseDiscovery();
+                this.discovery = new IndexCourseDiscovery();
                 this.listenTo(this.discovery, 'sync', this.onSync, this);
                 this.listenTo(this.discovery, 'error', this.onError, this);
             },
@@ -133,7 +132,7 @@
                 if (this.cached) {
                     deferred.resolveWith(this, [this.cached]);
                 } else {
-                    this.cached = new CourseDiscovery();
+                    this.cached = new IndexCourseDiscovery();
                     this.cached.fetch({
                         type: 'POST',
                         data: {
