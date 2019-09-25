@@ -1,7 +1,7 @@
 (function(define) {
     define([
         'backbone',
-        'js/index_discovery/models/course_card'
+        'js/index_discovery/models/index_course_card'
     ], function(Backbone, IndexCourseCard) {
         'use strict';
 

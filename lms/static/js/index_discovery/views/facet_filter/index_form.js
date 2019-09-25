@@ -1,7 +1,7 @@
 (function(define) {
     define(['jquery',
             'backbone',
-            'js/index_discovery/views/facet_filter/input'],
+            'js/index_discovery/views/facet_filter/index_input'],
         function($, Backbone, FacetFilterInput) {
             'use strict';
 

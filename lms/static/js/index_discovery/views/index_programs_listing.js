@@ -4,7 +4,7 @@
         'underscore',
         'backbone',
         'gettext',
-        'js/index_discovery/views/program_card'
+        'js/index_discovery/views/index_program_card'
     ], function($, _, Backbone, gettext, IndexProgramCardView) {
         'use strict';
 

@@ -2,9 +2,9 @@
     define([
         'underscore',
         'backbone',
-        'js/index_discovery/models/program_card',
-        'js/index_discovery/models/course_card',
-        'js/index_discovery/models/facet_option'
+        'js/index_discovery/models/index_program_card',
+        'js/index_discovery/models/index_course_card',
+        'js/index_discovery/models/index_facet_option'
     ], function(_, Backbone, IndexProgramCard, IndexCourseCard, IndexFacetOption) {
         'use strict';
 

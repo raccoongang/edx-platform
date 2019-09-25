@@ -4,8 +4,8 @@
         'underscore',
         'backbone',
         'gettext',
-        'js/index_discovery/models/filter',
-        'js/index_discovery/views/filter_label'
+        'js/index_discovery/models/index_filter',
+        'js/index_discovery/views/index_filter_label'
     ], function($, _, Backbone, gettext, IndexFilter, IndexFilterLabel) {
         'use strict';
 

@@ -4,7 +4,7 @@
         'underscore',
         'backbone',
         'gettext',
-        'js/index_discovery/views/course_card',
+        'js/index_discovery/views/index_course_card',
     ], function($, _, Backbone, gettext, IndexCourseCardView) {
         'use strict';
 

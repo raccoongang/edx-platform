@@ -2,7 +2,7 @@
     define([
         'underscore',
         'backbone',
-        'js/index_discovery/models/course_discovery',
+        'js/index_discovery/models/index_course_discovery',
     ], function(_, Backbone, IndexCourseDiscovery) {
         'use strict';
 

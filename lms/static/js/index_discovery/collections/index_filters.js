@@ -1,7 +1,7 @@
 (function(define) {
     define([
         'backbone',
-        'js/index_discovery/models/filter'
+        'js/index_discovery/models/index_filter'
     ], function(Backbone, IndexFilter) {
         'use strict';
 

@@ -5,8 +5,8 @@
         'backbone',
         'gettext',
         'edx-ui-toolkit/js/utils/date-utils',
-        'js/index_discovery/models/course_card',
-        'js/index_discovery/views/courses_listing'
+        'js/index_discovery/models/index_course_card',
+        'js/index_discovery/views/index_courses_listing'
     ], function($, _, Backbone, gettext, DateUtils, IndexCourseCard, IndexCoursesListing) {
         'use strict';
 
