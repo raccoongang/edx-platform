@@ -1,9 +1,9 @@
 import json
-
+import mock
 import httpretty
 from django.core.cache import cache
 from django.core.management import call_command
-
+from course_category.models import Program
 from openedx.core.djangoapps.catalog.cache import (
     PROGRAM_CACHE_KEY_TPL,
     SITE_PROGRAM_UUIDS_CACHE_KEY_TPL
@@ -184,3 +184,66 @@ class TestCachePrograms(CatalogIntegrationMixin, CacheIsolationTestCase, SiteMix
 
         for key, program in cached_programs.items():
             self.assertEqual(program, partial_programs[key])
+
+    def test_update_db_programs(self):
+        """
+        Verify that the function updates db correctly.
+        """
+
+        site = mock.Mock()
+        site.domain = self.site_domain
+
+        UserFactory(username=self.catalog_integration.service_username)
+
+        programs = {
+            PROGRAM_CACHE_KEY_TPL.format(uuid=program['uuid']): program for program in self.programs
+        }
+
+        self.mock_list()
+
+        for uuid in self.uuids:
+            program = programs[PROGRAM_CACHE_KEY_TPL.format(uuid=uuid)]
+            self.mock_detail(uuid, program)
+
+        with mock.patch('django.contrib.sites.models.Site.objects.get_current', return_value = site):
+            call_command('cache_programs')
+
+        updated_programs = Program.objects.all()
+        self.assertEqual(len(self.programs), len(updated_programs.values_list()))
+
+        # Creating fake program in db:
+        fake_uuid = '90d3137c-20eb-4250-abdf-111111111111'
+        fake_title = 'Fake program'
+        fake_subtitle = 'there is no such program in cache'
+        Program.objects.create(
+            uuid=fake_uuid, title=fake_title, subtitle=fake_subtitle, courses=[]
+        )
+
+        # Deleting program from db:
+        deleted_program_uuid = updated_programs[0].uuid
+        Program.objects.get(uuid=deleted_program_uuid).delete()
+
+        # Canging only 'courses' value (will be updatet by 'cache_programs' anyway,
+        # even if program have valid uuid).
+        program_with_fake_courses = updated_programs[1]
+        program_with_fake_courses.courses = 'fake'
+        program_with_fake_courses_id = program_with_fake_courses.uuid
+
+        with mock.patch('django.contrib.sites.models.Site.objects.get_current', return_value = site):
+            call_command('cache_programs')
+
+        updated_programs_2 = Program.objects.all()
+
+        # Assert that programs in db is equal to programs in cache despite changes
+        # in db between calling 'cache_programs' command.
+        for updated_program in updated_programs:
+            updated_programs_2_uuids = updated_programs_2.values_list('uuid', flat=True)
+            self.assertIn(updated_program.uuid, updated_programs_2_uuids)
+
+        # Assert that deleted programs appears again, fake programs removes from
+        # db, 'courses' value replaces by valid after calling 'cache_programs' command.
+        self.assertIn(deleted_program_uuid, updated_programs_2.values_list('uuid', flat=True))
+        self.assertNotIn(fake_uuid, Program.objects.all().values_list('uuid', flat=True))
+        self.assertNotIn(
+            'fake', updated_programs_2.filter(uuid=program_with_fake_courses_id).values_list('courses', flat=True)
+        )
