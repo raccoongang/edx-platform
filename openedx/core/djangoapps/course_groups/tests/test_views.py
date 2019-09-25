@@ -650,6 +650,7 @@ class UsersInCohortTestCase(CohortViewsTestCase):
         <=100 users.
         """
         users = [UserFactory() for _ in range(5)]
+        self._enroll_users(users, self.course.id)
         cohort = CohortFactory(course_id=self.course.id, users=users)
         response_dict = self.request_users_in_cohort(cohort, self.course, 1)
         self.verify_users_in_cohort_and_response(
@@ -665,6 +666,7 @@ class UsersInCohortTestCase(CohortViewsTestCase):
         Verify that pagination works correctly for cohorts with >100 users.
         """
         users = [UserFactory() for _ in range(101)]
+        self._enroll_users(users, self.course.id)
         cohort = CohortFactory(course_id=self.course.id, users=users)
         response_dict_1 = self.request_users_in_cohort(cohort, self.course, 1)
         response_dict_2 = self.request_users_in_cohort(cohort, self.course, 2)

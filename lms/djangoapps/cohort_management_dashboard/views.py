@@ -12,7 +12,7 @@ class DashboardIndex(View):
     def get(self, request, course_id, cohort_id):
         course_key = CourseKey.from_string(course_id)
         course = get_course_with_access(request.user, 'instructor', course_key, depth=None)
-        if not is_course_cohorted(course_key) :
+        if not is_course_cohorted(course_key):
             raise Http404
 
         template_cohort_id_key = 123123123
@@ -32,7 +32,7 @@ class DashboardIndex(View):
                 'remove_from_cohort',
                 kwargs={'course_key_string': unicode(course_id), 'cohort_id': template_cohort_id_key}
             ),
-            'cohort_id':  cohort_id,
+            'cohort_id': cohort_id,
             'template_cohort_id_key': template_cohort_id_key,
             'empty_user_list_redirect': (
                 reverse('instructor_dashboard', kwargs={'course_id': unicode(course_id)}) +
@@ -42,5 +42,4 @@ class DashboardIndex(View):
                 'cohort_management_dashboard:dashboard_with_cohort',
                 kwargs={'course_id': unicode(course_id), 'cohort_id': template_cohort_id_key}
             )
-
         })

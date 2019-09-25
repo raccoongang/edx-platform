@@ -6,7 +6,6 @@ forums, and to the cohort admin views.
 import logging
 import random
 
-from courseware import courses
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -16,10 +15,11 @@ from django.dispatch import receiver
 from django.http import Http404
 from django.utils.translation import ugettext as _
 from eventtracking import tracker
+
+from courseware import courses
 from openedx.core.djangoapps.request_cache import clear_cache, get_cache
 from openedx.core.djangoapps.request_cache.middleware import request_cached
 from student.models import get_user_by_username_or_email
-
 from .models import (
     CohortMembership,
     CourseCohort,
@@ -47,6 +47,7 @@ def _cohort_added(sender, **kwargs):
 @receiver(m2m_changed, sender=CourseUserGroup.users.through)
 def _cohort_membership_changed(sender, **kwargs):
     """Emits a tracking log event each time cohort membership is modified"""
+
     def get_event_iter(user_id_iter, cohort_iter):
         """
         Returns a dictionary containing a mashup of cohort and user information for the given lists
@@ -92,7 +93,6 @@ def _cohort_membership_changed(sender, **kwargs):
 # Note that course staff have the ability to change the name of this cohort after creation via the cohort
 # management UI in the instructor dashboard.
 DEFAULT_COHORT_NAME = _("Default Group")
-
 
 # tl;dr: global state is bad.  capa reseeds random every time a problem is loaded.  Even
 # if and when that's fixed, it's a good idea to have a local generator to avoid any other
@@ -341,6 +341,14 @@ def get_course_cohorts(course, assignment_type=None):
     )
     query_set = query_set.filter(cohort__assignment_type=assignment_type) if assignment_type else query_set
     return list(query_set)
+
+
+def get_enrolled_students_by_cohort_and_course_key(cohort, course_key):
+    """Return a query set of users, which have been enrolled to the course and added to the cohort."""
+    return cohort.users.filter(
+        courseenrollment__course_id=course_key,
+        courseenrollment__is_active=1
+    )
 
 
 def get_cohort_names(course):
@@ -592,7 +600,6 @@ def _get_course_cohort_settings(course_key):
 
 
 def get_legacy_discussion_settings(course_key):
-
     try:
         course_cohort_settings = CourseCohortsSettings.objects.get(course_id=course_key)
         return {
