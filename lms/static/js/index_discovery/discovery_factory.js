@@ -1,25 +1,37 @@
 (function(define) {
     'use strict';
 
-    define(['backbone',
-            'js/index_discovery/models/search_state',
-            'js/index_discovery/collections/filters',
-            'js/index_discovery/views/search_form',
-            'js/index_discovery/views/facet_filter/form',
-            'js/index_discovery/views/programs_listing',
-            'js/index_discovery/views/courses_listing',
-            'js/index_discovery/views/course_card',
-            'js/index_discovery/views/filter_bar',
-            'js/index_discovery/views/refine_sidebar'],
-        function(Backbone, SearchState, Filters, SearchForm, FacetFilterForm, ProgramsListing, CoursesListing, CourseCard, FilterBar, RefineSidebar) {
+    define(
+        ['backbone',
+        'js/index_discovery/models/search_state',
+        'js/index_discovery/collections/filters',
+        'js/index_discovery/views/search_form',
+        'js/index_discovery/views/facet_filter/form',
+        'js/index_discovery/views/programs_listing',
+        'js/index_discovery/views/courses_listing',
+        'js/index_discovery/views/course_card',
+        'js/index_discovery/views/filter_bar',
+        'js/index_discovery/views/refine_sidebar'],
+        function(
+            Backbone,
+            IndexSearchState,
+            IndexFilters,
+            IndexSearchForm,
+            IndexFacetFilterForm,
+            IndexProgramsListing,
+            IndexCoursesListing,
+            IndexCourseCard,
+            IndexFilterBar,
+            IndexRefineSidebar
+        ) {
             return function(meanings, searchQuery, userLanguage, userTimezone) {
                 var dispatcher = _.extend({}, Backbone.Events);
-                var searchState = new SearchState();
-                var filters = new Filters();
-                var searchForm = new SearchForm();
-                var facetFilterForm = new FacetFilterForm();
-                var filterBar = new FilterBar({collection: filters});
-                var refineSidebar = new RefineSidebar({
+                var searchState = new IndexSearchState();
+                var filters = new IndexFilters();
+                var searchForm = new IndexSearchForm();
+                var facetFilterForm = new IndexFacetFilterForm();
+                var filterBar = new IndexFilterBar({collection: filters});
+                var refineSidebar = new IndexRefineSidebar({
                     collection: searchState.discovery.facetOptions,
                     meanings: meanings
                 });
@@ -31,11 +43,11 @@
                 };
 
                 programListingModel.coursesListing = {
-                    cardViewClass: CourseCard,
-                    viewClass: CoursesListing,
+                    cardViewClass: IndexCourseCard,
+                    viewClass: IndexCoursesListing,
                 };
 
-                var listing = new ProgramsListing({model: programListingModel});
+                var listing = new IndexProgramsListing({model: programListingModel});
 
                 dispatcher.listenTo(searchForm, 'search', function(query) {
                     filters.reset();
