@@ -183,7 +183,7 @@ COURSE_DISCOVERY_MEANINGS = {
     },
     'language': LANGUAGE_MAP,
     'category': {
-        'name': 'Categories',
+        'name': 'Topics',
     }
 }
 

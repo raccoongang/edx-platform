@@ -373,6 +373,12 @@ FEATURES = {
 
 COURSE_DISCOVERY_FILTERS = ["org", "language", "modes", "category"]
 
+COURSE_DISCOVERY_MEANINGS = {
+    'category': {
+        'name': 'Topics',
+    }
+}
+
 COURSE_DISCOVERY_FACETS = {
     'category': {
         'size': 100
