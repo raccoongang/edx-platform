@@ -26,6 +26,7 @@
             'js/api_admin/catalog_preview_factory',
             'js/courseware/courseware_factory',
             'js/discovery/discovery_factory',
+            'js/index_discovery/index_discovery_factory',
             'js/edxnotes/views/notes_visibility_factory',
             'js/edxnotes/views/page_factory',
             'js/financial-assistance/financial_assistance_form_factory',

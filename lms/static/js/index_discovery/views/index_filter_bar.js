@@ -4,9 +4,9 @@
         'underscore',
         'backbone',
         'gettext',
-        'js/index_discovery/models/filter',
-        'js/index_discovery/views/filter_label'
-    ], function($, _, Backbone, gettext, Filter, FilterLabel) {
+        'js/index_discovery/models/index_filter',
+        'js/index_discovery/views/index_filter_label'
+    ], function($, _, Backbone, gettext, IndexFilter, IndexFilterLabel) {
         'use strict';
 
         return Backbone.View.extend({
@@ -35,7 +35,7 @@
             },
 
             addFilter: function(filter) {
-                var label = new FilterLabel({model: filter});
+                var label = new IndexFilterLabel({model: filter});
                 this.$ul.append(label.render().el);
                 this.show();
             },

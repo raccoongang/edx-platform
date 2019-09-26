@@ -4,8 +4,8 @@
         'underscore',
         'backbone',
         'gettext',
-        'js/index_discovery/views/program_card'
-    ], function($, _, Backbone, gettext, ProgramCardView) {
+        'js/index_discovery/views/index_program_card'
+    ], function($, _, Backbone, gettext, IndexProgramCardView) {
         'use strict';
 
         return Backbone.View.extend({
@@ -35,7 +35,7 @@
                 var latest = this.model.latest();
 
                 var items = latest.map(function(item) {
-                    var itemView = new ProgramCardView({model: item, testParam: 'testParam'});
+                    var itemView = new IndexProgramCardView({model: item});
                     return itemView.render().el;
                 });
 
