@@ -48,7 +48,8 @@ from student.models import (
     UserAttribute,
     UserProfile,
     unique_id_for_user,
-    email_exists_or_retired
+    email_exists_or_retired,
+    UserSites
 )
 
 
@@ -680,3 +681,17 @@ def do_create_account(form, custom_form=None):
         raise
 
     return user, profile, registration
+
+
+#UpSkilling Team
+def link_user_with_site(user, site):
+    """
+    Link user with the initial site he signed-up from
+    :param site:
+    :param user:
+    """
+    try:
+        if site and site.id != settings.SITE_ID:
+            UserSites.objects.create(user=user, site=site)
+    except Exception as e:
+        print e

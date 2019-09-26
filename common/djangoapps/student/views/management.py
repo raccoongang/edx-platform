@@ -743,6 +743,9 @@ def create_account_with_params(request, params):
 
     # Perform operations that are non-critical parts of account creation
     create_or_set_user_attribute_created_on_site(user, request.site)
+    
+    #Upskilling Team
+    link_user_with_site(user, request.site)
 
     preferences_api.set_user_preference(user, LANGUAGE_KEY, get_language())
 
