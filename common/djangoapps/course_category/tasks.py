@@ -1,19 +1,25 @@
 from celery.task import task
-
 from opaque_keys.edx.keys import CourseKey
+
 from xmodule.modulestore.django import modulestore
 
 
 @task
 def task_reindex_courses(category_id=None, course_keys=None):
+    """
+    Reindex courses while saving changes in category
+        Args:
+            category_id: int
+            course_keys: list of course ids (str)
+    """
+
     from course_category.models import CourseCategory
     from cms.djangoapps.contentstore.courseware_index import CoursewareSearchIndexer
     courses = set(course_keys) if course_keys else set()
     if category_id:
         category = CourseCategory.objects.filter(id=category_id).first()
         if category:
-            courses.update(category.courses.all().values_list('id', flat=True))
-            courses.update(category.get_descendants().values_list('courses', flat=True))
+            courses.update(map(str, category.courses.all().values_list('id', flat=True)))
 
     for course_key in courses:
         course_key = CourseKey.from_string(course_key)
