@@ -886,6 +886,24 @@ class CourseFields(object):
         ),
         scope=Scope.settings, default=False
     )
+    product = Boolean(
+        display_name=_("Product"),
+        help=_("Set this to \"true\" to mark this course as a Product."),
+        default=False,
+        scope=Scope.settings
+    )
+    downloadable = Boolean(
+        display_name=_("Downloadable"),
+        help=_("Set this to \"true\" to mark this product as downloadable."),
+        default=False,
+        scope=Scope.settings
+    )
+    external_product_link = String(
+        display_name=_("External product link"),
+        help=_("Specify the external link for product."),
+        default="http://your_product_link.com",
+        scope=Scope.settings
+    )
 
 
 class CourseModule(CourseFields, SequenceModule):  # pylint: disable=abstract-method

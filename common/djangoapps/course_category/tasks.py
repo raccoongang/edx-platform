@@ -22,7 +22,7 @@ def task_reindex_courses(category_id=None, course_keys=None):
         if category:
             category_ids = category.courses.all().values_list('id', flat=True)
             courses.update(str(x) for x in category_ids)
-            descendants_ids = category.courses.all().values_list('id', flat=True)
+            descendants_ids = category.get_descendants().values_list('courses', flat=True)
             courses.update(str(x) for x in descendants_ids)
     for course_key in courses:
         course_key = CourseKey.from_string(course_key)

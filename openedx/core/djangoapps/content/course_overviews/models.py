@@ -104,6 +104,11 @@ class CourseOverview(TimeStampedModel):
     marketing_url = TextField(null=True)
     eligible_for_financial_aid = BooleanField(default=True)
 
+    # Products info
+    product = BooleanField(default=False)
+    downloadable = BooleanField(default=False)
+    external_product_link = TextField(null=True)
+
     language = TextField(null=True)
 
     @classmethod
@@ -195,6 +200,10 @@ class CourseOverview(TimeStampedModel):
         course_overview.effort = CourseDetails.fetch_about_attribute(course.id, 'effort')
         course_overview.course_video_url = CourseDetails.fetch_video_url(course.id)
         course_overview.self_paced = course.self_paced
+
+        course_overview.product = course.product
+        course_overview.downloadable = course.downloadable
+        course_overview.external_product_link = course.external_product_link
 
         if not CatalogIntegration.is_enabled():
             course_overview.language = course.language

@@ -7,11 +7,21 @@ from six import text_type
 %>
 <%page args="course" expression_filter="h"/>
 <article class="course" id="${course.id}" role="region" aria-label="${course.display_name_with_default}">
-  <a href="${reverse('about_course', args=[text_type(course.id)])}">
+  <%
+    if course.product and not course.downloadable:
+        link = course.external_product_link
+        target = "_blank"
+        button = _("BUY NOW")
+    else:
+        link = reverse('about_course', args=[text_type(course.id)])
+        target = "_self"
+        button = _("LEARN MORE")
+  %>
+  <a href=${link} target=${target}}>
     <header class="course-image">
       <div class="cover-image">
         <img src="${course.course_image_url}" alt="${course.display_name_with_default} ${course.display_number_with_default}" />
-        <div class="learn-more" aria-hidden="true">${_("LEARN MORE")}</div>
+        <div class="learn-more" aria-hidden="true">${button}</div>
       </div>
     </header>
     <div class="course-info" aria-hidden="true">
