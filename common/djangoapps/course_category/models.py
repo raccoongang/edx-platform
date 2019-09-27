@@ -69,7 +69,7 @@ def move_reindex_course_category(sender, instance, **kwargs):
 def delete_reindex_course_category(sender, instance, **kwargs):
     category_courses = instance.courses.all()
     if category_courses:
-        instance.courses_list = (str(x.id) for x in category_courses)
+        instance.courses_list = [str(x.id) for x in category_courses]
     elif getattr(instance, 'courses_list', []):
         task_reindex_courses.delay(course_keys=instance.courses_list)
 
