@@ -1,0 +1,94 @@
+<%namespace name='static' file='../static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _, get_language
+from django.utils.translation import pgettext
+from django.urls import reverse
+from courseware.courses import get_course_about_section
+from django.conf import settings
+from openedx.core.lib.courses import course_image_url
+from six import string_types
+%>
+
+<%inherit file="../main.html" />
+<%block name="headextra">
+  ## OG (Open Graph) title and description added below to give social media info to display
+  ## (https://developers.facebook.com/docs/opengraph/howtos/maximizing-distribution-media-content#tags)
+  <meta property="og:title" content="${course.display_name_with_default_escaped}" />
+  <meta property="og:description" content="${get_course_about_section(request, course, 'short_description')}" />
+</%block>
+
+
+<%block name="pagetitle">${course.display_name_with_default_escaped}</%block>
+
+<section class="course-info">
+
+  <%block name="course_about_header">
+  <header class="course-profile">
+    <div class="holder">
+      <div class="intro-inner-wrapper">
+        <div class="table">
+        <section class="intro">
+          <div class="heading-group">
+            <h1>
+              ${course.display_name_with_default_escaped}
+              <span>${course.display_org_with_default | h}</span>
+            </h1>
+            <br>
+            <h3>
+              ${get_course_about_section(request, course, 'short_description')}
+            </h3>
+          </div>
+
+          <div class="main-cta">
+            <a href="${course.external_product_link}" download class="register">
+              ${_("Download now")}
+            </a>
+          </div>
+
+        </section>
+        % if get_course_about_section(request, course, "video"):
+        <a href="#video-modal" class="media" rel="leanModal">
+          <div class="hero">
+            <img src="${course_image_urls['large']}" alt="" />
+            <div class="play-intro"></div>
+          </div>
+        </a>
+        %else:
+        <div class="media">
+          <div class="hero">
+            <img src="${course_image_urls['large']}" alt="" />
+          </div>
+        </div>
+        % endif
+        </div>
+      </div>
+    </div>
+  </header>
+  </%block>
+
+  <div class="container">
+
+    <%block name="course_about_details">
+    <div class="details">
+      % if staff_access and studio_url is not None:
+        <div class="wrap-instructor-info studio-view">
+          <a class="instructor-info-action" href="${studio_url}">${_("View About Page in studio")}</a>
+        </div>
+      % endif
+
+      <div class="inner-wrapper">
+        ${get_course_about_section(request, course, "overview")}
+      </div>
+    </div>
+    </%block>
+
+
+</section>
+
+
+
+<%include file="../video_modal.html" />
+
+<%static:require_module_async module_name="js/dateutil_factory" class_name="DateUtilFactory">
+    DateUtilFactory.transform(iterationKey=".localized_datetime");
+</%static:require_module_async>

@@ -878,9 +878,11 @@ def course_about(request, course_id):
             'reviews_fragment_view': reviews_fragment_view,
             'sidebar_html_enabled': sidebar_html_enabled,
         }
+        course_tpl = 'courseware/course_about.html'
+        product_tpl = 'courseware/product_about.html'
 
-        return render_to_response('courseware/course_about.html', context)
-
+        tpl = product_tpl if course.product else course_tpl
+        return render_to_response(tpl, context)
 
 @ensure_csrf_cookie
 @cache_if_anonymous()
