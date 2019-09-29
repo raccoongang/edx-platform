@@ -234,7 +234,7 @@ FEATURES = {
     'ALLOW_WIKI_ROOT_ACCESS': True,
 
     # Turn on/off Microsites feature
-    'USE_MICROSITES': False,
+    'USE_MICROSITES': True,
 
     # Turn on third-party auth. Disabled for now because full implementations are not yet available. Remember to run
     # migrations if you enable this; we don't create tables by default.
