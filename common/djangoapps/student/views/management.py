@@ -82,7 +82,8 @@ from student.helpers import (
     destroy_oauth_tokens,
     do_create_account,
     generate_activation_email_context,
-    get_next_url_for_login_page
+    get_next_url_for_login_page,
+    link_user_with_site
 )
 from student.models import (
     CourseEnrollment,
