@@ -132,7 +132,6 @@ def get_student_statistics(student_email, course_id):
 
     edeos_post_data = {
         "payload": {
-            "student_id": get_user_id_from_email(student_email),
             "client_id": getattr(settings, 'EDEOS_API_KEY'),
             "course_id": course_id,
         },
@@ -143,8 +142,8 @@ def get_student_statistics(student_email, course_id):
     }
     response = send_edeos_api_request(**edeos_post_data)
     tokens = 'n/a'
-    try:
-        tokens = response[student_email][0]["tokens"]
-    except (KeyError, TypeError) as err:
-        log.exception("Edeos student statistics call failed. {}".format(err.message))
+    students = filter(lambda students: students.get(student_email), response)
+    
+    if students:
+        return students[0][student_email][0]['tokens'] if students[0][student_email][0] else tokens
     return tokens
