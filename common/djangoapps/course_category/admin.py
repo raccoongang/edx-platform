@@ -7,6 +7,33 @@ from openedx.core.djangoapps.content.course_overviews.models import CourseOvervi
 from models import CourseCategory, Program
 
 
+class ProductModelMultipleChoiceField(forms.ModelMultipleChoiceField):
+    '''
+    Redefinition of clean method.
+
+    Values that original method recieves by m2m from CourseOverview are course_id (str),
+    while CourseLocator needed.
+    '''
+    def clean(self, value):
+        value = [CourseKey.from_string(v) for v in value]
+        return super(ProductModelMultipleChoiceField, self).clean(value)
+
+
+class ProgramForm(forms.ModelForm):
+    products = ProductModelMultipleChoiceField(
+        queryset=CourseOverview.objects.filter(product=True),
+        required=False,
+        label='Shippable or downloadable products'
+    )
+
+
+class ProgramAdmin(admin.ModelAdmin):
+    form = ProgramForm
+    fields = (
+        'products',
+    )
+
+
 class CourseMultipleModelChoiceField(forms.ModelMultipleChoiceField):
 
     def clean(self, value):
@@ -31,12 +58,14 @@ class CourseCategoryForm(forms.ModelForm):
 
 
 class CourseCategoryAdmin(DjangoMpttAdmin):
-
     form = CourseCategoryForm
     tree_auto_open = True
     prepopulated_fields = {'slug': ('name',)}
     filter_horizontal = ('programs',)
     # for DjangoMpttAdmin fields = '__all__' doesn't work
-    fields = ['name', 'slug', 'img', 'description', 'parent', 'url', 'courses', 'programs']
+    fields = (
+        'name', 'slug', 'img', 'description', 'parent', 'url', 'courses', 'programs',
+    )
 
 admin.site.register(CourseCategory, CourseCategoryAdmin)
+admin.site.register(Program, ProgramAdmin)
