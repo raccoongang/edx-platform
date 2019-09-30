@@ -128,7 +128,7 @@ from util.file import (
     store_uploaded_file
 )
 from util.json_request import JsonResponse, JsonResponseBadRequest
-from util.views import require_global_staff
+from util.views import require_global_staff, require_global_or_course_staff
 from xmodule.modulestore.django import modulestore
 
 from .tools import (
@@ -189,6 +189,7 @@ def require_post_params(*args, **kwargs):
     required_params = []
     required_params += [(arg, None) for arg in args]
     required_params += [(key, kwargs[key]) for key in kwargs]
+
     # required_params = e.g. [('action', 'enroll or unenroll'), ['emails', None]]
 
     def decorator(func):  # pylint: disable=missing-docstring
@@ -211,7 +212,9 @@ def require_post_params(*args, **kwargs):
                 return JsonResponse(error_response_data, status=400)
             else:
                 return func(*args, **kwargs)
+
         return wrapped
+
     return decorator
 
 
@@ -240,7 +243,9 @@ def require_level(level):
                 return func(*args, **kwargs)
             else:
                 return HttpResponseForbidden()
+
         return wrapped
+
     return decorator
 
 
@@ -252,6 +257,7 @@ def require_sales_admin(func):
 
     If the user does not have privileges for this operation, this will return HttpResponseForbidden (403).
     """
+
     def wrapped(request, course_id):  # pylint: disable=missing-docstring
 
         try:
@@ -266,6 +272,7 @@ def require_sales_admin(func):
             return func(request, course_id)
         else:
             return HttpResponseForbidden()
+
     return wrapped
 
 
@@ -277,6 +284,7 @@ def require_finance_admin(func):
 
     If the user does not have privileges for this operation, this will return HttpResponseForbidden (403).
     """
+
     def wrapped(request, course_id):  # pylint: disable=missing-docstring
 
         try:
@@ -291,6 +299,7 @@ def require_finance_admin(func):
             return func(request, course_id)
         else:
             return HttpResponseForbidden()
+
     return wrapped
 
 
@@ -352,7 +361,8 @@ def register_and_enroll_students(request, course_id):  # pylint: disable=too-man
             else:
                 general_errors.append({
                     'username': '', 'email': '',
-                    'response': _('Make sure that the file you upload is in CSV format with no extraneous characters or rows.')
+                    'response': _(
+                        'Make sure that the file you upload is in CSV format with no extraneous characters or rows.')
                 })
 
         except Exception:  # pylint: disable=broad-except
@@ -373,7 +383,9 @@ def register_and_enroll_students(request, course_id):  # pylint: disable=too-man
                     general_errors.append({
                         'username': '',
                         'email': '',
-                        'response': _('Data in row #{row_num} must have exactly four columns: email, username, full name, and country').format(row_num=row_num)
+                        'response': _(
+                            'Data in row #{row_num} must have exactly four columns: email, username, full name, and country').format(
+                            row_num=row_num)
                     })
                 continue
 
@@ -388,7 +400,8 @@ def register_and_enroll_students(request, course_id):  # pylint: disable=too-man
                 validate_email(email)  # Raises ValidationError if invalid
             except ValidationError:
                 row_errors.append({
-                    'username': username, 'email': email, 'response': _('Invalid email {email_address}.').format(email_address=email)})
+                    'username': username, 'email': email,
+                    'response': _('Invalid email {email_address}.').format(email_address=email)})
             else:
                 if User.objects.filter(email=email).exists():
                     # Email address already exists. assume it is the correct user
@@ -425,7 +438,13 @@ def register_and_enroll_students(request, course_id):  # pylint: disable=too-man
                             reason='Enrolling via csv upload',
                             state_transition=UNENROLLED_TO_ENROLLED,
                         )
-                        enroll_email(course_id=course_id, student_email=email, auto_enroll=True, email_students=True, email_params=email_params)
+                        enroll_email(
+                            course_id=course_id,
+                            student_email=email,
+                            auto_enroll=True,
+                            email_students=True,
+                            email_params=email_params,
+                        )
                 elif is_email_retired(email):
                     # We are either attempting to enroll a retired user or create a new user with an email which is
                     # already associated with a retired account.  Simply block these attempts.
@@ -1604,7 +1623,7 @@ def get_registration_codes(request, course_id):
     """
     course_id = CourseKey.from_string(course_id)
 
-    #filter all the  course registration codes
+    # filter all the  course registration codes
     registration_codes = CourseRegistrationCode.objects.filter(
         course_id=course_id
     ).order_by('invoice_item__invoice__company_name')
@@ -1757,7 +1776,7 @@ def generate_registration_codes(request, course_id):
         'corp_address': configuration_helpers.get_value('invoice_corp_address', settings.INVOICE_CORP_ADDRESS),
         'payment_instructions': configuration_helpers.get_value(
             'invoice_payment_instructions',
-            settings. INVOICE_PAYMENT_INSTRUCTIONS,
+            settings.INVOICE_PAYMENT_INSTRUCTIONS,
         ),
         'date': time.strftime("%m/%d/%Y")
     }
@@ -1767,7 +1786,7 @@ def generate_registration_codes(request, course_id):
 
     invoice_attachment = render_to_string('emails/registration_codes_sale_invoice_attachment.txt', context)
 
-    #send_mail(subject, message, from_address, recipient_list, fail_silently=False)
+    # send_mail(subject, message, from_address, recipient_list, fail_silently=False)
     csv_file = StringIO.StringIO()
     csv_writer = csv.writer(csv_file)
     for registration_code in registration_codes:
@@ -1856,7 +1875,8 @@ def spent_registration_codes(request, course_id):
 
         company_name = request.POST['spent_company_name']
         if company_name:
-            spent_codes_list = spent_codes_list.filter(invoice_item__invoice__company_name=company_name)  # pylint: disable=maybe-no-member
+            spent_codes_list = spent_codes_list.filter(
+                invoice_item__invoice__company_name=company_name)  # pylint: disable=maybe-no-member
 
     csv_type = 'spent'
     return registration_codes_csv("Spent_Registration_Codes.csv", spent_codes_list, csv_type)
@@ -3379,7 +3399,7 @@ def update_cohort_assignment(request, course_id):
     cohort_id = int(request.POST.get('cohort_id'))
     user = get_student_from_identifier(request.POST.get('unique_student_identifier'))
 
-    #Note (yura.braiko@gmail.com): if cohort id is `-1` it equal to `All` cohort.
+    # Note (yura.braiko@gmail.com): if cohort id is `-1` it equal to `All` cohort.
     if cohort_id == -1:
         migrate_cohort_settings(course)
 
@@ -3403,7 +3423,7 @@ def update_cohort_assignment(request, course_id):
 @transaction.non_atomic_requests
 @ensure_csrf_cookie
 @cache_control(no_cache=True, no_store=True, must_revalidate=True)
-@require_global_staff
+@require_global_or_course_staff
 @require_http_methods(['POST', 'GET'])
 def cohorts_list_with_assignment(request, course_id):
     cohort_info = json.loads(cohort_handler(request, course_id).content)

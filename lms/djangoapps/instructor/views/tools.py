@@ -6,15 +6,15 @@ import json
 import dateutil
 from django.contrib.auth.models import User
 from django.http import HttpResponseBadRequest
-from pytz import UTC
 from django.utils.translation import ugettext as _
 from opaque_keys.edx.keys import UsageKey
-from six import text_type, string_types
+from pytz import UTC
+from six import string_types, text_type
 
-from student.models import get_user_by_username_or_email
 from courseware.field_overrides import disable_overrides
 from courseware.models import StudentFieldOverride
 from courseware.student_field_overrides import clear_override_for_user, get_override_for_user, override_field_for_user
+from student.models import get_user_by_username_or_email
 from xmodule.fields import Date
 
 DATE_FIELD = Date()
@@ -24,6 +24,7 @@ class DashboardError(Exception):
     """
     Errors arising from use of the instructor dashboard.
     """
+
     def response(self):
         """
         Generate an instance of HttpResponseBadRequest for this error.
@@ -38,6 +39,7 @@ def handle_dashboard_error(view):
     DashboardError is raised during view processing, an HttpResponseBadRequest
     is sent back to the client with JSON data about the error.
     """
+
     def wrapper(request, course_id):
         """
         Wrap the view.
@@ -102,6 +104,7 @@ def find_unit(course, url):
     url in the course tree and returns the unit.  Raises DashboardError if no
     unit is found.
     """
+
     def find(node, url):
         """
         Find node in course tree for url.
@@ -138,8 +141,9 @@ def get_units_with_due_date(course):
         else:
             for child in node.get_children():
                 visit(child)
+
     visit(course)
-    #units.sort(key=_title_or_url)
+    # units.sort(key=_title_or_url)
     return units
 
 
