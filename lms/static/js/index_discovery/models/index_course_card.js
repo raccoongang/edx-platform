@@ -16,7 +16,10 @@
                 start: '',
                 image_url: '',
                 org: '',
-                id: ''
+                id: '',
+                product: false,
+                downloadable: false,
+                external_product_link: ''
             }
         });
     });
