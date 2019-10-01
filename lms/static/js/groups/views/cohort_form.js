@@ -65,14 +65,27 @@
                 },
 
                 onRevokeAdminClick: function(event) {
-                    this.updateCohortAssigment(this, event.target.closest('.revoke').dataset.user, false);
+                    this.updateCohortAssigment(event.target.closest('.revoke').dataset.user, false);
                 },
 
-                onCohortAdminAdded: function(event){
-                    this.updateCohortAssigment(this, $(event.target.parentElement).find('input')[0].value, true)
+                onCohortAdminAdded: function(event) {
+                    var userName = $(event.target.parentElement).find('input')[0].value.trim();
+                    if (!userName) {
+                        this.showNotification(
+                            {
+                                type: 'error',
+                                title: gettext('The cohort leaders cannot be saved'),
+                                details: [gettext('Username is a required field.')]
+                            },
+                            this.$('.cohort-leaders-management')
+                        );
+                        return;
+                    }
+                    this.updateCohortAssigment(userName, true);
                 },
 
-                updateCohortAssigment: function(self, user, isAdd){
+                updateCohortAssigment: function(user, isAdd) {
+                    var self = this;
                     $.ajax({
                         type: 'POST',
                         dataType: 'json',
@@ -83,19 +96,30 @@
                             is_assignment: isAdd,
                         },
                         success: function(data) {
-                            if(!isAdd) {
-                                self.model.set('cohort_admins', self.model.get('cohort_admins').filter(function (value, index, arr) {
-                                    return value !== user;
-                                }));
-                            }else {
-                                var newCohortAdmins = self.model.get('cohort_admins');
-                                newCohortAdmins.push(user);
-                                self.model.set('cohort_admins', newCohortAdmins);
+                            if (isAdd) {
+                                self.model.addCohortAdmin(data['user']);
+                            } else {
+                                self.model.removeCohortAdmin(data['user']);
                             }
                             self.render();
                         },
-                        error: statusAjaxError(function () {
-                            // TODO(yurabraiko@raccoongang.com) add error render.
+                        error: statusAjaxError(function(jqXHR) {
+                            var errorMsg;
+                            switch (jqXHR.status) {
+                                case 404:
+                                    errorMsg = gettext('A user with this identifier "' + user + '"  does not exist.');
+                                    break;
+                                default:
+                                    errorMsg = gettext('Opps. An unknown error occurred.');
+                            }
+                            self.showNotification(
+                                {
+                                    type: 'error',
+                                    title: gettext('The cohort leaders cannot be saved'),
+                                    details: [errorMsg]
+                                },
+                                self.$('.cohort-leaders-management')
+                            );
                         })
                     });
                 },
@@ -174,6 +198,7 @@
                         assignment_type: selectedAssignmentType
                     };
                     errorMessages = this.validate(fieldData);
+                    !isUpdate && (fieldData['admins'] = this.model.get('cohort_admins'));
 
                     if (errorMessages.length > 0) {
                         showErrorMessage(
