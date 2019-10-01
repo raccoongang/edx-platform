@@ -15,6 +15,7 @@
                 'click .show-less': 'collapse',
                 'click .show-more': 'expand'
             },
+            collapsedListMaxOptionsCount: 9,
 
             initialize: function(options) {
                 this.meanings = options.meanings || {};
@@ -45,7 +46,7 @@
 
             renderFacet: function(facetKey, options) {
                 var optionsSelected = _.filter(options, function(o) { return o.get('selected'); });
-                var listIsHuge = optionsSelected.length ? false : (options.length > 9);
+                var listIsHuge = optionsSelected.length ? false : (options.length > this.collapsedListMaxOptionsCount);
                 return this.facetTpl({
                     name: facetKey,
                     displayName: this.facetName(facetKey),
