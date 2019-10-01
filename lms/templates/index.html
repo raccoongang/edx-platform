@@ -13,24 +13,6 @@ from openedx.core.djangolib.js_utils import dump_js_escaped_json
   course_discovery_enabled = settings.FEATURES.get('ENABLE_COURSE_DISCOVERY')
 %>
 
-% if course_discovery_enabled:
-<%block name="header_extras">
-  % for template_name in ["program_card", "course_card", "filter_bar", "filter", "facet", "facet_option"]:
-  <script type="text/template" id="${template_name}-tpl">
-      <%static:include path="index_discovery/${template_name}.underscore" />
-  </script>
-  % endfor
-  <%static:require_module module_name="js/index_discovery/index_discovery_factory" class_name="IndexDiscoveryFactory">
-    IndexDiscoveryFactory(
-      ${course_discovery_meanings | n, dump_js_escaped_json},
-      getParameterByName('search_query'),
-      "${user_language}",
-      "${user_timezone}"
-    );
-  </%static:require_module>
-</%block>
-% endif
-
 <main id="main" aria-label="Content" tabindex="-1">
     <section class="home">
       <header>
@@ -95,8 +77,8 @@ from openedx.core.djangolib.js_utils import dump_js_escaped_json
           <h2 class="header-search-facets">${_('Refine Your Search')}</h2>
           <section id="search-facet-filter">
             <form class="wrapper-facet-filter-input">
-              <label for="facet-filter-input" class="sr">${_('Search for a category')}</label>
-              <input id="facet-filter-input" class="discovery-input" placeholder="${_('Search for a category')}" type="text"/>
+              <label for="facet-filter-input" class="sr">${_('Filter categories')}</label>
+              <input id="facet-filter-input" class="discovery-input" placeholder="${_('Filter categories')}" type="text"/>
             </form>
           </section>
           <section class="search-facets-lists">
@@ -109,6 +91,24 @@ from openedx.core.djangolib.js_utils import dump_js_escaped_json
 
     </section>
 </main>
+
+% if course_discovery_enabled:
+<%block name="header_extras">
+  % for template_name in ["program_card", "course_card", "filter_bar", "filter", "facet", "facet_option"]:
+  <script type="text/template" id="${template_name}-tpl">
+      <%static:include path="index_discovery/${template_name}.underscore" />
+  </script>
+  % endfor
+  <%static:require_module module_name="js/index_discovery/index_discovery_factory" class_name="IndexDiscoveryFactory">
+    IndexDiscoveryFactory(
+      ${course_discovery_meanings | n, dump_js_escaped_json},
+      getParameterByName('search_query'),
+      "${user_language}",
+      "${user_timezone}"
+    );
+  </%static:require_module>
+</%block>
+% endif
 
 % if show_homepage_promo_video:
   <section id="video-modal" class="modal home-page-video-modal video-modal">
