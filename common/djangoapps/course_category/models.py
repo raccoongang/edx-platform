@@ -17,6 +17,7 @@ class Program(models.Model):
     uuid = models.CharField(primary_key=True, max_length=50)
     subtitle = models.TextField(default='')
     courses = JSONField(default=[])
+    products = models.ManyToManyField("course_overviews.CourseOverview")
 
     def __unicode__(self):
         """Represent ourselves with the course key."""
