@@ -3394,6 +3394,7 @@ def update_cohort_assignment(request, course_id):
 
     is_assignment = json.loads(request.POST.get('is_assignment').lower())
     cohort_id = request.POST.get('cohort_id')
+    cohort_for_change = []
     if cohort_id:
         cohort_id = int(cohort_id)
 
@@ -3410,14 +3411,12 @@ def update_cohort_assignment(request, course_id):
             course_id=course.location.course_key,
             group_type=CourseUserGroup.COHORT
         ).values_list('id', flat=True)
-    else:
-        cohort_for_change = [cohort_id]
+    elif cohort_id:
+        cohort_for_change.append(cohort_id)
 
     if is_assignment:
         created = False
         for cohort in cohort_for_change:
-            if not cohort:
-                continue
             __, created = CohortAssigment.objects.get_or_create(cohort_id=cohort, user=user)
         return JsonResponse({'user': user.email}, status=201 if created else 200)
 
