@@ -880,6 +880,9 @@ def course_about(request, course_id):
         }
         course_tpl = 'courseware/course_about.html'
         product_tpl = 'courseware/product_about.html'
+        # To prevent access to course/about for shippable products by direct link:
+        if course.product and not course.downloadable:
+            raise Http404()
 
         tpl = product_tpl if course.product else course_tpl
         return render_to_response(tpl, context)

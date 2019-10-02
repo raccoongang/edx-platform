@@ -1,9 +1,20 @@
+<%
+    if (product && !downloadable) {
+        var link = external_product_link;
+        var target = '_blank';
+        var buttonText = gettext('BUY NOW');
+    } else {
+        var link = '/courses/' + course + '/about';
+        var target = '_self';
+        var buttonText = gettext('LEARN MORE');
+    }
+%>
 <article class="course" role="region" aria-label="<%- content.display_name %>">
-    <a href="/courses/<%- course %>/about">
+    <a href="<%- link %>" target="<%- target %>">
         <header class="course-image">
             <div class="cover-image">
                 <img src="<%- image_url %>" alt="<%- content.display_name %> <%- content.number %>" />
-                <div class="learn-more" aria-hidden="true"><%- gettext("LEARN MORE") %></div>
+                <div class="learn-more" aria-hidden="true"><%- buttonText %></div>
             </div>
         </header>
         <section class="course-info" aria-hidden="true">
