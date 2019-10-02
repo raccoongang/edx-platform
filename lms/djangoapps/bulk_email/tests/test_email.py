@@ -174,7 +174,7 @@ class SendEmailWithMockedUgettextMixin(object):
     {
         'ENABLE_INSTRUCTOR_EMAIL': True,
         'REQUIRE_COURSE_EMAIL_AUTH': False,
-        'BULK_EMAIL_FROM_DIFFERENT_ADDRESSES': True
+        'BULK_EMAIL_FROM_DIFFERENT_ADDRESSES': True,
     }
 )
 @ddt.ddt
@@ -207,7 +207,7 @@ class LocalizedFromAddressPlatformLangTestCase(SendEmailWithMockedUgettextMixin,
     {
         'ENABLE_INSTRUCTOR_EMAIL': True,
         'REQUIRE_COURSE_EMAIL_AUTH': False,
-        'BULK_EMAIL_FROM_DIFFERENT_ADDRESSES': True
+        'BULK_EMAIL_FROM_DIFFERENT_ADDRESSES': True,
     }
 )
 @ddt.ddt

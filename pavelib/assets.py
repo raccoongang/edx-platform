@@ -944,6 +944,7 @@ def update_assets(args):
     )
     args = parser.parse_args(args)
 
+    # This variable is only needed to disable static_collector
     is_devstack = True
     if not args.disable_static_collector and args.settings in ('aws', 'static_collector'):
         args.settings = 'static_collector'
