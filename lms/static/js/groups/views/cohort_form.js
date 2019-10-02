@@ -75,7 +75,7 @@
                             {
                                 type: 'error',
                                 title: gettext('The cohort leaders cannot be saved'),
-                                details: [gettext('Username is a required field.')]
+                                details: [gettext('Username is a required field')]
                             },
                             this.$('.cohort-leaders-management')
                         );
@@ -107,10 +107,10 @@
                             var errorMsg;
                             switch (jqXHR.status) {
                                 case 404:
-                                    errorMsg = gettext('A user with this identifier "' + user + '"  does not exist.');
+                                    errorMsg = gettext('User with this identifier does not exist');
                                     break;
                                 default:
-                                    errorMsg = gettext('Opps. An unknown error occurred.');
+                                    errorMsg = gettext("We've encountered an error. Refresh your browser and then try again.")
                             }
                             self.showNotification(
                                 {
