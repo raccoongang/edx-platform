@@ -29,12 +29,12 @@
             validate: function(attrs) {
                 var newCohortAdmins = attrs.cohort_admins.slice(0);
                 if (newCohortAdmins.indexOf(newCohortAdmins.pop()) !== -1) {
-                    return 'Duplicate error';
+                    return "Got duplicate value";
                 }
             },
 
             addCohortAdmin: function(user) {
-                this.set({
+                return this.set({
                     cohort_admins: this.get('cohort_admins').concat(user)
                 }, {
                     validate: true

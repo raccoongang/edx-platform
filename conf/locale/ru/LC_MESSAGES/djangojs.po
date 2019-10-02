@@ -5289,6 +5289,10 @@ msgid "User with this identifier does not exist"
 msgstr "Указанного вами пользователя не существует"
 
 #: lms/static/js/groups/views/cohort_form.js
+msgid "User is already leader of the cohort"
+msgstr "Пользователь уже является руководителем данной когорты"
+
+#: lms/static/js/groups/views/cohort_form.js
 msgid "You did not select a content group"
 msgstr "Вы не выбрали группу по изучаемому материалу"
 

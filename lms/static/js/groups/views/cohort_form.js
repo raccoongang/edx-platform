@@ -71,14 +71,7 @@
                 onCohortAdminAdded: function(event) {
                     var userName = $(event.target.parentElement).find('input')[0].value.trim();
                     if (!userName) {
-                        this.showNotification(
-                            {
-                                type: 'error',
-                                title: gettext('The cohort leaders cannot be saved'),
-                                details: [gettext('Username is a required field')]
-                            },
-                            this.$('.cohort-leaders-management')
-                        );
+                        this.handleCohortValidationError(gettext('Username is a required field'));
                         return;
                     }
                     this.updateCohortAssigment(userName, true);
@@ -97,7 +90,11 @@
                         },
                         success: function(data) {
                             if (isAdd) {
-                                self.model.addCohortAdmin(data['user']);
+                                var isAdminAdded = self.model.addCohortAdmin(data['user']);
+                                if (!isAdminAdded) {
+                                    self.handleCohortValidationError(gettext('User is already leader of the cohort'));
+                                    return;
+                                }
                             } else {
                                 self.model.removeCohortAdmin(data['user']);
                             }
@@ -112,16 +109,20 @@
                                 default:
                                     errorMsg = gettext("We've encountered an error. Refresh your browser and then try again.")
                             }
-                            self.showNotification(
-                                {
-                                    type: 'error',
-                                    title: gettext('The cohort leaders cannot be saved'),
-                                    details: [errorMsg]
-                                },
-                                self.$('.cohort-leaders-management')
-                            );
+                            self.handleCohortValidationError(errorMsg);
                         })
                     });
+                },
+
+                handleCohortValidationError: function(errorMsg) {
+                    this.showNotification(
+                        {
+                            type: 'error',
+                            title: gettext('The cohort leaders cannot be saved'),
+                            details: [errorMsg]
+                        },
+                        this.$('.cohort-leaders-management')
+                    );
                 },
 
                 hasAssociatedContentGroup: function() {
