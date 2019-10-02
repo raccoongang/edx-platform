@@ -436,8 +436,13 @@ def register_and_enroll_students(request, course_id):  # pylint: disable=too-man
                             reason='Enrolling via csv upload',
                             state_transition=UNENROLLED_TO_ENROLLED,
                         )
-                        enroll_email(course_id=course_id, student_email=email, auto_enroll=True, email_students=True,
-                                     email_params=email_params)
+                        enroll_email(
+                            course_id=course_id,
+                            student_email=email,
+                            auto_enroll=True,
+                            email_students=True,
+                            email_params=email_params,
+                        )
                 elif is_email_retired(email):
                     # We are either attempting to enroll a retired user or create a new user with an email which is
                     # already associated with a retired account.  Simply block these attempts.
