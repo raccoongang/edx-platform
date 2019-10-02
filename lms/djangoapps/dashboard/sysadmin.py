@@ -40,6 +40,7 @@ from openedx.core.djangoapps.external_auth.models import ExternalAuthMap
 from openedx.core.djangoapps.external_auth.views import generate_password
 from student.models import CourseEnrollment, Registration, UserProfile
 from student.roles import CourseInstructorRole, CourseStaffRole
+from util.milestones_helpers import remove_course_references
 from xmodule.modulestore.django import modulestore
 from search.search_engine_base import SearchEngine
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
@@ -520,6 +521,8 @@ class Courses(SysadminDashboardView):
                 except Exception as e: # pragma: no cover
                     log.error(e.message)
 
+                # delete prerequisites that are based on deleted course
+                remove_course_references(course.location.course_key)
                 CourseOverview.objects.filter(id=course.id).delete()
 
                 # don't delete user permission groups, though
