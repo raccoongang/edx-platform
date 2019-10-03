@@ -98,12 +98,12 @@ def _replace_courses_with_elastic_data(programs, courses):
 
         program['courses'] = elastics_program_courses
 
-    return _group_ungrouped_courses(programs, courses, already_grouped_courses_ids)
+    return _group_ungrouped_courses_and_products(programs, courses, already_grouped_courses_ids)
 
 
-def _group_ungrouped_courses(programs, courses, already_grouped_courses_ids):
+def _group_ungrouped_courses_and_products(programs, courses, already_grouped_courses_ids):
     """
-    Group ungrouped courses into a fictional group `Without group`.
+    Group ungrouped courses & products into a fictional group `Without group`.
 
     Arguments:
         programs(list(dict)): A list of programs.
@@ -118,13 +118,33 @@ def _group_ungrouped_courses(programs, courses, already_grouped_courses_ids):
     ungrouped_courses_ids = set(courses_ids) - already_grouped_courses_ids
 
     if ungrouped_courses_ids:
-        ungrouped_courses = [c for c in courses if c.get('data', {}).get('id') in ungrouped_courses_ids]
+        ungrouped_course_items = [c for c in courses if c.get('data', {}).get('id') in ungrouped_courses_ids]
 
-        programs.append({
-            'title': 'Without program',
-            'subtitle': '',
-            'courses': ungrouped_courses
-        })
+        ungrouped_courses = list()
+        ungrouped_products = list()
+
+        for course in ungrouped_course_items:
+            course_data = course.get('data', {})
+
+            if course_data.get('product', False):
+                ungrouped_products.append(course)
+
+            else:
+                ungrouped_courses.append(course)
+
+        if ungrouped_courses:
+            programs.append({
+                'title': 'Lakeside Learning Courses',
+                'subtitle': '',
+                'courses': ungrouped_courses
+            })
+
+        if ungrouped_products:
+            programs.append({
+                'title': 'Lakeside Learning Products',
+                'subtitle': '',
+                'courses': ungrouped_products
+            })
 
     return programs
 
@@ -162,4 +182,15 @@ def _format_programs(programs):
     Returns:
         list(dict): A formatted list of programs as dictionary data.
     """
-    return [{'title': p.title, 'subtitle': p.subtitle, 'courses': p.courses} for p in programs]
+    formatted_programs = list()
+
+    for program in programs:
+        program_products_ids = [{'key': str(p.id)} for p in program.products.all()]
+
+        formatted_programs.append({
+            'title': program.title,
+            'subtitle': program.subtitle,
+            'courses': list(program.courses) + program_products_ids,
+        })
+
+    return formatted_programs
