@@ -518,6 +518,7 @@ class TestProgramProgressMeter(TestCase):
         # One enrollment, one program in progress.
         self._create_enrollments(first_course_run_key)
         meter = ProgramProgressMeter(self.site, self.user)
+        meter.real_course_ids = [first_course_run_key, second_course_run_key]
         program, program_uuid = data[0], data[0]['uuid']
         self._assert_progress(
             meter,
