@@ -105,5 +105,5 @@
 -e git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.1.6#egg=xblock-drag-and-drop-v2==2.1.6
 
 # Raccoongang Instructor analytics
--e git+https://github.com/raccoongang/rg_instructor_analytics@release-1.0.0#egg=rg_instructor_analytics
--e git+https://github.com/raccoongang/rg_instructor_analytics_log_collector@release-0.2.0#egg=rg_instructor_analytics_log_collector
+-e git+git@gitlab.raccoongang.com:rg-developers/instructor-analytics.git@v2.2.1-web-science#egg=rg_instructor_analytics
+-e git+git@gitlab.raccoongang.com:rg-developers/instructor-analytics-log-collector.git@v2.2.1-web-science#egg=rg_instructor_analytics_log_collector
