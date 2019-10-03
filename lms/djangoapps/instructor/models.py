@@ -36,7 +36,8 @@ class CohortAssigment(models.Model):
 @receiver(post_save, sender=CohortAssigment)
 def allow_course_access_for_cohort_leader(sender, instance, created, **kwargs):  # pylint: disable=unused-argument
     """
-    Send request to allow user access to course modification after the user is assigned as cohort leader of the course.
+    Send request to allow user access to course modification
+    after the user is assigned as cohort leader of the course.
     """
 
     if created:
