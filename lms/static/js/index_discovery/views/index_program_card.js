@@ -45,7 +45,7 @@
             },
 
             renderCourseCards: function(courses) {
-                var programCoursesCards = new Backbone.Collection([], IndexCourseCard);
+                var programCoursesCards = new Backbone.Collection([], {model: IndexCourseCard});
 
                 programCoursesCards.add(courses);
 

@@ -80,9 +80,9 @@
                     listing.renderNext();
                 });
 
-                dispatcher.listenTo(searchState, 'search', function(query, total) {
+                dispatcher.listenTo(searchState, 'search', function(query, total, programsTotal) {
                     if (total > 0) {
-                        searchForm.showFoundMessage(total);
+                        searchForm.showFoundMessage(total + programsTotal);
                         if (query) {
                             filters.add(
                                 {type: 'search_query', query: query, name: quote(query)},
