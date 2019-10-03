@@ -3424,9 +3424,9 @@ def update_cohort_assignment(request, course_id):
 @ensure_csrf_cookie
 @cache_control(no_cache=True, no_store=True, must_revalidate=True)
 @require_global_or_course_staff
-@require_http_methods(['POST', 'GET'])
-def cohorts_list_with_assignment(request, course_id):
-    cohort_info = json.loads(cohort_handler(request, course_id).content)
+@require_http_methods(("GET", "PUT", "POST", "PATCH"))
+def cohorts_list_with_assignment(request, course_id, cohort_id=None):
+    cohort_info = json.loads(cohort_handler(request, course_id, cohort_id).content)
     cohorts = cohort_info.get('cohorts', [])
     course_id = CourseKey.from_string(course_id)
     cohort_assignments = (

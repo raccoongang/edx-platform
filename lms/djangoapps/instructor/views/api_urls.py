@@ -94,6 +94,5 @@ urlpatterns = [
 
 
     url(r'^update_cohort_assignment$', api.update_cohort_assignment, name='update_cohort_assignment'),
-    url(r'^cohorts_list_with_assignment$', api.cohorts_list_with_assignment, name='cohorts_list_with_assignment'),
-
+    url(r'^cohorts_list_with_assignment/(?P<cohort_id>[0-9]+)?$', api.cohorts_list_with_assignment, name='cohorts_list_with_assignment'),
 ]
