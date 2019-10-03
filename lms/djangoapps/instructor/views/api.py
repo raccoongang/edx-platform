@@ -131,7 +131,7 @@ from util.file import (
     UniversalNewlineIterator,
 )
 from util.json_request import JsonResponse, JsonResponseBadRequest
-from util.views import require_global_staff
+from util.views import require_global_staff, require_global_or_course_staff
 from xmodule.modulestore.django import modulestore
 from .tools import (
     dump_module_extensions,
@@ -363,7 +363,8 @@ def register_and_enroll_students(request, course_id):  # pylint: disable=too-man
             else:
                 general_errors.append({
                     'username': '', 'email': '',
-                    'response': _('Make sure that the file you upload is in CSV format with no extraneous characters or rows.')
+                    'response': _(
+                        'Make sure that the file you upload is in CSV format with no extraneous characters or rows.')
                 })
 
         except Exception:  # pylint: disable=broad-except
@@ -384,7 +385,9 @@ def register_and_enroll_students(request, course_id):  # pylint: disable=too-man
                     general_errors.append({
                         'username': '',
                         'email': '',
-                        'response': _('Data in row #{row_num} must have exactly four columns: email, username, full name, and country').format(row_num=row_num)
+                        'response': _(
+                            'Data in row #{row_num} must have exactly four columns: email, username, full name, and country').format(
+                            row_num=row_num)
                     })
                 continue
 
@@ -399,7 +402,8 @@ def register_and_enroll_students(request, course_id):  # pylint: disable=too-man
                 validate_email(email)  # Raises ValidationError if invalid
             except ValidationError:
                 row_errors.append({
-                    'username': username, 'email': email, 'response': _('Invalid email {email_address}.').format(email_address=email)})
+                    'username': username, 'email': email,
+                    'response': _('Invalid email {email_address}.').format(email_address=email)})
             else:
                 if User.objects.filter(email=email).exists():
                     # Email address already exists. assume it is the correct user
@@ -1873,7 +1877,8 @@ def spent_registration_codes(request, course_id):
 
         company_name = request.POST['spent_company_name']
         if company_name:
-            spent_codes_list = spent_codes_list.filter(invoice_item__invoice__company_name=company_name)  # pylint: disable=maybe-no-member
+            spent_codes_list = spent_codes_list.filter(
+                invoice_item__invoice__company_name=company_name)  # pylint: disable=maybe-no-member
 
     csv_type = 'spent'
     return registration_codes_csv("Spent_Registration_Codes.csv", spent_codes_list, csv_type)
@@ -3427,10 +3432,10 @@ def update_cohort_assignment(request, course_id):
 @transaction.non_atomic_requests
 @ensure_csrf_cookie
 @cache_control(no_cache=True, no_store=True, must_revalidate=True)
-@require_global_staff
-@require_http_methods(['POST', 'GET'])
-def cohorts_list_with_assignment(request, course_id):
-    cohort_info = json.loads(cohort_handler(request, course_id).content)
+@require_global_or_course_staff
+@require_http_methods(("GET", "PUT", "POST", "PATCH"))
+def cohorts_list_with_assignment(request, course_id, cohort_id=None):
+    cohort_info = json.loads(cohort_handler(request, course_id, cohort_id).content)
     cohorts = cohort_info.get('cohorts', [])
     course_id = CourseKey.from_string(course_id)
     cohort_assignments = CourseUserGroup.objects.filter(

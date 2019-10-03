@@ -3,14 +3,14 @@ import logging
 import sys
 from functools import wraps
 from smtplib import SMTPException
-import crum
 
+import crum
 import zendesk
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.cache import caches
 from django.core.mail import send_mail
-from django.core.validators import ValidationError, validate_email
+from django.core.validators import validate_email, ValidationError
 from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseServerError
 from django.views.decorators.csrf import requires_csrf_token
 from django.views.defaults import server_error
@@ -24,7 +24,7 @@ from edxmako.shortcuts import render_to_response, render_to_string
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.features.enterprise_support import api as enterprise_api
 from student.models import CourseEnrollment
-from student.roles import GlobalStaff
+from student.roles import CourseStaffRole, GlobalStaff
 
 log = logging.getLogger(__name__)
 
@@ -38,6 +38,7 @@ def ensure_valid_course_key(view_func):
     This decorator should only be used with views which have argument course_key_string (studio) or course_id (lms).
     If course_key_string (studio) or course_id (lms) is not valid raise 404.
     """
+
     @wraps(view_func)
     def inner(request, *args, **kwargs):
         course_key = kwargs.get('course_key_string') or kwargs.get('course_id')
@@ -58,6 +59,7 @@ def ensure_valid_usage_key(view_func):
     This decorator should only be used with views which have argument usage_key_string.
     If usage_key_string is not valid raise 404.
     """
+
     @wraps(view_func)
     def inner(request, *args, **kwargs):  # pylint: disable=missing-docstring
         usage_key = kwargs.get('usage_key_string')
@@ -75,6 +77,7 @@ def ensure_valid_usage_key(view_func):
 
 def require_global_staff(func):
     """View decorator that requires that the user have global staff permissions. """
+
     @wraps(func)
     def wrapped(request, *args, **kwargs):  # pylint: disable=missing-docstring
         if GlobalStaff().has_user(request.user):
@@ -85,6 +88,25 @@ def require_global_staff(func):
                     platform_name=settings.PLATFORM_NAME
                 )
             )
+
+    return login_required(wrapped)
+
+
+def require_global_or_course_staff(func):
+    """View decorator that requires that the user have global staff permissions or has to be staff of a course. """
+
+    @wraps(func)
+    def wrapped(request, course_id, *args, **kwargs):
+        if GlobalStaff().has_user(request.user) or CourseStaffRole(CourseKey.from_string(course_id)).has_user(
+                request.user):
+            return func(request, course_id, *args, **kwargs)
+        else:
+            return HttpResponseForbidden(
+                u"Must be {platform_name} staff to perform this action.".format(
+                    platform_name=settings.PLATFORM_NAME
+                )
+            )
+
     return login_required(wrapped)
 
 
@@ -95,11 +117,13 @@ def fix_crum_request(func):
     be fetched by crum (e.g.: when HTTP errors are raised in our views via 'raise Http404', et. al.). This decorator
     manually sets the current request for crum if it cannot be fetched.
     """
+
     @wraps(func)
     def wrapper(request, *args, **kwargs):
         if not crum.get_current_request():
             crum.set_current_request(request=request)
         return func(request, *args, **kwargs)
+
     return wrapper
 
 
@@ -133,10 +157,12 @@ def handle_500(template_path, context=None, test_func=None):
             # ...
 
     """
+
     def decorator(func):
         """
         Decorator to render custom html template in case of uncaught exception in wrapped function
         """
+
         @wraps(func)
         def inner(request, *args, **kwargs):
             """
@@ -157,7 +183,9 @@ def handle_500(template_path, context=None, test_func=None):
                 else:
                     # Do not show custom 500 error when test fails
                     raise
+
         return inner
+
     return decorator
 
 
@@ -175,7 +203,6 @@ def calculate(request):
 
 
 class _ZendeskApi(object):
-
     CACHE_PREFIX = 'ZENDESK_API_CACHE'
     CACHE_TIMEOUT = 60 * 60
 
@@ -542,6 +569,7 @@ def add_p3p_header(view_func):
     http://blogs.msdn.com/b/ieinternals/archive/2013/09/17/simple-introduction-to-p3p-cookie-blocking-frame.aspx
     http://stackoverflow.com/questions/8048306/what-is-the-most-broad-p3p-header-that-will-work-with-ie
     """
+
     @wraps(view_func)
     def inner(request, *args, **kwargs):
         """
@@ -550,4 +578,5 @@ def add_p3p_header(view_func):
         response = view_func(request, *args, **kwargs)
         response['P3P'] = settings.P3P_HEADER
         return response
+
     return inner
