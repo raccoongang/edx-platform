@@ -27,12 +27,12 @@ from django.core.exceptions import (
     ValidationError
 )
 from django.core.mail.message import EmailMessage
-from django.db.models import Sum
-from django.urls import reverse
 from django.core.validators import validate_email
 from django.db import IntegrityError, models, transaction
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound
+from django.db.models import Sum
+from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control
@@ -41,6 +41,7 @@ from django.views.decorators.http import require_http_methods, require_POST
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
 from six import text_type
+from submissions import api as sub_api  # installed from the edx-submissions repository
 
 import instructor_analytics.basic
 import instructor_analytics.csvs
@@ -48,28 +49,31 @@ import instructor_analytics.distributions
 import lms.djangoapps.instructor.enrollment as enrollment
 import lms.djangoapps.instructor_task.api
 from bulk_email.models import BulkEmailFlag, CourseEmail
-from lms.djangoapps.certificates import api as certs_api
-from lms.djangoapps.certificates.models import (
-    CertificateInvalidation, CertificateStatuses, CertificateWhitelist, GeneratedCertificate,
-)
 from courseware.access import has_access
 from courseware.courses import get_course_by_id, get_course_with_access
 from courseware.models import StudentModule
 from django_comment_client.utils import (
-    has_forum_access,
     get_course_discussion_settings,
+    get_group_id_for_user,
     get_group_name,
-    get_group_id_for_user
+    has_forum_access,
 )
 from django_comment_common.models import (
-    Role,
     FORUM_ROLE_ADMINISTRATOR,
-    FORUM_ROLE_MODERATOR,
-    FORUM_ROLE_GROUP_MODERATOR,
     FORUM_ROLE_COMMUNITY_TA,
+    FORUM_ROLE_GROUP_MODERATOR,
+    FORUM_ROLE_MODERATOR,
+    Role,
 )
 from edxmako.shortcuts import render_to_string
-from lms.djangoapps.instructor.access import ROLES, allow_access, list_with_level, revoke_access, update_forum_role
+from lms.djangoapps.certificates import api as certs_api
+from lms.djangoapps.certificates.models import (
+    CertificateInvalidation,
+    CertificateStatuses,
+    CertificateWhitelist,
+    GeneratedCertificate,
+)
+from lms.djangoapps.instructor.access import allow_access, list_with_level, revoke_access, ROLES, update_forum_role
 from lms.djangoapps.instructor.enrollment import (
     enroll_email,
     get_email_params,
@@ -103,34 +107,32 @@ from student import auth
 from student.models import (
     ALLOWEDTOENROLL_TO_ENROLLED,
     ALLOWEDTOENROLL_TO_UNENROLLED,
+    anonymous_id_for_user,
+    CourseEnrollment,
     DEFAULT_TRANSITION_STATE,
     ENROLLED_TO_ENROLLED,
     ENROLLED_TO_UNENROLLED,
+    EntranceExamConfiguration,
+    get_user_by_username_or_email,
+    is_email_retired,
+    ManualEnrollmentAudit,
+    Registration,
     UNENROLLED_TO_ALLOWEDTOENROLL,
     UNENROLLED_TO_ENROLLED,
     UNENROLLED_TO_UNENROLLED,
-    CourseEnrollment,
-    EntranceExamConfiguration,
-    ManualEnrollmentAudit,
-    Registration,
-    UserProfile,
-    anonymous_id_for_user,
-    get_user_by_username_or_email,
     unique_id_for_user,
-    is_email_retired
+    UserProfile,
 )
 from student.roles import CourseFinanceAdminRole, CourseSalesAdminRole
-from submissions import api as sub_api  # installed from the edx-submissions repository
 from util.file import (
-    FileValidationException,
-    UniversalNewlineIterator,
     course_and_time_based_filename_generator,
-    store_uploaded_file
+    FileValidationException,
+    store_uploaded_file,
+    UniversalNewlineIterator,
 )
 from util.json_request import JsonResponse, JsonResponseBadRequest
 from util.views import require_global_staff, require_global_or_course_staff
 from xmodule.modulestore.django import modulestore
-
 from .tools import (
     dump_module_extensions,
     dump_student_extensions,
@@ -3396,10 +3398,17 @@ def update_cohort_assignment(request, course_id):
     )
 
     is_assignment = json.loads(request.POST.get('is_assignment').lower())
-    cohort_id = int(request.POST.get('cohort_id'))
-    user = get_student_from_identifier(request.POST.get('unique_student_identifier'))
+    cohort_id = request.POST.get('cohort_id')
+    cohort_for_change = []
+    if cohort_id:
+        cohort_id = int(cohort_id)
 
-    # Note (yura.braiko@gmail.com): if cohort id is `-1` it equal to `All` cohort.
+    try:
+        user = get_user_by_username_or_email(request.POST.get('unique_student_identifier'))
+    except User.DoesNotExist:
+        raise Http404
+
+    # Note (yura.braiko@gmail.com): if cohort id is `-1` it equals to `All` cohort.
     if cohort_id == -1:
         migrate_cohort_settings(course)
 
@@ -3407,17 +3416,17 @@ def update_cohort_assignment(request, course_id):
             course_id=course.location.course_key,
             group_type=CourseUserGroup.COHORT
         ).values_list('id', flat=True)
-    else:
-        cohort_for_change = [cohort_id]
+    elif cohort_id:
+        cohort_for_change.append(cohort_id)
 
     if is_assignment:
-        cohort_to_incert = [CohortAssigment(cohort_id=cohort, user=user) for cohort in cohort_for_change]
-        CohortAssigment.objects.bulk_create(cohort_to_incert)
-    else:
-        CohortAssigment.objects.filter(cohort__id__in=cohort_for_change, user=user).delete()
+        created = False
+        for cohort in cohort_for_change:
+            __, created = CohortAssigment.objects.get_or_create(cohort_id=cohort, user=user)
+        return JsonResponse({'user': user.email}, status=201 if created else 200)
 
-    # Note(yura.braiko@raccoongang.com): return empty success response.
-    return JsonResponse({})
+    CohortAssigment.objects.filter(cohort__id__in=cohort_for_change, user=user).delete()
+    return JsonResponse({'user': user.email}, status=202)
 
 
 @transaction.non_atomic_requests
@@ -3429,9 +3438,9 @@ def cohorts_list_with_assignment(request, course_id, cohort_id=None):
     cohort_info = json.loads(cohort_handler(request, course_id, cohort_id).content)
     cohorts = cohort_info.get('cohorts', [])
     course_id = CourseKey.from_string(course_id)
-    cohort_assignments = (
-        CourseUserGroup.objects.filter(course_id=course_id).values_list('id', 'cohortassigment__user__email')
-    )
+    cohort_assignments = CourseUserGroup.objects.filter(
+        course_id=course_id
+    ).exclude(cohortassigment__user__isnull=True).values_list('id', 'cohortassigment__user__email')
 
     cohort_assignments_dict = defaultdict(set)
 

@@ -20,6 +20,7 @@ from six import text_type
 
 from courseware.courses import get_course_with_access
 from edxmako.shortcuts import render_to_response
+from lms.djangoapps.instructor.models import CohortAssigment
 from util.json_request import expect_json, JsonResponse
 from . import cohorts
 from .models import CohortMembership, CourseUserGroup, CourseUserGroupPartitionGroup
@@ -179,6 +180,8 @@ def cohort_handler(request, course_key_string, cohort_id=None):
         else:
             try:
                 cohort = cohorts.add_cohort(course_key, name, assignment_type)
+                admins = User.objects.filter(email__in=request.json.get('admins'))
+                CohortAssigment.objects.bulk_create(CohortAssigment(cohort=cohort, user=user) for user in admins)
             except ValueError as err:
                 return JsonResponse({"error": unicode(err)}, 400)
 

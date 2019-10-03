@@ -65,14 +65,20 @@
                 },
 
                 onRevokeAdminClick: function(event) {
-                    this.updateCohortAssigment(this, event.target.closest('.revoke').dataset.user, false);
+                    this.updateCohortAssigment(event.target.closest('.revoke').dataset.user, false);
                 },
 
-                onCohortAdminAdded: function(event){
-                    this.updateCohortAssigment(this, $(event.target.parentElement).find('input')[0].value, true)
+                onCohortAdminAdded: function(event) {
+                    var userName = $(event.target.parentElement).find('input')[0].value.trim();
+                    if (!userName) {
+                        this.handleCohortValidationError(gettext('Username is a required field'));
+                        return;
+                    }
+                    this.updateCohortAssigment(userName, true);
                 },
 
-                updateCohortAssigment: function(self, user, isAdd){
+                updateCohortAssigment: function(user, isAdd) {
+                    var self = this;
                     $.ajax({
                         type: 'POST',
                         dataType: 'json',
@@ -83,21 +89,40 @@
                             is_assignment: isAdd,
                         },
                         success: function(data) {
-                            if(!isAdd) {
-                                self.model.set('cohort_admins', self.model.get('cohort_admins').filter(function (value, index, arr) {
-                                    return value !== user;
-                                }));
-                            }else {
-                                var newCohortAdmins = self.model.get('cohort_admins');
-                                newCohortAdmins.push(user);
-                                self.model.set('cohort_admins', newCohortAdmins);
+                            if (isAdd) {
+                                var isAdminAdded = self.model.addCohortAdmin(data['user']);
+                                if (!isAdminAdded) {
+                                    self.handleCohortValidationError(gettext('User is already leader of the cohort'));
+                                    return;
+                                }
+                            } else {
+                                self.model.removeCohortAdmin(data['user']);
                             }
                             self.render();
                         },
-                        error: statusAjaxError(function () {
-                            // TODO(yurabraiko@raccoongang.com) add error render.
+                        error: statusAjaxError(function(jqXHR) {
+                            var errorMsg;
+                            switch (jqXHR.status) {
+                                case 404:
+                                    errorMsg = gettext('User with this identifier does not exist');
+                                    break;
+                                default:
+                                    errorMsg = gettext("We've encountered an error. Refresh your browser and then try again.")
+                            }
+                            self.handleCohortValidationError(errorMsg);
                         })
                     });
+                },
+
+                handleCohortValidationError: function(errorMsg) {
+                    this.showNotification(
+                        {
+                            type: 'error',
+                            title: gettext('The cohort leaders cannot be saved'),
+                            details: [errorMsg]
+                        },
+                        this.$('.cohort-leaders-management')
+                    );
                 },
 
                 hasAssociatedContentGroup: function() {
@@ -174,6 +199,7 @@
                         assignment_type: selectedAssignmentType
                     };
                     errorMessages = this.validate(fieldData);
+                    !isUpdate && (fieldData['admins'] = this.model.get('cohort_admins'));
 
                     if (errorMessages.length > 0) {
                         showErrorMessage(

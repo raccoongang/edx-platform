@@ -162,7 +162,7 @@
 
         <div class="new_user field field-text">
             <label for="admin-user-name" class="form-label"> <%- gettext('Username') %> * </label>
-            <input name="admin-user-name" class="input admin-user-name" id="admin-user-name-input" placeholder="<%- gettext('Username') %>"type="text">
+            <input name="admin-user-name" class="input admin-user-name" id="admin-user-name" placeholder="<%- gettext('Username') %>"type="text">
             <div class="form-submit button action-primary add-new-admin-button">
                 <%- gettext('Add') %>
             </div>

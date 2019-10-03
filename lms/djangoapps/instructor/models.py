@@ -16,4 +16,4 @@ class CohortAssigment(models.Model):
 
     class Meta:
         app_label = 'instructor'
-        managed = True
+        unique_together = (('cohort', 'user'), )

@@ -4175,6 +4175,22 @@ msgid "You must specify a name for the cohort"
 msgstr ""
 
 #: lms/static/js/groups/views/cohort_form.js
+msgid "The cohort leaders cannot be saved"
+msgstr ""
+
+#: lms/static/js/groups/views/cohort_form.js
+msgid "Username is a required field"
+msgstr ""
+
+#: lms/static/js/groups/views/cohort_form.js
+msgid "User with this identifier does not exist"
+msgstr ""
+
+#: lms/static/js/groups/views/cohort_form.js
+msgid "User is already leader of the cohort"
+msgstr ""
+
+#: lms/static/js/groups/views/cohort_form.js
 msgid "You did not select a content group"
 msgstr ""
 
