@@ -18,8 +18,21 @@ such that the value can be defined later than this assignment (file load order).
         emailStudents, plantTimeout, statusAjaxError, enableAddButton,
         /* eslint-disable */
         __hasProp = {}.hasOwnProperty,
-        __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-        /* eslint-enable */
+        __extends = function(child, parent) {
+            for (var key in parent) {
+                if (__hasProp.call(parent, key)) child[key] = parent[key];
+            }
+
+            function ctor() {
+                this.constructor = child;
+            }
+
+            ctor.prototype = parent.prototype;
+            child.prototype = new ctor();
+            child.__super__ = parent.prototype;
+            return child;
+        };
+    /* eslint-enable */
 
     plantTimeout = function() {
         return window.InstructorDashboard.util.plantTimeout.apply(this, arguments);
@@ -112,7 +125,7 @@ such that the value can be defined later than this assignment (file load order).
             this.rolename = rolename;
             this.$errorSection = $errorSection;
             this.list_enabled = true;
-            this.is_cohort_enable = $container.data('is-cohort-enabled');
+            this.is_cohort_enable = $container.data('is-cohort-enabled') && (rolename === "staff");
             if (this.rolename === 'Group Moderator') {
                 labelsList = [gettext('Username'), gettext('Email'), gettext('Group'), gettext('Revoke access')];
             }
@@ -212,7 +225,6 @@ such that the value can be defined later than this assignment (file load order).
                             );
                         }
                     } else {
-
                         var row = [member.username, member.email, $revokeBtn];
                         if (authListWidgetReloadList.is_cohort_enable) {
                             row = row.concat(authListWidgetReloadList.render_cohort_settings_control(member));
