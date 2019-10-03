@@ -14,6 +14,7 @@
 
             defaults: {
                 totalCount: 0,
+                programsTotalCount: 0,
                 latestCount: 0
             },
 
@@ -31,26 +32,13 @@
 
                 _(programs).each(function(program, idx) {
                     program.courses = _.pluck(program.courses, 'data');
-                    // TODO: Figure out why IndexCourseCard model does not handle properties absence.
-                    _(program.courses).each(function(course, idx) {
-                        if (course.product === undefined) {
-                            course.product = false;
-                        }
-
-                        if (course.downloadable === undefined) {
-                            course.downloadable = false;
-                        }
-
-                        if (course.external_product_link === undefined) {
-                            course.external_product_link = '';
-                        }
-                    });
                 });
 
                 this.programCards.add(programs);
 
                 this.set({
-                    totalCount: response.total + response.programs_total,
+                    totalCount: response.total,
+                    programsTotalCount: response.programs_total,
                     latestCount: courses.length
                 });
 
@@ -94,6 +82,7 @@
             reset: function() {
                 this.set({
                     totalCount: 0,
+                    programsTotalCount: 0,
                     latestCount: 0
                 });
                 this.programCards.reset();
