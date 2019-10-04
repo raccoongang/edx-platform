@@ -944,6 +944,8 @@ def modify_access(request, course_id):
         allow_access(course, user, rolename)
     elif action == 'revoke':
         revoke_access(course, user, rolename)
+        if rolename == 'staff':
+            CohortAssigment.objects.delete_assigned_cohorts(user)
     else:
         return HttpResponseBadRequest(strip_tags(
             "unrecognized action '{}'".format(action)
