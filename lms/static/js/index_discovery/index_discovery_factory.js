@@ -80,9 +80,11 @@
                     listing.renderNext();
                 });
 
-                dispatcher.listenTo(searchState, 'search', function(query, total) {
-                    if (total > 0) {
-                        searchForm.showFoundMessage(total);
+                dispatcher.listenTo(searchState, 'search', function(query, coursesTotal, programsTotal) {
+                    var searchResultsCount = coursesTotal + programsTotal;
+
+                    if (searchResultsCount > 0) {
+                        searchForm.showFoundMessage(searchResultsCount);
                         if (query) {
                             filters.add(
                                 {type: 'search_query', query: query, name: quote(query)},
