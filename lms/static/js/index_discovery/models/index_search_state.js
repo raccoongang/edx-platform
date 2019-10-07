@@ -95,8 +95,8 @@
                 var programsTotal = this.discovery.get('programsTotalCount');
                 var originalSearchTerm = this.searchTerm;
                 if (options.data.page_index === 0) {
-                    if (total === 0) {
-                    // list all courses
+                    if (programsTotal === 0 && total === 0) {
+                    // list all programs & courses
                         this.cachedDiscovery().done(function(cached) {
                             this.discovery.programCards.reset(cached.programCards.toJSON());
                             this.discovery.facetOptions.reset(cached.facetOptions.toJSON());
