@@ -10,7 +10,7 @@
         return Backbone.Model.extend({
 
             page: 0,
-            pageSize: 20,
+            pageSize: 100,
             searchTerm: '',
             terms: {},
             jqhxr: null,
@@ -92,6 +92,7 @@
 
             onSync: function(collection, response, options) {
                 var total = this.discovery.get('totalCount');
+                var programsTotal = this.discovery.get('programsTotalCount');
                 var originalSearchTerm = this.searchTerm;
                 if (options.data.page_index === 0) {
                     if (programsTotal === 0 && total === 0) {
@@ -100,7 +101,7 @@
                             this.discovery.programCards.reset(cached.programCards.toJSON());
                             this.discovery.facetOptions.reset(cached.facetOptions.toJSON());
                             this.discovery.set('latestCount', cached.get('latestCount'));
-                            this.trigger('search', originalSearchTerm, total);
+                            this.trigger('search', originalSearchTerm, total, programsTotal);
                         });
                         this.searchTerm = '';
                         this.terms = {};
@@ -116,7 +117,7 @@
                                 }
                             }
                         }, this);
-                        this.trigger('search', this.searchTerm, total);
+                        this.trigger('search', this.searchTerm, total, programsTotal);
                     }
                 } else {
                     this.page = options.data.page_index;

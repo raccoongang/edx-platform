@@ -14,11 +14,12 @@
 
             defaults: {
                 totalCount: 0,
+                programsTotalCount: 0,
                 latestCount: 0
             },
 
             initialize: function() {
-                this.programCards = new Backbone.Collection([], {model: IndexProgramCard})
+                this.programCards = new Backbone.Collection([], {model: IndexProgramCard});
 
                 this.facetOptions = new Backbone.Collection([], {model: IndexFacetOption});
                 this.originalFacetOptions = new Backbone.Collection([], {model: IndexFacetOption})
@@ -36,7 +37,8 @@
                 this.programCards.add(programs);
 
                 this.set({
-                    totalCount: response.total + response.programs_total,
+                    totalCount: response.total,
+                    programsTotalCount: response.programs_total,
                     latestCount: courses.length
                 });
 
@@ -80,6 +82,7 @@
             reset: function() {
                 this.set({
                     totalCount: 0,
+                    programsTotalCount: 0,
                     latestCount: 0
                 });
                 this.programCards.reset();
