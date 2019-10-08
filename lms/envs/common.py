@@ -185,11 +185,7 @@ FEATURES = {
     'ENABLE_VERIFIED_CERTIFICATES': False,
 
     # for acceptance and load testing
-<<<<<<< HEAD
     'AUTOMATIC_AUTH_FOR_TESTING': True,
-=======
-    'AUTOMATIC_AUTH_FOR_TESTING': False,
->>>>>>> 47c560406e50e705cf2f27f7188c9bfa89575ee8
 
     # Prevent auto auth from creating superusers or modifying existing users
     'RESTRICT_AUTOMATIC_AUTH': True,
@@ -238,11 +234,7 @@ FEATURES = {
     'ALLOW_WIKI_ROOT_ACCESS': True,
 
     # Turn on/off Microsites feature
-<<<<<<< HEAD
     'USE_MICROSITES': False,
-=======
-    'USE_MICROSITES': True,
->>>>>>> 47c560406e50e705cf2f27f7188c9bfa89575ee8
 
     # Turn on third-party auth. Disabled for now because full implementations are not yet available. Remember to run
     # migrations if you enable this; we don't create tables by default.
@@ -2327,12 +2319,9 @@ INSTALLED_APPS = [
 
     # API Documentation
     'rest_framework_swagger',
-<<<<<<< HEAD
 
     #UpSkilling Team
     'admin_dashboard',
-=======
->>>>>>> 47c560406e50e705cf2f27f7188c9bfa89575ee8
 ]
 
 ######################### CSRF #########################################
