@@ -84,11 +84,12 @@ def remove_prerequisite_course(course_key, milestone):
 
 def remove_course_references(course_key):
     """
-    Remove course milestones and course content milestones that are referenced to specified course_key
+    Remove milestones that are referenced to course_key.
+
+    Removing include course milestones and course content milestones.
     """
-    if not is_prerequisite_courses_enabled():
-        return None
-    milestones_api.remove_course_references(course_key)
+    if is_prerequisite_courses_enabled():
+        milestones_api.remove_course_references(course_key)
 
 
 def set_prerequisite_courses(course_key, prerequisite_course_keys):

@@ -524,6 +524,8 @@ class Courses(SysadminDashboardView):
                 # delete prerequisites that are based on deleted course
                 remove_course_references(course.location.course_key)
                 CourseOverview.objects.filter(id=course.id).delete()
+                log.info("Delete course {}, try to delete "
+                         "prerequisites that are based on the course".format(course.location.to_deprecated_string()))
 
                 # don't delete user permission groups, though
                 self.msg += \
