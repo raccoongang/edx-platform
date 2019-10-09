@@ -33,6 +33,9 @@ class ProgramAdmin(admin.ModelAdmin):
         'products',
     )
 
+    def has_add_permission(self, request, obj=None):
+        return False
+
 
 class CourseMultipleModelChoiceField(forms.ModelMultipleChoiceField):
 
