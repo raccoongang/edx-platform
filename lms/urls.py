@@ -144,7 +144,19 @@ urlpatterns = [
 
     url(r'^dashboard/', include('learner_dashboard.urls')),
     url(r'^api/experiments/', include('experiments.urls', namespace='api_experiments')),
+    
 ]
+
+if settings.FEATURES.get("ENABLE_RG_INSTRUCTOR_ANALYTICS"):
+    urlpatterns += [
+        url(
+            r'^courses/{}/tab/instructor_analytics/'.format(
+                settings.COURSE_ID_PATTERN,
+            ),
+            include('rg_instructor_analytics.urls'),
+            name='instructor_analytics_endpoint',
+        ),
+    ]
 
 if settings.FEATURES.get('ENABLE_MOBILE_REST_API'):
     urlpatterns += [
