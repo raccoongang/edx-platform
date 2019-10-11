@@ -37,7 +37,8 @@
 -e git+https://github.com/pmitros/FeedbackXBlock.git#egg=FeedbackXBlock
 
 # Image Explorer xblock
--e git+https://github.com/edx-solutions/xblock-image-explorer.git#egg=xblock-image-explorer
+-e git+https://github.com/edx-solutions/xblock-image-explorer.git@v1.1.5#egg=xblock-image-explorer
+parsel==1.5.1
 
 # InvideoQuiz xblock
 -e git+https://github.com/raccoongang/xblock-in-video-quiz.git@invquiz-rg#egg=xblock-in-video-quiz
