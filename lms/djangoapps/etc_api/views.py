@@ -1,4 +1,5 @@
 import logging
+from uuid import uuid4
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
@@ -44,6 +45,8 @@ class CreateUserAccountView(APIView):
         password = request.data.get('password')
         prename = request.data.get('prename', '')
         surname = request.data.get('surname', '')
+        # Note: If the password wasn't sent we would generate a password and send the email for changing it.
+        is_send_email = not bool(password)
         if not username:
             return Response(
                 data={"user_message": "'username' is required parameter."},
@@ -57,10 +60,7 @@ class CreateUserAccountView(APIView):
             )
 
         if not password:
-            return Response(
-                data={"user_message": "'password' is required parameter."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            data["password"] = password = uuid4().hex
 
         try:
             validate_slug(username)
@@ -86,7 +86,8 @@ class CreateUserAccountView(APIView):
             user.first_name = prename
             user.last_name = surname
             user.save()
-            self.send_activation_email(request)
+            if is_send_email:
+                self.send_activation_email(request)
         except ValidationError:
             return Response(data={"user_message": "Wrong email format"}, status=status.HTTP_400_BAD_REQUEST)
 
