@@ -98,6 +98,9 @@ class CourseOverview(TimeStampedModel):
     effort = TextField(null=True)
     self_paced = BooleanField(default=False)
 
+    # Ordering
+    order = IntegerField(null=True)
+
     @classmethod
     def _create_from_course(cls, course):
         """
@@ -181,6 +184,8 @@ class CourseOverview(TimeStampedModel):
             effort=CourseDetails.fetch_about_attribute(course.id, 'effort'),
             course_video_url=CourseDetails.fetch_video_url(course.id),
             self_paced=course.self_paced,
+
+            order=course.order,
         )
 
     @classmethod

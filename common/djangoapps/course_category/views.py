@@ -26,6 +26,7 @@ class CategoryCoursesListView(View):
 
         category = get_object_or_404(CourseCategory, slug=slug)
         courses = get_courses(request.user, filter_={'coursecategory__id': category.id})
+        courses = sorted(courses, key=lambda course: (course.order is None, course.order, course.display_name))
         if not courses:
             raise Http404()
         context = {
