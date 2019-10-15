@@ -26,6 +26,7 @@ from lms.djangoapps.course_goals.models import GOAL_KEY_CHOICES
 from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
 from openedx.core.djangolib.markup import HTML, Text
 from openedx.features.course_experience import CourseHomeMessages
+from openedx.features.course_experience.utils import get_course_outline_block_tree
 from student.models import CourseEnrollment
 
 
@@ -67,7 +68,7 @@ class CourseHomeMessageFragmentView(EdxFragmentView):
         }
 
         # Register the course home messages to be loaded on the page
-        _register_course_home_messages(request, course, user_access, course_start_data)
+        _register_course_home_messages(request, course, course_id, user_access, course_start_data)
 
         # Register course date alerts
         for course_date_block in get_course_date_blocks(course, request.user):
@@ -103,7 +104,7 @@ class CourseHomeMessageFragmentView(EdxFragmentView):
         return Fragment(html)
 
 
-def _register_course_home_messages(request, course, user_access, course_start_data):
+def _register_course_home_messages(request, course, course_id, user_access, course_start_data):
     """
     Register messages to be shown in the course home content page.
     """
@@ -124,19 +125,31 @@ def _register_course_home_messages(request, course, user_access, course_start_da
             ),
             title=Text(_('You must be enrolled in the course to see course content.'))
         )
-    if not user_access['is_anonymous'] and not user_access['is_staff'] and not user_access['is_enrolled']:
-        CourseHomeMessages.register_info_message(
-            request,
-            Text(_(
-                '{open_enroll_link}Enroll now{close_enroll_link} to access the full course.'
-            )).format(
-                open_enroll_link='',
-                close_enroll_link=''
-            ),
-            title=Text(_('Welcome to {course_display_name}')).format(
-                course_display_name=course.display_name
+    else:
+        if not user_access['is_staff'] and not user_access['is_enrolled']:
+            CourseHomeMessages.register_info_message(
+                request,
+                Text(_(
+                    '{open_enroll_link}Enroll now{close_enroll_link} to access the full course.'
+                )).format(
+                    open_enroll_link='',
+                    close_enroll_link=''
+                ),
+                title=Text(_('Welcome to {course_display_name}')).format(
+                    course_display_name=course.display_name
+                )
             )
-        )
+        # function get_course_outline_block_tree is request-cached
+        # and is already called at CourseOutlineFragmentView
+        outline_blocks = get_course_outline_block_tree(request, course_id) or {}
+        if course_start_data['already_started'] and not outline_blocks.get('children'):
+            CourseHomeMessages.register_info_message(
+                request,
+                Text(_('We\'re still working on course content.')),
+                title=Text(_('Welcome to {course_display_name}')).format(
+                    course_display_name=course.display_name
+                )
+            )
 
 
 def _register_course_goal_message(request, course):
