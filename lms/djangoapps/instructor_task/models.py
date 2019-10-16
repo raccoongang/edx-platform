@@ -212,7 +212,10 @@ class ReportStore(object):
             return DjangoStorageReportStore(
                 storage_class='django.core.files.storage.FileSystemStorage',
                 storage_kwargs={
-                    'location': config['ROOT_PATH'],
+                    'location': (
+                        config['ROOT_PATH'] or getattr(settings, 'EDX_GRADES_STORAGE_MEDIA_ROOT', '/tmp/edx-s3/grades')
+                    ),
+                    'base_url': getattr(settings, 'EDX_GRADES_STORAGE_MEDIA_URL', '/media/grades/')
                 },
             )
         return DjangoStorageReportStore.from_config(config_name)

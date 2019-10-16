@@ -9,6 +9,13 @@ from .production import *  # pylint: disable=wildcard-import, unused-wildcard-im
 
 # Don't use S3 in devstack, fall back to filesystem
 del DEFAULT_FILE_STORAGE
+
+# Variables which used by django.core.files.storage.FileSystemStorage for save and download grades.
+# Overrides GRADES_DOWNLOAD setting if it gets from lms.envs.json with empty STORAGE_TYPE
+EDX_GRADES_STORAGE_MEDIA_URL = "/media/grades/"
+EDX_GRADES_STORAGE_MEDIA_ROOT = "/tmp/edx-s3/grades"
+GRADES_DOWNLOAD.update({'STORAGE_TYPE': 'localfs'})
+
 MEDIA_ROOT = "/edx/var/edxapp/uploads"
 ORA2_FILEUPLOAD_BACKEND = 'django'
 
