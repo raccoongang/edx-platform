@@ -38,7 +38,7 @@ import dashboard.git_import as git_import
 from dashboard.git_import import GitImportError
 from student.roles import CourseStaffRole, CourseInstructorRole
 from dashboard.models import CourseImportLog
-from lms.djangoapps.grades.new.course_grade import CourseGradeFactory
+from lms.djangoapps.grades.models import PersistentCourseGrade
 from openedx.core.djangoapps.external_auth.models import ExternalAuthMap
 from openedx.core.djangoapps.external_auth.views import generate_password
 from student.models import CourseEnrollment, UserProfile, Registration
@@ -614,15 +614,18 @@ class Staffing(SysadminDashboardView):
                 for courseenrollment in CourseEnrollment.objects.filter(course_id=course.id):
                     user = courseenrollment.user
                     if user:
-                        persisted_grade = CourseGradeFactory().get_persisted(user, course)
+                        try:
+                            persistent_grade = PersistentCourseGrade.read_course_grade(user.id, course.id)
+                        except PersistentCourseGrade.DoesNotExist:
+                            persistent_grade = None
                         datum = [
                             user.username,
                             user.email,
                             str(course.id),
                             course.display_name,
                             courseenrollment.created.strftime("%m/%d/%Y"),
-                            persisted_grade.course_edited_timestamp.strftime("%m/%d/%Y") if persisted_grade else '',
-                            persisted_grade.letter_grade if persisted_grade else ''
+                            persistent_grade.passed_timestamp.strftime("%m/%d/%Y") if persistent_grade and persistent_grade.passed_timestamp else '',
+                            persistent_grade.letter_grade if persistent_grade else ''
                         ]
                         data.append(datum)
 
