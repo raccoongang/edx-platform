@@ -1,8 +1,11 @@
+import re
+import string
+import random
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie,csrf_exempt
 from django.views.decorators.cache import cache_control
 from util.json_request import JsonResponse
-from lms.djangoapps.instructor.views.api import _split_input_list, generate_unique_password
+# from lms.djangoapps.instructor.views.api import _split_input_list, generate_unique_password
 from admin_dashboard.helpers import create_user_and_link_with_subdomain, send_registration_email
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
@@ -12,10 +15,11 @@ from django.core.mail import send_mail
 # @require_POST
 # # @ensure_csrf_cookie
 # @cache_control(no_cache=True, no_store=True, must_revalidate=True)
+@csrf_exempt
 def create_bulk_users(request):
     try:
+        print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
         emails_raw = validate_email(request.GET.get('emails'))
-
         users_emails = _split_input_list(emails_raw)
         site_id = request.GET.get('subdomain')
 
@@ -40,3 +44,48 @@ def create_bulk_users(request):
 
     except Exception as e:
         return JsonResponse()
+
+
+def _split_input_list(str_list):
+    """
+    Separate out individual student email from the comma, or space separated string.
+
+    e.g.
+    in: "Lorem@ipsum.dolor, sit@amet.consectetur\nadipiscing@elit.Aenean\r convallis@at.lacus\r, ut@lacinia.Sed"
+    out: ['Lorem@ipsum.dolor', 'sit@amet.consectetur', 'adipiscing@elit.Aenean', 'convallis@at.lacus', 'ut@lacinia.Sed']
+
+    `str_list` is a string coming from an input text area
+    returns a list of separated values
+    """
+
+    new_list = re.split(r'[\n\r\s,]', str_list)
+    new_list = [s.strip() for s in new_list]
+    new_list = [s for s in new_list if s != '']
+
+    return new_list
+
+
+def generate_unique_password(generated_passwords, password_length=12):
+    """
+    generate a unique password for each student.
+    """
+
+    password = generate_random_string(password_length)
+    while password in generated_passwords:
+        password = generate_random_string(password_length)
+
+    generated_passwords.append(password)
+
+    return password
+
+
+def generate_random_string(length):
+    """
+    Create a string of random characters of specified length
+    """
+    chars = [
+        char for char in string.ascii_uppercase + string.digits + string.ascii_lowercase
+        if char not in 'aAeEiIoOuU1l'
+    ]
+
+    return string.join((random.choice(chars) for __ in range(length)), '')
