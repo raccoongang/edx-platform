@@ -2033,6 +2033,7 @@ YOUTUBE_API_KEY = None
 # RemovedInDjango19Warnings in the test logs.
 INSTALLED_APPS = [
     # Standard ones that are always installed...
+    'openedx_caliper_tracking',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.humanize',
@@ -3508,4 +3509,18 @@ TINYMCE_DEFAULT_CONFIG = {
         {'title' : 'Red background', 'inline' : 'span', 'styles': {'background': '#f00'}},
         {'title' : 'Black background', 'inline' : 'span', 'styles': {'background': '#000'}},
     ]
+}
+
+
+
+############## openedx-caliper-tracking #########################
+# https://github.com/ucsd-ets/openedx-caliper-tracking
+
+CALIPER_DELIVERY_ENDPOINT = ''
+CALIPER_DELIVERY_AUTH_TOKEN = ''
+
+
+CALIPER_AUTH = {
+    'CALIPER_TESTS_API_URL': '',
+    'CALIPER_TESTS_API_TOKEN': '',
 }
