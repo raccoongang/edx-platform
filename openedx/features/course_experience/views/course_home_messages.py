@@ -68,7 +68,7 @@ class CourseHomeMessageFragmentView(EdxFragmentView):
         }
 
         # Register the course home messages to be loaded on the page
-        _register_course_home_messages(request, course, course_id, user_access, course_start_data)
+        _register_course_home_messages(request, course, user_access, course_start_data)
 
         # Register course date alerts
         for course_date_block in get_course_date_blocks(course, request.user):
@@ -104,7 +104,7 @@ class CourseHomeMessageFragmentView(EdxFragmentView):
         return Fragment(html)
 
 
-def _register_course_home_messages(request, course, course_id, user_access, course_start_data):
+def _register_course_home_messages(request, course, user_access, course_start_data):
     """
     Register messages to be shown in the course home content page.
     """
@@ -141,7 +141,7 @@ def _register_course_home_messages(request, course, course_id, user_access, cour
             )
         # function get_course_outline_block_tree is request-cached
         # and is already called at CourseOutlineFragmentView
-        outline_blocks = get_course_outline_block_tree(request, course_id) or {}
+        outline_blocks = get_course_outline_block_tree(request, unicode(course.id)) or {}
         if course_start_data['already_started'] and not outline_blocks.get('children'):
             CourseHomeMessages.register_info_message(
                 request,
