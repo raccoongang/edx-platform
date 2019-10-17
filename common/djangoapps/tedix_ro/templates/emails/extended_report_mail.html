@@ -12,26 +12,26 @@ from django.utils.translation import ugettext as _
 
 <img class="logo-image" src="${static.url("images/logo.png")}" alt="${_("{platform_name} Home Page").format(platform_name=static.get_platform_name())}" itemprop="logo" />
 <%
-teacher_report = student.is_superuser or student.is_staff and hasattr(student, 'instructorprofile')
+teacher_report = user.is_superuser or user.is_staff and hasattr(user, 'instructorprofile')
 %>
 %if teacher_report:
     <%
-    roll = _('Superuser') if student.is_superuser else _('Teacher')
+    roll = _('Superuser') if user.is_superuser else _('Teacher')
     %>
 %endif
 <h2 class="hd hd-2">
-    ${_("Students Progress for {roll} '{username}'").format(roll=roll, username=student.username)}
+    ${_("Students Progress for {roll} '{username}'").format(roll=roll, username=user.username)}
 </h2>
 %for lesson_report in lesson_reports:
     %if teacher_report:
         <%include
             file="/includes/teacher_extended_report.html"
-            args="report_data=lesson_report.get('report_data'), header=lesson_report.get('header'), course=lesson_report.get('course')"
+            args="report_data=lesson_report.get('report_data'), header=lesson_report.get('header'), course_name=lesson_report.get('course_name')"
         />
     %else:
         <%include
             file="/includes/student_extended_report.html"
-            args="report_data=lesson_report.get('report_data'), course=lesson_report.get('course')"
+            args="report_data=lesson_report.get('report_data'), course_name=lesson_report.get('course_name')"
         />
     %endif
     <p><a href="${lesson_report.get('report_url')}" class="new-page">External report</a><p>

@@ -78,19 +78,18 @@ def extended_report(request, course_key):
     report_data = []
     modulestore_course = modulestore().get_course(course_key)
     if user.is_superuser:
-        for student in User.objects.filter(courseenrollment__course_id=course.id):
+        for student in User.objects.filter(courseenrollment__course_id=course.id).select_related('profile'):
             header, user_data = report_data_preparation(student, modulestore_course, course_key)
             report_data.append(user_data)
     elif user.is_staff and hasattr(user, 'instructorprofile'):
-        for student_profile in user.instructorprofile.students.filter(user__courseenrollment__course_id=course.id):
+        for student_profile in user.instructorprofile.students.filter(user__courseenrollment__course_id=course.id).select_related('user__profile'):
             header, user_data = report_data_preparation(student_profile.user, modulestore_course, course_key)
-            print(light_report_data_preparation(student_profile.user, modulestore_course, course_key))
             report_data.append(user_data)
     else:
         header, user_data = report_data_preparation(user, modulestore_course, course_key)
         report_data.append(user_data)
     context = {
-        'course': course,
+        'course_name': course.display_name,
         'header': header,
         'report_data': report_data,
         'staff_access': staff_access,

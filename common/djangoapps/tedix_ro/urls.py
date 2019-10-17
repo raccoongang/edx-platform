@@ -9,7 +9,7 @@ from .views import (
     VideoLessonViewSet,
     city_import,
     manage_courses,
-    extended_report
+    extended_report,
 )
 
 router = DefaultRouter()

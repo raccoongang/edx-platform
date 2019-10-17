@@ -1,10 +1,10 @@
-<%page args="report_data, header, course"/>
+<%page args="report_data, header, course_name"/>
 <%!
 from django.utils.translation import ugettext as _
 %>
 
 <section class="chapters">
-    <h1>${_("Activity report for lesson:")} ${ course.display_name }</h1>
+    <h1>${_("Activity report for lesson:")} ${ course_name }</h1>
     <br>
     <div style="overflow-x: scroll; overflow-y: hidden;">
     <table id="progress-table" class="display nowrap" border='1'>

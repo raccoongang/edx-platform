@@ -7,17 +7,17 @@ from openedx.features.enterprise_support.utils import get_enterprise_learner_gen
 from django.utils.translation import ugettext as _
 %>
 <%
-roll = _('Superuser') if student.is_superuser else _('Teacher')
+roll = _('Superuser') if user.is_superuser else _('Teacher')
 %>
-%if student.is_superuser or student.is_staff and hasattr(student, 'instructorprofile'):
-${_("Students Progress for {roll} '{username}'").format(roll=roll, username=student.username)}
+%if user.is_superuser or user.is_staff and hasattr(user, 'instructorprofile'):
+${_("Students Progress for {roll} '{username}'").format(roll=roll, username=user.username)}
 %endif
 
 %for lesson_report in lesson_reports:
 %for user_data in lesson_report.get('report_data'):
 
 ${_("Student name")}: ${ user_data['full_name'] }
-${_("Activity report for lesson")}: ${ lesson_report['course'].display_name }
+${_("Activity report for lesson")}: ${ lesson_report['course_name'] }
 ${_("Lesson completed")}: ${'Yes' if user_data['completion'] == 1 else 'No'}
 ${_("Number of question completed from first attempt")}: ${ user_data['percent'] }% (${user_data['count_answer_first_attempt']} out of ${len(user_data['questions'])})
 
