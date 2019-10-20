@@ -69,7 +69,7 @@ body{
 		</div>
 		<div class="row mt-4">
 			<div class="col">
-				<form id="add-users" class="lms-form">
+				<form id="add-users" class="lms-form" method="post">
 					<div class="form-group">
 						<label for="bulk-email">Enter User Emails (Separated by commas or new lines.)</label>
 						<textarea name="users-emails" id="users-emails" class="form-control" id="bulk-email" rows="6" placeholder="Email Addresses" spellcheck="false" required></textarea>
@@ -89,7 +89,7 @@ body{
 
 					<div class="d-flex justify-content-center mt-5">
                         <input name="token" type="hidden" value="${csrf_token}"></input>
-						<button id="create-button" name="create-button" class="btn btn-primary" value="add-users" data-endpoint="${ context['create_bulk_users'] }">Add User(s)</button>
+						<button id="create-button" name="create-button" class="btn btn-primary" value="add-users">Add User(s)</button>
 						<button type="button" class="btn btn-default ml-3">Cancel</button>
 					</div>
 				</form>
