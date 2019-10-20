@@ -37,7 +37,7 @@ def create_bulk_users(request):
             )
             created_users.append(user.email)
 
-            send_registration_email(email)
+            # send_registration_email(email)
 
         return JsonResponse(created_users)
 
