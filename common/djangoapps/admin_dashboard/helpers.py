@@ -4,7 +4,6 @@ Helper for Admin Dashboard
 
 from django.contrib.auth.models import User
 from student.models import Registration, UserProfile
-from student.helpers import link_user_with_site
 from student.models import UserSites
 from django.contrib.sites.models import Site
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers

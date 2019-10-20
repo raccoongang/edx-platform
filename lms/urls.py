@@ -142,7 +142,7 @@ urlpatterns = [
     url(r'^api/experiments/', include('experiments.urls', namespace='api_experiments')),
     
     # UpSkilling Team
-    url(r'^admin_dashboard', include('admin_dashboard.urls')),
+    url(r'^admin_dashboard/', include('admin_dashboard.urls')),
 ]
 
 # TODO: This needs to move to a separate urls.py once the student_account and

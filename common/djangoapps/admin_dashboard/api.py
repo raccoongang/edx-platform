@@ -6,11 +6,14 @@ from django.views.decorators.csrf import ensure_csrf_cookie,csrf_exempt
 from django.views.decorators.cache import cache_control
 from util.json_request import JsonResponse
 # from lms.djangoapps.instructor.views.api import _split_input_list, generate_unique_password
-from admin_dashboard.helpers import create_user_and_link_with_subdomain, send_registration_email
+from helpers import create_user_and_link_with_subdomain, send_registration_email
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
+import logging
 
+
+logger = logging.getLogger(__name__)
 
 # @require_POST
 # # @ensure_csrf_cookie
@@ -18,9 +21,8 @@ from django.core.mail import send_mail
 @csrf_exempt
 def create_bulk_users(request):
     try:
-        print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-        emails_raw = validate_email(request.GET.get('emails'))
-        users_emails = _split_input_list(emails_raw)
+#        emails_raw = validate_email(request.GET.get('emails'))
+        users_emails = _split_input_list(request.GET.get('emails'))
         site_id = request.GET.get('subdomain')
 
         generated_passwords = []
@@ -43,6 +45,7 @@ def create_bulk_users(request):
         return JsonResponse(status=500)
 
     except Exception as e:
+        logger.error(e)
         return JsonResponse()
 
 

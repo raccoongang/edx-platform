@@ -727,7 +727,7 @@ LMS_SEGMENT_KEY = None
 # FIXME: Should we be doing this truncation?
 TRACK_MAX_EVENT = 50000
 
-DEBUG_TRACK_LOG = False
+DEBUG_TRACK_LOG = True
 
 TRACKING_BACKENDS = {
     'logger': {
