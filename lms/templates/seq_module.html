@@ -34,7 +34,8 @@
         % else:
         % for idx, item in enumerate(items):
         <li role="presentation">
-          <button class="seq_${item['type']} inactive nav-item tab"
+          <% item_render_type = 'problem' if item['is_scorm'] else item['type'] %>
+          <button class="seq_${item_render_type} inactive nav-item tab"
             role="tab"
             tabindex="-1"
             aria-selected="false"
@@ -48,7 +49,7 @@
             data-graded="${item['graded']}"
             id="tab_${idx}"
             ${"disabled=disabled" if disable_navigation else ""}>
-            <span class="icon fa seq_${item['type']}" aria-hidden="true"></span>
+            <span class="icon fa seq_${item_render_type}" aria-hidden="true"></span>
             % if 'complete' in item:
               <span 
                 class="fa fa-check-circle check-circle ${"is-hidden" if not item['complete'] else ""}" 
