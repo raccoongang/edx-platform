@@ -174,10 +174,6 @@ JS_INFO_DICT = {
     'packages': ('openassessment',),
 }
 
-urlpatterns += [
-    url(r'^openassessment/fileupload/', include('openassessment.fileupload.urls')),
-]
-
 if settings.FEATURES.get('ENABLE_CONTENT_LIBRARIES'):
     urlpatterns += [
         url(r'^library/{}?$'.format(LIBRARY_KEY_PATTERN),
