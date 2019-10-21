@@ -816,7 +816,8 @@ def _section_open_response_assessment(request, course, openassessment_blocks, ac
     )
 
     user_cohorts = CohortAssigment.objects.filter(user=request.user)
-    if request.user.is_staff and user_cohorts.exists():
+
+    if user_cohorts.exists():
         cohort_info = user_cohorts.values('cohort__id', 'cohort__name').annotate(
             id=F('cohort__id'),
             name=F('cohort__name')
