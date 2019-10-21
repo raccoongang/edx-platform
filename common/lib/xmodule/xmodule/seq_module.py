@@ -450,6 +450,12 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
                 )
                 continue
 
+            is_scorm = False
+            for child in item.children:
+                if child.category == 'scormxblock':
+                    is_scorm = True
+                    break
+
             show_bookmark_button = False
             is_bookmarked = False
 
@@ -467,6 +473,7 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
                 'content': rendered_item.content,
                 'page_title': getattr(item, 'tooltip_title', ''),
                 'type': item_type,
+                'is_scorm': is_scorm,
                 'id': text_type(usage_id),
                 'bookmarked': is_bookmarked,
                 'path': " > ".join(display_names + [item.display_name_with_default]),
