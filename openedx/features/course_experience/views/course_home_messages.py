@@ -27,6 +27,7 @@ from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
 from openedx.core.djangolib.markup import HTML, Text
 from openedx.features.course_experience import CourseHomeMessages
 from student.models import CourseEnrollment
+from xmodule.course_module import COURSE_VISIBILITY_PUBLIC_OUTLINE, COURSE_VISIBILITY_PUBLIC
 
 
 class CourseHomeMessageFragmentView(EdxFragmentView):
@@ -108,11 +109,19 @@ def _register_course_home_messages(request, course, user_access, course_start_da
     Register messages to be shown in the course home content page.
     """
     if user_access['is_anonymous']:
+        title = Text(_('You must be enrolled in the course to see full course content.'))
+        if course.course_visibility == COURSE_VISIBILITY_PUBLIC:
+            txt = Text(_("View the course is available in limited mode. "
+                         "{sign_in_link} or {register_link} and then enroll in order to get the full access"))
+        elif course.course_visibility == COURSE_VISIBILITY_PUBLIC_OUTLINE:
+            txt = Text(_("You could view only outline for the course. "
+                         "{sign_in_link} or {register_link} and then enroll in order to get the full access"))
+        else:  # COURSE_VISIBILITY_PRIVATE
+            txt = Text(_('{sign_in_link} or {register_link} and then enroll in this course.'))
+            title = Text(_('You must be enrolled in the course to see course content.'))
         CourseHomeMessages.register_info_message(
             request,
-            Text(_(
-                '{sign_in_link} or {register_link} and then enroll in this course.'
-            )).format(
+            txt.format(
                 sign_in_link=HTML('<a href="/login?next={current_url}">{sign_in_label}</a>').format(
                     sign_in_label=_('Sign in'),
                     current_url=urlquote_plus(request.path),
@@ -122,7 +131,7 @@ def _register_course_home_messages(request, course, user_access, course_start_da
                     current_url=urlquote_plus(request.path),
                 )
             ),
-            title=Text(_('You must be enrolled in the course to see course content.'))
+            title=title
         )
     if not user_access['is_anonymous'] and not user_access['is_staff'] and not user_access['is_enrolled']:
         CourseHomeMessages.register_info_message(
