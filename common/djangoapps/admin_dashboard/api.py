@@ -21,14 +21,15 @@ logger = logging.getLogger(__name__)
 @csrf_exempt
 def create_bulk_users(request):
     try:
-#        emails_raw = validate_email(request.GET.get('emails'))
+   
         users_emails = _split_input_list(request.GET.get('emails'))
         site_id = request.GET.get('subdomain')
 
         generated_passwords = []
         created_users = []
         for email in users_emails:
-            username = email
+            validate_email(email)
+	    username = email
             # country = "Saudi Arabia"
 
             password = generate_unique_password(generated_passwords)

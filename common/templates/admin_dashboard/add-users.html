@@ -118,7 +118,8 @@ body{
 </html>
 
 <script>
-    $("#create-button").click(function() {
+    $("#create-button").click(function(ev) {
+	ev.preventDefault();
         let emails = $('#users-emails').val();
         let subdomain = $("#users-subdomain").val();
         let getUrl = "${context['create_bulk_users']}";
