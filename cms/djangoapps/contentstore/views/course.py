@@ -1062,7 +1062,8 @@ def settings_handler(request, course_key_string):
                 settings.FEATURES.get('ENABLE_EXTENDED_COURSE_DETAILS', False)
             )
 
-            about_page_editable = not marketing_site_enabled
+            # about_page_editable = not marketing_site_enabled
+            about_page_editable = True
             enrollment_end_editable = GlobalStaff().has_user(request.user) or not marketing_site_enabled
             short_description_editable = configuration_helpers.get_value_for_org(
                 course_module.location.org,
