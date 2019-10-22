@@ -60,7 +60,7 @@
                     })
                 };
             }
-
+            var tabSections = {};
             aboutSectionsData = [
                 {
                     title: gettext('Basic Account Information'),
@@ -188,74 +188,90 @@
                     ]
                 }
             ];
-            accountsSectionData = [
-                {
-                    title: gettext('Linked Accounts'),
-                    subtitle: StringUtils.interpolate(
-                        gettext('You can link your social media accounts to simplify signing in to {platform_name}.'),
-                        {platform_name: platformName}
-                    ),
-                    fields: _.map(authData.providers, function(provider) {
-                        return {
-                            view: new AccountSettingsFieldViews.AuthFieldView({
-                                title: provider.name,
-                                valueAttribute: 'auth-' + provider.id,
-                                helpMessage: '',
-                                connected: provider.connected,
-                                connectUrl: provider.connect_url,
-                                acceptsLogins: provider.accepts_logins,
-                                disconnectUrl: provider.disconnect_url,
-                                platformName: platformName
-                            })
-                        };
-                    })
-                }
-            ];
 
-            ordersHistoryData.unshift(
-                {
-                    title: gettext('ORDER NAME'),
-                    order_date: gettext('ORDER PLACED'),
-                    price: gettext('TOTAL'),
-                    number: gettext('ORDER NUMBER')
-                }
-            );
+            tabSections['aboutTabSections'] = aboutSectionsData;
 
-            ordersSectionData = [
-                {
-                    title: gettext('My Orders'),
-                    subtitle: StringUtils.interpolate(
-                        gettext('This page contains information about orders that you have placed with {platform_name}.'),  // eslint-disable-line max-len
-                        {platform_name: platformName}
-                    ),
-                    fields: _.map(ordersHistoryData, function(order) {
-                        orderNumber = order.number;
-                        if (orderNumber === 'ORDER NUMBER') {
-                            orderNumber = 'orderId';
-                        }
-                        return {
-                            view: new AccountSettingsFieldViews.OrderHistoryFieldView({
-                                totalPrice: order.price,
-                                orderId: order.number,
-                                orderDate: order.order_date,
-                                receiptUrl: order.receipt_url,
-                                valueAttribute: 'order-' + orderNumber,
-                                lines: order.lines
-                            })
-                        };
-                    })
-                }
-            ];
+            // set TimeZoneField to listen to CountryField
+            getUserField = function(list, search) {
+                return _.find(list, function(field) {
+                    return field.view.options.valueAttribute === search;
+                }).view;
+            };
+            userFields = _.find(aboutSectionsData, function(section) {
+                return section.title === gettext('Basic Account Information');
+            }).fields;
+            timeZoneDropdownField = getUserField(userFields, 'time_zone');
+            countryDropdownField = getUserField(userFields, 'country');
+            timeZoneDropdownField.listenToCountryView(countryDropdownField);
 
+            if(authData.providers != undefined){
+                accountsSectionData = [
+                    {
+                        title: gettext('Linked Accounts'),
+                        subtitle: StringUtils.interpolate(
+                            gettext('You can link your social media accounts to simplify signing in to {platform_name}.'),
+                            {platform_name: platformName}
+                        ),
+                        fields: _.map(authData.providers, function(provider) {
+                            return {
+                                view: new AccountSettingsFieldViews.AuthFieldView({
+                                    title: provider.name,
+                                    valueAttribute: 'auth-' + provider.id,
+                                    helpMessage: '',
+                                    connected: provider.connected,
+                                    connectUrl: provider.connect_url,
+                                    acceptsLogins: provider.accepts_logins,
+                                    disconnectUrl: provider.disconnect_url,
+                                    platformName: platformName
+                                })
+                            };
+                        })
+                    }
+                ];
+                tabSections['accountsTabSections'] = accountsSectionData;
+            }
+            if(ordersHistoryData.length > 0){
+                ordersHistoryData.unshift(
+                    {
+                        title: gettext('ORDER NAME'),
+                        order_date: gettext('ORDER PLACED'),
+                        price: gettext('TOTAL'),
+                        number: gettext('ORDER NUMBER')
+                    }
+                );
+
+                ordersSectionData = [
+                    {
+                        title: gettext('My Orders'),
+                        subtitle: StringUtils.interpolate(
+                            gettext('This page contains information about orders that you have placed with {platform_name}.'),  // eslint-disable-line max-len
+                            {platform_name: platformName}
+                        ),
+                        fields: _.map(ordersHistoryData, function(order) {
+                            orderNumber = order.number;
+                            if (orderNumber === 'ORDER NUMBER') {
+                                orderNumber = 'orderId';
+                            }
+                            return {
+                                view: new AccountSettingsFieldViews.OrderHistoryFieldView({
+                                    totalPrice: order.price,
+                                    orderId: order.number,
+                                    orderDate: order.order_date,
+                                    receiptUrl: order.receipt_url,
+                                    valueAttribute: 'order-' + orderNumber,
+                                    lines: order.lines
+                                })
+                            };
+                        })
+                    }
+                ];
+                tabSections['ordersTabSections'] = ordersSectionData;
+            }
             accountSettingsView = new AccountSettingsView({
                 model: userAccountModel,
                 accountUserId: accountUserId,
                 el: accountSettingsElement,
-                tabSections: {
-                    aboutTabSections: aboutSectionsData,
-                    accountsTabSections: accountsSectionData,
-                    ordersTabSections: ordersSectionData
-                },
+                tabSections: tabSections,
                 userPreferencesModel: userPreferencesModel
             });
 

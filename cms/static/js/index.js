@@ -168,6 +168,36 @@ define(['domReady', 'jquery', 'underscore', 'js/utils/cancel_on_escape', 'js/vie
             };
         };
 
+        var searchHandler = function(e) {
+            e.preventDefault();
+
+            var search = $(e.target);
+            var searchString = search.val().toLowerCase();
+            var list = $('.'+search.data('list'));
+
+            if (!searchString) {
+                list.find('li').removeClass('hidden');
+                return;
+            }
+
+            list.find('li.course-item').each(function(i, li) {
+                var li = $(li);
+                var name = li.find('.course-title').html();
+                var org = li.find('.course-org').find('.value').html();
+                var num = li.find('.course-num').find('.value').html();
+                var run = li.find('.course-run').find('.value').html() || '';
+
+                var nameMatch = name.toLowerCase().includes(searchString);
+                var keyMatch = (org + "/" + num + "/" + run).toLowerCase().includes(searchString);
+
+                if (nameMatch || keyMatch) {
+                    li.removeClass('hidden');
+                } else {
+                    li.addClass('hidden');
+                }
+            });
+        }
+
         var onReady = function() {
             $('.new-course-button').bind('click', addNewCourse);
             $('.new-library-button').bind('click', addNewLibrary);
@@ -180,6 +210,7 @@ define(['domReady', 'jquery', 'underscore', 'js/utils/cancel_on_escape', 'js/vie
 
             $('#course-index-tabs .courses-tab').bind('click', showTab('courses'));
             $('#course-index-tabs .libraries-tab').bind('click', showTab('libraries'));
+            $('.index-search-input').bind('input', searchHandler);
         };
 
         domReady(onReady);
