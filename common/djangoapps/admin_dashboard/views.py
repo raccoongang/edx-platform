@@ -11,9 +11,14 @@ from collections import defaultdict
 from django.urls import reverse
 from django.contrib.sites.models import Site
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.contrib.auth.decorators import login_required
+from decorators import site_admin, takamol_admin
 
 
-def index(request, template_name="/admin_dashboard/index.html"):
+@login_required()
+@takamol_admin
+def takamol_admin(request, template_name="/admin_dashboard/takamol_admin.html"):
+
     usersites = UserSites.objects.all()
 
     page = request.GET.get('page', 1)
@@ -30,7 +35,7 @@ def index(request, template_name="/admin_dashboard/index.html"):
 
 @csrf_exempt
 def add_users(request, template_name="/admin_dashboard/add-users.html"):
-    print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
     subdoamins = list(Site.objects.all())
 
     context = {'create_bulk_users': reverse('create_bulk_users'),

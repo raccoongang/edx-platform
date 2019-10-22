@@ -678,6 +678,8 @@ def user_post_save_callback(sender, **kwargs):
 class UserSites(models.Model):
     user = models.ForeignKey(User, db_index=True)
     site = models.ForeignKey(Site, db_index=True)
+    takamol_admin = models.BooleanField(default=False)
+    site_admin = models.BooleanField(default=False)
 
 
 class UserSignupSource(models.Model):

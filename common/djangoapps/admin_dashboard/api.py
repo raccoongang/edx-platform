@@ -29,7 +29,7 @@ def create_bulk_users(request):
         created_users = []
         for email in users_emails:
             validate_email(email)
-	    username = email
+            username = email
             # country = "Saudi Arabia"
 
             password = generate_unique_password(generated_passwords)
