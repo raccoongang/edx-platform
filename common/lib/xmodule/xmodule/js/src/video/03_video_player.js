@@ -141,6 +141,11 @@ function(HTML5Video, HTML5HLSVideo, Resizer, HLS, _) {
             cc_load_policy: 0
         };
 
+        state.isUSPAP = (state.el.closest('#main').data('is-uspap') != undefined);
+        if (state.isUSPAP) {
+            state.videoPlayer.playerVars.disablekb = 1;
+        }
+
         if (!state.isFlashMode()) {
             state.videoPlayer.playerVars.html5 = 1;
         }
@@ -431,6 +436,10 @@ function(HTML5Video, HTML5HLSVideo, Resizer, HLS, _) {
     // It is created on a onPlay event. Cleared on a onPause event.
     // Reinitialized on a onSeek event.
     function onSeek(params) {
+        if (this.isUSPAP) {
+            console.log('[Video info]: video for uspap courses cannot be rewound.');
+            return false;
+        }
         var time = params.time,
             type = params.type,
             oldTime = this.videoPlayer.currentTime;
