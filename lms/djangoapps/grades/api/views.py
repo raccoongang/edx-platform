@@ -1,6 +1,7 @@
 """ API v0 views. """
 import logging
 
+from django.contrib.auth import get_user_model
 from django.http import Http404
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
@@ -21,6 +22,7 @@ from student.roles import CourseStaffRole, GlobalStaff
 
 
 log = logging.getLogger(__name__)
+User = get_user_model()
 
 
 class GradeViewMixin(DeveloperErrorViewMixin):
@@ -134,13 +136,13 @@ class UserGradeView(GradeViewMixin, GenericAPIView):
         username = request.GET.get('username')
         course_key = CourseKey.from_string(course_id)
 
-        is_staff_user = GlobalStaff().has_user(user) or CourseStaffRole(course_key).has_user(user)
+        is_staff_user = GlobalStaff().has_user(request.user) or CourseStaffRole(course_key).has_user(request.user)
 
         # only the student & staff can access student's own grade status info
-        if not is_staff_user and user.username != username:
+        if not is_staff_user and request.user.username != username:
             log.info(
                 'User %s tried to access the grade for user %s.',
-                user.username,
+                request.user.username,
                 username
             )
             return self.make_error_response(
@@ -149,15 +151,26 @@ class UserGradeView(GradeViewMixin, GenericAPIView):
                 error_code='user_mismatch'
             )
 
-        course = self._get_course(course_id, user, 'load')
+        course = self._get_course(course_id, request.user, 'load')
         if isinstance(course, Response):
             return course
+
+        if request.user.username == username:
+            user = request.user
+        else:
+            user = User.objects.filter(username=username).first()
+            if not user:
+                return self.make_error_response(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    developer_message='The requested user does not exist.',
+                    error_code='no_user'
+                )
 
         prep_course_for_grading(course, request)
         course_grade = CourseGradeFactory().create(user, course)
 
         return Response([{
-            'username': username,
+            'username': user.username,
             'course_key': course_id,
             'passed': course_grade.passed,
             'percent': course_grade.percent,
