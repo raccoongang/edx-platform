@@ -14,7 +14,7 @@ from django.http import HttpResponseForbidden
 from openedx.core.djangoapps.theming.helpers import get_current_request
 from six import text_type
 
-from student.models import User, UserProfile, Registration, email_exists_or_retired
+from student.models import User, UserProfile, Registration, Role, email_exists_or_retired
 from student import forms as student_forms
 from student import views as student_views
 from util.model_utils import emit_setting_changed_event
@@ -760,3 +760,73 @@ def _validate_unicode(data, err=u"Input not valid unicode"):
         unicode(data)
     except UnicodeError:
         raise UnicodeError(err)
+
+
+@helpers.intercept_errors(errors.UserAPIInternalError, ignore_errors=[errors.UserAPIRequestError])
+def get_role_settings(request):
+
+    from student.models import Specialization
+    data = {
+        'role': {
+            'options': [(role.id, role.name) for role in Role.objects.filter(parent__isnull=True)]
+        },
+        'other_role': request.user.profile.other_role,
+        'selected_role': None,
+        'selected_sub_role': None,
+    }
+
+    if request.user.profile.role is None:
+        return data
+
+    role = Role.objects.get(id=request.user.profile.role.id)
+
+    if role.parent is None:
+        data.update({
+            'selected_role': role.id,
+            'sub_roles': [(sub.id, sub.name) for sub in role.children.all()],
+        })
+    elif role.parent is None and not role.children.exists():
+        data.update({
+            'selected_role': role.id,
+        })
+    else:
+        data.update({
+            'selected_role': role.parent.id,
+            'selected_sub_role': role.id,
+            'sub_roles': [(sub.id, sub.name) for sub in role.parent.children.all()],
+        })
+        if role.has_specialization:
+            data.update({'selected_specializations': request.user.profile.specialization.values_list('id', flat=True)})
+
+    if role.has_specialization:
+        data.update({
+            'specialization': [(spec.id, spec.name) for spec in Specialization.objects.all()],
+        })
+
+    return data
+
+
+@helpers.intercept_errors(errors.UserAPIInternalError, ignore_errors=[errors.UserAPIRequestError])
+def update_role_settings(request):
+    data = request.data
+    role = data.get('role')
+    other_role = data.get('other_role')
+    specialization = data.get('specialization')
+
+    user = UserProfile.objects.get(user=request.user)
+
+    if role:
+        role = Role.objects.get(id=role)
+        user.role = role
+
+        if specialization is not None:
+            user.specialization.clear()
+            if role.has_specialization:
+                user.specialization.add(*specialization)
+
+    if other_role:
+        user.other_role = other_role
+
+    user.save()
+
+    return {'status': 'state save'}

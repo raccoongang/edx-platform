@@ -59,13 +59,15 @@ from webpack_loader.templatetags.webpack_loader import render_bundle
         contactEmail,
         allowEmailChange,
         socialPlatforms,
+<!--        -->
 
         syncLearnerProfileData,
         enterpriseName,
         enterpriseReadonlyAccountFields,
         edxSupportUrl,
         extendedProfileFields,
-        displayAccountDeletion
+        displayAccountDeletion,
+        '${ user_role_api_url | n, js_escaped_string }',
     );
 </%static:require_module>
 

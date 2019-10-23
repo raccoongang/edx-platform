@@ -105,6 +105,8 @@ class UserReadOnlySerializer(serializers.Serializer):
             # https://docs.djangoproject.com/en/1.8/ref/databases/#fractional-seconds-support-for-time-and-datetime-fields
             "date_joined": user.date_joined.replace(microsecond=0),
             "is_active": user.is_active,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
             "bio": None,
             "country": None,
             "profile_image": None,
@@ -120,6 +122,10 @@ class UserReadOnlySerializer(serializers.Serializer):
             "account_privacy": self.configuration.get('default_visibility'),
             "social_links": None,
             "extended_profile_fields": None,
+            "phone": None,
+            "second_name": None,
+            "second_email": None,
+            "region": None,
         }
 
         if user_profile:
@@ -147,6 +153,10 @@ class UserReadOnlySerializer(serializers.Serializer):
                         user_profile.social_links.all(), many=True
                     ).data,
                     "extended_profile": get_extended_profile(user_profile),
+                    "phone": user_profile.phone,
+                    "second_name": user_profile.second_name,
+                    "second_email": user_profile.second_email,
+                    "region": user_profile.region,
                 }
             )
 
@@ -180,7 +190,7 @@ class AccountUserSerializer(serializers.HyperlinkedModelSerializer, ReadOnlyFiel
     """
     class Meta(object):
         model = User
-        fields = ("username", "email", "date_joined", "is_active")
+        fields = ("username", "email", "date_joined", "is_active", "first_name", "last_name")
         read_only_fields = ("username", "email", "date_joined", "is_active")
         explicit_read_only_fields = ()
 
@@ -198,7 +208,8 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
         model = UserProfile
         fields = (
             "name", "gender", "goals", "year_of_birth", "level_of_education", "country", "social_links",
-            "mailing_address", "bio", "profile_image", "requires_parental_consent", "language_proficiencies"
+            "mailing_address", "bio", "profile_image", "requires_parental_consent", "language_proficiencies",
+            "phone", "second_name", "second_email", "region",
         )
         # Currently no read-only field, but keep this so view code doesn't need to know.
         read_only_fields = ()

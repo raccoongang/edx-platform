@@ -51,7 +51,7 @@ from openedx.features.enterprise_support.utils import (
 )
 from student.helpers import destroy_oauth_tokens, get_next_url_for_login_page
 from student.message_types import PasswordReset
-from student.models import UserProfile
+from student.models import UserProfile, Role
 from student.views import register_user as old_register_view, signin_user as old_login_view
 from third_party_auth import pipeline
 from third_party_auth.decorators import xframe_allow_whitelisted
@@ -549,12 +549,12 @@ def account_settings_context(request):
                 'options': [(choice[0], _(choice[1])) for choice in UserProfile.LEVEL_OF_EDUCATION_CHOICES],  # pylint: disable=translation-of-non-string
             }, 'password': {
                 'url': reverse('password_reset'),
-            }, 'year_of_birth': {
-                'options': year_of_birth_options,
             }, 'preferred_language': {
                 'options': all_languages(),
             }, 'time_zone': {
                 'options': TIME_ZONE_CHOICES,
+            }, 'region': {
+                'options': [(choice[0], _(choice[1])) for choice in UserProfile.REGION_CHOICES],
             }
         },
         'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
@@ -571,6 +571,7 @@ def account_settings_context(request):
             'ENABLE_ACCOUNT_DELETION', settings.FEATURES.get('ENABLE_ACCOUNT_DELETION', False)
         ),
         'extended_profile_fields': _get_extended_profile_fields(),
+        'user_role_api_url': reverse('roles_api'),
     }
 
     enterprise_customer = get_enterprise_customer_for_learner(site=request.site, user=request.user)

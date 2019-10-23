@@ -74,7 +74,21 @@ log = logging.getLogger(__name__)
 AUDIT_LOG = logging.getLogger("audit")
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore  # pylint: disable=invalid-name
 
+
 # enroll status changed events - signaled to email_marketing.  See email_marketing.tasks for more info
+class Specialization(models.Model):
+    name = models.CharField(max_length=255)
+
+
+class Role(models.Model):
+    name = models.CharField(null=True, blank=True, max_length=120)
+    parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
+    has_specialization = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
+
 
 
 # ENROLL signal used for free enrollment only
@@ -378,12 +392,12 @@ class UserProfile(models.Model):
     # Optional demographic data we started capturing from Fall 2012
     this_year = datetime.now(UTC).year
     VALID_YEARS = range(this_year, this_year - 120, -1)
-    year_of_birth = models.IntegerField(blank=True, null=True, db_index=True)
+    year_of_birth = models.DateField(blank=True, null=True, db_index=True)
     GENDER_CHOICES = (
         ('m', ugettext_noop('Male')),
         ('f', ugettext_noop('Female')),
         # Translators: 'Other' refers to the student's gender
-        ('o', ugettext_noop('Other/Prefer Not to Say'))
+        # ('o', ugettext_noop('Other/Prefer Not to Say'))
     )
     gender = models.CharField(
         blank=True, null=True, max_length=6, db_index=True, choices=GENDER_CHOICES
@@ -417,6 +431,16 @@ class UserProfile(models.Model):
     allow_certificate = models.BooleanField(default=1)
     bio = models.CharField(blank=True, null=True, max_length=3000, db_index=False)
     profile_image_uploaded_at = models.DateTimeField(null=True, blank=True)
+
+    phone = models.CharField(max_length=13, null=True, blank=True)
+    second_name = models.CharField(max_length=100, null=True, blank=True)
+    second_email = models.CharField(max_length=255, null=True, blank=True)
+    REGION_CHOICES = [(region[0], _(region[1])) for region in getattr(settings, 'REGIONS', [])]
+    region = models.CharField(max_length=255, null=True, blank=True, choices=REGION_CHOICES)
+    role = models.ForeignKey(Role, null=True, blank=True, on_delete=models.CASCADE)
+    other_role = models.TextField(max_length=255, null=True, blank=True)
+
+    specialization = models.ManyToManyField(Specialization, null=True, blank=True)
 
     @property
     def has_profile_image(self):

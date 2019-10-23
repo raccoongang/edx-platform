@@ -4,11 +4,12 @@
         'gettext', 'jquery', 'underscore', 'backbone', 'logger',
         'js/student_account/models/user_account_model',
         'js/student_account/models/user_preferences_model',
+        'js/student_account/models/role_model',
         'js/student_account/views/account_settings_fields',
         'js/student_account/views/account_settings_view',
         'edx-ui-toolkit/js/utils/string-utils',
         'edx-ui-toolkit/js/utils/html-utils'
-    ], function(gettext, $, _, Backbone, Logger, UserAccountModel, UserPreferencesModel,
+    ], function(gettext, $, _, Backbone, Logger, UserAccountModel, UserPreferencesModel, RoleAccountModel,
                  AccountSettingsFieldViews, AccountSettingsView, StringUtils, HtmlUtils) {
         return function(
             fieldsData,
@@ -27,9 +28,11 @@
             enterpriseReadonlyAccountFields,
             edxSupportUrl,
             extendedProfileFields,
-            displayAccountDeletion
+            displayAccountDeletion,
+            roleAccountApiUrl,
+            isProgressForm
         ) {
-            var $accountSettingsElement, userAccountModel, userPreferencesModel, aboutSectionsData,
+            var $accountSettingsElement, userAccountModel, userPreferencesModel, roleAccountModel, aboutSectionsData,
                 accountsSectionData, ordersSectionData, accountSettingsView, showAccountSettingsPage,
                 showLoadingError, orderNumber, getUserField, userFields, timeZoneDropdownField, countryDropdownField,
                 emailFieldView, socialFields, accountDeletionFields, platformData,
@@ -141,6 +144,37 @@
                                 )
                             })
                         },
+                        {
+                            view: new AccountSettingsFieldViews.TextFieldView(
+                                {
+                                    model: userAccountModel,
+                                    title: gettext('First Name'),
+                                    valueAttribute: 'first_name',
+                                    helpMessage: gettext('The name that is used for ID verification and that appears on your certificates.'),  // eslint-disable-line max-len,
+                                    persistChanges: true
+                                }
+                            )
+                        },
+                        {
+                            view: new AccountSettingsFieldViews.TextFieldView({
+                                model: userAccountModel,
+                                title: gettext('Second Name'),
+                                valueAttribute: 'second_name',
+                                helpMessage: gettext('second_name'),
+                                persistChanges: true
+                            })
+                        },
+                        {
+                            view: new AccountSettingsFieldViews.TextFieldView(
+                                {
+                                    model: userAccountModel,
+                                    title: gettext('Last Name'),
+                                    valueAttribute: 'last_name',
+                                    helpMessage: gettext('The name that is used for ID verification and that appears on your certificates.'),  // eslint-disable-line max-len,
+                                    persistChanges: true
+                                }
+                            )
+                        },
                         fullnameFieldView,
                         emailFieldView,
                         {
@@ -211,11 +245,11 @@
                             })
                         },
                         {
-                            view: new AccountSettingsFieldViews.DropdownFieldView({
+                            view: new AccountSettingsFieldViews.TextFieldView({
                                 model: userAccountModel,
                                 title: gettext('Year of Birth'),
                                 valueAttribute: 'year_of_birth',
-                                options: fieldsData.year_of_birth.options,
+                                helpMessage: gettext('Birth Day'),
                                 persistChanges: true
                             })
                         },
@@ -227,10 +261,63 @@
                                 options: fieldsData.preferred_language.options,
                                 persistChanges: true
                             })
+                        },
+                        {
+                            view: new AccountSettingsFieldViews.TextFieldView({
+                                model: userAccountModel,
+                                title: gettext('Phone'),
+                                valueAttribute: 'phone',
+                                helpMessage: gettext('Phone number'),
+                                persistChanges: true
+                            })
+                        },
+                        {
+                            view: new AccountSettingsFieldViews.TextFieldView({
+                                model: userAccountModel,
+                                title: gettext('Second Email'),
+                                valueAttribute: 'second_email',
+                                helpMessage: gettext('second_email'),
+                                persistChanges: true
+                            })
+                        },
+                        {
+                            view: new AccountSettingsFieldViews.DropdownFieldView({
+                                model: userAccountModel,
+                                title: gettext('Region'),
+                                valueAttribute: 'region',
+                                options: fieldsData.region.options,
+                                persistChanges: true
+                            })
                         }
                     ]
                 }
             ];
+
+
+
+            var RoleAccountCollection = Backbone.Collection.extend({
+                model: RoleAccountModel,
+                url: roleAccountApiUrl
+            });
+
+            var roleAccountCollection = new RoleAccountCollection();
+
+            roleAccountCollection.fetch({
+                success: function(data) {
+                        aboutSectionsData[1].fields.push({
+                            view: new AccountSettingsFieldViews.EditableDualFieldView({
+                                model: data.models[0],
+                                valueAttribute: 'role',
+                                roleChoices: data.models[0].attributes.role.options,
+                                helpMessage: gettext('Select the state and enter the appropriate certificate. Both fields are required.'),
+                                persistChanges: true,
+                            })
+                        });
+                accountSettingsView.render()
+                },
+                error: showLoadingError
+            });
+
 
             // Add the extended profile fields
             additionalFields = aboutSectionsData[1];
@@ -289,18 +376,22 @@
                     }
                 );
             }
-            aboutSectionsData.push(socialFields);
 
-            // Add account deletion fields
-            if (displayAccountDeletion) {
-                accountDeletionFields = {
-                    title: gettext('Delete My Account'),
-                    fields: [],
-                    // Used so content can be rendered external to Backbone
-                    domHookId: 'account-deletion-container'
-                };
-                aboutSectionsData.push(accountDeletionFields);
+            if (!isProgressForm) {
+                aboutSectionsData.push(socialFields);
+
+                // Add account deletion fields
+                if (displayAccountDeletion) {
+                    accountDeletionFields = {
+                        title: gettext('Delete My Account'),
+                        fields: [],
+                        // Used so content can be rendered external to Backbone
+                        domHookId: 'account-deletion-container'
+                    };
+                    aboutSectionsData.push(accountDeletionFields);
+                }
             }
+
 
             // set TimeZoneField to listen to CountryField
 
@@ -390,10 +481,9 @@
                 accountUserId: accountUserId,
                 el: $accountSettingsElement,
                 tabSections: tabSections,
-                userPreferencesModel: userPreferencesModel
+                userPreferencesModel: userPreferencesModel,
+                progress_form: isProgressForm
             });
-
-            accountSettingsView.render();
 
             showAccountSettingsPage = function() {
                 // Record that the account settings page was viewed.
@@ -418,6 +508,24 @@
                 },
                 error: showLoadingError
             });
+
+            if (isProgressForm) {
+                var myArr = ["first_name", "second_name", "last_name", "phone", "second_email", "gender", "date_of_birth", "region"];
+
+                aboutSectionsData.map(function (el) {
+                    var fields = el.fields;
+                    var newFields = [];
+
+                    fields.filter(function (field) {
+                        if (myArr.indexOf(field.view.options.valueAttribute) !== -1) {
+                            newFields.push(field);
+                        }
+                    });
+                    el.fields = newFields;
+                });
+            }
+
+
 
             return {
                 userAccountModel: userAccountModel,

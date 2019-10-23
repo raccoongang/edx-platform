@@ -26,7 +26,9 @@ from student.models import (
     RegistrationCookieConfiguration,
     UserAttribute,
     UserProfile,
-    UserTestGroup
+    UserTestGroup,
+    Role,
+    Specialization,
 )
 from student.roles import REGISTERED_ACCESS_ROLES
 from xmodule.modulestore.django import modulestore
@@ -303,3 +305,6 @@ except NotRegistered:
     pass
 
 admin.site.register(User, UserAdmin)
+
+admin.site.register(Role)
+admin.site.register(Specialization)

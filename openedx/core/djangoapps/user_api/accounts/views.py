@@ -70,7 +70,7 @@ from ..models import (
     UserRetirementPartnerReportingStatus,
     UserRetirementStatus
 )
-from .api import get_account_settings, update_account_settings
+from .api import get_account_settings, update_account_settings, get_role_settings, update_role_settings
 from .permissions import CanDeactivateUser, CanRetireUser
 from .serializers import UserRetirementPartnerReportSerializer, UserRetirementStatusSerializer
 from .signals import (
@@ -914,3 +914,31 @@ class AccountRetirementView(ViewSet):
         """
         for entitlement in CourseEntitlement.objects.filter(user_id=user.id):
             entitlement.courseentitlementsupportdetail_set.all().update(comments='')
+
+
+class AccountRoleViewSet(ViewSet):
+
+    authentication_classes = (
+        OAuth2AuthenticationAllowInactiveUser, SessionAuthenticationAllowInactiveUser, JwtAuthentication
+    )
+    permission_classes = (permissions.IsAuthenticated,)
+    parser_classes = (MergePatchParser,)
+
+    def list(self, request):
+        """
+        GET /api/user/v1/accounts_states/
+        """
+        role_settings = get_role_settings(request)
+        return Response(role_settings)
+
+    def update(self, request):
+        """
+        POST /api/user/v1/accounts_states/
+        """
+        try:
+            update_role_settings(request)
+        except AccountValidationError as err:
+            return Response({"field_errors": err.field_errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        state_settings = get_role_settings(request)
+        return Response(state_settings)

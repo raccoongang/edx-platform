@@ -104,6 +104,7 @@ from xmodule.modulestore.exceptions import ItemNotFoundError, NoPathToItem
 from xmodule.tabs import CourseTabList
 from xmodule.x_module import STUDENT_VIEW
 
+from student_account.views import account_settings_context
 from ..entrance_exams import user_can_skip_entrance_exam
 from ..module_render import get_module, get_module_by_usage_id, get_module_for_descriptor
 
@@ -998,6 +999,7 @@ def _progress(request, course_key, student_id):
             student,
         )
     )
+    context.update(account_settings_context(request))
 
     with outer_atomic():
         response = render_to_response('courseware/progress.html', context)

@@ -44,8 +44,10 @@
                 'click .account-nav-link': 'switchTab',
                 'keydown .account-nav-link': 'keydownHandler'
             },
+            progress_form: false,
 
             initialize: function(options) {
+                this.progress_form = options.progress_form;
                 this.options = options;
                 _.bindAll(this, 'render', 'switchTab', 'setActiveTab', 'showLoadingError');
                 var accountSettingsTabsEdited = [];
@@ -61,7 +63,8 @@
                 var tabName,
                     view = this;
                 HtmlUtils.setHtml(this.$el, HtmlUtils.template(accountSettingsTemplate)({
-                    accountSettingsTabs: this.accountSettingsTabs
+                    accountSettingsTabs: this.accountSettingsTabs,
+                    progressForm: this.progress_form
                 }));
                 _.each(view.accountSettingsTabs, function(tab) {
                     tabName = tab.name;

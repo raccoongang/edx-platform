@@ -9,13 +9,15 @@
         'text!templates/fields/field_link.underscore',
         'text!templates/fields/field_text.underscore',
         'text!templates/fields/field_textarea.underscore',
+        'text!templates/fields/field_dual.underscore',
         'backbone-super'
     ], function(gettext, $, _, Backbone, HtmlUtils, DateUtils,
                  field_readonly_template,
                  field_dropdown_template,
                  field_link_template,
                  field_text_template,
-                 field_textarea_template
+                 field_textarea_template,
+                 field_dual_template
     ) {
         var messageRevertDelay = 6000;
         var FieldViews = {};
@@ -691,6 +693,82 @@
             linkClicked: function(event) {
                 event.preventDefault();
             }
+        });
+
+        FieldViews.EditableDualFieldView = FieldViews.EditableFieldView.extend({
+
+            fieldType: 'dual',
+
+            className: function() {
+                return 'u-field' + ' u-field-' + this.fieldType + ' u-field-' + this.options.valueAttribute + ' u-field-dual__custom';
+            },
+
+            fieldTemplate: field_dual_template,
+
+            events: {
+                'change input': 'saveFieldsValues',
+                'change select': 'saveFieldsValues'
+            },
+
+
+
+            initialize: function(options) {
+                _.bindAll(this, 'render', 'saveFieldsValues');
+                this._super(options);
+
+                this.listenTo(this.model, 'change', this.render);
+            },
+
+            saveFieldsValues: function() {
+                if (this.persistChanges === true) {
+                    var valueOtherRole = this.$('#field-input-' + this.model.cid).val(),
+                        valueRole = this.$('#u-field-select-' + this.model.cid).val(),
+                        valueSubRole = this.$('#u-field-select-sub-' + this.model.cid).val(),
+                        valueSpecialization = this.$('#u-field-select-spec-' + this.model.cid).val();
+                    console.log(valueSpecialization, 'qweqwe');
+
+                    var view = this;
+                    var options = {
+                        contentType: 'application/merge-patch+json',
+                        wait: true,
+                        success: function () {
+                            view.saveSucceeded();
+                        },
+                        error: function (model, xhr) {
+                            view.showErrorMessage(xhr);
+                        }
+                    };
+
+                    this.showInProgressMessage();
+
+                    if (valueRole != this.model.get('selected_role')) {
+                        this.model.save({role: valueRole, other_role: valueOtherRole, specialization: valueSpecialization}, options);
+                    } else {
+                        this.model.save(
+                            {role: valueSubRole, other_role: valueOtherRole, specialization: valueSpecialization},
+                            options
+                        );
+                    }
+                }
+            },
+
+            render: function() {
+                console.log(this.model);
+                HtmlUtils.setHtml(this.$el, HtmlUtils.template(this.fieldTemplate)({
+                    id: this.model.cid,
+                    valueRole: this.model.get('selected_role'),
+                    valueSubRole: this.model.get('selected_sub_role'),
+                    selectOptions: this.options.roleChoices,
+                    selectSubRoles: this.model.get('sub_roles'),
+                    message: this.helpMessage,
+                    otherRole: this.model.get('other_role'),
+                    specialization: this.model.get('specialization'),
+                    selectedSpecializations: this.model.get('selected_specializations')
+                }));
+                this.delegateEvents();
+                return this;
+            },
+
         });
 
         return FieldViews;

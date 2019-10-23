@@ -774,6 +774,8 @@ def create_account_with_params(request, params):
                 'address': profile.mailing_address,
                 'gender': profile.gender_display,
                 'country': text_type(profile.country),
+                'role': profile.role,
+                'other_role': profile.other_role,
             }
         ]
 
