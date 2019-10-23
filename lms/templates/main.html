@@ -168,6 +168,21 @@ from pipeline_mako import render_require_js_path_overrides
   <script type="text/javascript" src="${static.url('js/vendor/noreferrer.js')}" charset="utf-8"></script>
   <script type="text/javascript" src="${static.url('js/utils/navigation.js')}" charset="utf-8"></script>
   <%static:optional_include_mako file="body-extra.html" is_theming_enabled="True" />
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript" >
+     (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+     m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+     (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+     ym(50301426, "init", {
+          clickmap:true,
+          trackLinks:true,
+          accurateTrackBounce:true,
+          webvisor:true,
+          trackHash:true
+     });
+  </script>
+  <!-- /Yandex.Metrika counter -->
 </body>
 </html>
 
