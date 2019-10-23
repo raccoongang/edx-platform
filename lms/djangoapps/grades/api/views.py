@@ -17,6 +17,8 @@ from lms.djangoapps.grades.api.serializers import GradingPolicySerializer
 from lms.djangoapps.grades.new.course_grade import CourseGradeFactory
 from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiveUser
 from openedx.core.lib.api.view_utils import DeveloperErrorViewMixin
+from student.roles import CourseStaffRole, GlobalStaff
+
 
 log = logging.getLogger(__name__)
 
@@ -128,13 +130,17 @@ class UserGradeView(GradeViewMixin, GenericAPIView):
         Return:
             A JSON serialized representation of the requesting user's current grade status.
         """
+        user = request.user
         username = request.GET.get('username')
+        course_key = CourseKey.from_string(course_id)
 
-        # only the student can access her own grade status info
-        if request.user.username != username:
+        is_staff_user = GlobalStaff().has_user(user) or CourseStaffRole(course_key).has_user(user)
+
+        # only the student & staff can access student's own grade status info
+        if not is_staff_user and user.username != username:
             log.info(
                 'User %s tried to access the grade for user %s.',
-                request.user.username,
+                user.username,
                 username
             )
             return self.make_error_response(
@@ -143,12 +149,12 @@ class UserGradeView(GradeViewMixin, GenericAPIView):
                 error_code='user_mismatch'
             )
 
-        course = self._get_course(course_id, request.user, 'load')
+        course = self._get_course(course_id, user, 'load')
         if isinstance(course, Response):
             return course
 
         prep_course_for_grading(course, request)
-        course_grade = CourseGradeFactory().create(request.user, course)
+        course_grade = CourseGradeFactory().create(user, course)
 
         return Response([{
             'username': username,
