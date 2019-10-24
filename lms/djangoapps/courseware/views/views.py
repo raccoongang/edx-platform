@@ -966,7 +966,7 @@ def _progress(request, course_key, student_id):
 
     # The pre-fetching of groups is done to make auth checks not require an
     # additional DB lookup (this kills the Progress page in particular).
-    student = User.objects.prefetch_related("groups").get(id=student.id)
+    student = User.objects.prefetch_related("groups").select_related('profile').get(id=student.id)
     if request.user.id != student.id:
         # refetch the course as the assumed student
         course = get_course_with_access(student, 'load', course_key, check_if_enrolled=True)
@@ -981,6 +981,17 @@ def _progress(request, course_key, student_id):
     # checking certificate generation configuration
     enrollment_mode, _ = CourseEnrollment.enrollment_mode_for_user(student, course_key)
 
+    profile = student.profile
+
+    can_request_certificate = all([
+            student.first_name,
+            student.last_name,
+            profile.second_name,
+            profile.phone,
+            profile.year_of_birth,
+            profile.position
+    ])
+
     context = {
         'course': course,
         'courseware_summary': courseware_summary,
@@ -992,6 +1003,8 @@ def _progress(request, course_key, student_id):
         'student': student,
         'credit_course_requirements': _credit_course_requirements(course_key, student),
         'certificate_data': _get_cert_data(student, course, enrollment_mode, course_grade),
+        'can_request_certificate': can_request_certificate,
+        'accounts_api_url': reverse("accounts_api", kwargs={'username': student.username}),
     }
     context.update(
         get_experiment_user_metadata_context(

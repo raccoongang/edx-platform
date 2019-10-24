@@ -14,7 +14,7 @@ from django.http import HttpResponseForbidden
 from openedx.core.djangoapps.theming.helpers import get_current_request
 from six import text_type
 
-from student.models import User, UserProfile, Registration, Role, email_exists_or_retired
+from student.models import Position, Registration, Specialization, User, UserProfile, email_exists_or_retired
 from student import forms as student_forms
 from student import views as student_views
 from util.model_utils import emit_setting_changed_event
@@ -763,70 +763,69 @@ def _validate_unicode(data, err=u"Input not valid unicode"):
 
 
 @helpers.intercept_errors(errors.UserAPIInternalError, ignore_errors=[errors.UserAPIRequestError])
-def get_role_settings(request):
+def get_position_settings(request):
+    """
+    View, that fetch data for user position fields.
+    """
 
-    from student.models import Specialization
+    user_profile = UserProfile.objects.select_related('position').prefetch_related('specialization').get(
+        user=request.user
+    )
+
     data = {
-        'role': {
-            'options': [(role.id, role.name) for role in Role.objects.filter(parent__isnull=True)]
+        'position': {
+            'options': Position.objects.filter(parent__isnull=True).values_list('id', 'name')
         },
-        'other_role': request.user.profile.other_role,
-        'selected_role': None,
-        'selected_sub_role': None,
+        'other_position': user_profile.other_position,
+        'selected_position': None,
     }
 
-    if request.user.profile.role is None:
+    if user_profile.position is None:
         return data
 
-    role = Role.objects.get(id=request.user.profile.role.id)
+    position = user_profile.position
+    sub_position = position if position.parent is None else position.parent
 
-    if role.parent is None:
-        data.update({
-            'selected_role': role.id,
-            'sub_roles': [(sub.id, sub.name) for sub in role.children.all()],
-        })
-    elif role.parent is None and not role.children.exists():
-        data.update({
-            'selected_role': role.id,
-        })
-    else:
-        data.update({
-            'selected_role': role.parent.id,
-            'selected_sub_role': role.id,
-            'sub_roles': [(sub.id, sub.name) for sub in role.parent.children.all()],
-        })
-        if role.has_specialization:
-            data.update({'selected_specializations': request.user.profile.specialization.values_list('id', flat=True)})
+    data.update({
+        'selected_position': position.id if position.parent is None else position.parent.id,
+        'sub_positions': sub_position.children.values_list('id', 'name'),
+        'selected_sub_position': position.id if position.parent is not None else None,
+    })
 
-    if role.has_specialization:
+    if position.has_specialization:
         data.update({
-            'specialization': [(spec.id, spec.name) for spec in Specialization.objects.all()],
+            'specialization': Specialization.objects.values_list('id', 'name'),
+            'selected_specializations': user_profile.specialization.values_list('id', flat=True)
         })
 
     return data
 
 
 @helpers.intercept_errors(errors.UserAPIInternalError, ignore_errors=[errors.UserAPIRequestError])
-def update_role_settings(request):
+def update_position_settings(request):
+    """
+    View, that update user position fields.
+    """
+
     data = request.data
-    role = data.get('role')
-    other_role = data.get('other_role')
+    position = data.get('position')
+    other_position = data.get('other_position')
     specialization = data.get('specialization')
 
     user = UserProfile.objects.get(user=request.user)
 
-    if role:
-        role = Role.objects.get(id=role)
-        user.role = role
+    if position:
+        position = Position.objects.get(id=position)
+        user.position = position
 
         if specialization is not None:
             user.specialization.clear()
-            if role.has_specialization:
+            if position.has_specialization:
                 user.specialization.add(*specialization)
 
-    if other_role:
-        user.other_role = other_role
+    if other_position:
+        user.other_position = other_position
 
     user.save()
 
-    return {'status': 'state save'}
+    return {'status': 'position save'}

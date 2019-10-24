@@ -4,12 +4,12 @@
         'gettext', 'jquery', 'underscore', 'backbone', 'logger',
         'js/student_account/models/user_account_model',
         'js/student_account/models/user_preferences_model',
-        'js/student_account/models/role_model',
+        'js/student_account/models/position_model',
         'js/student_account/views/account_settings_fields',
         'js/student_account/views/account_settings_view',
         'edx-ui-toolkit/js/utils/string-utils',
         'edx-ui-toolkit/js/utils/html-utils'
-    ], function(gettext, $, _, Backbone, Logger, UserAccountModel, UserPreferencesModel, RoleAccountModel,
+    ], function(gettext, $, _, Backbone, Logger, UserAccountModel, UserPreferencesModel, PositionAccountModel,
                  AccountSettingsFieldViews, AccountSettingsView, StringUtils, HtmlUtils) {
         return function(
             fieldsData,
@@ -29,10 +29,11 @@
             edxSupportUrl,
             extendedProfileFields,
             displayAccountDeletion,
-            roleAccountApiUrl,
-            isProgressForm
+            positionAccountApiUrl,
+            isProgressForm,
+            listFormFields,
         ) {
-            var $accountSettingsElement, userAccountModel, userPreferencesModel, roleAccountModel, aboutSectionsData,
+            var $accountSettingsElement, userAccountModel, userPreferencesModel, positionAccountModel, aboutSectionsData,
                 accountsSectionData, ordersSectionData, accountSettingsView, showAccountSettingsPage,
                 showLoadingError, orderNumber, getUserField, userFields, timeZoneDropdownField, countryDropdownField,
                 emailFieldView, socialFields, accountDeletionFields, platformData,
@@ -46,6 +47,8 @@
 
             userPreferencesModel = new UserPreferencesModel();
             userPreferencesModel.url = userPreferencesApiUrl;
+
+            var persistChanges = !isProgressForm;
 
             if (syncLearnerProfileData && enterpriseName) {
                 aboutSectionMessageType = 'info';
@@ -90,7 +93,7 @@
                 title: gettext('Full Name'),
                 valueAttribute: 'name',
                 helpMessage: gettext('The name that is used for ID verification and that appears on your certificates.'),  // eslint-disable-line max-len,
-                persistChanges: true
+                persistChanges: persistChanges
             };
             if (syncLearnerProfileData && enterpriseReadonlyAccountFields.fields.indexOf('name') !== -1) {
                 fullnameFieldView = {
@@ -108,7 +111,7 @@
                 title: gettext('Country or Region of Residence'),
                 valueAttribute: 'country',
                 options: fieldsData.country.options,
-                persistChanges: true,
+                persistChanges: persistChanges,
                 helpMessage: gettext('The country or region where you live.')
             };
             if (syncLearnerProfileData && enterpriseReadonlyAccountFields.fields.indexOf('country') !== -1) {
@@ -150,8 +153,8 @@
                                     model: userAccountModel,
                                     title: gettext('First Name'),
                                     valueAttribute: 'first_name',
-                                    helpMessage: gettext('The name that is used for ID verification and that appears on your certificates.'),  // eslint-disable-line max-len,
-                                    persistChanges: true
+                                    helpMessage: gettext('Add your first name.'),  // eslint-disable-line max-len,
+                                    persistChanges: persistChanges
                                 }
                             )
                         },
@@ -160,8 +163,8 @@
                                 model: userAccountModel,
                                 title: gettext('Second Name'),
                                 valueAttribute: 'second_name',
-                                helpMessage: gettext('second_name'),
-                                persistChanges: true
+                                helpMessage: gettext('Add your second name.'),
+                                persistChanges: persistChanges
                             })
                         },
                         {
@@ -170,8 +173,8 @@
                                     model: userAccountModel,
                                     title: gettext('Last Name'),
                                     valueAttribute: 'last_name',
-                                    helpMessage: gettext('The name that is used for ID verification and that appears on your certificates.'),  // eslint-disable-line max-len,
-                                    persistChanges: true
+                                    helpMessage: gettext('Add your last name.'),  // eslint-disable-line max-len,
+                                    persistChanges: persistChanges
                                 }
                             )
                         },
@@ -202,7 +205,7 @@
                                     {platform_name: platformName}
                                 ),
                                 options: fieldsData.language.options,
-                                persistChanges: true
+                                persistChanges: persistChanges
                             })
                         },
                         countryFieldView,
@@ -218,7 +221,7 @@
                                     selectOptions: fieldsData.time_zone.options,
                                     nullValueOptionLabel: gettext('Default (Local Time Zone)')
                                 }],
-                                persistChanges: true
+                                persistChanges: persistChanges
                             })
                         }
                     ]
@@ -232,7 +235,7 @@
                                 title: gettext('Education Completed'),
                                 valueAttribute: 'level_of_education',
                                 options: fieldsData.level_of_education.options,
-                                persistChanges: true
+                                persistChanges: persistChanges
                             })
                         },
                         {
@@ -241,16 +244,16 @@
                                 title: gettext('Gender'),
                                 valueAttribute: 'gender',
                                 options: fieldsData.gender.options,
-                                persistChanges: true
+                                persistChanges: persistChanges
                             })
                         },
                         {
                             view: new AccountSettingsFieldViews.TextFieldView({
                                 model: userAccountModel,
-                                title: gettext('Year of Birth'),
-                                valueAttribute: 'year_of_birth',
-                                helpMessage: gettext('Birth Day'),
-                                persistChanges: true
+                                title: gettext('Date of Birth'),
+                                valueAttribute: 'date_of_birth',
+                                helpMessage: gettext('Select your date of birth'),
+                                persistChanges: persistChanges
                             })
                         },
                         {
@@ -259,7 +262,7 @@
                                 title: gettext('Preferred Language'),
                                 valueAttribute: 'language_proficiencies',
                                 options: fieldsData.preferred_language.options,
-                                persistChanges: true
+                                persistChanges: persistChanges
                             })
                         },
                         {
@@ -268,16 +271,16 @@
                                 title: gettext('Phone'),
                                 valueAttribute: 'phone',
                                 helpMessage: gettext('Phone number'),
-                                persistChanges: true
+                                persistChanges: persistChanges
                             })
                         },
                         {
                             view: new AccountSettingsFieldViews.TextFieldView({
                                 model: userAccountModel,
-                                title: gettext('Second Email'),
-                                valueAttribute: 'second_email',
-                                helpMessage: gettext('second_email'),
-                                persistChanges: true
+                                title: gettext('Additional Email'),
+                                valueAttribute: 'additional_email',
+                                helpMessage: gettext('Add your additional Email.'),
+                                persistChanges: persistChanges
                             })
                         },
                         {
@@ -286,7 +289,8 @@
                                 title: gettext('Region'),
                                 valueAttribute: 'region',
                                 options: fieldsData.region.options,
-                                persistChanges: true
+                                helpMessage: gettext('The region where you live.'),
+                                persistChanges: persistChanges
                             })
                         }
                     ]
@@ -294,22 +298,25 @@
             ];
 
 
-
-            var RoleAccountCollection = Backbone.Collection.extend({
-                model: RoleAccountModel,
-                url: roleAccountApiUrl
+            var PositionAccountCollection = Backbone.Collection.extend({
+                model: PositionAccountModel,
+                url: positionAccountApiUrl
             });
 
-            var roleAccountCollection = new RoleAccountCollection();
+            var positionAccountCollection = new PositionAccountCollection();
 
-            roleAccountCollection.fetch({
+            positionAccountCollection.fetch({
                 success: function(data) {
                         aboutSectionsData[1].fields.push({
                             view: new AccountSettingsFieldViews.EditableDualFieldView({
                                 model: data.models[0],
-                                valueAttribute: 'role',
-                                roleChoices: data.models[0].attributes.role.options,
-                                helpMessage: gettext('Select the state and enter the appropriate certificate. Both fields are required.'),
+                                title: gettext('Position'),
+                                valueAttribute: 'position',
+                                positionChoices: data.models[0].attributes.position.options,
+                                helpMessage: gettext('Select type of your position.'),
+                                helpMessageSubPosition: gettext('Select your position.'),
+                                helpMessageSpecialization: gettext('Select your specialization.'),
+
                                 persistChanges: true,
                             })
                         });
@@ -330,7 +337,7 @@
                             title: fieldItem.field_label,
                             fieldName: fieldItem.field_name,
                             valueAttribute: 'extended_profile',
-                            persistChanges: true
+                            persistChanges: persistChanges
                         })
                     });
                 } else {
@@ -342,7 +349,7 @@
                                 fieldName: fieldItem.field_name,
                                 options: fieldItem.field_options,
                                 valueAttribute: 'extended_profile',
-                                persistChanges: true
+                                persistChanges: persistChanges
                             })
                         });
                     }
@@ -370,7 +377,7 @@
                                 platformData.display_name + ' page. Delete the URL to remove the link.'
                             ),
                             platform: socialPlatform,
-                            persistChanges: true,
+                            persistChanges: persistChanges,
                             placeholder: platformData.example
                         })
                     }
@@ -510,14 +517,12 @@
             });
 
             if (isProgressForm) {
-                var myArr = ["first_name", "second_name", "last_name", "phone", "second_email", "gender", "date_of_birth", "region"];
-
                 aboutSectionsData.map(function (el) {
                     var fields = el.fields;
                     var newFields = [];
 
                     fields.filter(function (field) {
-                        if (myArr.indexOf(field.view.options.valueAttribute) !== -1) {
+                        if (listFormFields.indexOf(field.view.options.valueAttribute) !== -1) {
                             newFields.push(field);
                         }
                     });

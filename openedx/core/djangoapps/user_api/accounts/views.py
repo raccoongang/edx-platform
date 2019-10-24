@@ -70,7 +70,7 @@ from ..models import (
     UserRetirementPartnerReportingStatus,
     UserRetirementStatus
 )
-from .api import get_account_settings, update_account_settings, get_role_settings, update_role_settings
+from .api import get_account_settings, get_position_settings, update_account_settings, update_position_settings
 from .permissions import CanDeactivateUser, CanRetireUser
 from .serializers import UserRetirementPartnerReportSerializer, UserRetirementStatusSerializer
 from .signals import (
@@ -315,6 +315,13 @@ class AccountViewSet(ViewSet):
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
+        required_fields = [
+            "first_name", "second_name", "last_name", "phone", "second_email", "gender", "year_of_birth", "region"
+        ]
+
+        if request.META.get('HTTP_REFERER').endswith('progress'):
+            allow_certificate = all([account_settings.get(field) for field in required_fields])
+            account_settings.update({"allow_certificate": allow_certificate})
 
         return Response(account_settings)
 
@@ -916,7 +923,7 @@ class AccountRetirementView(ViewSet):
             entitlement.courseentitlementsupportdetail_set.all().update(comments='')
 
 
-class AccountRoleViewSet(ViewSet):
+class AccountPositionViewSet(ViewSet):
 
     authentication_classes = (
         OAuth2AuthenticationAllowInactiveUser, SessionAuthenticationAllowInactiveUser, JwtAuthentication
@@ -926,19 +933,21 @@ class AccountRoleViewSet(ViewSet):
 
     def list(self, request):
         """
-        GET /api/user/v1/accounts_states/
+        GET /api/user/v1/accounts_position/
         """
-        role_settings = get_role_settings(request)
-        return Response(role_settings)
+
+        position_settings = get_position_settings(request)
+        return Response(position_settings)
 
     def update(self, request):
         """
-        POST /api/user/v1/accounts_states/
+        POST /api/user/v1/accounts_position/
         """
+
         try:
-            update_role_settings(request)
+            update_position_settings(request)
         except AccountValidationError as err:
             return Response({"field_errors": err.field_errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        state_settings = get_role_settings(request)
-        return Response(state_settings)
+        position_settings = get_position_settings(request)
+        return Response(position_settings)

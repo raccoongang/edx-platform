@@ -3033,12 +3033,6 @@ ACCOUNT_VISIBILITY_CONFIGURATION = {
         'account_privacy',
         # Not an actual field, but used to signal whether badges should be public.
         'accomplishments_shared',
-        'first_name',
-        'last_name',
-        "phone",
-        "second_name",
-        "second_email",
-        "region",
     ],
 
     # The list of account fields that are always public
@@ -3046,12 +3040,6 @@ ACCOUNT_VISIBILITY_CONFIGURATION = {
         'username',
         'profile_image',
         'account_privacy',
-        'first_name',
-        'last_name',
-        "phone",
-        "second_name",
-        "second_email",
-        "region",
     ],
 
     # The list of account fields that are visible only to staff and users viewing their own profiles
@@ -3075,13 +3063,14 @@ ACCOUNT_VISIBILITY_CONFIGURATION = {
         "account_privacy",
         "accomplishments_shared",
         "extended_profile",
-        "role",
+        "position",
         'first_name',
         'last_name',
         "phone",
         "second_name",
-        "second_email",
+        "additional_email",
         "region",
+        "date_of_birth",
     ]
 }
 

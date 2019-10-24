@@ -54,6 +54,9 @@ username = get_enterprise_learner_generic_name(request) or student.username
     ${progress_graph.body(grade_summary, course.grade_cutoffs, "grade-detail-graph", not course.no_grade, not course.no_grade)}
 </script>
 
+<!--Needs to be removed-->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
 
 
 <%static:require_module module_name="js/student_account/views/account_settings_factory" class_name="AccountSettingsFactory">
@@ -91,8 +94,9 @@ username = get_enterprise_learner_generic_name(request) or student.username
         edxSupportUrl,
         extendedProfileFields,
         displayAccountDeletion,
-        '${ user_role_api_url | n, js_escaped_string }',
+        '${ user_position_api_url | n, js_escaped_string }',
         true,
+        ["first_name", "second_name", "last_name", "phone", "additional_email", "gender", "date_of_birth", "region"],
     );
 </%static:require_module>
 </%block>
@@ -132,7 +136,14 @@ username = get_enterprise_learner_generic_name(request) or student.username
                                 %elif certificate_data.cert_status == CertificateStatuses.downloadable and certificate_data.download_url:
                                 <a class="btn" href="${certificate_data.download_url}" target="_blank">${_("Download Your Certificate")} <span class="sr">${_("Opens in a new browser window")}</span></a>
                                 %elif certificate_data.cert_status == CertificateStatuses.requesting:
-                                <button class="btn generate_certs" data-endpoint="${post_url}" id="btn_generate_cert">${_('Request Certificate')}</button>
+                                <button class="btn generate_certs" data-endpoint="${post_url}" id="btn_generate_cert"
+                                        %if not can_request_certificate:
+                                        hidden
+                                        %endif
+                                >${_('Request Certificate')}</button>
+                                %if not can_request_certificate:
+                                <button id="modal-button" type="button" class="btn btn-primary" data-toggle="modal" data-target=".progress-form-modal">${_('Update profile info and Request Certificate')}</button>
+                                %endif
                                 %endif
                             </div>
                         </div>
@@ -290,8 +301,39 @@ username = get_enterprise_learner_generic_name(request) or student.username
             </section>
         </div>
     </div>
-    <div class="wrapper-account-settings"></div>
+
+    <div class="modal fade progress-form-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="#" id="progress-form" data-url="${accounts_api_url}">
+                        <div class="wrapper-account-settings"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="profile-form-save-action">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
+
 <%static:require_module_async module_name="js/dateutil_factory" class_name="DateUtilFactory">
     DateUtilFactory.transform(iterationKey=".localized-datetime");
 </%static:require_module_async>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script>
+    $('#myModal').on('shown.bs.modal', function () {
+        $('#myInput').trigger('focus')
+    });
+</script>
+<script src="${static.url('js/progress_page_additional_form.js')}"></script>

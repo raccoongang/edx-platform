@@ -3,9 +3,7 @@
     define([
         'backbone'
     ], function(Backbone) {
-        var RoleAccountModel = Backbone.Model.extend({
-
-        });
-        return RoleAccountModel;
+        var PositionAccountModel = Backbone.Model.extend({});
+        return PositionAccountModel;
     });
 }).call(this, define || RequireJS.define);

@@ -1,49 +1,60 @@
 <div class="u-field-value field">
+    <label class="u-field-title field-label" for="u-field-select-<%- id %>"><%- title %></label>
     <select name="select" id="u-field-select-<%- id %>" aria-describedby="u-field-help-message-<%- id %>">
         <option value="">-----</option>
         <% _.each(selectOptions, function(selectOption) { %>
-            <option value="<%- selectOption[0] %>" <% if (selectOption[0] == valueRole) { %> selected <% } %> ><%- selectOption[1] %></option>
+            <option value="<%- selectOption[0] %>" <% if (selectOption[0] == valuePosition) { %> selected <% } %> ><%- selectOption[1] %></option>
         <% }); %>
     </select>
     <span class="icon-caret-down" aria-hidden="true"></span>
 </div>
-<br>
-
-<% if (selectSubRoles && selectSubRoles.length) { %>
-    <div class="u-field-value field">
-        <select name="select" id="u-field-select-sub-<%- id %>" aria-describedby="u-field-help-message-<%- id %>">
-            <option value="">-----</option>
-            <% _.each(selectSubRoles, function(selectOption) { %>
-                <option value="<%- selectOption[0] %>" <% if (selectOption[0] == valueSubRole) { %> selected <% } %> ><%- selectOption[1] %></option>
-            <% }); %>
-        </select>
-        <span class="icon-caret-down" aria-hidden="true"></span>
-    </div>
-    <br>
-
-    <% if (specialization && specialization.length) { %>
-    <div class="u-field-value field">
-        <select name="select" multiple id="u-field-select-spec-<%- id %>" aria-describedby="u-field-help-message-<%- id %>">
-            <option value="">-----</option>
-            <% _.each(specialization, function(selectOption) { %>
-                <option value="<%- selectOption[0] %>" <% if (selectedSpecializations.indexOf(selectOption[0]) != -1) { %> selected <% } %> ><%- selectOption[1] %></option>
-            <% }); %>
-
-        </select>
-        <span class="icon-caret-down" aria-hidden="true"></span>
-    </div>
-    <br>
-    <% } %>
-
-<% } else { %>
-
-<div class="u-field-value field">
-    <input class="field-input input-text" type="text" id="field-input-<%- id %>" title="Input field for <%- id %>" aria-describedby="u-field-message-help-<%- id %>" name="input" value="<%- otherRole %>" />
-</div>
-
-<% } %>
-
 <div class="u-field-message u-field-message__custom" id="u-field-message-<%- id %>">
     <span class="u-field-message-notification" aria-live="polite"></span>
     <span class="u-field-message-help" id="u-field-help-message-<%- id %>"><%- message %></span>
 </div>
+
+<% if (selectSubPositions && selectSubPositions.length) { %>
+    <div class="u-field-value field">
+        <label class="u-field-title field-label" for="u-field-select-<%- id %>">Sub Position</label>
+        <select name="select" id="u-field-select-sub-<%- id %>" aria-describedby="u-field-help-message-<%- id %>">
+            <option value="">-----</option>
+            <% _.each(selectSubPositions, function(selectOption) { %>
+                <option value="<%- selectOption[0] %>" <% if (selectOption[0] == valueSubPosition) { %> selected <% } %> ><%- selectOption[1] %></option>
+            <% }); %>
+        </select>
+        <span class="icon-caret-down" aria-hidden="true"></span>
+    </div>
+    <div class="u-field-message u-field-message__custom" id="u-field-message-<%- id %>">
+        <span class="u-field-message-notification" aria-live="polite"></span>
+        <span class="u-field-message-help" id="u-field-help-message-<%- id %>"><%- helpMessageSubPosition %></span>
+    </div>
+
+    <% if (specialization && specialization.length) { %>
+        <div class="u-field-value field">
+            <label class="u-field-title field-label" for="u-field-select-<%- id %>">Specialization</label>
+            <select name="select" multiple id="u-field-select-spec-<%- id %>" aria-describedby="u-field-help-message-<%- id %>">
+                <option value="">-----</option>
+                <% _.each(specialization, function(selectOption) { %>
+                    <option value="<%- selectOption[0] %>" <% if (selectedSpecializations.indexOf(selectOption[0]) != -1) { %> selected <% } %> ><%- selectOption[1] %></option>
+                <% }); %>
+            </select>
+            <span class="icon-caret-down" aria-hidden="true"></span>
+        </div>
+        <div class="u-field-message u-field-message__custom" id="u-field-message-<%- id %>">
+            <span class="u-field-message-notification" aria-live="polite"></span>
+            <span class="u-field-message-help" id="u-field-help-message-<%- id %>"><%- helpMessageSpecialization %></span>
+        </div>
+    <% } %>
+
+<% } else { %>
+    <div class="u-field u-field-text u-field-<%- id %> editable-always mode-edit">
+    <div class="u-field-value field">
+        <label class="u-field-title field-label" for="u-field-select-<%- id %>">Other Position</label>
+        <input class="field-input input-text" type="text" id="field-input-<%- id %>" title="Input field for <%- id %>" aria-describedby="u-field-message-help-<%- id %>" name="input" value="<%- otherPosition %>" />
+    </div>
+    <div class="u-field-message u-field-message__custom" id="u-field-message-<%- id %>">
+        <span class="u-field-message-notification" aria-live="polite"></span>
+        <span class="u-field-message-help" id="u-field-help-message-<%- id %>">Write your position.</span>
+    </div>
+    </div>
+<% } %>

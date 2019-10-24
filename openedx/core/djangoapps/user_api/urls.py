@@ -8,6 +8,7 @@ from django.conf.urls import url
 from ..profile_images.views import ProfileImageView
 from .accounts.views import (
     AccountDeactivationView,
+    AccountPositionViewSet,
     AccountRetireMailingsView,
     AccountRetirementPartnerReportView,
     AccountRetirementStatusView,
@@ -15,7 +16,6 @@ from .accounts.views import (
     AccountViewSet,
     DeactivateLogoutView,
     LMSAccountRetirementView,
-    AccountRoleViewSet,
 )
 from .preferences.views import PreferencesDetailView, PreferencesView
 from .verification_api.views import IDVerificationStatusView
@@ -60,7 +60,7 @@ RETIREMENT_LMS_POST = LMSAccountRetirementView.as_view({
     'post': 'post',
 })
 
-ROLE_LIST = AccountRoleViewSet.as_view({
+POSITION_LIST = AccountPositionViewSet.as_view({
     'get': 'list',
     'post': 'update',
 })
@@ -152,6 +152,6 @@ urlpatterns = [
         name='preferences_detail_api'
     ),
     url(
-        r'^v1/accounts_roles/$', ROLE_LIST, name='roles_api'
+        r'^v1/accounts_position/$', POSITION_LIST, name='position_api'
     ),
 ]

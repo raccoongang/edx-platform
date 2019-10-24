@@ -22,13 +22,13 @@ from student.models import (
     DashboardConfiguration,
     LinkedInAddToProfileConfiguration,
     PendingNameChange,
+    Position,
     Registration,
     RegistrationCookieConfiguration,
+    Specialization,
     UserAttribute,
     UserProfile,
     UserTestGroup,
-    Role,
-    Specialization,
 )
 from student.roles import REGISTERED_ACCESS_ROLES
 from xmodule.modulestore.django import modulestore
@@ -306,5 +306,5 @@ except NotRegistered:
 
 admin.site.register(User, UserAdmin)
 
-admin.site.register(Role)
+admin.site.register(Position)
 admin.site.register(Specialization)

@@ -721,11 +721,10 @@
 
             saveFieldsValues: function() {
                 if (this.persistChanges === true) {
-                    var valueOtherRole = this.$('#field-input-' + this.model.cid).val(),
-                        valueRole = this.$('#u-field-select-' + this.model.cid).val(),
-                        valueSubRole = this.$('#u-field-select-sub-' + this.model.cid).val(),
+                    var valueOtherPosition = this.$('#field-input-' + this.model.cid).val(),
+                        valuePosition = this.$('#u-field-select-' + this.model.cid).val(),
+                        valueSubPosition = this.$('#u-field-select-sub-' + this.model.cid).val(),
                         valueSpecialization = this.$('#u-field-select-spec-' + this.model.cid).val();
-                    console.log(valueSpecialization, 'qweqwe');
 
                     var view = this;
                     var options = {
@@ -739,31 +738,31 @@
                         }
                     };
 
-                    this.showInProgressMessage();
+                    var postData = {other_position: valueOtherPosition, specialization: valueSpecialization};
 
-                    if (valueRole != this.model.get('selected_role')) {
-                        this.model.save({role: valueRole, other_role: valueOtherRole, specialization: valueSpecialization}, options);
-                    } else {
-                        this.model.save(
-                            {role: valueSubRole, other_role: valueOtherRole, specialization: valueSpecialization},
-                            options
-                        );
-                    }
+                    postData.position = (
+                        valuePosition != this.model.get('selected_position') ? valuePosition : valueSubPosition
+                    );
+
+                    this.showInProgressMessage();
+                    this.model.save(postData, options);
                 }
             },
 
             render: function() {
-                console.log(this.model);
                 HtmlUtils.setHtml(this.$el, HtmlUtils.template(this.fieldTemplate)({
                     id: this.model.cid,
-                    valueRole: this.model.get('selected_role'),
-                    valueSubRole: this.model.get('selected_sub_role'),
-                    selectOptions: this.options.roleChoices,
-                    selectSubRoles: this.model.get('sub_roles'),
+                    valuePosition: this.model.get('selected_position'),
+                    valueSubPosition: this.model.get('selected_sub_position'),
+                    selectOptions: this.options.positionChoices,
+                    selectSubPositions: this.model.get('sub_positions'),
+                    title: this.options.title,
                     message: this.helpMessage,
-                    otherRole: this.model.get('other_role'),
+                    otherPosition: this.model.get('other_position'),
                     specialization: this.model.get('specialization'),
-                    selectedSpecializations: this.model.get('selected_specializations')
+                    selectedSpecializations: this.model.get('selected_specializations'),
+                    helpMessageSubPosition: this.options.helpMessageSubPosition,
+                    helpMessageSpecialization: this.options.helpMessageSpecialization,
                 }));
                 this.delegateEvents();
                 return this;

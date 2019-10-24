@@ -75,12 +75,14 @@ AUDIT_LOG = logging.getLogger("audit")
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore  # pylint: disable=invalid-name
 
 
-# enroll status changed events - signaled to email_marketing.  See email_marketing.tasks for more info
 class Specialization(models.Model):
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
 
-class Role(models.Model):
+
+class Position(models.Model):
     name = models.CharField(null=True, blank=True, max_length=120)
     parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
     has_specialization = models.BooleanField(default=False)
@@ -89,8 +91,7 @@ class Role(models.Model):
         return self.name
 
 
-
-
+# enroll status changed events - signaled to email_marketing.  See email_marketing.tasks for more info
 # ENROLL signal used for free enrollment only
 class EnrollStatusChange(object):
     """
@@ -392,7 +393,7 @@ class UserProfile(models.Model):
     # Optional demographic data we started capturing from Fall 2012
     this_year = datetime.now(UTC).year
     VALID_YEARS = range(this_year, this_year - 120, -1)
-    year_of_birth = models.DateField(blank=True, null=True, db_index=True)
+    year_of_birth = models.IntegerField(blank=True, null=True, db_index=True)
     GENDER_CHOICES = (
         ('m', ugettext_noop('Male')),
         ('f', ugettext_noop('Female')),
@@ -434,13 +435,15 @@ class UserProfile(models.Model):
 
     phone = models.CharField(max_length=13, null=True, blank=True)
     second_name = models.CharField(max_length=100, null=True, blank=True)
-    second_email = models.CharField(max_length=255, null=True, blank=True)
+    additional_email = models.CharField(max_length=255, null=True, blank=True)
+    date_of_birth = models.DateField(blank=True, null=True, db_index=True)
+
     REGION_CHOICES = [(region[0], _(region[1])) for region in getattr(settings, 'REGIONS', [])]
     region = models.CharField(max_length=255, null=True, blank=True, choices=REGION_CHOICES)
-    role = models.ForeignKey(Role, null=True, blank=True, on_delete=models.CASCADE)
-    other_role = models.TextField(max_length=255, null=True, blank=True)
+    position = models.ForeignKey(Position, null=True, blank=True, on_delete=models.CASCADE)
+    other_position = models.TextField(max_length=255, null=True, blank=True)
 
-    specialization = models.ManyToManyField(Specialization, null=True, blank=True)
+    specialization = models.ManyToManyField(Specialization)
 
     @property
     def has_profile_image(self):
