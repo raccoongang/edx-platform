@@ -17,6 +17,7 @@ from django.utils.translation import ugettext as _
 from eventtracking import tracker
 
 from courseware import courses
+from courseware.access import has_access
 from openedx.core.djangoapps.request_cache import clear_cache, get_cache
 from openedx.core.djangoapps.request_cache.middleware import request_cached
 from student.models import get_user_by_username_or_email
@@ -26,7 +27,7 @@ from .models import (
     CourseCohortsSettings,
     CourseUserGroup,
     CourseUserGroupPartitionGroup,
-    UnregisteredLearnerCohortAssignments
+    UnregisteredLearnerCohortAssignments,
 )
 from .signals.signals import COHORT_MEMBERSHIP_UPDATED
 
@@ -123,6 +124,26 @@ def is_course_cohorted(course_key):
        Http404 if the course doesn't exist.
     """
     return _get_course_cohort_settings(course_key).is_cohorted
+
+
+def is_cohort_enabled(course, user):
+    """
+    Predicate to describe a cohort accessibility.
+
+    Given a course and user, return a boolean for whether or not the course is
+    able to manage of cohorts by reauested user.
+
+    Raises:
+       Http404 if the course doesn't exist.
+    """
+
+    ENABLED_ROLES = ('instructor', 'staff',)
+
+    return (
+        any(has_access(user, role, course, course.id) for role in ENABLED_ROLES)
+        or user.is_staff
+        or user.is_superuser
+    ) and is_course_cohorted(course.id)
 
 
 def get_course_cohort_id(course_key):
@@ -337,7 +358,7 @@ def get_course_cohorts(course, assignment_type=None):
 
     query_set = CourseUserGroup.objects.filter(
         course_id=course.location.course_key,
-        group_type=CourseUserGroup.COHORT
+        group_type=CourseUserGroup.COHORT,
     )
     query_set = query_set.filter(cohort__assignment_type=assignment_type) if assignment_type else query_set
     return list(query_set)
@@ -400,7 +421,7 @@ def add_cohort(course_key, name, assignment_type):
     cohort = CourseCohort.create(
         cohort_name=name,
         course_id=course.id,
-        assignment_type=assignment_type
+        assignment_type=assignment_type,
     ).course_user_group
 
     tracker.emit(
@@ -474,7 +495,7 @@ def add_user_to_cohort(cohort, username_or_email):
                 "cohort_name": cohort.name,
                 "previous_cohort_id": membership.previous_cohort_id,
                 "previous_cohort_name": membership.previous_cohort_name,
-            }
+            },
         )
         return (user, membership.previous_cohort_name, False)
     except User.DoesNotExist as ex:
@@ -605,7 +626,7 @@ def get_legacy_discussion_settings(course_key):
         return {
             'is_cohorted': course_cohort_settings.is_cohorted,
             'cohorted_discussions': course_cohort_settings.cohorted_discussions,
-            'always_cohort_inline_discussions': course_cohort_settings.always_cohort_inline_discussions
+            'always_cohort_inline_discussions': course_cohort_settings.always_cohort_inline_discussions,
         }
     except CourseCohortsSettings.DoesNotExist:
         course = courses.get_course_by_id(course_key)
@@ -616,5 +637,5 @@ def _get_cohort_settings_from_modulestore(course):
     return {
         'is_cohorted': course.is_cohorted,
         'cohorted_discussions': list(course.cohorted_discussions),
-        'always_cohort_inline_discussions': course.always_cohort_inline_discussions
+        'always_cohort_inline_discussions': course.always_cohort_inline_discussions,
     }
