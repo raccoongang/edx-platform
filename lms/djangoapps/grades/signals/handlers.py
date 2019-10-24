@@ -3,6 +3,7 @@ Grades related signals.
 """
 from contextlib import contextmanager
 from logging import getLogger
+from celery import uuid
 
 from crum import get_current_user
 from django.dispatch import receiver
@@ -216,6 +217,15 @@ def enqueue_subsection_update(sender, **kwargs):  # pylint: disable=unused-argum
     enqueueing a subsection update operation to occur asynchronously.
     """
     _emit_event(kwargs)
+
+    task_id = uuid()
+    InfoTaskRecalculateSubsectionGrade.objects.create(
+        course_id=kwargs['course_id'],
+        user_id=kwargs['user_id'],
+        task_id=task_id,
+        status=InfoTaskRecalculateSubsectionGrade.START_TASK
+    )
+
     result = recalculate_subsection_grade_v3.apply_async(
         kwargs=dict(
             user_id=kwargs['user_id'],
@@ -230,13 +240,7 @@ def enqueue_subsection_update(sender, **kwargs):  # pylint: disable=unused-argum
             score_db_table=kwargs['score_db_table'],
         ),
         countdown=RECALCULATE_GRADE_DELAY,
-    )
-
-    InfoTaskRecalculateSubsectionGrade.objects.create(
-        course_id=kwargs['course_id'],
-        user_id=kwargs['user_id'],
-        task_id=result.id,
-        status=InfoTaskRecalculateSubsectionGrade.START_TASK
+        task_id=task_id,
     )
 
     log.info(
