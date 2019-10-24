@@ -316,7 +316,6 @@
                                 helpMessage: gettext('Select type of your position.'),
                                 helpMessageSubPosition: gettext('Select your position.'),
                                 helpMessageSpecialization: gettext('Select your specialization.'),
-
                                 persistChanges: true,
                             })
                         });

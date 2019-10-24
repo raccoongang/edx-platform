@@ -12,7 +12,7 @@
                     gender: '',
                     year_of_birth: '',
                     mailing_address: '',
-                    goals: '',
+                    goals: ''
                 },
                 ajaxType: '',
                 urlRoot: '',
