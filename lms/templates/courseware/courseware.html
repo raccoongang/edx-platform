@@ -88,6 +88,10 @@ from openedx.features.course_experience import course_home_page_title, COURSE_OU
     CoursewareFactory();
   </%static:require_module>
 
+  <%static:require_module module_name="js/courseware/check_user_activity" class_name="CheckUserActivity">
+    CheckUserActivity(${check_student_activity_config | n});
+  </%static:require_module>
+
   % if staff_access:
   	<%include file="xqa_interface.html"/>
   % endif

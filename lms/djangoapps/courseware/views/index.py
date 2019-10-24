@@ -24,7 +24,7 @@ from django.utils.translation import ugettext as _
 from opaque_keys.edx.keys import CourseKey, UsageKey
 from web_fragments.fragment import Fragment
 
-from courseware.models import StudentModule
+from courseware.models import StudentModule, UserCheckActivityConfig
 from edxmako.shortcuts import render_to_response, render_to_string
 from lms.djangoapps.courseware.exceptions import CourseAccessRedirect
 from lms.djangoapps.instructor.enrollment import reset_student_attempts
@@ -360,6 +360,7 @@ class CoursewareIndex(View):
             'upgrade_link': check_and_get_upgrade_link(request, self.effective_user, self.course.id),
             'upgrade_price': get_cosmetic_verified_display_price(self.course),
             # ENDTODO
+            'check_student_activity_config': UserCheckActivityConfig.current().serialize(),
         }
         table_of_contents = toc_for_course(
             self.effective_user,
