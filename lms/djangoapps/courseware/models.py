@@ -14,6 +14,7 @@ ASSUMPTIONS: modules have unique IDs, even across different module_types
 """
 import itertools
 import logging
+import json
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -22,6 +23,7 @@ from django.db.models.signals import post_save
 from model_utils.models import TimeStampedModel
 
 import coursewarehistoryextended
+from config_models.models import ConfigurationModel
 from openedx.core.djangoapps.xmodule_django.models import BlockTypeKeyField, CourseKeyField, LocationKeyField
 
 log = logging.getLogger("edx.courseware")
@@ -355,3 +357,22 @@ class StudentFieldOverride(TimeStampedModel):
 
     field = models.CharField(max_length=255)
     value = models.TextField(default='null')
+
+
+class UserCheckActivityConfig(ConfigurationModel):
+    timeout = models.IntegerField(
+        default=10,
+        help_text="Student idle time in minutes."
+    )
+
+    def __unicode__(self):
+        return u'UserCheckActivity: "{}" {} minutes'.format(
+            self.enabled and 'Enabled' or 'Disabled', self.timeout
+        )
+
+    @property
+    def timeout_milliseconds(self):
+        return self.timeout * 60000
+
+    def serialize(self):
+        return json.dumps({'enabled': self.enabled, 'timeout': self.timeout_milliseconds})

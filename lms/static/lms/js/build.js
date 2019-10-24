@@ -25,6 +25,7 @@
             'discussion/js/discussion_profile_page_factory',
             'js/api_admin/catalog_preview_factory',
             'js/courseware/courseware_factory',
+            'js/courseware/check_user_activity',
             'js/discovery/discovery_factory',
             'js/edxnotes/views/notes_visibility_factory',
             'js/edxnotes/views/page_factory',
