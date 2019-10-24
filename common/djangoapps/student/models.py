@@ -30,6 +30,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.core.cache import cache
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.core.validators import RegexValidator
 from django.db import IntegrityError, models, transaction
 from django.db.models import Count, Q
 from django.db.models.signals import post_save, pre_save
@@ -435,13 +436,13 @@ class UserProfile(models.Model):
 
     phone = models.CharField(max_length=13, null=True, blank=True)
     second_name = models.CharField(max_length=100, null=True, blank=True)
-    additional_email = models.CharField(max_length=255, null=True, blank=True)
+    additional_email = models.EmailField(max_length=255, null=True, blank=True)
     date_of_birth = models.DateField(blank=True, null=True, db_index=True)
 
     REGION_CHOICES = [(region[0], _(region[1])) for region in getattr(settings, 'REGIONS', [])]
     region = models.CharField(max_length=255, null=True, blank=True, choices=REGION_CHOICES)
     position = models.ForeignKey(Position, null=True, blank=True, on_delete=models.CASCADE)
-    other_position = models.TextField(max_length=255, null=True, blank=True)
+    other_position = models.CharField(max_length=255, null=True, blank=True)
 
     specialization = models.ManyToManyField(Specialization)
 

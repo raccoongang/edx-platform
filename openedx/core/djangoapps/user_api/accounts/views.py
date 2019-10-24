@@ -316,7 +316,7 @@ class AccountViewSet(ViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         required_fields = [
-            "first_name", "second_name", "last_name", "phone", "second_email", "gender", "year_of_birth", "region"
+            "first_name", "second_name", "last_name", "phone", "additional_email", "gender", "year_of_birth", "region"
         ]
 
         if request.META.get('HTTP_REFERER').endswith('progress'):

@@ -20,7 +20,7 @@ $("#profile-form-save-action").on("click", function (e) {
         contentType: 'application/merge-patch+json',
         success: function (data, textStatus) {
             if (data.allow_certificate) {
-                $(".bd-example-modal-lg").modal('hide');
+                $(".progress-form-modal").modal('hide');
                 $("#modal-button").hide();
                 $("#btn_generate_cert").removeAttr('hidden');
             } else {

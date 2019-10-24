@@ -778,6 +778,7 @@ def get_position_settings(request):
         },
         'other_position': user_profile.other_position,
         'selected_position': None,
+        'specialization': None,
     }
 
     if user_profile.position is None:
@@ -823,8 +824,18 @@ def update_position_settings(request):
             if position.has_specialization:
                 user.specialization.add(*specialization)
 
-    if other_position:
+    if other_position and len(other_position) < 255:
         user.other_position = other_position
+    else:
+        raise AccountValidationError({
+            "field_errors": {
+                "other_position": {
+                    "developer_message": "Value is not valid for field other_position",
+                    'first_name': [u'Ensure this value has at most 30 characters.'],
+                    "user_message": "This value is invalid.",
+                }
+            }
+        })
 
     user.save()
 
