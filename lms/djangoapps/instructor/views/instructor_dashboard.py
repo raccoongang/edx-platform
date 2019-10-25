@@ -25,6 +25,7 @@ from opaque_keys.edx.keys import CourseKey
 from opaque_keys.edx.locator import BlockUsageLocator
 from xblock.field_data import DictFieldData
 from xblock.fields import ScopeIds
+from openedx.core.djangoapps.course_groups.cohorts import is_cohort_enabled
 
 from bulk_email.models import BulkEmailFlag
 from class_dashboard.dashboard_data import get_array_section_has_problem, get_section_display_name
@@ -815,16 +816,18 @@ def _section_open_response_assessment(request, course, openassessment_blocks, ac
         disable_staff_debug_info=True, course=course
     )
 
-    if CohortAssigment.objects.has_cohorts(request.user):
-        cohort_info = CohortAssigment.objects.filter(user=request.user).values('cohort__id', 'cohort__name').annotate(
-            id=F('cohort__id'),
-            name=F('cohort__name')
-        )
-    else:
-        cohort_info = [
-            {'name': cohort.name, 'id': cohort.id}
-            for cohort in (is_course_cohorted(course_key) and get_course_cohorts(course) or [])
-        ]
+    cohort_info = None
+    if is_cohort_enabled(course, request.user):
+        if CohortAssigment.objects.has_cohorts(request.user):
+            cohort_info = CohortAssigment.objects.filter(user=request.user).values('cohort__id', 'cohort__name').annotate(
+                id=F('cohort__id'),
+                name=F('cohort__name')
+            )
+        else:
+            cohort_info = [
+                {'name': cohort.name, 'id': cohort.id}
+                for cohort in (is_course_cohorted(course_key) and get_course_cohorts(course) or [])
+            ]
 
     section_data = {
         'fragment': block.render('ora_blocks_listing_view', context={
