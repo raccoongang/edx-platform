@@ -478,8 +478,11 @@
                 });
             };
 
-            if ((direction === 'next') && (this.position >= this.contents.length)) {
-                if(this.nextUrl === 'None') {
+            var currentButton = this.el.find('button.nav-item.active');
+            if ((direction === 'next')
+              && (this.position >= this.contents.length)
+              && this.allowNextStep(currentButton)) {
+                if(this.nextUrl === 'None' ) {
                     $("body").addClass("answer-loading");
                     checkPrerequisite.call(this);
                 } else {
@@ -488,7 +491,6 @@
             } else if ((direction === 'previous') && (this.position === 1)) {
                 goToNextOrPrevious(this.prevUrl);
             } else {
-                var currentButton = this.el.find('button.nav-item.active');
                 if(direction === 'next' && this.allowNextStep(currentButton)) {
                     goToNextOrPrevious();
                 } else if (direction === 'previous') {
