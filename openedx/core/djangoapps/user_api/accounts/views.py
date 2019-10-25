@@ -320,8 +320,9 @@ class AccountViewSet(ViewSet):
         ]
 
         if request.META.get('HTTP_REFERER').endswith('progress'):
-            allow_certificate = all([account_settings.get(field) for field in required_fields])
-            account_settings.update({"allow_certificate": allow_certificate})
+            account_settings.update({
+                "empty_fields": [field for field in required_fields if not account_settings.get(field)]
+            })
 
         return Response(account_settings)
 

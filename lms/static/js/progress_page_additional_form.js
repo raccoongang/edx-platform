@@ -19,13 +19,17 @@ $("#profile-form-save-action").on("click", function (e) {
         data: JSON.stringify(ajaxData),
         contentType: 'application/merge-patch+json',
         success: function (data, textStatus) {
-            if (data.allow_certificate) {
+            form.find('.u-field').removeClass('progress-form-error');
+            if (!data.empty_fields.length) {
                 $(".progress-form-modal").modal('hide');
                 $("#modal-button").hide();
                 $("#btn_generate_cert").removeAttr('hidden');
             } else {
-                form.prepend(`<div class="form-incomplete-error">All fields are required</div>`);
+                form.find(".form-incomplete-error").text("All fields are required");
                 $('.progress-form-modal').first().animate({scrollTop: 0}, 'slow');
+                data.empty_fields.forEach(function(field) {
+                  form.find("div[class*='u-field-" + field + "']").addClass("progress-form-error")
+                });
             }
         },
         error: function (xhr) {
