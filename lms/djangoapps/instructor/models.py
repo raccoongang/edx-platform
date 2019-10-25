@@ -18,6 +18,9 @@ class CohortAssigmentManager(models.Manager):
     def delete_assigned_cohorts(self, user):
         return self.get_queryset().filter(user=user).delete()
 
+    def has_cohorts(self, user):
+        return self.get_queryset().filter(user=user).exists()
+
 
 class CohortAssigment(models.Model):
     """
