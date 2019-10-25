@@ -82,15 +82,17 @@
             var unit = this.el.find('[data-usage-id="' + elem.data('id') + '"]');
             var allowNext = true;
 
-            if (main.data('is-uspap') != undefined && elem.hasClass('seq_video')) {
+            if (main.data('is-uspap') !== undefined) {
                 unit.find('.xblock .video').each(function(i, v) {
                     allowNext = v.classList.contains('is-viewed');
-                    return allowNext;
+                    if (!allowNext) {
+                        return allowNext;
+                    }
                 });
                 return allowNext;
             }
             return allowNext;
-        }
+        };
 
         Sequence.prototype.previousNav = function(focused, index) {
             var $navItemList,
@@ -478,8 +480,11 @@
                 });
             };
 
-            if ((direction === 'next') && (this.position >= this.contents.length)) {
-                if(this.nextUrl === 'None') {
+            var currentButton = this.el.find('button.nav-item.active');
+            if ((direction === 'next')
+              && (this.position >= this.contents.length)
+              && this.allowNextStep(currentButton)) {
+                if(this.nextUrl === 'None' ) {
                     $("body").addClass("answer-loading");
                     checkPrerequisite.call(this);
                 } else {
@@ -488,7 +493,6 @@
             } else if ((direction === 'previous') && (this.position === 1)) {
                 goToNextOrPrevious(this.prevUrl);
             } else {
-                var currentButton = this.el.find('button.nav-item.active');
                 if(direction === 'next' && this.allowNextStep(currentButton)) {
                     goToNextOrPrevious();
                 } else if (direction === 'previous') {
