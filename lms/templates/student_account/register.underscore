@@ -31,6 +31,11 @@
                     </button>
                 <% } %>
             </div>
+            <div class="section-title lines">
+                <h2>
+                    <span class="text"><%- gettext("or create a new one here") %></span>
+                </h2>
+            </div>
         <% } else { %>
             <div class="section-title lines">
                 <h2>
@@ -40,6 +45,10 @@
         <% } %>
     <% } %>
 
+    <%= context.fields %>
+
+    <button type="submit" class="action action-primary action-update js-register register-button"><%- gettext("Create your account") %></button>
+    <p class="note">* <%- gettext("Required field") %></p>
 </form>
 
 <div class="toggle-form">
