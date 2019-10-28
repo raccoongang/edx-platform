@@ -95,6 +95,7 @@ from openedx.features.course_experience.waffle import ENABLE_COURSE_ABOUT_SIDEBA
 from openedx.features.enterprise_support.api import data_sharing_consent_required
 from shoppingcart.utils import is_shopping_cart_enabled
 from student.models import CourseEnrollment, UserTestGroup
+from student_account.views import account_settings_context
 from util.cache import cache, cache_if_anonymous
 from util.db import outer_atomic
 from util.milestones_helpers import get_prerequisite_courses_display
@@ -104,7 +105,6 @@ from xmodule.modulestore.exceptions import ItemNotFoundError, NoPathToItem
 from xmodule.tabs import CourseTabList
 from xmodule.x_module import STUDENT_VIEW
 
-from student_account.views import account_settings_context
 from ..entrance_exams import user_can_skip_entrance_exam
 from ..module_render import get_module, get_module_by_usage_id, get_module_for_descriptor
 
@@ -983,6 +983,8 @@ def _progress(request, course_key, student_id):
 
     profile = student.profile
 
+    # Checking that particular user can request his certificate.
+    # All fields in the list below are required for requesting a certificate.
     can_request_certificate = all([
             student.first_name,
             student.last_name,

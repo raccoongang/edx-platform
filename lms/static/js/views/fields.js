@@ -710,8 +710,6 @@
                 'change select': 'saveFieldsValues'
             },
 
-
-
             initialize: function(options) {
                 _.bindAll(this, 'render', 'saveFieldsValues');
                 this._super(options);
