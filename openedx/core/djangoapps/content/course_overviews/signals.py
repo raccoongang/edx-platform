@@ -3,7 +3,7 @@ Signal handler for invalidating cached course overviews
 """
 from django.dispatch.dispatcher import receiver
 
-from course_category.tasks import task_add_categories
+from course_category.utils import add_categories_for_course
 from xmodule.modulestore.django import SignalHandler
 
 from .models import CourseOverview
@@ -22,7 +22,7 @@ def _listen_for_course_publish(sender, course_key, **kwargs):  # pylint: disable
         course_overview.delete()
     CourseOverview.load_from_module_store(course_key)
     if category_names:
-        task_add_categories.delay(category_names, str(course_key))
+        add_categories_for_course(category_names, course_key)
 
 
 @receiver(SignalHandler.course_deleted)
