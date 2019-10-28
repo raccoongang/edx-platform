@@ -434,7 +434,9 @@
                     this.delegateEvents();
                     return this;
                 }
-            })
+            }),
+
+            EditableDualFieldView: FieldViews.EditableDualFieldView.extend({}),
         };
 
         return AccountSettingsFieldViews;

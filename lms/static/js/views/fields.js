@@ -9,13 +9,15 @@
         'text!templates/fields/field_link.underscore',
         'text!templates/fields/field_text.underscore',
         'text!templates/fields/field_textarea.underscore',
+        'text!templates/fields/field_dual.underscore',
         'backbone-super'
     ], function(gettext, $, _, Backbone, HtmlUtils, DateUtils,
                  field_readonly_template,
                  field_dropdown_template,
                  field_link_template,
                  field_text_template,
-                 field_textarea_template
+                 field_textarea_template,
+                 field_dual_template
     ) {
         var messageRevertDelay = 6000;
         var FieldViews = {};
@@ -691,6 +693,79 @@
             linkClicked: function(event) {
                 event.preventDefault();
             }
+        });
+
+        FieldViews.EditableDualFieldView = FieldViews.EditableFieldView.extend({
+
+            fieldType: 'dual',
+
+            className: function() {
+                return 'u-field' + ' u-field-' + this.fieldType + ' u-field-' + this.options.valueAttribute + ' u-field-dual__custom';
+            },
+
+            fieldTemplate: field_dual_template,
+
+            events: {
+                'change input': 'saveFieldsValues',
+                'change select': 'saveFieldsValues'
+            },
+
+            initialize: function(options) {
+                _.bindAll(this, 'render', 'saveFieldsValues');
+                this._super(options);
+
+                this.listenTo(this.model, 'change', this.render);
+            },
+
+            saveFieldsValues: function() {
+                if (this.persistChanges === true) {
+                    var valueOtherPosition = this.$('#field-input-' + this.model.cid).val(),
+                        valuePosition = this.$('#u-field-select-' + this.model.cid).val(),
+                        valueSubPosition = this.$('#u-field-select-sub-' + this.model.cid).val(),
+                        valueSpecialization = this.$('#u-field-select-spec-' + this.model.cid).val();
+
+                    var view = this;
+                    var options = {
+                        contentType: 'application/merge-patch+json',
+                        wait: true,
+                        success: function () {
+                            view.saveSucceeded();
+                        },
+                        error: function (model, xhr) {
+                            view.showErrorMessage(xhr);
+                        }
+                    };
+
+                    var postData = {other_position: valueOtherPosition, specialization: valueSpecialization};
+
+                    postData.position = (
+                        valuePosition != this.model.get('selected_position') ? valuePosition : valueSubPosition
+                    );
+
+                    this.showInProgressMessage();
+                    this.model.save(postData, options);
+                }
+            },
+
+            render: function() {
+                HtmlUtils.setHtml(this.$el, HtmlUtils.template(this.fieldTemplate)({
+                    id: this.model.cid,
+                    valuePosition: this.model.get('selected_position'),
+                    valueSubPosition: this.model.get('selected_sub_position'),
+                    selectOptions: this.options.positionChoices,
+                    selectSubPositions: this.model.get('sub_positions'),
+                    title: this.options.title,
+                    message: this.helpMessage,
+                    otherPosition: this.model.get('other_position'),
+                    specialization: this.model.get('specialization'),
+                    selectedSpecializations: this.model.get('selected_specializations'),
+                    helpMessageSubPosition: this.options.helpMessageSubPosition,
+                    helpMessageSpecialization: this.options.helpMessageSpecialization,
+                }));
+                this.delegateEvents();
+                return this;
+            },
+
         });
 
         return FieldViews;

@@ -3063,6 +3063,14 @@ ACCOUNT_VISIBILITY_CONFIGURATION = {
         "account_privacy",
         "accomplishments_shared",
         "extended_profile",
+        "position",
+        "first_name",
+        "last_name",
+        "phone",
+        "second_name",
+        "additional_email",
+        "region",
+        "date_of_birth",
     ]
 }
 
@@ -3530,3 +3538,32 @@ TINYMCE_DEFAULT_CONFIG = {
         {'title' : 'Black background', 'inline' : 'span', 'styles': {'background': '#000'}},
     ]
 }
+
+
+REGIONS = (
+    ('crimea', u'Автономна Республіка Крим'),
+    ('vinnitskaya', u'Вінницька область'),
+    ('volinskaya', u'Волинська область'),
+    ('dnepropetrovskaya', u'Дніпропетровська область'),
+    ('donetskaya', u'Донецька область'),
+    ('zitomirskaya', u'Житомирська область'),
+    ('zakarpatskaya', u'Закарпатська область'),
+    ('zaporozskaya', u'Запорізька область'),
+    ('ivano-frankovskaya', u'Івано-Франківська область'),
+    ('kievskaya', u'Київська область'),
+    ('kirovogradskaya', u'Кіровоградська область'),
+    ('luganskaya', u'Луганська область'),
+    ('lvovskaya', u'Львівська область'),
+    ('nikolaevskaya', u'Миколаївська область'),
+    ('odesskaya', u'Одеська область'),
+    ('poltavskaya', u'Полтавська область'),
+    ('rovenskaya', u'Рівненська область'),
+    ('sumskaya', u'Сумська область'),
+    ('ternopolskaya', u'Тернопільська область'),
+    ('kharkovskaya', u'Харківська область'),
+    ('khersonskaya', u'Херсонська область'),
+    ('khmelnitskaya', u'Хмельницька область'),
+    ('cherkasskaya', u'Черкаська область'),
+    ('chernovetskaya', u'Чернівецька область'),
+    ('chernigovskaya', u'Чернігівська область'),
+)

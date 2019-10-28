@@ -30,6 +30,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.core.cache import cache
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.core.validators import RegexValidator
 from django.db import IntegrityError, models, transaction
 from django.db.models import Count, Q
 from django.db.models.signals import post_save, pre_save
@@ -74,9 +75,24 @@ log = logging.getLogger(__name__)
 AUDIT_LOG = logging.getLogger("audit")
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore  # pylint: disable=invalid-name
 
+
+class Specialization(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class Position(models.Model):
+    name = models.CharField(null=True, blank=True, max_length=120)
+    parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
+    has_specialization = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
+
 # enroll status changed events - signaled to email_marketing.  See email_marketing.tasks for more info
-
-
 # ENROLL signal used for free enrollment only
 class EnrollStatusChange(object):
     """
@@ -382,8 +398,6 @@ class UserProfile(models.Model):
     GENDER_CHOICES = (
         ('m', ugettext_noop('Male')),
         ('f', ugettext_noop('Female')),
-        # Translators: 'Other' refers to the student's gender
-        ('o', ugettext_noop('Other/Prefer Not to Say'))
     )
     gender = models.CharField(
         blank=True, null=True, max_length=6, db_index=True, choices=GENDER_CHOICES
@@ -417,6 +431,18 @@ class UserProfile(models.Model):
     allow_certificate = models.BooleanField(default=1)
     bio = models.CharField(blank=True, null=True, max_length=3000, db_index=False)
     profile_image_uploaded_at = models.DateTimeField(null=True, blank=True)
+
+    phone = models.CharField(max_length=13, null=True, blank=True)
+    second_name = models.CharField(max_length=100, null=True, blank=True)
+    additional_email = models.EmailField(max_length=255, null=True, blank=True)
+    date_of_birth = models.DateField(blank=True, null=True, db_index=True)
+
+    REGION_CHOICES = [(region[0], _(region[1])) for region in getattr(settings, 'REGIONS', [])]
+    region = models.CharField(max_length=255, null=True, blank=True, choices=REGION_CHOICES)
+    position = models.ForeignKey(Position, null=True, blank=True, on_delete=models.CASCADE)
+    other_position = models.CharField(max_length=255, null=True, blank=True)
+
+    specialization = models.ManyToManyField(Specialization)
 
     @property
     def has_profile_image(self):

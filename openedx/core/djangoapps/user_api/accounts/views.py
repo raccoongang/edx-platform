@@ -70,7 +70,7 @@ from ..models import (
     UserRetirementPartnerReportingStatus,
     UserRetirementStatus
 )
-from .api import get_account_settings, update_account_settings
+from .api import get_account_settings, get_position_settings, update_account_settings, update_position_settings
 from .permissions import CanDeactivateUser, CanRetireUser
 from .serializers import UserRetirementPartnerReportSerializer, UserRetirementStatusSerializer
 from .signals import (
@@ -315,6 +315,14 @@ class AccountViewSet(ViewSet):
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
+        required_fields = [
+            "first_name", "second_name", "last_name", "phone", "additional_email", "gender", "year_of_birth", "region"
+        ]
+
+        if request.META.get('HTTP_REFERER').endswith('progress'):
+            account_settings.update({
+                "empty_fields": [field for field in required_fields if not account_settings.get(field)]
+            })
 
         return Response(account_settings)
 
@@ -914,3 +922,33 @@ class AccountRetirementView(ViewSet):
         """
         for entitlement in CourseEntitlement.objects.filter(user_id=user.id):
             entitlement.courseentitlementsupportdetail_set.all().update(comments='')
+
+
+class AccountPositionViewSet(ViewSet):
+
+    authentication_classes = (
+        OAuth2AuthenticationAllowInactiveUser, SessionAuthenticationAllowInactiveUser, JwtAuthentication
+    )
+    permission_classes = (permissions.IsAuthenticated,)
+    parser_classes = (MergePatchParser,)
+
+    def list(self, request):
+        """
+        GET /api/user/v1/accounts_position/
+        """
+
+        position_settings = get_position_settings(request)
+        return Response(position_settings)
+
+    def update(self, request):
+        """
+        POST /api/user/v1/accounts_position/
+        """
+
+        try:
+            update_position_settings(request)
+        except AccountValidationError as err:
+            return Response({"field_errors": err.field_errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        position_settings = get_position_settings(request)
+        return Response(position_settings)
