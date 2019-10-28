@@ -97,10 +97,16 @@
                     data = {
                         saved_video_position: this.state.videoPlayer.currentTime
                     };
-                    if (this.state.videoPlayer.isEnded()) {
+
+                    try {
+                      if (this.state.videoPlayer.isEnded()) {
                         data.is_viewed = true;
                         this.state.storage.setItem('isViewed', true, true);
+                      }
+                    } catch (e) {
+                        console.log('[Video info]: video is not initialized');
                     }
+
                 }
 
                 if (data.speed) {
