@@ -18,12 +18,20 @@ class CourseMultipleModelChoiceField(forms.ModelMultipleChoiceField):
 class CourseCategoryForm(forms.ModelForm):
     courses = CourseMultipleModelChoiceField(queryset=CourseOverview.objects.all(), required=False)
 
+    def clean_parent(self):
+        parent = self.cleaned_data['parent']
+        if self.instance.id and parent in self.instance.get_descendants(include_self=True):
+            self.add_error('parent',
+                'A category or subcategory can\'t be a parent of itself. '
+                'A subcategory can\'t be a parent of its parent category.'
+            )
+        return parent
 
 class CourseCategoryAdmin(DjangoMpttAdmin):
     form = CourseCategoryForm
     tree_auto_open = True
     prepopulated_fields = {'slug': ('name',)}
     # for DjangoMpttAdmin fields = '__all__' doesn't work
-    fields = ['name', 'slug', 'img', 'description', 'courses']
+    fields = ['name', 'slug', 'img', 'url', 'parent', 'description', 'courses']
 
 admin.site.register(CourseCategory, CourseCategoryAdmin)
