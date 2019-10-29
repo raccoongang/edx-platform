@@ -31,7 +31,7 @@ def create_catalog_api_client(user, site=None):
     jwt = JwtBuilder(user).build_token(scopes, expires_in)
 
     if site:
-        url = site.configuration.get_value('COURSE_CATALOG_API_URL')
+        url = site.configuration.get_value('COURSE_CATALOG_API_URL', settings.COURSE_CATALOG_API_URL)
     else:
         url = CatalogIntegration.current().get_internal_api_url()
 
