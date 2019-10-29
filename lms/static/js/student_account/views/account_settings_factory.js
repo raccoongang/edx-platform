@@ -31,7 +31,7 @@
             displayAccountDeletion,
             positionAccountApiUrl,
             isProgressForm,
-            listFormFields,
+            listFormFields
         ) {
             var $accountSettingsElement, userAccountModel, userPreferencesModel, positionAccountModel, aboutSectionsData,
                 accountsSectionData, ordersSectionData, accountSettingsView, showAccountSettingsPage,
