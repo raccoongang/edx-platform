@@ -185,7 +185,7 @@ FEATURES = {
     'ENABLE_VERIFIED_CERTIFICATES': False,
 
     # for acceptance and load testing
-    'AUTOMATIC_AUTH_FOR_TESTING': True,
+    'AUTOMATIC_AUTH_FOR_TESTING': False,
 
     # Prevent auto auth from creating superusers or modifying existing users
     'RESTRICT_AUTOMATIC_AUTH': True,
