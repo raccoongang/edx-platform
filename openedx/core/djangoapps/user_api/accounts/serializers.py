@@ -142,7 +142,7 @@ class UserReadOnlySerializer(serializers.Serializer):
                         user_profile.social_links.all(), many=True
                     ).data,
                     'mobytize_id': user_profile.mobytize_id,
-                    'mobytize_token': user_profile.mobytize_token
+                    'mobytize_token': user_profile.mobytize_token,
                 }
             )
 
@@ -195,7 +195,7 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
         fields = (
             "name", "gender", "goals", "year_of_birth", "level_of_education", "country",
             "mailing_address", "bio", "profile_image", "requires_parental_consent", "language_proficiencies",
-            "social_links", "mobytize_id", "mobytize_token"
+            "social_links", "mobytize_id", "mobytize_token",
         )
         # Currently no read-only field, but keep this so view code doesn't need to know.
         read_only_fields = ()
