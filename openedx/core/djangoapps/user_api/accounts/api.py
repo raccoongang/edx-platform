@@ -824,9 +824,7 @@ def update_position_settings(request):
             if position.has_specialization:
                 user.specialization.add(*specialization)
 
-    if other_position and len(other_position) < 255:
-        user.other_position = other_position
-    else:
+    if other_position and len(other_position) > 255:
         raise AccountValidationError({
             "field_errors": {
                 "other_position": {
@@ -837,6 +835,7 @@ def update_position_settings(request):
             }
         })
 
+    user.other_position = other_position
     user.save()
 
     return {'status': 'position save'}

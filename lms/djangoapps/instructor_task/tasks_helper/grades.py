@@ -228,14 +228,23 @@ class CourseGradeReport(object):
         Returns a list of all applicable column headers for this grade report.
         """
         return (
-            ["Student ID", "Email", "Username"] +
+            [
+                "Student ID",
+                "Email",
+                "Username",
+                "Fist Name",
+                "Second Name",
+                "Last Name",
+                "Additional Email",
+                "Phone",
+                "Date of Birth",
+                "Region",
+                "Position",
+                "Qualification",
+                "Specializations",
+            ] +
             self._grades_header(context) +
-            (['Cohort Name'] if context.cohorts_enabled else []) +
-            [u'Experiment Group ({})'.format(partition.name) for partition in context.course_experiments] +
-            (['Team Name'] if context.teams_enabled else []) +
-            ['Enrollment Track', 'Verification Status'] +
-            ['Certificate Eligible', 'Certificate Delivered', 'Certificate Type'] +
-            ['Enrollment Status']
+            ['Certificate Eligible', 'Certificate Delivered', 'Certificate Type']
         )
 
     def _error_headers(self):
@@ -300,7 +309,7 @@ class CourseGradeReport(object):
             return izip_longest(*args, fillvalue=fillvalue)
 
         users = CourseEnrollment.objects.users_enrolled_in(context.course_id, include_inactive=True)
-        users = users.select_related('profile')
+        users = users.select_related('profile', 'profile__position').prefetch_related('profile__specialization')
         return grouper(users)
 
     def _user_grades(self, course_grade, context):
@@ -424,6 +433,39 @@ class CourseGradeReport(object):
         )
         return certificate_info
 
+    @staticmethod
+    def _generate_user_info(user):
+        """
+        Returns the user and user profile information for the given user.
+        """
+
+        profile = user.profile
+        position = profile.position
+        result_list = [
+            user.id,
+            user.email,
+            user.username,
+            user.first_name,
+            profile.second_name,
+            user.last_name,
+            user.profile.additional_email or '',
+            profile.phone or '',
+            profile.date_of_birth or '',
+            profile.region_display or '',
+        ]
+
+        if profile.position is not None:
+            has_parent = position.parent is not None
+            result_list.extend([
+                position.parent.name if has_parent else position.name,
+                position.name if has_parent else profile.other_position,
+                ', '.join(profile.specialization.values_list('name', flat=True)) if position.has_specialization else '',
+            ])
+        else:
+            result_list.extend(['', '', ''])
+
+        return result_list
+
     def _rows_for_users(self, context, users):
         """
         Returns a list of rows for the given users for this report.
@@ -443,14 +485,9 @@ class CourseGradeReport(object):
                     error_rows.append([user.id, user.username, text_type(error)])
                 else:
                     success_rows.append(
-                        [user.id, user.email, user.username] +
+                        self._generate_user_info(user) +
                         self._user_grades(course_grade, context) +
-                        self._user_cohort_group_names(user, context) +
-                        self._user_experiment_group_names(user, context) +
-                        self._user_team_names(user, bulk_context.teams) +
-                        self._user_verification_mode(user, context, bulk_context.enrollments) +
-                        self._user_certificate_info(user, context, course_grade, bulk_context.certs) +
-                        [_user_enrollment_status(user, context.course_id)]
+                        self._user_certificate_info(user, context, course_grade, bulk_context.certs)
                     )
             return success_rows, error_rows
 
