@@ -30,7 +30,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.core.cache import cache
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
-from django.core.validators import RegexValidator
 from django.db import IntegrityError, models, transaction
 from django.db.models import Count, Q
 from django.db.models.signals import post_save, pre_save
@@ -80,7 +79,7 @@ class Specialization(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.name
+        return self.name.encode('utf-8')
 
 
 class Position(models.Model):
@@ -89,7 +88,7 @@ class Position(models.Model):
     has_specialization = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return self.name.encode('utf-8')
 
 
 # enroll status changed events - signaled to email_marketing.  See email_marketing.tasks for more info
@@ -442,7 +441,7 @@ class UserProfile(models.Model):
     position = models.ForeignKey(Position, null=True, blank=True, on_delete=models.CASCADE)
     other_position = models.CharField(max_length=255, null=True, blank=True)
 
-    specialization = models.ManyToManyField(Specialization)
+    specialization = models.ManyToManyField(Specialization, blank=True)
 
     @property
     def has_profile_image(self):
@@ -471,6 +470,11 @@ class UserProfile(models.Model):
         """ Convenience method that returns the human readable gender. """
         if self.gender:
             return self.__enumerable_to_display(self.GENDER_CHOICES, self.gender)
+
+    @property
+    def region_display(self):
+        if self.region:
+            return self.__enumerable_to_display(self.REGION_CHOICES, self.region)
 
     def get_meta(self):  # pylint: disable=missing-docstring
         js_str = self.meta
