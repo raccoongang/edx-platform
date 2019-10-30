@@ -461,10 +461,10 @@ class CourseGradeReport(object):
                 position.name if has_parent else profile.other_position,
                 ', '.join(profile.specialization.values_list('name', flat=True)) if position.has_specialization else '',
             ])
+        else:
+            result_list.extend(['', '', ''])
 
-            return result_list
-
-        return result_list + ['', '', '']
+        return result_list
 
     def _rows_for_users(self, context, users):
         """
