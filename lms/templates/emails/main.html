@@ -1,3 +1,99 @@
 <!-- {% block message %} -->
-<%block name="message"></%block>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body style="background: #7d7d7d; padding: 0; margin: 0;">
+<table border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto; padding: 0; width: 100%">
+    <tbody>
+    <tr>
+        <td>
+            <table border="0" cellpadding="0" cellspacing="0" style="background: #ffffff; height: 150px; margin: 0; padding: 0; width: 100%">
+                <tbody>
+                <tr>
+                    <td>
+                        <div style="width: 100%; text-align: center;">
+                            <a href="https://pwctraining.fastlane.net/" target="_blank" style="display: inline-block;">
+                                <img src="https://${ site }/static/${settings.DEFAULT_SITE_THEME}/images/logo.png" border="0" width="165" height="125" style="display: block; margin: 0 auto 0" alt="header_logo">
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <table border="0" cellpadding="0" cellspacing="0" style="background: #efefef; width: 100%; padding: 22px 0px;">
+                <tbody>
+                <tr>
+                    <td style="text-align: center;">
+                        <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; max-width: 600px; margin: 0 auto; padding: 0 12px;">
+                            <tr>
+                                <td>
+                                    <%block name="message"></%block>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table border="0" cellpadding="0" cellspacing="0" style="background: #7d7d7d; width: 100%; margin: 0; padding: 22px 36px;">
+                <tbody>
+                <tr>
+                    <td>
+                        <table border="0" cellpadding="0" cellspacing="0" style="width: 100%; margin: 0 auto; padding: 0; position: relative; text-align: center;">
+                            <tr>
+                                <td style="text-align: center; padding: 0 0px 12px; display: inline-block;">
+                                    <a href="https://www.pwc.com/us/en/site/privacy.html" target="_blank" style="color: #ffffff; text-transform: uppercase; text-decoration: none; font-size: 14px; font-weight: 700; -webkit-text-size-adjust: none;">
+                                        Privacy Policy
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; padding: 0 0px 12px; display: inline-block;">
+                                    <a href="https://www.pwc.com/us/en/site/terms-and-conditions.html" target="_blank" style="color: #ffffff; text-transform: uppercase; text-decoration: none; font-size: 14px; font-weight: 700; -webkit-text-size-adjust: none;">
+                                        Terms and Conditions
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; padding: 0 0px 12px; display: inline-block;">
+                                    <a href="mailto:pwctraining@fastlaneus.com" target="_blank" style="color: #ffffff; text-transform: uppercase; text-decoration: none; font-size: 14px; font-weight: 700; -webkit-text-size-adjust: none;">
+                                        Contact Us
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="width: 100%; text-align: center;">
+                            <a href="https://pwctraining.fastlane.net/" target="_blank" style="display: inline-block;">
+                                <img src="https://${ site }/static/${settings.DEFAULT_SITE_THEME}/images/logo.png" border="0" width="165" height="125" style="display: block; margin: 12px auto 0" alt="footer_logo">
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
 <!-- {% endblock %} -->
