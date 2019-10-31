@@ -1,0 +1,25 @@
+<%inherit file="main.html" />
+<%! from django.utils.translation import ugettext as _ %>
+
+<%block name="message">
+<p>
+${_("Dear {full_name},").format(full_name=full_name)}
+</p>
+<p>
+${_("Congratulations!")}
+</p>
+<p>
+${_("You have successfully received a passing grade in the course: \"{course_name}\"!").format(course_name=course_name)}
+</p>
+<p>
+${_("Cheers,")}
+
+${_("The {platform_name} team").format(platform_name=platform_name)}
+</p>
+<hr />
+${_("This email was automatically sent from {site_name} to "
+	"{full_name}").format(
+		site_name=site, full_name=full_name
+	)}
+</p>
+</%block>

@@ -1,0 +1,14 @@
+<%! from django.utils.translation import ugettext as _ %>
+
+${_("Dear {full_name},").format(full_name=full_name)}
+
+${_("Congratulations!")}
+${_("You have successfully received a passing grade in the course: \"{course_name}\"!").format(course_name=course_name)}
+
+${_("Cheers,")}
+${_("The {platform_name} team").format(platform_name=platform_name)}
+
+${_("This email was automatically sent from {site_name} to "
+	"{full_name}").format(
+		site_name=site, full_name=full_name
+	)}
