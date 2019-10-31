@@ -171,7 +171,9 @@ def score_published_handler(sender, block, user, raw_earned, raw_possible, only_
 
         if original_course_grade.percent <= course_overview.lowest_passing_grade and grade_changed:
             if course_grade.percent >= course_overview.lowest_passing_grade:
-                notify_student_about_course_is_graded.apply_async(args=(user, course_overview))
+                user_id = user.id
+                course_id = str(block.course_id)
+                notify_student_about_course_is_graded.apply_async(args=(user_id, course_id))
 
         # Fire a signal (consumed by enqueue_subsection_update, below)
         PROBLEM_RAW_SCORE_CHANGED.send(

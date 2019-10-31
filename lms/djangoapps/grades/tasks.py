@@ -21,6 +21,7 @@ from lms.djangoapps.course_blocks.api import get_course_blocks
 from lms.djangoapps.grades.config.models import ComputeGradesSetting
 from opaque_keys.edx.keys import CourseKey, UsageKey
 from opaque_keys.edx.locator import CourseLocator
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.monitoring_utils import set_custom_metric, set_custom_metrics_for_course_key
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from student.models import CourseEnrollment
@@ -161,10 +162,13 @@ def recalculate_course_and_subsection_grades_for_user(self, **kwargs):  # pylint
     default_retry_delay=RETRY_DELAY_SECONDS,
     routing_key=settings.MINIMAL_GRADING_REACHED_NOTIFICATION_ROUTING_KEY,
 )
-def notify_student_about_course_is_graded(self, user, course, **kwargs):
+def notify_student_about_course_is_graded(self, user_id, course_id, **kwargs):
     """
     Send an email informing that the user has reached a minimal grading for the course.
     """
+    user = User.objects.filter(id=user_id).first()
+    key = CourseKey.from_string(course_id)
+    course = CourseOverview.objects.filter(id=key).first()
     context = {
         'full_name': user.profile.name,
         'platform_name': configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
