@@ -7,6 +7,7 @@ from config_models.admin import ConfigurationModelAdmin
 from django import forms
 from django.conf import settings
 from django.contrib import admin
+from django.urls import reverse
 
 from lms.djangoapps.certificates.models import (
     CertificateGenerationConfiguration,
@@ -65,8 +66,37 @@ class GeneratedCertificateAdmin(admin.ModelAdmin):
     """
     raw_id_fields = ('user',)
     show_full_result_count = False
-    search_fields = ('course_id', 'user__username')
-    list_display = ('id', 'course_id', 'mode', 'user')
+    search_fields = ('course_id', 'verify_uuid', 'user__username', 'user__first_name', 'user__last_name')
+    list_display = (
+        'id', 'course_id', 'mode', 'show_certificate_url', 'get_first_name', 'get_second_name', 'get_last_name'
+    )
+
+    def get_first_name(self, obj):
+        return obj.user.first_name
+
+    def get_last_name(self, obj):
+        return obj.user.last_name
+
+    def get_second_name(self, obj):
+        return obj.user.profile.second_name
+
+    def show_certificate_url(self, obj):
+        if obj.verify_uuid:
+            field = '<a href="{link}" target="_blank">{uuid}</a>'.format(
+                link=reverse('certificates:render_cert_by_uuid', kwargs={'certificate_uuid': obj.verify_uuid}),
+                uuid=obj.verify_uuid
+            )
+        else:
+            field = obj.verify_uuid
+
+        return field
+
+    show_certificate_url.allow_tags = True
+    show_certificate_url.short_description = 'Certificate uuid'
+
+    get_first_name.short_description = 'First Name'
+    get_second_name.short_description = 'Second Name'
+    get_last_name.short_description = 'Last Name'
 
 
 class CertificateGenerationCourseSettingAdmin(admin.ModelAdmin):
