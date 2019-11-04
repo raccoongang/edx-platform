@@ -17,10 +17,11 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from edxmako.shortcuts import render_to_response
-from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiveUser
+from rest_framework import generics, permissions, status, viewsets
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.response import Response
 from opaque_keys.edx.keys import CourseKey
 from opaque_keys import InvalidKeyError
-from rest_framework import generics, viewsets, permissions
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
@@ -186,18 +187,22 @@ class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class VideoLessonViewSet(viewsets.ModelViewSet):
-    authentication_classes = (OAuth2AuthenticationAllowInactiveUser,)
+    authentication_classes = (SessionAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = VideoLessonSerializer
     queryset = VideoLesson.objects.all()
     paginator = None
     pagination_class = None
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data, context=self.get_serializer_context())
-        serializer.is_valid()
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
+        data['user'] = request.user.id
+        serializer = self.get_serializer(data=data, context=self.get_serializer_context())
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProfileImportView(View):
