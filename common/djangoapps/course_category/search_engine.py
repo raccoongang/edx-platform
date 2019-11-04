@@ -8,10 +8,9 @@ from .models import CourseCategory
 
 
 class CourseCategorySearchEngine(ElasticSearchEngine):
-
     def search(self, **kwargs):
         """
-        Override default engine just to reorder categories
+        Override default engine just to reorder categories.
         """
         results = super(CourseCategorySearchEngine, self).search(**kwargs)
 

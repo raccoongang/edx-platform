@@ -1,0 +1,28 @@
+<%! from django.utils.translation import ugettext as _ %>
+
+<%block name="message">
+
+
+${_("Dear {full_name}").format(full_name=full_name)}
+
+%if enroll_info['enrolled_courses']:
+${_("You have been enrolled in the following courses: ")}
+
+	% for course in enroll_info['enrolled_courses']:
+		${course['link']}
+	% endfor
+%endif
+
+%if enroll_info['not_enrolled_courses']:
+${_("You have not been enrolled in the following courses for some reasons: ")}
+
+	% for course in enroll_info['not_enrolled_courses']:
+		${course['link']}
+	% endfor
+%endif
+
+${_("This email was automatically sent from {site_name} to {email_address}").format(
+	site_name=site_name, email_address=email_address
+)}
+
+</%block>

@@ -1,0 +1,39 @@
+<%inherit file="main.html" />
+<%! from django.utils.translation import ugettext as _ %>
+
+<%block name="message">
+
+<p>
+${_("Dear {full_name}").format(full_name=full_name)}
+</p>
+%if enroll_info['enrolled_courses']:
+<p>
+${_("You have been enrolled in the following courses: ")}
+</p>
+<ul>
+	% for course in enroll_info['enrolled_courses']:
+	<li>
+		<a href="${course['link']}">${course['display_name']}</a>
+	</li>
+	% endfor
+</ul>
+%endif
+%if enroll_info['not_enrolled_courses']:
+<p>
+${_("You have not been enrolled in the following courses for some reasons: ")}
+</p>
+<ul>
+	% for course in enroll_info['not_enrolled_courses']:
+	<li>
+		<a href="${course['link']}">${course['display_name']}</a>
+	</li>
+	% endfor
+</ul>
+%endif
+<p>
+<hr />
+${_("This email was automatically sent from {site_name} to {email_address}").format(
+	site_name=site_name, email_address=email_address
+)}
+</p>
+</%block>
