@@ -28,11 +28,12 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                initialize: function(options) {
                    options = options || {};
         // fill in fields
-                   this.$el.find('#course-language').val(this.model.get('language'));
-                   this.$el.find('#course-organization').val(this.model.get('org'));
-                   this.$el.find('#course-number').val(this.model.get('course_id'));
-                   this.$el.find('#course-name').val(this.model.get('run'));
-                   this.$el.find('.set-date').datepicker({'dateFormat': 'm/d/yy'});
+                    this.$el.find('#course-category').val(this.model.get('category'));
+                    this.$el.find('#course-language').val(this.model.get('language'));
+                    this.$el.find('#course-organization').val(this.model.get('org'));
+                    this.$el.find('#course-number').val(this.model.get('course_id'));
+                    this.$el.find('#course-name').val(this.model.get('run'));
+                    this.$el.find('.set-date').datepicker({'dateFormat': 'm/d/yy'});
 
         // Avoid showing broken image on mistyped/nonexistent image
                    this.$el.find('img').error(function() {
@@ -154,29 +155,30 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    return this;
                },
                fieldToSelectorMap: {
-                   'language': 'course-language',
-                   'start_date': 'course-start',
-                   'end_date': 'course-end',
-                   'enrollment_start': 'enrollment-start',
-                   'enrollment_end': 'enrollment-end',
-                   'overview': 'course-overview',
-                   'title': 'course-title',
-                   'subtitle': 'course-subtitle',
-                   'duration': 'course-duration',
-                   'description': 'course-description',
-                   'short_description': 'course-short-description',
-                   'intro_video': 'course-introduction-video',
-                   'effort': 'course-effort',
-                   'course_image_asset_path': 'course-image-url',
-                   'banner_image_asset_path': 'banner-image-url',
-                   'video_thumbnail_image_asset_path': 'video-thumbnail-image-url',
-                   'pre_requisite_courses': 'pre-requisite-course',
-                   'entrance_exam_enabled': 'entrance-exam-enabled',
-                   'entrance_exam_minimum_score_pct': 'entrance-exam-minimum-score-pct',
-                   'course_settings_learning_fields': 'course-settings-learning-fields',
-                   'add_course_learning_info': 'add-course-learning-info',
-                   'add_course_instructor_info': 'add-course-instructor-info',
-                   'course_learning_info': 'course-learning-info'
+                    'category': 'course-category',
+                    'language': 'course-language',
+                    'start_date': 'course-start',
+                    'end_date': 'course-end',
+                    'enrollment_start': 'enrollment-start',
+                    'enrollment_end': 'enrollment-end',
+                    'overview': 'course-overview',
+                    'title': 'course-title',
+                    'subtitle': 'course-subtitle',
+                    'duration': 'course-duration',
+                    'description': 'course-description',
+                    'short_description': 'course-short-description',
+                    'intro_video': 'course-introduction-video',
+                    'effort': 'course-effort',
+                    'course_image_asset_path': 'course-image-url',
+                    'banner_image_asset_path': 'banner-image-url',
+                    'video_thumbnail_image_asset_path': 'video-thumbnail-image-url',
+                    'pre_requisite_courses': 'pre-requisite-course',
+                    'entrance_exam_enabled': 'entrance-exam-enabled',
+                    'entrance_exam_minimum_score_pct': 'entrance-exam-minimum-score-pct',
+                    'course_settings_learning_fields': 'course-settings-learning-fields',
+                    'add_course_learning_info': 'add-course-learning-info',
+                    'add_course_instructor_info': 'add-course-instructor-info',
+                    'course_learning_info': 'course-learning-info'
                },
 
                addLearningFields: function() {
@@ -298,6 +300,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        this.model.set('self_paced', JSON.parse(event.currentTarget.value));
                        break;
                    case 'course-language':
+                   case 'course-category':
                    case 'course-effort':
                    case 'course-title':
                    case 'course-subtitle':

@@ -55,6 +55,8 @@ from contentstore.views.entrance_exam import (
 )
 from course_action_state.managers import CourseActionStateItemNotFoundError
 from course_action_state.models import CourseRerunState, CourseRerunUIStateManager
+from course_category.models import CourseCategory
+from course_category.utils import add_nodes
 from course_creators.views import get_course_creator_status, add_user_with_status_unrequested
 from edxmako.shortcuts import render_to_response
 from models.settings.course_grading import CourseGradingModel
@@ -995,7 +997,12 @@ def settings_handler(request, course_key_string):
                 'EDITABLE_SHORT_DESCRIPTION',
                 settings.FEATURES.get('EDITABLE_SHORT_DESCRIPTION', True)
             )
-            self_paced_enabled = SelfPacedConfiguration.current().enabled
+            #self_paced_enabled = SelfPacedConfiguration.current().enabled
+
+            course_category_nodes = CourseCategory.objects.filter(parent=None)
+            course_category_options = []
+
+            add_nodes(course_category_nodes, u'', course_category_options)
 
             settings_context = {
                 'context_course': course_module,
@@ -1016,8 +1023,9 @@ def settings_handler(request, course_key_string):
                 'enrollment_end_editable': enrollment_end_editable,
                 'is_prerequisite_courses_enabled': is_prerequisite_courses_enabled(),
                 'is_entrance_exams_enabled': is_entrance_exams_enabled(),
-                'self_paced_enabled': self_paced_enabled,
-                'enable_extended_course_details': enable_extended_course_details
+                #'self_paced_enabled': self_paced_enabled,
+                'enable_extended_course_details': enable_extended_course_details,
+                'course_category_options': course_category_options,
             }
             if is_prerequisite_courses_enabled():
                 courses, in_process_course_actions = get_courses_accessible_to_user(request)
