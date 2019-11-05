@@ -8,9 +8,5 @@
 #   * run "make upgrade" to update the detailed requirements files
 
 -r shared.txt                       # Dependencies in common with LMS and Studio
-<<<<<<< HEAD
-matplotlib==1.3.1                   # 2D plotting library
-=======
 matplotlib==1.5.3                   # 2D plotting library
 
->>>>>>> 1f7650eb6f7c1390e2f854975be2bc01cd470da1

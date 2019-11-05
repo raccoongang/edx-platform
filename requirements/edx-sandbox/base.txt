@@ -11,7 +11,6 @@ common/lib/symmath
 asn1crypto==0.24.0
 backports-abc==0.5        # via tornado
 cffi==1.11.5
-<<<<<<< HEAD
 cryptography==2.2.2
 enum34==1.1.6
 futures==3.2.0            # via tornado
@@ -31,7 +30,6 @@ singledispatch==3.4.0.3   # via tornado
 six==1.11.0
 sympy==0.7.1
 tornado==5.0.2            # via matplotlib
-=======
 cryptography==2.4.2
 cycler==0.10.0            # via matplotlib
 enum34==1.1.6
@@ -53,4 +51,3 @@ singledispatch==3.4.0.3
 six==1.11.0
 sympy==0.7.1
 tornado==5.1.1            # via matplotlib
->>>>>>> 1f7650eb6f7c1390e2f854975be2bc01cd470da1

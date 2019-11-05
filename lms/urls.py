@@ -140,12 +140,10 @@ urlpatterns = [
 
     url(r'^dashboard/', include('learner_dashboard.urls')),
     url(r'^api/experiments/', include('experiments.urls', namespace='api_experiments')),
-<<<<<<< HEAD
-=======
+    
     
     # UpSkilling Team
     url(r'^admin_dashboard/', include('admin_dashboard.urls')),
->>>>>>> 1f7650eb6f7c1390e2f854975be2bc01cd470da1
 ]
 
 # TODO: This needs to move to a separate urls.py once the student_account and

@@ -82,12 +82,8 @@ from student.helpers import (
     destroy_oauth_tokens,
     do_create_account,
     generate_activation_email_context,
-<<<<<<< HEAD
-    get_next_url_for_login_page
-=======
     get_next_url_for_login_page,
     link_user_with_site
->>>>>>> 1f7650eb6f7c1390e2f854975be2bc01cd470da1
 )
 from student.models import (
     CourseEnrollment,
@@ -748,13 +744,10 @@ def create_account_with_params(request, params):
 
     # Perform operations that are non-critical parts of account creation
     create_or_set_user_attribute_created_on_site(user, request.site)
-<<<<<<< HEAD
-=======
+    
     
     #Upskilling Team
     link_user_with_site(user, request.site)
->>>>>>> 1f7650eb6f7c1390e2f854975be2bc01cd470da1
-
     preferences_api.set_user_preference(user, LANGUAGE_KEY, get_language())
 
     if settings.FEATURES.get('ENABLE_DISCUSSION_EMAIL_DIGEST'):

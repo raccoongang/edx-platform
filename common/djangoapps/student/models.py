@@ -70,10 +70,7 @@ from track import contexts
 from util.milestones_helpers import is_entrance_exams_enabled
 from util.model_utils import emit_field_changed_events, get_changed_fields_dict
 from util.query import use_read_replica_if_available
-<<<<<<< HEAD
-=======
 from django.contrib.sites.models import Site
->>>>>>> 1f7650eb6f7c1390e2f854975be2bc01cd470da1
 
 log = logging.getLogger(__name__)
 AUDIT_LOG = logging.getLogger("audit")
@@ -677,8 +674,6 @@ def user_post_save_callback(sender, **kwargs):
     )
 
 
-<<<<<<< HEAD
-=======
 #UpSkilling Team
 class UserSites(models.Model):
     user = models.ForeignKey(User, db_index=True)
@@ -687,7 +682,6 @@ class UserSites(models.Model):
     site_admin = models.BooleanField(default=False)
 
 
->>>>>>> 1f7650eb6f7c1390e2f854975be2bc01cd470da1
 class UserSignupSource(models.Model):
     """
     This table contains information about users registering

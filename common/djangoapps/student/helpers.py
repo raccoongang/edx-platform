@@ -48,12 +48,8 @@ from student.models import (
     UserAttribute,
     UserProfile,
     unique_id_for_user,
-<<<<<<< HEAD
-    email_exists_or_retired
-=======
-    email_exists_or_retired,
     UserSites
->>>>>>> 1f7650eb6f7c1390e2f854975be2bc01cd470da1
+    email_exists_or_retired,
 )
 
 
@@ -685,8 +681,6 @@ def do_create_account(form, custom_form=None):
         raise
 
     return user, profile, registration
-<<<<<<< HEAD
-=======
 
 
 #UpSkilling Team
@@ -701,4 +695,3 @@ def link_user_with_site(user, site):
             UserSites.objects.create(user=user, site=site)
     except Exception as e:
         print e
->>>>>>> 1f7650eb6f7c1390e2f854975be2bc01cd470da1

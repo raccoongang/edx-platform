@@ -649,14 +649,10 @@ derived_collection_entry('DEFAULT_TEMPLATE_ENGINE', 'DIRS')
 
 ###############################################################################################
 
-<<<<<<< HEAD
-AUTHENTICATION_BACKENDS = ['openedx.core.djangoapps.oauth_dispatch.dot_overrides.validators.EdxRateLimitedAllowAllUsersModelBackend']
-=======
 AUTHENTICATION_BACKENDS = [# 'openedx.core.djangoapps.oauth_dispatch.dot_overrides.validators.EdxRateLimitedAllowAllUsersModelBackend',
 		            # UpSkilling
 		            'student.backends.MainSiteBackend',
                             'student.backends.SiteMemberBackend',]
->>>>>>> 1f7650eb6f7c1390e2f854975be2bc01cd470da1
 STUDENT_FILEUPLOAD_MAX_SIZE = 4 * 1000 * 1000  # 4 MB
 MAX_FILEUPLOADS_PER_INPUT = 20
 
@@ -731,11 +727,7 @@ LMS_SEGMENT_KEY = None
 # FIXME: Should we be doing this truncation?
 TRACK_MAX_EVENT = 50000
 
-<<<<<<< HEAD
 DEBUG_TRACK_LOG = False
-=======
-DEBUG_TRACK_LOG = True
->>>>>>> 1f7650eb6f7c1390e2f854975be2bc01cd470da1
 
 TRACKING_BACKENDS = {
     'logger': {
@@ -2327,12 +2319,10 @@ INSTALLED_APPS = [
 
     # API Documentation
     'rest_framework_swagger',
-<<<<<<< HEAD
-=======
+
 
     #UpSkilling Team
     'admin_dashboard',
->>>>>>> 1f7650eb6f7c1390e2f854975be2bc01cd470da1
 ]
 
 ######################### CSRF #########################################
