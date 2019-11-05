@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>TakaMol Admin</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+
+        body{
+            background: #f4f4f4;
+        }
+
+        .lms-admin__table {
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+
+        .lms-admin__header{
+            padding: 15px 0;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .lms-admin__logo{
+            width: 142px;
+        }
+
+        .lms-admin__takamol-logo{
+            width: 150px;
+            margin-bottom: 30px;
+        }
+
+        .lms-admin__footer{
+            background: #626262;
+            padding: 80px 0 180px 0;
+            margin-top: 120px;
+            color: #fff;
+        }
+
+    </style>
+
+    <header class="lms-admin__header">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <img src="/static/images/admin_dashboard/3oloom-logo.svg" class="lms-admin__logo" alt="3oloom logo" aria-hidden="true">
+                </div>
+            </div>
+        </div>
+    </header>
+
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col d-flex justify-content-between flex-fill">
+            <h1>LMS Users</h1>
+            <a class="btn btn-primary" href="/admin_dashboard/add_users">Add Users</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <!-- Users Table --------------- Start -->
+            <table class="table table-striped lms-admin__table mt-4">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Subdomain(s)</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                % for userssite in userssites:
+                <tr>
+                    <th scope="row">${userssite.id}</th>
+                    <td>${userssite.user.email}</td>
+                    <td>
+                        ${userssite.site.name}
+                    </td>
+                    <td><button type="button" class="btn btn-primary">Edit</button></td>
+                </tr>
+                % endfor
+
+                </tbody>
+            </table>
+            <!-- Users Table --------------- End -->
+        </div>
+    </div>
+</div>
+
+
+<!-- Pagination -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col d-flex justify-content-center">
+            <nav aria-label="...">
+                % if userssites.has_other_pages():
+                <ul class="pagination">
+                    % if userssites.has_previous():
+                    <li class="page-item"><a class="page-link" href="?page=${ userssites.previous_page_number() }">Previous</a></li>
+                    % else:
+                    <li class="page-item disabled"><span></span></li>
+                    % endif
+                    % for i in userssites.paginator.page_range:
+                    % if userssites.number == i:
+                    <li class="page-item active"><span class="page-link">${ i } <span class="sr-only">(current)</span></span></li>
+                    % else:
+                    <li class="page-item"><a class="page-link" href="?page=${ i }">${ i }</a></li>
+                    % endif
+                    % endfor
+                    % if userssites.has_next():
+                    <li class="page-item"><a class="page-link" href="?page=${ userssites.next_page_number() }">Next</a></li>
+                    % else:
+                    <li class="page-item disabled"><span></span></li>
+                    % endif
+                </ul>
+                % endif
+            </nav>
+        </div>
+    </div>
+</div>
+
+<footer class="lms-admin__footer">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <img src="/static/images/admin_dashboard/takamol-logo--white.svg" alt="takamol logo" class="lms-admin__takamol-logo" aria-hidden="true">
+                <p>تكامل القابضة | جميع الحقوق محفوظة © 2019</p>
+            </div>
+        </div>
+    </div>
+
+
+
+</footer>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
