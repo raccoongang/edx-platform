@@ -1,39 +1,39 @@
 # #-#-#-#-#  django-partial.po (0.1a)  #-#-#-#-#
 # edX translation file.
-# Copyright (C) 2017 EdX
+# Copyright (C) 2019 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2017.
+# EdX Team <info@edx.org>, 2019.
 # 
 # #-#-#-#-#  django-studio.po (0.1a)  #-#-#-#-#
 # edX translation file.
-# Copyright (C) 2017 EdX
+# Copyright (C) 2019 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2017.
+# EdX Team <info@edx.org>, 2019.
 # 
 # #-#-#-#-#  mako.po (0.1a)  #-#-#-#-#
 # edX translation file
-# Copyright (C) 2017 edX
+# Copyright (C) 2019 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2017.
+# EdX Team <info@edx.org>, 2019.
 # 
 # #-#-#-#-#  mako-studio.po (0.1a)  #-#-#-#-#
 # edX translation file
-# Copyright (C) 2017 edX
+# Copyright (C) 2019 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2017.
+# EdX Team <info@edx.org>, 2019.
 # 
 # #-#-#-#-#  wiki.po (0.1a)  #-#-#-#-#
 # edX translation file
-# Copyright (C) 2017 edX
+# Copyright (C) 2019 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
-# EdX Team <info@edx.org>, 2017.
+# EdX Team <info@edx.org>, 2019.
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2017-04-05 06:22-0400\n"
-"PO-Revision-Date: 2017-04-05 10:22:49.567755\n"
+"POT-Creation-Date: 2019-10-29 20:24+0000\n"
+"PO-Revision-Date: 2019-10-29 20:24:55.361054\n"
 "Last-Translator: \n"
 "Language-Team: openedx-translation <openedx-translation@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -115,6 +115,10 @@ msgstr ""
 #: cms/djangoapps/contentstore/views/videos.py
 #: openedx/core/djangoapps/api_admin/models.py cms/templates/index.html
 msgid "Pending"
+msgstr ""
+
+#: common/djangoapps/course_category/models.py
+msgid "Category Name"
 msgstr ""
 
 #: common/djangoapps/course_modes/admin.py
@@ -294,6 +298,33 @@ msgstr ""
 
 #: common/djangoapps/student/admin.py
 msgid "User profile"
+msgstr ""
+
+#: common/djangoapps/student/admin.py
+#, python-format
+msgid "Email \"%(value)s\" is already taken."
+msgstr ""
+
+#: common/djangoapps/student/admin.py cms/templates/login.html
+#: cms/templates/register.html lms/templates/help_modal.html
+#: lms/templates/login.html lms/templates/provider_login.html
+#: lms/templates/register-form.html lms/templates/register-shib.html
+#: lms/templates/signup_modal.html themes/red-theme/cms/templates/login.html
+#: themes/stanford-style/lms/templates/register-form.html
+#: themes/stanford-style/lms/templates/register-shib.html
+msgid "E-mail"
+msgstr ""
+
+#: common/djangoapps/student/admin.py
+msgid "Personal info"
+msgstr ""
+
+#: common/djangoapps/student/admin.py wiki/forms.py
+msgid "Permissions"
+msgstr ""
+
+#: common/djangoapps/student/admin.py
+msgid "Important dates"
 msgstr ""
 
 #: common/djangoapps/student/forms.py
@@ -4370,6 +4401,7 @@ msgstr ""
 #. in order to register a new account.
 #: lms/djangoapps/branding/api.py openedx/core/djangoapps/user_api/views.py
 #: cms/templates/widgets/footer.html lms/templates/static_templates/tos.html
+#: lms/templates/static_templates/tos_and_honor.html
 #: themes/red-theme/lms/templates/footer.html
 #: themes/stanford-style/lms/templates/footer.html
 #: themes/stanford-style/lms/templates/static_templates/tos.html
@@ -5456,7 +5488,7 @@ msgstr ""
 
 #: lms/djangoapps/dashboard/sysadmin.py
 #, python-brace-format
-msgid "Error - cannot get course with ID {0}<br/><pre>{1}</pre>"
+msgid "<font color=\"red\">Error - cannot get course with ID {0}</font>"
 msgstr ""
 
 #: lms/djangoapps/dashboard/sysadmin.py
@@ -8545,7 +8577,7 @@ msgid ""
 "on other articles which may or may not be a good thing."
 msgstr ""
 
-#: lms/templates/wiki/plugins/attachments/index.html
+#: lms/templates/wiki/plugins/attachments/index.html cms/templates/index.html
 #: lms/templates/dashboard.html lms/templates/index.html
 #: lms/templates/api_admin/catalogs/search.html
 #: lms/templates/courseware/courses.html
@@ -9297,9 +9329,11 @@ msgstr ""
 msgid "Review the Honor Code"
 msgstr ""
 
+#. #-#-#-#-#  django-partial.po (0.1a)  #-#-#-#-#
 #. Translators: This is a legal document users must agree to
 #. in order to register a new account.
 #: openedx/core/djangoapps/user_api/views.py
+#: lms/templates/static_templates/tos_and_honor.html
 msgid "Terms of Service and Honor Code"
 msgstr ""
 
@@ -9940,6 +9974,7 @@ msgstr ""
 
 #: cms/templates/index.html cms/templates/widgets/header.html
 #: lms/templates/navigation.html lms/templates/learner_dashboard/programs.html
+#: lms/templates/program_marketing/explore_programs.html
 #: themes/edx.org/lms/templates/header.html
 #: themes/red-theme/lms/templates/header.html
 msgid "Programs"
@@ -9960,16 +9995,6 @@ msgstr ""
 
 #: cms/templates/login.html themes/red-theme/cms/templates/login.html
 msgid "Required Information to Sign In to {studio_name}"
-msgstr ""
-
-#: cms/templates/login.html cms/templates/register.html
-#: lms/templates/help_modal.html lms/templates/login.html
-#: lms/templates/provider_login.html lms/templates/register-form.html
-#: lms/templates/register-shib.html lms/templates/signup_modal.html
-#: themes/red-theme/cms/templates/login.html
-#: themes/stanford-style/lms/templates/register-form.html
-#: themes/stanford-style/lms/templates/register-shib.html
-msgid "E-mail"
 msgstr ""
 
 #. Translators: This is the placeholder text for a field that requests an
@@ -10296,6 +10321,10 @@ msgstr ""
 
 #: lms/templates/course.html
 msgid "Starts"
+msgstr ""
+
+#: lms/templates/course.html
+msgid "Course starts: "
 msgstr ""
 
 #: lms/templates/course.html
@@ -13877,6 +13906,8 @@ msgstr ""
 
 #: lms/templates/emails/add_beta_tester_email_message.html
 #: lms/templates/emails/add_beta_tester_email_message.txt
+#: lms/templates/emails/enroll_category.html
+#: lms/templates/emails/enroll_category.txt
 #: lms/templates/emails/enroll_email_enrolledmessage.html
 #: lms/templates/emails/enroll_email_enrolledmessage.txt
 #: lms/templates/emails/remove_beta_tester_email_message.html
@@ -13912,6 +13943,8 @@ msgstr ""
 
 #: lms/templates/emails/add_beta_tester_email_message.html
 #: lms/templates/emails/add_beta_tester_email_message.txt
+#: lms/templates/emails/enroll_category.html
+#: lms/templates/emails/enroll_category.txt
 #: lms/templates/emails/enroll_email_allowedmessage.html
 #: lms/templates/emails/enroll_email_allowedmessage.txt
 #: lms/templates/emails/remove_beta_tester_email_message.html
@@ -14146,6 +14179,20 @@ msgstr ""
 
 #: lms/templates/emails/email_change_subject.txt
 msgid "Request to change {platform_name} account e-mail"
+msgstr ""
+
+#: lms/templates/emails/enroll_category.html
+#: lms/templates/emails/enroll_category.txt
+msgid "You have been enrolled to following courses: "
+msgstr ""
+
+#: lms/templates/emails/enroll_category.html
+#: lms/templates/emails/enroll_category.txt
+msgid "You have not been enrolled to following courses for some reasons: "
+msgstr ""
+
+#: lms/templates/emails/enroll_category_subject.txt
+msgid "You have been enrolled to {category_name} category courses."
 msgstr ""
 
 #: lms/templates/emails/enroll_email_allowedmessage.html
@@ -16854,6 +16901,7 @@ msgstr ""
 #: lms/templates/static_templates/press.html
 #: lms/templates/static_templates/privacy.html
 #: lms/templates/static_templates/tos.html
+#: lms/templates/static_templates/tos_and_honor.html
 msgid "This page left intentionally blank. Feel free to add your own content."
 msgstr ""
 
@@ -17379,8 +17427,9 @@ msgstr ""
 #: cms/templates/asset_index.html
 msgid ""
 "{em_start}Caution{em_end}: {platform_name} recommends that you limit the "
-"file size to {em_start}10 MB{em_end}. In addition, do not upload video or "
-"audio files. You should use a third party service to host multimedia files."
+"file size to {em_start}{max_filesize} MB{em_end}. In addition, do not upload"
+" video or audio files. You should use a third party service to host "
+"multimedia files."
 msgstr ""
 
 #: cms/templates/asset_index.html
@@ -20415,7 +20464,7 @@ msgstr ""
 msgid ""
 "This will be the address where your article can be found. Use only "
 "alphanumeric characters and - or _. Note that you cannot change the slug "
-"after creating the article."
+"after creating the article.  Please, do not use only numeric characters"
 msgstr ""
 
 #: wiki/forms.py
@@ -20434,6 +20483,10 @@ msgstr ""
 #: wiki/forms.py
 #, python-format
 msgid "A slug named \"%s\" already exists."
+msgstr ""
+
+#: wiki/forms.py
+msgid "Numeric slug is not allowed."
 msgstr ""
 
 #: wiki/forms.py
@@ -20466,10 +20519,6 @@ msgstr ""
 
 #: wiki/forms.py
 msgid "Deny all users access to edit this article."
-msgstr ""
-
-#: wiki/forms.py
-msgid "Permissions"
 msgstr ""
 
 #: wiki/forms.py
