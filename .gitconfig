@@ -1,0 +1,8 @@
+[fetch]
+	prune = true
+
+#[http]
+#lowSpeedTime = 300
+
+[https]
+lowSpeedTime = 300

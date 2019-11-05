@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>LMS Admin - Add Users</title>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<style>
+
+body{
+	background: #f4f4f4;
+}
+
+.lms-admin__table {
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+.lms-admin__header{
+	padding: 15px 0;
+	background: #fff;
+	box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.lms-admin__logo{
+	width: 142px;
+}
+
+.lms-admin__takamol-logo{
+	width: 150px;
+	margin-bottom: 30px;
+}
+
+.lms-admin__footer{
+	background: #626262;
+	padding: 80px 0 180px 0;
+	margin-top: 120px;
+	color: #fff;
+}
+
+.lms-form{
+	box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+	background: #fff;
+	padding: 40px;
+}
+
+</style>
+
+<header class="lms-admin__header">
+		<div class="container">
+			<div class="row">
+				<div class="col">
+						<img src="/static/images/admin_dashboard/3oloom-logo.svg" class="lms-admin__logo" alt="3oloom logo" aria-hidden="true">
+				</div>
+			</div>
+		</div>
+</header>
+
+</head>
+<body>
+
+	<div class="container mt-5">
+		<div class="row">
+			<div class="col d-flex justify-content-between flex-fill">
+				<h1>Add User(s)</h1>
+				<a class="btn btn-primary" href="/admin_dashboard">Back to User Listing</a>
+			</div>
+		</div>
+		<div class="row mt-4">
+			<div class="col">
+				<form id="add-users" class="lms-form" method="post">
+					<div class="form-group">
+						<label for="bulk-email">Enter User Emails (Separated by commas or new lines.)</label>
+						<textarea name="users-emails" id="users-emails" class="form-control" id="bulk-email" rows="6" placeholder="Email Addresses" spellcheck="false" required></textarea>
+					</div>
+
+					<div class="form-group">
+						<label>Link to Subdomain</label>
+						<select class="form-control" name="users-subdoamin" id="users-subdomain" required>
+							<option value="0">Select</option>
+                            % for subdomain in subdomains:
+                                <option value="${ subdomain.id }">${ subdomain.name }</option>
+                            % endfor
+						</select>
+					</div>
+
+                    <div id="msg"></div>
+
+					<div class="d-flex justify-content-center mt-5">
+                        <input name="token" type="hidden" value="${csrf_token}"></input>
+						<button id="create-button" name="create-button" class="btn btn-primary" value="add-users">Add User(s)</button>
+						<button type="button" class="btn btn-default ml-3">Cancel</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+
+
+
+<footer class="lms-admin__footer">
+	<div class="container">
+		<div class="row">
+			<div class="col">
+					<img src="/static/images/admin_dashboard/takamol-logo--white.svg" alt="takamol logo" class="lms-admin__takamol-logo" aria-hidden="true">
+					<p>تكامل القابضة | جميع الحقوق محفوظة © 2019</p>
+			</div>
+		</div>
+	</div>
+
+
+
+</footer>
+	  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
+
+<script>
+    $("#create-button").click(function(ev) {
+	ev.preventDefault();
+        let emails = $('#users-emails').val();
+        let subdomain = $("#users-subdomain").val();
+        let getUrl = "${context['create_bulk_users']}";
+        // let token = $('#token').val();
+
+        $.ajax({
+            dataType: 'json',
+            contentType: 'json',
+            type: 'GET',
+            url: getUrl,
+            data: {'emails':emails, 'subdomain': subdomain},
+            success: function (data) {
+                $('#msg').addClass('alert alert-success text-center');
+                $('#msg').html(data);
+            },
+            error: function () {
+                $('#msg').addClass('alert alert-danger text-center');
+                $('#msg').html("Invalid email, please try again with correct email format");
+            },
+        });
+    })
+</script>

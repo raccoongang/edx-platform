@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>LMS Admin - Add Users</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <style>
+
+        body{
+            background: #f4f4f4;
+        }
+
+
+        .lms-admin__header{
+            padding: 15px 0;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .lms-admin__logo{
+            width: 142px;
+        }
+
+        .lms-admin__takamol-logo{
+            width: 150px;
+            margin-bottom: 30px;
+        }
+
+        .lms-admin__footer{
+            background: #626262;
+            padding: 80px 0 180px 0;
+            margin-top: 120px;
+            color: #fff;
+        }
+
+        .error_message{
+            alignment: center;
+            margin-top: 100px;
+        }
+    </style>
+
+    <header class="lms-admin__header">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <img src="/static/images/admin_dashboard/3oloom-logo.svg" class="lms-admin__logo" alt="3oloom logo" aria-hidden="true">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container error_message">
+        <div class="white-background add-padding">
+
+                <div class="alert alert-danger text-center">
+                    <span>
+                        <i class="fa fa-warning"></i>
+                        <span>You do not have permission to access this page</span>
+                        <i class="fa fa-warning"></i>
+                    </span>
+                </div>
+        </div>
+    </div>
+
+</head>
+<footer class="lms-admin__footer">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <img src="/static/images/admin_dashboard/takamol-logo--white.svg" alt="takamol logo" class="lms-admin__takamol-logo" aria-hidden="true">
+                <p>تكامل القابضة | جميع الحقوق محفوظة © 2019</p>
+            </div>
+        </div>
+    </div>
+
+</footer>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</html>
