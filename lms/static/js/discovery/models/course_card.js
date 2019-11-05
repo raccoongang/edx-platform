@@ -19,7 +19,8 @@
                 id: '',
                 product: false,
                 downloadable: false,
-                external_product_link: ''
+                external_product_link: '',
+                display_number: ''
             }
         });
     });
