@@ -649,7 +649,10 @@ derived_collection_entry('DEFAULT_TEMPLATE_ENGINE', 'DIRS')
 
 ###############################################################################################
 
-AUTHENTICATION_BACKENDS = ['openedx.core.djangoapps.oauth_dispatch.dot_overrides.validators.EdxRateLimitedAllowAllUsersModelBackend']
+AUTHENTICATION_BACKENDS = [# 'openedx.core.djangoapps.oauth_dispatch.dot_overrides.validators.EdxRateLimitedAllowAllUsersModelBackend',
+		            # UpSkilling
+		            'student.backends.MainSiteBackend',
+                            'student.backends.SiteMemberBackend',]
 STUDENT_FILEUPLOAD_MAX_SIZE = 4 * 1000 * 1000  # 4 MB
 MAX_FILEUPLOADS_PER_INPUT = 20
 
@@ -2316,6 +2319,10 @@ INSTALLED_APPS = [
 
     # API Documentation
     'rest_framework_swagger',
+
+
+    #UpSkilling Team
+    'admin_dashboard',
 ]
 
 ######################### CSRF #########################################

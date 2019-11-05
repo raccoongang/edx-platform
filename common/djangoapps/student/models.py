@@ -70,6 +70,7 @@ from track import contexts
 from util.milestones_helpers import is_entrance_exams_enabled
 from util.model_utils import emit_field_changed_events, get_changed_fields_dict
 from util.query import use_read_replica_if_available
+from django.contrib.sites.models import Site
 
 log = logging.getLogger(__name__)
 AUDIT_LOG = logging.getLogger("audit")
@@ -671,6 +672,14 @@ def user_post_save_callback(sender, **kwargs):
         excluded_fields=['last_login', 'first_name', 'last_name'],
         hidden_fields=['password']
     )
+
+
+#UpSkilling Team
+class UserSites(models.Model):
+    user = models.ForeignKey(User, db_index=True)
+    site = models.ForeignKey(Site, db_index=True)
+    takamol_admin = models.BooleanField(default=False)
+    site_admin = models.BooleanField(default=False)
 
 
 class UserSignupSource(models.Model):

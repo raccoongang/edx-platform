@@ -23,7 +23,8 @@ from student.models import (
     RegistrationCookieConfiguration,
     UserAttribute,
     UserProfile,
-    UserTestGroup
+    UserSites
+    UserTestGroup,
 )
 from student.roles import REGISTERED_ACCESS_ROLES
 from xmodule.modulestore.django import modulestore
@@ -260,6 +261,11 @@ class CourseEnrollmentAllowedAdmin(admin.ModelAdmin):
     class Meta(object):
         model = CourseEnrollmentAllowed
 
+#UpSkilling Team
+@admin.register(UserSites)
+class UserSitesAdmin(admin.ModelAdmin):
+    list_display = ('user', 'site')
+    search_fields = ('user', 'site')
 
 admin.site.register(UserTestGroup)
 admin.site.register(Registration)
