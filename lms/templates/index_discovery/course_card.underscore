@@ -13,14 +13,14 @@
     <a href="<%- link %>" target="<%- target %>">
         <header class="course-image">
             <div class="cover-image">
-                <img src="<%- image_url %>" alt="<%- content.display_name %> <%- content.number %>" />
+                <img src="<%- image_url %>" alt="<%- content.display_name %> <%- display_number %>" />
                 <div class="learn-more" aria-hidden="true"><%- buttonText %></div>
             </div>
         </header>
         <section class="course-info" aria-hidden="true">
             <h2 class="course-name">
                 <span class="course-organization"><%- org %></span>
-                <span class="course-code"><%- content.number %></span>
+                <span class="course-code"><%- display_number %></span>
                 <span class="course-title"><%- content.display_name %></span>
             </h2>
             <% if (!product) { %>
@@ -35,7 +35,7 @@
         <div class="sr">
             <ul>
                 <li><%- org %></li>
-                <li><%- content.number %></li>
+                <li><%- display_number %></li>
                 <li><%- gettext("Starts") %><time itemprop="startDate" datetime="<%- start %>"><%- start %></time></li>
             </ul>
         </div>
