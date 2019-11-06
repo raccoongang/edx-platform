@@ -243,6 +243,10 @@ def enqueue_subsection_update(sender, **kwargs):  # pylint: disable=unused-argum
         task_id=task_id,
     )
 
+    InfoTaskRecalculateSubsectionGrade.objects.filter(
+        status=InfoTaskRecalculateSubsectionGrade.SUCCESS_TASK
+    ).delete()
+
     log.info(
         u'Grades: Request async calculation of subsection grades with args: {}. Task [{}]'.format(
             ', '.join('{}:{}'.format(arg, kwargs[arg]) for arg in sorted(kwargs)),
