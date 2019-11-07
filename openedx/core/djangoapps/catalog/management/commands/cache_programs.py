@@ -52,8 +52,12 @@ class Command(BaseCommand):
                     logger.info('Skipping site {domain}. No configuration.'.format(domain=site.domain))
                     cache.set(SITE_PROGRAM_UUIDS_CACHE_KEY_TPL.format(domain=site.domain), [], None)
                     continue
+                else:
+                    course_catalog_api_url = settings.COURSE_CATALOG_API_URL
+            else:
+                course_catalog_api_url = site_config.get_value('COURSE_CATALOG_API_URL')
 
-            client = create_catalog_api_client(user, site=site)
+            client = create_catalog_api_client(user, course_catalog_api_url)
             uuids, program_uuids_failed = self.get_site_program_uuids(client, site)
             new_programs, program_details_failed = self.fetch_program_details(client, uuids)
 

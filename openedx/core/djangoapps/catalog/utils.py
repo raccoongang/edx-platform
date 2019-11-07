@@ -24,18 +24,16 @@ from student.models import CourseEnrollment
 logger = logging.getLogger(__name__)
 
 
-def create_catalog_api_client(user, site=None):
+def create_catalog_api_client(user, course_catalog_api_url=None):
     """Returns an API client which can be used to make Catalog API requests."""
     scopes = ['email', 'profile']
     expires_in = settings.OAUTH_ID_TOKEN_EXPIRATION
     jwt = JwtBuilder(user).build_token(scopes, expires_in)
 
-    if site:
-        url = site.configuration.get_value('COURSE_CATALOG_API_URL', settings.COURSE_CATALOG_API_URL)
-    else:
-        url = CatalogIntegration.current().get_internal_api_url()
+    if not course_catalog_api_url:
+        course_catalog_api_url = CatalogIntegration.current().get_internal_api_url()
 
-    return EdxRestApiClient(url, jwt=jwt)
+    return EdxRestApiClient(course_catalog_api_url, jwt=jwt)
 
 
 def get_programs(site, uuid=None):
