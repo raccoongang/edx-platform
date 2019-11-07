@@ -171,14 +171,12 @@ def notify_student_about_course_is_graded(self, user_id, course_id, **kwargs):
     course = CourseOverview.objects.filter(id=key).first()
     context = {
         'full_name': user.profile.name,
-        'platform_name': configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
         'course_name': course.display_name,
         'site': configuration_helpers.get_value('SITE_NAME', settings.SITE_NAME),
     }
 
-    subject = _("{platform_name} You've received a passing grade in the course: {course_name}!").format(
-        platform_name=context.get('platform_name', ''),
-        course_name=context.get('course_name', ''),
+    subject = _("Congratulations, {full_name}!").format(
+        full_name=context.get('full_name', ''),
     )
 
     from_address = configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
