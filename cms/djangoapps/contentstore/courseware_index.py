@@ -602,6 +602,7 @@ class CourseAboutSearchIndexer(object):
             'product': course.product,
             'downloadable': course.downloadable,
             'external_product_link': course.external_product_link,
+            'display_number': course.display_number_with_default,
         }
 
         # load data for all of the 'about' modules for this course into a dictionary
