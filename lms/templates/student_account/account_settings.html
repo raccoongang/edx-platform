@@ -28,6 +28,8 @@ from webpack_loader.templatetags.webpack_loader import render_bundle
 <%block name="headextra">
     <%static:css group='style-course'/>
     <link type="text/css" rel="stylesheet" href="${STATIC_URL}paragon/static/paragon.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
+    <link  href="/static/${settings.DEFAULT_SITE_THEME}/css/datepicker.css" rel="stylesheet">
 </%block>
 
 <%block name="js_extra">
@@ -76,4 +78,7 @@ from webpack_loader.templatetags.webpack_loader import render_bundle
 </script>
 <%static:webpack entry="StudentAccountDeletionInitializer">
 </%static:webpack>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js"></script>
+<script src="/static/${settings.DEFAULT_SITE_THEME}/js/jquery.inputmask.min.js"></script>
+<script src="/static/${settings.DEFAULT_SITE_THEME}/js/datepicker.min.js"></script>
 </%block>

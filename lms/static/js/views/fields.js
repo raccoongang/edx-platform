@@ -762,6 +762,7 @@
                     helpMessageSubPosition: this.options.helpMessageSubPosition,
                     helpMessageSpecialization: this.options.helpMessageSpecialization,
                 }));
+                this.$('select[multiple]').select2();
                 this.delegateEvents();
                 return this;
             },
