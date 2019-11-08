@@ -3,22 +3,26 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 %>
 
-<div class="wallet-holder">
-    <h3>Add existing wallet</h3>
-    <form action="" id="edeos_form" style="padding: 10px;">
-        <label for="wallet_name">${_("Wallet Name")}</label>
-        <input type="text" name="wallet_name" id="wallet_name" value="${data['wallets_data']['wallet_name']}">
-        <br/>
-        <span class="status-message" id="wallet_name_validation_message"></span>
-        <br/>
-        <label for="profitonomy_public_key">${_("Public Key")}</label>
-        <input type="text" name="profitonomy_public_key" id="profitonomy_public_key" maxlength="64" value="${data['wallets_data']['profitonomy_public_key']}">
-        <br/>
-        <span class="status-message" id="profitonomy_public_key_validation_message"></span>
-        <br/>
-        <input type="submit" value='${_("Add")}'>
-        <br/>
-        <span class="status-message" id="edeos_response"></span>
+<div class="wallet">
+    <h3 class="wallet__heading">Add existing wallet</h3>
+    <form action="" id="edeos_form" class="edeos_form">
+        <div class="wallet__row">
+            <label class="wallet__label" for="wallet_name">${_("Wallet Name")}</label>
+            <input class="wallet__input" type="text" name="wallet_name" id="wallet_name" value="${data['wallets_data']['wallet_name']}">
+        </div>
+        
+        <span class="wallet__message status-message" id="wallet_name_validation_message"></span>
+
+        <div class="wallet__row">
+            <label class="wallet__label" for="profitonomy_public_key">${_("Public Key")}</label>
+            <input class="wallet__input" type="text" name="profitonomy_public_key" id="profitonomy_public_key" value="${data['wallets_data']['profitonomy_public_key']}">
+        </div>
+        
+        <span class="wallet__message status-message" id="profitonomy_public_key_validation_message"></span>
+        
+        <input class="wallet__submit" type="submit" value='${_("Add")}'>
+        
+        <span class="wallet__message status-message" id="edeos_response"></span>
     </form>
     <script type="text/javascript">
         // NOTE: consider moving custom scripts to a dedicated JS module (w/ `reverse`, `gettext`)
