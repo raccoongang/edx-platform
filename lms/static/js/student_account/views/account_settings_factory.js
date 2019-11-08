@@ -307,19 +307,27 @@
 
             positionAccountCollection.fetch({
                 success: function(data) {
-                        aboutSectionsData[1].fields.push({
-                            view: new AccountSettingsFieldViews.EditableDualFieldView({
-                                model: data.models[0],
-                                title: gettext('Position'),
-                                valueAttribute: 'position',
-                                positionChoices: data.models[0].attributes.position.options,
-                                helpMessage: gettext('Select type of your position.'),
-                                helpMessageSubPosition: gettext('Select your position.'),
-                                helpMessageSpecialization: gettext('Select your specialization.'),
-                                persistChanges: true,
-                            })
-                        });
-                accountSettingsView.render()
+                    aboutSectionsData[1].fields.push({
+                        view: new AccountSettingsFieldViews.EditableDualFieldView({
+                            model: data.models[0],
+                            title: gettext('Position'),
+                            valueAttribute: 'position',
+                            positionChoices: data.models[0].attributes.position.options,
+                            helpMessage: gettext('Select type of your position.'),
+                            helpMessageSubPosition: gettext('Select your position.'),
+                            helpMessageSpecialization: gettext('Select your specialization.'),
+                            persistChanges: true,
+                        })
+                    });
+                    accountSettingsView.render();
+                    // input mask for 'phone' field
+                    $('#field-input-phone').inputmask("(999) 999 99 99");
+                    // datepicker for 'date of birth' field
+                    $('#field-input-date_of_birth').attr('autocomplete','off').datepicker({
+                        format: 'yyyy-mm-dd',
+                        autoHide: true,
+                        endDate: new Date()
+                    });
                 },
                 error: showLoadingError
             });

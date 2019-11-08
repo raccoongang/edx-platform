@@ -15,7 +15,7 @@
 
 <% if (selectSubPositions && selectSubPositions.length) { %>
     <div class="u-field-value field">
-        <label class="u-field-title field-label" for="u-field-select-<%- id %>">Sub Position</label>
+        <label class="u-field-title field-label" for="u-field-select-sub-<%- id %>">Sub Position</label>
         <select name="select" id="u-field-select-sub-<%- id %>" aria-describedby="u-field-help-message-<%- id %>">
             <option value="">-----</option>
             <% _.each(selectSubPositions, function(selectOption) { %>
@@ -31,9 +31,8 @@
 
     <% if (specialization && specialization.length) { %>
         <div class="u-field-value field">
-            <label class="u-field-title field-label" for="u-field-select-<%- id %>">Specialization</label>
+            <label class="u-field-title field-label" for="u-field-select-spec-<%- id %>">Specialization</label>
             <select name="select" multiple id="u-field-select-spec-<%- id %>" aria-describedby="u-field-help-message-<%- id %>">
-                <option value="">-----</option>
                 <% _.each(specialization, function(selectOption) { %>
                     <option value="<%- selectOption[0] %>" <% if (selectedSpecializations.indexOf(selectOption[0]) != -1) { %> selected <% } %> ><%- selectOption[1] %></option>
                 <% }); %>

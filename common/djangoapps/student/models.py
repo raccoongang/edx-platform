@@ -431,7 +431,7 @@ class UserProfile(models.Model):
     bio = models.CharField(blank=True, null=True, max_length=3000, db_index=False)
     profile_image_uploaded_at = models.DateTimeField(null=True, blank=True)
 
-    phone = models.CharField(max_length=13, null=True, blank=True)
+    phone = models.CharField(max_length=20, null=True, blank=True)
     second_name = models.CharField(max_length=100, null=True, blank=True)
     additional_email = models.EmailField(max_length=255, null=True, blank=True)
     date_of_birth = models.DateField(blank=True, null=True, db_index=True)
