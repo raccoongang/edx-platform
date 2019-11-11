@@ -3,7 +3,7 @@ Course API Views
 """
 
 from django.core.exceptions import ValidationError
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 
 from openedx.core.lib.api.paginators import NamespacedPageNumberPagination
 from openedx.core.lib.api.view_utils import view_auth_classes, DeveloperErrorViewMixin
@@ -13,7 +13,7 @@ from .serializers import CourseSerializer, CourseDetailSerializer
 
 
 @view_auth_classes(is_authenticated=False)
-class CourseDetailView(DeveloperErrorViewMixin, RetrieveAPIView):
+class CourseDetailView(DeveloperErrorViewMixin, RetrieveUpdateAPIView):
     """
     **Use Cases**
 
