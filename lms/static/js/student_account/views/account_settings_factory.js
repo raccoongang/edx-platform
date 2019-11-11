@@ -58,7 +58,7 @@
                             })
                         },
                         {
-                            view: new AccountSettingsFieldViews.EmailFieldView({
+                            view: new AccountSettingsFieldViews.ReadonlyFieldView({
                                 model: userAccountModel,
                                 title: gettext('Email Address'),
                                 valueAttribute: 'email',
