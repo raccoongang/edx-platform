@@ -450,11 +450,16 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
                 )
                 continue
 
+            # XBlock icons customizations
             is_scorm = False
             for child in item.children:
                 if child.category == 'scormxblock':
                     is_scorm = True
-                    break
+
+                child_xblock = self.get_child(child)
+                custom_type = getattr(child_xblock, 'custom_type', '')
+                if custom_type:
+                    item_type = custom_type
 
             show_bookmark_button = False
             is_bookmarked = False
