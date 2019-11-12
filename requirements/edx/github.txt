@@ -108,3 +108,6 @@ git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.18#egg=xblock-
 
 # Custom video_xblock
 git+https://github.com/raccoongang/xblock-video.git@greenhost-ginkgo-v0.9.1#egg=video_xblock==0.9.1
+
+# Interactive Network Diagram
+-e git+https://code.greenhost.net/totem/ind.git#egg=indie==0.1
