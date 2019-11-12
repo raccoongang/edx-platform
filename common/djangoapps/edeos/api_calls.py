@@ -140,7 +140,9 @@ class EdeosBaseApiClient(object):
         }
         if headers is not None:
             headers_.update(headers)
-        resp = requests.post(url, json=payload, headers=headers_)
+        resp = requests.post(url, data=payload, headers=headers_)
+        if resp.status_code != httplib.OK:
+            resp = requests.post(url, json=payload, headers=headers_)
         log.info("Edeos response: status {}, content {}".format(resp.status_code, resp.content))
         if resp.status_code in (httplib.OK, httplib.CREATED):
             try:
@@ -188,6 +190,7 @@ class EdeosApiClient(EdeosBaseApiClient):
                 payload=payload)
             return response
         except (EdeosApiClientError, EdeosApiClientErrorUnauthorized) as e:
+            # NOTE: consider returning error codes and messages instead of None
             print("Edeos '{}' call failed. {}".format(endpoint_url, e.__class__.error_message))
             return None
         except ValueError as e:
@@ -199,6 +202,7 @@ class EdeosApiClient(EdeosBaseApiClient):
     def wallet_store(self, payload):
         return self.call_api("wallet/store", payload)
 
+    # TODO consider removing (no longer used; replaced with `wallet_store`)
     def wallet_update(self, payload):
         return self.call_api("wallet/update", payload)
 

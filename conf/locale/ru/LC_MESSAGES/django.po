@@ -24756,3 +24756,19 @@ msgstr ""
 "Если Вы не создавали учетную запись, дальнейших действий не требуется; "
 "Вы больше не будете получать от нас сообщения. Если Вам потребуется помощь, пожалуйста, не отвечайте на это сообщение. "
 "Обратитесь к разделу \"Помощь\" на веб-сайте {platform_name}."
+
+#: common/templates/edeos/update_wallet.html
+msgid "The EOS account name must be exactly 12 characters long and must consist of lowercase letters and numbers up to 5."
+msgstr "Имя аккаунта EOS должно быть ровно 12 символов и состоять из строчных букв и цифр до 5."
+
+#: common/templates/edeos/update_wallet.html
+msgid "Add"
+msgstr "Добавить"
+
+#: common/templates/edeos/update_wallet.html
+msgid "Wallet Name"
+msgstr "Имя кошелька"
+
+#: common/templates/edeos/update_wallet.html
+msgid "Public Key"
+msgstr "Публичный ключ"

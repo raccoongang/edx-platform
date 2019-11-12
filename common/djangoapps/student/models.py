@@ -296,7 +296,8 @@ class UserProfile(models.Model):
     profile_image_uploaded_at = models.DateTimeField(null=True, blank=True)
     mobytize_id = models.CharField(max_length=32, blank=True)
     mobytize_token = models.CharField(max_length=64, blank=True)
-
+    profitonomy_public_key = models.CharField(max_length=64, blank=True)
+    wallet_name = models.CharField(max_length=12, blank=True)
 
     @property
     def has_profile_image(self):
@@ -413,6 +414,34 @@ class UserProfile(models.Model):
             Unicode cache key
         """
         return cls.PROFILE_COUNTRY_CACHE_KEY.format(user_id=user_id)
+
+    def save_profitonomy_public_key(self, profitonomy_public_key):
+        """
+        Store a public key.
+
+        Normally used for wallets storage.
+
+        Arguments:
+            profitonomy_public_key (str): a public key.
+                Example:
+                ```
+                EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u
+                ```
+        """
+        self.profitonomy_public_key = profitonomy_public_key
+        self.save()
+
+    def save_wallet_name(self, wallet_name):
+        """
+        Store a wallet name.
+
+        Normally used for wallets storage.
+
+        Arguments:
+            wallet_name (str): a wallet name.
+        """
+        self.wallet_name = wallet_name
+        self.save()
 
     def __unicode__(self):
         return unicode(self.user.email)

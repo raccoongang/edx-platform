@@ -1,36 +1,45 @@
 <%!
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 %>
 
-<div class="wallet-holder">
-    <h3>Add existing wallet</h3>
-    <span id="edeos_response"></span>
-    <form action="" id="edeos_form" style="padding: 10px;">
-        <label for="wallet_name" style="display: inline;">Wallet name</label>
-        <input type="text" name="wallet_name" id="wallet_name">
-        <input type="submit" id="submit" value="Add">
-    </form>
-    <style>
-        .status-error {
-            color: red;
-        }
+<div class="wallet">
+    <h3 class="wallet__heading">Add existing wallet</h3>
+    <form action="" id="edeos_form" class="edeos_form">
+        <div class="wallet__row">
+            <label class="wallet__label" for="wallet_name">${_("Wallet Name")}</label>
+            <input class="wallet__input" type="text" name="wallet_name" id="wallet_name" value="${data['wallets_data']['wallet_name']}">
+        </div>
+        
+        <span class="wallet__message status-message" id="wallet_name_validation_message"></span>
 
-        .status-success {
-            color: green;
-        }
-    </style>
+        <div class="wallet__row">
+            <label class="wallet__label" for="profitonomy_public_key">${_("Public Key")}</label>
+            <input class="wallet__input" type="text" name="profitonomy_public_key" id="profitonomy_public_key" value="${data['wallets_data']['profitonomy_public_key']}">
+        </div>
+        
+        <span class="wallet__message status-message" id="profitonomy_public_key_validation_message"></span>
+        
+        <input class="wallet__submit" type="submit" value='${_("Add")}'>
+        
+        <span class="wallet__message status-message" id="edeos_response"></span>
+    </form>
     <script type="text/javascript">
-         /**
+        // NOTE: consider moving custom scripts to a dedicated JS module (w/ `reverse`, `gettext`)
+
+        /**
          * Display message with results of a performed action (e.g. a transcript manual or automatic upload).
          * @param {jQuery Elements} $el     Container elements where message should be displayed.
          * @param {String}          type    Message type: 'success' or 'error'.
          * @param {String}          message Status message for user to be displayed.
          */
         function showStatus($el, type, message) {
-            // TODO move to js
             'use strict';
 
-            var msgShowTime = 10000; // 10 seconds
+            // Hide all currently shown messages if any
+            $('.status-message').addClass('is-hidden');
+
+            let msgShowTime = 10000; // 10 seconds
 
             $el.removeClass('status-error status-success is-hidden').addClass('status-' + type)
                .text(message);
@@ -40,16 +49,85 @@ from django.core.urlresolvers import reverse
             }, msgShowTime);
         }
 
+        /**
+         * Validate `wallet_name` text.
+         *
+         * Rules:
+         *   length equals to 12,
+         *   at least one letter,
+         *   at least one digit,
+         *   all symbols lowercase,
+         *   all numbers up to 5,
+         *   no special characters (should be alphanumeric).
+         */
+        function validateWalletNameContent() {
+            let walletName = $('#wallet_name').val().trim();
+            // Note: consider passing the configs from backend
+            const maxLength = 12;
+            if (walletName.length !== maxLength) {
+                return false;
+            }
+            // Only lowercase letters and digits (value up to 5)
+            // At least one digit (value up to 5) and one letter
+            return !/[^a-z0-5]/.test(walletName) && /(?=.*?[0-5])(?=.*?[a-z]).+/.test(walletName);
+        }
+
+        /**
+         * Validate `edeos_form` form.
+         *
+         * NOTE: consider refactoring with prototypes
+         */
+        function validateWalletForm() {
+            if (!validateWalletNameContent()) {
+                showStatus(
+                    $('#wallet_name_validation_message'),
+                    "error",
+                    "${_('The EOS account name must be exactly 12 characters long and must consist of lowercase letters and numbers up to 5.')}"
+                );
+                return false;
+            }
+            return true;
+        }
+
+        /**
+         * Manage the wallets form submit button.
+         *
+         * "Add" btn should show up only when all fields' data are provided.
+         */
+        function manageWalletActionDisplay() {
+            if ($('#wallet_name').val() !== "" && $('#profitonomy_public_key').val() !== "") {
+                $("input[type=submit]", $("#edeos_form")).show();
+            } else {
+                 $("input[type=submit]", $("#edeos_form")).hide();
+            }
+        }
+
         $(document).ready(function() {
+
+            // "Add" btn should show up only when all fields' data are provided
+            manageWalletActionDisplay();
+            $( "#profitonomy_public_key, #wallet_name" ).on("keyup change", function() {
+                manageWalletActionDisplay();
+            });
+
             $("#edeos_form").submit(function(e) {
                 e.preventDefault();
             });
-            $('#submit').on("click", function(event){
+
+            $("input[type=submit]", $("#edeos_form")).on("click", function(e){
+
+                if (!validateWalletForm()) {
+                    e.preventDefault();
+                    return false;
+                }
+
                 $.ajax({
                     url: "${reverse('edeos:update')}",
                     method: 'post',
+                    dataType: 'text',
                     data: {
-                        wallet_name: $('#wallet_name').val()
+                        wallet_name: $('#wallet_name').val(),
+                        profitonomy_public_key: $('#profitonomy_public_key').val()
                     },
                     success: function(data) {
                         let stringData = "API response - ";
@@ -62,9 +140,6 @@ from django.core.urlresolvers import reverse
                     error: function() {
                         showStatus($('#edeos_response'), "error", "Couldn't create a new wallet.")
                     },
-                    complete: function(data) {
-                        showStatus($('#edeos_response'), "success", "New wallet has been created.")
-                    }
                 });
             });
         });
