@@ -191,19 +191,6 @@
 
             tabSections['aboutTabSections'] = aboutSectionsData;
 
-            // set TimeZoneField to listen to CountryField
-            getUserField = function(list, search) {
-                return _.find(list, function(field) {
-                    return field.view.options.valueAttribute === search;
-                }).view;
-            };
-            userFields = _.find(aboutSectionsData, function(section) {
-                return section.title === gettext('Basic Account Information');
-            }).fields;
-            timeZoneDropdownField = getUserField(userFields, 'time_zone');
-            countryDropdownField = getUserField(userFields, 'country');
-            timeZoneDropdownField.listenToCountryView(countryDropdownField);
-
             if(authData.providers != undefined){
                 accountsSectionData = [
                     {
