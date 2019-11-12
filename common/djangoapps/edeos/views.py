@@ -43,7 +43,7 @@ def update_wallet(request):
             }
             response = send_edeos_api_request(**edeos_post_data)
             if response:
-                profile = UserProfile.objects.get(user=request.user)
+                profile = UserProfile.objects.filter(user=request.user).first()
                 if profile:
                     profile.save_profitonomy_public_key(profitonomy_public_key)
                     profile.save_wallet_name(wallet_name)
