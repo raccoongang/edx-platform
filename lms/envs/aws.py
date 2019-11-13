@@ -1107,4 +1107,6 @@ if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
     sentry_sdk.init(AUTH_TOKENS.get('RG_SENTRY_DSN'), integrations=[DjangoIntegration()])
+
+TEDIX_SMS_SETTINGS = AUTH_TOKENS.get('TEDIX_SMS_SETTINGS')
 #RACCOONGANG
