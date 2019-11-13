@@ -23,6 +23,7 @@ from openedx.core.lib.gating.api import get_required_content
 from pytz import UTC, timezone
 from xmodule.modulestore.django import modulestore
 
+from calypso_reg_form.models import UserSpendTimeCourse
 from certificates.models import GeneratedCertificate, CertificateStatuses
 from courseware.courses import get_course_by_id
 from courseware.models import StudentModule
@@ -358,9 +359,17 @@ def upload_all_courses_certificates_report(_xmodule_instance_args, _entry_id, co
 
 
 def get_certificates_report(courses):
-    header = ["Awarded Date: Date", "Certificate: Name", "Student: Full Name", "Student: Email",
-              "User Certificate: Certificate Number", "User Certificate: Score",
-              "Student: State Abbreviation", "User Student License Number: License Number"]
+    header = [
+        "Awarded Date: Date",
+        "Certificate: Name",
+        "Student: Full Name",
+        "Student: Email",
+        "User Certificate: Certificate Number",
+        "User Certificate: Score",
+        "Student: State Abbreviation",
+        "User Student License Number: License Number",
+        "Total spent time (minutes)"
+    ]
     csv_rows = []
 
     for course_overview in courses:
@@ -395,13 +404,22 @@ def get_certificates_report(courses):
             except AttributeError:
                 state_extra_infos = []
 
+            user_spend_time_course = UserSpendTimeCourse.objects.filter(
+                user=generated_certificate.user,
+                course_id=generated_certificate.course_id
+            ).first()
+
+            spend_time = user_spend_time_course and int(user_spend_time_course.spend_time / 60) or ''
+
             for state_extra_info in state_extra_infos:
                 row_copy = row[:]
                 row_copy.append(state_extra_info.state)
                 row_copy.append(state_extra_info.license)
+                row_copy.append(spend_time)
                 csv_rows.append(row_copy)
 
             if not state_extra_infos:
+                row.append(spend_time)
                 csv_rows.append(row)
 
     return header, csv_rows

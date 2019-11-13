@@ -20,6 +20,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
+from django.utils.timezone import now
 from model_utils.models import TimeStampedModel
 
 import coursewarehistoryextended
@@ -365,6 +366,8 @@ class UserCheckActivityConfig(ConfigurationModel):
         help_text="Student idle time in minutes."
     )
 
+    start_tracking = models.DateTimeField(default=now)
+
     def __unicode__(self):
         return u'UserCheckActivity: "{}" {} minutes'.format(
             self.enabled and 'Enabled' or 'Disabled', self.timeout
@@ -373,6 +376,10 @@ class UserCheckActivityConfig(ConfigurationModel):
     @property
     def timeout_milliseconds(self):
         return self.timeout * 60000
+
+    @property
+    def timeout_seconds(self):
+        return self.timeout * 60
 
     def serialize(self):
         return json.dumps({'enabled': self.enabled, 'timeout': self.timeout_milliseconds})

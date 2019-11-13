@@ -667,6 +667,15 @@ urlpatterns += (
         ),
         include('openedx.features.course_search.urls'),
     ),
+
+    # Set the spend time on the course
+    url(
+        r'^courses/{}/spend_time/'.format(
+            settings.COURSE_ID_PATTERN,
+        ),
+        'calypso_reg_form.views.set_spend_time',
+        name='course_spend_time',
+    ),
 )
 
 if settings.FEATURES["ENABLE_TEAMS"]:
