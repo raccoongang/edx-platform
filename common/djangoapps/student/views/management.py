@@ -204,13 +204,16 @@ def compose_and_send_activation_email(user, profile, user_registration=None):
     # Email subject *must not* contain newlines
     subject = ''.join(subject.splitlines())
     message_for_activation = render_to_string('emails/activation_email.txt', context)
+    html_message_for_activation = render_to_string('emails/activation_email.html', context)
     from_address = configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
     from_address = configuration_helpers.get_value('ACTIVATION_EMAIL_FROM_ADDRESS', from_address)
     if settings.FEATURES.get('REROUTE_ACTIVATION_EMAIL'):
         dest_addr = settings.FEATURES['REROUTE_ACTIVATION_EMAIL']
         message_for_activation = ("Activation for %s (%s): %s\n" % (user, user.email, profile.name) +
                                   '-' * 80 + '\n\n' + message_for_activation)
-    send_activation_email.delay(subject, message_for_activation, from_address, dest_addr)
+    send_activation_email.delay(
+        subject, message_for_activation, from_address, dest_addr, html_message=html_message_for_activation
+    )
 
 
 def send_reactivation_email_for_user(user):
@@ -238,11 +241,12 @@ def send_reactivation_email_for_user(user):
     subject = render_to_string('emails/activation_email_subject.txt', context)
     subject = ''.join(subject.splitlines())
     message = render_to_string('emails/activation_email.txt', context)
+    html_message = render_to_string('emails/activation_email.html', context)
     from_address = configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
     from_address = configuration_helpers.get_value('ACTIVATION_EMAIL_FROM_ADDRESS', from_address)
 
     try:
-        user.email_user(subject, message, from_address)
+        user.email_user(subject, message, from_address, html_message=html_message)
     except Exception:  # pylint: disable=broad-except
         log.error(
             u'Unable to send reactivation email from "%s" to "%s"',
@@ -1140,7 +1144,8 @@ def do_email_change_request(user, new_email, activation_key=None, secondary_emai
             }
         )
 
-    use_https = theming_helpers.get_current_request().is_secure()
+    request = theming_helpers.get_current_request()
+    use_https = request.is_secure()
 
     site = Site.objects.get_current()
     message_context = get_base_template_context(site)
@@ -1153,6 +1158,7 @@ def do_email_change_request(user, new_email, activation_key=None, secondary_emai
             site=configuration_helpers.get_value('SITE_NAME', settings.SITE_NAME),
             link=confirm_link,
         ),
+        'request': request,
     })
 
     msg = EmailChange().personalize(
@@ -1237,6 +1243,7 @@ def confirm_email_change(request, key):  # pylint: disable=unused-argument
         subject = render_to_string('emails/email_change_subject.txt', address_context)
         subject = ''.join(subject.splitlines())
         message = render_to_string('emails/confirm_email_change.txt', address_context)
+        html_message = render_to_string('emails/confirm_email_change.html', address_context)
         u_prof = UserProfile.objects.get(user=user)
         meta = u_prof.get_meta()
         if 'old_emails' not in meta:
@@ -1249,7 +1256,8 @@ def confirm_email_change(request, key):  # pylint: disable=unused-argument
             user.email_user(
                 subject,
                 message,
-                configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
+                configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL),
+                html_message=html_message
             )
         except Exception:    # pylint: disable=broad-except
             log.warning('Unable to send confirmation email to old address', exc_info=True)
@@ -1265,7 +1273,8 @@ def confirm_email_change(request, key):  # pylint: disable=unused-argument
             user.email_user(
                 subject,
                 message,
-                configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
+                configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL),
+                html_message=html_message
             )
         except Exception:  # pylint: disable=broad-except
             log.warning('Unable to send confirmation email to new address', exc_info=True)
