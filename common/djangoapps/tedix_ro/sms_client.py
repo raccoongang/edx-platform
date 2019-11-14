@@ -2,11 +2,11 @@
 Client to deal with SMS provider
 """
 import logging
-import requests
 from urllib import quote_plus
 from urlparse import urljoin
 
 from django.conf import settings
+import requests
 
 
 log = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ class Singletone(object):
 
 class SMSClient(Singletone):
     """
-    Client for handling different types of requests
+    Client for handling different types of requests.
     """
     ACCESS_TOKEN_TEMPLATE = '/token/{username}/{password}'
     SEND_MESSAGE_TEMPLATE = '/trimite/{username}/{token}/Q1/{number}/{message}'
@@ -49,7 +49,11 @@ class SMSClient(Singletone):
         Get needed settings, API_KEY, sms gateway etc.
         """
         sms_creds = settings.TEDIX_SMS_SETTINGS
-        assert sms_creds and sms_creds.get("username") and sms_creds.get("username") and sms_creds.get('base_url'), 'SMS provider credentials are not provided!!!'
+        assert (
+            sms_creds and
+            sms_creds.get("username") and
+            sms_creds.get("username") and
+            sms_creds.get('base_url')), 'SMS provider credentials are not provided!!!'
         return dict(
             username=sms_creds.get("username"),
             password=sms_creds.get('password'),
@@ -58,7 +62,7 @@ class SMSClient(Singletone):
     
     def _get(self, template, **kwargs):
         """
-        Get request to SMS provider.
+        GET request to SMS provider.
         Arguments:
             url (str): ready url to use
         Returns response data.
@@ -81,7 +85,6 @@ class SMSClient(Singletone):
             else:
                 return data
 
-    
     def _get_url_template(self, template):
         """
         Compose url with base_url and template.
@@ -111,7 +114,6 @@ class SMSClient(Singletone):
             return self.access_token
         return self._refresh_token()
 
-    
     def send_message(self, number, message):
         """
         Send SMS to number with message.
@@ -134,7 +136,7 @@ class SMSClient(Singletone):
             return response_data
         else:
             log.error('Error while sending message')
-    
+
     def get_credit(self):
         """
         Get credit.
@@ -164,5 +166,3 @@ class SMSClient(Singletone):
                 status = datum.get('status')
                 queue_history.append(status_mapping.get(status, ''))
             return ', '.join(queue_history)
-
-    
