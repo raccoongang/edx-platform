@@ -116,7 +116,8 @@ def learner_profile_context(request, profile_username, user_is_staff):
             'backpack_ui_img': staticfiles_storage.url('certificates/images/backpack-ui.png'),
             'platform_name': configuration_helpers.get_value('platform_name', settings.PLATFORM_NAME),
             'active_course': True if active_course else False,
-            # Skillonomy customization. Branding policy tends to change (Edeos, Mobytize, Protifonomy)
+            # Skillonomy customization.
+            # Branding/environments tend to update (Edeos, Mobytize, Protifonomy)
             'edeos_balance': edeos_resp,
             "mobytize_token": profile_user.profile.mobytize_token,
             "users": profile_user.profile.mobytize_id,

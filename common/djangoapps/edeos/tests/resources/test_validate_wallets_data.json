@@ -77,10 +77,10 @@
     "wallet_name": "11111ddwørld",
     "result": false
   },
-    {
-    "description": "14. Wrong length: profitonomy_public_key",
+  {
+    "description": "14. Success; length (interval [1:64]): profitonomy_public_key",
     "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDH",
     "wallet_name": "ddddddd11115",
-    "result": false
+    "result": true
   }
 ]
