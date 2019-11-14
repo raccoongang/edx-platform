@@ -17,8 +17,8 @@ import logging
 from provider.utils import long_token
 from provider.oauth2.models import Client
 from social.backends.base import BaseAuth
-from social.backends.oauth import OAuthAuth, SAMLIdentityProvider
-from social.backends.saml import SAMLAuth
+from social.backends.oauth import OAuthAuth
+from social.backends.saml import SAMLAuth, SAMLIdentityProvider
 from .lti import LTIAuthBackend, LTI_PARAMS_KEY
 from social.exceptions import SocialAuthBaseException
 from social.utils import module_member
