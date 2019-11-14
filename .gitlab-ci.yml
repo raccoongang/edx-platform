@@ -2,7 +2,7 @@
 touch-deploy:
     stage: deploy
     script:
-        - apk add curl
-        - "curl -X POST -F token=${DEPLOY_REPO_TOKEN} -F ref=master ${DEPLOY_REPO_TRIGGER_URL}"
+        - "apk add curl"
+        - "curl -X POST -F token=${PSTF_DEPLOY_TRIGGER_TOKEN} -F ref=master https://gitlab.raccoongang.com/api/v4/projects/369/trigger/pipeline"
     only:
         - master
