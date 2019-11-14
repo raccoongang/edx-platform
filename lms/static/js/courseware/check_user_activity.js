@@ -2,13 +2,15 @@
     'use strict';
 
     define([], function() {
-        return function(options) {
+        return function(options, url) {
             if (!options.enabled) {
                 return;
             }
 
+            var timerIdInterval;
+
             var checkActivity = function() {
-                var timer;
+                var timerIdTimeout;
                 var events = ['click', 'mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
 
                 window.addEventListener('load', resetTimer, true);
@@ -21,12 +23,30 @@
                 }
 
                 function resetTimer() {
-                    clearTimeout(timer);
-                    timer = setTimeout(redirect, options.timeout || 600000);
+                    clearTimeout(timerIdTimeout);
+                    timerIdTimeout = setTimeout(redirect, options.timeout || 600000);
                 }
             };
 
+            function setSpendTime(pageClose=false) {
+                if (pageClose) {
+                    clearTimeout(timerIdInterval);
+                }
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    contentType: 'application/x-www-form-urlencoded ',
+                    data: {page_close: pageClose},
+                    headers: {
+                        'X-CSRFToken': $.cookie('csrftoken')
+                    },
+                })
+            }
+
             window.onload = checkActivity;
+            window.addEventListener('beforeunload', function() { setSpendTime(true) });
+            timerIdInterval = setInterval(setSpendTime, 60000);
+            setSpendTime();
         };
     });
 }).call(this, define || RequireJS.define);

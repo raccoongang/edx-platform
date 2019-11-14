@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from calypso_reg_form.models import ExtraInfo, StateExtraInfo
+from calypso_reg_form.models import ExtraInfo, StateExtraInfo, UserSpendTimeCourse
 
 
 class StateInline(admin.StackedInline):
@@ -13,3 +13,4 @@ class ExtraInfoAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ExtraInfo, ExtraInfoAdmin)
+admin.site.register(UserSpendTimeCourse)

@@ -361,6 +361,7 @@ class CoursewareIndex(View):
             'upgrade_price': get_cosmetic_verified_display_price(self.course),
             # ENDTODO
             'check_student_activity_config': UserCheckActivityConfig.current().serialize(),
+            'url_course_spend_time': reverse('course_spend_time', args=[unicode(self.course_key)])
         }
         table_of_contents = toc_for_course(
             self.effective_user,
