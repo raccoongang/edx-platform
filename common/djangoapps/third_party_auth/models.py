@@ -18,8 +18,9 @@ from provider.utils import long_token
 from provider.oauth2.models import Client
 from social.backends.base import BaseAuth
 from social.backends.oauth import OAuthAuth
-from social.backends.saml import SAMLAuth, SAMLIdentityProvider
+from social.backends.saml import SAMLAuth
 from .lti import LTIAuthBackend, LTI_PARAMS_KEY
+from .provider import EtihadSAMLIdentityProvider
 from social.exceptions import SocialAuthBaseException
 from social.utils import module_member
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
@@ -397,7 +398,7 @@ class SAMLProviderConfig(ProviderConfig):
 
     def get_config(self):
         """
-        Return a SAMLIdentityProvider instance for use by SAMLAuthBackend.
+        Return a EtihadSAMLIdentityProvider instance for use by SAMLAuthBackend.
 
         Essentially this just returns the values of this object and its
         associated 'SAMLProviderData' entry.
@@ -420,7 +421,7 @@ class SAMLProviderConfig(ProviderConfig):
             raise AuthNotConfigured(provider_name=self.name)
         conf['x509cert'] = data.public_key
         conf['url'] = data.sso_url
-        return SAMLIdentityProvider(self.idp_slug, **conf)
+        return EtihadSAMLIdentityProvider(self.idp_slug, **conf)
 
 
 class SAMLConfiguration(ConfigurationModel):
