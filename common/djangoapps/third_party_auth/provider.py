@@ -2,28 +2,12 @@
 Third-party auth provider configuration API.
 """
 from django.contrib.sites.models import Site
-from social.backends.saml import SAMLIdentityProvider
-
 from openedx.core.djangoapps.theming.helpers import get_current_request
 
 from .models import (
     OAuth2ProviderConfig, SAMLConfiguration, SAMLProviderConfig, LTIProviderConfig,
     _PSA_OAUTH2_BACKENDS, _PSA_SAML_BACKENDS, _LTI_BACKENDS,
 )
-
-
-
-class EtihadSAMLIdentityProvider(SAMLIdentityProvider):
-
-    def get_user_details(self, attributes):
-        """
-        Compose fullname from the first_name and last_name if it's not provided.
-        """
-        details = super(EtihadSAMLIdentityProvider, self).get_user_details(attributes)
-        details.update({
-            'fullname': details['fullname'] or '%s %s' % (details['first_name'], details['last_name'])
-        })
-        return details
 
 
 class Registry(object):

@@ -17,16 +17,28 @@ import logging
 from provider.utils import long_token
 from provider.oauth2.models import Client
 from social.backends.base import BaseAuth
-from social.backends.oauth import OAuthAuth
+from social.backends.oauth import OAuthAuth, SAMLIdentityProvider
 from social.backends.saml import SAMLAuth
 from .lti import LTIAuthBackend, LTI_PARAMS_KEY
-from .provider import EtihadSAMLIdentityProvider
 from social.exceptions import SocialAuthBaseException
 from social.utils import module_member
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.theming.helpers import get_current_request
 
 log = logging.getLogger(__name__)
+
+
+class EtihadSAMLIdentityProvider(SAMLIdentityProvider):
+
+    def get_user_details(self, attributes):
+        """
+        Compose fullname from the first_name and last_name if it's not provided.
+        """
+        details = super(EtihadSAMLIdentityProvider, self).get_user_details(attributes)
+        details.update({
+            'fullname': details['fullname'] or '%s %s' % (details['first_name'], details['last_name'])
+        })
+        return details
 
 
 # A dictionary of {name: class} entries for each python-social-auth backend available.
