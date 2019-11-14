@@ -3416,7 +3416,14 @@ def all_courses_certificates_report(request, course_id):
     """
     course_key = SlashSeparatedCourseKey.from_deprecated_string(course_id)
     try:
-        lms.djangoapps.instructor_task.api.submit_all_courses_certificates_report_csv(request, course_key)
+        lms.djangoapps.instructor_task.api.submit_all_courses_certificates_report_csv(
+            request,
+            course_key,
+            {
+                'from_date': request.POST.get('from_date'),
+                'to_date': request.POST.get('to_date')
+            }
+        )
         success_status = _("The courses certificates report is being created."
                            " To view the status of the report, see Pending Tasks below.")
         return JsonResponse({"status": success_status})

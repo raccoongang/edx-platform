@@ -86,6 +86,19 @@ from openedx.core.djangolib.markup import HTML, Text
     <p>
       <input type="button" name="course-certificates-report-csv" class="async-report-btn" value="${_("Generate CSV Course Report")}" data-endpoint="${ section_data['course_certificates_report_url'] }"/>
       <input type="button" name="all-courses-certificates-report-csv" class="async-report-btn" value="${_("Generate CSV All Courses Report")}" data-endpoint="${ section_data['all_courses_certificates_report_url'] }"/>
+      <p>
+        <label for="from-timeframe">${_("From")}</label>
+        <input type="text" id="from-timeframe" name="from">
+        <label for="to-timeframe">${_("to")}</label>
+        <input type="text" id="to-timeframe" name="to">
+        <input type="button"
+               class="async-report-btn"
+               name="timeframe-courses-certificates-report-csv"
+               value="${_("Generate CSV All Courses report with timeframe")}"
+               data-endpoint="${ section_data['all_courses_certificates_report_url'] }"
+               disabled
+        />
+      </p>
     </p>
 
     <p>${_("To generate a CSV file Student Progress Transcript")}</p>

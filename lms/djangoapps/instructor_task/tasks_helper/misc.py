@@ -342,7 +342,7 @@ def upload_all_courses_certificates_report(_xmodule_instance_args, _entry_id, co
 
     courses = CourseOverview.objects.filter(Q(end__gte=start_date-timedelta(days=365)) | Q(end__isnull=True))
 
-    header, csv_rows = get_certificates_report(courses)
+    header, csv_rows = get_certificates_report(courses, _task_input.get('from_date'), _task_input.get('to_date'))
 
     task_progress.attempted = task_progress.succeeded = len(csv_rows)
     task_progress.skipped = task_progress.total - task_progress.attempted
@@ -358,7 +358,7 @@ def upload_all_courses_certificates_report(_xmodule_instance_args, _entry_id, co
     return task_progress.update_task_state(extra_meta=current_step)
 
 
-def get_certificates_report(courses):
+def get_certificates_report(courses, from_date=None, to_date=None):
     header = [
         "Awarded Date: Date",
         "Certificate: Name",
@@ -378,6 +378,13 @@ def get_certificates_report(courses):
             course_id=course_overview.id,
             status=CertificateStatuses.downloadable
         )
+
+        if from_date and to_date:
+            generated_certificates = generated_certificates.filter(
+                created_date__gte=from_date,
+                created_date__lte=to_date
+            )
+
         for generated_certificate in generated_certificates:
             row = []
             row.append(generated_certificate.created_date.astimezone(timezone(settings.TIME_ZONE)).strftime("%d/%m/%Y"))
