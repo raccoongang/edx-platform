@@ -23,7 +23,6 @@ STATUS_OK = 'OK'
 STATUS_ERROR = 'ERR'
 
 
-
 class Singletone(object):
     _instance = None
 
