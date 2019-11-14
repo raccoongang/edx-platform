@@ -5,6 +5,7 @@ e.g. wallets management.
 """
 
 import httplib
+import logging
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -18,6 +19,8 @@ from edeos.utils import (
 )
 from student.models import UserProfile
 
+log = logging.getLogger(__name__)
+
 
 @login_required
 @csrf_exempt
@@ -28,6 +31,10 @@ def update_wallet(request):
         wallet_name = data.get('wallet_name')
         if wallet_name and profitonomy_public_key:
             if not validate_wallets_data(wallet_name, profitonomy_public_key):
+                log.error(
+                    "Invalid wallets data: wallet name '{!s}', public key '{!s}'."
+                    .format(wallet_name, profitonomy_public_key)
+                )
                 return HttpResponse(status=httplib.BAD_REQUEST)
             edeos_post_data = {
                 'payload': {

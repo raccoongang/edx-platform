@@ -296,6 +296,9 @@ class UserProfile(models.Model):
     profile_image_uploaded_at = models.DateTimeField(null=True, blank=True)
     mobytize_id = models.CharField(max_length=32, blank=True)
     mobytize_token = models.CharField(max_length=64, blank=True)
+    # Key naming should ideally be environment-agnostic, but the whole flow tends to change
+    # and it's easier to keep it this way.
+    # SKILLONOMY-133: 'profitonomy_public_key' is normally used for the wallets flow.
     profitonomy_public_key = models.CharField(max_length=64, blank=True)
     wallet_name = models.CharField(max_length=12, blank=True)
 

@@ -127,7 +127,6 @@ def learner_profile_context(request, profile_username, user_is_staff):
         # Skillonomy customization
         "display_wallets_data": profile_user.is_active and own_profile and settings.FEATURES["DISPLAY_WALLETS"],
     }
-
     if badges_enabled():
         context['data']['badges_api_url'] = reverse("badges_api:user_assertions", kwargs={'username': profile_username})
 

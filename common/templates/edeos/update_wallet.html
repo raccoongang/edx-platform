@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
             <input class="wallet__input" type="text" name="wallet_name" id="wallet_name" value="${data['wallets_data']['wallet_name']}">
         </div>
         
-        <span class="wallet__message status-message" id="wallet_name_validation_message"></span>
+        <span class="wallet__message" id="wallet_name_validation_message">${_("The EOS account name must be exactly 12 characters long and must consist of lowercase letters and numbers up to 5.")}</span>
 
         <div class="wallet__row">
             <label class="wallet__label" for="profitonomy_public_key">${_("Public Key")}</label>
@@ -75,7 +75,8 @@ from django.utils.translation import ugettext as _
         /**
          * Validate `edeos_form` form.
          *
-         * NOTE: consider refactoring with prototypes
+         * NOTE: consider refactoring with prototypes.
+         * Currently not used (consider removing).
          */
         function validateWalletForm() {
             if (!validateWalletNameContent()) {
@@ -116,10 +117,12 @@ from django.utils.translation import ugettext as _
 
             $("input[type=submit]", $("#edeos_form")).on("click", function(e){
 
-                if (!validateWalletForm()) {
-                    e.preventDefault();
-                    return false;
-                }
+                // 'wallet_name_validation_message' wasn't supposed to be a dynamic validation message, but a help text.
+                // All the validation will be done on the backend side.
+                // if (!validateWalletForm()) {
+                //     e.preventDefault();
+                //     return false;
+                // }
 
                 $.ajax({
                     url: "${reverse('edeos:update')}",
@@ -138,6 +141,7 @@ from django.utils.translation import ugettext as _
                         showStatus($('#edeos_response'), "success", "New wallet has been created.")
                     },
                     error: function() {
+                        console.error("Couldn't create a new wallet.");
                         showStatus($('#edeos_response'), "error", "Couldn't create a new wallet.")
                     },
                 });
