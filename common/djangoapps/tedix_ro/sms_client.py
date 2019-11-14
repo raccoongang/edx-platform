@@ -71,9 +71,8 @@ class SMSClient(Singletone):
                 token=self._authorize()
             ))
         url = self._get_url_template(template).format(**settings)
-        log.info('URL to do request - "%s"', url)
         resp = requests.get(url)
-        log.info('SMS response data - "%s"', resp.content)
+        log.debug('SMS response data - "%s"', resp.content)
         if resp.status_code == 200:
             data = resp.json()
             if data.get('status') == STATUS_ERROR:
