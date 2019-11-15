@@ -56,6 +56,18 @@ class HtmlBlock(object):
         default=False,
         scope=Scope.settings
     )
+    custom_type = String(
+        help=_("Override default type icon with a specific one"),
+        display_name=_("Custom type icon"),
+        default="",
+        values=[
+            {"display_name": _("Default (don't override)"), "value": ""},
+            {"display_name": _("Video"), "value": "video"},
+            {"display_name": _("Problem"), "value": "problem"},
+            {"display_name": _("Other"), "value": "other"},
+        ],
+        scope=Scope.settings,
+    )
     editor = String(
         help=_(
             "Select Visual to enter content and have the editor automatically create the HTML. Select Raw to edit "
