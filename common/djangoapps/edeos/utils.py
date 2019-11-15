@@ -14,7 +14,7 @@ from api_calls import ALLOWED_EDEOS_API_ENDPOINTS_NAMES, EdeosApiClient
 from configs import (
     EDEOS_STUDIO_FIELDS,
     WALLET_NAME_LENGTH,
-    PROFITONOMY_PUBLIC_KEY_LENGTH,
+    PROFITONOMY_PUBLIC_KEY_LENGTH_INTERVAL,
 )
 
 log = logging.getLogger(__name__)
@@ -155,5 +155,9 @@ def validate_wallets_data(wallet_name, profitonomy_public_key):
         # Only lowercase letters and digits (up to 5)
         and bool(re.match("^[a-z0-5]*$", wallet_name.strip()))
         and len(wallet_name.strip()) == WALLET_NAME_LENGTH
-        and len(profitonomy_public_key.strip()) == PROFITONOMY_PUBLIC_KEY_LENGTH
+        and (
+            PROFITONOMY_PUBLIC_KEY_LENGTH_INTERVAL[0]
+            <= len(profitonomy_public_key.strip())
+            <= PROFITONOMY_PUBLIC_KEY_LENGTH_INTERVAL[1]
+        )
     )
