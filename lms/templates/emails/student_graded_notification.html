@@ -3,23 +3,22 @@
 
 <%block name="message">
 <p>
-${_("Dear {full_name},").format(full_name=full_name)}
+${_("Congratulations, {full_name}.").format(full_name=full_name)}
 </p>
 <p>
-${_("Congratulations!")}
+${_("You completed the Lakeside Learning course, {course_name}. We hope you found the information in this course engaging and insightful.").format(course_name=course_name)}
 </p>
 <p>
-${_("You have successfully received a passing grade in the course: \"{course_name}\"!").format(course_name=course_name)}
+${_("We want to continue to learn with you. Please join us for another course and share your ideas about topics that are of interest to you by ")}<a href="mailto:LakesideLearning@fastlaneus.com" target="_blank">${_("emailing us here")}</a>.
 </p>
 <p>
-${_("Cheers,")}
-
-${_("The {platform_name} team").format(platform_name=platform_name)}
+${_("We look forward to seeing you in another class soon.")}
 </p>
-<hr />
-${_("This email was automatically sent from {site_name} to "
-	"{full_name}").format(
-		site_name=site, full_name=full_name
-	)}
+<img src="https://${site}/static/images/Gerald-Vassar-Signature.png" border="0" height="30" style="display: block; margin: 0 auto 0" alt="Gerald-Vassar-Signature">
+<p>
+${_("Gerald Vassar,")}
+</p>
+<p>
+${_("President and CEO of Lakeside Global Institute")}
 </p>
 </%block>
