@@ -13,7 +13,7 @@
                 var timerIdTimeout;
                 var events = ['click', 'mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
 
-                window.addEventListener('load', resetTimer, true);
+                resetTimer();
                 events.forEach(function(event) {
                     document.addEventListener(event, resetTimer, true);
                 });
