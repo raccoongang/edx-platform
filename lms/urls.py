@@ -53,6 +53,7 @@ from student import views as student_views
 from student_account import views as student_account_views
 from track import views as track_views
 from util import views as util_views
+from django.views.generic.base import TemplateView
 
 if settings.DEBUG or settings.FEATURES.get('ENABLE_DJANGO_ADMIN_SITE'):
     django_autodiscover()
@@ -682,6 +683,14 @@ urlpatterns += [
             settings.COURSE_ID_PATTERN,
         ),
         include('openedx.features.portfolio_project.urls'),
+    ),
+    url(
+        r'^tracks$',
+        courseware_views.tracks_html,
+    ),
+    url(
+        r'^custom-courses$',
+        courseware_views.custom_courses_html,
     ),
 ]
 
