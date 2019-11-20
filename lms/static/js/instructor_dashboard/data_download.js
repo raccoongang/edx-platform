@@ -119,6 +119,7 @@
             this.report_downloads = new (ReportDownloads())(this.$section);
             this.instructor_tasks = new (PendingInstructorTasks())(this.$section);
             this.clear_display();
+            this.setDateRange();
             this.$list_anon_btn.click(function() {
                 location.href = dataDownloadObj.$list_anon_btn.data('endpoint');
             });
@@ -309,9 +310,19 @@
             });
             this.$async_report_btn.click(function(e) {
                 var url = $(e.target).data('endpoint');
+                var data = {};
                 dataDownloadObj.clear_display();
+
+                if (e.target.name === 'timeframe-courses-certificates-report-csv') {
+                    data = {
+                        from_date: dataDownloadObj.$fromTimeframe.datepicker("getDate").toJSON(),
+                        to_date: dataDownloadObj.$toTimeframe.datepicker("getDate").addDays(1).toJSON(),
+                    }
+                }
+
                 return $.ajax({
                     type: 'POST',
+                    data: data,
                     dataType: 'json',
                     url: url,
                     error: statusAjaxError(function() {
@@ -392,6 +403,50 @@
             return $('.msg-error').css({
                 display: 'none'
             });
+        };
+
+        InstructorDashboardDataDownload.prototype.setDateRange = function() {
+            var dateFormat = "dd/mm/yy";
+            var that = this;
+            var $downloadTimeframeButton = this.$section.find("[name = timeframe-courses-certificates-report-csv]");
+
+            this.$fromTimeframe = this.$section.find("#from-timeframe").datepicker({
+                numberOfMonths: 1,
+                dateFormat: dateFormat,
+                maxDate: new Date(),
+            })
+            .on( "change", function() {
+                that.$toTimeframe.datepicker("option", "minDate", getDate(this));
+                checkAvailabilityDownloadReport();
+            });
+
+            this.$toTimeframe = this.$section.find("#to-timeframe").datepicker({
+                numberOfMonths: 1,
+                dateFormat: dateFormat,
+                maxDate: new Date(),
+            })
+            .on( "change", function() {
+                that.$fromTimeframe.datepicker("option", "maxDate", getDate(this));
+                checkAvailabilityDownloadReport();
+            });
+
+            function getDate( element ) {
+                var date;
+                try {
+                    date = $.datepicker.parseDate(dateFormat, element.value);
+                } catch( error ) {
+                    date = null;
+                }
+                return date;
+            }
+
+            function checkAvailabilityDownloadReport() {
+                if (that.$fromTimeframe.datepicker("getDate") && that.$toTimeframe.datepicker("getDate")) {
+                    $downloadTimeframeButton.prop("disabled", false);
+                } else {
+                    $downloadTimeframeButton.prop("disabled", true);
+                }
+            }
         };
 
         return InstructorDashboardDataDownload;

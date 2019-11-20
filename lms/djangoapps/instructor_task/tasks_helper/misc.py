@@ -23,6 +23,7 @@ from openedx.core.lib.gating.api import get_required_content
 from pytz import UTC, timezone
 from xmodule.modulestore.django import modulestore
 
+from calypso_reg_form.models import UserSpendTimeCourse
 from certificates.models import GeneratedCertificate, CertificateStatuses
 from courseware.courses import get_course_by_id
 from courseware.models import StudentModule
@@ -341,7 +342,7 @@ def upload_all_courses_certificates_report(_xmodule_instance_args, _entry_id, co
 
     courses = CourseOverview.objects.filter(Q(end__gte=start_date-timedelta(days=365)) | Q(end__isnull=True))
 
-    header, csv_rows = get_certificates_report(courses)
+    header, csv_rows = get_certificates_report(courses, _task_input.get('from_date'), _task_input.get('to_date'))
 
     task_progress.attempted = task_progress.succeeded = len(csv_rows)
     task_progress.skipped = task_progress.total - task_progress.attempted
@@ -357,10 +358,18 @@ def upload_all_courses_certificates_report(_xmodule_instance_args, _entry_id, co
     return task_progress.update_task_state(extra_meta=current_step)
 
 
-def get_certificates_report(courses):
-    header = ["Awarded Date: Date", "Certificate: Name", "Student: Full Name", "Student: Email",
-              "User Certificate: Certificate Number", "User Certificate: Score",
-              "Student: State Abbreviation", "User Student License Number: License Number"]
+def get_certificates_report(courses, from_date=None, to_date=None):
+    header = [
+        "Awarded Date: Date",
+        "Certificate: Name",
+        "Student: Full Name",
+        "Student: Email",
+        "User Certificate: Certificate Number",
+        "User Certificate: Score",
+        "Student: State Abbreviation",
+        "User Student License Number: License Number",
+        "Total spent time (minutes)"
+    ]
     csv_rows = []
 
     for course_overview in courses:
@@ -369,6 +378,13 @@ def get_certificates_report(courses):
             course_id=course_overview.id,
             status=CertificateStatuses.downloadable
         )
+
+        if from_date and to_date:
+            generated_certificates = generated_certificates.filter(
+                created_date__gte=from_date,
+                created_date__lte=to_date
+            )
+
         for generated_certificate in generated_certificates:
             row = []
             row.append(generated_certificate.created_date.astimezone(timezone(settings.TIME_ZONE)).strftime("%d/%m/%Y"))
@@ -395,13 +411,22 @@ def get_certificates_report(courses):
             except AttributeError:
                 state_extra_infos = []
 
+            user_spend_time_course = UserSpendTimeCourse.objects.filter(
+                user=generated_certificate.user,
+                course_id=generated_certificate.course_id
+            ).first()
+
+            spend_time = user_spend_time_course and int(user_spend_time_course.spend_time / 60) or ''
+
             for state_extra_info in state_extra_infos:
                 row_copy = row[:]
                 row_copy.append(state_extra_info.state)
                 row_copy.append(state_extra_info.license)
+                row_copy.append(spend_time)
                 csv_rows.append(row_copy)
 
             if not state_extra_infos:
+                row.append(spend_time)
                 csv_rows.append(row)
 
     return header, csv_rows

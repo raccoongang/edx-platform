@@ -462,13 +462,13 @@ def submit_course_certificates_report_csv(request, course_key):
     return submit_task(request, task_type, task_class, course_key, task_input, task_key)
 
 
-def submit_all_courses_certificates_report_csv(request, course_key):
+def submit_all_courses_certificates_report_csv(request, course_key, params):
     """
     AlreadyRunningError is raised if the courses certificates report are already being updated.
     """
     task_type = 'all_courses_certificates_report_csv'
     task_class = all_courses_certificates_report_csv
-    task_input = {}
+    task_input = params
     task_key = ""
 
     return submit_task(request, task_type, task_class, course_key, task_input, task_key)
