@@ -238,7 +238,11 @@ class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class VideoLessonViewSet(viewsets.ModelViewSet):
+<<<<<<< HEAD
     authentication_classes = (SessionAuthentication,)
+=======
+    authentication_classes = (OAuth2AuthenticationAllowInactiveUser,)
+>>>>>>> change subject for emails. fix tasks and email temlates
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = VideoLessonSerializer
     queryset = VideoLesson.objects.all()

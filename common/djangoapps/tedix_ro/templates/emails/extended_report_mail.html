@@ -18,10 +18,10 @@ teacher_report = user.is_superuser or user.is_staff and hasattr(user, 'instructo
     <%
     roll = _('Superuser') if user.is_superuser else _('Teacher')
     %>
+    <h2 class="hd hd-2">
+        ${_("Students Progress for {roll} '{username}'").format(roll=roll, username=user.username)}
+    </h2>
 %endif
-<h2 class="hd hd-2">
-    ${_("Students Progress for {roll} '{username}'").format(roll=roll, username=user.username)}
-</h2>
 %for lesson_report in lesson_reports:
     %if teacher_report:
         <%include

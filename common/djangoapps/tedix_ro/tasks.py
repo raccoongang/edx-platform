@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from urlparse import urljoin
 
 from django.conf import settings
@@ -27,6 +27,7 @@ def send_teacher_extended_reports():
         for enrollment in instructor.user.courseenrollment_set.filter():
             course = modulestore().get_course(enrollment.course_id)
             report_data = []
+            header = []
             for student_profile in instructor.students.filter(user__courseenrollment__course_id=course.id):
                 header, user_data = report_data_preparation(student_profile.user, course, course.id)
                 report_data.append(user_data)
@@ -39,8 +40,13 @@ def send_teacher_extended_reports():
                     reverse('extended_report', kwargs={'course_key': course.id})
                 )
             })
+        subject = '{platform_name}: Report for {username} on "{course_name}"'.format(
+            platform_name=settings.PLATFORM_NAME,
+            username=instructor.user.username,
+            course_name=course.display_name
+        )
         context = {
-            'user': user,
+            'user': instructor.user,
             'lesson_reports': lesson_reports
         }
         html_message = render_to_string(
@@ -55,20 +61,21 @@ def send_teacher_extended_reports():
             'email_from_address',
             settings.DEFAULT_FROM_EMAIL
         )
-        send_mail('teacher extended report', txt_message, from_address, [user.email], html_message=html_message)
+        send_mail(subject, txt_message, from_address, [instructor.user.email], html_message=html_message)
 
 
 @periodic_task(run_every=crontab(hour='10', minute='30'))
 def send_extended_reports_by_deadline():
+    datetime_now = datetime.utcnow().replace(tzinfo=pytz.UTC)
     for due_date in StudentCourseDueDate.objects.filter(
-            due_date__lte=datetime.utcnow().replace(tzinfo=pytz.UTC),
-            due_date__gt=datetime.utcnow().replace(tzinfo=pytz.UTC)-timedelta(1)):
+            due_date__lte=datetime_now,
+            due_date__gt=datetime_now-timedelta(1)):
         send_student_extended_reports(due_date.student.user.id, str(due_date.course_id))
 
 
 @task
 def send_student_extended_reports(user_id, course_id):
-    user = StudentProfile.objects.filter(user__id=user_id)
+    user = User.objects.filter(id=user_id).first()
     if user:
         course_key = CourseKey.from_string(course_id)
         course = modulestore().get_course(course_key)
@@ -81,6 +88,11 @@ def send_student_extended_reports(user_id, course_id):
                     reverse('extended_report', kwargs={'course_key': course.id})
                 )
             }]
+        subject = '{platform_name}: Report for {username} on "{course_name}"'.format(
+            platform_name=settings.PLATFORM_NAME,
+            username=user.username,
+            course_name=course.display_name
+        )
         context = {
             'user': user,
             'lesson_reports': lesson_reports
@@ -97,4 +109,4 @@ def send_student_extended_reports(user_id, course_id):
             'email_from_address',
             settings.DEFAULT_FROM_EMAIL
         )
-        send_mail('student extended report', txt_message, from_address, [user.email], html_message=html_message)
+        send_mail(subject, txt_message, from_address, [user.email], html_message=html_message)
