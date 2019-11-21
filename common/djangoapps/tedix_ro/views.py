@@ -1,5 +1,6 @@
 import datetime
 import json
+import pytz
 from csv import DictReader
 from urlparse import urljoin
 
@@ -46,7 +47,7 @@ from .forms import (
     SchoolImportValidationForm,
     StudentEnrollForm,
     StudentImportRegisterForm,
-    StudentProfileImportForm
+    StudentProfileImportForm,
 )
 from .models import City, School, StudentCourseDueDate, StudentProfile, VideoLesson
 from .serializers import (
@@ -54,35 +55,29 @@ from .serializers import (
     SchoolSerilizer,
     SingleCitySerializer,
     SingleSchoolSerilizer,
-    VideoLessonSerializer
+    VideoLessonSerializer,
 )
 from .utils import get_payment_link, report_data_preparation, light_report_data_preparation
 
 
 def extended_report(request, course_key):
-    if not request.user.is_authenticated():
+    user = request.user
+    if not user.is_authenticated():
         return redirect(get_next_url_for_login_page(request))
 
     course_key = CourseKey.from_string(course_key)
-    course = get_course_with_access(request.user, 'load', course_key)
-
-    staff_access = bool(has_access(request.user, 'staff', course))
-
-    masquerade, user = setup_masquerade(request, course_key, staff_access, reset_masquerade_data=True)
-
-    user = User.objects.prefetch_related("groups").get(id=user.id)
-    if request.user.id != user.id:
-        # refetch the course as the assumed student
-        course = get_course_with_access(user, 'load', course_key, check_if_enrolled=True)
+    course = get_course_with_access(user, 'load', course_key, check_if_enrolled=True)
 
     report_data = []
     modulestore_course = modulestore().get_course(course_key)
     if user.is_superuser:
-        for student in User.objects.filter(courseenrollment__course_id=course.id).select_related('profile'):
+        for student in User.objects.filter(courseenrollment__course_id=course.id, is_staff=False).select_related('profile'):
             header, user_data = report_data_preparation(student, modulestore_course, course_key)
             report_data.append(user_data)
     elif user.is_staff and hasattr(user, 'instructorprofile'):
-        for student_profile in user.instructorprofile.students.filter(user__courseenrollment__course_id=course.id).select_related('user__profile'):
+        for student_profile in user.instructorprofile.students.filter(
+            user__courseenrollment__course_id=course.id
+        ).select_related('user__profile'):
             header, user_data = report_data_preparation(student_profile.user, modulestore_course, course_key)
             report_data.append(user_data)
     else:
@@ -92,9 +87,6 @@ def extended_report(request, course_key):
         'course_name': course.display_name,
         'header': header,
         'report_data': report_data,
-        'staff_access': staff_access,
-        'masquerade': masquerade,
-        'supports_preview_menu': True,
         'student': user,
     }
     return render_to_response('extended_report.html', context)
@@ -238,11 +230,7 @@ class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class VideoLessonViewSet(viewsets.ModelViewSet):
-<<<<<<< HEAD
     authentication_classes = (SessionAuthentication,)
-=======
-    authentication_classes = (OAuth2AuthenticationAllowInactiveUser,)
->>>>>>> change subject for emails. fix tasks and email temlates
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = VideoLessonSerializer
     queryset = VideoLesson.objects.all()

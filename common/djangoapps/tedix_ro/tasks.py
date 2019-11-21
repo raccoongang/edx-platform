@@ -1,3 +1,4 @@
+import pytz
 from datetime import datetime, timedelta
 from urlparse import urljoin
 
@@ -12,7 +13,6 @@ from celery.task import periodic_task, task
 from edxmako.shortcuts import render_to_string
 from opaque_keys.edx.keys import CourseKey
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
-import pytz
 from student.models import CourseEnrollment
 from xmodule.modulestore.django import modulestore
 
