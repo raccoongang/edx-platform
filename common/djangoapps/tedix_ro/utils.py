@@ -102,7 +102,7 @@ def light_report_data_preparation(student, course, course_key):
         'completion': completion,
         'count_answer_first_attempt': count_answer_first_attempt,
         'count_questions': count_questions,
-        'percent': (count_answer_first_attempt * 100 / count_questions) if count_questions != 0 else 100,
+        'percent': (count_answer_first_attempt * 100 / count_questions) if count_questions else 100,
         'due_date': format_datetime(due_date, "yy.MM.dd hh:mm a", locale='en'),
         'report_url': urljoin(
             configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),

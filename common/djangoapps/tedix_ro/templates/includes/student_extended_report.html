@@ -12,9 +12,6 @@ from django.utils.translation import ugettext as _
             <p>${_("Number of question completed from first attempt")}:<span style="color: green"> ${ user_data['percent'] }% (${user_data['count_answer_first_attempt']} out of ${len(user_data['questions'])})</span><p>
         </h4>
     </h2>
-    <section class="chapters">
-    <br>
-    <div>
     %for question_name, question_count_answer in user_data['questions']:
         <p>
             ${_("Question")} ${loop.index + 1}: ${ question_name }<br>

@@ -1,15 +1,15 @@
-import pytz
 from datetime import datetime, timedelta
 from urlparse import urljoin
 
+from celery.schedules import crontab
+from celery.task import periodic_task, task
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.urls import reverse
 from django.utils.translation import ugettext as _
+import pytz
 
-from celery.schedules import crontab
-from celery.task import periodic_task, task
 from edxmako.shortcuts import render_to_string
 from opaque_keys.edx.keys import CourseKey
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
