@@ -44,11 +44,13 @@
             },
 
             renderFacet: function(facetKey, options) {
+                var optionsSelected = _.filter(options, function(o) { return o.get('selected'); });
+                var listIsHuge = optionsSelected.length ? false : (options.length > 8);
                 return this.facetTpl({
                     name: facetKey,
                     displayName: this.facetName(facetKey),
                     optionsHtml: this.renderOptions(options),
-                    listIsHuge: (options.length > 9)
+                    listIsHuge: listIsHuge
                 });
             },
 
