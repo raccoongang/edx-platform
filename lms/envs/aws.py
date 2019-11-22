@@ -1112,4 +1112,8 @@ if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
 
 # Variable for overriding standard MKTG_URLS
 EXTERNAL_MKTG_URLS = ENV_TOKENS.get('EXTERNAL_MKTG_URLS', {})
+
+# Override standard regex validator for username field if it exists in lms.env.json
+USERNAME_REGEX_PARTIAL = ENV_TOKENS.get('USERNAME_REGEX_PARTIAL', USERNAME_REGEX_PARTIAL)
+
 #RACCOONGANG
