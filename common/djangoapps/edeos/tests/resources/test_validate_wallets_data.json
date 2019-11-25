@@ -2,14 +2,14 @@
   {
     "description": "1. Letters only, no numbers: wallet name",
     "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u1111111111s",
-    "wallet_name": "ddddddd111111",
-    "result": false
+    "wallet_name": "dddddddddddd",
+    "result": true
   },
   {
     "description": "2. numbers only, no letters: wallet name",
     "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u1111111111s",
     "wallet_name": "111111111111",
-    "result": false
+    "result": true
   },
   {
     "description": "3. 13 - more than 12 symbols: wallet name",

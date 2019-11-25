@@ -136,10 +136,9 @@ def validate_wallets_data(wallet_name, profitonomy_public_key):
         both: length strict check, non-empty
         wallet_name:
             length equals to 12,
-            at least one letter,
-            at least one digit,
             all symbols lowercase,
-            all numbers (value up to 5),
+            all numbers (value 1 to 5),
+            order (symbols/numbers) does'n metter,
             no special characters (should be alphanumeric).
 
     Arguments:
@@ -150,10 +149,8 @@ def validate_wallets_data(wallet_name, profitonomy_public_key):
               ```
     """
     return (
-        # At least one digit (up to 5) and one letter
-        bool(re.match('^(?=.*[0-5]$)(?=.*[a-z])', wallet_name.strip()))
-        # Only lowercase letters and digits (up to 5)
-        and bool(re.match("^[a-z0-5]*$", wallet_name.strip()))
+        # Only lowercase letters and digits (1 to 5)
+        bool(re.match("^[a-z1-5]*$", wallet_name.strip()))
         and len(wallet_name.strip()) == WALLET_NAME_LENGTH
         and (
             PROFITONOMY_PUBLIC_KEY_LENGTH_INTERVAL[0]
