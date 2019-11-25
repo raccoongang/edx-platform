@@ -24772,3 +24772,19 @@ msgstr "Имя кошелька"
 #: common/templates/edeos/update_wallet.html
 msgid "Public Key"
 msgstr "Публичный ключ"
+
+#: common/templates/edeos/update_wallet.html
+msgid "Couldn't create a new wallet."
+msgstr "Не удалось создать новый кошелек."
+
+#: common/templates/edeos/update_wallet.html
+msgid "Name is already taken."
+msgstr "Имя уже занято."
+
+#: common/templates/edeos/update_wallet.html
+msgid "New wallet has been created."
+msgstr "Новый кошелек создан."
+
+#: common/templates/edeos/update_wallet.html
+msgid "Create your wallet:"
+msgstr "Создать свой кошелек:"

@@ -49,11 +49,13 @@ def update_wallet(request):
                 "base_url": getattr(settings, 'EDEOS_API_URL')
             }
             response = send_edeos_api_request(**edeos_post_data)
-            if response:
+            if response and not isinstance(response, int):
                 profile = UserProfile.objects.filter(user=request.user).first()
                 if profile:
                     profile.save_profitonomy_public_key(profitonomy_public_key)
                     profile.save_wallet_name(wallet_name)
+            elif response == httplib.UNPROCESSABLE_ENTITY:
+                return HttpResponse(status=httplib.UNPROCESSABLE_ENTITY)
             else:
                 # NOTE: handle the code from edeos api (major refactoring needed)
                 return HttpResponse(status=httplib.BAD_REQUEST)

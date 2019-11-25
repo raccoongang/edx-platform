@@ -53,10 +53,17 @@ class EdeosApiBaseClientError(Exception):
 
 class EdeosApiClientError(EdeosApiBaseClientError):
     error_message = 'Edeos API error occurred.'
+    error_code = 400
 
 
 class EdeosApiClientErrorUnauthorized(EdeosApiBaseClientError):
     error_message = 'Unauthorized call to Edeos API.'
+    error_code = 401
+
+
+class EdeosApiClientErrorUnprocessableEntity(EdeosApiBaseClientError):
+    error_message = "Name is already taken."
+    error_code = 422
 
 
 class EdeosBaseApiClient(object):
@@ -149,7 +156,8 @@ class EdeosBaseApiClient(object):
                 return resp.json()
             except JSONDecodeError:
                 return resp
-
+        elif resp.status_code == httplib.UNPROCESSABLE_ENTITY:
+            raise EdeosApiClientErrorUnprocessableEntity
         elif resp.status_code == httplib.UNAUTHORIZED and can_retry:
             self.access_token = self._refresh_access_token()
             return self.post(url, payload, headers, can_retry=False)
@@ -189,10 +197,10 @@ class EdeosApiClient(EdeosBaseApiClient):
                 url="{}{}".format(self.base_url, endpoint_url),
                 payload=payload)
             return response
-        except (EdeosApiClientError, EdeosApiClientErrorUnauthorized) as e:
+        except (EdeosApiClientError, EdeosApiClientErrorUnauthorized, EdeosApiClientErrorUnprocessableEntity) as e:
             # NOTE: consider returning error codes and messages instead of None
             print("Edeos '{}' call failed. {}".format(endpoint_url, e.__class__.error_message))
-            return None
+            return e.error_code
         except ValueError as e:
             log.exception("Edeos '{}' call failed. {}".format(endpoint_url, e.message))
             return None
@@ -256,6 +264,6 @@ class EdeosApiClient(EdeosBaseApiClient):
 
     def statistics(self, payload):
         return self.call_api("statistics", payload)
-    
+
     def profile_statistics(self, payload):
         return self.call_api("profile_statistics", payload)
