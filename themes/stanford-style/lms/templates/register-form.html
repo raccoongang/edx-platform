@@ -240,7 +240,7 @@ from student.models import UserProfile
       <div class="field required checkbox" id="field-tos">
         <input id="tos-yes" type="checkbox" name="terms_of_service" value="true" required aria-required="true" />
         <label for="tos-yes">${_('I agree to the {link_start}Terms of Service{link_end}').format(
-          link_start='<a href="{url}" class="new-vp" tabindex="-1">'.format(url=marketing_link('TOS')),
+          link_start='<a href="https://www.cct.ie/terms-conditions/" target="_blank" class="new-vp">'.format(url=marketing_link('TOS')),
           link_end='</a>')}</label>
       </div>
       % endif
@@ -252,7 +252,7 @@ from student.models import UserProfile
           honor_code_path = marketing_link('TOS') + "#honor"
         %>
         <label for="honorcode-yes">${_('I agree to the {link_start}Honor Code{link_end}').format(
-          link_start='<a href="{url}" class="new-vp" tabindex="-1">'.format(url=honor_code_path),
+          link_start='<a href="https://www.cct.ie/terms-conditions/" target="_blank" class="new-vp">'.format(url=honor_code_path),
           link_end='</a>')}</label>
       </div>
       % endif
