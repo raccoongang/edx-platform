@@ -5,6 +5,8 @@ from contextlib import contextmanager
 from logging import getLogger
 
 import six
+
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from courseware.model_data import get_score, set_score
 from django.dispatch import receiver
 from submissions.models import score_reset, score_set
@@ -12,6 +14,7 @@ from xblock.scorable import ScorableXBlockMixin, Score
 
 from openedx.core.djangoapps.course_groups.signals.signals import COHORT_MEMBERSHIP_UPDATED
 from openedx.core.lib.grade_utils import is_score_higher_or_equal
+
 from student.models import user_by_anonymous_id
 from student.signals import ENROLLMENT_TRACK_UPDATED
 from track.event_transaction_utils import get_event_transaction_id, get_event_transaction_type
@@ -30,7 +33,8 @@ from ..scores import weighted_score
 from ..tasks import (
     RECALCULATE_GRADE_DELAY_SECONDS,
     recalculate_subsection_grade_v3,
-    recalculate_course_and_subsection_grades_for_user
+    recalculate_course_and_subsection_grades_for_user,
+    notify_student_about_course_is_graded,
 )
 
 log = getLogger(__name__)
@@ -152,12 +156,25 @@ def score_published_handler(sender, block, user, raw_earned, raw_possible, only_
                 )
 
     if update_score:
+        original_course_grade = CourseGradeFactory().read(user, course_key=block.course_id)
+
         # Set the problem score in CSM.
         score_modified_time = set_score(user.id, block.location, raw_earned, raw_possible)
 
         # Set the problem score on the xblock.
         if isinstance(block, ScorableXBlockMixin):
             block.set_score(Score(raw_earned=raw_earned, raw_possible=raw_possible))
+
+        course_overview = CourseOverview.objects.filter(id=block.course_id).first()
+        course_grade = CourseGradeFactory().read(user, course_key=block.course_id)
+
+        grade_changed = original_course_grade.percent != course_grade.percent
+
+        if original_course_grade.percent <= course_overview.lowest_passing_grade and grade_changed:
+            if course_grade.percent >= course_overview.lowest_passing_grade:
+                user_id = user.id
+                course_id = str(block.course_id)
+                notify_student_about_course_is_graded.apply_async(args=(user_id, course_id))
 
         # Fire a signal (consumed by enqueue_subsection_update, below)
         PROBLEM_RAW_SCORE_CHANGED.send(

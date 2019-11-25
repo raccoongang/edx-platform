@@ -1,6 +1,7 @@
 import logging
 import sys
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core.cache import cache
@@ -47,11 +48,16 @@ class Command(BaseCommand):
         for site in Site.objects.all():
             site_config = getattr(site, 'configuration', None)
             if site_config is None or not site_config.get_value('COURSE_CATALOG_API_URL'):
-                logger.info('Skipping site {domain}. No configuration.'.format(domain=site.domain))
-                cache.set(SITE_PROGRAM_UUIDS_CACHE_KEY_TPL.format(domain=site.domain), [], None)
-                continue
+                if not settings.COURSE_CATALOG_API_URL:
+                    logger.info('Skipping site {domain}. No configuration.'.format(domain=site.domain))
+                    cache.set(SITE_PROGRAM_UUIDS_CACHE_KEY_TPL.format(domain=site.domain), [], None)
+                    continue
+                else:
+                    course_catalog_api_url = settings.COURSE_CATALOG_API_URL
+            else:
+                course_catalog_api_url = site_config.get_value('COURSE_CATALOG_API_URL')
 
-            client = create_catalog_api_client(user, site=site)
+            client = create_catalog_api_client(user, course_catalog_api_url)
             uuids, program_uuids_failed = self.get_site_program_uuids(client, site)
             new_programs, program_details_failed = self.fetch_program_details(client, uuids)
 

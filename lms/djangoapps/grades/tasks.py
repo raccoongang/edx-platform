@@ -5,18 +5,25 @@ This module contains tasks for asynchronous execution of grade updates.
 from logging import getLogger
 
 import six
+
 from celery import task
 from celery_utils.persist_on_failure import LoggedPersistOnFailureTask
+from celery_utils.logged_task import LoggedTask
 from courseware.model_data import get_score
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
 from django.db.utils import DatabaseError
+from django.utils.translation import ugettext as _
+from edxmako.shortcuts import render_to_string
 from lms.djangoapps.course_blocks.api import get_course_blocks
 from lms.djangoapps.grades.config.models import ComputeGradesSetting
 from opaque_keys.edx.keys import CourseKey, UsageKey
 from opaque_keys.edx.locator import CourseLocator
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.monitoring_utils import set_custom_metric, set_custom_metrics_for_course_key
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from student.models import CourseEnrollment
 from submissions import api as sub_api
 from track.event_transaction_utils import set_event_transaction_id, set_event_transaction_type
@@ -43,6 +50,7 @@ KNOWN_RETRY_ERRORS = (  # Errors we expect occasionally, should be resolved on r
 RECALCULATE_GRADE_DELAY_SECONDS = 2  # to prevent excessive _has_db_updated failures. See TNL-6424.
 RETRY_DELAY_SECONDS = 40
 SUBSECTION_GRADE_TIMEOUT_SECONDS = 300
+MINIMAL_GRADE_REACHED_NOTIFICATION_TIMEOUT_SECONDS = 300
 
 
 @task(base=LoggedPersistOnFailureTask, routing_key=settings.POLICY_CHANGE_GRADES_ROUTING_KEY)
@@ -145,6 +153,47 @@ def recalculate_course_and_subsection_grades_for_user(self, **kwargs):  # pylint
             course_key=course_key,
             force_update_subsections=True
         )
+
+
+@task(
+    bind=True,
+    base=LoggedTask,
+    time_limit=MINIMAL_GRADE_REACHED_NOTIFICATION_TIMEOUT_SECONDS,
+    default_retry_delay=RETRY_DELAY_SECONDS,
+    routing_key=settings.POLICY_CHANGE_GRADES_ROUTING_KEY,
+)
+def notify_student_about_course_is_graded(self, user_id, course_id, **kwargs):
+    """
+    Send an email informing that the user has reached a minimal grading for the course.
+    """
+    user = User.objects.filter(id=user_id).first()
+    key = CourseKey.from_string(course_id)
+    course = CourseOverview.objects.filter(id=key).first()
+    context = {
+        'full_name': user.profile.name,
+        'course_name': course.display_name,
+        'site': configuration_helpers.get_value('SITE_NAME', settings.SITE_NAME),
+    }
+
+    subject = _("Congratulations, {full_name}!").format(
+        full_name=context.get('full_name', ''),
+    )
+
+    from_address = configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
+    to_address = user.email
+    message = render_to_string('emails/student_graded_notification.txt', context)
+
+    try:
+        html_message = render_to_string('emails/student_graded_notification.html', context)
+    except Exception as e:  # pylint: disable=bare-except
+        html_message = None
+        log.exception(e)
+
+    try:
+        send_mail(subject, message, from_address, [to_address], fail_silently=False, html_message=html_message)
+    except Exception as e:  # pylint: disable=bare-except
+        log.exception(e)
+        log.exception("Could not send notification email for course graduation of user %s", user.id)
 
 
 @task(
