@@ -29,7 +29,7 @@ def send_teacher_extended_reports():
             report_data = []
             header = []
             for student_profile in instructor.students.filter(user__courseenrollment__course_id=course.id):
-                header, user_data = report_data_preparation(student_profile.user, course, course.id)
+                header, user_data = report_data_preparation(student_profile.user, course)
                 report_data.append(user_data)
             lesson_reports.append({
                 'course_name': course.display_name,
@@ -40,9 +40,9 @@ def send_teacher_extended_reports():
                     reverse('extended_report', kwargs={'course_key': course.id})
                 )
             })
-        subject = '{platform_name}: Report for {username} on "{course_name}"'.format(
+        subject = u'{platform_name}: Report for {username} on "{course_name}"'.format(
             platform_name=settings.PLATFORM_NAME,
-            username=instructor.user.username,
+            username=instructor.user.profile.name or instructor.user.username,
             course_name=course.display_name
         )
         context = {
@@ -79,7 +79,7 @@ def send_student_extended_reports(user_id, course_id):
     if user:
         course_key = CourseKey.from_string(course_id)
         course = modulestore().get_course(course_key)
-        header, user_data = report_data_preparation(user, course, course_key)
+        header, user_data = report_data_preparation(user, course)
         lesson_reports = [{
                 'course_name': course.display_name,
                 'report_data': [user_data,],
@@ -88,9 +88,9 @@ def send_student_extended_reports(user_id, course_id):
                     reverse('extended_report', kwargs={'course_key': course.id})
                 )
             }]
-        subject = '{platform_name}: Report for {username} on "{course_name}"'.format(
+        subject = u'{platform_name}: Report for {username} on "{course_name}"'.format(
             platform_name=settings.PLATFORM_NAME,
-            username=user.username,
+            username=user.profile.name or user.username,
             course_name=course.display_name
         )
         context = {

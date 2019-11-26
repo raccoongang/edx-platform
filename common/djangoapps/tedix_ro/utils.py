@@ -21,20 +21,20 @@ def get_payment_link(user):
     )
 
 
-def report_data_preparation(student, course, course_key):
+def report_data_preparation(user, course):
     Question = apps.get_model('tedix_ro', 'Question')
     count_answer_first_attempt = 0
     questions_data = []
     video_questions_data = {}
     header = []
-    video_questions = Question.objects.filter(video_lesson__course=course_key)
+    video_questions = Question.objects.filter(video_lesson__course=course.id)
 
     for section in course.get_children():
         for subsection in section.get_children():
             for unit in subsection.get_children():
                 for problem in unit.get_children():
                     if problem.location.block_type == 'problem':
-                        student_module = StudentModule.objects.filter(student=student, module_state_key=problem.location).first()
+                        student_module = StudentModule.objects.filter(student=user, module_state_key=problem.location).first()
                         if student_module:
                             attempts = json.loads(student_module.state).get("attempts", 0)
                             if attempts == 1:
@@ -49,7 +49,7 @@ def report_data_preparation(student, course, course_key):
     for question_id in questions_id:
         video_questions_data.update({question_id: 0})
 
-    for video_question in video_questions.filter(video_lesson__user=student):
+    for video_question in video_questions.filter(video_lesson__user=user):
         video_questions_data.update({video_question.question_id: video_question.attempt_count})
         if video_question.attempt_count == 1:
             count_answer_first_attempt += 1
@@ -57,7 +57,7 @@ def report_data_preparation(student, course, course_key):
     questions_data += list(video_questions_data.items())
 
     report_data = {
-        'full_name': student.profile.name or student.username,
+        'full_name': user.profile.name or user.username,
         'completion': not bool([item for item in questions_data if item[1] == 0]),
         'questions': questions_data,
         'count_answer_first_attempt': count_answer_first_attempt,
@@ -66,7 +66,7 @@ def report_data_preparation(student, course, course_key):
     return header, report_data
 
 
-def light_report_data_preparation(student, course, course_key):
+def light_report_data_preparation(user, course):
     Question = apps.get_model('tedix_ro', 'Question')
     StudentCourseDueDate = apps.get_model('tedix_ro', 'StudentCourseDueDate')
     count_answer_first_attempt = 0
@@ -80,7 +80,7 @@ def light_report_data_preparation(student, course, course_key):
                 for problem in unit.get_children():
                     if problem.location.block_type == 'problem':
                         student_module = StudentModule.objects.filter(
-                            student=student,
+                            student=user,
                             module_state_key=problem.location
                         ).first()
                         if student_module:
@@ -92,18 +92,18 @@ def light_report_data_preparation(student, course, course_key):
                         else:
                             completion = False
                         count_questions += 1
-    count_questions += Question.objects.filter(video_lesson__course=course_key).values('question_id').distinct().count()
-    count_answer_first_attempt += Question.objects.filter(video_lesson__course=course_key, video_lesson__user=student, attempt_count=1).count()
-    student_course_due_date = StudentCourseDueDate.objects.filter(student__user=student, course_id=course_key).first()
+    count_questions += Question.objects.filter(video_lesson__course=course.id).values('question_id').distinct().count()
+    count_answer_first_attempt += Question.objects.filter(video_lesson__course=course.id, video_lesson__user=user, attempt_count=1).count()
+    student_course_due_date = StudentCourseDueDate.objects.filter(student__user=user, course_id=course.id).first()
     due_date = student_course_due_date.due_date if student_course_due_date else None
     report_data = {
-        'student_name': student.profile.name or student.username,
+        'student_name': user.profile.name or user.username,
         'lesson': course.display_name,
         'completion': completion,
         'count_answer_first_attempt': count_answer_first_attempt,
         'count_questions': count_questions,
         'percent': (count_answer_first_attempt * 100 / count_questions) if count_questions else 100,
-        'due_date': format_datetime(due_date, "yy.MM.dd hh:mm a", locale='en'),
+        'due_date': format_datetime(due_date, "yy.MM.dd hh:mm a", locale='en') if due_date else 'N/A',
         'report_url': urljoin(
             configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
             reverse('extended_report', kwargs={'course_key': course.id})
