@@ -461,8 +461,8 @@ function(HTML5Video, Resizer) {
             );
         }
 
-        newSpeed = parseFloat(newSpeed).toFixed(2).replace(/\.00$/, '.0');
         this.setSpeed(newSpeed);
+        newSpeed = parseFloat(newSpeed)
         this.videoPlayer.setPlaybackRate(newSpeed);
     }
 
