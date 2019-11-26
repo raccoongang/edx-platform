@@ -1,13 +1,13 @@
 <form>
 <div>
     <% if (!xblockInfo.isVertical()) { %>
-        <h3 class="modal-section-title"> <%- gettext('Unit Level') %>
+        <h3 class="modal-section-title"> <%- gettext('Lesson Level') %></h3>
         <div class="modal-section-content">
             <label class="label">
                 <select name="level" id="unit_level">
                     <option value="low" <%- xblockInfo.unitLevel === 'low' ? 'selected' : null %> >Low</option>
-                    <option value="middle" <%- xblockInfo.unitLevel === 'middle' ? 'selected' : null %> >Middle</option>
-                    <option value="hight" <%- xblockInfo.unitLevel === 'hight' ? 'selected' : null %> >Hight</option>
+                    <option value="middle" <%- xblockInfo.unitLevel === 'middle' ? 'selected' : null %> >Medium</option>
+                    <option value="hight" <%- xblockInfo.unitLevel === 'hight' ? 'selected' : null %> >High</option>
                 </select>
             </label>
         </div>
