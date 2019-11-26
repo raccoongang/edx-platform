@@ -98,13 +98,8 @@ def _update_certificate_context(context, user_certificate, platform_name):
         uuid=user_certificate.verify_uuid,
         suffix=context.get('certificate_verify_url_suffix')
     )
-
     # Translators:  The format of the date includes the full name of the month
-    context['certificate_date_issued'] = _('{month} {day}, {year}').format(
-        month=user_certificate.modified_date.strftime("%B"),
-        day=user_certificate.modified_date.day,
-        year=user_certificate.modified_date.year
-    )
+    context['certificate_date_issued'] = user_certificate.modified_date.strftime("%d.%m.%Y")
 
     # Translators:  This text represents the verification of the certificate
     context['document_meta_description'] = _('This is a valid {platform_name} certificate for {user_name}, '
