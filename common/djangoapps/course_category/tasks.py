@@ -1,5 +1,6 @@
 from celery.task import task
 
+from ccx_keys.locator import CCXLocator
 from opaque_keys.edx.keys import CourseKey
 from xmodule.modulestore.django import modulestore
 
@@ -26,6 +27,8 @@ def task_reindex_courses(category_id=None, course_keys=None):
             courses.update(str(x) for x in descendants_ids)
     for course_key in courses:
         course_key = CourseKey.from_string(course_key)
+        if isinstance(course_key, CCXLocator):
+            continue
         CoursewareSearchIndexer.do_course_reindex(modulestore(), course_key)
 
 

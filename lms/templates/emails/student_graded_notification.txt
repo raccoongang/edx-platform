@@ -1,0 +1,12 @@
+<%! from django.utils.translation import ugettext as _ %>
+
+${_("Congratulations, {full_name}.").format(full_name=full_name)}
+
+${_("You completed the Lakeside Learning course, {course_name}. We hope you found the information in this course engaging and insightful.").format(course_name=course_name)}
+
+${_("We want to continue to learn with you. Please join us for another course and share your ideas about topics that are of interest to you by ")}${_("emailing us here")}: LakesideLearning@fastlaneus.com.
+
+${_("We look forward to seeing you in another class soon.")}
+
+${_("Gerald Vassar,")}
+${_("President and CEO of Lakeside Global Institute")}

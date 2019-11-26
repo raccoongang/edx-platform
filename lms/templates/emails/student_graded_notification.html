@@ -1,0 +1,24 @@
+<%inherit file="main.html" />
+<%! from django.utils.translation import ugettext as _ %>
+
+<%block name="message">
+<p>
+${_("Congratulations, {full_name}.").format(full_name=full_name)}
+</p>
+<p>
+${_("You completed the Lakeside Learning course, {course_name}. We hope you found the information in this course engaging and insightful.").format(course_name=course_name)}
+</p>
+<p>
+${_("We want to continue to learn with you. Please join us for another course and share your ideas about topics that are of interest to you by ")}<a href="mailto:LakesideLearning@fastlaneus.com" target="_blank">${_("emailing us here")}</a>.
+</p>
+<p>
+${_("We look forward to seeing you in another class soon.")}
+</p>
+<img src="https://${site}/static/images/Gerald-Vassar-Signature.png" border="0" height="30" style="display: block; margin: 0 auto 0" alt="Gerald-Vassar-Signature">
+<p>
+${_("Gerald Vassar,")}
+</p>
+<p>
+${_("President and CEO of Lakeside Global Institute")}
+</p>
+</%block>

@@ -792,32 +792,46 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
                         break
 
             # Build the notification message based on the notification type and translate it.
+            data = getattr(self, 'data', '')
+            # Customization for the default system responses while submitting answers in Python-Evaluated Input Block
+            # by `python_evaluated_block` flag. The `data.find('<jsinput') < 0` check provided to exclude Custom
+            # JavaScript Display and Grading block.
+            python_evaluated_block = data.find('<script type="loncapa/python">') >= 0 and data.find('<jsinput') < 0
             ungettext = self.runtime.service(self, "i18n").ungettext
             if answer_notification_type == 'incorrect':
                 if progress is not None:
-                    answer_notification_message = ungettext(
-                        "Incorrect ({progress} point)",
-                        "Incorrect ({progress} points)",
-                        progress.frac()[1]
-                    ).format(progress=str(progress))
+                    if not python_evaluated_block:
+                        answer_notification_message = ungettext(
+                            "Incorrect ({progress} point)",
+                            "Incorrect ({progress} points)",
+                            progress.frac()[1]
+                        ).format(progress=str(progress))
+                    else:
+                        answer_notification_message = _('Answer submission required')
                 else:
                     answer_notification_message = _('Incorrect')
             elif answer_notification_type == 'correct':
                 if progress is not None:
-                    answer_notification_message = ungettext(
-                        "Correct ({progress} point)",
-                        "Correct ({progress} points)",
-                        progress.frac()[1]
-                    ).format(progress=str(progress))
+                    if not python_evaluated_block:
+                        answer_notification_message = ungettext(
+                            "Correct ({progress} point)",
+                            "Correct ({progress} points)",
+                            progress.frac()[1]
+                        ).format(progress=str(progress))
+                    else:
+                        answer_notification_message = _('Answer submitted')
                 else:
                     answer_notification_message = _('Correct')
             elif answer_notification_type == 'partially-correct':
                 if progress is not None:
-                    answer_notification_message = ungettext(
-                        "Partially correct ({progress} point)",
-                        "Partially correct ({progress} points)",
-                        progress.frac()[1]
-                    ).format(progress=str(progress))
+                    if not python_evaluated_block:
+                        answer_notification_message = ungettext(
+                            "Partially correct ({progress} point)",
+                            "Partially correct ({progress} points)",
+                            progress.frac()[1]
+                        ).format(progress=str(progress))
+                    else:
+                        answer_notification_message = _('Answer submitted')
                 else:
                     answer_notification_message = _('Partially Correct')
             elif answer_notification_type == 'submitted':
