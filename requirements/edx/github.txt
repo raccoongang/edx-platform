@@ -114,6 +114,3 @@ git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.15#egg=xblock-
 
 -e git+https://github.com/raccoongang/edx_xblock_firepad.git#egg=edx-xblock-firepad
 -e git+https://github.com/raccoongang/edx_xblock_firechat.git#egg=edx-xblock-firechat
-
-# Raccoongang fixed search for course visibility
--e git+https://github.com/raccoongang/edx-search.git@0.1.2-rg#egg=edx-search
