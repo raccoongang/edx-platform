@@ -461,6 +461,7 @@ function(HTML5Video, Resizer) {
             );
         }
 
+        newSpeed = parseFloat(newSpeed)
         this.setSpeed(newSpeed);
         newSpeed = parseFloat(newSpeed)
         this.videoPlayer.setPlaybackRate(newSpeed);

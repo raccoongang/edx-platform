@@ -48,8 +48,6 @@ from lms.djangoapps.lms_xblock.mixin import LmsBlockMixin
 # The display name of the platform to be used in templates/emails/etc.
 PLATFORM_NAME = "Your Platform Name Here"
 CC_MERCHANT_NAME = PLATFORM_NAME
-# Shows up in the platform footer, eg "(c) COPYRIGHT_YEAR"
-COPYRIGHT_YEAR = "2017"
 
 PLATFORM_FACEBOOK_ACCOUNT = "http://www.facebook.com/YourPlatformFacebookAccount"
 PLATFORM_TWITTER_ACCOUNT = "@YourPlatformTwitterAccount"
@@ -2169,11 +2167,6 @@ INSTALLED_APPS = (
     'openedx.core.djangoapps.edx_global_analytics',
 )
 
-# Migrations which are not in the standard module "migrations"
-MIGRATION_MODULES = {
-    'social.apps.django_app.default': 'social.apps.django_app.default.south_migrations'
-}
-
 ######################### CSRF #########################################
 
 # Forwards-compatibility with Django 1.7
@@ -2205,6 +2198,7 @@ MKTG_URL_LINK_MAP = {
     'ROOT': 'root',
     'TOS': 'tos',
     'HONOR': 'honor',  # If your site does not have an honor code, simply delete this line.
+    'TOS_AND_HONOR': 'tos-and-honor',
     'PRIVACY': 'privacy',
     'PRESS': 'press',
     'BLOG': 'blog',

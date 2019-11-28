@@ -295,6 +295,7 @@
       // at the same length whether there are unread comments for this story or not.
     max-width: calc(100% - 125px);
     flex-grow: 1;  // This column should consume all the available space
+    width: 100%;
 }
 
 .forum-nav-thread-wrapper-2 {
