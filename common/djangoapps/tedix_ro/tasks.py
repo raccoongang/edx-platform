@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from urlparse import urljoin
 
+from babel.dates import format_datetime
 from celery.schedules import crontab
 from celery.task import periodic_task, task
 from django.conf import settings
@@ -17,6 +18,7 @@ from student.models import CourseEnrollment
 from xmodule.modulestore.django import modulestore
 
 from .models import InstructorProfile, StudentCourseDueDate, StudentProfile
+from .sms_client import SMSClient
 from .utils import report_data_preparation
 
 
@@ -31,15 +33,16 @@ def send_teacher_extended_reports():
             for student_profile in instructor.students.filter(user__courseenrollment__course_id=course.id):
                 header, user_data = report_data_preparation(student_profile.user, course)
                 report_data.append(user_data)
-            lesson_reports.append({
-                'course_name': course.display_name,
-                'header': header,
-                'report_data': report_data,
-                'report_url': urljoin(
-                    configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
-                    reverse('extended_report', kwargs={'course_key': course.id})
-                )
-            })
+            if report_data:
+                lesson_reports.append({
+                    'course_name': course.display_name,
+                    'header': header,
+                    'report_data': report_data,
+                    'report_url': urljoin(
+                        configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
+                        reverse('extended_report', kwargs={'course_key': course.id})
+                    )
+                })
         subject = u'{platform_name}: Report for {username} on "{course_name}"'.format(
             platform_name=settings.PLATFORM_NAME,
             username=instructor.user.profile.name or instructor.user.username,
@@ -76,7 +79,7 @@ def send_extended_reports_by_deadline():
 @task
 def send_student_extended_reports(user_id, course_id):
     user = User.objects.filter(id=user_id).first()
-    if user:
+    if user and hasattr(user, 'studentprofile'):
         course_key = CourseKey.from_string(course_id)
         course = modulestore().get_course(course_key)
         header, user_data = report_data_preparation(user, course)
@@ -109,4 +112,24 @@ def send_student_extended_reports(user_id, course_id):
             'email_from_address',
             settings.DEFAULT_FROM_EMAIL
         )
-        send_mail(subject, txt_message, from_address, [user.email], html_message=html_message)
+        parent = user.studentprofile.parents.first()
+        send_mail(subject, txt_message, from_address, [user.email, parent.user.email], html_message=html_message)
+
+        student_course_due_date = StudentCourseDueDate.objects.filter(
+            student=user.studentprofile,
+            course_id=course_key
+        ).first()
+        if student_course_due_date:
+            due_date = format_datetime(student_course_due_date.due_date, "yy.MM.dd hh:mm a", locale='en')
+        else:
+            due_date = 'N/A'
+        context.update({
+            'due_date': due_date,
+        })
+        sms_message = render_to_string(
+            'sms/light_report.txt',
+            context
+        )
+        sms_client = SMSClient()
+        sms_client.send_message(user.studentprofile.phone, sms_message)
+        sms_client.send_message(parent.phone, sms_message)

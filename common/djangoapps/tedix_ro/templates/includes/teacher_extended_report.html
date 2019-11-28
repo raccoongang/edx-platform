@@ -7,24 +7,25 @@ from django.utils.translation import ugettext as _
     <h1>${_("Activity report for lesson:")} ${ course_name }</h1>
     <br>
     <div style="overflow-x: scroll; overflow-y: hidden;">
-    <table id="progress-table" class="display nowrap" border='1'>
+    <table style="border-collapse: collapse; border: 1px solid;">
         <tr>
-            <th>${_("Student name")}</th>
+            <th style="border: 1px solid; padding: 10px 8px;">${_("Student name")}</th>
             %for question_name in header:
-                <th>
-                    <p>${_("Question")} ${loop.index + 1}: ${ question_name }</p>
+                <th style="border: 1px solid; padding: 10px 8px;">
+                    <p>${_("Question")} ${loop.index + 1}:
+                    <br>${ question_name }</p>
                 </th>
             %endfor
-            <th>${_("Number of question completed from first attempt")}</th>
-            <th>${_("Lesson completed")}</th>
+            <th style="border: 1px solid; padding: 10px 8px;">${_("Number of question completed from first attempt")}</th>
+            <th style="border: 1px solid; padding: 10px 8px;">${_("Lesson completed")}</th>
         </tr>
         %for user_data in report_data:
             <tr>
-                <th>
+                <th style="border: 1px solid; white-space: nowrap; padding: 10px 8px;">
                     ${ user_data['full_name'] }<br>
                 </th>
                 %for question_name, question_count_answer in user_data['questions']:
-                    <td>
+                    <td style="white-space: nowrap; border: 1px solid; padding: 9px 8px;">
                         %if question_count_answer == 1:
                             <span style="color: green;">${ ('First attempt') }</span>
                         %else:
@@ -32,8 +33,8 @@ from django.utils.translation import ugettext as _
                         %endif
                     </td>
                 %endfor
-                <td>${ user_data['percent'] }%</td>
-                <td><span style="color: ${'green' if user_data['completion'] == 1 else 'red'};">${'Yes' if user_data['completion'] == 1 else 'No'}</span></td>
+                <td style="white-space: nowrap; border: 1px solid; padding: 9px 8px;">${ user_data['percent'] }%</td>
+                <td style="white-space: nowrap; border: 1px solid; padding: 9px 8px;"><span style="color: ${'green' if user_data['completion'] == 1 else 'red'};">${'Yes' if user_data['completion'] == 1 else 'No'}</span></td>
             </tr>
         %endfor
         </table>

@@ -34,5 +34,7 @@ teacher_report = user.is_superuser or user.is_staff and hasattr(user, 'instructo
             args="report_data=lesson_report.get('report_data'), course_name=lesson_report.get('course_name')"
         />
     %endif
-    <p><a href="${lesson_report.get('report_url')}" class="new-page">External report</a><p>
+    <p>Report link:<br>
+    ${lesson_report.get('report_url')}
+    <p>
 %endfor
