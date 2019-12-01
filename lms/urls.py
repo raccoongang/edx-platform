@@ -692,6 +692,11 @@ urlpatterns += [
         r'^custom-courses$',
         courseware_views.custom_courses_html,
     ),
+    url(
+        r'^tracks-about$',
+        courseware_views.tracks_about_html,
+    ),
+
 ]
 
 if settings.FEATURES.get('ENABLE_TEAMS'):

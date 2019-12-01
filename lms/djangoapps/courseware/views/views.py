@@ -256,6 +256,17 @@ def custom_courses_html(request):
     )
 
 @ensure_csrf_cookie
+@cache_if_anonymous()
+def tracks_about_html(request):
+
+
+    return render_to_response(
+        "tracks-about.html",
+        {}
+    )
+
+
+@ensure_csrf_cookie
 @ensure_valid_course_key
 def jump_to_id(request, course_id, module_id):
     """
