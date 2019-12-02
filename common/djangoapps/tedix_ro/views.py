@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db import transaction
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
@@ -67,7 +68,7 @@ def extended_report(request, course_key):
 
     course_key = CourseKey.from_string(course_key)
     course = get_course_with_access(user, 'load', course_key, check_if_enrolled=True)
-
+    header = []
     report_data = []
     modulestore_course = modulestore().get_course(course_key)
     if user.is_superuser:
@@ -83,6 +84,10 @@ def extended_report(request, course_key):
     else:
         header, user_data = report_data_preparation(user, modulestore_course)
         report_data.append(user_data)
+
+    if not report_data:
+        raise Http404
+
     context = {
         'course_name': course.display_name,
         'header': header,

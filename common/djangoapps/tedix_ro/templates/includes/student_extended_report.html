@@ -10,7 +10,7 @@ from django.utils.translation import ugettext as _
         <p>${_("Lesson completed")}: <span style="color: ${'green' if user_data['completion'] == 1 else 'red'};">${'Yes' if user_data['completion'] == 1 else 'No'}</span>
         <br>${_("Number of question completed from first attempt")}:<span style="color: green"> ${ user_data['percent'] }% (${user_data['count_answer_first_attempt']} out of ${len(user_data['questions'])})</span><p>
     </h4>
-    <h2 class="hd hd-2" style="padding-bottom: 30px">Questions answered report break-down:</h2>
+    <h2 class="hd hd-2" style="padding-bottom: 20px">Questions answered report break-down:</h2>
 
     %for question_name, question_count_answer in user_data['questions']:
         <h4 class="hd hd-6" style="padding-bottom: 20px">

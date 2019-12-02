@@ -22,7 +22,7 @@ from .sms_client import SMSClient
 from .utils import report_data_preparation
 
 
-@periodic_task(run_every=crontab(hour='10', minute='30'))
+@periodic_task(run_every=crontab(hour='15', minute='30'))
 def send_teacher_extended_reports():
     for instructor in InstructorProfile.objects.filter(user__is_staff=True).prefetch_related('students'):
         lesson_reports = []
@@ -43,31 +43,32 @@ def send_teacher_extended_reports():
                         reverse('extended_report', kwargs={'course_key': course.id})
                     )
                 })
-        subject = u'{platform_name}: Report for {username} on "{course_name}"'.format(
-            platform_name=settings.PLATFORM_NAME,
-            username=instructor.user.profile.name or instructor.user.username,
-            course_name=course.display_name
-        )
-        context = {
-            'user': instructor.user,
-            'lesson_reports': lesson_reports
-        }
-        html_message = render_to_string(
-            'emails/extended_report_mail.html',
-            context
-        )
-        txt_message = render_to_string(
-            'emails/extended_report_mail.txt',
-            context
-        )
-        from_address = configuration_helpers.get_value(
-            'email_from_address',
-            settings.DEFAULT_FROM_EMAIL
-        )
-        send_mail(subject, txt_message, from_address, [instructor.user.email], html_message=html_message)
+        if lesson_reports:
+            subject = u'{platform_name}: Report for {username}'.format(
+                platform_name=settings.PLATFORM_NAME,
+                username=instructor.user.profile.name or instructor.user.username,
+                course_name=course.display_name
+            )
+            context = {
+                'user': instructor.user,
+                'lesson_reports': lesson_reports
+            }
+            html_message = render_to_string(
+                'emails/extended_report_mail.html',
+                context
+            )
+            txt_message = render_to_string(
+                'emails/extended_report_mail.txt',
+                context
+            )
+            from_address = configuration_helpers.get_value(
+                'email_from_address',
+                settings.DEFAULT_FROM_EMAIL
+            )
+            send_mail(subject, txt_message, from_address, [instructor.user.email], html_message=html_message)
 
 
-@periodic_task(run_every=crontab(hour='10', minute='30'))
+@periodic_task(run_every=crontab(hour='15', minute='30'))
 def send_extended_reports_by_deadline():
     datetime_now = datetime.utcnow().replace(tzinfo=pytz.UTC)
     for due_date in StudentCourseDueDate.objects.filter(
