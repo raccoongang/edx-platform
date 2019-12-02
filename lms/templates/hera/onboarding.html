@@ -21,7 +21,7 @@
 
 <script type="text/javascript">
 
-    var currentLocation = "{% url 'hera:onboarding' %}";
+    var currentLocation = "${reverse('hera:onboarding', args=[course_id])}";
 
     function fourthPageButtonTitle(currentPage, isPassed){
         $('#next_button').show();
@@ -52,15 +52,18 @@
         });
     }
 
-    fourthPageButtonTitle("${current_page}", $('#next_button').data('is-passed'));
+    function isPassed(value) {
+        if (value === 'True') {
+            return true;
+        }
+        return false;
+    }
+
+    fourthPageButtonTitle("${current_page}", isPassed($('#next_button').data('is-passed')));
 
     $('#next_button').click(function(event){
 
         var currentPage = $(this).data('currentPage');
-
-        if (currentPage === 'page_4'){
-            // TODO: add redirect by pass
-        }
 
         data = {
             "csrfmiddlewaretoken": "${csrf_token}",
@@ -73,6 +76,11 @@
             data: data,
             dataType: 'json',
             success: function (data) {
+                if (currentPage === 'page_4') {
+                    // TODO: add redirect by pass
+                    window.location.reload(false);
+                    return;
+                }
                 if (data.next_page){
                     $('#next_button').data('currentPage', data.next_page);
                     $('#next_button').data('is-passed', data.is_passed);
@@ -88,7 +96,7 @@
 
                     changeCurrentPageContent(data.next_page);
                     firstPageButtonHide(data.next_page);
-                    fourthPageButtonTitle(data.next_page, data.is_passed);
+                    fourthPageButtonTitle(data.next_page, isPassed(data.is_passed));
 
                 }
             },
