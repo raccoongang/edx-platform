@@ -1,7 +1,7 @@
 import datetime
-from csv import DictReader
 import json
 import pytz
+from csv import DictReader
 from urlparse import urljoin
 
 from django.apps import apps
@@ -11,43 +11,91 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db import transaction
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views import View
+
+from courseware.access import has_access
+from courseware.courses import get_course_with_access, get_studio_url
+from courseware.masquerade import setup_masquerade
 from edxmako.shortcuts import render_to_response
-from rest_framework import generics, permissions, status, viewsets
+from rest_framework import permissions, status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from opaque_keys.edx.keys import CourseKey
-from opaque_keys import InvalidKeyError
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
-from openedx.core.djangoapps.user_api.accounts.utils import generate_password
 from openedx.core.djangoapps.user_api.accounts.permissions import CanRetireUser
+from openedx.core.djangoapps.user_api.accounts.utils import generate_password
+from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiveUser
+import pytz
+from student.helpers import do_create_account, get_next_url_for_login_page
 from student.models import CourseEnrollment
-from student.helpers import get_next_url_for_login_page, do_create_account
+from xmodule.modulestore.django import modulestore
 
-from .admin import STUDENT_PARENT_EXPORT_FIELD_NAMES, INSTRUCTOR_EXPORT_FIELD_NAMES
+from .admin import INSTRUCTOR_EXPORT_FIELD_NAMES, STUDENT_PARENT_EXPORT_FIELD_NAMES
 from .forms import (
-    StudentEnrollForm,
-    StudentImportRegisterForm,
+    FORM_FIELDS_MAP,
+    AccountImportValidationForm,
+    CityImportForm,
+    CityImportValidationForm,
     InstructorImportValidationForm,
     ProfileImportForm,
-    StudentProfileImportForm,
-    AccountImportValidationForm,
-    StudentProfileImportForm,
-    CityImportForm,
-    AccountImportValidationForm,
-    CityImportValidationForm,
     SchoolImportValidationForm,
-    FORM_FIELDS_MAP
+    StudentEnrollForm,
+    StudentImportRegisterForm,
+    StudentProfileImportForm,
 )
-from .models import StudentProfile, StudentCourseDueDate, City, School, VideoLesson
-from .serializers import CitySerializer, SchoolSerilizer, SingleCitySerializer, SingleSchoolSerilizer, VideoLessonSerializer
-from .utils import get_payment_link
+from .models import City, School, StudentCourseDueDate, StudentProfile, VideoLesson
+from .serializers import (
+    CitySerializer,
+    SchoolSerilizer,
+    SingleCitySerializer,
+    SingleSchoolSerilizer,
+    VideoLessonSerializer,
+)
+from .utils import get_payment_link, report_data_preparation, light_report_data_preparation
+
+
+def extended_report(request, course_key):
+    user = request.user
+    if not user.is_authenticated():
+        return redirect(get_next_url_for_login_page(request))
+
+    course_key = CourseKey.from_string(course_key)
+    course = get_course_with_access(user, 'load', course_key, check_if_enrolled=True)
+    header = []
+    report_data = []
+    modulestore_course = modulestore().get_course(course_key)
+    if user.is_superuser:
+        for student in User.objects.filter(courseenrollment__course_id=course.id, is_staff=False).select_related('profile'):
+            header, user_data = report_data_preparation(student, modulestore_course)
+            report_data.append(user_data)
+    elif user.is_staff and hasattr(user, 'instructorprofile'):
+        for student_profile in user.instructorprofile.students.filter(
+            user__courseenrollment__course_id=course.id
+        ).select_related('user__profile'):
+            header, user_data = report_data_preparation(student_profile.user, modulestore_course)
+            report_data.append(user_data)
+    else:
+        header, user_data = report_data_preparation(user, modulestore_course)
+        report_data.append(user_data)
+
+    if not report_data:
+        raise Http404
+
+    context = {
+        'course_name': course.display_name,
+        'header': header,
+        'report_data': report_data,
+        'user': user,
+    }
+    return render_to_response('extended_report.html', context)
+
 
 
 def manage_courses(request):
