@@ -181,7 +181,6 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
         
         active_block_id = section_module.scope_ids.usage_id.block_id
         subsection_active = ''
-        print('ACTIVE BLOCK!!!', active_block_id)
 
         for section in course_block_tree.get('children'):
             for subsection in section.get('children', []):
@@ -196,7 +195,6 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
                     for section in chapter['sections']:
                         if course_block_id == section.location.block_id:
                             earned = section.all_total.earned
-                            print(earned, 'EARNED '*8)
                             total = section.all_total.possible
                             break
         
@@ -207,13 +205,17 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
                 and filter the next lessons by level
             """
 
-            subsection_vertical = {}
-            subsection_vertical['children'] = []
-            # print('++++++++++++', subsection_active)
-            subsection_level = ''
+            subsection_vertical = {'children': []}
 
-            def ut(earned, level=None):
-                print("LEVEL", level)
+            def get_next_level(earned, level=None):
+                """
+                Get user's next level depending on earned points.
+
+                    Arguments:
+                        earned (float): Points student has earned.
+                        level (str): One of "low", "middle", "hight". Default one is "middle"
+                    Return level.
+                """
                 subsection_level = 'middle' # default
                 if level:
                     if 0 <= earned <= 4.9:
@@ -230,104 +232,71 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
                             subsection_level = 'hight'
                     return subsection_level
                 return subsection_level
-            print("EARNED - ", earned)
-                    
-            """
-            {
-                COURSE_KEY: course_id,
-                USER: request.user.id,
-                LEVEL: subsection_level,
-                first: {id: <id>, data: <subsection>}
-                next: {id: <id>, data: <subsection>}
-            }
-            """
-            # TODO How we take the pair if here is only one first taken
-            print(course_id, 'COURSE_ID')
+
+            def get_pair(first_id, next_id, tree):
+                """
+                Get whole subsection data by ids.
+
+                    Arguments:
+                        first_id (str): First block's ID.
+                        next_id (str): Next block's ID
+                        tree (dict): Contains whole data of the course.
+                    Return pair of two blocks to be dispayed to user.
+                """
+                pair = [{},{}]
+                for section in tree['children']:
+                    for sub in section['children']:
+                        if sub['block_id'] == first_id:
+                            pair[0] = sub
+                        if sub['block_id'] == next_id:
+                            pair[1] = sub
+                return pair
+
             lesson_pair = c_selection_page().find_one({
                 COURSE_KEY: course_id,
                 USER: request.user.id,
-                # '$or': [{BLOCK_ID: subsection_active['block_id']}, {NEXT_ID: subsection_active['block_id']}]
             })
-            # print(lesson_pair, '- LESSONPAIR')
-            
+
             subsection_level = subsection_active['unit_level']
-            print(subsection_active['unit_level'], 'SUB_LEVEL')
-            
-            
-            if not lesson_pair:
-                next_level = ut(earned)
-            # TODO HERE IS LESSON  pait DO NOT UPDATES!!! after the complete lessons need to change     
-            elif lesson_pair and not lesson_pair['block_id']['data']['complete'] and not lesson_pair['next_id']['data']['complete']:
-                next_level = ut(earned, subsection_level)
-            else:
-                next_level = ut(earned, subsection_level)
-            print(next_level, 'NEXTLEVEL ')
-            
-            if lesson_pair and lesson_pair[LEVEL] == next_level:
-                
-                
-                
-                first, _next = (lesson_pair.get(BLOCK_ID), lesson_pair.get(NEXT_ID))
-                # print('------', first)
-                # print('------______', _next)
-                if first['id'] == subsection_active['block_id']:
-                    first['data'] = subsection_active
-                if _next['id'] == subsection_active['block_id']:
-                    _next['data'] = subsection_active
-                
-                print(first['data']['complete'], 'COMPLETE ' *3)
-                if subsection_active['complete'] and first['data']['complete'] and _next['data']['complete']:
-                    c_selection_page().remove({
-                        COURSE_KEY: course_id,
-                        USER: request.user.id}
-                    )
-                else:
-                    c_selection_page().update({
-                        COURSE_KEY: course_id,
-                        USER: request.user.id}, {'$set': {
-                            LEVEL: next_level,
-                            BLOCK_ID: {'id': first['id'], 'data': first['data']},
-                            NEXT_ID: {'id': _next['id'], 'data': _next['data']}
-                        }
-                    })
-                    subsection_vertical['children'] = [first['data'], _next['data']]
-                    return subsection_vertical
-            
+            is_complete = subsection_active['complete']
+            next_level = get_next_level(earned, subsection_level)
+            if lesson_pair:
+                # get next level only if user finished the previous one.
+                next_level = next_level if is_complete else lesson_pair[LEVEL]
+                first_sub, next_sub = get_pair(lesson_pair.get('block_id'), lesson_pair.get('next_id'), course_block_tree)
+                pair = []
+                # levels the same and at least one hasn't completed - return current pair
+                if lesson_pair[LEVEL] == next_level and (not first_sub.get('complete', True) or not next_sub.get('complete', True)):
+                    return {'children': [first_sub, next_sub]}
+            else: # means that student is here for the first time
+                next_level = get_next_level(earned)
+
             for section in course_block_tree.get('children'):
                 for subsection in section.get('children', []):
-                   
-                    # should the first in selection logic
-                    # print(next_level, 'SUBSECTION________________________________________________')
                     if next_level == subsection['unit_level'] and not subsection['complete']:
                         subsection_vertical['children'].append(subsection)
                         if len(subsection_vertical['children']) >= 2:
                             break
                         continue
-                
-            print(next_level, 'NEXTLEVEL+! ' *8)
-            # print(subsection_vertical, 'VERTICAL ')
             to_set = {}
             if subsection_vertical['children'] and len(subsection_vertical['children']) > 1:
-                
                 to_set = {
-                        BLOCK_ID: {'id': subsection_vertical['children'][0]['block_id'], 'data': subsection_vertical['children'][0]},
-                        NEXT_ID: {'id': subsection_vertical['children'][1]['block_id'], 'data': subsection_vertical['children'][1]},
+                        BLOCK_ID: subsection_vertical['children'][0]['block_id'],
+                        NEXT_ID: subsection_vertical['children'][1]['block_id'],
                         LEVEL: next_level
                     }
             elif subsection_vertical['children']:
-                print(LEVEL, next_level, 'WHY IT IS HASHABLE')
                 to_set = {
-                        BLOCK_ID: {'id': subsection_vertical['children'][0]['block_id'], 'data': subsection_vertical['children'][0]},
+                        BLOCK_ID: subsection_vertical['children'][0]['block_id'],
                         LEVEL: next_level
                 }
+
             if to_set:
                 c_selection_page().update({
                     COURSE_KEY: course_id,
                     USER: request.user.id},
                     {'$set': to_set}
                 , upsert=True)
-            
-            
 
             return subsection_vertical
 
