@@ -25909,3 +25909,80 @@ msgid ""
 "A new revision was created: Merge between Revision #%(r1)d and Revision "
 "#%(r2)d"
 msgstr "أُنشأت مراجعة جديدة: الدمج بين المراجعة #%(r1)d والمراجعة #%(r2)d "
+
+#takamol
+
+msgid "My Dashboard"
+msgstr "التعليمية"
+
+msgid "Featured"
+msgstr "المفضلة"
+
+msgid "Tracks"
+msgstr "المسارات"
+
+msgid "Improve Your Skills"
+msgstr "تطوير مهاراتك"
+
+msgid "Anywhere. Anytime."
+msgstr "في أي وقت واي مكان"
+
+msgid "What do you want to learn?"
+msgstr "ماذا تريد أن تتعلم ؟"
+
+msgid "Logout"
+msgstr "تسجيل خروج"
+
+msgid "View All Courses"
+msgstr "عرض جميع الدورات"
+
+msgid "Information Technology"
+msgstr "التقنية"
+
+msgid "Choose a Course from the Catalog"
+msgstr "سجل في الدورة التي تريدها"
+
+msgid "Register for the Course"
+msgstr "اختر دورة من الكتالوج"
+
+msgid "Reach your Goals"
+msgstr "تحقيق أهدافك والحصول على وظيفة رائعة"
+
+msgid "About 3oloom"
+msgstr "عن برنامج علوم"
+
+msgid "Takamol Holding. All rights reserved."
+msgstr "تكامل القابضة | جميع الحقوق محفوظة"
+
+msgid "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit."
+msgstr "اختر من بين عدد كبير من الدورات التدريبية التي تغطي مختلف الموضوعات ومجالات الخبرة."
+
+msgid "Share this Course"
+msgstr "شارك هذا الدورة"
+
+msgid "About the Course"
+msgstr "عن الدورة"
+
+msgid "Course Goals"
+msgstr "الهدف من هذه الدورة"
+
+msgid "Sponsors"
+msgstr "بالتعاون مع"
+
+msgid "Back to Course Catalog"
+msgstr "العودة إلى كتالوج الدورات"
+
+msgid "Courses I am Registered In"
+msgstr "الدورات المسجل فيها"
+
+msgid "Tracks I am Registered In"
+msgstr "المسارات المسجل فيها"
+
+msgid "Certifcates Issued"
+msgstr "الشهادات الممنوحة"
+
+msgid "My Tracks"
+msgstr "المسارات المسجل فيها"
+
+msgid "Overall Progress"
+msgstr "التقدم العام"
