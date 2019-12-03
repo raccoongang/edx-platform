@@ -21,8 +21,6 @@
 
 <script type="text/javascript">
 
-    var currentLocation = "${reverse('hera:onboarding', args=[course_id])}";
-
     function fourthPageButtonTitle(currentPage, isPassed){
         $('#next_button').show();
         if (currentPage === 'page_4' && !isPassed) {
@@ -72,7 +70,6 @@
 
         $.ajax({
             type: 'POST',
-            url: currentLocation,
             data: data,
             dataType: 'json',
             success: function (data) {
