@@ -271,4 +271,4 @@ django-mptt-admin==0.4.2
 -e lms/lib/ucdc_edx_api_plugin
 
 # UCDC SSO and API integration
-git+https://github.com/raccoongang/edx-oauth-client.git@ucdc-v.0.1.0#egg=edx_oauth_client==ucdc-v.0.1.0
+git+https://github.com/raccoongang/edx-oauth-client.git@ucdc-v.0.1.1#egg=edx_oauth_client==ucdc-v.0.1.1
