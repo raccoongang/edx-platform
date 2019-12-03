@@ -57,11 +57,14 @@ class UserOnboarding(models.Model):
     Contain history of hera users onboarding states.
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    onboarding = models.ForeignKey(Onboarding, null=True, blank=True, on_delete=models.CASCADE)
     page_1 = models.BooleanField(default=False)
     page_2 = models.BooleanField(default=False)
     page_3 = models.BooleanField(default=False)
     page_4 = models.BooleanField(default=False)
+
+    @property
+    def onboarding(self):
+        return Onboarding.objects.last()
 
     def is_passed(self):
         """
@@ -141,7 +144,7 @@ class UserOnboarding(models.Model):
                 'name': 'page_3'
             },
             {
-                'content': self.onboarding.third if self.onboarding else render_to_string(get_template('page_4')),
+                'content': self.onboarding.fourth if self.onboarding else render_to_string(get_template('page_4')),
                 'passed': self.page_4,
                 'name': 'page_4'
             }
