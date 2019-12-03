@@ -50,6 +50,7 @@ def send_teacher_extended_reports():
                 course_name=course.display_name
             )
             context = {
+                'lms_url': configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
                 'user': instructor.user,
                 'lesson_reports': lesson_reports
             }
@@ -98,6 +99,7 @@ def send_student_extended_reports(user_id, course_id):
             course_name=course.display_name
         )
         context = {
+            'lms_url': configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
             'user': user,
             'lesson_reports': lesson_reports
         }

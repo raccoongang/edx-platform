@@ -10,7 +10,7 @@ from django.utils.translation import ugettext as _
 <%namespace name='static' file='/static_content.html' />
 
 
-<img class="logo-image" src="${static.url("images/logo.png")}" alt="${_("{platform_name} Home Page").format(platform_name=static.get_platform_name())}" itemprop="logo" />
+<img class="logo-image" src="${ lms_url }${static.url("red-theme/images/logo.png")}" alt="${_("{platform_name} Home Page").format(platform_name=static.get_platform_name())}" itemprop="logo" />
 <%
 teacher_report = user.is_superuser or user.is_staff and hasattr(user, 'instructorprofile')
 %>
