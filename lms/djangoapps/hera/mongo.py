@@ -2,7 +2,8 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-from pymongo import MongoClient
+
+from xmodule.mongo_utils import connect_to_mongodb
 
 
 class Singleton(object):
@@ -30,7 +31,9 @@ class MongoConnector(Singleton):
         """
         Set class _conn variable.
         """
-        self._conn = MongoClient(host='mongo', port=27017)
+        options = settings.CONTENTSTORE['DOC_STORE_CONFIG']
+        options.pop('collection')  # we just connect to mongo, collection is not needed
+        self._conn = connect_to_mongodb(**options)
 
 
 _conn = MongoConnector()
@@ -44,4 +47,4 @@ LEVEL = 'unit_level'
 
 
 def c_selection_page():
-    return _conn.connector.get_database('hera')['selection_page']
+    return _conn.connector['selection_page']
