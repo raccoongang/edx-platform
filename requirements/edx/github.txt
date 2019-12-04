@@ -104,10 +104,7 @@ git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.18#egg=xblock-
 -e git+https://github.com/Stanford-Online/xblock-free-text-response#egg=xblock-free-text-response
 
 # Totem ind xblock (greenhost)
--e git+https://code.greenhost.net/totem/ind.git#egg=xblock-ind
+-e git+https://code.greenhost.net/totem/ind.git#egg=xblock_ind==0.1
 
 # Custom video_xblock
-git+https://github.com/raccoongang/xblock-video.git@greenhost-ginkgo-v0.9.1#egg=video_xblock==0.9.1
-
-# Interactive Network Diagram
--e git+https://code.greenhost.net/totem/ind.git#egg=indie==0.1
+git+https://github.com/raccoongang/xblock-video.git@greenhost-ginkgo-v0.9.2#egg=video_xblock==0.9.2
