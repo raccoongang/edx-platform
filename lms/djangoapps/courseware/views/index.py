@@ -95,6 +95,8 @@ class CoursewareIndex(View):
             section (unicode): section url_name
             position (unicode): position in module, eg of <sequential> module
         """
+        if course_id != settings.HERA_COURSE_ID: #
+            raise Http404()
         self.course_key = CourseKey.from_string(course_id)
 
         if not (request.user.is_authenticated or self.enable_anonymous_courseware_access):

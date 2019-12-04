@@ -2329,6 +2329,10 @@ INSTALLED_APPS = [
     'hvad',
 ]
 
+# if we redirect users from another pages just uncomment this
+# if 'hera' in INSTALLED_APPS:
+#     MIDDLEWARE_CLASSES.insert(0, 'lms.djangoapps.hera.middleware.RestrictPages')
+
 ######################### CSRF #########################################
 
 # Forwards-compatibility with Django 1.7
@@ -3512,3 +3516,5 @@ TINYMCE_DEFAULT_CONFIG = {
         {'title' : 'Black background', 'inline' : 'span', 'styles': {'background': '#000'}},
     ]
 }
+
+HERA_COURSE_ID = 'course-v1:Raccoongang+101+2019'

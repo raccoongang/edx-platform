@@ -107,11 +107,6 @@ ${HTML(fragment.foot_html())}
 
 <div class="message-banner" aria-live="polite"></div>
 
-% if default_tab:
-  <%include file="/courseware/course_navigation.html" />
-% else:
-  <%include file="/courseware/course_navigation.html" args="active_page='courseware'" />
-% endif
 
 <div class="container"
   % if getattr(course, 'language'):
@@ -161,35 +156,6 @@ ${HTML(fragment.foot_html())}
     </div>
 % endif
     <section class="course-content" id="course-content">
-        <header class="page-header has-secondary">
-            <div class="page-header-main">
-                <nav aria-label="${_('Course')}" class="sr-is-focusable" tabindex="-1">
-                    <div class="has-breadcrumbs">
-                        <div class="breadcrumbs">
-                            % if COURSE_OUTLINE_PAGE_FLAG.is_enabled(course.id):
-                                <span class="nav-item nav-item-course">
-                                    <a href="${course_url}">${course_home_page_title(course)}</a>
-                                </span>
-                                <span class="icon fa fa-angle-right" aria-hidden="true"></span>
-                            % endif
-                            % if chapter:
-                                <span class="nav-item nav-item-chapter" data-course-position="${course.position}" data-chapter-position="${chapter.position}">
-                                    <a href="${course_url}#${unicode(chapter.location)}">${chapter.display_name_with_default}</a>
-                                </span>
-                                <span class="icon fa fa-angle-right" aria-hidden="true"></span>
-                            % endif
-                            % if section:
-                                <span class="nav-item nav-item-section">
-                                    <a href="${course_url}#${unicode(section.location)}">${section.display_name_with_default}</a>
-                                </span>
-                                <span class="icon fa fa-angle-right" aria-hidden="true"></span>
-                            % endif
-                            <span class="nav-item nav-item-sequence">${sequence_title}</span>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-        </header>
 
         <main id="main" tabindex="-1" aria-label="Content">
             % if getattr(course, 'entrance_exam_enabled') and \

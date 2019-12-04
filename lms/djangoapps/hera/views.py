@@ -10,7 +10,7 @@ from django.utils.decorators import method_decorator
 
 from edxmako.shortcuts import render_to_response
 
-from hera.models import Onboarding, UserOnboarding
+from .models import Onboarding, UserOnboarding
 
 
 @method_decorator(login_required, name='dispatch')
@@ -24,13 +24,10 @@ class OnboardingPagesView(View):
         Render user onboarding pages.
         """
         user_onboarding, _ = UserOnboarding.objects.get_or_create(user=request.user)
-        # redirect_url = reverse('hera:selection_page', args={'course_id': kwargs['course_id']})
         context = {
             'pages': user_onboarding.get_pages(),
             'current_page': user_onboarding.get_current_page(),
             'is_passed': user_onboarding.is_passed(),
-            'course_id': kwargs['course_id'],
-            # 'redirect_url': redirect_url,
         }
         return render_to_response("hera/onboarding.html", context)
 
