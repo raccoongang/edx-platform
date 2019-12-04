@@ -256,7 +256,6 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
                 COURSE_KEY: course_id,
                 USER: request.user.id,
             })
-
             subsection_level = subsection_active['unit_level']
             is_complete = subsection_active['complete']
             next_level = get_next_level(earned, subsection_level)
@@ -325,3 +324,4 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
 
         html = render_to_string('course_experience/course-lessons-outline-fragment.html', context)
         return Fragment(html)
+        
