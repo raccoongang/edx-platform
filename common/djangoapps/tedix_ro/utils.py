@@ -10,6 +10,10 @@ from django.conf import settings
 from django.urls import reverse
 
 from courseware.models import StudentModule
+from lms.djangoapps.grades.config.models import PersistentGradesEnabledFlag
+from lms.djangoapps.grades.course_data import CourseData
+from lms.djangoapps.grades.course_grade import CourseGrade
+from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 
 
@@ -70,7 +74,6 @@ def light_report_data_preparation(user, course):
     Question = apps.get_model('tedix_ro', 'Question')
     StudentCourseDueDate = apps.get_model('tedix_ro', 'StudentCourseDueDate')
     count_answer_first_attempt = 0
-    questions = 0
     completion = True
     count_questions = 0
 
@@ -110,3 +113,21 @@ def light_report_data_preparation(user, course):
         )
     }
     return report_data
+
+
+def lesson_complite(user, course_key):
+    Question = apps.get_model('tedix_ro', 'Question')
+    if PersistentGradesEnabledFlag.feature_enabled(course_key):
+        course_grade = CourseGradeFactory().read(user=user, course_key=course_key)
+    else:
+        course_data = CourseData(user, course, collected_block_structure, course_structure, course_key)
+        course_grade = CourseGrade(
+            user,
+            course_data,
+            force_update_subsections=force_update_subsections
+        )
+        course_grade = course_grade.update()
+    video_questions = Question.objects.filter(video_lesson__course=course_key)
+    questions_count = video_questions.values('question_id').distinct().count()
+    answered_questions_count = video_questions.filter(video_lesson__user=user).exclude(attempt_count=0).count()
+    return bool(course_grade.passed and answered_questions_count == questions_count)

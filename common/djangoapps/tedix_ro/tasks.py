@@ -8,18 +8,16 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.urls import reverse
-from django.utils.translation import ugettext as _
 import pytz
 
 from edxmako.shortcuts import render_to_string
 from opaque_keys.edx.keys import CourseKey
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
-from student.models import CourseEnrollment
 from xmodule.modulestore.django import modulestore
 
-from .models import InstructorProfile, StudentCourseDueDate, StudentProfile
+from .models import InstructorProfile, StudentCourseDueDate
 from .sms_client import SMSClient
-from .utils import report_data_preparation
+from .utils import report_data_preparation, lesson_complite
 
 
 @periodic_task(run_every=crontab(hour='15', minute='30'))
@@ -75,7 +73,10 @@ def send_extended_reports_by_deadline():
     for due_date in StudentCourseDueDate.objects.filter(
             due_date__lte=datetime_now,
             due_date__gt=datetime_now-timedelta(1)):
-        send_student_extended_reports(due_date.student.user.id, str(due_date.course_id))
+        user = due_date.student.user
+        course_id = due_date.course_id
+        if not lesson_complite(user, course_id):
+            send_student_extended_reports(user.id, str(course_id))
 
 
 @task
