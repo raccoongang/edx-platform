@@ -4,8 +4,8 @@
 <html lang="{{LANGUAGE_CODE}}">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ platform_name }}{% endblock %}</title>
-
   <link rel="icon" type="image/x-icon" href="{% favicon_path %}" />
 
   {% with "js/i18n/"|add:LANGUAGE_CODE|add:"/djangojs.js" as i18njs_path %}

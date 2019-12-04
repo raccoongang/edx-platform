@@ -6,14 +6,14 @@ import httplib
 import unittest
 import uuid
 
-from ddt import ddt, data, unpack
-from mock import patch, call
+from ddt import data, ddt, unpack
+from mock import call, patch
 
-from openedx.core.djangoapps.edx_global_analytics.utils.utilities import send_instance_statistics_to_acceptor
 from openedx.core.djangoapps.edx_global_analytics.utils.token_utils import (
     access_token_authorization,
-    access_token_registration,
+    access_token_registration
 )
+from openedx.core.djangoapps.edx_global_analytics.utils.utilities import send_instance_statistics_to_acceptor
 
 
 @ddt
@@ -45,7 +45,6 @@ class TestAcceptorApiUsage(unittest.TestCase):
         ]
 
         self.assertEqual(mock_request.call_args_list, expected_calls)
-
 
     @data(
         [httplib.CREATED, 'Data were successfully transferred to OLGA acceptor. Status code is {0}.'],

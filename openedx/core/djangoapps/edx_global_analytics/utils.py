@@ -6,9 +6,8 @@ import calendar
 import datetime
 
 from django.core.cache import cache
+from django.db.models import Count, Q
 
-from django.db.models import Count
-from django.db.models import Q
 from student.models import UserProfile
 
 

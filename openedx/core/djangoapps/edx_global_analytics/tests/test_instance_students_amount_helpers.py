@@ -4,14 +4,14 @@ Tests for edX global analytics application functions, that help to calculate sta
 
 from datetime import date
 
-from ddt import ddt, data, unpack
-from mock import patch
+from ddt import data, ddt, unpack
 from django.test import TestCase
+from mock import patch
 
 from openedx.core.djangoapps.edx_global_analytics.utils.utilities import (
     get_previous_day_start_and_end_dates,
-    get_previous_week_start_and_end_dates,
     get_previous_month_start_and_end_dates,
+    get_previous_week_start_and_end_dates
 )
 
 

@@ -24,7 +24,8 @@ from datetime import datetime
 from student.roles import CourseStaffRole, GlobalStaff
 from student.tests.factories import UserFactory
 from xmodule.modulestore.django import modulestore
-from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
+from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase, ModuleStoreTestCase
+from xmodule.modulestore.tests.factories import CourseFactory
 from xmodule.modulestore.tests.mongo_connection import MONGO_PORT_NUM, MONGO_HOST
 
 
@@ -364,3 +365,35 @@ class TestSysAdminMongoCourseImport(SysadminBaseTestCase):
                       response.content)
 
         self._rm_edx4edx()
+
+
+class SysadminViewsTestCase(ModuleStoreTestCase):
+    """
+    Tests for views.py course info
+    """
+
+    def setUp(self):
+        super(SysadminViewsTestCase, self).setUp()
+        self.course = CourseFactory.create()
+
+    def test_action_del_course(self):
+        # login as staff
+        self.assertTrue(self.client.login(username=self.user, password='foo'))
+
+        # delete with wrong course id
+        course_id = 'WRONG COURSE ID'
+        response = self.client.post(
+            reverse('sysadmin_courses'),
+            {
+                'course_id': 'WRONG COURSE ID',
+                'action': 'del_course',
+            }, follow=True)
+        self.assertContains(response, u'Error - cannot get course with ID {}'.format(course_id))
+
+        response = self.client.post(
+            reverse('sysadmin_courses'),
+            {
+                'course_id': self.course.id,
+                'action': 'del_course',
+            }, follow=True)
+        self.assertContains(response, u'Deleted {}'.format(self.course.location.to_deprecated_string()))

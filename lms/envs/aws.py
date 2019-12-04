@@ -31,6 +31,7 @@ import os
 
 from path import Path as path
 from xmodule.modulestore.modulestore_settings import convert_module_store_setting_if_needed
+from django.utils.encoding import force_str
 
 # SERVICE_VARIANT specifies name of the variant used, which decides what JSON
 # configuration files are read during startup.
@@ -123,6 +124,15 @@ with open(CONFIG_ROOT / CONFIG_PREFIX + "env.json") as env_file:
 # Celery time zone settings for periodic task.
 OPENEDX_LEARNERS_GLOBAL_ANALYTICS_ENABLE = ENV_TOKENS.get('OPENEDX_LEARNERS_GLOBAL_ANALYTICS_ENABLE', False)
 OPENEDX_LEARNERS_GLOBAL_ANALYTICS_SETTINGS = ENV_TOKENS.get('OPENEDX_LEARNERS_GLOBAL_ANALYTICS', None)
+
+# This variable needs for running tasks more faster than once a day when your need test OLGA working.
+OLGA_SENDING_FREQUENCY = ENV_TOKENS.get('OLGA_SENDING_FREQUENCY', None)
+
+if OLGA_SENDING_FREQUENCY and (0 < OLGA_SENDING_FREQUENCY < 60):
+    OLGA_PERIODICITY = crontab(minute='*/{minutes}'.format(minutes=OLGA_SENDING_FREQUENCY))
+else:
+    OLGA_PERIODICITY = crontab(hour=0, minute=random.randint(1, 59))
+
 if OPENEDX_LEARNERS_GLOBAL_ANALYTICS_ENABLE and OPENEDX_LEARNERS_GLOBAL_ANALYTICS_SETTINGS:
     CELERY_TIMEZONE = OPENEDX_LEARNERS_GLOBAL_ANALYTICS_SETTINGS.get('CELERY_TIMEZONE') or TIME_ZONE
     CELERYBEAT_SCHEDULE.update({
@@ -131,7 +141,7 @@ if OPENEDX_LEARNERS_GLOBAL_ANALYTICS_ENABLE and OPENEDX_LEARNERS_GLOBAL_ANALYTIC
         # makes a POST request with the data to the appropriate service.
         'collect_stats': {
             'task': 'openedx.core.djangoapps.edx_global_analytics.tasks.collect_stats',
-            'schedule': crontab(hour=0, minute=random.randint(1, 59)),
+            'schedule': OLGA_PERIODICITY,
         }
     })
 
@@ -173,6 +183,7 @@ EMAIL_FILE_PATH = ENV_TOKENS.get('EMAIL_FILE_PATH', None)
 EMAIL_HOST = ENV_TOKENS.get('EMAIL_HOST', 'localhost')  # django default is localhost
 EMAIL_PORT = ENV_TOKENS.get('EMAIL_PORT', 25)  # django default is 25
 EMAIL_USE_TLS = ENV_TOKENS.get('EMAIL_USE_TLS', False)  # django default is False
+EMAIL_USE_SSL = ENV_TOKENS.get('EMAIL_USE_SSL', False)  # django default is False
 SITE_NAME = ENV_TOKENS['SITE_NAME']
 HTTPS = ENV_TOKENS.get('HTTPS', HTTPS)
 SESSION_ENGINE = ENV_TOKENS.get('SESSION_ENGINE', SESSION_ENGINE)
@@ -520,15 +531,30 @@ if AWS_SECRET_ACCESS_KEY == "":
 
 AWS_STORAGE_BUCKET_NAME = AUTH_TOKENS.get('AWS_STORAGE_BUCKET_NAME', 'edxuploads')
 
+#
+# To support Azure Storage via the Django-Storages library
+#
+AZURE_ACCOUNT_NAME = AUTH_TOKENS.get('AZURE_ACCOUNT_NAME', None)
+AZURE_ACCOUNT_KEY = AUTH_TOKENS.get('AZURE_ACCOUNT_KEY', None)
+AZURE_CONTAINER = AUTH_TOKENS.get('AZURE_CONTAINER', None)
+
 # Disabling querystring auth instructs Boto to exclude the querystring parameters (e.g. signature, access key) it
 # normally appends to every returned URL.
 AWS_QUERYSTRING_AUTH = AUTH_TOKENS.get('AWS_QUERYSTRING_AUTH', True)
 AWS_S3_CUSTOM_DOMAIN = AUTH_TOKENS.get('AWS_S3_CUSTOM_DOMAIN', 'edxuploads.s3.amazonaws.com')
 
+S3_USE_SIGV4 = ENV_TOKENS.get('S3_USE_SIGV4', False)
+S3_HOST = ENV_TOKENS.get('S3_HOST', None)
+
+if S3_USE_SIGV4 and S3_HOST:
+    os.environ['S3_USE_SIGV4'] = 'True'
+
 if AUTH_TOKENS.get('DEFAULT_FILE_STORAGE'):
     DEFAULT_FILE_STORAGE = AUTH_TOKENS.get('DEFAULT_FILE_STORAGE')
 elif AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY:
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+elif AZURE_ACCOUNT_NAME and AZURE_ACCOUNT_KEY and AZURE_CONTAINER:
+    DEFAULT_FILE_STORAGE = 'openedx.core.storage.AzureStorageExtended'
 else:
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
@@ -564,7 +590,8 @@ DOC_STORE_CONFIG = AUTH_TOKENS.get('DOC_STORE_CONFIG', DOC_STORE_CONFIG)
 MONGODB_LOG = AUTH_TOKENS.get('MONGODB_LOG', {})
 
 EMAIL_HOST_USER = AUTH_TOKENS.get('EMAIL_HOST_USER', '')  # django default is ''
-EMAIL_HOST_PASSWORD = AUTH_TOKENS.get('EMAIL_HOST_PASSWORD', '')  # django default is ''
+# convert from unicode to ascii to fix this issue - https://code.djangoproject.com/ticket/27131
+EMAIL_HOST_PASSWORD = force_str(AUTH_TOKENS.get('EMAIL_HOST_PASSWORD', '')) # django default is ''
 
 # Datadog for events!
 DATADOG = AUTH_TOKENS.get("DATADOG", {})
@@ -916,20 +943,23 @@ ENTERPRISE_ENROLLMENT_API_URL = ENV_TOKENS.get('ENTERPRISE_ENROLLMENT_API_URL', 
 #### RaccoonGang ####
 LOCALESET_FROM_REQUEST = ENV_TOKENS.get('LOCALESET_FROM_REQUEST', {"en": "en_US.utf8"})
 
-if AUTH_TOKENS.get('SENTRY_DSN'):
+# Courses categorization feature
+HOMEPAGE_COURSE_MAX = ENV_TOKENS.get('HOMEPAGE_COURSE_MAX', HOMEPAGE_COURSE_MAX)
+ORA2_FILEUPLOAD_BACKEND = ENV_TOKENS.get('ORA2_FILEUPLOAD_BACKEND', 'filesystem')
+ORA2_FILEUPLOAD_CACHE_NAME = ENV_TOKENS.get('ORA2_FILEUPLOAD_CACHE_NAME', 'default')
+ORA2_FILEUPLOAD_ROOT = os.path.join(MEDIA_ROOT, 'submissions_attachments/')
+ORA2_FILEUPLOAD_ROOT = ENV_TOKENS.get('ORA2_FILEUPLOAD_ROOT', ORA2_FILEUPLOAD_ROOT)
+SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING = FEATURES.get("SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING", True)
+
+if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
     import raven
     INSTALLED_APPS += ( 'raven.contrib.django.raven_compat', )
     RAVEN_CONFIG = {
-        'dsn': AUTH_TOKENS.get('SENTRY_DSN'),
+        'dsn': AUTH_TOKENS.get('RG_SENTRY_DSN'),
     }
-    raven.fetch_git_sha("/edx/app/edxapp/edx-platform")
+    raven.fetch_git_sha(REPO_ROOT)
 
-SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING = FEATURES.get("SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING", True)
+# Variable for overriding standard MKTG_URLS
+EXTERNAL_MKTG_URLS = ENV_TOKENS.get('EXTERNAL_MKTG_URLS', {})
 
-ORA2_FILEUPLOAD_BACKEND = ENV_TOKENS.get('ORA2_FILEUPLOAD_BACKEND', 'filesystem')
-ORA2_FILEUPLOAD_CACHE_NAME = ENV_TOKENS.get('ORA2_FILEUPLOAD_CACHE_NAME', 'default')
-ORA2_FILEUPLOAD_ROOT = ENV_TOKENS.get('ORA2_FILEUPLOAD_ROOT', os.path.join(MEDIA_ROOT, 'submissions_attachments/'))
 #### RaccoonGang ####
-
-# Courses categorization feature
-HOMEPAGE_COURSE_MAX = ENV_TOKENS.get('HOMEPAGE_COURSE_MAX', HOMEPAGE_COURSE_MAX)

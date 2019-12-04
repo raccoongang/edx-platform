@@ -207,7 +207,9 @@ CACHES = {
     # This is the cache used for most things.
     # In staging/prod envs, the sessions also live here.
     'default': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'edx_loc_mem_cache',
+        'KEY_FUNCTION': 'util.memcache.safe_key',
     },
 
     # The general cache is what you get if you use our util.cache. It's used for
@@ -217,16 +219,24 @@ CACHES = {
     # push process.
     'general': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        'KEY_PREFIX': 'general',
+        'VERSION': 4,
+        'KEY_FUNCTION': 'util.memcache.safe_key',
     },
 
     'mongo_metadata_inheritance': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/var/tmp/mongo_metadata_inheritance',
+        'TIMEOUT': 300,
+        'KEY_FUNCTION': 'util.memcache.safe_key',
     },
     'loc_cache': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'edx_location_mem_cache',
     },
     'course_structure_cache': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'edx_course_structure_mem_cache',
     },
 }
 
@@ -588,3 +598,6 @@ COMPREHENSIVE_THEME_DIRS = [REPO_ROOT / "themes", REPO_ROOT / "common/test"]
 COMPREHENSIVE_THEME_LOCALE_PATHS = [REPO_ROOT / "themes/conf/locale", ]
 
 LMS_ROOT_URL = "http://localhost:8000"
+STATIC_ROOT_BASE = REPO_ROOT / "static_test"
+EDX_PLATFORM_STATIC_ROOT_BASE = REPO_ROOT / "static_edxplatform_test"
+STATIC_COLLECTOR_ROOT = REPO_ROOT / "static_collection_test"

@@ -8,9 +8,8 @@ from django.test import TestCase
 from django.utils import timezone
 from django_countries.fields import Country
 
-from student.tests.factories import UserFactory
-
 from openedx.core.djangoapps.edx_global_analytics.utils.utilities import fetch_instance_information
+from student.tests.factories import UserFactory
 
 
 class TestStudentsAmountPerParticularPeriod(TestCase):

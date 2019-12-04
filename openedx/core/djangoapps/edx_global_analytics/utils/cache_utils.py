@@ -5,12 +5,12 @@ Cache functionality.
 from datetime import date, datetime, timedelta
 
 from django.core.cache import cache
-from django.db.models import Count
-from django.db.models import Q
+from django.db.models import Count, Q
 
 from student.models import UserProfile
 
-
+ACTIVE_STUDENTS_AMOUNT = 'active_students_amount'
+STUDENTS_PER_COUNTRY = 'students_per_country'
 WEEK_TIMEOUT = 7 * 24 * 60 * 60
 
 
@@ -20,7 +20,8 @@ def cache_instance_data(name_to_cache, query_type, activity_period):
 
     Arguments:
         name_to_cache (str): year-week or year-month accordance as string.
-        query_result (query result): Django-query result.
+        query_type (str): query type.
+        activity_period (tuple): tuple of two dates for filtering query.
 
     Returns cached query result.
     """
@@ -41,12 +42,12 @@ def get_query_result(query_type, activity_period):
     """
     period_start, period_end = activity_period
 
-    if query_type == 'active_students_amount':
+    if query_type == ACTIVE_STUDENTS_AMOUNT:
         return UserProfile.objects.exclude(
             Q(user__last_login=None) | Q(user__is_active=False)
         ).filter(user__last_login__gte=period_start, user__last_login__lt=period_end).count()
 
-    if query_type == 'students_per_country':
+    if query_type == STUDENTS_PER_COUNTRY:
         return dict(
             UserProfile.objects.exclude(
                 Q(user__last_login=None) | Q(user__is_active=False)
@@ -79,23 +80,23 @@ def get_cache_month_key():
     return '{0}-{1}-month'.format(year, month_number)
 
 
-def get_last_analytics_sent_date(type, token):
+def get_last_analytics_sent_date(query_type, token):
     """
     Get last analytics sent date from the cache.
     """
-    cache_key = 'ega_{}_{}'.format(type, token)
+    cache_key = 'ega_{}_{}'.format(query_type, token)
     default_date = datetime.fromtimestamp(0)
     cache_value = cache.get(cache_key, default_date)
 
-    if cache_value == default_date:
+    if cache_value.replace(tzinfo=None) == default_date:
         cache.set(cache_key, cache_value, WEEK_TIMEOUT)
 
     return cache_value
 
 
-def set_last_analytics_sent_date(type, token, date):
+def set_last_analytics_sent_date(query_type, token, sent_date):
     """
     Set last analytics sent date from the cache.
     """
-    cache_key = 'ega_{}_{}'.format(type, token)
-    return cache.set(cache_key, date, WEEK_TIMEOUT)
+    cache_key = 'ega_{}_{}'.format(query_type, token)
+    return cache.set(cache_key, sent_date, WEEK_TIMEOUT)

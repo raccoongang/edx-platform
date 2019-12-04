@@ -100,6 +100,11 @@ urlpatterns += patterns(
     url(r'^assets/{}/{}?$'.format(settings.COURSE_KEY_PATTERN, settings.ASSET_KEY_PATTERN), 'assets_handler'),
     url(r'^import/{}$'.format(COURSELIKE_KEY_PATTERN), 'import_handler'),
     url(r'^import_status/{}/(?P<filename>.+)$'.format(COURSELIKE_KEY_PATTERN), 'import_status_handler'),
+    # rest api for course import/export
+    url(
+        r'^api/courses/',
+        include('cms.djangoapps.contentstore.api.urls', namespace='courses_api')
+    ),
     url(r'^export/{}$'.format(COURSELIKE_KEY_PATTERN), 'export_handler'),
     url(r'^xblock/outline/{}$'.format(settings.USAGE_KEY_PATTERN), 'xblock_outline_handler'),
     url(r'^xblock/container/{}$'.format(settings.USAGE_KEY_PATTERN), 'xblock_container_handler'),
