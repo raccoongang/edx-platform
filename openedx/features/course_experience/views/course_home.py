@@ -33,7 +33,7 @@ from .. import LATEST_UPDATE_FLAG, SHOW_UPGRADE_MSG_ON_COURSE_HOME, USE_BOOTSTRA
 from ..utils import get_course_outline_block_tree, get_resume_block
 from .course_dates import CourseDatesFragmentView
 from .course_home_messages import CourseHomeMessageFragmentView
-from .course_outline import CourseOutlineFragmentView, SelectionPageOutlineFragmentView
+from .course_outline import CourseOutlineFragmentView
 from .course_sock import CourseSockFragmentView
 from .latest_update import LatestUpdateFragmentView
 from .welcome_message import WelcomeMessageFragmentView
@@ -203,18 +203,3 @@ class CourseHomeFragmentView(EdxFragmentView):
         }
         html = render_to_string('course_experience/course-home-fragment.html', context)
         return Fragment(html)
-
-
-class SelectionPageFragmentView(CourseHomeFragmentView):
-    outline_fragment_view = SelectionPageOutlineFragmentView
-
-
-class SelectionPageView(CourseHomeView):
-    """
-    The home page for the first two lessons
-    """
-
-    def render_to_fragment(self, request, course=None, tab=None, **kwargs):
-        course_id = unicode(course.id)
-        home_fragment_view = SelectionPageFragmentView()
-        return home_fragment_view.render_to_fragment(request, course_id=course_id, **kwargs)

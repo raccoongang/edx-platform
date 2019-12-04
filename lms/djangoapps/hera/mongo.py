@@ -5,8 +5,6 @@ from django.conf import settings
 from pymongo import MongoClient
 
 
-
-
 class Singleton(object):
     _instance = None
 

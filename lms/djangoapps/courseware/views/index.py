@@ -497,7 +497,7 @@ class CoursewareIndex(View):
             section_context['prev_url'] = _compute_section_url(previous_of_active_section, 'last')
         if next_of_active_section:
             section_context['next_url'] = reverse(
-                    'openedx.selection_page',
+                    'hera:selection_page',
                     args=[unicode(self.course_key)],
                 )
         # sections can hide data that masquerading staff should see when debugging issues with specific students

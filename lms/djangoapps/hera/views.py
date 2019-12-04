@@ -11,6 +11,8 @@ from django.utils.decorators import method_decorator
 from edxmako.shortcuts import render_to_response
 
 from hera.models import Onboarding, UserOnboarding
+from hera.fragments import SelectionPageOutlineFragmentView
+from openedx.features.course_experience.views.course_home import CourseHomeFragmentView, CourseHomeView
 
 
 @method_decorator(login_required, name='dispatch')
@@ -48,3 +50,18 @@ class OnboardingPagesView(View):
                 'is_passed': user_onboarding.is_passed(),
             })
         return HttpResponseForbidden()
+
+
+class SelectionPageFragmentView(CourseHomeFragmentView):
+    outline_fragment_view = SelectionPageOutlineFragmentView
+
+
+class SelectionPageView(CourseHomeView):
+    """
+    The home page for the first two lessons
+    """
+
+    def render_to_fragment(self, request, course=None, tab=None, **kwargs):
+        course_id = unicode(course.id)
+        home_fragment_view = SelectionPageFragmentView()
+        return home_fragment_view.render_to_fragment(request, course_id=course_id, **kwargs)
