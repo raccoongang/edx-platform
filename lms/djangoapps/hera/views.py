@@ -32,7 +32,6 @@ class OnboardingPagesView(View):
             'pages': user_onboarding.get_pages(),
             'current_page': user_onboarding.get_current_page(),
             'is_passed': user_onboarding.is_passed(),
-            'course_id': kwargs['course_id'],
         }
         return render_to_response("hera/onboarding.html", context)
 
