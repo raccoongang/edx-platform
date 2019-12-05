@@ -65,6 +65,7 @@ if settings.DEBUG or settings.FEATURES.get('ENABLE_DJANGO_ADMIN_SITE'):
 
 
 urlpatterns = [
+    url(r'', include('hera.urls', namespace='hera')),
     url(r'^$', branding_views.index, name='root'),   # Main marketing page, or redirect to courseware
 
     url(r'', include('student.urls')),
@@ -799,15 +800,6 @@ urlpatterns += [
         ),
         StaticCourseTabView.as_view(),
         name='static_tab',
-    ),
-]
-
-urlpatterns += [
-    url(
-        r'^courses/{}/course/'.format(
-            settings.COURSE_ID_PATTERN,
-        ),
-        include('lms.djangoapps.hera.urls', namespace='hera'),
     ),
 ]
 
