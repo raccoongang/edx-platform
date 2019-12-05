@@ -3,15 +3,18 @@ Model which store and override hera onboarding pages templates and user onboardi
 """
 
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
+from mako.template import Template
 
 
-def get_template(page_number):
+def render_template(page_number):
     """
-    Method which return path to default hera templates.
+    Return rendered template as a string.
     """
-    return 'hera/{}.html'.format(page_number)
+    template = Template(render_to_string('hera/{}.html'.format(page_number)))
+    return template.render(**{'settings': settings})
 
 
 class Onboarding(models.Model):
@@ -19,33 +22,49 @@ class Onboarding(models.Model):
     Contain hera onboarding pages.
     """
 
-    page_1 = models.TextField(blank=True, verbose_name='First Page')
-    page_2 = models.TextField(blank=True, verbose_name='Second Page')
-    page_3 = models.TextField(blank=True, verbose_name='Third Page')
-    page_4 = models.TextField(blank=True, verbose_name='Fourth Page')
+    page_1 = models.TextField(
+        blank=True,
+        verbose_name='First Page',
+        default=render_template('page_1')
+    )
+    page_2 = models.TextField(
+        blank=True,
+        verbose_name='Second Page',
+        default=render_template('page_2')
+    )
+    page_3 = models.TextField(
+        blank=True,
+        verbose_name='Third Page',
+        default=render_template('page_3')
+    )
+    page_4 = models.TextField(
+        blank=True,
+        verbose_name='Fourth Page',
+        default=render_template('page_4')
+    )
 
     @property
     def first(self):
         if not self.page_1:
-            return render_to_string(get_template('page_1'))
+            return render_template('page_1')
         return self.page_1
 
     @property
     def second(self):
         if not self.page_2:
-            return render_to_string(get_template('page_2'))
+            return render_template('page_2')
         return self.page_2
 
     @property
     def third(self):
         if not self.page_3:
-            return render_to_string(get_template('page_3'))
+            return render_template('page_3')
         return self.page_3
 
     @property
     def fourth(self):
         if not self.page_4:
-            return render_to_string(get_template('page_4'))
+            return render_template('page_4')
         return self.page_4
 
     class Meta:
@@ -61,6 +80,9 @@ class UserOnboarding(models.Model):
     page_2 = models.BooleanField(default=False)
     page_3 = models.BooleanField(default=False)
     page_4 = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.user.username
 
     @property
     def onboarding(self):
@@ -129,22 +151,22 @@ class UserOnboarding(models.Model):
         """
         return [
             {
-                'content': self.onboarding.first if self.onboarding else render_to_string(get_template('page_1')),
+                'content': self.onboarding.first if self.onboarding else render_template('page_1'),
                 'passed': self.page_1,
                 'name': 'page_1'
             },
             {
-                'content': self.onboarding.second if self.onboarding else render_to_string(get_template('page_2')),
+                'content': self.onboarding.second if self.onboarding else render_template('page_2'),
                 'passed': self.page_2,
                 'name': 'page_2'
             },
             {
-                'content': self.onboarding.third if self.onboarding else render_to_string(get_template('page_3')),
+                'content': self.onboarding.third if self.onboarding else render_template('page_3'),
                 'passed': self.page_3,
                 'name': 'page_3'
             },
             {
-                'content': self.onboarding.fourth if self.onboarding else render_to_string(get_template('page_4')),
+                'content': self.onboarding.fourth if self.onboarding else render_template('page_4'),
                 'passed': self.page_4,
                 'name': 'page_4'
             }
