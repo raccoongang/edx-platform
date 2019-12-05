@@ -3,7 +3,7 @@ View which retrieve hera onboarding pages and handle user onboarding states.
 """
 
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden, JsonResponse
+from django.http import HttpResponseForbidden, JsonResponse, HttpResponseRedirect
 from django.views.generic import View
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -24,13 +24,13 @@ class OnboardingPagesView(View):
         Render user onboarding pages.
         """
         user_onboarding, _ = UserOnboarding.objects.get_or_create(user=request.user)
-        # redirect_url = reverse('hera:selection_page', args={'course_id': kwargs['course_id']})
+        if user_onboarding.is_passed():
+            return HttpResponseRedirect('/')
         context = {
             'pages': user_onboarding.get_pages(),
             'current_page': user_onboarding.get_current_page(),
             'is_passed': user_onboarding.is_passed(),
             'course_id': kwargs['course_id'],
-            # 'redirect_url': redirect_url,
         }
         return render_to_response("hera/onboarding.html", context)
 
