@@ -1,11 +1,17 @@
+import unittest
+
+from django.conf import settings
+from openedx.core.djangoapps.content.course_overviews.models import \
+    CourseOverview
 from student.tests.factories import UserFactory
-from xmodule.modulestore.tests.factories import CourseFactory
-from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
+from xmodule.modulestore.tests.factories import CourseFactory
 
 from .factories import CourseCategoryFactory
 from ..utils import enroll_category
 
+
+@unittest.skipUnless(settings.ROOT_URLCONF == 'lms.urls', 'Test only valid in lms')
 class TestUtils(ModuleStoreTestCase):
     """
     Test course_category.utils.py.
