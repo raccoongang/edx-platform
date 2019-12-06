@@ -1109,8 +1109,7 @@ simplefilter('ignore')
 ################################# Middleware ###################################
 
 MIDDLEWARE_CLASSES = (
-    'crum.CurrentRequestUserMiddleware',
-
+    'courseware.middleware.CustomCurrentRequestUserMiddleware',
     'request_cache.middleware.RequestCache',
     'newrelic_custom_metrics.middleware.NewRelicCustomMetrics',
 
