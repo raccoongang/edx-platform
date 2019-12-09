@@ -28,6 +28,19 @@ from openedx.core.djangoapps.theming.helpers import get_current_request
 log = logging.getLogger(__name__)
 
 
+class EtihadSAMLIdentityProvider(SAMLIdentityProvider):
+
+    def get_user_details(self, attributes):
+        """
+        Compose fullname from the first_name and last_name if it's not provided.
+        """
+        details = super(EtihadSAMLIdentityProvider, self).get_user_details(attributes)
+        details.update({
+            'fullname': details['fullname'] or '%s %s' % (details['first_name'], details['last_name'])
+        })
+        return details
+
+
 # A dictionary of {name: class} entries for each python-social-auth backend available.
 # Because this setting can specify arbitrary code to load and execute, it is set via
 # normal Django settings only and cannot be changed at runtime:
@@ -397,7 +410,7 @@ class SAMLProviderConfig(ProviderConfig):
 
     def get_config(self):
         """
-        Return a SAMLIdentityProvider instance for use by SAMLAuthBackend.
+        Return a EtihadSAMLIdentityProvider instance for use by SAMLAuthBackend.
 
         Essentially this just returns the values of this object and its
         associated 'SAMLProviderData' entry.
@@ -420,7 +433,7 @@ class SAMLProviderConfig(ProviderConfig):
             raise AuthNotConfigured(provider_name=self.name)
         conf['x509cert'] = data.public_key
         conf['url'] = data.sso_url
-        return SAMLIdentityProvider(self.idp_slug, **conf)
+        return EtihadSAMLIdentityProvider(self.idp_slug, **conf)
 
 
 class SAMLConfiguration(ConfigurationModel):
