@@ -35,9 +35,3 @@ ${_("Once you have registered and activated your account, visit {course_about_ur
 ${_("You can then enroll in {course_name}.").format(course_name=display_name or course.display_name_with_default_escaped)}
 % endif
 % endif
-
-----
-${_("This email was automatically sent from {site_name} to "
-	"{email_address}").format(
-		site_name=site_name, email_address=email_address
-	)}
