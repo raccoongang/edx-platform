@@ -139,8 +139,8 @@ class ProgramDetailsView extends Backbone.View {
          $("#shoppingcart-popup").dialog({width: 400});
        }
      }
+   });
   }
- }
 }
 
 export default ProgramDetailsView;
