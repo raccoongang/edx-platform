@@ -6,13 +6,18 @@ from celery import task
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
 from django.db.utils import DatabaseError
+from django.utils.translation import ugettext as _
+from edxmako.shortcuts import render_to_string
 from logging import getLogger
 
 from courseware.model_data import get_score
 from lms.djangoapps.course_blocks.api import get_course_blocks
-from opaque_keys.edx.keys import UsageKey
+from opaque_keys.edx.keys import UsageKey, CourseKey
 from opaque_keys.edx.locator import CourseLocator
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from submissions import api as sub_api
 from student.models import anonymous_id_for_user
 from track.event_transaction_utils import (
@@ -32,6 +37,8 @@ from .transformer import GradesTransformer
 log = getLogger(__name__)
 
 KNOWN_RETRY_ERRORS = (DatabaseError, ValidationError)  # Errors we expect occasionally, should be resolved on retry
+RETRY_DELAY_SECONDS = 40
+MINIMAL_GRADE_REACHED_NOTIFICATION_TIMEOUT_SECONDS = 300
 
 
 @task(default_retry_delay=30, routing_key=settings.RECALCULATE_GRADES_ROUTING_KEY)
@@ -115,6 +122,45 @@ def recalculate_subsection_grade_v2(**kwargs):
                 kwargs
             ))
         raise _retry_recalculate_subsection_grade(exc=exc, **kwargs)
+
+
+@task(
+    bind=True,
+    time_limit=MINIMAL_GRADE_REACHED_NOTIFICATION_TIMEOUT_SECONDS,
+    default_retry_delay=RETRY_DELAY_SECONDS,
+    routing_key=settings.RECALCULATE_GRADES_ROUTING_KEY,
+)
+def notify_student_about_course_is_graded(self, user_id, course_id, **kwargs):
+    """
+    Send an email informing that the user has reached a minimal grading for the course.
+    """
+    user = User.objects.filter(id=user_id).first()
+    key = CourseKey.from_string(course_id)
+    course = CourseOverview.objects.filter(id=key).first()
+    context = {
+        'full_name': user.profile.name,
+        'platform_name': configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
+        'course_name': course.display_name,
+        'site': configuration_helpers.get_value('SITE_NAME', settings.SITE_NAME),
+    }
+
+    subject = _("Microsoft Azure Course Completion: Next Steps")
+
+    from_address = configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
+    to_address = user.email
+    message = render_to_string('emails/student_graded_notification.txt', context)
+
+    try:
+        html_message = render_to_string('emails/student_graded_notification.html', context)
+    except Exception as e:  # pylint: disable=bare-except
+        html_message = None
+        log.exception(e)
+
+    try:
+        send_mail(subject, message, from_address, [to_address], fail_silently=False, html_message=html_message)
+    except Exception as e:  # pylint: disable=bare-except
+        log.exception(e)
+        log.exception("Could not send notification email for course graduation of user %s", user.id)
 
 
 def _has_database_updated_with_new_score(

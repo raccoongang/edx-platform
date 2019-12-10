@@ -6,6 +6,8 @@ from logging import getLogger
 
 from courseware.model_data import get_score, set_score
 from django.dispatch import receiver
+from lms.djangoapps.courseware.courses import get_course
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.lib.grade_utils import is_score_higher
 from submissions.models import score_set, score_reset
 from util.date_utils import to_timestamp
@@ -27,7 +29,7 @@ from .signals import (
 )
 from ..new.course_grade import CourseGradeFactory
 from ..scores import weighted_score
-from ..tasks import recalculate_subsection_grade_v2
+from ..tasks import recalculate_subsection_grade_v2, notify_student_about_course_is_graded
 
 log = getLogger(__name__)
 
@@ -123,7 +125,25 @@ def score_published_handler(sender, block, user, raw_earned, raw_possible, only_
                 )
 
     if update_score:
+        course = get_course(block.course_id)
+        original_course_grade = CourseGradeFactory().create(user, course)
+
+        # Set the problem score in CSM.
         score_modified_time = set_score(user.id, block.location, raw_earned, raw_possible)
+
+        course_overview = CourseOverview.objects.filter(id=block.course_id).first()
+        course_grade = CourseGradeFactory().create(user, course)
+
+        grade_changed = original_course_grade.percent != course_grade.percent
+        grade_was_lower_then_passing_grade = original_course_grade.percent <= course_overview.lowest_passing_grade
+        passing_grade_reached = course_grade.percent >= course_overview.lowest_passing_grade
+
+        if grade_was_lower_then_passing_grade and grade_changed:
+            if passing_grade_reached:
+                user_id = user.id
+                course_id = str(block.course_id)
+                notify_student_about_course_is_graded.apply_async(args=(user_id, course_id))
+
         PROBLEM_RAW_SCORE_CHANGED.send(
             sender=None,
             raw_earned=raw_earned,
