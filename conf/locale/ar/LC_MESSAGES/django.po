@@ -225,11 +225,6 @@ msgstr "المناقشة"
 msgid "Problem"
 msgstr "المسألة "
 
-#: cms/djangoapps/contentstore/views/component.py
-#: common/lib/xmodule/xmodule/video_module/video_module.py
-msgid "Advanced"
-msgstr "إعدادات متقدّمة"
-
 #: cms/djangoapps/contentstore/views/entrance_exam.py
 #: lms/djangoapps/courseware/tabs.py cms/templates/settings.html
 msgid "Entrance Exam"
@@ -5541,7 +5536,7 @@ msgstr "شروط الخدمة وميثاق الشرف الأكاديمي"
 #: themes/stanford-style/lms/templates/footer.html
 #: themes/stanford-style/lms/templates/static_templates/tos.html
 msgid "Privacy Policy"
-msgstr "سياسة الخصوصية"
+msgstr "بيان إخلاء مسئولية"
 
 #: lms/djangoapps/branding/api.py
 msgid "Accessibility Policy"
@@ -5560,7 +5555,7 @@ msgstr "خريطة الموقع"
 #: themes/stanford-style/lms/templates/footer.html
 #: themes/stanford-style/lms/templates/static_templates/tos.html
 msgid "Terms of Service"
-msgstr "شروط الخدمة"
+msgstr "الشروط والأحكام"
 
 #: lms/djangoapps/branding/api.py
 msgid "Affiliates"
@@ -12716,7 +12711,7 @@ msgstr ""
 #: lms/templates/navigation/bootstrap/navbar-authenticated.html
 #: themes/edx.org/lms/templates/header/navbar-authenticated.html
 msgid "Courses"
-msgstr "المساقات"
+msgstr "دورات"
 
 #: cms/templates/login.html themes/red-theme/cms/templates/login.html
 msgid "Sign In to {studio_name}"
@@ -13914,7 +13909,7 @@ msgstr "أوافق على {link_start}ميثاق الشرف{link_end} "
 #: themes/edx.org/lms/templates/header/navbar-not-authenticated.html
 #: themes/stanford-style/lms/templates/register-form.html
 msgid "Register"
-msgstr "تسجيل"
+msgstr "إنشاء حساب"
 
 #: lms/templates/register-form.html lms/templates/signup_modal.html
 #: themes/stanford-style/lms/templates/register-form.html
@@ -16113,7 +16108,7 @@ msgstr "تصفّح النشرات "
 #: lms/templates/courseware/info.html
 #: openedx/features/course_experience/templates/course_experience/course-home-fragment.html
 msgid "Course Tools"
-msgstr ""
+msgstr "أدوات الدورة"
 
 #: lms/templates/courseware/news.html
 msgid "News - MITx 6.002x"
@@ -16333,7 +16328,7 @@ msgid "Section grade has been overridden."
 msgstr ""
 
 #: lms/templates/courseware/progress.html
-msgid "Problem Scores: "
+msgid "Problem Scores:"
 msgstr "درجات المسألة:"
 
 #: lms/templates/courseware/progress.html
@@ -20639,7 +20634,7 @@ msgstr "لقد تركت الحقول الضرورية التالية فارغة:
 
 #: lms/templates/survey/survey.html
 msgid "Cancel and Return to Dashboard"
-msgstr "إلغاء والعودة إلى لوحة المعلومات"
+msgstr "إلغاء والعودة إلى لوحة القيادة"
 
 #: lms/templates/survey/survey.html
 msgid "Why do I need to complete this information?"
@@ -20680,7 +20675,7 @@ msgstr ""
 #: lms/templates/ux/reference/bootstrap/course-skeleton.html
 #: openedx/features/course_experience/templates/course_experience/course-home-fragment.html
 msgid "Start Course"
-msgstr ""
+msgstr "الدورة"
 
 #: lms/templates/verify_student/_verification_help.html
 msgid "Have questions?"
@@ -20858,7 +20853,7 @@ msgstr ""
 
 #: openedx/features/course_experience/templates/course_experience/course-dates-fragment.html
 msgid "Important Course Dates"
-msgstr ""
+msgstr "تواريخ مهمّة بالنسبة للمساق"
 
 #: openedx/features/course_experience/templates/course_experience/course-home-fragment.html
 msgid "Goal: "
@@ -20878,7 +20873,7 @@ msgstr ""
 
 #: openedx/features/course_experience/templates/course_experience/course-outline-fragment.html
 msgid "Expand All"
-msgstr ""
+msgstr "توسيع الكل"
 
 #: openedx/features/course_experience/templates/course_experience/course-outline-fragment.html
 msgid "Prerequisite: "
@@ -21037,7 +21032,7 @@ msgstr ""
 
 #: openedx/features/learner_profile/templates/learner_profile/learner_profile.html
 msgid "My Profile"
-msgstr ""
+msgstr "ملفي الشخصي"
 
 #: openedx/features/learner_profile/templates/learner_profile/learner_profile.html
 msgid ""
@@ -25912,6 +25907,10 @@ msgstr "أُنشأت مراجعة جديدة: الدمج بين المراجعة
 
 #takamol
 
+msgid "Login"
+msgstr "تسجيل الدخول"
+
+
 msgid "My Dashboard"
 msgstr "التعليمية"
 
@@ -25986,3 +25985,195 @@ msgstr "المسارات المسجل فيها"
 
 msgid "Overall Progress"
 msgstr "التقدم العام"
+
+msgid "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit. Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit. Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit."
+msgstr "بكل فخر نحن الذراع التنفيذي الذي يربط القطاع الخاص بالقطاع الحكومي، لتحسين ودفع سوق العمل والتنمية الاجتماعية بشكل مباشر، والنهوض بهما وتمكينهم على مستوى الموارد البشرية والبنية التحتية للأعمال."
+
+msgid "Register Now"
+msgstr "سجّل الآن"
+
+msgid "Course Publications"
+msgstr "منشورات الدورة"
+
+msgid "Muhammad Ahmad Al Ghamdi"
+msgstr "محمد احمد الغامدي"
+
+msgid "Muhammad"
+msgstr "محمد"
+
+msgid "Ahmad"
+msgstr "احمد"
+
+msgid "Al Ghamdi"
+msgstr "الغامدي"
+
+msgid "Progress:"
+msgstr "التقدم:"
+
+msgid "View Track"
+msgstr "استمر"
+
+msgid "Employment Support Program for Skills Upgrade"
+msgstr "برنامج دعم التوظيف لرفع المهارات"
+
+msgid "Executive Secretarial Series"
+msgstr "سلسلة السكرتارية التنفيذية"
+
+msgid "Search for Tracks"
+msgstr "البحث عن دورات"
+
+msgid "Search for Courses"
+msgstr "خيارات التصفية"
+
+msgid "Clear All"
+msgstr "امسح الكل"
+
+msgid "Viewing"
+msgstr "عرض"
+
+msgid "Banking & Finance"
+msgstr "التقنية"
+
+msgid "Insurance"
+msgstr "المصرفية والتمويل"
+
+msgid "Self Improvement"
+msgstr "تطوير الذات"
+
+msgid "Soft Skills"
+msgstr "تطوير الذات"
+
+msgid "Beginner"
+msgstr "مبتدئ"
+
+msgid "Intermediate"
+msgstr "متوسط"
+
+msgid "Advanced"
+msgstr "المتقدمة"
+
+msgid "By Category"
+msgstr "بالتصنيف"
+
+msgid "By Level"
+msgstr "حسب المستوى"
+
+msgid "Filter Options"
+msgstr "خيارات التصفية"
+
+msgid "Father's Name"
+msgstr "اسم الاب"
+
+msgid "Family Name"
+msgstr "اسم العائلة"
+
+msgid "Email Address (Username)"
+msgstr "البريد الإلكتروني (اسم المستخدم)"
+
+msgid "Mobile Number"
+msgstr "رقم الجوال"
+
+msgid "Additional Information"
+msgstr "معلومة اضافية"
+
+msgid "Education Completed"
+msgstr "التعليم"
+
+msgid "Employment Status"
+msgstr "الحالة الوظيفية"
+
+msgid "You receive correspondence on this e-mail"
+msgstr "تتلقى رسائل على هذا البريد الإلكتروني"
+
+msgid "Change your password through this link"
+msgstr "تغيير كلمة المرور الخاصة بك من خلال هذا الرابط"
+
+msgid "You will receive updates on this mobile number"
+msgstr "سوف تتلقى تحديثات على رقم الهاتف المحمول هذا"
+
+msgid "Update My Profile"
+msgstr "حدث ملفي الشخصي"
+
+msgid "Change Password"
+msgstr "تغيير كلمة السر"
+
+msgid "Back to Tracks Catalog"
+msgstr "العودة إلى كتالوج المسارات"
+
+msgid "About the Track"
+msgstr "عن المسار"
+
+msgid "Track Goals"
+msgstr "الهدف من هذه المسار"
+
+msgid "Certificate of Completion"
+msgstr "شهادة إتمام المسار"
+
+msgid "Lorem ipsum dolor sit amet"
+msgstr "طريقة استخدام الحاسوب وبرنامج مايكروسوفت إكسل - الجزء الأول"
+
+msgid "Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
+msgstr "طريقة استخدام جهاز الحاسوب وبرنامج مايكروسوفت إكسل الجزء الثاني"
+
+msgid "Nulla facilisi morbi tempus iaculis urna id volutpat lacus laoreet"
+msgstr "الإخراج ومخطط العرض وبرنامج إكسل"
+
+msgid "Feugiat nibh sed pulvinar proin. Sapien faucibus et molestie ac feugiat sed"
+msgstr "الإخراج ومخطط العرض والأدوات المتقدمة لبرنامج الإكسل"
+
+msgid "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+msgstr "المحسن بواسطة الذكاء على أنماطك وينظم بياناتك لتوفير الوقت. قم بإنشاء جداول بيانات بسهولة من القوالب أو بنفسك وقم بإجراء العمليات الحسابية مع أحدث الصيغ. مخططات ورسوم بيانية جديدة تساعدك على تقديم بياناتك بطريقة جذابة مع التنسيق وخطوط المؤشر والجداول التي تساعد على استيعاب بياناتك بشكل أفضل. قم بإنشاء تنبؤات بسهولة بنقرة واحدة لتوقع الاتجاهات. تمكن من مشاركة المصنف الخاص بك مع الآخرين والعمل على الإصدار الأحدث دائماً من أجل تحقيق التعاون في الوقت الحقيقي الذي يساعدك على إنجاز العمل بشكل أسرع. تمكن من العمل مع Office 365 في ملف Excel من الجهاز المحمول وسطح المكتب والويب"
+
+msgid "Sponsors: In Partnership with"
+msgstr "بالتعاون مع"
+
+msgid "Please pass the course pass rate in order to obtain the certificate"
+msgstr "يرجى منكم اجتياز نسبة النجاح المحددة في الدورة من أجل الحصول على الشهادة"
+
+msgid "Course Progress for Muhammad Ahmad Al Ghamdi"
+msgstr "يرجى منكم اجتياز نسبة النجاح المحددة في الدورة من أجل الحصول على الشهادة"
+
+msgid "Module"
+msgstr "المقدمة"
+
+msgid "Create an Account"
+msgstr "إنشاء حساب جديد"
+
+msgid "Create an account today and start your journey with us."
+msgstr "قم بإنشاء حساب اليوم وابدأ رحلتك معنا"
+
+msgid "Enter your email address"
+msgstr "أدخل البريد الإلكتروني"
+
+msgid "Enter your password"
+msgstr "أدخل كلمة السر"
+
+msgid "Confirm Password"
+msgstr "تأكيد كلمة السر"
+
+msgid "Re-enter your password"
+msgstr "تأكيد كلمة السر"
+
+msgid "Welcome Back!"
+msgstr "نرحب بك مرة أخرى"
+
+msgid "New User?"
+msgstr "مستخدم جديد ؟"
+
+msgid "Forgot Password?"
+msgstr "نسيت كلمة السر؟"
+
+msgid "Current Password"
+msgstr "كلمة السر الحالية"
+
+msgid "New Password"
+msgstr "كلمة سر جديدة"
+
+msgid "Enter Current Password"
+msgstr "كلمة السر الحالية"
+
+msgid "Enter New Password"
+msgstr "أدخل كلمة السر"
+
+msgid "By registering, you agree to our <a href='#'>Terms of Use</a> and <a href='#'>Privacy Policy</a>"
+msgstr "من خلال تقديم هذا النموذج ، فإنك توافق على شروط الاستخدام وسياسة الخصوصية"
