@@ -119,6 +119,15 @@ from pipeline_mako import render_require_js_path_overrides
       });
     }).call(this, require || RequireJS.require);
   </script>
+
+  % if settings.FEATURES.get('ENABLE_RG_ENGAGEMENT_ANALYTICS'):
+    <script type="text/javascript" src="${static.url('rg_engagement_analytics/js/utils/lazy-load.js')}"></script>
+    <script type="text/javascript" src="${static.url('rg_engagement_analytics/js/utils/faceSDK-loader.js')}"></script>
+    <script type="text/javascript">
+        window.addEventListener("load", faceSDK.initialize.bind(this, {nlz: '${static.url("rg_engagement_analytics/plugins/faceNLZ/faceNLZ.js")}', sw: '${static.url("rg_engagement_analytics/plugins/faceNLZ/sw.js")}'}));
+    </script>
+  % endif
+
   <script type="text/javascript" src="${static.url("lms/js/require-config.js")}"></script>
   <%block name="js_overrides">
     ${render_require_js_path_overrides(settings.REQUIRE_JS_PATH_OVERRIDES) | n, decode.utf8}

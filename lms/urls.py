@@ -154,6 +154,17 @@ if settings.FEATURES.get("ENABLE_RG_INSTRUCTOR_ANALYTICS"):
         ),
     ]
 
+if settings.FEATURES.get("ENABLE_RG_ENGAGEMENT_ANALYTICS"):
+    urlpatterns += [
+        url(
+            r'^courses/{}/tab/engagement_analytics/'.format(
+                settings.COURSE_ID_PATTERN,
+            ),
+            include('rg_engagement_analytics.urls'),
+            name='engagement_analytics_endpoint',
+        ),
+    ]
+
 # TODO: This needs to move to a separate urls.py once the student_account and
 # student views below find a home together
 if settings.FEATURES.get('ENABLE_COMBINED_LOGIN_REGISTRATION'):

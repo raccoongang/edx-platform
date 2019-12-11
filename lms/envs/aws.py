@@ -1111,3 +1111,8 @@ if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
 # Variable for overriding standard MKTG_URLS
 EXTERNAL_MKTG_URLS = ENV_TOKENS.get('EXTERNAL_MKTG_URLS', {})
 #RACCOONGANG
+
+
+########################## Examus Analitics #######################
+if FEATURES.get('ENABLE_RG_ENGAGEMENT_ANALYTICS'):
+    EXAMUS_ENGAGEMENT_ANALYTICS_PARAMS = ENV_TOKENS.get('EXAMUS_ENGAGEMENT_ANALYTICS_PARAMS', {})
