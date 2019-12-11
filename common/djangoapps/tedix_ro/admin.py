@@ -26,7 +26,7 @@ from tedix_ro.models import (
     Classroom,
     StudentCourseDueDate,
     Question,
-    VideoLesson
+    VideoLesson,
 )
 
 STUDENT_PARENT_EXPORT_FIELD_NAMES = (

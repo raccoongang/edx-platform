@@ -15,9 +15,9 @@ from opaque_keys.edx.keys import CourseKey
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from xmodule.modulestore.django import modulestore
 
-from .models import InstructorProfile, StudentCourseDueDate
+from .models import InstructorProfile, StudentCourseDueDate, StudentReportSending
 from .sms_client import SMSClient
-from .utils import report_data_preparation, lesson_complite
+from .utils import report_data_preparation, lesson_course_grade, video_lesson_complite, all_problem_have_answer
 
 
 @periodic_task(run_every=crontab(hour='15', minute='30'))
@@ -75,8 +75,31 @@ def send_extended_reports_by_deadline():
             due_date__gt=datetime_now-timedelta(1)):
         user = due_date.student.user
         course_id = due_date.course_id
-        if not lesson_complite(user, course_id):
+        course_grade = lesson_course_grade(user, course_id)
+        if not (course_grade.passed or all_problem_have_answer(user, course_grade)
+            or video_lesson_complite(user, course_id)):
             send_student_extended_reports(user.id, str(course_id))
+
+
+@task
+def send_student_extended_reports_if_complite(user_id, course_id):
+    user = User.objects.filter(id=user_id).first()
+    if user and hasattr(user, 'studentprofile'):
+        course_key = CourseKey.from_string(course_id)
+        student_report_sending, created = StudentReportSending.objects.get_or_create(
+            course_id=course_key,
+            user=user,
+            defaults={
+                'grade': 0
+            }
+        )
+        course_grade = lesson_course_grade(user, course_key)
+        if (video_lesson_complite(user, course_key) and course_grade.passed and
+            (created or student_report_sending.grade < course_grade.percent) and 
+            all_problem_have_answer(user, course_grade)):
+            student_report_sending.grade = course_grade.percent
+            student_report_sending.save()
+            send_student_extended_reports(user_id, course_id)
 
 
 @task
