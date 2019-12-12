@@ -103,7 +103,7 @@ def prepare_edeos_data(model_obj, event_type, event_details=None):
     }
     if course.edeos_enabled:
         if is_valid_edeos_field(edeos_fields):
-            user =  getattr(model_obj, "user", getattr(model_obj, "student", None))
+            user = getattr(model_obj, "user", getattr(model_obj, "student", None))
             uid = ""
             if event_type == 3 or event_type == 4:
                 uid = unicode(model_obj.module_state_key)

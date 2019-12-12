@@ -147,9 +147,7 @@ class EdeosBaseApiClient(object):
         }
         if headers is not None:
             headers_.update(headers)
-        resp = requests.post(url, data=payload, headers=headers_)
-        if resp.status_code != httplib.OK:
-            resp = requests.post(url, json=payload, headers=headers_)
+        resp = requests.post(url, json=payload, headers=headers_)
         log.info("Edeos response: status {}, content {}".format(resp.status_code, resp.content))
         if resp.status_code in (httplib.OK, httplib.CREATED):
             try:
