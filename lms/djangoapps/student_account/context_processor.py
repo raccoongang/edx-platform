@@ -12,7 +12,7 @@ def context_providers(request):
         'providers': []
     }
     redirect_to = get_next_url_for_login_page(request)
-    if third_party_auth.is_enabled() and not request.user or not request.user.is_authenticated():
+    if third_party_auth.is_enabled():
         for enabled in third_party_auth.provider.Registry.displayed_for_login():
             info = {
                 "id": enabled.provider_id,
