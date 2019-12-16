@@ -56,6 +56,9 @@ from .utils import get_payment_link, report_data_preparation
 
 
 def extended_report(request, course_key):
+    """
+    Provides an extended report, depending on the role
+    """
     user = request.user
     if not user.is_authenticated():
         return redirect(get_next_url_for_login_page(request))

@@ -17,11 +17,14 @@ from xmodule.modulestore.django import modulestore
 
 from .models import InstructorProfile, StudentCourseDueDate, StudentReportSending
 from .sms_client import SMSClient
-from .utils import report_data_preparation, lesson_course_grade, video_lesson_complite, all_problem_have_answer
+from .utils import report_data_preparation, lesson_course_grade, video_lesson_complited, all_problems_have_answer
 
 
 @periodic_task(run_every=crontab(hour='15', minute='30'))
 def send_teacher_extended_reports():
+    """
+    Sends extended report for the teacher with all his courses and all his students
+    """
     for instructor in InstructorProfile.objects.filter(user__is_staff=True).prefetch_related('students'):
         lesson_reports = []
         for enrollment in instructor.user.courseenrollment_set.filter():
@@ -44,8 +47,7 @@ def send_teacher_extended_reports():
         if lesson_reports:
             subject = u'{platform_name}: Report for {username}'.format(
                 platform_name=settings.PLATFORM_NAME,
-                username=instructor.user.profile.name or instructor.user.username,
-                course_name=course.display_name
+                username=instructor.user.profile.name or instructor.user.username
             )
             context = {
                 'lms_url': configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
@@ -69,6 +71,10 @@ def send_teacher_extended_reports():
 
 @periodic_task(run_every=crontab(hour='15', minute='30'))
 def send_extended_reports_by_deadline():
+    """
+    Sends an extended report to the student if the course deadline has expired in the last 24 hours
+    and the course has not been completed (not all questions have attempts and the course was not passed)
+    """
     datetime_now = datetime.utcnow().replace(tzinfo=pytz.UTC)
     for due_date in StudentCourseDueDate.objects.filter(
             due_date__lte=datetime_now,
@@ -76,13 +82,17 @@ def send_extended_reports_by_deadline():
         user = due_date.student.user
         course_id = due_date.course_id
         course_grade = lesson_course_grade(user, course_id)
-        if not (course_grade.passed or all_problem_have_answer(user, course_grade)
-            or video_lesson_complite(user, course_id)):
+        if not (course_grade.passed and all_problems_have_answer(user, course_grade)
+            and video_lesson_complited(user, course_id)):
             send_student_extended_reports(user.id, str(course_id))
 
 
 @task
-def send_student_extended_reports_if_complite(user_id, course_id):
+def send_student_complited_report(user_id, course_id):
+    """
+    Sends an extended report to the student if  questions have attempts and
+    the course has been passed and the grade has been raised
+    """
     user = User.objects.filter(id=user_id).first()
     if user and hasattr(user, 'studentprofile'):
         course_key = CourseKey.from_string(course_id)
@@ -94,9 +104,9 @@ def send_student_extended_reports_if_complite(user_id, course_id):
             }
         )
         course_grade = lesson_course_grade(user, course_key)
-        if (video_lesson_complite(user, course_key) and course_grade.passed and
-            (created or student_report_sending.grade < course_grade.percent) and 
-            all_problem_have_answer(user, course_grade)):
+        if (video_lesson_complited(user, course_key) and course_grade.passed and
+            (created or student_report_sending.grade < course_grade.percent) and
+            all_problems_have_answer(user, course_grade)):
             student_report_sending.grade = course_grade.percent
             student_report_sending.save()
             send_student_extended_reports(user_id, course_id)
@@ -104,6 +114,9 @@ def send_student_extended_reports_if_complite(user_id, course_id):
 
 @task
 def send_student_extended_reports(user_id, course_id):
+    """
+    Sends email and SMS with an extended report for student and his parent
+    """
     user = User.objects.filter(id=user_id).first()
     if user and hasattr(user, 'studentprofile'):
         course_key = CourseKey.from_string(course_id)

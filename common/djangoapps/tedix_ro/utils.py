@@ -26,6 +26,10 @@ def get_payment_link(user):
 
 
 def report_data_preparation(user, course):
+    """
+    Takes user and course
+    Return "report_data" - data for extended report
+    """
     Question = apps.get_model('tedix_ro', 'Question')
     count_answer_first_attempt = 0
     questions_data = []
@@ -121,6 +125,9 @@ def light_report_data_preparation(user, course):
 
 
 def lesson_course_grade(user, course_key):
+    """
+    Return "CourseGrade" object for "user" and "course_key"
+    """
     if PersistentGradesEnabledFlag.feature_enabled(course_key):
         course_grade = CourseGradeFactory().read(user=user, course_key=course_key)
     else:
@@ -133,7 +140,10 @@ def lesson_course_grade(user, course_key):
     return course_grade
 
 
-def all_problem_have_answer(user, course_grade):
+def all_problems_have_answer(user, course_grade):
+    """
+    Return "True" if all problems have attempts
+    """
     for problem in course_grade.problem_scores:
         student_module = StudentModule.objects.filter(
             student=user,
@@ -144,7 +154,10 @@ def all_problem_have_answer(user, course_grade):
     return True
 
 
-def video_lesson_complite(user, course_key):
+def video_lesson_complited(user, course_key):
+    """
+    Return "True" if all question in video lesson has attempts
+    """
     Question = apps.get_model('tedix_ro', 'Question')
     video_questions = Question.objects.filter(video_lesson__course=course_key)
     questions_count = video_questions.values('question_id').distinct().count()
