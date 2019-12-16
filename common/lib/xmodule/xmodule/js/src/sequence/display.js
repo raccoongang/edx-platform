@@ -80,6 +80,7 @@
         Sequence.prototype.allowNextStep = function(elem) {
             var main = this.el.closest('#main');
             var unit = this.el.find('[data-usage-id="' + elem.data('id') + '"]');
+            var unitTimer = unit.find('.forced-seating-timer-enabled');
             var allowNext = true;
 
             if (main.data('is-uspap') !== undefined) {
@@ -89,7 +90,12 @@
                         return allowNext;
                     }
                 });
-                return allowNext;
+            }
+            if (unitTimer.length !== 0) {
+                allowNext = unitTimer.hasClass('is-seating-time-finished');
+                if (!allowNext) {
+                    return allowNext;
+                }
             }
             return allowNext;
         };
