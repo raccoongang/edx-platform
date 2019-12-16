@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.signals import m2m_changed, pre_delete, post_delete
+from django.db.models.signals import m2m_changed, pre_delete, post_delete, post_save, post_init
 from django.dispatch import Signal, receiver
 from django.utils.translation import ugettext_lazy as _
 from jsonfield.fields import JSONField
@@ -70,7 +70,7 @@ def move_reindex_course_category(sender, instance, **kwargs):
 def delete_reindex_course_category(sender, instance, **kwargs):
     category_courses = instance.courses.all()
     if category_courses:
-        instance.courses_list = [str(x.id) for x in category_courses]
+        instance.courses_list = [str(c.id) for c in category_courses]
     elif getattr(instance, 'courses_list', []):
         task_reindex_courses.delay(course_keys=instance.courses_list)
 
@@ -83,6 +83,28 @@ def save_reindex_course_category(sender, instance, pk_set, action, **kwargs):
         instance.pre_clear_course_keys.update(str(x.id) for x in instance.courses.all())
 
     if action in ['post_add', 'post_remove']:
-        courses_set.update(str(x.id) for x in instance.courses.all())
+        courses_set.update(str(c.id) for c in instance.courses.all())
         courses_set.update(getattr(instance, 'pre_clear_course_keys', set()))
         task_reindex_courses.delay(instance.id, list(courses_set))
+
+
+@receiver(post_init, sender=CourseCategory)
+def remember_previous_name(sender, instance, **kwargs):
+    """
+    Saves category name to check if it was changed.
+    """
+    instance.previous_name = instance.name
+
+
+@receiver(post_save, sender=CourseCategory)
+def category_name_change_reindex_course_category(sender, instance, created, **kwargs):
+    """
+    Reindexes category courses when category name changes.
+
+    We need to reindex category courses (in case of category name was changed
+    but not category courses) to avoid category disappearing in category
+    filters (catalog and index page).
+    """
+    courses=[str(c.id) for c in instance.courses.all()]
+    if (instance.previous_name != instance.name and not created):
+        task_reindex_courses.delay(instance.id, courses)
