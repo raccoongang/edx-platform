@@ -1,0 +1,123 @@
+.nav-panel {
+
+    &-wrapper {
+        color: #cbd4dd;
+        background: #2a2f30;
+        padding: 0 0 12px;
+    }
+
+    &-title {
+        background: #191c1c;
+        padding: 6px 15px;
+    }
+
+    &-list {
+        border-bottom: 1px solid #383c3c;
+        margin: 0 0 12px;
+        padding-bottom: 12px;
+
+        &__item {
+
+        }
+        &__link {
+            color: inherit;
+            display: block;
+            padding: 6px 35px;
+            transition: background .3s ease-in-out;
+
+            &:hover {
+                color: inherit;
+                background: #2b6797;
+            }
+        }
+    }
+
+    &-questions-list {
+        &__item {
+        }
+
+        &__link {
+            color: inherit;
+            display: block;
+            padding: 6px 60px;
+            transition: background .3s ease-in-out;
+
+            &:hover {
+                color: inherit;
+                background: #2b6797;
+            }
+        }
+    }
+
+    &-accrd {
+        &__link {
+            color: inherit;
+            display: block;
+            padding: 6px 35px;
+            transition: background .3s ease-in-out;
+
+            &:hover {
+                color: inherit;
+                background: #2b6797;
+            }
+        }
+
+        &__content {
+
+        }
+    }
+
+    .adaptivity-section {
+
+        &-title {
+            padding: 6px 15px;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin: 0 0 8px;
+        }
+
+        &-list {
+            border-bottom: 1px solid #383c3c;
+            padding: 0 0 12px;
+
+            &__item {
+            }
+
+            &__link {
+                color: inherit;
+                display: block;
+                padding: 6px 35px;
+
+                &:hover {
+                    color: inherit;
+                    background: #2b6797;
+                }
+            }
+        }
+    }
+
+    .panel-btn-holder {
+        padding: 12px 15px 0;
+        text-align: right;
+
+        .panel-btn {
+            display: inline-block;
+            border: none;
+            box-shadow: none;
+            background: #2b6797;
+            outline: none;
+            border-radius: 4px;
+            text-align: center;
+            color: #fff;
+            padding: 6px 22px;
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all .3s ease-in-out;
+
+            &:hover {
+                opacity: .75;
+            }
+        }
+    }
+}
