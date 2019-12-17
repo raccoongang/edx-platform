@@ -644,3 +644,9 @@ class TestCourseOutlinePreview(SharedModuleStoreTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'Future Chapter')
+
+class TestSelectionPageOutlineFragment():
+    """
+    This test should test how the view return the lessons.
+    """
+    pass

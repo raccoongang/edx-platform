@@ -48,7 +48,7 @@ from contentstore.views.helpers import (
 from contentstore.views.preview import get_preview_fragment
 from edxmako.shortcuts import render_to_string
 from help_tokens.core import HelpUrlExpert
-from models.settings.course_grading import CourseGradingModel
+from cms.djangoapps.models.settings.course_grading import CourseGradingModel
 from openedx.core.djangoapps.schedules.config import COURSE_UPDATE_WAFFLE_FLAG
 from openedx.core.djangoapps.waffle_utils import WaffleSwitch
 from openedx.core.djangoapps.bookmarks import api as bookmarks_api

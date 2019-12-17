@@ -1,0 +1,55 @@
+## mako
+
+<%page expression_filter="h"/>
+
+<%namespace name='static' file='../static_content.html'/>
+
+<%!
+from django.utils.translation import ugettext as _
+
+from openedx.core.djangolib.markup import HTML, Text
+%>
+
+<%
+subsection_new = subsection_vertical.get('children')
+%>
+<main role="main" class="course-outline" id="main" tabindex="-1">
+    % if course_sections is not None:
+        <button class="btn btn-primary"
+                id="expand-collapse-outline-all-button"
+                aria-expanded="false"
+                aria-controls="course-outline-block-tree"
+                >
+          <span class="expand-collapse-outline-all-extra-padding" id="expand-collapse-outline-all-span">${_("Expand All")}</span>
+        </button>
+        <ol class="block-tree accordion"
+            id="course-outline-block-tree"
+            aria-labelledby="expand-collapse-outline-all-button">
+
+        % for vertical in subsection_new:
+                                    <li class="vertical outline-item focusable">
+                                        <a class="outline-item focusable"
+                                            href="${ vertical['lms_web_url'] }"
+                                            id="${ vertical['id'] }">
+                                            <div class="vertical-details">
+                                              <div class="vertical-title">
+                                                ${ vertical['display_name'] }
+                                              </div>
+                                            </div>
+                        % if vertical.get('complete'):
+                                                <span class="complete-checkmark fa fa-check"></span>
+                        % endif
+                                        </a>
+                                    </li>
+                    % endfor
+        </ol>
+    % endif
+</main>
+
+<%static:require_module_async module_name="js/dateutil_factory" class_name="DateUtilFactory">
+    DateUtilFactory.transform('.localized-datetime');
+</%static:require_module_async>
+
+<%static:webpack entry="CourseOutline">
+    new CourseOutline();
+</%static:webpack>
