@@ -1230,6 +1230,9 @@ def create_xblock_info(xblock, data=None, metadata=None, include_ancestor_info=F
             xblock_info["has_partition_group_components"] = has_children_visible_to_specific_partition_groups(
                 xblock
             )
+        if is_xblock_unit:
+            xblock_info['forced_seating_time'] = getattr(xblock, 'forced_seating_time', None)
+
     return xblock_info
 
 
