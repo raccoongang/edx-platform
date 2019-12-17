@@ -496,7 +496,10 @@ class CoursewareIndex(View):
         if previous_of_active_section:
             section_context['prev_url'] = _compute_section_url(previous_of_active_section, 'last')
         if next_of_active_section:
-            section_context['next_url'] = _compute_section_url(next_of_active_section, 'first')
+            section_context['next_url'] = reverse(
+                    'hera:selection_page',
+                    args=[unicode(self.course_key)],
+                )
         # sections can hide data that masquerading staff should see when debugging issues with specific students
         section_context['specific_masquerade'] = self._is_masquerading_as_specific_student()
         return section_context
