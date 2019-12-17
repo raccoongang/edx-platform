@@ -25,10 +25,13 @@ def send_teacher_extended_reports():
     """
     Sends extended report for the teacher with all his courses and all his students
     """
+    datetime_now = datetime.utcnow().replace(tzinfo=pytz.UTC)
     for instructor in InstructorProfile.objects.filter(user__is_staff=True).prefetch_related('students'):
         lesson_reports = []
         for enrollment in instructor.user.courseenrollment_set.filter():
             course = modulestore().get_course(enrollment.course_id)
+            if course.end and course.end + timedelta(1) < datetime_now:
+                continue
             report_data = []
             header = []
             for student_profile in instructor.students.filter(user__courseenrollment__course_id=course.id):
