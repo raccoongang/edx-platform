@@ -10,6 +10,10 @@ from django.conf import settings
 from django.urls import reverse
 
 from courseware.models import StudentModule
+from lms.djangoapps.grades.config.models import PersistentGradesEnabledFlag
+from lms.djangoapps.grades.course_data import CourseData
+from lms.djangoapps.grades.course_grade import CourseGrade
+from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 
 
@@ -22,10 +26,13 @@ def get_payment_link(user):
 
 
 def report_data_preparation(user, course):
+    """
+    Takes user and course
+    Return "report_data" - data for extended report
+    """
     Question = apps.get_model('tedix_ro', 'Question')
     count_answer_first_attempt = 0
     questions_data = []
-    video_questions_data = {}
     header = []
     video_questions = Question.objects.filter(video_lesson__course=course.id)
 
@@ -37,28 +44,34 @@ def report_data_preparation(user, course):
                         student_module = StudentModule.objects.filter(student=user, module_state_key=problem.location).first()
                         if student_module:
                             attempts = json.loads(student_module.state).get("attempts", 0)
-                            if attempts == 1:
+                            correct_map = json.loads(student_module.state).get('correct_map', {})
+                            done = correct_map.values()[0].get('correctness') if correct_map else False
+                            if attempts == 1 and done == 'correct':
                                 count_answer_first_attempt += 1
                         else:
                             attempts = 0
                         header.append(problem.display_name)
-                        questions_data.append((problem.display_name, attempts))
+                        done = True if done == 'correct' else False
+                        questions_data.append((problem.display_name, attempts, done))
 
-    questions_id = list(video_questions.values_list('question_id', flat=True).distinct())
-    header.extend(questions_id)
-    for question_id in questions_id:
-        video_questions_data.update({question_id: 0})
+    questions = video_questions.values('question_id', 'video_lesson__video_id').distinct()
+    user_video_questions = video_questions.filter(video_lesson__user=user)
 
-    for video_question in video_questions.filter(video_lesson__user=user):
-        video_questions_data.update({video_question.question_id: video_question.attempt_count})
-        if video_question.attempt_count == 1:
-            count_answer_first_attempt += 1
+    if user_video_questions:
+        for video_question in user_video_questions:
+            questions = questions.exclude(video_lesson__video_id=video_question.video_lesson.video_id)
+            questions_data.append((video_question.question_id, video_question.attempt_count, True))
+            header.append(video_question.question_id)
+            if video_question.attempt_count == 1:
+                count_answer_first_attempt += 1
 
-    questions_data += list(video_questions_data.items())
+    for question in questions:
+        questions_data.append((question.get('question_id'), 0, False))
+        header.append(question.get('question_id'))
 
     report_data = {
         'full_name': user.profile.name or user.username,
-        'completion': not bool([item for item in questions_data if item[1] == 0]),
+        'completion': not bool([item for item in questions_data if item[1] == 0]) and lesson_course_grade(user, course.id).passed,
         'questions': questions_data,
         'count_answer_first_attempt': count_answer_first_attempt,
         'percent': (count_answer_first_attempt * 100 / len(questions_data)) if questions_data else 100
@@ -70,7 +83,6 @@ def light_report_data_preparation(user, course):
     Question = apps.get_model('tedix_ro', 'Question')
     StudentCourseDueDate = apps.get_model('tedix_ro', 'StudentCourseDueDate')
     count_answer_first_attempt = 0
-    questions = 0
     completion = True
     count_questions = 0
 
@@ -110,3 +122,44 @@ def light_report_data_preparation(user, course):
         )
     }
     return report_data
+
+
+def lesson_course_grade(user, course_key):
+    """
+    Return "CourseGrade" object for "user" and "course_key"
+    """
+    if PersistentGradesEnabledFlag.feature_enabled(course_key):
+        course_grade = CourseGradeFactory().read(user=user, course_key=course_key)
+    else:
+        course_data = CourseData(user, course_key=course_key)
+        course_grade = CourseGrade(
+            user,
+            course_data
+        )
+        course_grade = course_grade.update()
+    return course_grade
+
+
+def all_problems_have_answer(user, course_grade):
+    """
+    Return "True" if all problems have attempts
+    """
+    for problem in course_grade.problem_scores:
+        student_module = StudentModule.objects.filter(
+            student=user,
+            module_state_key=problem
+        ).first()
+        if not student_module or not json.loads(student_module.state).get("attempts"):
+            return False
+    return True
+
+
+def video_lesson_complited(user, course_key):
+    """
+    Return "True" if all question in video lesson has attempts
+    """
+    Question = apps.get_model('tedix_ro', 'Question')
+    video_questions = Question.objects.filter(video_lesson__course=course_key)
+    questions_count = video_questions.values('question_id').distinct().count()
+    answered_questions_count = video_questions.filter(video_lesson__user=user).exclude(attempt_count=0).count()
+    return questions_count == answered_questions_count

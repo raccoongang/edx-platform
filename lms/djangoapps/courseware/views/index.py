@@ -105,12 +105,13 @@ class CoursewareIndex(View):
             return redirect_to_login(request.get_full_path())
         StudentProfile = apps.get_model('tedix_ro', 'StudentProfile')
         try:
-            student_course_due_date = request.user.studentprofile.course_due_dates.filter(course_id=self.course_key).first()
-            if student_course_due_date:
-                now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
-                if student_course_due_date.due_date < now:
-                    PageLevelMessages.register_warning_message(request, _('The due date has passed. You can no longer access the content.'))
-                    return redirect(reverse('openedx.course_experience.course_home', kwargs={'course_id': self.course_key}))
+            if request.user.is_authenticated:
+                student_course_due_date = request.user.studentprofile.course_due_dates.filter(course_id=self.course_key).first()
+                if student_course_due_date:
+                    now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
+                    if student_course_due_date.due_date < now:
+                        PageLevelMessages.register_warning_message(request, _('The due date has passed. You can no longer access the content.'))
+                        return redirect(reverse('openedx.course_experience.course_home', kwargs={'course_id': self.course_key}))
         except StudentProfile.DoesNotExist:
             pass
 

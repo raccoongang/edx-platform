@@ -21,7 +21,7 @@ ${_("Activity report for lesson")}: ${ lesson_report['course_name'] }
 ${_("Lesson completed")}: ${'Yes' if user_data['completion'] == 1 else 'No'}
 ${_("Number of question completed from first attempt")}: ${ user_data['percent'] }% (${user_data['count_answer_first_attempt']} out of ${len(user_data['questions'])})
 
-    %for question_name, question_count_answer in user_data['questions']:
+    %for question_name, question_count_answer, done in user_data['questions']:
     ${_("Question")} ${loop.index + 1}: ${ question_name }
         %if question_count_answer == 1:
         ${ ('First attempt') }

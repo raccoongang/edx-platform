@@ -24,7 +24,9 @@ from tedix_ro.models import (
     StudentProfile,
     InstructorProfile,
     Classroom,
-    StudentCourseDueDate
+    StudentCourseDueDate,
+    Question,
+    VideoLesson,
 )
 
 STUDENT_PARENT_EXPORT_FIELD_NAMES = (
@@ -51,6 +53,18 @@ INSTRUCTOR_EXPORT_FIELD_NAMES = (
 
 
 admin.site.register(Classroom)
+
+
+
+class QuestionInline(admin.TabularInline):
+    model = Question
+    list_display = ('question_id',)
+
+
+@admin.register(VideoLesson)
+class VideoLessonAdmin(admin.ModelAdmin):
+    list_display = ('user', 'course')
+    inlines = [QuestionInline]
 
 
 class ProfileForm(forms.ModelForm):
