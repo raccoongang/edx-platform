@@ -81,23 +81,21 @@
             var main = this.el.closest('#main');
             var unit = this.el.find('[data-usage-id="' + elem.data('id') + '"]');
             var unitTimer = unit.find('.forced-seating-timer-enabled');
-            var allowNext = true;
+            var isVideoViewed = true;
+            var isUnitTimeFinished = true;
 
             if (main.data('is-uspap') !== undefined) {
                 unit.find('.xblock .video').each(function(i, v) {
-                    allowNext = v.classList.contains('is-viewed');
-                    if (!allowNext) {
-                        return allowNext;
+                    isVideoViewed = v.classList.contains('is-viewed');
+                    if (!isVideoViewed) {
+                        return isVideoViewed;
                     }
                 });
             }
             if (unitTimer.length !== 0) {
-                allowNext = unitTimer.hasClass('is-seating-time-finished');
-                if (!allowNext) {
-                    return allowNext;
-                }
+                isUnitTimeFinished = unitTimer.hasClass('is-seating-time-finished');
             }
-            return allowNext;
+            return isVideoViewed && isUnitTimeFinished;
         };
 
         Sequence.prototype.previousNav = function(focused, index) {
