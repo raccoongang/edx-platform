@@ -53,9 +53,10 @@ class InheritanceMixin(XBlockMixin):
     )
 
     unit_level = String(
-        display_name="The difficulty level of the unit",
+        help=_("The difficulty level of the Lesson"),
+        display_name=_("Level of difficulty"),
         default="middle",
-        scope=Scope.settings
+        scope=Scope.settings,
     )
     course_edit_method = String(
         display_name=_("Course Editor"),

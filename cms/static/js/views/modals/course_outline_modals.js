@@ -857,6 +857,20 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
             AbstractVisibilityEditor.prototype.afterRender.call(this);
             this.setVisibility(this.modelVisibility());
             this.$('input[name=content-visibility]:checked').change();
+            this.setLevel(this.getUnitLevel());
+        },
+
+        setLevel: function(value) {
+            var that = this;
+            this.$('#unit_level option').each(function(index, el) {
+                if (el.value === value) {
+                    that.$(el).prop('selected', 'selected');
+                }
+            });
+        },
+
+        currentUnitLevel: function() {
+            return this.$('#unit_level').val();
         },
 
         setVisibility: function(value) {
@@ -868,7 +882,7 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
         },
 
         hasChanges: function() {
-            return this.modelVisibility() !== this.currentVisibility();
+            return this.modelVisibility() !== this.currentVisibility() || this.getUnitLevel() !== this.currentUnitLevel();
         },
 
         toggleUnlockWarning: function() {
@@ -886,6 +900,9 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
             }
         },
 
+        getUnitLevel: function() {
+            return this.model.get('unit_level');
+        },
         getRequestData: function() {
             if (this.hasChanges()) {
                 var metadata = {};
@@ -899,7 +916,7 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
                     metadata.visible_to_staff_only = null;
                     metadata.hide_after_due = null;
                 }
-
+                metadata.unit_level = this.currentUnitLevel();
                 return {
                     publish: 'republish',
                     metadata: metadata
@@ -915,7 +932,8 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
                 AbstractVisibilityEditor.prototype.getContext.call(this),
                 {
                     hide_after_due: this.modelVisibility() === 'hide_after_due',
-                    self_paced: course.get('self_paced') === true
+                    self_paced: course.get('self_paced') === true,
+                    unit_level: this.currentUnitLevel()
                 }
             );
         }

@@ -149,7 +149,7 @@
     .modal-section-title {
       @extend %t-title6;
 
-      margin: 0 0 ($baseline/2) 0;
+      margin: 25px 0 ($baseline/2) 0;
       border-bottom: ($baseline/10) solid $gray-l4;
       padding-bottom: ($baseline/4);
       color: $gray-d2;

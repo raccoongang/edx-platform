@@ -121,7 +121,8 @@ class CourseHomeFragmentView(EdxFragmentView):
             'is_staff': has_access(request.user, 'staff', course_key),
         }
         if user_access['is_enrolled'] or user_access['is_staff']:
-            outline_fragment = CourseOutlineFragmentView().render_to_fragment(request, course_id=course_id, **kwargs)
+            outline_fragment_view = getattr(self, 'outline_fragment_view', CourseOutlineFragmentView)
+            outline_fragment = outline_fragment_view().render_to_fragment(request, course_id=course_id, **kwargs)
             if LATEST_UPDATE_FLAG.is_enabled(course_key):
                 update_message_fragment = LatestUpdateFragmentView().render_to_fragment(
                     request, course_id=course_id, **kwargs
