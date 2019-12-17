@@ -45,13 +45,14 @@ def report_data_preparation(user, course):
                         if student_module:
                             attempts = json.loads(student_module.state).get("attempts", 0)
                             correct_map = json.loads(student_module.state).get('correct_map', {})
-                            done = correct_map.values()[0].get('correctness') if correct_map else False
-                            if attempts == 1 and done == 'correct':
+                            correctness = correct_map.values()[0].get('correctness') if correct_map else False
+                            done = True if correctness == 'correct' else False
+                            if attempts == 1 and done:
                                 count_answer_first_attempt += 1
                         else:
                             attempts = 0
+                            done = False
                         header.append(problem.display_name)
-                        done = True if done == 'correct' else False
                         questions_data.append((problem.display_name, attempts, done))
 
     questions = video_questions.values('question_id', 'video_lesson__video_id').distinct()
