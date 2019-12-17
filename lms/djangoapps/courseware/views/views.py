@@ -63,6 +63,7 @@ from courseware.url_helpers import get_redirect_url
 from courseware.user_state_client import DjangoXBlockUserStateClient
 from edxmako.shortcuts import marketing_link, render_to_response, render_to_string
 from enrollment.api import add_enrollment
+from learner_dashboard.programs import get_course_ids
 from lms.djangoapps.ccx.custom_exception import CCXLocatorValidationException
 from lms.djangoapps.commerce.utils import EcommerceService
 from lms.djangoapps.courseware.exceptions import CourseAccessRedirect, Redirect
@@ -103,7 +104,6 @@ from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError, NoPathToItem
 from xmodule.tabs import CourseTabList
 from xmodule.x_module import STUDENT_VIEW
-from learner_dashboard.programs import get_course_ids
 
 from ..entrance_exams import user_can_skip_entrance_exam
 from ..module_render import get_module, get_module_by_usage_id, get_module_for_descriptor
@@ -910,6 +910,8 @@ def program_marketing(request, program_uuid):
     ecommerce_service = EcommerceService()
 
     price = program.get('price', '0.00')
+    # started_courses_count depends on the count of courses in a program
+    # it's impossible to have started_courses > 0 if total_courses_count == 0
     if price != '0.00' and started_courses_count:
         program['full_program_price'] = (float(price) / total_courses_count) * (total_courses_count - started_courses_count)
     elif price != '0.00':

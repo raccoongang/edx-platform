@@ -191,13 +191,13 @@ FEATURES = {
     'RESTRICT_AUTOMATIC_AUTH': True,
 
     # Toggle the availability of the shopping cart page
-    'ENABLE_SHOPPING_CART': True,
+    'ENABLE_SHOPPING_CART': False,
 
     # Toggle storing detailed billing information
     'STORE_BILLING_INFO': False,
 
     # Enable flow for payments for course registration (DIFFERENT from verified student flow)
-    'ENABLE_PAID_COURSE_REGISTRATION': True,
+    'ENABLE_PAID_COURSE_REGISTRATION': False,
 
     # Enable the display of cosmetic course price display (set in course advanced settings)
     'ENABLE_COSMETIC_DISPLAY_PRICE': False,

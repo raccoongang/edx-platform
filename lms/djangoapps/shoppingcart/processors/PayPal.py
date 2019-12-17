@@ -16,6 +16,9 @@ log = logging.getLogger(__name__)
 
 
 def init_paypalrestsdk():
+    """
+    Initialize paypal REST SDK.
+    """
     paypal_configuration = get_processor_config()
     # Initialize the PayPal REST SDK
     paypalrestsdk.configure({
@@ -28,6 +31,9 @@ init_paypalrestsdk()
 
 
 def render_purchase_form_html(cart, callback_url=None, extra_data=None):
+    """
+    Render a purchase form.
+    """
     return render_to_string('shoppingcart/cybersource_form.html', {
         'action': reverse("shoppingcart.views.paypal_create"),
         'params': {}
@@ -35,6 +41,9 @@ def render_purchase_form_html(cart, callback_url=None, extra_data=None):
 
 
 def process_postpay_callback(params):
+    """
+    Process payment callback.
+    """
     payment_support_email = microsite.get_value('payment_support_email', settings.PAYMENT_SUPPORT_EMAIL)
     payer_id = params.get('PayerID')
     payment_id = params.get('paymentId')
@@ -92,7 +101,9 @@ def process_postpay_callback(params):
 
 
 def _record_purchase(params, order):
-
+    """
+    Save purchase order to DB.
+    """
     # Mark the order as purchased and store the billing information
     payer = params.get('payer', {})
     payer_info = payer.get('payer_info', {})
@@ -111,5 +122,7 @@ def _record_purchase(params, order):
 
 
 def _format_error_html(msg):
-    """ Format an HTML error message """
+    """
+    Format an HTML error message.
+    """
     return u'<p class="error_msg">{msg}</p>'.format(msg=msg)

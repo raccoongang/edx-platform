@@ -85,66 +85,6 @@ class BasketsView(APIView):
         Attempt to enroll the user.
         """
         return DetailResponse('Method not allowed', status=HTTP_406_NOT_ACCEPTABLE)
-        user = request.user
-        valid, course_key, error = self._is_data_valid(request)
-        if not valid:
-            return DetailResponse(error, status=HTTP_406_NOT_ACCEPTABLE)
-
-        embargo_response = embargo_api.get_embargo_response(request, course_key, user)
-
-        if embargo_response:
-            return embargo_response
-
-        # Don't do anything if an enrollment already exists
-        course_id = unicode(course_key)
-        enrollment = CourseEnrollment.get_enrollment(user, course_key)
-        if enrollment and enrollment.is_active:
-            msg = Messages.ENROLLMENT_EXISTS.format(course_id=course_id, username=user.username)
-            return DetailResponse(msg, status=HTTP_409_CONFLICT)
-
-        # Check to see if enrollment for this course is closed.
-        course = courses.get_course(course_key)
-        if CourseEnrollment.is_enrollment_closed(user, course):
-            msg = Messages.ENROLLMENT_CLOSED.format(course_id=course_id)
-            log.info(u'Unable to enroll user %s in closed course %s.', user.id, course_id)
-            return DetailResponse(msg, status=HTTP_406_NOT_ACCEPTABLE)
-
-        # If there is no audit or honor course mode, this most likely
-        # a Prof-Ed course. Return an error so that the JS redirects
-        # to track selection.
-        honor_mode = CourseMode.mode_for_course(course_key, CourseMode.HONOR)
-        audit_mode = CourseMode.mode_for_course(course_key, CourseMode.AUDIT)
-
-        # Check to see if the User has an entitlement and enroll them if they have one for this course
-        if CourseEntitlement.check_for_existing_entitlement_and_enroll(user=user, course_run_key=course_key):
-            return JsonResponse(
-                {
-                    'redirect_destination': reverse('courseware', args=[unicode(course_id)]),
-                },
-            )
-
-        # Accept either honor or audit as an enrollment mode to
-        # maintain backwards compatibility with existing courses
-        default_enrollment_mode = audit_mode or honor_mode
-        if default_enrollment_mode:
-            msg = Messages.ENROLL_DIRECTLY.format(
-                username=user.username,
-                course_id=course_id
-            )
-            if not default_enrollment_mode.sku:
-                # If there are no course modes with SKUs, return a different message.
-                msg = Messages.NO_SKU_ENROLLED.format(
-                    enrollment_mode=default_enrollment_mode.slug,
-                    course_id=course_id,
-                    username=user.username
-                )
-            log.info(msg)
-            self._enroll(course_key, user, default_enrollment_mode.slug)
-            self._handle_marketing_opt_in(request, course_key, user)
-            return DetailResponse(msg)
-        else:
-            msg = Messages.NO_DEFAULT_ENROLLMENT_MODE.format(course_id=course_id)
-            return DetailResponse(msg, status=HTTP_406_NOT_ACCEPTABLE)
 
 
 class BasketOrderView(APIView):

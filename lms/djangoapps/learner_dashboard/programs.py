@@ -118,6 +118,8 @@ class ProgramDetailsFragmentView(EdxFragmentView):
             course_id__in=course_ids
         ).count()
 
+        # started_courses_count depends on the count of courses in a program
+        # it's impossible to have started_courses > 0 if total_courses_count == 0
         if started_courses_count:
             program_data['price'] = '%.2f' % (
                 (float(program_data['price']) / total_courses_count * (total_courses_count - started_courses_count))

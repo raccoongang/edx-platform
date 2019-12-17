@@ -142,6 +142,9 @@ def add_course_to_cart(request, course_id):
 
 @require_POST
 def add_program_to_cart(request, uuid):
+    """
+    Add a program specified by uuid to the cart.
+    """
     if not request.user.is_authenticated():
         return JsonResponse({'success': False, 'msg': _('You must be logged-in to add to a shopping cart')})
 
@@ -1099,6 +1102,9 @@ def csv_report(request):
 @login_required
 @enforce_shopping_cart_enabled
 def paypal_create(request):
+    """
+    Create a payment order for items in user's shoping cart with PayPal SDK.
+    """
     cart = Order.get_cart_for_user(request.user)
     shoppingcart_items = verify_for_closed_enrollment(cart.user, cart)[-1]
 
@@ -1181,7 +1187,9 @@ def paypal_create(request):
 
 
 def paypal_cancel(request):
-
+    """
+    Process cancelation of the payment request.
+    """
     request.session['attempting_upgrade'] = False
     payment_support_email = microsite.get_value('payment_support_email', settings.PAYMENT_SUPPORT_EMAIL)
     error_msg = _(
@@ -1196,6 +1204,9 @@ def paypal_cancel(request):
 
 
 def render_error_html(msg, order=None):
+    """
+    Render message with error message.
+    """
     error_html = u'<p class="error_msg">{msg}</p>'.format(msg=msg)
     return render_to_response('shoppingcart/error.html', {'order': order,
                                                           'error_html': error_html})
