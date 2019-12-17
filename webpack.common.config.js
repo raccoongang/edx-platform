@@ -78,7 +78,10 @@ module.exports = Merge.smart({
         ReactRenderer: './common/static/js/src/ReactRenderer.jsx',
         XModuleShim: 'xmodule/js/src/xmodule.js',
 
-        VerticalStudentView: './common/lib/xmodule/xmodule/assets/vertical/public/js/vertical_student_view.js'
+        VerticalStudentView: './common/lib/xmodule/xmodule/assets/vertical/public/js/vertical_student_view.js',
+
+        // Studio HeraApp
+        HeraApp: './cms/static/js/hera/App.jsx',
     },
 
     output: {
@@ -202,6 +205,17 @@ module.exports = Merge.smart({
                 test: /\.underscore$/,
                 use: 'raw-loader'
             },
+            {
+                test: /\.s[ac]ss$/i,
+                use: [
+                  // Creates `style` nodes from JS strings
+                  'style-loader',
+                  // Translates CSS into CommonJS
+                  'css-loader',
+                  // Compiles Sass to CSS
+                  'sass-loader',
+                ],
+              },
             {
                 // This file is used by both RequireJS and Webpack and depends on window globals
                 // This is a dirty hack and shouldn't be replicated for other files.
