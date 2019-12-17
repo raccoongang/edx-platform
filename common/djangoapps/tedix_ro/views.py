@@ -247,7 +247,7 @@ class VideoLessonViewSet(viewsets.ModelViewSet):
             serializer.save()
             if not( any(d['attempt_count'] == 0 for d in data['questions'])):
                 VIDEO_LESSON_COMPLETED.send(
-                    sender=VideoLessonViewSet,
+                    sender=VideoLesson,
                     user=request.user,
                     course_id=data['course']
                 )

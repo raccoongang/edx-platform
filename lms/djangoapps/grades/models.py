@@ -207,9 +207,8 @@ class VisibleBlocks(models.Model):
                 hashed=brl.hash_value,
                 course_id=course_key,
             )
-            for brl in block_record_lists
-        ],
-        ignore_conflicts=True
+            for brl in block_record_lists],
+            ignore_conflicts=True
         )
         cls._update_cache(user_id, course_key, created)
         return created
