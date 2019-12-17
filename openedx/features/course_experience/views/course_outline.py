@@ -14,25 +14,18 @@ from waffle.models import Switch
 from web_fragments.fragment import Fragment
 
 from courseware.courses import get_course_overview_with_access
-from courseware.model_data import FieldDataCache
-from courseware.module_render import  get_module_for_descriptor
-from courseware.courses import get_current_child, get_problems_in_section
-
-from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
 from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
 from student.models import CourseEnrollment
 
 from util.milestones_helpers import get_course_content_milestones
 from xmodule.modulestore.django import modulestore
 from ..utils import get_course_outline_block_tree, get_resume_block
-from lms.djangoapps.hera.mongo import c_selection_page, USER, COURSE_KEY, BLOCK_ID, NEXT_ID, LEVEL
 
 
 DEFAULT_COMPLETION_TRACKING_START = datetime.datetime(2018, 1, 24, tzinfo=UTC)
 
 
 class CourseOutlineFragmentView(EdxFragmentView):
-
     """
     Course outline fragment to be shown in the unified course view.
     """
