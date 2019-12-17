@@ -225,11 +225,14 @@ class VerticalBlock(SequenceFields, XModuleFields, StudioEditableBlock, XmlParse
     @property
     def forced_seating_time_left(self):
         time_left = 0
+
         if not self.is_seating_time_finished:
             time_left = self.forced_seating_time - self.actual_seating_time
-            if time_left < 0:
-                self.is_seating_time_finished = time_left < 0
-        return time_left if time_left > 0 else 0
+            if time_left <= 0:
+                self.is_seating_time_finished = True
+                time_left = 0
+
+        return time_left
 
     @XBlock.handler
     def set_seating_time(self, request, suffix=''):
@@ -248,7 +251,9 @@ class VerticalBlock(SequenceFields, XModuleFields, StudioEditableBlock, XmlParse
                 self.is_seating_time_finished = True
 
             self.check_last_ping = None if page_close else now
-            context = {'forced_seating_time_left': self.forced_seating_time_left}
+
+            if not page_close:
+                context['forced_seating_time_left'] = self.forced_seating_time_left
 
         context['is_seating_time_finished'] = self.is_seating_time_finished
         return Response(json.dumps(context), content_type='application/json')

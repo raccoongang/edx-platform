@@ -22,6 +22,9 @@ window.VerticalStudentView = function(runtime, element) {
     var updateForcedSeatingTime = function() {
         forcedSeatingTime --;
         $forcedSeatingTimerElement.text(getFormattedTime(forcedSeatingTime));
+        if (forcedSeatingTime === 0){
+            setSpendTime(true);
+        }
     };
 
     function setSpendTime(pageClose=false) {
@@ -40,14 +43,15 @@ window.VerticalStudentView = function(runtime, element) {
             success: function(response) {
                 var forcedSeatingTimeLeft = response.forced_seating_time_left;
                 var isSeatingTimeFinished = response.is_seating_time_finished;
+                clearTimeout(pingIdInterval);
                 if (isSeatingTimeFinished) {
-                    clearTimeout(pingIdInterval);
                     clearInterval(timerIdInterval);
                     $element.find('.forced-seating-timer-enabled').addClass('is-seating-time-finished');
                 } else if (forcedSeatingTimeLeft) {
                     forcedSeatingTime = forcedSeatingTimeLeft;
                     clearInterval(timerIdInterval);
                     timerIdInterval = setInterval(updateForcedSeatingTime, 1000);
+                    pingIdInterval = setTimeout(setSpendTime, pingTimedelta);
                     updateForcedSeatingTime();
                 }
             }
