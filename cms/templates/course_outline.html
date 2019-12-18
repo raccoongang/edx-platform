@@ -215,6 +215,114 @@ from openedx.core.djangolib.markup import HTML, Text
                 course_locator = context_course.location
                 %>
                 <h2 class="sr">${_("Course Outline")}</h2>
+                <div class="nav-panel">
+                    <div class="nav-panel-wrapper">
+                        <h3 class="nav-panel-title">
+                            ${_("Lesson Layer")}
+                        </h3>
+                        <ul class="nav-panel-list">
+                            <li class="nav-panel-list__item">
+                                <a href="/" class="nav-panel-list__link">
+                                    ${_("Title")}
+                                </a>
+                            </li>
+                            <li class="nav-panel-list__item">
+                                <a href="/" class="nav-panel-list__link">
+                                    ${_("Introduction")}
+                                </a>
+                            </li>
+                            <li class="nav-panel-list__item">
+                                <a href="/" class="nav-panel-list__link">
+                                    ${_("Interactive Simulation")}
+                                </a>
+                            </li>
+                            <li class="nav-panel-list__item with-add-list">
+                                <div class="nav-panel-accrd">
+                                    <a href="#" class="nav-panel-accrd__link">
+                                        ${_("Questions")}
+                                    </a>
+                                </div>
+                                <ul class="nav-panel-questions-list nav-panel-accrd__content">
+                                    <li class="nav-panel-questions-list__item">
+                                        <a href="/" class="nav-panel-questions-list__link">
+                                            ${_("Q1")}
+                                        </a>
+                                    </li>
+                                    <li class="nav-panel-questions-list__item">
+                                        <a href="/" class="nav-panel-questions-list__link">
+                                            ${_("Q2")}
+                                        </a>
+                                    </li>
+                                    <li class="nav-panel-questions-list__item">
+                                        <a href="/" class="nav-panel-questions-list__link">
+                                            ${_("Q3")}
+                                        </a>
+                                    </li>
+                                    <li class="nav-panel-questions-list__item">
+                                        <a href="/" class="nav-panel-questions-list__link">
+                                            ${_("Q4")}
+                                        </a>
+                                    </li>
+                                    <li class="nav-panel-questions-list__item">
+                                        <a href="/" class="nav-panel-questions-list__link">
+                                            ${_("Q5")}
+                                        </a>
+                                    </li>
+                                    <li class="nav-panel-questions-list__item">
+                                        <a href="/" class="nav-panel-questions-list__link">
+                                            ${_("Q6")}
+                                        </a>
+                                    </li>
+                                    <li class="nav-panel-questions-list__item">
+                                        <a href="/" class="nav-panel-questions-list__link">
+                                            ${_("Q7")}
+                                        </a>
+                                    </li>
+                                    <li class="nav-panel-questions-list__item">
+                                        <a href="/" class="nav-panel-questions-list__link">
+                                            ${_("Q8")}
+                                        </a>
+                                    </li>
+                                    <li class="nav-panel-questions-list__item">
+                                        <a href="/" class="nav-panel-questions-list__link">
+                                            ${_("Q9")}
+                                        </a>
+                                    </li>
+                                    <li class="nav-panel-questions-list__item">
+                                        <a href="/" class="nav-panel-questions-list__link">
+                                            ${_("Q10")}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-panel-list__item">
+                                <a href="/" class="nav-panel-list__link">
+                                    ${_("End-Survey")}
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="adaptivity-section">
+                            <h4 class="adaptivity-section-title">
+                                ${_("adaptivity")}
+                            </h4>
+                            <ul class="adaptivity-section-list">
+                                <li class="adaptivity-section-list__item">
+                                    <a href="/" class="adaptivity-section-list__link">
+                                        ${_("Initial State")}
+                                    </a>
+                                </li>
+                                <li class="adaptivity-section-list__item">
+                                    <a href="/" class="adaptivity-section-list__link">
+                                        ${_("Correct State")}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="panel-btn-holder">
+                            <button type="button" class="panel-btn">save</button>
+                        </div>
+                    </div>
+                </div>
                 <article class="outline outline-complex outline-course" data-locator="${course_locator}" data-course-key="${course_locator.course_key}">
                 </article>
             </div>
@@ -251,7 +359,6 @@ from openedx.core.djangolib.markup import HTML, Text
                     <a href="${get_online_help_info('visibility')['doc_url']}" target="_blank" class="button external-help-button">${_("Learn more about content visibility settings")}</a>
                 </div>
             </div>
-
         </aside>
     </section>
 </div>
