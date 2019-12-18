@@ -253,10 +253,12 @@ from openedx.core.djangolib.markup import HTML, Text
         </aside>
     </section>
 </div>
+<!-- TinyMCE part -->
 <%static:css group='style-vendor-tinymce-content'/>
-    <%static:css group='style-vendor-tinymce-skin'/>
+<%static:css group='style-vendor-tinymce-skin'/>
 <script type="text/javascript" src="${static.url('js/vendor/tinymce/js/tinymce/tinymce.full.min.js')}"></script>
 <script type="text/javascript" src="${static.url('js/vendor/tinymce/js/tinymce/jquery.tinymce.min.js')}"></script>
+<!-- End TinyMCE part -->
 <div class="test-react-div">
     ${static.renderReact(
       component="HeraApp",
