@@ -1,0 +1,1 @@
+export const TITLE_CHANGED = 'TITLE_CHANGED';
