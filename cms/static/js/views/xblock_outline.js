@@ -194,7 +194,7 @@ define(['jquery', 'underscore', 'gettext', 'js/views/baseview', 'common/js/compo
                 var self = this;
                 element.find('.delete-button').click(_.bind(this.handleDeleteEvent, this));
                 element.find('.duplicate-button').click(_.bind(this.handleDuplicateEvent, this));
-                // element.find('.button-new').click(_.bind(this.handleAddEvent, this));
+                element.find('.button-new').click(_.bind(this.handleAddEvent, this));
             },
 
             shouldRenderChildren: function() {
@@ -346,9 +346,11 @@ define(['jquery', 'underscore', 'gettext', 'js/views/baseview', 'common/js/compo
                     $target = $(event.currentTarget),
                     category = $target.data('category');
                 event.preventDefault();
-                XBlockViewUtils.addXBlock($target).done(function(locator) {
-                    self.onChildAdded(locator, category, event);
-                });
+                if (category !== 'sequential') {
+                    XBlockViewUtils.addXBlock($target).done(function(locator) {
+                        self.onChildAdded(locator, category, event);
+                    });
+                }
             }
         });
 
