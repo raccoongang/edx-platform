@@ -15,7 +15,7 @@ import EndServey from '../components/EndSurvey';
 
 import {addElement} from '../utils/api';
 
-import '../sass/_nav-panel.scss';
+import '../sass/main.scss';
 
 
 export class TeacherTemplate extends React.Component{
@@ -53,9 +53,9 @@ export class TeacherTemplate extends React.Component{
         const target = event.target;
         if (target.dataset.category === 'sequential') {
             event.preventDefault();
-            this.setState({
-                showBar: true
-            }, this.initTinyMCE);
+            const rootElement = document.getElementById('hera-popup');
+            rootElement.classList.add("popup-open");
+            this.initTinyMCE();
             this.addSubsection(target);
         }
     }
@@ -83,13 +83,13 @@ export class TeacherTemplate extends React.Component{
 
     render() {
         return (
-                this.state.showBar ? <div className="nav-panel">
+            <div className="author-holder">
+                <div className="nav-panel">
                     <div className="nav-panel-wrapper">
                         <h3 className="nav-panel-title">Lesson Layer</h3>
                         <ul className="nav-panel-list">
                             <li className="nav-panel-list__item">
-                                <textarea className="title-xblock"id="title-xblock"></textarea>
-                                <Title content={this.props.titleContent}/>
+                                <Title/>
                             </li>
                             <li className="nav-panel-list__item">
                                 <Introduction/>
@@ -107,36 +107,41 @@ export class TeacherTemplate extends React.Component{
                                     <li className="nav-panel-questions-list__item">
                                         <Question/>
                                     </li>
-                                    
                                 </ul>
                             </li>
                             <li className="nav-panel-list__item">
                                 <EndServey/>
                             </li>
                         </ul>
-                        <div className="adaptivity-section">
-                            <h4 className="adaptivity-section-title">
-                                adaptivity
-                            </h4>
-                            <ul className="adaptivity-section-list">
-                                <li className="adaptivity-section-list__item">
-                                    <a href="/" className="adaptivity-section-list__link">
-                                        Initial State
-                                    </a>
-                                </li>
-                                <li className="adaptivity-section-list__item">
-                                    <a href="/" className="adaptivity-section-list__link">
-                                        Correct State
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
                         <div className="panel-btn-holder">
                             <button type="button" className="panel-btn" onClick={this.closeBar.bind(this)}>save</button>
                         </div>
                     </div>
-                </div> : null
-            
+                </div>
+
+                <div className="author-block__wrapper">
+                    <div className="author-block__content">
+                        <div className="author-block__image">
+                            <img src="https://d1icd6shlvmxi6.cloudfront.net/gsc/THB1PC/52/ec/b3/52ecb386d0d140898c3a931c5caaccba/images/scenario_page/u620.png?token=937ef3394f9bbd5177382de1fe4cbf677b95681186e42c8b44b00217fe8c6834" alt="/"/>
+                        </div>
+                        <div className="author-block__question">
+                            <div className="author-block__question-title">
+                                Hooke's Law
+                            </div>
+                            <div className="author-block__question-text">
+                                Imagine that you are standing on a cliff, and you've just been hooked up to a bungee cord. The instructor gives you a pat on the back and then it's time to jump. What will happen?
+                            </div>
+                        </div>
+                    </div>
+                    <div className="author-block__buttons">
+                        <button type="button" className="author-block__btn">
+                            Next
+                        </button>
+                    </div>
+                </div>
+
+                <button className="close-popup">&#2715;</button>
+            </div>
         );
     }
 }
