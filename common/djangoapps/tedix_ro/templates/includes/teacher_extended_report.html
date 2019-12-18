@@ -24,12 +24,12 @@ from django.utils.translation import ugettext as _
                 <th style="border: 1px solid; white-space: nowrap; padding: 10px 8px;">
                     ${ user_data['full_name'] }<br>
                 </th>
-                %for question_name, question_count_answer in user_data['questions']:
+                %for question_name, question_count_answer, done in user_data['questions']:
                     <td style="white-space: nowrap; border: 1px solid; padding: 9px 8px;">
-                        %if question_count_answer == 1:
+                        %if question_count_answer == 1 and done:
                             <span style="color: green;">${ ('First attempt') }</span>
                         %else:
-                            <span style="color: red;">${ question_count_answer } ${ _("attempts") }</span>
+                            <span style="color: red;">${ question_count_answer } ${ _("attempt") if question_count_answer == 1 else _("attempts")}</span>
                         %endif
                     </td>
                 %endfor

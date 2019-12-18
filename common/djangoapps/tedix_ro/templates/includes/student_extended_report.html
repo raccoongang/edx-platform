@@ -12,14 +12,14 @@ from django.utils.translation import ugettext as _
     </h4>
     <h2 class="hd hd-2" style="padding-bottom: 20px">Questions answered report break-down:</h2>
 
-    %for question_name, question_count_answer in user_data['questions']:
+    %for question_name, question_count_answer, done in user_data['questions']:
         <h4 class="hd hd-6" style="padding-bottom: 20px">
             ${_("Question")} ${loop.index + 1}: <span style="color: #24ad97;">${ question_name }</span><br>
                 Number of attempts:
-            %if question_count_answer == 1:
+            %if question_count_answer == 1 and done:
                 <span style="color: green;">${ ('First attempt') }</span>
             %else:
-                <span style="color: red;">${ question_count_answer } ${ _("attempts") }</span>
+                <span style="color: red;">${ question_count_answer } ${ _("attempt") if question_count_answer == 1 else _("attempts")}</span>
             %endif
         </h4>
     %endfor

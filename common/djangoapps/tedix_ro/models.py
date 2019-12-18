@@ -151,3 +151,9 @@ class Question(models.Model):
     video_lesson = models.ForeignKey(VideoLesson, related_name='questions', on_delete=models.CASCADE)
     question_id = models.CharField(max_length=255)
     attempt_count = models.IntegerField()
+
+
+class StudentReportSending(models.Model):
+    course_id = CourseKeyField(max_length=255)
+    user = models.ForeignKey(User, related_name='stident_report_sending', on_delete=models.CASCADE)
+    grade = models.FloatField()

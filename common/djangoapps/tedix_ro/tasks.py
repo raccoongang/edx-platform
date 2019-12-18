@@ -8,26 +8,30 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.urls import reverse
-from django.utils.translation import ugettext as _
 import pytz
 
 from edxmako.shortcuts import render_to_string
 from opaque_keys.edx.keys import CourseKey
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
-from student.models import CourseEnrollment
 from xmodule.modulestore.django import modulestore
 
-from .models import InstructorProfile, StudentCourseDueDate, StudentProfile
+from .models import InstructorProfile, StudentCourseDueDate, StudentReportSending
 from .sms_client import SMSClient
-from .utils import report_data_preparation
+from .utils import report_data_preparation, lesson_course_grade, video_lesson_complited, all_problems_have_answer
 
 
 @periodic_task(run_every=crontab(minute='*/5'))
 def send_teacher_extended_reports():
+    """
+    Sends extended report for the teacher with all his courses and all his students
+    """
+    datetime_now = datetime.utcnow().replace(tzinfo=pytz.UTC)
     for instructor in InstructorProfile.objects.filter(user__is_staff=True).prefetch_related('students'):
         lesson_reports = []
         for enrollment in instructor.user.courseenrollment_set.filter():
             course = modulestore().get_course(enrollment.course_id)
+            if course.end and course.end + timedelta(1) < datetime_now:
+                continue
             report_data = []
             header = []
             for student_profile in instructor.students.filter(user__courseenrollment__course_id=course.id):
@@ -46,8 +50,7 @@ def send_teacher_extended_reports():
         if lesson_reports:
             subject = u'{platform_name}: Report for {username}'.format(
                 platform_name=settings.PLATFORM_NAME,
-                username=instructor.user.profile.name or instructor.user.username,
-                course_name=course.display_name
+                username=instructor.user.profile.name or instructor.user.username
             )
             context = {
                 'lms_url': configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
@@ -71,15 +74,52 @@ def send_teacher_extended_reports():
 
 @periodic_task(run_every=crontab(minute='*/5'))
 def send_extended_reports_by_deadline():
+    """
+    Sends an extended report to the student if the course deadline has expired in the last 24 hours
+    and the course has not been completed (not all questions have attempts and the course was not passed)
+    """
     datetime_now = datetime.utcnow().replace(tzinfo=pytz.UTC)
     for due_date in StudentCourseDueDate.objects.filter(
             due_date__lte=datetime_now,
             due_date__gt=datetime_now-timedelta(1)):
-        send_student_extended_reports(due_date.student.user.id, str(due_date.course_id))
+        user = due_date.student.user
+        course_id = due_date.course_id
+        course_grade = lesson_course_grade(user, course_id)
+        if not (course_grade.passed and all_problems_have_answer(user, course_grade)
+            and video_lesson_complited(user, course_id)):
+            send_student_extended_reports(user.id, str(course_id))
+
+
+@task
+def send_student_complited_report(user_id, course_id):
+    """
+    Sends an extended report to the student if  questions have attempts and
+    the course has been passed and the grade has been raised
+    """
+    user = User.objects.filter(id=user_id).first()
+    if user and hasattr(user, 'studentprofile'):
+        course_key = CourseKey.from_string(course_id)
+        student_report_sending, created = StudentReportSending.objects.get_or_create(
+            course_id=course_key,
+            user=user,
+            defaults={
+                'grade': 0
+            }
+        )
+        course_grade = lesson_course_grade(user, course_key)
+        if (video_lesson_complited(user, course_key) and course_grade.passed and
+            (created or student_report_sending.grade < course_grade.percent) and
+            all_problems_have_answer(user, course_grade)):
+            student_report_sending.grade = course_grade.percent
+            student_report_sending.save()
+            send_student_extended_reports(user_id, course_id)
 
 
 @task
 def send_student_extended_reports(user_id, course_id):
+    """
+    Sends email and SMS with an extended report for student and his parent
+    """
     user = User.objects.filter(id=user_id).first()
     if user and hasattr(user, 'studentprofile'):
         course_key = CourseKey.from_string(course_id)
