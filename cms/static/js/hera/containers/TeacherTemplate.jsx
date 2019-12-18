@@ -15,7 +15,7 @@ import EndServey from '../components/EndSurvey';
 
 import {addElement} from '../utils/api';
 
-import '../sass/_nav-panel.scss';
+import '../sass/main.scss';
 
 
 export class TeacherTemplate extends React.Component{
@@ -53,9 +53,9 @@ export class TeacherTemplate extends React.Component{
         const target = event.target;
         if (target.dataset.category === 'sequential') {
             event.preventDefault();
-            this.setState({
-                showBar: true
-            }, this.initTinyMCE);
+            const rootElement = document.getElementById('hera-popup');
+            rootElement.classList.add("popup-open");
+            this.initTinyMCE();
             this.addSubsection(target);
         }
     }
@@ -83,7 +83,7 @@ export class TeacherTemplate extends React.Component{
 
     render() {
         return (
-                this.state.showBar ? <div className="author-holder">
+            <div className="author-holder">
                 <div className="nav-panel">
                     <div className="nav-panel-wrapper">
                         <h3 className="nav-panel-title">Lesson Layer</h3>
@@ -141,8 +141,7 @@ export class TeacherTemplate extends React.Component{
                 </div>
 
                 <button className="close-popup">&#2715;</button>
-            </div> : null
-            
+            </div>
         );
     }
 }
