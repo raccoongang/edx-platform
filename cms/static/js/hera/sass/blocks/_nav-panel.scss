@@ -28,8 +28,7 @@ $nav_color6: #b3b4b4;
 }
 
 .nav-panel {
-    height: 100%;
-    width: 245px;
+    width: 284px;
     background: $nav_color1;
     margin-right: 12px;
 
@@ -116,7 +115,7 @@ $nav_color6: #b3b4b4;
 
     .panel-btn-holder {
         padding: 12px 15px 0;
-        text-align: right;
+        text-align: center;
 
         .panel-btn {
             display: inline-block;
@@ -127,7 +126,7 @@ $nav_color6: #b3b4b4;
             border-radius: 4px;
             text-align: center;
             color: $nav_color4;
-            padding: 6px 22px;
+            padding: 8px 28px;
             text-transform: uppercase;
             font-weight: bold;
             font-size: 16px;

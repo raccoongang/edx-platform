@@ -1,23 +1,22 @@
 .author-holder {
     position: relative;
-    width: 1286px;
-    max-width: 1268px;
+    width: 95%;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    padding: 10px;
-    background: #fff;
+    padding: 0;
+    background: #f2f2f2;
     border: 1px solid #ccc;
     border-radius: 4px;
 
     .close-popup {
         position: absolute;
-        top: 0;
-        right: 0;
+        top: 8px;
+        right: 8px;
         width: 32px;
         height: 32px;
-        color: #ccc;
+        color: #666;
         background: #fff;
         border: 2px solid #ccc;
         border-radius: 50%;
@@ -39,7 +38,10 @@
 
 .author-block {
     &__wrapper {
+        margin: 12px auto;
         width: 1024px;
+        padding: 12px;
+        background: #fff;
     }
 
     &__title {
