@@ -1,16 +1,19 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
+
+
+
+
 import Title from './components/Title';
 import Introduction from './components/Introduction';
 import InteractiveSimulation from './components/InteractiveSimulation';
 import Question from './components/Question';
 import EndServey from './components/EndSurvey';
 
+import {addElement} from './utils/api';
+
 import './sass/_nav-panel.scss';
-
-
-const rootUrl = '/xblock/';
 
 
 export class HeraApp extends React.Component{
@@ -22,56 +25,58 @@ export class HeraApp extends React.Component{
 
         this.state = {
             showBar: false,
-        }
+        };
     }
 
     addSubsection(target) {
-        const parentLocator = target.dataset.parent,
-                category = target.dataset.category,
-                displayName = target.dataset.defaultName;
-        fetch(rootUrl + parentLocator, {
-            method: 'POST',
-            credentials: "same-origin",
-            body: JSON.stringify({
-                category: category,
-                parent_locator: parentLocator,
-                display_name: displayName
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': 'YwFwBXmguKOSCCg621Vhc3Nyk3wMksjIuyEtH1qOqqZqY5OdzxrCjCCM9s7FgTPs',
-                'Accept': 'application/json',
-            },
-        }).then(response=>response.json()).then((data) => {
-            // do something with data
-            console.log(data);
-        }).catch(err=>console.log(err));
+        addElement(target.dataset.parent, target.dataset.category, target.dataset.defaultName).then((response) => {
+            this.setState({...response.data});
+        });
+    }
+
+    initTinyMCE() {
+        tinymce.init({
+            selector: '.title-xblock',
+            plugins: "table",
+            init_instance_callback: function (editor) {
+                editor.on('change', function (e) {
+                    console.log(e.target.getContent());
+                });
+            }
+        });
+
     }
 
     handlerClick(event) {
         const target = event.target;
-        event.preventDefault();
         if (target.dataset.category === 'sequential') {
+            event.preventDefault();
             this.setState({
                 showBar: true
-            })
-            // this.addSubsection(target);
+            }, this.initTinyMCE);
+            this.addSubsection(target);
         }
     }
 
     closeBar() {
         this.setState({
             showBar: false
+        }, () => {
+            tinymce.remove('.title-xblock');
         });
     }
 
     componentDidMount() {
-        setTimeout(()=>{
-            let buttons = document.getElementsByClassName('button button-new');
+        setTimeout(() => {
+            const buttons = document.getElementsByClassName('button button-new');
             for (let i=0; i<buttons.length; i++) {
-                buttons[i].addEventListener('click', this.handlerClick);
-            }
-        },3000);
+                const element = buttons[i];
+                const category = element.getAttribute('data-category');
+                if (category === 'sequential') {
+                    element.addEventListener('click', this.handlerClick);
+                }
+            };
+        },2000);
     }
 
     render() {
@@ -81,6 +86,7 @@ export class HeraApp extends React.Component{
                     <h3 className="nav-panel-title">Lesson Layer</h3>
                     <ul className="nav-panel-list">
                         <li className="nav-panel-list__item">
+                            <textarea class="title-xblock" name="" id="title-xblock" cols="30" rows="10"></textarea>
                             <Title/>
                         </li>
                         <li className="nav-panel-list__item">

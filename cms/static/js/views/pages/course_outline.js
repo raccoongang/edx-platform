@@ -26,9 +26,9 @@ define([
                 var self = this;
                 this.initialState = this.options.initialState;
                 BasePage.prototype.initialize.call(this);
-                // this.$('.button-new').click(function(event) {
-                //     self.outlineView.handleAddEvent(event);
-                // });
+                this.$('.button-new').click(function(event) {
+                    self.outlineView.handleAddEvent(event);
+                });
                 this.$('.button.button-reindex').click(function(event) {
                     self.handleReIndexEvent(event);
                 });
