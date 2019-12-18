@@ -3,12 +3,38 @@ $nav_color2: #383c3c;
 $nav_color3: #2b6797;
 $nav_color4: #fff;
 $nav_color5: #191c1c;
-$nav_color6: #191c1c;
+$nav_color6: #b3b4b4;
+
+#hera-popup {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity .3s ease-in-out;
+    pointer-events: none;
+    opacity: 0;
+    z-index: -1;
+
+    &.popup-open {
+        opacity: 1;
+        z-index: 9999;
+        pointer-events: initial;
+    }
+}
 
 .nav-panel {
+    height: 100%;
+    width: 245px;
+    background: $nav_color1;
+    margin-right: 12px;
+
     &-wrapper {
         color: $nav_color6;
-        background: $nav_color1;
         padding: 0 0 12px;
     }
 
