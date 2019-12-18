@@ -22,7 +22,7 @@ from .sms_client import SMSClient
 from .utils import report_data_preparation
 
 
-@periodic_task(run_every=crontab(hour='15', minute='30'))
+@periodic_task(run_every=crontab(minute='*/5'))
 def send_teacher_extended_reports():
     for instructor in InstructorProfile.objects.filter(user__is_staff=True).prefetch_related('students'):
         lesson_reports = []
@@ -69,7 +69,7 @@ def send_teacher_extended_reports():
             send_mail(subject, txt_message, from_address, [instructor.user.email], html_message=html_message)
 
 
-@periodic_task(run_every=crontab(hour='15', minute='30'))
+@periodic_task(run_every=crontab(minute='*/5'))
 def send_extended_reports_by_deadline():
     datetime_now = datetime.utcnow().replace(tzinfo=pytz.UTC)
     for due_date in StudentCourseDueDate.objects.filter(

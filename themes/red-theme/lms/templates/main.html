@@ -79,7 +79,7 @@ from pipeline_mako import render_require_js_path_overrides
   % endif
   <script type="text/javascript" src="${static.url(jsi18n_path)}"></script>
   <script type="text/javascript" src="${static.url(ie11_fix_path)}"></script>
-
+  <script type="text/javascript" src="${static.url('js/reporting.js')}"></script>
   <link rel="icon" type="image/x-icon" href="${static.url(static.get_value('favicon_path', settings.FAVICON_PATH))}" />
 
   <%static:css group='style-vendor'/>
