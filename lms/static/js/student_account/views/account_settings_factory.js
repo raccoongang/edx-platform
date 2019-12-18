@@ -221,14 +221,14 @@
             aboutSectionsData.push(socialFields);
             // Add the mobytize_id and mobytizetoken fields
             mobytizeFields = {
-                title: gettext('Mobytize data'),
+                title: gettext('Profitonomy data'),
                 fields: [   {
                     view: new AccountSettingsFieldViews.TextFieldView({
                         model: userAccountModel,
                         title: gettext('mobytize_id'),
                         valueAttribute: 'mobytize_id',
                         helpMessage: gettext(
-                            'mobytize_id'  // eslint-disable-line max-len
+                            'profitonomy_id'  // eslint-disable-line max-len
                         ),
                         persistChanges: true
                     })
@@ -239,7 +239,7 @@
                         title: gettext('mobytize_token'),
                         valueAttribute: 'mobytize_token',
                         helpMessage: gettext(
-                            'mobytize_token'  // eslint-disable-line max-len
+                            'profitonomy_token'  // eslint-disable-line max-len
                         ),
                         persistChanges: true
                     })
