@@ -52,9 +52,9 @@ export class TeacherTemplate extends React.Component{
         });
     }
 
-    initTinyMCE() {
+    initTinyMCE(selector) {
         tinymce.init({
-            selector: '.title-xblock',
+            selector: selector,
             plugins: "table",
             init_instance_callback: function (editor) {
                 editor.on('change', function (e) {
@@ -71,7 +71,6 @@ export class TeacherTemplate extends React.Component{
             event.preventDefault();
             const rootElement = document.getElementById('hera-popup');
             rootElement.classList.add("popup-open");
-            this.initTinyMCE();
             this.addSubsection(target);
         }
     }
@@ -131,7 +130,11 @@ export class TeacherTemplate extends React.Component{
                         </div>
                     </div>
                 </div>
-                <ActiveComponent/>
+                <ActiveComponent 
+                    initTinyMCE={this.initTinyMCE} 
+                    title={this.props.title}
+                    introduction={this.props.introduction}
+                    {...this.props}/>
                 <button className="close-popup" onClick={this.closeBar}>&#2715;</button>
             </div>
         );
@@ -141,7 +144,8 @@ export class TeacherTemplate extends React.Component{
 
 const mapStateToProps = (store) => {
     return {
-        titleContent: store.title.content,
+        title: store.title,
+        introduction: store.introduction,
         questions: store.questions.questions
     };
 };
