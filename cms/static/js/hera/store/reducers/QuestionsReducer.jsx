@@ -3,9 +3,9 @@ import { QUESTION_CHANGED, QUESTION_ADDED } from '../actionTypes';
 
 const initialState = {
     questions: [
-        {title: "Q1"},
-        {title: "Q2"},
-        {title: "Q3"}
+        {title: "Question1"},
+        {title: "Question2"},
+        {title: "Question3"}
     ],
 };
 
