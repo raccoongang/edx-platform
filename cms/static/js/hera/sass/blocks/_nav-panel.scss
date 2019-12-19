@@ -30,7 +30,6 @@ $nav_color6: #b3b4b4;
 .nav-panel {
     width: 284px;
     background: $nav_color1;
-    margin-right: 12px;
 
     &-wrapper {
         color: $nav_color6;
@@ -54,7 +53,7 @@ $nav_color6: #b3b4b4;
             transition: background .3s ease-in-out;
 
             &:hover {
-                color: inherit;
+                color: $nav_color4;
                 background: $nav_color3;
             }
         }
@@ -68,13 +67,73 @@ $nav_color6: #b3b4b4;
             transition: background .3s ease-in-out;
 
             &:hover {
-                color: inherit;
+                color: $nav_color4;
                 background: $nav_color3;
             }
         }
     }
 
     &-accrd {
+        &__content {
+            .nav-panel-questions-list__item {
+                position: relative;
+
+                &:last-child {
+                    text-align: right;
+                }
+
+                .remove-item {
+                    cursor: pointer;
+                    position: absolute;
+                    top: 50%;
+                    right: 18px;
+                    transform: translateY(-50%);
+                    opacity: .5;
+                    transition: all .3s ease-in-out;
+
+                    &:hover {
+                        color: $nav_color4;
+                        opacity: 1;
+                    };
+                }
+            }
+
+            .nav-panel-list__link {
+                color: inherit;
+                display: block;
+                padding: 6px 60px;
+                transition: background .3s ease-in-out;
+
+                &:hover {
+                    color: $nav_color4;
+                    background: $nav_color3;
+                }
+            }
+
+            .add-btn {
+                margin: 0 0 4px 0;
+                display: inline-block;
+                box-shadow: none;
+                background: none;
+                outline: none;
+                border: none;
+                text-align: center;
+                color: $nav_color6;
+                padding: 4px 18px;
+                text-transform: lowercase;
+                font-weight: bold;
+                font-size: 12px;
+                transition: all .3s ease-in-out;
+                opacity: .5;
+
+                &:hover {
+                    opacity: 1;
+                    color: $nav_color4;
+                    background: none;
+                }
+            }
+        }
+
         &__link {
             color: inherit;
             display: block;
@@ -82,7 +141,7 @@ $nav_color6: #b3b4b4;
             transition: background .3s ease-in-out;
 
             &:hover {
-                color: inherit;
+                color: $nav_color4;
                 background: $nav_color3;
             }
         }
@@ -106,7 +165,7 @@ $nav_color6: #b3b4b4;
                 padding: 6px 35px;
 
                 &:hover {
-                    color: inherit;
+                    color: $nav_color4;
                     background: $nav_color3;
                 }
             }

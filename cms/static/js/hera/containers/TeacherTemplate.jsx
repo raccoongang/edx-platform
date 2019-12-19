@@ -135,7 +135,7 @@ export class TeacherTemplate extends React.Component{
                     title={this.props.title}
                     introduction={this.props.introduction}
                     {...this.props}/>
-                <button className="close-popup" onClick={this.closeBar}>&#2715;</button>
+                <button className="close-popup" onClick={this.closeBar} />
             </div>
         );
     }

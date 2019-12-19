@@ -18,9 +18,17 @@ export default class Questions extends React.Component{
                         return (
                             <li className="nav-panel-questions-list__item" key={index}>
                                 <SwitchComponent switchComponent={this.props.switchComponent} title={question.title}/>
+                                <span className="remove-item">
+                                    <i className="fa fa-trash-o" aria-hidden="true"></i>
+                                </span>
                             </li>
                         )
                     })}
+                    <li className="nav-panel-questions-list__item">
+                        <button className="add-btn">
+                           + add question
+                        </button>
+                    </li>
                 </ul>
             </div>
         )

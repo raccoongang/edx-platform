@@ -12,7 +12,9 @@ export default class SwitchComponent extends React.Component{
 
     render() {
         return (
-            <a href="#" className="nav-panel-list__link" onClick={this.handleClick.bind(this)}>{this.props.title}</a>
+            <a href="#" className="nav-panel-list__link" onClick={this.handleClick.bind(this)}>
+                {this.props.title}
+            </a>
         )
     }
 }
