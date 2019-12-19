@@ -20,7 +20,7 @@ from .sms_client import SMSClient
 from .utils import report_data_preparation, lesson_course_grade, video_lesson_complited, all_problems_have_answer
 
 
-@periodic_task(run_every=crontab(minute='*/5'))
+@periodic_task(run_every=crontab(hour='15', minute='30'))
 def send_teacher_extended_reports():
     """
     Sends extended report for the teacher with all his courses and all his students
@@ -72,7 +72,7 @@ def send_teacher_extended_reports():
             send_mail(subject, txt_message, from_address, [instructor.user.email], html_message=html_message)
 
 
-@periodic_task(run_every=crontab(minute='*/5'))
+@periodic_task(run_every=crontab(hour='15', minute='30'))
 def send_extended_reports_by_deadline():
     """
     Sends an extended report to the student if the course deadline has expired in the last 24 hours
