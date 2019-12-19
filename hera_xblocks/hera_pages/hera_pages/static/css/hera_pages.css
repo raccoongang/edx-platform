@@ -1,0 +1,9 @@
+/* CSS for HeraPagesXBlock */
+
+.hera_pages_block .count {
+    font-weight: bold;
+}
+
+.hera_pages_block p {
+    cursor: pointer;
+}
