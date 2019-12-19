@@ -57,6 +57,17 @@ $nav_color6: #b3b4b4;
                 color: inherit;
                 background: $nav_color3;
             }
+
+            &:focus,
+            &:active,
+            &:visited {
+                outline: none
+            }
+
+            &.active {
+                color: inherit;
+                background: $nav_color3;
+            }
         }
     }
 
