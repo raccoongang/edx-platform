@@ -12,10 +12,23 @@ import Introduction from '../components/Introduction';
 import InteractiveSimulation from '../components/InteractiveSimulation';
 import Question from '../components/Question';
 import EndServey from '../components/EndSurvey';
+import SwitchComponent from '../components/SwitchComponent';
 
 import {addElement} from '../utils/api';
 
 import '../sass/main.scss';
+import Questions from './Questions';
+
+
+const ActiveComponentsMap = {
+    'Introduction': Introduction,
+    'Interactive Simulation': InteractiveSimulation,
+    'End Servey': EndServey,
+    'Title': Title,
+    'Questions': Questions,
+}
+
+const defaultActiveComponent = ActiveComponentsMap['Introduction'];
 
 
 export class TeacherTemplate extends React.Component{
@@ -24,9 +37,12 @@ export class TeacherTemplate extends React.Component{
         super(props);
         this.addSubsection = this.addSubsection.bind(this);
         this.handlerClick = this.handlerClick.bind(this);
+        this.switchComponent = this.switchComponent.bind(this);
+        this.closeBar = this.closeBar.bind(this);
 
         this.state = {
             showBar: false,
+            activeComponent: defaultActiveComponent
         };
     }
 
@@ -36,9 +52,9 @@ export class TeacherTemplate extends React.Component{
         });
     }
 
-    initTinyMCE() {
+    initTinyMCE(selector) {
         tinymce.init({
-            selector: '.title-xblock',
+            selector: selector,
             plugins: "table",
             init_instance_callback: function (editor) {
                 editor.on('change', function (e) {
@@ -55,17 +71,14 @@ export class TeacherTemplate extends React.Component{
             event.preventDefault();
             const rootElement = document.getElementById('hera-popup');
             rootElement.classList.add("popup-open");
-            this.initTinyMCE();
             this.addSubsection(target);
         }
     }
 
     closeBar() {
-        this.setState({
-            showBar: false
-        }, () => {
-            tinymce.remove('.title-xblock');
-        });
+        const rootElement = document.getElementById('hera-popup');
+        rootElement.classList.remove("popup-open");
+        tinymce.remove('.title-xblock');
     }
 
     componentDidMount() {
@@ -81,7 +94,15 @@ export class TeacherTemplate extends React.Component{
         },2000);
     }
 
+    switchComponent(title) {
+        console.log('title = ', title);
+        this.setState({
+            activeComponent: ActiveComponentsMap[title] || defaultActiveComponent
+        });
+    }
+
     render() {
+        const ActiveComponent = this.state.activeComponent;
         return (
             <div className="author-holder">
                 <div className="nav-panel">
@@ -89,58 +110,32 @@ export class TeacherTemplate extends React.Component{
                         <h3 className="nav-panel-title">Lesson Layer</h3>
                         <ul className="nav-panel-list">
                             <li className="nav-panel-list__item">
-                                <Title/>
+                                <SwitchComponent switchComponent={this.switchComponent} title="Title"/>
                             </li>
                             <li className="nav-panel-list__item">
-                                <Introduction/>
+                                <SwitchComponent switchComponent={this.switchComponent} title="Introduction"/>
                             </li>
                             <li className="nav-panel-list__item">
-                                <InteractiveSimulation/>
+                                <SwitchComponent switchComponent={this.switchComponent} title="Interactive Simulation"/>
                             </li>
                             <li className="nav-panel-list__item with-add-list">
-                                <div className="nav-panel-accrd">
-                                    <a href="#" className="nav-panel-accrd__link">
-                                        Questions
-                                    </a>
-                                </div>
-                                <ul className="nav-panel-questions-list nav-panel-accrd__content">
-                                    <li className="nav-panel-questions-list__item">
-                                        <Question/>
-                                    </li>
-                                </ul>
+                                <Questions switchComponent={this.switchComponent} questions={this.props.questions}/>
                             </li>
                             <li className="nav-panel-list__item">
-                                <EndServey/>
+                                <SwitchComponent switchComponent={this.switchComponent} title="End Servey"/>
                             </li>
                         </ul>
                         <div className="panel-btn-holder">
-                            <button type="button" className="panel-btn" onClick={this.closeBar.bind(this)}>save</button>
+                            <button type="button" className="panel-btn" onClick={this.closeBar}>save</button>
                         </div>
                     </div>
                 </div>
-
-                <div className="author-block__wrapper">
-                    <div className="author-block__content">
-                        <div className="author-block__image">
-                            <img src="https://d1icd6shlvmxi6.cloudfront.net/gsc/THB1PC/52/ec/b3/52ecb386d0d140898c3a931c5caaccba/images/scenario_page/u620.png?token=937ef3394f9bbd5177382de1fe4cbf677b95681186e42c8b44b00217fe8c6834" alt="/"/>
-                        </div>
-                        <div className="author-block__question">
-                            <div className="author-block__question-title">
-                                Hooke's Law
-                            </div>
-                            <div className="author-block__question-text">
-                                Imagine that you are standing on a cliff, and you've just been hooked up to a bungee cord. The instructor gives you a pat on the back and then it's time to jump. What will happen?
-                            </div>
-                        </div>
-                    </div>
-                    <div className="author-block__buttons">
-                        <button type="button" className="author-block__btn">
-                            Next
-                        </button>
-                    </div>
-                </div>
-
-                <button className="close-popup">&#2715;</button>
+                <ActiveComponent 
+                    initTinyMCE={this.initTinyMCE} 
+                    title={this.props.title}
+                    introduction={this.props.introduction}
+                    {...this.props}/>
+                <button className="close-popup" onClick={this.closeBar}>&#2715;</button>
             </div>
         );
     }
@@ -149,16 +144,18 @@ export class TeacherTemplate extends React.Component{
 
 const mapStateToProps = (store) => {
     return {
-        titleContent: store.title.content
-    }
-}
+        title: store.title,
+        introduction: store.introduction,
+        questions: store.questions.questions
+    };
+};
 
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         changeTitle: (content) => {
-            return dispatch({type: TITLE_CHANGED, content: content})
+            return dispatch({type: TITLE_CHANGED, content: content});
         }
-    }
-}
+    };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(TeacherTemplate);
