@@ -21,14 +21,20 @@ import Questions from './Questions';
 
 
 const ActiveComponentsMap = {
+    'Title': Title,
     'Introduction': Introduction,
     'Interactive Simulation': InteractiveSimulation,
+    'Question': Question,
     'End Servey': EndServey,
-    'Title': Title,
-    'Questions': Questions,
-}
+};
 
-const defaultActiveComponent = ActiveComponentsMap['Introduction'];
+const getComponentByTitle = (title) => {
+    if (title.includes('Question')) {
+        return ActiveComponentsMap['Question'];
+    } else {
+        return ActiveComponentsMap[title];
+    }
+}
 
 
 export class TeacherTemplate extends React.Component{
@@ -42,7 +48,7 @@ export class TeacherTemplate extends React.Component{
 
         this.state = {
             showBar: false,
-            activeComponent: defaultActiveComponent
+            activeComponent: 'Introduction'
         };
     }
 
@@ -95,14 +101,13 @@ export class TeacherTemplate extends React.Component{
     }
 
     switchComponent(title) {
-        console.log('title = ', title);
         this.setState({
-            activeComponent: ActiveComponentsMap[title] || defaultActiveComponent
+            activeComponent: title
         });
     }
 
     render() {
-        const ActiveComponent = this.state.activeComponent;
+        const ActiveComponent = getComponentByTitle(this.state.activeComponent);
         return (
             <div className="author-holder">
                 <div className="nav-panel">
@@ -110,19 +115,19 @@ export class TeacherTemplate extends React.Component{
                         <h3 className="nav-panel-title">Lesson Layer</h3>
                         <ul className="nav-panel-list">
                             <li className="nav-panel-list__item">
-                                <SwitchComponent switchComponent={this.switchComponent} title="Title"/>
+                                <SwitchComponent switchComponent={this.switchComponent} isActive={this.state.activeComponent === 'Title'} title="Title"/>
                             </li>
                             <li className="nav-panel-list__item">
-                                <SwitchComponent switchComponent={this.switchComponent} title="Introduction"/>
+                                <SwitchComponent switchComponent={this.switchComponent} isActive={this.state.activeComponent === 'Introduction'} title="Introduction"/>
                             </li>
                             <li className="nav-panel-list__item">
-                                <SwitchComponent switchComponent={this.switchComponent} title="Interactive Simulation"/>
+                                <SwitchComponent switchComponent={this.switchComponent} isActive={this.state.activeComponent === 'Interactive Simulation'} title="Interactive Simulation"/>
                             </li>
                             <li className="nav-panel-list__item with-add-list">
-                                <Questions switchComponent={this.switchComponent} questions={this.props.questions}/>
+                                <Questions activeComponent={this.state.activeComponent} switchComponent={this.switchComponent} questions={this.props.questions}/>
                             </li>
                             <li className="nav-panel-list__item">
-                                <SwitchComponent switchComponent={this.switchComponent} title="End Servey"/>
+                                <SwitchComponent switchComponent={this.switchComponent} isActive={this.state.activeComponent === 'End Servey'} title="End Servey"/>
                             </li>
                         </ul>
                         <div className="panel-btn-holder">

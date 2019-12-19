@@ -6,6 +6,12 @@ import SwitchComponent from '../components/SwitchComponent';
 export default class Questions extends React.Component{
 
     render() {
+        let activeQuestionIndex;
+        for (let i in this.props.questions) {
+            if (this.props.questions[i].title === this.props.activeComponent) {
+                activeQuestionIndex = i;
+            }
+        }
         return (
             <div>
                 <div className="nav-panel-accrd">
@@ -17,7 +23,7 @@ export default class Questions extends React.Component{
                     {this.props.questions.map((question, index) => {
                         return (
                             <li className="nav-panel-questions-list__item" key={index}>
-                                <SwitchComponent switchComponent={this.props.switchComponent} title={question.title}/>
+                                <SwitchComponent isActive={activeQuestionIndex == index} switchComponent={this.props.switchComponent} title={`Question${index+1}`}/>
                                 <span className="remove-item">
                                     <i className="fa fa-trash-o" aria-hidden="true"></i>
                                 </span>
