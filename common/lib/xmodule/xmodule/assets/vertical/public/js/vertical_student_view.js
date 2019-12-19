@@ -22,8 +22,9 @@ window.VerticalStudentView = function(runtime, element) {
     var updateForcedSeatingTime = function() {
         forcedSeatingTime --;
         $forcedSeatingTimerElement.text(getFormattedTime(forcedSeatingTime));
-        if (forcedSeatingTime === 0){
+        if (forcedSeatingTime <= 0){
             setSpendTime(true);
+            clearInterval(timerIdInterval);
         }
     };
 

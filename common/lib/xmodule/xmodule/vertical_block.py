@@ -118,7 +118,7 @@ class VerticalBlock(SequenceFields, XModuleFields, StudioEditableBlock, XmlParse
             'bookmarked': child_context['bookmarked'],
             'bookmark_id': u"{},{}".format(child_context['username'], unicode(self.location)),
             'forced_seating_time': self.forced_seating_time_left,
-            'forced_seating_timer_enabled': self.forced_seating_time > 0,
+            'forced_seating_timer_enabled': self.is_timer_enabled,
             'is_seating_time_finished': self.is_seating_time_finished,
             'ping_timedelta': self.ping_timedelta,
         }))
@@ -223,10 +223,14 @@ class VerticalBlock(SequenceFields, XModuleFields, StudioEditableBlock, XmlParse
         return xblock_body
 
     @property
+    def is_timer_enabled(self):
+        return self.forced_seating_time is not None and self.forced_seating_time > 0
+
+    @property
     def forced_seating_time_left(self):
         time_left = 0
 
-        if not self.is_seating_time_finished:
+        if self.is_timer_enabled and not self.is_seating_time_finished:
             time_left = self.forced_seating_time - self.actual_seating_time
             if time_left <= 0:
                 self.is_seating_time_finished = True
