@@ -13,7 +13,7 @@ define(['jquery', 'underscore', 'backbone', 'gettext', 'js/utils/handle_iframe_b
 
         var BaseView = Backbone.View.extend({
             events: {
-                'click .ui-toggle-expansion': 'toggleExpandCollapse'
+                'click .ui-toggle-expansion span.icon.fa-caret-down': 'toggleExpandCollapse'
             },
 
             options: {

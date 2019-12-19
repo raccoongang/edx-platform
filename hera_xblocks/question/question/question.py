@@ -91,6 +91,10 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         frag.add_javascript(self.resource_string("static/js/src/question.js"))
         frag.initialize_js('QuestionXBlock')
         return frag
+    
+    @XBlock.json_handler
+    def get_data(self, somedata, sufix=''):
+        return self.data
 
     @XBlock.json_handler
     def submit(self, answer, suffix=''):
