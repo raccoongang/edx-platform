@@ -51,6 +51,8 @@ $nav_color6: #b3b4b4;
             display: block;
             padding: 6px 35px;
             transition: background .3s ease-in-out;
+            font-size: 16px;
+            cursor: pointer;
 
             &:hover {
                 color: $nav_color4;
@@ -85,7 +87,22 @@ $nav_color6: #b3b4b4;
     }
 
     &-accrd {
+        overflow: hidden;
+
+        input {
+            position: absolute;
+            opacity: 0;
+            z-index: -1;
+
+            &:checked ~ .nav-panel-accrd__content {
+                max-height: 100vh;
+            }
+        }
+
         &__content {
+            max-height: 0;
+            transition: all .3s;
+
             .nav-panel-questions-list__item {
                 position: relative;
 
@@ -150,6 +167,8 @@ $nav_color6: #b3b4b4;
             display: block;
             padding: 6px 35px;
             transition: background .3s ease-in-out;
+            font-size: 16px;
+            cursor: pointer;
 
             &:hover {
                 color: $nav_color4;
