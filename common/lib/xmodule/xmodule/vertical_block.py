@@ -75,7 +75,7 @@ class VerticalBlock(SequenceFields, XModuleFields, StudioEditableBlock, XmlParse
 
     show_in_read_only_mode = True
 
-    ping_timedelta = 30000  # 30 seconds
+    ping_timedelta = 30  # seconds
 
     def student_view(self, context):
         """
@@ -120,7 +120,7 @@ class VerticalBlock(SequenceFields, XModuleFields, StudioEditableBlock, XmlParse
             'forced_seating_time': self.forced_seating_time_left,
             'forced_seating_timer_enabled': self.is_timer_enabled,
             'is_seating_time_finished': self.is_seating_time_finished,
-            'ping_timedelta': self.ping_timedelta,
+            'ping_timedelta': self.ping_timedelta * 1000,
         }))
 
         fragment.add_javascript_url(self.runtime.local_resource_url(self, 'public/js/vertical_student_view.js'))
