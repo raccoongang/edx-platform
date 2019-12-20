@@ -4,8 +4,11 @@ import pkg_resources
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
 from xblock.fields import JSONField
+from xblockutils.resources import ResourceLoader
 from xblockutils.studio_editable import StudioEditableXBlockMixin
 
+
+loader = ResourceLoader(__name__)
 
 class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     """
@@ -64,14 +67,33 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         data = pkg_resources.resource_string(__name__, path)
         return data.decode("utf8")
 
+    def get_context(self):
+        return {
+            "img_url": self.img_url,
+            "iframe_url": self.iframe_url,
+            "description": self.description,
+            "confidence_text": self.confidence_text,
+            "options": self.options
+        }
+
     def student_view(self, context=None):
         """
         The primary view of the QuestionXBlock, shown to students
         when viewing courses.
         """
-        html = self.resource_string("static/html/question.html")
+        html = loader.render_django_template(
+            'static/html/question.html',
+            context=self.get_context()
+        )
         frag = Fragment(html.format(self=self))
         frag.add_css(self.resource_string("static/css/question.css"))
+        frag.add_javascript_url("https://cdn.jsdelivr.net/gh/vast-engineering/jquery-popup-overlay@2/jquery.popupoverlay.min.js")
         frag.add_javascript(self.resource_string("static/js/src/question.js"))
         frag.initialize_js('QuestionXBlock')
         return frag
+
+    @XBlock.json_handler
+    def submit(self, answer, suffix=''):
+        correct_answers = [ option["title"] for option in self.options if option["correct"]==True ]
+        print(answer, correct_answers)
+        return True if answer in correct_answers else False
