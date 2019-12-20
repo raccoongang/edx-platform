@@ -22,9 +22,6 @@ window.VerticalStudentView = function(runtime, element) {
     var updateForcedSeatingTime = function() {
         forcedSeatingTime --;
         $forcedSeatingTimerElement.text(getFormattedTime(forcedSeatingTime));
-        if (forcedSeatingTime <= 0){
-            setSpendTime();
-        }
     };
 
     function setSpendTime(pageClose=false) {
@@ -51,6 +48,9 @@ window.VerticalStudentView = function(runtime, element) {
                     forcedSeatingTime = forcedSeatingTimeLeft;
                     clearInterval(timerIdInterval);
                     timerIdInterval = setInterval(updateForcedSeatingTime, 1000);
+                    if (forcedSeatingTime * 1000 < pingTimedelta) {
+                        pingTimedelta = forcedSeatingTime * 1000;
+                    }
                     pingIdInterval = setTimeout(setSpendTime, pingTimedelta);
                     updateForcedSeatingTime();
                 }
@@ -65,7 +65,6 @@ window.VerticalStudentView = function(runtime, element) {
 
     if ($forcedSeatingTimerElement.length) {
         $('.sequence').on('sequence:change', onSequenceChange);
-
         window.addEventListener('beforeunload', function() { setSpendTime(true) });
         pingIdInterval = setTimeout(setSpendTime, pingTimedelta);
         setSpendTime();
