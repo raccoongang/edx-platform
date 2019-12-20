@@ -147,6 +147,13 @@ def update_account_settings(requesting_user, update, username=None):
         changing_full_name = True
         old_name = existing_user_profile.name
 
+    date_of_birth = update.get("date_of_birth")
+
+    if date_of_birth is not None and len(date_of_birth):
+        update['year_of_birth'] = datetime.datetime.strptime(update.get("date_of_birth"), '%Y-%m-%d').year
+    else:
+        update['date_of_birth'] = None
+
     # Check for fields that are not editable. Marking them read-only causes them to be ignored, but we wish to 400.
     read_only_fields = set(update.keys()).intersection(
         AccountUserSerializer.get_read_only_fields() + AccountLegacyProfileSerializer.get_read_only_fields()
@@ -791,6 +798,7 @@ def get_position_settings(request):
         'selected_position': position.id if position.parent is None else position.parent.id,
         'sub_positions': sub_position.children.values_list('id', 'name'),
         'selected_sub_position': position.id if position.parent is not None else None,
+        'has_diploma': position.has_diploma,
     })
 
     if position.has_specialization:
@@ -798,6 +806,9 @@ def get_position_settings(request):
             'specialization': Specialization.objects.values_list('id', 'name'),
             'selected_specializations': user_profile.specialization.values_list('id', flat=True)
         })
+
+    if position.has_diploma:
+        data.update({'diploma_number': user_profile.diploma_number})
 
     return data
 
@@ -812,6 +823,7 @@ def update_position_settings(request):
     position = data.get('position')
     other_position = data.get('other_position')
     specialization = data.get('specialization')
+    diploma_id = data.get('diploma_id')
 
     user = UserProfile.objects.get(user=request.user)
 
@@ -823,18 +835,21 @@ def update_position_settings(request):
             user.specialization.clear()
             if position.has_specialization:
                 user.specialization.add(*specialization)
+    else:
+        user.position = None
 
     if other_position and len(other_position) > 255:
         raise AccountValidationError({
             "field_errors": {
                 "other_position": {
                     "developer_message": "Value is not valid for field other_position",
-                    'first_name': [u'Ensure this value has at most 30 characters.'],
+                    'other_position': [u'Ensure this value has at most 30 characters.'],
                     "user_message": "This value is invalid.",
                 }
             }
         })
 
+    user.diploma_number = diploma_id
     user.other_position = other_position
     user.save()
 

@@ -133,12 +133,15 @@ username = get_enterprise_learner_generic_name(request) or student.username
                                 <p class="copy">${certificate_data.msg}</p>
                             </div>
                             <div class="msg-actions">
-                                %if certificate_data.cert_web_view_url:
-                                <a class="btn" href="${certificate_data.cert_web_view_url}" target="_blank">${_("View Certificate")} <span class="sr">${_("Opens in a new browser window")}</span></a>
-                                %elif certificate_data.cert_status == CertificateStatuses.downloadable and certificate_data.download_url:
-                                <a class="btn" href="${certificate_data.download_url}" target="_blank">${_("Download Your Certificate")} <span class="sr">${_("Opens in a new browser window")}</span></a>
-                                %elif certificate_data.cert_status == CertificateStatuses.requesting:
-                                <button class="btn generate_certs ${'hidden' if not can_request_certificate else ''}" data-endpoint="${post_url}" id="btn_generate_cert">${_('Request Certificate')}</button>
+                                <div id="certificate-actions" class="${'hidden' if not can_request_certificate else ''}">
+                                    %if certificate_data.cert_web_view_url:
+                                    <a class="btn" href="${certificate_data.cert_web_view_url}" target="_blank">${_("View Certificate")} <span class="sr">${_("Opens in a new browser window")}</span></a>
+                                    %elif certificate_data.cert_status == CertificateStatuses.downloadable and certificate_data.download_url:
+                                    <a class="btn" href="${certificate_data.download_url}" target="_blank">${_("Download Your Certificate")} <span class="sr">${_("Opens in a new browser window")}</span></a>
+                                    %elif certificate_data.cert_status == CertificateStatuses.requesting:
+                                    <button class="btn generate_certs" data-endpoint="${post_url}" id="btn_generate_cert">${_('Request Certificate')}</button>
+                                    %endif
+                                </div>
                                 %if not can_request_certificate:
                                 <button id="modal-button" type="button" class="btn btn-primary" data-popup=".progress-form-modal">${_('Update profile info and Request Certificate')}</button>
                                 %endif

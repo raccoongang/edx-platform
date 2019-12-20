@@ -11,6 +11,7 @@ import pytz
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import Http404, HttpResponse
+from django.shortcuts import redirect
 from django.template import RequestContext
 from django.utils.encoding import smart_str
 from django.utils import translation
@@ -503,7 +504,7 @@ def render_html_view(request, user_id, course_id):
     # Load the course and user objects
     try:
         course_key = CourseKey.from_string(course_id)
-        user = User.objects.get(id=user_id)
+        user = User.objects.select_related('profile').get(id=user_id)
         course = get_course_by_id(course_key)
 
     # For any course or user exceptions, kick the user back to the "Invalid" screen
@@ -514,6 +515,20 @@ def render_html_view(request, user_id, course_id):
         )
         log.info(error_str, course_id, user_id, str(exception))
         return _render_invalid_certificate(course_id, platform_name, configuration)
+
+    profile = user.profile
+
+    can_request_certificate = all([
+        user.first_name,
+        user.last_name,
+        profile.second_name,
+        profile.phone,
+        profile.year_of_birth,
+        profile.position
+    ])
+
+    if not can_request_certificate:
+        return redirect('progress', course_key)
 
     # Kick the user back to the "Invalid" screen if the feature is disabled for the course
     if not course.cert_html_view_enabled:

@@ -16,7 +16,7 @@ import logging
 import six
 import uuid
 from collections import OrderedDict, defaultdict, namedtuple
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from functools import total_ordering
 from importlib import import_module
 from urllib import urlencode
@@ -86,6 +86,7 @@ class Position(models.Model):
     name = models.CharField(null=True, blank=True, max_length=120)
     parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
     has_specialization = models.BooleanField(default=False)
+    has_diploma = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name.encode('utf-8')
@@ -351,6 +352,12 @@ class UserStanding(models.Model):
     standing_last_changed_at = models.DateTimeField(auto_now=True)
 
 
+def validate_date_of_birth(value):
+    if value is not None:
+        if value > date.today():
+            raise ValueError("Date of birth should be in past")
+
+
 class UserProfile(models.Model):
     """This is where we store all the user demographic fields. We have a
     separate table for this rather than extending the built-in Django auth_user.
@@ -434,7 +441,7 @@ class UserProfile(models.Model):
     phone = models.CharField(max_length=20, null=True, blank=True)
     second_name = models.CharField(max_length=100, null=True, blank=True)
     additional_email = models.EmailField(max_length=255, null=True, blank=True)
-    date_of_birth = models.DateField(blank=True, null=True, db_index=True)
+    date_of_birth = models.DateField(blank=True, null=True, db_index=True, validators=[validate_date_of_birth])
 
     REGION_CHOICES = [(region[0], _(region[1])) for region in getattr(settings, 'REGIONS', [])]
     region = models.CharField(max_length=255, null=True, blank=True, choices=REGION_CHOICES)
@@ -442,6 +449,7 @@ class UserProfile(models.Model):
     other_position = models.CharField(max_length=255, null=True, blank=True)
 
     specialization = models.ManyToManyField(Specialization, blank=True)
+    diploma_number = models.CharField(max_length=11, blank=True, null=True)
 
     @property
     def has_profile_image(self):
