@@ -31,7 +31,7 @@ class HeraPagesXBlock(StudioEditableXBlockMixin, XBlock):
         return self.data.get("iframeUrl")
 
     @property
-    def slide_bar(self):
+    def slider_bar(self):
         """return html content for the slide bar in pages"""
         return self.data.get("sliderBar")
 
