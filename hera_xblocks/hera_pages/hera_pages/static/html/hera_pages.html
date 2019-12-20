@@ -1,3 +1,16 @@
 <div class="hera_pages_block">
-<p>HeraPagesXBlock</p>
+    <p>HeraPagesXBlock</p>
+        
+    <div class="wrapper">
+        <div class="image-wrapper">
+            <img src="{{ data.imgUrl }}" alt=""/>
+        </div>
+        <div class="slidebar-wrapper">
+            {% for i in  data.sliderBar %}
+            <div class="single-item">{{ i.content|safe }}</div>
+            {% endfor %}
+        </div>
+    </div>
 </div>
+
+

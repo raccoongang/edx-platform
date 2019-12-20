@@ -7,3 +7,17 @@
 .hera_pages_block p {
     cursor: pointer;
 }
+
+.wrapper {
+    width: 100%;
+}
+
+.image-wrapper {
+    width: 60%;
+    float: left;
+}
+
+.slidebar-wrapper {
+    float:left;
+    width:40%
+}
