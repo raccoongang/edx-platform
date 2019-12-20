@@ -1,13 +1,20 @@
-<div class="question_block">
-<p>{self.img_url}</p>
-<p>{self.iframe_url}</p>
-<p>{self.description}</p>
-<p>{self.options}</p>
-<p>{self.user_confidence}</p>
-<p>{self.confidence_text}</p>
-<p>{self.correct_answer_text}</p>
-<p>{self.incorrect_answer_text}</p>
-<p>{self.rephrase}</p>
-<p>{self.break_down}</p>
-<p>{self.teach_me}</p>
+<div class="author-block__wrapper">
+    <div class="author-block__content">
+        <div class="author-block__image">
+            <img src="{{img_url}}" alt="">
+            <button type="button" class="iframe_open">iframe</button>
+        </div>
+        <div class="author-block__question">
+        {{description|safe}}
+        <form id="question">
+        {% for option in options %}
+            <p><input type="radio" name="answer" value="{{option.title}}"> {{option.title}} </option><p>
+        {% endfor %}
+        </form>
+        </div>
+    </div>
+    <div class="author-block__buttons"><button type="button" class="author-block__btn" id="submit">Submit</button></div>
+    <div id="iframe">
+        <iframe src="{{iframe_url}}" style="display: block; width: 600px; height: 600px;"></iframe>
+    </div>
 </div>
