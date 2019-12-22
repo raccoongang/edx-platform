@@ -1,11 +1,12 @@
 /* CSS for HeraPagesXBlock */
+.hera_pages_block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
 
 .hera_pages_block .count {
     font-weight: bold;
-}
-
-.hera_pages_block p {
-    cursor: pointer;
 }
 
 .wrapper {
@@ -21,4 +22,8 @@
 .slidebar-wrapper {
     /* float:left; */
     width:600px;
+}
+.column {
+    float: left;
+    width: 33%;
 }
