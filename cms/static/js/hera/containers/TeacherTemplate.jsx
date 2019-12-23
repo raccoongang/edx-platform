@@ -112,10 +112,13 @@ export class TeacherTemplate extends React.Component{
             };
           }
         if (introductionData.xBlockID) { // if xBlockID is located we assume all data are being edited
-            saveIntroductionXBlockData(introductionData.xBlockID, introductionData);
-            saveIntroductionXBlockData(simulationData.xBlockID, simulationData);
-            this.closeBar();
-            window.location.reload();
+            saveIntroductionXBlockData(introductionData.xBlockID, introductionData).then(sleeper()).then(()=>{
+                saveIntroductionXBlockData(simulationData.xBlockID, simulationData).then(()=>{
+                    this.closeBar();
+                    window.location.reload();
+                });
+            });
+
         } else {
             addSubsection(subsectionData.parentLocator, subsectionData.category, subsectionData.displayName).then(sleeper()).then(response=>{
                 const subsectionLocator = response.data.locator;
