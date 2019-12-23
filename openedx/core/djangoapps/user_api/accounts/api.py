@@ -152,7 +152,7 @@ def update_account_settings(requesting_user, update, username=None):
     if date_of_birth is not None and len(date_of_birth):
         update_date = datetime.datetime.strptime(update.get("date_of_birth"), '%Y-%m-%d')
 
-        if update_date > datetime.date.today():
+        if update_date.date() > datetime.date.today():
             raise AccountValidationError({
                 "field_errors": {
                     "date_of_birth": {
