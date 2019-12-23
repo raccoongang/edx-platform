@@ -1,7 +1,7 @@
 /* Javascript for HeraPagesXBlock. */
 function HeraPagesXBlock(runtime, element) {
     var isFormValid;
-    
+    $('#slider-popup').popup();
     $('.slidebar-wrapper').slick({
         slidesToShow: 1,
         slidesToScroll: 1,
@@ -20,7 +20,7 @@ function HeraPagesXBlock(runtime, element) {
     $(".button-next").click((e) => {
         if(shouldShowMessage && !isFormValid()) {
             shouldShowMessage = false;
-            alert('Fill up al the fields');
+            $('#slider-popup').popup('show')
         } else {
             $(".slick-next").trigger("click")
         }

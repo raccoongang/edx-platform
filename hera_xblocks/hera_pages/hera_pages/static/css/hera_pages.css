@@ -23,7 +23,29 @@
     /* float:left; */
     width:600px;
 }
+
 .column {
     float: left;
     width: 33%;
 }
+
+.popup_content {
+    margin: 10px;
+    padding: 0 10px;
+    max-width: 60%;
+    border: 2px solid #444;
+    background: white;
+  }
+  
+  .instructor-info-action {
+      visibility: hidden;
+  }
+  
+  .bookmark-button {
+    visibility: hidden;
+  }
+  
+.slick-arrow {
+    visibility: hidden;
+}
+  
