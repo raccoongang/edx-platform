@@ -1,10 +1,12 @@
 <div class="hera_pages_block">
-    <div class="wrapper">
+    <div class="wrapper-page">
         <div class="image-wrapper">
         {% if data.imgUrl %}
             <img src="{{ data.imgUrl }}" alt=""/>
+        {% elif data.iframeUrl %}
+            <iframe src="{{ data.iframeUrl }}">
         {% else %}
-            <img src="{{ data.iframeUrl }}" alt=""/>
+            <img alt="Unfortunately no image"/>
         {% endif %}
         </div>
         <div class="slidebar-wrapper">
