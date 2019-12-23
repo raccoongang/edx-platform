@@ -132,7 +132,24 @@ export const saveIntroductionXBlockData = (locator, data) => {
 //     teachMe: : {
 //         imgUrl: "link",
 //         content: "html content"
+//     },
+//     question: {
+//         questionType: '', // ['radio', 'checkbox', 'select', 'number', 'text']
+//         // 'radio', 'checkbox', 'select'
+//         options: [
+//             {
+//                 correct: true/false,
+//                 title: "title text" // assume this will be the unique identificator
+//             },
+//             {
+//                 correct: true/false,
+//                 title: "title text" // assume this will be the unique identificator
+//             }
+//         ],
+//         answer: text/number,
+//         preciseness: text // +-5, +-0.001, +-0.1% 
 //     }
+
 // }
 
 // {
