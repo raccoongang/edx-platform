@@ -15,8 +15,8 @@ const SimulationReducer = function(state=initialState, action) {
             let {index} = action.data;
             return {
                 blockType: 'simulation',
-                imgUrl: state.imgUrl,
-                iframeUrl: state.iframeUrl,
+                imgUrl: action.data.imgUrl,
+                iframeUrl: action.data.iframeUrl,
                 sliderBar: state.sliderBar.map((slide, ind) => {
                     if (ind === index) {
                         return {
