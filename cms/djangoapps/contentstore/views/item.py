@@ -1031,7 +1031,8 @@ def _get_module_info(xblock, rewrite_static_links=True, include_ancestor_info=Fa
 
         # Note that children aren't being returned until we have a use case.
         xblock_info = create_xblock_info(
-            xblock, data=data, metadata=own_metadata(xblock), include_ancestor_info=include_ancestor_info
+            xblock, data=data, metadata=own_metadata(xblock), include_ancestor_info=include_ancestor_info, include_child_info=True,
+            include_children_predicate=ALWAYS,
         )
         if include_publishing_info:
             add_container_page_publishing_info(xblock, xblock_info)

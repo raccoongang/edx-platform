@@ -6,6 +6,7 @@ import store from './store/store';
 
 import TeacherTemplate from './containers/TeacherTemplate';
 
+
 export class HeraApp extends React.Component{
     render() {
         return (

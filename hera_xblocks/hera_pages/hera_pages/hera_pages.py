@@ -39,6 +39,10 @@ class HeraPagesXBlock(StudioEditableXBlockMixin, XBlock):
         """Handy helper for getting resources from our kit."""
         data = pkg_resources.resource_string(__name__, path)
         return data.decode("utf8")
+    
+    @XBlock.json_handler
+    def get_data(self, somedata, sufix=''):
+        return self.data
 
     # TO-DO: change this view to display your data your own way.
     def student_view(self, context=None):

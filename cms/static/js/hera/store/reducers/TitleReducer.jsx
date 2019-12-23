@@ -6,7 +6,6 @@ const initialState = {
 };
 
 const TitleReducer = function(state=initialState, action) {
-    console.log(action);
     switch(action.type) {
         case TITLE_CHANGED:
             return Object.assign({}, state, {
