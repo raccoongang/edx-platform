@@ -16,7 +16,7 @@ import logging
 import six
 import uuid
 from collections import OrderedDict, defaultdict, namedtuple
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 from functools import total_ordering
 from importlib import import_module
 from urllib import urlencode
@@ -65,6 +65,7 @@ from openedx.core.djangoapps.request_cache import clear_cache, get_cache
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.xmodule_django.models import NoneToEmptyManager
 from openedx.core.djangolib.model_mixins import DeletableByUserValue
+from student.validators import validate_date_of_birth
 from track import contexts
 from util.milestones_helpers import is_entrance_exams_enabled
 from util.model_utils import emit_field_changed_events, get_changed_fields_dict
@@ -350,12 +351,6 @@ class UserStanding(models.Model):
     )
     changed_by = models.ForeignKey(User, blank=True, on_delete=models.CASCADE)
     standing_last_changed_at = models.DateTimeField(auto_now=True)
-
-
-def validate_date_of_birth(value):
-    if value is not None:
-        if value > date.today():
-            raise ValueError("Date of birth should be in past")
 
 
 class UserProfile(models.Model):

@@ -150,9 +150,19 @@ def update_account_settings(requesting_user, update, username=None):
     date_of_birth = update.get("date_of_birth")
 
     if date_of_birth is not None and len(date_of_birth):
+
         update['year_of_birth'] = datetime.datetime.strptime(update.get("date_of_birth"), '%Y-%m-%d').year
-    else:
-        update['date_of_birth'] = None
+
+    if update.get("phone") is not None and "_" in update.get("phone"):
+        raise AccountValidationError({
+            "field_errors": {
+                "phone": {
+                    "developer_message": "Value is not valid for field phone",
+                    'phone': [u'The phone field should contain only numbers and brackets.'],
+                    "user_message": "This value is invalid.",
+                }
+            }
+        })
 
     # Check for fields that are not editable. Marking them read-only causes them to be ignored, but we wish to 400.
     read_only_fields = set(update.keys()).intersection(
