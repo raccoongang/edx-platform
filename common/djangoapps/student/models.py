@@ -86,6 +86,7 @@ class Position(models.Model):
     name = models.CharField(null=True, blank=True, max_length=120)
     parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
     has_specialization = models.BooleanField(default=False)
+    has_diploma = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name.encode('utf-8')
@@ -442,6 +443,7 @@ class UserProfile(models.Model):
     other_position = models.CharField(max_length=255, null=True, blank=True)
 
     specialization = models.ManyToManyField(Specialization, blank=True)
+    diploma_number = models.CharField(max_length=11, blank=True, null=True)
 
     @property
     def has_profile_image(self):

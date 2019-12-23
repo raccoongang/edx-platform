@@ -719,10 +719,11 @@
 
             saveFieldsValues: function() {
                 if (this.persistChanges === true) {
-                    var valueOtherPosition = this.$('#field-input-' + this.model.cid).val(),
+                    var valueOtherPosition = this.$('#field-input-other-position' + this.model.cid).val(),
                         valuePosition = this.$('#u-field-select-' + this.model.cid).val(),
                         valueSubPosition = this.$('#u-field-select-sub-' + this.model.cid).val(),
-                        valueSpecialization = this.$('#u-field-select-spec-' + this.model.cid).val();
+                        valueSpecialization = this.$('#u-field-select-spec-' + this.model.cid).val(),
+                        valueDiplomaNumber = this.$('#field-input-diploma-number').val();
 
                     var view = this;
                     var options = {
@@ -736,7 +737,11 @@
                         }
                     };
 
-                    var postData = {other_position: valueOtherPosition, specialization: valueSpecialization};
+                    var postData = {
+                        other_position: valueOtherPosition,
+                        specialization: valueSpecialization,
+                        diploma_id: valueDiplomaNumber
+                    };
 
                     postData.position = (
                         valuePosition != this.model.get('selected_position') ? valuePosition : valueSubPosition
@@ -761,6 +766,8 @@
                     selectedSpecializations: this.model.get('selected_specializations'),
                     helpMessageSubPosition: this.options.helpMessageSubPosition,
                     helpMessageSpecialization: this.options.helpMessageSpecialization,
+                    hasDiploma: this.model.get('has_diploma'),
+                    diplomaNumber: this.model.get('diploma_number'),
                 }));
                 this.$('select[multiple]').select2();
                 this.delegateEvents();

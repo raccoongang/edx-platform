@@ -158,7 +158,9 @@ class UserReadOnlySerializer(serializers.Serializer):
                     "second_name": user_profile.second_name,
                     "additional_email": user_profile.additional_email,
                     "region": user_profile.region,
-                    "date_of_birth": user_profile.date_of_birth,
+                    "date_of_birth": user_profile.date_of_birth.strftime(
+                        "%Y-%m-%d"
+                    ) if user_profile.date_of_birth is not None else None,
                 }
             )
 

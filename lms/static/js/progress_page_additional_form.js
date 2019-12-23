@@ -49,7 +49,7 @@ $("#profile-form-save-action").on("click", function (e) {
                 $(".progress-form-modal").first().removeClass("show").fadeOut();
                 $("body").removeClass("not-scrollable");
                 $("#modal-button").hide();
-                $("#btn_generate_cert").removeAttr("hidden");
+                $("#certificate-actions").removeClass("hidden");
             },
             error: function (xhr) {
                 let errors = JSON.parse(xhr.responseText);

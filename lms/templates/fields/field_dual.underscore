@@ -45,6 +45,19 @@
         </div>
     <% } %>
 
+    <% if (hasDiploma) { %>
+        <div class="u-field u-field-text u-field-<%- id %> editable-always mode-edit">
+        <div class="u-field-value field">
+            <label class="u-field-title field-label" for="u-field-select-<%- id %>">Diploma ID</label>
+            <input class="field-input input-text" maxlength="11" type="text" id="field-input-diploma-number" title="Put your diploma number" aria-describedby="u-field-message-help-diploma-number" name="input" value="<%- diplomaNumber %>" />
+        </div>
+        <div class="u-field-message u-field-message__custom" id="u-field-message-<%- id %>">
+            <span class="u-field-message-notification" aria-live="polite"></span>
+            <span class="u-field-message-help" id="u-field-help-message-<%- id %>">Write your diploma number.</span>
+        </div>
+        </div>
+    <% } %>
+
 <% } else { %>
     <div class="u-field u-field-text u-field-<%- id %> editable-always mode-edit">
     <div class="u-field-value field">
