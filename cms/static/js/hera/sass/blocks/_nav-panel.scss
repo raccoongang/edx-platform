@@ -97,6 +97,14 @@ $nav_color6: #b3b4b4;
             &:checked ~ .nav-panel-accrd__content {
                 max-height: 100vh;
             }
+
+            &:checked {
+                + .nav-panel-accrd__link {
+                    &:after {
+                        transform: translateY(-50%) rotate(-90deg);
+                    }
+                }
+            }
         }
 
         &__content {
@@ -169,10 +177,23 @@ $nav_color6: #b3b4b4;
             transition: background .3s ease-in-out;
             font-size: 16px;
             cursor: pointer;
+            position: relative;
 
             &:hover {
                 color: $nav_color4;
                 background: $nav_color3;
+            }
+
+            &::after {
+                content: "\276F";
+                width: 1em;
+                height: 1em;
+                text-align: center;
+                transition: all .35s;
+                position: absolute;
+                right: 12px;
+                top: 50%;
+                transform: translateY(-50%) rotate(90deg);
             }
         }
     }
