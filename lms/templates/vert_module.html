@@ -8,7 +8,12 @@
     <%include file='bookmark_button.html' args="bookmark_id=bookmark_id, is_bookmarked=bookmarked"/>
 % endif
 
-<div class="vert-mod">
+% if forced_seating_time and not is_seating_time_finished:
+  <div class="forced-seating-timer" data-ping-timedelta="${ping_timedelta}"></div>
+% endif
+
+<div class="vert-mod ${'forced-seating-timer-enabled' if forced_seating_timer_enabled else ''}
+            ${'is-seating-time-finished' if is_seating_time_finished else ''}">
 % for idx, item in enumerate(items):
   <div class="vert vert-${idx}" data-id="${item['id']}">
     ${HTML(item['content'])}

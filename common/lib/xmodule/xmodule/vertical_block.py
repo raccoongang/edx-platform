@@ -1,11 +1,16 @@
 """
 VerticalBlock - an XBlock which renders its children in a column.
 """
+from datetime import datetime
+
+import json
 import logging
 from copy import copy
 
 from lxml import etree
+from webob import Response
 from xblock.core import XBlock
+from xblock.fields import Integer, Scope, DateTime, Boolean
 from xblock.fragment import Fragment
 
 from xmodule.mako_module import MakoTemplateBlockBase
@@ -14,6 +19,7 @@ from xmodule.seq_module import SequenceFields
 from xmodule.studio_editable import StudioEditableBlock
 from xmodule.x_module import STUDENT_VIEW, XModuleFields
 from xmodule.xml_module import XmlParserMixin
+from pytz import utc
 
 log = logging.getLogger(__name__)
 
@@ -21,12 +27,44 @@ log = logging.getLogger(__name__)
 # OBSOLETE: This obsoletes 'type'
 CLASS_PRIORITY = ['video', 'problem']
 
+# Make '_' a no-op so we can scrape strings. Using lambda instead of
+#  `django.utils.translation.ugettext_noop` because Django cannot be imported in this file
+_ = lambda text: text
+
 
 @XBlock.needs('user', 'bookmarks')
 class VerticalBlock(SequenceFields, XModuleFields, StudioEditableBlock, XmlParserMixin, MakoTemplateBlockBase, XBlock):
     """
     Layout XBlock for rendering subblocks vertically.
     """
+
+    forced_seating_time = Integer(
+        display_name=_("Forced seating"),
+        help=_("Please, determine the amount of seconds while the students must stay on the page."),
+        default=0,
+        scope=Scope.settings
+    )
+
+    actual_seating_time = Integer(
+        display_name=_("Actual seating time"),
+        help=_("Actual Seating Time at the Unit."),
+        default=0,
+        scope=Scope.user_state
+    )
+
+    check_last_ping = DateTime(
+        display_name=_("Last Ping Time"),
+        help=_("Last Ping Time."),
+        default=None,
+        scope=Scope.user_state
+    )
+
+    is_seating_time_finished = Boolean(
+        display_name=_("Forced seating time finished or not."),
+        help=_("Forced seating time finished or not."),
+        default=False,
+        scope=Scope.user_state
+    )
 
     resources_dir = 'assets/vertical'
 
@@ -36,6 +74,8 @@ class VerticalBlock(SequenceFields, XModuleFields, StudioEditableBlock, XmlParse
     has_children = True
 
     show_in_read_only_mode = True
+
+    ping_timedelta = 30  # seconds
 
     def student_view(self, context):
         """
@@ -76,7 +116,11 @@ class VerticalBlock(SequenceFields, XModuleFields, StudioEditableBlock, XmlParse
             'unit_title': self.display_name_with_default if not is_child_of_vertical else None,
             'show_bookmark_button': child_context.get('show_bookmark_button', not is_child_of_vertical),
             'bookmarked': child_context['bookmarked'],
-            'bookmark_id': u"{},{}".format(child_context['username'], unicode(self.location))
+            'bookmark_id': u"{},{}".format(child_context['username'], unicode(self.location)),
+            'forced_seating_time': self.forced_seating_time_left,
+            'forced_seating_timer_enabled': self.is_timer_enabled,
+            'is_seating_time_finished': self.is_seating_time_finished,
+            'ping_timedelta': self.ping_timedelta * 1000,
         }))
 
         fragment.add_javascript_url(self.runtime.local_resource_url(self, 'public/js/vertical_student_view.js'))
@@ -177,3 +221,43 @@ class VerticalBlock(SequenceFields, XModuleFields, StudioEditableBlock, XmlParse
         xblock_body["content_type"] = "Sequence"
 
         return xblock_body
+
+    @property
+    def is_timer_enabled(self):
+        return self.forced_seating_time is not None and self.forced_seating_time > 0
+
+    @property
+    def forced_seating_time_left(self):
+        time_left = 0
+
+        if self.is_timer_enabled and not self.is_seating_time_finished:
+            time_left = self.forced_seating_time - self.actual_seating_time
+            if time_left <= 0:
+                self.is_seating_time_finished = True
+                time_left = 0
+
+        return time_left
+
+    @XBlock.handler
+    def set_seating_time(self, request, suffix=''):
+        context = {}
+        now = datetime.now(utc)
+        page_close = json.loads(request.POST.get('page_close'))
+        if not self.is_seating_time_finished:
+
+            if self.check_last_ping is not None:
+                timedelta_spent_time = (now - self.check_last_ping).seconds
+                if timedelta_spent_time <= self.ping_timedelta * 2:
+                    actual_seating_time = self.actual_seating_time + timedelta_spent_time
+                    self.actual_seating_time = actual_seating_time
+
+            if self.actual_seating_time >= self.forced_seating_time:
+                self.is_seating_time_finished = True
+
+            self.check_last_ping = None if page_close else now
+
+            if not page_close:
+                context['forced_seating_time_left'] = self.forced_seating_time_left
+
+        context['is_seating_time_finished'] = self.is_seating_time_finished
+        return Response(json.dumps(context), content_type='application/json')

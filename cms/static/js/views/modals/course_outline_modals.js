@@ -15,7 +15,8 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
     'use strict';
     var CourseOutlineXBlockModal, SettingsXBlockModal, PublishXBlockModal, AbstractEditor, BaseDateEditor,
         ReleaseDateEditor, DueDateEditor, GradingEditor, PublishEditor, AbstractVisibilityEditor, StaffLockEditor,
-        ContentVisibilityEditor, TimedExaminationPreferenceEditor, AccessEditor, ShowCorrectnessEditor;
+        ContentVisibilityEditor, TimedExaminationPreferenceEditor, AccessEditor, ShowCorrectnessEditor,
+        CustomUnitEditor;
 
     CourseOutlineXBlockModal = BaseModal.extend({
         events: _.extend({}, BaseModal.prototype.events, {
@@ -633,6 +634,51 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
         }
     });
 
+    CustomUnitEditor = AbstractVisibilityEditor.extend({
+        templateName: 'custom-unit-editor',
+        className: 'custom-edit-unit',
+        afterRender: function() {
+            AbstractVisibilityEditor.prototype.afterRender.call(this);
+            this.setLock(this.isModelLocked());
+            this.setValue(this.model.get('forced_seating_time') || '');
+        },
+        setLock: function(value) {
+            this.$('#staff_lock').prop('checked', value);
+        },
+
+        setValue: function(value) {
+            this.$('#forced_seating_time').val(value);
+        },
+
+        currentValue: function() {
+            return this.$('#forced_seating_time').val()
+        },
+
+        isLocked: function() {
+            return this.$('#staff_lock').is(':checked');
+        },
+
+        hasChanges: function() {
+            return this.isModelLocked() !== this.isLocked() ||
+                this.model.get('forced_seating_time') !== this.currentValue();
+        },
+
+        getRequestData: function() {
+            if (this.hasChanges()) {
+                return {
+                    publish: 'republish',
+                    metadata: {
+                        visible_to_staff_only: this.isLocked() ? true : null,
+                        forced_seating_time: this.currentValue()
+                    }
+                };
+            } else {
+                return {};
+            }
+        }
+    });
+
+
     ContentVisibilityEditor = AbstractVisibilityEditor.extend({
         templateName: 'content-visibility-editor',
         className: 'edit-content-visibility',
@@ -782,7 +828,7 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
                 editors: []
             };
             if (xblockInfo.isVertical()) {
-                editors = [StaffLockEditor];
+                editors = [CustomUnitEditor];
             } else {
                 tabs = [
                     {

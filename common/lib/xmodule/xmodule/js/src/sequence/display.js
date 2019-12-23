@@ -80,18 +80,22 @@
         Sequence.prototype.allowNextStep = function(elem) {
             var main = this.el.closest('#main');
             var unit = this.el.find('[data-usage-id="' + elem.data('id') + '"]');
-            var allowNext = true;
+            var unitTimer = unit.find('.forced-seating-timer-enabled');
+            var isVideoViewed = true;
+            var isUnitTimeFinished = true;
 
             if (main.data('is-uspap') !== undefined) {
                 unit.find('.xblock .video').each(function(i, v) {
-                    allowNext = v.classList.contains('is-viewed');
-                    if (!allowNext) {
-                        return allowNext;
+                    isVideoViewed = v.classList.contains('is-viewed');
+                    if (!isVideoViewed) {
+                        return isVideoViewed;
                     }
                 });
-                return allowNext;
             }
-            return allowNext;
+            if (unitTimer.length !== 0) {
+                isUnitTimeFinished = unitTimer.hasClass('is-seating-time-finished');
+            }
+            return isVideoViewed && isUnitTimeFinished;
         };
 
         Sequence.prototype.previousNav = function(focused, index) {
