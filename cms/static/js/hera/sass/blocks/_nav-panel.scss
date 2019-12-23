@@ -227,6 +227,71 @@ $nav_color6: #b3b4b4;
         padding: 12px 15px 0;
         text-align: center;
 
+        .panel-btn__loader,
+        .panel-btn__loader:before,
+        .panel-btn__loader:after {
+            display: block;
+            background: $nav_color4;
+            animation: load1 1s infinite ease-in-out;
+            width: 1em;
+            height: 4em;
+        }
+
+        .panel-btn__loader {
+            position: absolute;
+            transform: translateZ(0) translateX(-50%) translateY(-50%) scale(.35);
+            left: 50%;
+            top: 50%;
+            margin-top: 2px;
+            color: $nav_color4;
+            text-indent: -9999em;
+            font-size: 11px;
+            animation-delay: -0.16s;
+            opacity: 0;
+        }
+
+        .panel-btn__loader:before,
+        .panel-btn__loader:after {
+            position: absolute;
+            top: 0;
+            content: '';
+        }
+
+        .panel-btn__loader:before {
+            left: -1.5em;
+            animation-delay: -0.32s;
+        }
+
+        .panel-btn__loader:after {
+            left: 1.5em;
+        }
+
+        @-webkit-keyframes load1 {
+            0%,
+            80%,
+            100% {
+                box-shadow: 0 0;
+                height: 4em;
+            }
+            40% {
+                box-shadow: 0 -2em;
+                height: 5em;
+            }
+        }
+
+        @keyframes load1 {
+            0%,
+            80%,
+            100% {
+                box-shadow: 0 0;
+                height: 4em;
+            }
+            40% {
+                box-shadow: 0 -2em;
+                height: 5em;
+            }
+        }
+
         .panel-btn {
             display: inline-block;
             border: none;
@@ -241,9 +306,18 @@ $nav_color6: #b3b4b4;
             font-weight: bold;
             font-size: 16px;
             transition: all .3s ease-in-out;
+            position: relative;
 
             &:hover {
                 opacity: .75;
+            }
+
+            &.is-pending {
+                color: $nav_color3;
+
+                .panel-btn__loader {
+                    opacity: 1;
+                }
             }
         }
     }

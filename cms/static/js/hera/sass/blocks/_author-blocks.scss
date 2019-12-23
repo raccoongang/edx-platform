@@ -1,14 +1,28 @@
+$author_color1: #2b6797;
+$author_color2: #ccc;
+$author_color3: #ff0000;
+$author_color4: #f2f2f2;
+$author_color5: #666;
+$author_color6: #fff;
+$author_color7: #fff;
+$author_color8: #008000;
+
+$author_height: 32px;
+$author_radius: 4px;
+
 .author-holder {
     position: relative;
     width: 1315px;
+    max-height: 85%;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: stretch;
     padding: 0;
-    background: #f2f2f2;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    background: $author_color4;
+    border: 1px solid $author_color2;
+    border-radius: $author_radius;
+    overflow-y: scroll;
 
     .close-popup {
         position: absolute;
@@ -16,7 +30,7 @@
         right: 0;
         width: 32px;
         height: 32px;
-        color: #666;
+        color: $author_color5;
         background: transparent;
         border: none;
         font-size: 16px;
@@ -47,7 +61,7 @@
         margin: 32px;
         width: 1024px;
         padding: 12px;
-        background: #fff;
+        background: $author_color6;
     }
 
     &__title {
@@ -60,7 +74,7 @@
     &__content {
         display: flex;
         position: relative;
-
+        margin: 0 0 20px;
     }
 
     &__name {
@@ -68,23 +82,57 @@
     }
 
     &__image {
-        border: 1px solid #ccc;
+        border: 1px solid $author_color2;
         position: relative;
         margin-right: 12px;
         min-width: 660px;
+
+        &-selector {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+
+            .fa-picture-o {
+                font-size: 96px;
+                color: $author_color2;
+                margin-bottom: 12px;
+            }
+
+            &__btn {
+                margin: 8px 12px;
+                box-sizing: border-box;
+                height: $author_height;
+                display: inline-block;
+                border: none;
+                box-shadow: none;
+                background: $author_color1;
+                outline: none;
+                border-radius: $author_radius;
+                text-align: center;
+                color: $author_color6;
+                padding: 8px 28px;
+                text-transform: uppercase;
+                font-weight: bold;
+                font-size: 12px;
+                transition: all .3s ease-in-out;
+            }
+        }
 
         img,
         iframe {
             display: block;
             width: 100%;
             height: 100%;
+            position: relative;
+            z-index: 2;
         }
-
     }
 
     &__question {
         min-width: 322px;
-        border: 1px solid #ccc;
+        border: 1px solid $author_color2;
         padding: 12px;
     }
 
@@ -116,5 +164,94 @@
 
 .author-toolbar {
     width: 100%;
-    height: 50px;
+
+    &__row {
+        width: 65%;
+        margin: 0 0 12px;
+
+        &:last-child {
+            margin: 0;
+        }
+    }
+
+    &__field {
+        color: $author_color7;
+        border-radius: $author_radius;
+        display: inline-block !important;
+        vertical-align: middle;
+        box-sizing: border-box !important;
+        height: $author_height !important;
+        min-width: 505px !important;
+        max-width: 505px !important;
+        background: none !important;
+        box-shadow: none !important;
+        border: 1px solid $author_color2 !important;
+        margin-right: 12px;
+        transition: all .3s ease-in-out;
+
+        &:active,
+        &:focus {
+            border-color: $author_color1 !important;
+        }
+    }
+
+    &__btn {
+        margin-right: 12px;
+        margin-bottom: 8px;
+        box-sizing: border-box;
+        height: $author_height;
+        display: inline-block;
+        border: none;
+        box-shadow: none;
+        background: $author_color8;
+        outline: none;
+        border-radius: $author_radius;
+        text-align: center;
+        color: $author_color6;
+        padding: 8px 28px;
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 12px;
+        transition: all .3s ease-in-out;
+        position: relative;
+
+        &:last-of-type {
+            margin-right: 0;
+        }
+
+        &.cancel {
+            background: $author_color3;
+        }
+
+        &.is-disabled {
+            opacity: .3;
+            cursor: initial;
+            pointer-events: none;
+        }
+    }
+
+    &__add {
+        text-align: right;
+
+        &__btn {
+            box-sizing: border-box;
+            display: inline-block;
+            border: none;
+            box-shadow: none;
+            background: none;
+            outline: none;
+            text-align: center;
+            color: $author_color5;
+            padding: 0;
+            text-transform: initial;
+            font-weight: normal;
+            font-size: 16px;
+            transition: all .3s ease-in-out;
+            position: relative;
+
+            &:hover {
+                color: $author_color8;
+            }
+        }
+    }
 }
