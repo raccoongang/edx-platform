@@ -1,23 +1,29 @@
 /* CSS for HeraPagesXBlock */
+.hera_pages_block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
 
 .hera_pages_block .count {
     font-weight: bold;
 }
 
-.hera_pages_block p {
-    cursor: pointer;
-}
-
-.wrapper {
+.wrapper-page {
     width: 100%;
+    display: flex;
 }
 
 .image-wrapper {
-    width: 60%;
-    float: left;
+    width: 800px;
+    /* float: left; */
 }
 
 .slidebar-wrapper {
-    float:left;
-    width:40%
+    /* float:left; */
+    width:600px;
+}
+.column {
+    float: left;
+    width: 33%;
 }

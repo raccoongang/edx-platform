@@ -1,15 +1,23 @@
 <div class="hera_pages_block">
-    <p>HeraPagesXBlock</p>
-        
-    <div class="wrapper">
+    <div class="wrapper-page">
         <div class="image-wrapper">
+        {% if data.imgUrl %}
             <img src="{{ data.imgUrl }}" alt=""/>
+        {% elif data.iframeUrl %}
+            <iframe src="{{ data.iframeUrl }}">
+        {% else %}
+            <img alt="Unfortunately no image"/>
+        {% endif %}
         </div>
         <div class="slidebar-wrapper">
             {% for i in  data.sliderBar %}
             <div class="single-item">{{ i.content|safe }}</div>
             {% endfor %}
         </div>
+    </div>
+    <div class="button-wrapper">
+        <button class="button-prev" type="button">Previous</button>
+        <button class="button-next" type="button">Next</button>
     </div>
 </div>
 
