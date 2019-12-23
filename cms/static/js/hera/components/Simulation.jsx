@@ -9,7 +9,10 @@ export default class Simulation extends PagesBaseComponent{
         super(props);
         this.componentType = 'simulation';
         this.changeHandlerName = 'simulationChanged';
+        this.addImageHandlerName = 'simulationImageAdd';
+        this.removeImageHandlerName = 'simulationImageRemove';
+        this.changeImageHandlerName = 'simulationImageChange';
+        this.addContentHandler = 'simulationAddContent';
+        this.removeContentHandler = 'simulationRemoveContent';
     }
-
-    
 }

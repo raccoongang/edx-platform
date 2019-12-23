@@ -9,5 +9,10 @@ export default class Introduction extends PagesBaseComponent {
         super(props);
         this.componentType = 'introduction';
         this.changeHandlerName = 'introductionChanged';
+        this.addImageHandlerName = 'introductionImageAdd';
+        this.removeImageHandlerName = 'introductionImageRemove';
+        this.changeImageHandlerName = 'introductionImageChange';
+        this.addContentHandler = 'introductionAddContent';
+        this.removeContentHandler = 'introductionRemoveContent';
     }
 }
