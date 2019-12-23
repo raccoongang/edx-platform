@@ -65,7 +65,6 @@ from openedx.core.djangoapps.request_cache import clear_cache, get_cache
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.xmodule_django.models import NoneToEmptyManager
 from openedx.core.djangolib.model_mixins import DeletableByUserValue
-from student.validators import validate_date_of_birth
 from track import contexts
 from util.milestones_helpers import is_entrance_exams_enabled
 from util.model_utils import emit_field_changed_events, get_changed_fields_dict
@@ -436,7 +435,7 @@ class UserProfile(models.Model):
     phone = models.CharField(max_length=20, null=True, blank=True)
     second_name = models.CharField(max_length=100, null=True, blank=True)
     additional_email = models.EmailField(max_length=255, null=True, blank=True)
-    date_of_birth = models.DateField(blank=True, null=True, db_index=True, validators=[validate_date_of_birth])
+    date_of_birth = models.DateField(blank=True, null=True, db_index=True)
 
     REGION_CHOICES = [(region[0], _(region[1])) for region in getattr(settings, 'REGIONS', [])]
     region = models.CharField(max_length=255, null=True, blank=True, choices=REGION_CHOICES)

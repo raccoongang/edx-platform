@@ -150,8 +150,20 @@ def update_account_settings(requesting_user, update, username=None):
     date_of_birth = update.get("date_of_birth")
 
     if date_of_birth is not None and len(date_of_birth):
+        update_date = datetime.datetime.strptime(update.get("date_of_birth"), '%Y-%m-%d')
 
-        update['year_of_birth'] = datetime.datetime.strptime(update.get("date_of_birth"), '%Y-%m-%d').year
+        if update_date > datetime.date.today():
+            raise AccountValidationError({
+                "field_errors": {
+                    "date_of_birth": {
+                        "developer_message": "Value is not valid for field phone",
+                        'date_of_birth': [u'Date of birth should be in the past.'],
+                        "user_message": "This value is invalid.",
+                    }
+                }
+            })
+
+        update['year_of_birth'] = update_date.year
 
     if update.get("phone") is not None and "_" in update.get("phone"):
         raise AccountValidationError({
