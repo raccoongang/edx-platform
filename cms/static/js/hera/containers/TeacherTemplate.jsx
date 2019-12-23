@@ -214,7 +214,10 @@ export class TeacherTemplate extends React.Component{
                             </li>
                         </ul>
                         <div className="panel-btn-holder">
-                            <button type="button" className="panel-btn" onClick={this.save.bind(this)}>save</button>
+                            <button type="button" className="panel-btn" onClick={this.save.bind(this)}>
+                                save
+                                <span className="panel-btn__loader" />
+                            </button>
                         </div>
                     </div>
                 </div>
