@@ -1,7 +1,7 @@
 import React from 'react';
 
 
-export default class EndServey extends React.Component{
+export default class EndSurvey extends React.Component{
 
     render() {
         return (

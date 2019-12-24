@@ -15,7 +15,9 @@ const initialState = {
     sliderBar: [{content: ''}],
     imgUrl: [],
     iframeUrl: "",
-    xBlockID: ""
+    xBlockID: "",
+    title: "Simulation",
+    parentLocator: "",
 };
 
 const SimulationReducer = function(state=initialState, action) {
@@ -23,6 +25,8 @@ const SimulationReducer = function(state=initialState, action) {
         case SIMULATION_CHANGED:
             let {index} = action.data;
             return {
+                parentLocator: state.parentLocator,
+                title: action.data.title,
                 blockType: 'simulation',
                 imgUrl: action.data.imgUrl,
                 iframeUrl: action.data.iframeUrl,
@@ -50,6 +54,7 @@ const SimulationReducer = function(state=initialState, action) {
             };
         case SIMULATION_LOADED:
             return {
+                title: state.title,
                 blockType: 'simulation',
                 ...action.data
             };
@@ -61,7 +66,6 @@ const SimulationReducer = function(state=initialState, action) {
                 imgUrl: state.imgUrl.concat([''])
             }
         case SIMULATION_IMAGE_CHANGED:
-            console.log(action.data);
             return {
                 ...state,
                 imgUrl: state.imgUrl.map((img, ind) => {

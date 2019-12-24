@@ -5,9 +5,23 @@ export default class Question extends React.Component{
 
     render() {
         return (
-            <a href="/" className="nav-panel-list__link">
-                Question
-            </a>
+            <div className="author-block__wrapper">
+                <div className="author-block__content">
+                    <div className="author-block__image">
+                        <img
+                        src="https://d1icd6shlvmxi6.cloudfront.net/gsc/THB1PC/52/ec/b3/52ecb386d0d140898c3a931c5caaccba/images/scenario_page/u620.png?token=937ef3394f9bbd5177382de1fe4cbf677b95681186e42c8b44b00217fe8c6834"
+                        alt=""/>
+                    </div>
+                    <div className="author-block__question">
+                        {this.props.content}
+                    </div>
+                </div>
+                <div className="author-block__buttons">
+                    <button type="button" className="author-block__btn">
+                        Next
+                    </button>
+                </div>
+            </div>
         )
     }
 }

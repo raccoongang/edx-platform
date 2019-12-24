@@ -9,7 +9,7 @@ define(['js/views/baseview', 'js/views/utils/xblock_utils'],
     function(BaseView, XBlockViewUtils) {
         var XBlockStringFieldEditor = BaseView.extend({
             events: {
-                // 'click .xblock-field-value-edit': 'showInput',
+                'click .xblock-field-value-edit': 'showInput',
                 'click button[name=submit]': 'onClickSubmit',
                 'click button[name=cancel]': 'onClickCancel',
                 'click .xblock-string-field-editor': 'onClickEditor',

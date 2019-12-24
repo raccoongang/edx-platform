@@ -7,6 +7,7 @@ const initialState = {
         {title: "Question2"},
         {title: "Question3"}
     ],
+    blockType: 'questions'
 };
 
 const QuestionsReducer = function(state=initialState, action) {

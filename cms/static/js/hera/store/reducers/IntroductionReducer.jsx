@@ -16,13 +16,17 @@ const initialState = {
     imgUrl: [],
     iframeUrl: "",
     xBlockID: "",
-    shouldReset: false
+    shouldReset: false,
+    title: 'Introduction',
+    parentLocator: ""
 };
 
 const IntroductionReducer = function(state=initialState, action) {
     switch(action.type) {
         case INTRODUCTION_CHANGED:
             return {
+                parentLocator: state.parentLocator,
+                title: action.data.title,
                 blockType: 'introduction',
                 imgUrl: action.data.imgUrl,
                 iframeUrl: action.data.iframeUrl,
@@ -35,7 +39,7 @@ const IntroductionReducer = function(state=initialState, action) {
                     return slide;
                 }),
                 xBlockID: state.xBlockID,
-                shouldReset: action.shouldReset
+                shouldReset: action.shouldReset,
             };
         case INTRODUCTION_ADD_CONTENT:
             return {
@@ -51,6 +55,8 @@ const IntroductionReducer = function(state=initialState, action) {
             };
         case INTRODUCTION_LOADED:
             return {
+                title: state.title,
+                parentLocator: state.parentLocator,
                 ...action.data,
                 blockType: 'introduction',
             };

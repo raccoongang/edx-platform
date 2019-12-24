@@ -60,14 +60,29 @@ export const getXblockData = (xBlockId) => {
  * category: "vertical"
  * display_name: "Unit"
  */
-export const createUnit = (parentLocator) => {
+export const createUnit = (parentLocator, displayName) => {
     const data = {
         parent_locator: parentLocator,
         category: "vertical",
-        display_name: "Unit"
+        display_name: "Unit",
+        metadata: {
+            display_name: displayName
+        }
     };
     return _post(XBLOCK_ROOT_URL, data);
 };
+
+export const changeUnitName = (locator, displayName) => {
+    const data = {
+        metadata: {
+            display_name: displayName
+        }
+    };
+    if (locator) {
+        return _post(XBLOCK_ROOT_URL + locator, data);
+    }
+    return new Promise((resolve) => {return resolve});
+}
 
 /**
  *  Create xblock.
@@ -102,7 +117,7 @@ export const saveIntroductionXBlockData = (locator, data) => {
     return _post(XBLOCK_ROOT_URL + locator + "/handler/submit_studio_edits", postData);
 }
 
-
+// Questions
 // {
 //     imgUrl: "link",
 //     iframeUrl: "link",
@@ -152,6 +167,7 @@ export const saveIntroductionXBlockData = (locator, data) => {
 
 // }
 
+// Hera pages
 // {
 //     imgUrl: "link",
 //     iframeUrl: "link",
@@ -168,5 +184,20 @@ export const saveIntroductionXBlockData = (locator, data) => {
 //     ]
 // }
 
+// End Survey
 
+// {
+//     questions: [
+//         {
+//             type: "option/text",
+//             questionText: "Question title",
+//             possibleAnswers: [
+//                 '1',
+//                 '2',
+//             ],
+            
+//         }
+//     ],
+//     title: "The title of the Survey"
+// }
 
