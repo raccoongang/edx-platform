@@ -133,7 +133,7 @@ if (is_proctored_exam) {
                         </a>
                     </li>
                 <% } %>
-                <% if (xblockInfo.isPublishable()) { %>
+                <% if (xblockInfo.isPublishable() && xblockType !== 'unit') { %>
                     <li class="action-item action-publish">
                         <a href="#" data-tooltip="<%- gettext('Publish') %>" class="publish-button action-button">
                             <span class="icon fa fa-upload" aria-hidden="true"></span>
@@ -141,7 +141,7 @@ if (is_proctored_exam) {
                         </a>
                     </li>
                 <% } %>
-                <% if (xblockInfo.isEditableOnCourseOutline()) { %>
+                <% if (xblockInfo.isEditableOnCourseOutline() && xblockType !== 'unit') { %>
                     <li class="action-item action-configure">
                         <a href="#" data-tooltip="<%- gettext('Configure') %>" class="configure-button action-button">
                             <span class="icon fa fa-gear" aria-hidden="true"></span>
@@ -149,7 +149,7 @@ if (is_proctored_exam) {
                         </a>
                     </li>
                 <% } %>
-                <% if (xblockInfo.isDuplicable()) { %>
+                <% if (xblockInfo.isDuplicable() && xblockType !== 'unit') { %>
                     <li class="action-item action-duplicate">
                         <a href="#" data-tooltip="<%- gettext('Duplicate') %>" class="duplicate-button action-button">
                             <span class="icon fa fa-copy" aria-hidden="true"></span>
@@ -157,7 +157,7 @@ if (is_proctored_exam) {
                         </a>
                     </li>
                 <% } %>
-                <% if (xblockInfo.isDeletable()) { %>
+                <% if (xblockInfo.isDeletable() && xblockType !== 'unit') { %>
                     <li class="action-item action-delete">
                         <a href="#" data-tooltip="<%- gettext('Delete') %>" class="delete-button action-button">
                             <span class="icon fa fa-trash-o" aria-hidden="true"></span>
@@ -165,7 +165,7 @@ if (is_proctored_exam) {
                         </a>
                     </li>
                 <% } %>
-                <% if (xblockInfo.isDraggable()) { %>
+                <% if (xblockInfo.isDraggable() && xblockType !== 'unit') { %>
                 <li class="action-item action-drag">
                     <span data-tooltip="<%- gettext('Drag to reorder') %>"
                           class="drag-handle <%- xblockType %>-drag-handle action">
@@ -292,7 +292,7 @@ if (is_proctored_exam) {
                 </li>
             </ol>
 
-            <% if (childType) { %>
+            <% if (childType && childType !== 'unit') { %>
             <% if (xblockInfo.isChildAddable()) { %>
                 <div class="add-<%- childType %> add-item">
                     <a href="#" class="button button-new" data-category="<%- childCategory %>"
