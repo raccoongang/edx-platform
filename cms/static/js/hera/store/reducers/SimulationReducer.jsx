@@ -26,6 +26,7 @@ const SimulationReducer = function(state=initialState, action) {
         case SIMULATION_CHANGED:
             let {index} = action.data;
             return {
+                parentLocator: state.parentLocator,
                 title: action.data.title,
                 blockType: 'simulation',
                 imgUrl: action.data.imgUrl,
