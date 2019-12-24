@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 
 import { connect } from 'react-redux';
 
-import {getData, addSubsection, createUnit, createIntroductionXBlock, saveIntroductionXBlockData, getXblockData}from '../utils/api';
+import {getData, addSubsection, createUnit, createIntroductionXBlock, saveIntroductionXBlockData, getXblockData, changeUnitName} from '../utils/api';
 
 import * as actionTypes from '../store/actionTypes';
 
@@ -14,25 +14,25 @@ import Introduction from '../components/Introduction';
 import Simulation from '../components/Simulation';
 import Question from '../components/Question';
 import Questions from './Questions';
-import EndServey from '../components/EndSurvey';
+import EndSurvey from '../components/EndSurvey';
 import SwitchComponent from '../components/SwitchComponent';
 
 import '../sass/main.scss';
 
 
 const ActiveComponentsMap = {
-    'Title': Title,
-    'Introduction': Introduction,
-    'Simulation': Simulation,
-    'Question': Question,
-    'End Servey': EndServey,
+    'title': Title,
+    'introduction': Introduction,
+    'simulation': Simulation,
+    'question': Question,
+    'endSurvey': EndSurvey,
 };
 
 const getComponentByTitle = (title) => {
-    if (title.includes('Question')) {
-        return ActiveComponentsMap['Question'];
+    if (title.includes('question')) {
+        return ActiveComponentsMap['question'];
     } else {
-        return ActiveComponentsMap[title];
+        return ActiveComponentsMap[title] || ActiveComponentsMap['introduction'];
     }
 }
 
@@ -46,10 +46,11 @@ export class TeacherTemplate extends React.Component{
         this.handleEditSubsection = this.handleEditSubsection.bind(this);
         this.switchComponent = this.switchComponent.bind(this);
         this.closeBar = this.closeBar.bind(this);
+        this.changeTitle = this.changeTitle.bind(this);
 
         this.state = {
-            activeComponent: 'Introduction',
-            doSaveNewSubsection: true
+            activeComponent: 'introduction',
+            isQuestion: false
         };
     }
 
@@ -58,7 +59,7 @@ export class TeacherTemplate extends React.Component{
         this.props.introductionNew();
         this.props.simulationNew();
         this.setState({
-            activeComponent: 'Introduction',
+            activeComponent: 'introduction',
             doSaveNewSubsection: true
         });
     }
@@ -68,7 +69,7 @@ export class TeacherTemplate extends React.Component{
         rootElement.classList.remove("popup-open");
         this.props.introductionNew();
         this.setState({
-            activeComponent: 'Introduction'
+            activeComponent: 'introduction'
         });
     }
 
@@ -79,9 +80,19 @@ export class TeacherTemplate extends React.Component{
         });
     }
 
-    switchComponent(title) {
+    switchComponent(component, isQuestion, index) {
+        console.log('switch component', component, isQuestion, index);
         this.setState({
-            activeComponent: title
+            activeComponent: component,
+            isQuestion: isQuestion,
+            activeQuestionIndex: index
+        });
+    }
+
+    changeTitle(e, storeName, handlerName) {
+        this.props[handlerName]({
+            ...this.props[storeName],
+            title: e.target.value
         });
     }
 
@@ -101,34 +112,51 @@ export class TeacherTemplate extends React.Component{
         /**
          * Auxiliary Promise function, we need to wait the backend to handle our requests.
          */
-        function sleeper() {
+        const sleeper = () => {
             return function(x) {
               return new Promise(resolve => setTimeout(() => resolve(x), 1000));
             };
-          }
+        };
+
         if (introductionData.xBlockID) { // if xBlockID is located we assume all data are being edited
-            saveIntroductionXBlockData(introductionData.xBlockID, introductionData).then(sleeper()).then(()=>{
-                saveIntroductionXBlockData(simulationData.xBlockID, simulationData).then(()=>{
-                    this.closeBar();
-                    window.location.reload();
+            // change introduction Unit's display name
+            changeUnitName(introductionData.parentLocator, introductionData.title).then(sleeper()).then(() => {
+                saveIntroductionXBlockData(introductionData.xBlockID, introductionData).then(sleeper()).then(()=>{
+
+                    // change simulation Unit's display name
+                    changeUnitName(simulationData.parentLocator, simulationData.title).then(sleeper()).then(() => {
+                        saveIntroductionXBlockData(simulationData.xBlockID, simulationData).then(()=>{
+                            this.closeBar();
+                            window.location.reload();
+                        });
+                    })
                 });
-            });
+            })
+            
 
         } else {
             addSubsection(subsectionData.parentLocator, subsectionData.category, subsectionData.displayName).then(sleeper()).then(response=>{
                 const subsectionLocator = response.data.locator;
+                // creatin introduction content
                 createUnit(subsectionLocator).then(sleeper()).then(response=>{
-                    createIntroductionXBlock(response.data.locator).then(sleeper()).then(response=>{
-                        saveIntroductionXBlockData(response.data.locator, introductionData).then(sleeper()).then(()=>{
-                            createUnit(subsectionLocator).then(sleeper()).then(response=>{
-                                createIntroductionXBlock(response.data.locator).then(sleeper()).then(response=>{
-                                    saveIntroductionXBlockData(response.data.locator, simulationData);
-                                    this.closeBar();
-                                    window.location.reload();
+                    changeUnitName(response.data.locator, introductionData.title).then(sleeper()).then((response) => {
+                        console.log(response.data)
+                        createIntroductionXBlock(response.data.id).then(sleeper()).then(response=>{
+                            saveIntroductionXBlockData(response.data.locator, introductionData).then(sleeper()).then(()=>{
+                                // creating simulation content
+                                createUnit(subsectionLocator).then(sleeper()).then(response=>{
+                                    changeUnitName(response.data.locator, simulationData.title).then(sleeper()).then((response) => {
+                                        createIntroductionXBlock(response.data.id).then(sleeper()).then(response=>{
+                                            saveIntroductionXBlockData(response.data.locator, simulationData);
+                                            this.closeBar();
+                                            window.location.reload();
+                                        });
+
+                                    })
                                 });
-                            });
-                        })
-                    });
+                            })
+                        });
+                    })
                 });
             });
         }
@@ -138,10 +166,11 @@ export class TeacherTemplate extends React.Component{
      * Click on "Edit Subsection"
      */
     handleEditSubsection(event) {
-        if (event.target.parentElement.className.includes('xblock-field-value-edit')) {
-            const locator = event.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.dataset.locator;
+        if (event.target.parentElement.className.includes('hera-edit-subsection')) {
+            const locator = event.target.parentElement.dataset.locator;
             if (locator.includes('sequential')) {
                 getData(locator).then(data => {
+                    console.log(data);
                     this.props.subsectionDataChanged(data.id, data.category, data.display_name);
                     const subsectionChildren = data.child_info.children;
                     for (let childInfo in subsectionChildren) {
@@ -150,6 +179,8 @@ export class TeacherTemplate extends React.Component{
                                 ...response.data,
                                 shouldReset: true,
                                 xBlockID: subsectionChildren[childInfo].child_info.children[0].id,
+                                title: subsectionChildren[childInfo].display_name,
+                                parentLocator: subsectionChildren[childInfo].id
                             };
                             if (response.data.blockType === 'introduction') {
                                 // save data into Introduction component
@@ -193,19 +224,46 @@ export class TeacherTemplate extends React.Component{
                         <h3 className="nav-panel-title">Lesson Layer</h3>
                         <ul className="nav-panel-list">
                             <li className="nav-panel-list__item">
-                                <SwitchComponent switchComponent={this.switchComponent} isActive={this.state.activeComponent === 'Title'} title="Title"/>
+                                <SwitchComponent
+                                    switchComponent={this.switchComponent}
+                                    isActive={this.state.activeComponent === this.props.title.blockType}
+                                    blockType={this.props.title.blockType}
+                                    title="Title"/>
                             </li>
                             <li className="nav-panel-list__item">
-                                <SwitchComponent switchComponent={this.switchComponent} isActive={this.state.activeComponent === 'Introduction'} title="Introduction"/>
+                                <SwitchComponent
+                                    switchComponent={this.switchComponent}
+                                    isActive={this.state.activeComponent === this.props.introduction.blockType}
+                                    changeTitle={this.changeTitle}
+                                    changeHandler="introductionChanged"
+                                    storeName='introduction'
+                                    blockType={this.props.introduction.blockType}
+                                    title={this.props.introduction.title}/>
                             </li>
                             <li className="nav-panel-list__item">
-                                <SwitchComponent switchComponent={this.switchComponent} isActive={this.state.activeComponent === 'Simulation'} title="Simulation"/>
+                                <SwitchComponent
+                                    switchComponent={this.switchComponent}
+                                    isActive={this.state.activeComponent === this.props.simulation.blockType}
+                                    changeTitle={this.changeTitle}
+                                    changeHandler="simulationChanged"
+                                    storeName='simulation'
+                                    blockType={this.props.simulation.blockType}
+                                    title={this.props.simulation.title}/>
                             </li>
                             <li className="nav-panel-list__item with-add-list">
-                                <Questions activeComponent={this.state.activeComponent} switchComponent={this.switchComponent} questions={this.props.questions}/>
+                                <Questions 
+                                    activeComponent={this.state.activeComponent}
+                                    activeQuestionIndex={this.state.activeQuestionIndex}
+                                    switchComponent={this.switchComponent}
+                                    questions={this.props.questions.questions}
+                                    blockType={this.props.questions.blockType}/>
                             </li>
                             <li className="nav-panel-list__item">
-                                <SwitchComponent switchComponent={this.switchComponent} isActive={this.state.activeComponent === 'End Servey'} title="End Servey"/>
+                                <SwitchComponent
+                                    switchComponent={this.switchComponent}
+                                    isActive={this.state.activeComponent === this.props.endSurvey.blockType}
+                                    blockType={this.props.endSurvey.blockType}
+                                    title="End Survey"/>
                             </li>
                         </ul>
                         <div className="panel-btn-holder">
@@ -249,8 +307,9 @@ const mapStateToProps = (store) => {
         title: store.title,
         introduction: store.introduction,
         simulation: store.simulation,
-        questions: store.questions.questions,
-        subsectionData: store.subsectionData
+        questions: store.questions,
+        subsectionData: store.subsectionData,
+        endSurvey: store.endSurvey
     };
 };
 

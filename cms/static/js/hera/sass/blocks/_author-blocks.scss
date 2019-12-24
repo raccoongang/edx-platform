@@ -229,6 +229,10 @@ $author_radius: 4px;
             cursor: initial;
             pointer-events: none;
         }
+
+        i {
+            pointer-events: none;
+        }
     }
 
     &__add {

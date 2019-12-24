@@ -31,6 +31,7 @@ export default class PagesBaseComponent extends React.Component {
 
     saveContent(id, value) {
         this.props[this.changeHandlerName]({
+            ...this.props[this.componentType],
             content: value,
             imgUrl: this.props[this.componentType].imgUrl,
             iframeUrl: this.props[this.componentType].iframeUrl,

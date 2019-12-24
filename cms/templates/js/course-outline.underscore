@@ -125,6 +125,14 @@ if (is_proctored_exam) {
 
         <div class="<%- xblockType %>-header-actions">
             <ul class="actions-list">
+                <% if (xblockType === 'subsection') { %>
+                    <li class="action-item">
+                        <a href="#" data-tooltip="<%- gettext('Edit in Hera Template') %>" class="action-button hera-edit-subsection" data-locator="<%- xblockInfo.get('id') %>">
+                            <span class="icon fa fa-pencil" aria-hidden="true"></span>
+                            <span class="sr action-button-text"><%- gettext('Edit') %></span>
+                        </a>
+                    </li>
+                <% } %>
                 <% if (xblockInfo.isPublishable()) { %>
                     <li class="action-item action-publish">
                         <a href="#" data-tooltip="<%- gettext('Publish') %>" class="publish-button action-button">

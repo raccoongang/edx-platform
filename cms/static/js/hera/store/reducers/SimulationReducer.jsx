@@ -15,7 +15,10 @@ const initialState = {
     sliderBar: [{content: ''}],
     imgUrl: [],
     iframeUrl: "",
-    xBlockID: ""
+    xBlockID: "",
+    title: "Simulation",
+    parentLocator: "",
+    // componentType: "simulation"
 };
 
 const SimulationReducer = function(state=initialState, action) {
@@ -23,6 +26,7 @@ const SimulationReducer = function(state=initialState, action) {
         case SIMULATION_CHANGED:
             let {index} = action.data;
             return {
+                title: action.data.title,
                 blockType: 'simulation',
                 imgUrl: action.data.imgUrl,
                 iframeUrl: action.data.iframeUrl,
@@ -50,6 +54,7 @@ const SimulationReducer = function(state=initialState, action) {
             };
         case SIMULATION_LOADED:
             return {
+                title: state.title,
                 blockType: 'simulation',
                 ...action.data
             };

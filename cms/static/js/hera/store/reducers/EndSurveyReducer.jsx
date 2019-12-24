@@ -1,14 +1,11 @@
-import { TITLE_CHANGED } from '../actionTypes';
-
-
 const initialState = {
     content: 'Enter a text',
-    blockType: 'title'
+    blockType: 'endSurvey'
 };
 
-const TitleReducer = function(state=initialState, action) {
+const EndSurvey = function(state=initialState, action) {
     switch(action.type) {
-        case TITLE_CHANGED:
+        case 'TITLE_CHANGED':
             return Object.assign({}, state, {
                 content: action.content
             });
@@ -17,4 +14,4 @@ const TitleReducer = function(state=initialState, action) {
     }
 };
 
-export default TitleReducer;
+export default EndSurvey;
