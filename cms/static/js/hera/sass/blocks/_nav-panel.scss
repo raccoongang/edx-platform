@@ -18,11 +18,10 @@ $nav_color6: #b3b4b4;
     transition: opacity .3s ease-in-out;
     pointer-events: none;
     opacity: 0;
-    z-index: -1;
+    z-index: 9999;
 
     &.popup-open {
         opacity: 1;
-        z-index: 9999;
         pointer-events: initial;
     }
 }

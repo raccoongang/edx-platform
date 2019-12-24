@@ -13,7 +13,7 @@ $author_radius: 4px;
 .author-holder {
     position: relative;
     width: 1315px;
-    max-height: 85%;
+    max-height: 845px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -60,6 +60,7 @@ $author_radius: 4px;
     &__wrapper {
         margin: 32px;
         width: 1024px;
+        height: 100%;
         padding: 12px;
         background: $author_color6;
     }
@@ -135,6 +136,52 @@ $author_radius: 4px;
         min-width: 322px;
         border: 1px solid $author_color2;
         padding: 12px;
+        position: relative;
+
+        &__slider {
+            &-item {
+                position: relative;
+                padding-bottom: 32px;
+
+                .mce-tinymce {
+                    width: 99% !important;
+                    min-height: 545px;
+                }
+
+                iframe {
+                    min-height: 490px;
+                }
+            }
+
+            &-controls {
+                text-align: right;
+                position: absolute;
+                right: 8px;
+                bottom: 12px;
+                background: $author_color7;
+
+                &__prev,
+                &__next {
+                    border: 0;
+                    outline: none;
+                    box-shadow: none;
+                    color: $author_color2;
+                    cursor: pointer;
+                    margin-left: 6px;
+                    transition: color .3s ease-in-out;
+
+                    &.is-disabled {
+                        opacity: .3;
+                        pointer-events: none;
+                        cursor: initial;
+                    }
+
+                    &:hover {
+                        color: $author_color5;
+                    }
+                }
+            }
+        }
     }
 
     &__question-title {
@@ -149,7 +196,6 @@ $author_radius: 4px;
         font-size: 16px;
         line-height: 1.5;
         position: relative;
-
     }
 
     &__buttons {
@@ -161,10 +207,55 @@ $author_radius: 4px;
     &__btn {
         position: relative;
     }
+
+    &__add-btn {
+        position: absolute;
+        left: 14px;
+        bottom: 14px;
+        box-sizing: border-box;
+        display: inline-block;
+        border: none;
+        box-shadow: none;
+        background: none;
+        outline: none;
+        border-radius: $author_radius;
+        text-align: center;
+        color: $author_color2;
+        padding: 1px;
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 18px;
+        transition: all .3s ease-in-out;
+        -webkit-backface-visibility: hidden;
+
+        &:hover {
+            color: $author_color8;
+        }
+
+        &.remove {
+            position: absolute;
+            left: 24px;
+            bottom: 0;
+            background: none;
+            color: $author_color2;
+            height: 28px;
+            padding: 0 8px;
+            font-size: 18px;
+
+            &:hover {
+                color: $author_color3;
+            }
+        }
+
+        i {
+            pointer-events: none;
+        }
+    }
 }
 
 .author-toolbar {
     width: 100%;
+    margin: 0 0 20px;
 
     &__row {
         width: 65%;
@@ -182,13 +273,18 @@ $author_radius: 4px;
         vertical-align: middle;
         box-sizing: border-box !important;
         height: $author_height !important;
-        min-width: 505px !important;
-        max-width: 505px !important;
+        min-width: 585px !important;
+        max-width: 585px !important;
         background: none !important;
         box-shadow: none !important;
         border: 1px solid $author_color2 !important;
         margin-right: 12px;
         transition: all .3s ease-in-out;
+        line-height: 1;
+
+        &::placeholder {
+            opacity: .5;
+        }
 
         &:active,
         &:focus {
@@ -227,6 +323,10 @@ $author_radius: 4px;
         &.is-disabled {
             opacity: .3;
             cursor: initial;
+            pointer-events: none;
+        }
+
+        i {
             pointer-events: none;
         }
     }

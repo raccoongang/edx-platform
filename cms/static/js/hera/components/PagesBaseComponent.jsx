@@ -1,12 +1,14 @@
 import React from 'react';
+import Slider from "react-slick";
 
 import WYSWYGComponent from './WYSWYGComponent';
-
 
 export default class PagesBaseComponent extends React.Component {
 
     constructor(props) {
         super(props);
+        this.next = this.next.bind(this);
+        this.previous = this.previous.bind(this);
         this.saveContent = this.saveContent.bind(this);
         this.state = {};
     }
@@ -65,7 +67,24 @@ export default class PagesBaseComponent extends React.Component {
         });
     }
 
+    next() {
+        this.slider.slickNext();
+    }
+
+    previous() {
+        this.slider.slickPrev();
+    }
+
     render() {
+        const settings = {
+            arrows: false,
+            dots: false,
+            infinite: false,
+            speed: 500,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+        };
+
         const data = this.props[this.componentType];
         return (
             <div className="author-block__wrapper">
@@ -95,27 +114,45 @@ export default class PagesBaseComponent extends React.Component {
                         }
                     </div>
                     <div className="author-block__question">
-                        {data.sliderBar.map((bar, index) => {
-                            return (
-                                <div key={index}>
-                                    <WYSWYGComponent
-                                        key={index}
-                                        index={index}
-                                        content={bar.content}
-                                        saveContent={this.saveContent}
-                                        componentType={this.componentType}
-                                        popupClosed={this.props.popupClosed}
-                                        {...data}
-                                    />
-                                    {
-                                        data.sliderBar.length > 1 && (
-                                            <button data-index={index} onClick={this.removeContent.bind(this)}>Remove slider</button>
-                                        )
-                                    }
+                        <Slider ref={c => (this.slider = c)} {...settings} className="author-block__question__slider">
+                            {data.sliderBar.map((bar, index) => {
+                                return (
+                                    <div key={index} className="author-block__question__slider-item">
+                                        <WYSWYGComponent
+                                            key={index}
+                                            index={index}
+                                            content={bar.content}
+                                            saveContent={this.saveContent}
+                                            componentType={this.componentType}
+                                            popupClosed={this.props.popupClosed}
+                                            {...data}
+                                        />
+                                        {
+                                            data.sliderBar.length > 1 && (
+                                                <button className="author-block__add-btn remove" data-index={index} onClick={this.removeContent.bind(this)} title="Remove slide">
+                                                    <i className="fa fa-trash-o" aria-hidden="true" />
+                                                </button>
+                                            )
+                                        }
+                                    </div>
+                                )
+                            })}
+                        </Slider>
+                        {
+                            data.sliderBar.length > 1 && (
+                                <div className="author-block__question__slider-controls">
+                                    <button className="author-block__question__slider-controls__prev" onClick={this.previous}>
+                                        <i className="fa fa-arrow-left" aria-hidden="true" />
+                                    </button>
+                                    <button className="author-block__question__slider-controls__next" onClick={this.next}>
+                                        <i className="fa fa-arrow-right" aria-hidden="true" />
+                                    </button>
                                 </div>
                             )
-                        })}
-                        <button onClick={this.addContent.bind(this)}>Add slider</button>
+                        }
+                        <button onClick={this.addContent.bind(this)} title="Add slide" className="author-block__add-btn">
+                            <i className="fa fa-plus-circle" aria-hidden="true" />
+                        </button>
                     </div>
                 </div>
                 <div className="author-toolbar">
@@ -166,11 +203,11 @@ export default class PagesBaseComponent extends React.Component {
                         )
                     }
                 </div>
-                <div className="author-block__buttons">
-                    <button type="button" className="author-block__btn">
-                        Next
-                    </button>
-                </div>
+                {/*<div className="author-block__buttons">*/}
+                {/*    <button type="button" className="author-block__btn">*/}
+                {/*        Next*/}
+                {/*    </button>*/}
+                {/*</div>*/}
             </div>
         )
     }
