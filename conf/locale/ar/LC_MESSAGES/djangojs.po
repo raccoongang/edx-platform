@@ -2692,7 +2692,7 @@ msgstr ""
 #: lms/static/js/student_account/components/StudentAccountDeletion.jsx
 #: lms/static/js/student_account/views/account_settings_factory.js
 msgid "Delete My Account"
-msgstr ""
+msgstr "احذف حسابي"
 
 #: common/static/bundles/StudentAccountDeletion.js
 #: common/static/bundles/StudentAccountDeletionInitializer.js
@@ -5493,7 +5493,7 @@ msgstr "اللغة المفضّلة"
 
 #: lms/static/js/student_account/views/account_settings_factory.js
 msgid "Social Media Links"
-msgstr ""
+msgstr "روابط وسائل التواصل الاجتماعي"
 
 #: lms/static/js/student_account/views/account_settings_factory.js
 msgid ""
