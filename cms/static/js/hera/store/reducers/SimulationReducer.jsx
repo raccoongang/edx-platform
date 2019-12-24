@@ -18,7 +18,6 @@ const initialState = {
     xBlockID: "",
     title: "Simulation",
     parentLocator: "",
-    // componentType: "simulation"
 };
 
 const SimulationReducer = function(state=initialState, action) {
@@ -67,7 +66,6 @@ const SimulationReducer = function(state=initialState, action) {
                 imgUrl: state.imgUrl.concat([''])
             }
         case SIMULATION_IMAGE_CHANGED:
-            console.log(action.data);
             return {
                 ...state,
                 imgUrl: state.imgUrl.map((img, ind) => {

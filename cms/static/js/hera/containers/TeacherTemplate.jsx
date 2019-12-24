@@ -81,7 +81,6 @@ export class TeacherTemplate extends React.Component{
     }
 
     switchComponent(component, isQuestion, index) {
-        console.log('switch component', component, isQuestion, index);
         this.setState({
             activeComponent: component,
             isQuestion: isQuestion,
@@ -132,7 +131,7 @@ export class TeacherTemplate extends React.Component{
                     })
                 });
             })
-            
+
 
         } else {
             addSubsection(subsectionData.parentLocator, subsectionData.category, subsectionData.displayName).then(sleeper()).then(response=>{
@@ -140,7 +139,7 @@ export class TeacherTemplate extends React.Component{
                 // creatin introduction content
                 createUnit(subsectionLocator).then(sleeper()).then(response=>{
                     changeUnitName(response.data.locator, introductionData.title).then(sleeper()).then((response) => {
-                        console.log(response.data)
+
                         createIntroductionXBlock(response.data.id).then(sleeper()).then(response=>{
                             saveIntroductionXBlockData(response.data.locator, introductionData).then(sleeper()).then(()=>{
                                 // creating simulation content
@@ -170,7 +169,6 @@ export class TeacherTemplate extends React.Component{
             const locator = event.target.parentElement.dataset.locator;
             if (locator.includes('sequential')) {
                 getData(locator).then(data => {
-                    console.log(data);
                     this.props.subsectionDataChanged(data.id, data.category, data.display_name);
                     const subsectionChildren = data.child_info.children;
                     for (let childInfo in subsectionChildren) {
@@ -185,7 +183,7 @@ export class TeacherTemplate extends React.Component{
                             if (response.data.blockType === 'introduction') {
                                 // save data into Introduction component
                                 this.props.introductionLoaded(data);
-                            } else if (response.data.blockType === 'Title') {
+                            } else if (response.data.blockType === 'title') {
                                 // save data into Title component
                             } else if (response.data.blockType === 'simulation') {
                                 // save data into Simulation component
