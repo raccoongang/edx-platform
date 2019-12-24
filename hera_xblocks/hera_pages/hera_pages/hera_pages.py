@@ -63,8 +63,9 @@ class HeraPagesXBlock(StudioEditableXBlockMixin, XBlock):
         frag.add_css_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css")
         frag.add_css_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css")
         
-        frag.add_javascript_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css")
         frag.add_javascript_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.js")
         
+        frag.add_javascript_url("https://cdn.jsdelivr.net/gh/vast-engineering/jquery-popup-overlay@2/jquery.popupoverlay.min.js")
+      
         frag.initialize_js('HeraPagesXBlock')
         return frag
