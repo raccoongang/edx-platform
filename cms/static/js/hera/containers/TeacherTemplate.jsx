@@ -6,16 +6,7 @@ import { connect } from 'react-redux';
 
 import {getData, addSubsection, createUnit, createIntroductionXBlock, saveIntroductionXBlockData, getXblockData}from '../utils/api';
 
-import { 
-    TITLE_CHANGED,
-    INTRODUCTION_CHANGED,
-    SUBSECTION_DATA_CHANGED,
-    INTRODUCTION_LOADED,
-    INTRODUCTION_NEW,
-    SIMULATION_CHANGED,
-    SIMULATION_LOADED,
-    SIMULATION_NEW,
- } from '../store/actionTypes';
+import * as actionTypes from '../store/actionTypes';
 
 
 import Title from '../components/Title';
@@ -102,6 +93,10 @@ export class TeacherTemplate extends React.Component{
         const introductionData = this.props.introduction;
         const simulationData = this.props.simulation;
         const subsectionData = this.props.subsectionData;
+
+        this.setState({
+            isSaving: true
+        });
 
         /**
          * Auxiliary Promise function, we need to wait the backend to handle our requests.
@@ -214,7 +209,7 @@ export class TeacherTemplate extends React.Component{
                             </li>
                         </ul>
                         <div className="panel-btn-holder">
-                            <button type="button" className="panel-btn" onClick={this.save.bind(this)}>
+                            <button type="button" className={`panel-btn ${this.state.isSaving ? 'is-pending' : ''}`} onClick={this.save.bind(this)}>
                                 save
                                 <span className="panel-btn__loader" />
                             </button>
@@ -227,9 +222,19 @@ export class TeacherTemplate extends React.Component{
 
                     introduction={this.props.introduction}
                     introductionChanged={this.props.introductionChanged}
+                    introductionImageAdd={this.props.introductionImageAdd}
+                    introductionImageChange={this.props.introductionImageChange}
+                    introductionImageRemove={this.props.introductionImageRemove}
+                    introductionAddContent={this.props.introductionAddContent}
+                    introductionRemoveContent={this.props.introductionRemoveContent}
 
                     simulation={this.props.simulation}
                     simulationChanged={this.props.simulationChanged}
+                    simulationImageAdd={this.props.simulationImageAdd}
+                    simulationImageChange={this.props.simulationImageChange}
+                    simulationImageRemove={this.props.simulationImageRemove}
+                    simulationAddContent={this.props.simulationAddContent}
+                    simulationRemoveContent={this.props.simulationRemoveContent}
 
                 />
                 <button className="close-popup" onClick={this.closeBar} />
@@ -252,27 +257,57 @@ const mapStateToProps = (store) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         changeTitle: (content) => {
-            return dispatch({type: TITLE_CHANGED, content: content});
+            return dispatch({type: actionTypes.TITLE_CHANGED, content: content});
         },
         // introduction
         introductionChanged: (data) => {
-            return dispatch({type: INTRODUCTION_CHANGED, data: data});
+            return dispatch({type: actionTypes.INTRODUCTION_CHANGED, data: data});
         },
         introductionLoaded: (data) => {
-            return dispatch({type: INTRODUCTION_LOADED, data: data});
+            return dispatch({type: actionTypes.INTRODUCTION_LOADED, data: data});
         },
         introductionNew: () => {
-            return dispatch({type: INTRODUCTION_NEW});
+            return dispatch({type: actionTypes.INTRODUCTION_NEW});
+        },
+        introductionImageAdd: () => {
+            return dispatch({type: actionTypes.INTRODUCTION_IMAGE_ADD});
+        },
+        introductionImageChange: (data) => {
+            return dispatch({type: actionTypes.INTRODUCTION_IMAGE_CHANGED, data: data});
+        },
+        introductionImageRemove: (data) => {
+            return dispatch({type: actionTypes.INTRODUCTION_IMAGE_REMOVE, data: data});
+        },
+        introductionAddContent: () => {
+            return dispatch({type: actionTypes.INTRODUCTION_ADD_CONTENT});
+        },
+        introductionRemoveContent: (data) => {
+            return dispatch({type: actionTypes.INTRODUCTION_REMOVE_CONTENT, data: data});
         },
         // simulation
         simulationChanged: (data) => {
-            return dispatch({type: SIMULATION_CHANGED, data: data});
+            return dispatch({type: actionTypes.SIMULATION_CHANGED, data: data});
+        },
+        simulationAddContent: () => {
+            return dispatch({type: actionTypes.SIMULATION_ADD_CONTENT});
+        },
+        simulationRemoveContent: (data) => {
+            return dispatch({type: actionTypes.SIMULATION_REMOVE_CONTENT, data: data});
         },
         simulationLoaded: (data) => {
-            return dispatch({type: SIMULATION_LOADED, data: data});
+            return dispatch({type: actionTypes.SIMULATION_LOADED, data: data});
         },
         simulationNew: () => {
-            return dispatch({type: SIMULATION_NEW});
+            return dispatch({type: actionTypes.SIMULATION_NEW});
+        },
+        simulationImageAdd: () => {
+            return dispatch({type: actionTypes.SIMULATION_IMAGE_ADD});
+        },
+        simulationImageChange: (data) => {
+            return dispatch({type: actionTypes.SIMULATION_IMAGE_CHANGED, data: data});
+        },
+        simulationImageRemove: (data) => {
+            return dispatch({type: actionTypes.SIMULATION_IMAGE_REMOVE, data: data});
         },
         subsectionDataChanged: (parentLocator, category, displayName) => {
             const data = {
@@ -280,7 +315,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                 category: category,
                 displayName: displayName
             }
-            return dispatch({type: SUBSECTION_DATA_CHANGED, data: data});
+            return dispatch({type: actionTypes.SUBSECTION_DATA_CHANGED, data: data});
         }
     };
 };

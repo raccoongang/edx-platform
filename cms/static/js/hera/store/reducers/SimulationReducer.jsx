@@ -1,10 +1,19 @@
-import { SIMULATION_CHANGED, SIMULATION_LOADED, SIMULATION_NEW } from '../actionTypes';
+import {
+    SIMULATION_CHANGED,
+    SIMULATION_LOADED,
+    SIMULATION_NEW,
+    SIMULATION_ADD_CONTENT,
+    SIMULATION_REMOVE_CONTENT,
+    SIMULATION_IMAGE_ADD,
+    SIMULATION_IMAGE_CHANGED,
+    SIMULATION_IMAGE_REMOVE
+} from '../actionTypes';
 
 
 const initialState = {
     blockType: 'simulation',
     sliderBar: [{content: ''}],
-    imgUrl: "",
+    imgUrl: [],
     iframeUrl: "",
     xBlockID: ""
 };
@@ -27,6 +36,18 @@ const SimulationReducer = function(state=initialState, action) {
                 }),
                 xBlockID: state.xBlockID
             };
+        case SIMULATION_ADD_CONTENT:
+            return {
+                ...state,
+                sliderBar: state.sliderBar.concat([{content: ""}])
+            };
+        case SIMULATION_REMOVE_CONTENT:
+            return {
+                ...state,
+                sliderBar: state.sliderBar.filter((el, ind) => {
+                    return ind !== action.data.index
+                })
+            };
         case SIMULATION_LOADED:
             return {
                 blockType: 'simulation',
@@ -34,6 +55,29 @@ const SimulationReducer = function(state=initialState, action) {
             };
         case SIMULATION_NEW:
             return initialState;
+        case SIMULATION_IMAGE_ADD:
+            return {
+                ...state,
+                imgUrl: state.imgUrl.concat([''])
+            }
+        case SIMULATION_IMAGE_CHANGED:
+            console.log(action.data);
+            return {
+                ...state,
+                imgUrl: state.imgUrl.map((img, ind) => {
+                    if (ind === action.data.index) {
+                        return action.data.img;
+                    }
+                    return img;
+                })
+            };
+        case SIMULATION_IMAGE_REMOVE:
+            return {
+                ...state,
+                imgUrl: state.imgUrl.filter((img, ind) => {
+                    return ind !== action.data.index
+                })
+            };
         default:
             return state;
     }

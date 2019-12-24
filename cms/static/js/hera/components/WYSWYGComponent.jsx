@@ -9,7 +9,7 @@ export default class WYSWYGComponent extends React.Component {
     componentDidMount() {
         const self = this;
         tinymce.init({
-            selector: '.hera-tinymce',
+            selector: `.hera-tinymce${self.props.index}`,
             theme: "modern",
             skin: 'studio-tmce4',
             // skin_url: "https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.5.10/skins/lightgray/,
@@ -56,7 +56,7 @@ export default class WYSWYGComponent extends React.Component {
         }
         this.isReset = this.props.shouldReset;
         return (
-            <textarea className="hera-tinymce" defaultValue={this.props.content}>
+            <textarea key={this.props.index} className={`hera-tinymce${this.props.index}`} defaultValue={this.props.content}>
             </textarea>
         )
     }
