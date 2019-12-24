@@ -121,42 +121,65 @@ export class TeacherTemplate extends React.Component{
             // change introduction Unit's display name
             changeUnitName(introductionData.parentLocator, introductionData.title).then(sleeper()).then(() => {
                 saveIntroductionXBlockData(introductionData.xBlockID, introductionData).then(sleeper()).then(()=>{
-
                     // change simulation Unit's display name
                     changeUnitName(simulationData.parentLocator, simulationData.title).then(sleeper()).then(() => {
-                        saveIntroductionXBlockData(simulationData.xBlockID, simulationData).then(()=>{
+                        saveIntroductionXBlockData(simulationData.xBlockID, simulationData).then(sleeper()).then(()=>{
                             this.closeBar();
                             window.location.reload();
                         });
                     })
                 });
-            })
+            });
 
 
         } else {
             addSubsection(subsectionData.parentLocator, subsectionData.category, subsectionData.displayName).then(sleeper()).then(response=>{
                 const subsectionLocator = response.data.locator;
-                // creatin introduction content
-                createUnit(subsectionLocator).then(sleeper()).then(response=>{
-                    changeUnitName(response.data.locator, introductionData.title).then(sleeper()).then((response) => {
+                createUnit(subsectionLocator).then(sleeper()).then(response => {
+                    changeUnitName(response.data.locator, 'Title').then(sleeper()).then(() => {
+                        // creatin introduction content
+                        createUnit(subsectionLocator).then(sleeper()).then(response=>{
+                            changeUnitName(response.data.locator, introductionData.title).then(sleeper()).then((response) => {
 
-                        createIntroductionXBlock(response.data.id).then(sleeper()).then(response=>{
-                            saveIntroductionXBlockData(response.data.locator, introductionData).then(sleeper()).then(()=>{
-                                // creating simulation content
-                                createUnit(subsectionLocator).then(sleeper()).then(response=>{
-                                    changeUnitName(response.data.locator, simulationData.title).then(sleeper()).then((response) => {
-                                        createIntroductionXBlock(response.data.id).then(sleeper()).then(response=>{
-                                            saveIntroductionXBlockData(response.data.locator, simulationData);
-                                            this.closeBar();
-                                            window.location.reload();
+                                createIntroductionXBlock(response.data.id).then(sleeper()).then(response=>{
+                                    saveIntroductionXBlockData(response.data.locator, introductionData).then(sleeper()).then(()=>{
+                                        // creating simulation content
+                                        createUnit(subsectionLocator).then(sleeper()).then(response=>{
+                                            changeUnitName(response.data.locator, simulationData.title).then(sleeper()).then((response) => {
+                                                createIntroductionXBlock(response.data.id).then(sleeper()).then(response=>{
+                                                    saveIntroductionXBlockData(response.data.locator, simulationData).then(sleeper()).then(() => {
+                                                        // Creating Question1
+                                                        createUnit(subsectionLocator).then(sleeper()).then(response => {
+                                                            changeUnitName(response.data.locator, 'Question1').then(sleeper()).then(() => {
+                                                                // Creating Question2
+                                                                createUnit(subsectionLocator).then(sleeper()).then(response => {
+                                                                    changeUnitName(response.data.locator, 'Question2').then(sleeper()).then(() => {
+                                                                        // Creating Question3
+                                                                        createUnit(subsectionLocator).then(sleeper()).then(response => {
+                                                                            changeUnitName(response.data.locator, 'Question3').then(sleeper()).then(() => {
+                                                                                createUnit(subsectionLocator).then(sleeper()).then(response => {
+                                                                                    changeUnitName(response.data.locator, 'End Survey').then(sleeper()).then(() => {
+                                                                                        this.closeBar();
+                                                                                        window.location.reload();
+                                                                                    })
+                                                                                })
+                                                                            })
+                                                                        })
+                                                                    })
+                                                                })
+                                                            })
+                                                        });
+                                                    });
+                                                });
+
+                                            })
                                         });
-
                                     })
                                 });
                             })
                         });
                     })
-                });
+                })
             });
         }
     }
@@ -172,24 +195,26 @@ export class TeacherTemplate extends React.Component{
                     this.props.subsectionDataChanged(data.id, data.category, data.display_name);
                     const subsectionChildren = data.child_info.children;
                     for (let childInfo in subsectionChildren) {
-                        getXblockData(subsectionChildren[childInfo].child_info.children[0].id).then(response => {
-                            const data = {
-                                ...response.data,
-                                shouldReset: true,
-                                xBlockID: subsectionChildren[childInfo].child_info.children[0].id,
-                                title: subsectionChildren[childInfo].display_name,
-                                parentLocator: subsectionChildren[childInfo].id
-                            };
-                            if (response.data.blockType === 'introduction') {
-                                // save data into Introduction component
-                                this.props.introductionLoaded(data);
-                            } else if (response.data.blockType === 'title') {
-                                // save data into Title component
-                            } else if (response.data.blockType === 'simulation') {
-                                // save data into Simulation component
-                                this.props.simulationLoaded(data);
-                            }
-                        })
+                        if (subsectionChildren[childInfo].child_info && subsectionChildren[childInfo].child_info.children.length && subsectionChildren[childInfo].child_info.children[0].id) {
+                            getXblockData(subsectionChildren[childInfo].child_info.children[0].id).then(response => {
+                                const data = {
+                                    ...response.data,
+                                    shouldReset: true,
+                                    xBlockID: subsectionChildren[childInfo].child_info.children[0].id,
+                                    title: subsectionChildren[childInfo].display_name,
+                                    parentLocator: subsectionChildren[childInfo].id
+                                };
+                                if (response.data && response.data.blockType && response.data.blockType === 'introduction') {
+                                    // save data into Introduction component
+                                    this.props.introductionLoaded(data);
+                                } else if (response.data && response.data.blockType && response.data.blockType === 'title') {
+                                    // save data into Title component
+                                } else if (response.data && response.data.blockType && response.data.blockType === 'simulation') {
+                                    // save data into Simulation component
+                                    this.props.simulationLoaded(data);
+                                }
+                            })
+                        }
                     }
                     document.getElementById('hera-popup').classList.add("popup-open");
                     this.setState({

@@ -77,8 +77,11 @@ export const changeUnitName = (locator, displayName) => {
         metadata: {
             display_name: displayName
         }
+    };
+    if (locator) {
+        return _post(XBLOCK_ROOT_URL + locator, data);
     }
-    return _post(XBLOCK_ROOT_URL + locator, data);
+    return new Promise((resolve) => {return resolve});
 }
 
 /**

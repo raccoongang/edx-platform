@@ -70,6 +70,14 @@ $nav_color6: #b3b4b4;
                 right: 12px;
                 top: 50%;
                 transform: translateY(-50%);
+                opacity: 0;
+                transition: all .3s ease-in-out;
+            }
+
+            &:hover {
+                .edit-btn {
+                    opacity: 1;
+                }
             }
         }
 
