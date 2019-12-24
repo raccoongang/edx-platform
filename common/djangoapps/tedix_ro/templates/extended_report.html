@@ -3,12 +3,10 @@
 <%namespace name='static' file='/static_content.html'/>
 <%!
 from django.utils.translation import ugettext as _
-
-from openedx.features.enterprise_support.utils import get_enterprise_learner_generic_name
 %>
 
 <%
-username = get_enterprise_learner_generic_name(request) or user.username
+username = user.profile.name or user.username
 roll = _('Superuser') if user.is_superuser else _('Teacher')
 %>
 
