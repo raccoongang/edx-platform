@@ -10,7 +10,9 @@ export default class PagesBaseComponent extends React.Component {
         this.next = this.next.bind(this);
         this.previous = this.previous.bind(this);
         this.saveContent = this.saveContent.bind(this);
-        this.state = {};
+        this.state = {
+            activeSlideIndex: 0
+        };
     }
 
     changeIframeUrl(e) {
@@ -43,6 +45,13 @@ export default class PagesBaseComponent extends React.Component {
 
     addContent() {
         this.props[this.addContentHandler]();
+        setTimeout(()=>{
+            const lastSlideNumber = this.props[this.componentType].sliderBar.length -1;
+            this.slider.slickGoTo(lastSlideNumber);
+            this.setState({
+                activeSlideIndex: lastSlideNumber
+            });
+        }, 300);
     }
 
     removeContent(e) {
@@ -70,10 +79,16 @@ export default class PagesBaseComponent extends React.Component {
 
     next() {
         this.slider.slickNext();
+        this.setState({
+            activeSlideIndex: ++this.state.activeSlideIndex
+        });
     }
 
     previous() {
         this.slider.slickPrev();
+        this.setState({
+            activeSlideIndex: --this.state.activeSlideIndex
+        });
     }
 
     render() {
@@ -92,7 +107,9 @@ export default class PagesBaseComponent extends React.Component {
                 <div className="author-block__content">
                     <div className="author-block__image">
                         {data.imgUrl.map((img, ind) => {
-                            return <img src={img} key={ind} alt=""/>
+                            if (img) {
+                                return <img src={img} key={ind} alt=""/>
+                            }
                         })}
                         {
                             data.iframeUrl && (
@@ -142,10 +159,10 @@ export default class PagesBaseComponent extends React.Component {
                         {
                             data.sliderBar.length > 1 && (
                                 <div className="author-block__question__slider-controls">
-                                    <button className="author-block__question__slider-controls__prev" onClick={this.previous}>
+                                    <button className={`author-block__question__slider-controls__prev ${this.state.activeSlideIndex === 0 ? "is-disabled" : ""}`} onClick={this.previous}>
                                         <i className="fa fa-arrow-left" aria-hidden="true" />
                                     </button>
-                                    <button className="author-block__question__slider-controls__next" onClick={this.next}>
+                                    <button className={`author-block__question__slider-controls__next ${this.state.activeSlideIndex === data.sliderBar.length-1 ? 'is-disabled' : ''}`} onClick={this.next}>
                                         <i className="fa fa-arrow-right" aria-hidden="true" />
                                     </button>
                                 </div>

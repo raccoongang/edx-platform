@@ -13,7 +13,7 @@ import Title from '../components/Title';
 import Introduction from '../components/Introduction';
 import Simulation from '../components/Simulation';
 import Question from '../components/Question';
-import Questions from './Questions';
+import LeftSidebarQuestions from './LeftSidebarQuestions';
 import EndSurvey from '../components/EndSurvey';
 import SwitchComponent from '../components/SwitchComponent';
 
@@ -274,7 +274,7 @@ export class TeacherTemplate extends React.Component{
                                     title={this.props.simulation.title}/>
                             </li>
                             <li className="nav-panel-list__item with-add-list">
-                                <Questions 
+                                <LeftSidebarQuestions
                                     activeComponent={this.state.activeComponent}
                                     activeQuestionIndex={this.state.activeQuestionIndex}
                                     switchComponent={this.switchComponent}
@@ -298,6 +298,10 @@ export class TeacherTemplate extends React.Component{
                     </div>
                 </div>
                 <ActiveComponent
+
+                    isQuestion={this.state.isQuestion}
+                    activeQuestionIndex={this.state.activeQuestionIndex}
+                    questions={this.props.questions.questions}
 
                     title={this.props.title}
 

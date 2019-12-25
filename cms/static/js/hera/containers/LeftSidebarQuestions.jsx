@@ -3,7 +3,7 @@ import React from 'react';
 import SwitchComponent from '../components/SwitchComponent';
 
 
-export default class Questions extends React.Component{
+export default class LeftSidebarQuestions extends React.Component{
 
     render() {
         return (
