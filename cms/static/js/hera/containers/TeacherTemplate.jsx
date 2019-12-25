@@ -69,7 +69,9 @@ export class TeacherTemplate extends React.Component{
         rootElement.classList.remove("popup-open");
         this.props.introductionNew();
         this.setState({
-            activeComponent: 'introduction'
+            activeComponent: 'introduction',
+            isQuestion: false,
+            activeQuestionIndex: null
         });
     }
 
