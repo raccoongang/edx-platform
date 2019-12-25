@@ -23,8 +23,9 @@ export default class LeftSidebarQuestions extends React.Component{
                                         index={index}
                                         title={`Question${index+1}`}/>
                                     <span className="remove-item">
-                                    <i className="fa fa-trash-o" aria-hidden="true"></i>
-                                </span>
+                                        <i className="fa fa-trash-o" aria-hidden="true"></i>
+                                        <i className="edit-btn fa fa-pencil" aria-hidden="true" onClick={this.toggleShowInput} />
+                                    </span>
                                 </li>
                             )
                         })}

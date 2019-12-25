@@ -92,6 +92,15 @@ export default class PagesBaseComponent extends React.Component {
     }
 
     render() {
+        const settingsImg = {
+            arrows: true,
+            dots: false,
+            infinite: false,
+            speed: 500,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+        };
+
         const settings = {
             arrows: false,
             dots: false,
@@ -106,11 +115,17 @@ export default class PagesBaseComponent extends React.Component {
             <div className="author-block__wrapper">
                 <div className="author-block__content">
                     <div className="author-block__image">
-                        {data.imgUrl.map((img, ind) => {
-                            if (img) {
-                                return <img src={img} key={ind} alt=""/>
-                            }
-                        })}
+                        <Slider ref={c => (this.slider = c)} {...settingsImg} className="author-block__image__slider">
+                            {data.imgUrl.map((img, ind) => {
+                                if (img) {
+                                    return (
+                                        <div className="author-block__image__slider-item">
+                                            <img src={img} key={ind} alt=""/>
+                                        </div>
+                                    )
+                                }
+                            })}
+                        </Slider>
                         {
                             data.iframeUrl && (
                                 <iframe src={data.iframeUrl} frameborder="0"></iframe>

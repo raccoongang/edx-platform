@@ -12,7 +12,7 @@ $author_radius: 4px;
 
 .author-holder {
     position: relative;
-    width: 1315px;
+    width: 1365px;
     max-height: 845px;
     margin: 0 auto;
     display: flex;
@@ -87,8 +87,58 @@ $author_radius: 4px;
         position: relative;
         margin-right: 12px;
         min-width: 660px;
+        height: 646px;
         overflow: scroll;
-        height: 645px;
+
+        &__slider {
+            .slick-arrow {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 0;
+                border: 0;
+                background: none;
+                box-shadow: none;
+                outline: 0;
+                padding: 0;
+                cursor: pointer;
+                transition: all .3s ease-in-out;
+                z-index: 1;
+
+                &.slick-disabled {
+                    opacity: 0;
+                    pointer-events: none;
+                }
+
+                &:before {
+                    font-size: 28px;
+                    color: $author_color2;
+                }
+
+                &:hover {
+                    &:before {
+                        transform: scale(1.15);
+                        color: $author_color5;
+                    }
+                }
+
+                &.slick-prev {
+                    left: 12px;
+                    &:before {
+                        content: '\f060';
+                        font-family: FontAwesome;
+                    }
+                }
+
+                &.slick-next {
+                    right: 12px;
+                    &:before {
+                        content: '\f061';
+                        font-family: FontAwesome;
+                    }
+                }
+            }
+        }
 
         &-selector {
             position: absolute;

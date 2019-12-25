@@ -29,6 +29,9 @@ $nav_color6: #b3b4b4;
 .nav-panel {
     width: 284px;
     background: $nav_color1;
+    position: sticky;
+    top: 0;
+    left: 0;
 
     &-wrapper {
         color: $nav_color6;
@@ -53,6 +56,8 @@ $nav_color6: #b3b4b4;
                 top: 0;
                 left: 18px;
                 transition: all .3s ease-in-out;
+                padding: 4px 12px;
+                margin-top: 4px;
 
                 &.is-hidden {
                     opacity: 0;
@@ -65,12 +70,19 @@ $nav_color6: #b3b4b4;
             }
 
             .edit-btn {
+                margin-top: -2px;
+                cursor: pointer;
                 position: absolute;
                 right: 12px;
                 top: 50%;
                 transform: translateY(-50%);
                 opacity: 0;
                 transition: all .3s ease-in-out;
+
+                &:hover {
+                    color: $nav_color4;
+                    transform: translateY(-50%) scale(1.1);
+                }
             }
 
             &:hover {
@@ -88,6 +100,7 @@ $nav_color6: #b3b4b4;
             font-size: 16px;
             cursor: pointer;
             position: relative;
+            word-break: break-word;
 
             &:hover {
                 color: $nav_color4;
@@ -151,6 +164,11 @@ $nav_color6: #b3b4b4;
 
                 &:last-child {
                     text-align: right;
+                }
+
+                .edit-btn {
+                    margin-top: 0;
+                    right: 22px;
                 }
 
                 .remove-item {
