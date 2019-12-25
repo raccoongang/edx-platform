@@ -123,6 +123,12 @@
 
             aboutSectionsData = [
                 {
+                    title: '',
+                    fields: [
+                        fullnameFieldView
+                    ]
+                },
+                {
                     title: gettext('Basic Account Information'),
                     subtitle: gettext('These settings include basic information about your account.'),
 
@@ -141,7 +147,7 @@
                                 )
                             })
                         },
-                        fullnameFieldView,
+                        // fullnameFieldView,
                         emailFieldView,
                         {
                             view: new AccountSettingsFieldViews.PasswordFieldView({
@@ -289,7 +295,7 @@
                     }
                 );
             }
-            aboutSectionsData.push(socialFields);
+            // aboutSectionsData.push(socialFields);
 
             // Add account deletion fields
             if (displayAccountDeletion) {
