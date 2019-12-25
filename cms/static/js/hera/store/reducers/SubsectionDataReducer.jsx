@@ -4,7 +4,14 @@ import { SUBSECTION_DATA_CHANGED } from '../actionTypes';
 const initialState = {
     parentLocator: "",
     category: "",
-    displayName: ""
+    displayName: "",
+    componentsOrder: [
+        'title',
+        'introduction',
+        'simulation',
+        'questions',
+        'endSurvey'
+    ]
 };
 
 const SubsectionDataReducer = function(state=initialState, action) {
@@ -12,7 +19,8 @@ const SubsectionDataReducer = function(state=initialState, action) {
         case SUBSECTION_DATA_CHANGED:
             // TODO: change to the right action
             return {
-                ...action.data
+                ...action.data,
+                componentsOrder: state.componentsOrder
             };
         default:
             return state;

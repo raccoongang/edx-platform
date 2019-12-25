@@ -15,12 +15,14 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_http_methods
+from opaque_keys.edx.asides import AsideUsageKeyV1, AsideUsageKeyV2
 from opaque_keys.edx.keys import CourseKey
 from opaque_keys.edx.locator import LibraryUsageLocator
 from pytz import UTC
 from six import text_type
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
+from xblock.exceptions import NoSuchHandlerError
 from xblock.fields import Scope
 
 import dogstats_wrapper as dog_stats_api
@@ -46,6 +48,7 @@ from contentstore.views.helpers import (
     xblock_type_display_name
 )
 from contentstore.views.preview import get_preview_fragment
+from contentstore.utils import get_xblock_aside_instance
 from edxmako.shortcuts import render_to_string
 from help_tokens.core import HelpUrlExpert
 from cms.djangoapps.models.settings.course_grading import CourseGradingModel
@@ -71,8 +74,15 @@ from xmodule.services import ConfigurationService, SettingsService
 from xmodule.tabs import CourseTabList
 from xmodule.x_module import DEPRECATION_VSCOMPAT_EVENT, PREVIEW_VIEWS, STUDENT_VIEW, STUDIO_VIEW
 
+
 __all__ = [
-    'orphan_handler', 'xblock_handler', 'xblock_view_handler', 'xblock_outline_handler', 'xblock_container_handler'
+    'orphan_handler',
+    'xblock_handler',
+    'xblock_view_handler',
+    'xblock_outline_handler',
+    'xblock_container_handler',
+    'hera_template_create_handler',
+    'hera_template_changes_handler'
 ]
 
 log = logging.getLogger(__name__)
@@ -105,6 +115,114 @@ def _filter_entrance_exam_grader(graders):
     if is_entrance_exams_enabled():
         graders = [grader for grader in graders if grader.get('type') != u'Entrance Exam']
     return graders
+
+
+@require_http_methods(("POST",))
+@login_required
+@expect_json
+def hera_template_create_handler(request): # create new subsection
+    data = request.json
+    components_order = data.get('subsectionData').get('componentsOrder')
+    subsection_data = data.pop('subsectionData')
+    # create subsection
+    parent_locator = subsection_data.get('parentLocator')
+    usage_key = usage_key_with_run(parent_locator)
+
+    access_check = has_studio_read_access if request.method == 'GET' else has_studio_write_access
+    if not access_check(request.user, usage_key.course_key):
+        raise PermissionDenied()
+
+    created_block = create_xblock(
+        parent_locator=parent_locator,
+        user=request.user,
+        category='sequential',
+        display_name=subsection_data.get('displayName'),
+    )
+    def create_xblock_manipulations(xblock_data):
+        """
+        Prepare place for saving xblock.
+        Create vertical, then the "hera_pages" xblock, then save it with data.
+        """
+
+        xblock_types_mapping = {
+            # new xblocks will be added
+            'introduction': 'hera_pages',
+            'simulation': 'hera_pages',
+        }
+        unit = create_xblock(
+            parent_locator=unicode(created_block.location),
+            user=request.user,
+            category='vertical',
+            display_name=xblock_data.get('title', 'Unit'),
+        )
+        category = xblock_types_mapping.get(xblock_data.get('blockType'))
+        if category:
+            hera_pages_xblock = create_xblock(
+                parent_locator=unicode(unit.location),
+                user=request.user,
+                category='hera_pages',
+                display_name=None,
+            )
+            _save_xblock(
+                request.user,
+                _get_xblock(hera_pages_xblock.location, request.user),
+                fields={'data': xblock_data}
+            )
+
+    for component in components_order:
+        try:
+            if data[component].get('blockType') == 'questions':
+                for question in data[component]['questions']:
+                    create_xblock_manipulations(question)
+            else:
+                create_xblock_manipulations(data[component])
+        except Exception as e:
+            return JsonResponse({'error': e}, status=400)
+    return JsonResponse({'sucess': True})
+
+
+@require_http_methods(("POST",))
+@login_required
+@expect_json
+def hera_template_changes_handler(request):
+
+    data = request.json
+    components_order = data.get('subsectionData').get('componentsOrder')
+    asides = []
+    for component in components_order:
+        # in case the title of the component was changed we re-save xblock with metadata.
+        if data.get(component).get('parentLocator'):
+            unit_usage_key = usage_key_with_run(data.get(component).get('parentLocator'))
+            _save_xblock(
+                request.user,
+                _get_xblock(unit_usage_key, request.user),
+                metadata={'display_name': data.get(component).get('title')}
+            )
+
+        xblock_id = data.get(component).get('xBlockID')
+        if xblock_id:
+            usage_key = usage_key_with_run(xblock_id)
+            try:
+                if isinstance(usage_key, (AsideUsageKeyV1, AsideUsageKeyV2)):
+                    descriptor = modulestore().get_item(usage_key.usage_key)
+                    aside_instance = get_xblock_aside_instance(usage_key)
+                    asides = [aside_instance] if aside_instance else []
+                    resp = aside_instance.handle(handler, req, suffix)
+                else:
+                    descriptor = modulestore().get_item(usage_key)
+                    descriptor.xmodule_runtime = StudioEditModuleRuntime(request.user)
+                    # we don't validate it, we assume it has been done on frontend.
+                    descriptor.data.update(**data.get(component, {}))
+
+            except NoSuchHandlerError:
+                log.info("XBlock %s attempted to access missing handler %r", descriptor, handler, exc_info=True)
+                raise Http404
+
+            # unintentional update to handle any side effects of handle call
+            # could potentially be updating actual course data or simply caching its values
+            modulestore().update_item(descriptor, request.user.id, asides=asides)
+
+    return JsonResponse()
 
 
 @require_http_methods(("DELETE", "GET", "PUT", "POST", "PATCH"))

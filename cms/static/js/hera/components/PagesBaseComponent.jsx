@@ -47,7 +47,7 @@ export default class PagesBaseComponent extends React.Component {
         this.props[this.addContentHandler]();
         setTimeout(()=>{
             const lastSlideNumber = this.props[this.componentType].sliderBar.length -1;
-            this.slider.slickGoTo(lastSlideNumber);
+            this.sliderContent.slickGoTo(lastSlideNumber);
             this.setState({
                 activeSlideIndex: lastSlideNumber
             });
