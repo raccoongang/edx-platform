@@ -1,6 +1,7 @@
 const initialState = {
     content: 'Enter a text',
-    blockType: 'endSurvey'
+    blockType: 'endSurvey',
+    title: 'End Survey'
 };
 
 const EndSurvey = function(state=initialState, action) {

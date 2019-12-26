@@ -3,7 +3,8 @@ import { TITLE_CHANGED } from '../actionTypes';
 
 const initialState = {
     content: 'Enter a text',
-    blockType: 'title'
+    blockType: 'title',
+    title: 'Title'
 };
 
 const TitleReducer = function(state=initialState, action) {

@@ -10,7 +10,7 @@ const HEADERS = {
 
 const defaultParams = {headers: HEADERS, withCredentials: true};
 
-const _post = (url, data) => {
+export const _post = (url, data) => {
     return axios.post(url, data, defaultParams);
 };
 

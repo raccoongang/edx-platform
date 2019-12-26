@@ -19,6 +19,8 @@ import SwitchComponent from '../components/SwitchComponent';
 
 import '../sass/main.scss';
 
+import axios from 'axios';
+
 
 const ActiveComponentsMap = {
     'title': Title,
@@ -71,7 +73,8 @@ export class TeacherTemplate extends React.Component{
         this.setState({
             activeComponent: 'introduction',
             isQuestion: false,
-            activeQuestionIndex: null
+            activeQuestionIndex: null,
+            isSaving: false
         });
     }
 
@@ -120,68 +123,26 @@ export class TeacherTemplate extends React.Component{
         };
 
         if (introductionData.xBlockID) { // if xBlockID is located we assume all data are being edited
-            // change introduction Unit's display name
-            changeUnitName(introductionData.parentLocator, introductionData.title).then(sleeper()).then(() => {
-                saveIntroductionXBlockData(introductionData.xBlockID, introductionData).then(sleeper()).then(()=>{
-                    // change simulation Unit's display name
-                    changeUnitName(simulationData.parentLocator, simulationData.title).then(sleeper()).then(() => {
-                        saveIntroductionXBlockData(simulationData.xBlockID, simulationData).then(sleeper()).then(()=>{
-                            this.closeBar();
-                            window.location.reload();
-                        });
-                    })
+            this.props.saveChanges().then((response => {
+                this.closeBar();
+                window.location.reload();
+            })).catch((error)=>{
+                this.setState({
+                    isSaving: false
                 });
+                console.log(error);
             });
 
 
         } else {
-            addSubsection(subsectionData.parentLocator, subsectionData.category, subsectionData.displayName).then(sleeper()).then(response=>{
-                const subsectionLocator = response.data.locator;
-                createUnit(subsectionLocator).then(sleeper()).then(response => {
-                    changeUnitName(response.data.locator, 'Title').then(sleeper()).then(() => {
-                        // creatin introduction content
-                        createUnit(subsectionLocator).then(sleeper()).then(response=>{
-                            changeUnitName(response.data.locator, introductionData.title).then(sleeper()).then((response) => {
-
-                                createIntroductionXBlock(response.data.id).then(sleeper()).then(response=>{
-                                    saveIntroductionXBlockData(response.data.locator, introductionData).then(sleeper()).then(()=>{
-                                        // creating simulation content
-                                        createUnit(subsectionLocator).then(sleeper()).then(response=>{
-                                            changeUnitName(response.data.locator, simulationData.title).then(sleeper()).then((response) => {
-                                                createIntroductionXBlock(response.data.id).then(sleeper()).then(response=>{
-                                                    saveIntroductionXBlockData(response.data.locator, simulationData).then(sleeper()).then(() => {
-                                                        // Creating Question1
-                                                        createUnit(subsectionLocator).then(sleeper()).then(response => {
-                                                            changeUnitName(response.data.locator, 'Question1').then(sleeper()).then(() => {
-                                                                // Creating Question2
-                                                                createUnit(subsectionLocator).then(sleeper()).then(response => {
-                                                                    changeUnitName(response.data.locator, 'Question2').then(sleeper()).then(() => {
-                                                                        // Creating Question3
-                                                                        createUnit(subsectionLocator).then(sleeper()).then(response => {
-                                                                            changeUnitName(response.data.locator, 'Question3').then(sleeper()).then(() => {
-                                                                                createUnit(subsectionLocator).then(sleeper()).then(response => {
-                                                                                    changeUnitName(response.data.locator, 'End Survey').then(sleeper()).then(() => {
-                                                                                        this.closeBar();
-                                                                                        window.location.reload();
-                                                                                    })
-                                                                                })
-                                                                            })
-                                                                        })
-                                                                    })
-                                                                })
-                                                            })
-                                                        });
-                                                    });
-                                                });
-
-                                            })
-                                        });
-                                    })
-                                });
-                            })
-                        });
-                    })
-                })
+            this.props.createSubsection().then((response => {
+                this.closeBar();
+                window.location.reload();
+            })).catch((error)=>{
+                this.setState({
+                    isSaving: false
+                });
+                console.log(error);
             });
         }
     }
