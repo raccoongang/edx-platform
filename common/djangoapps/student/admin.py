@@ -23,8 +23,8 @@ from student.models import (
     RegistrationCookieConfiguration,
     UserAttribute,
     UserProfile,
-    UserSites
-    UserTestGroup,
+    UserSites,
+    UserTestGroup
 )
 from student.roles import REGISTERED_ACCESS_ROLES
 from xmodule.modulestore.django import modulestore

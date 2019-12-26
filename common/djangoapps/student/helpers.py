@@ -48,7 +48,7 @@ from student.models import (
     UserAttribute,
     UserProfile,
     unique_id_for_user,
-    email_exists_or_retired
+    email_exists_or_retired,
     UserSites
 )
 
