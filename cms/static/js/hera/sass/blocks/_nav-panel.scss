@@ -93,8 +93,10 @@ $nav_color6: #b3b4b4;
         }
 
         &__link {
+            box-sizing: border-box;
             color: inherit;
             display: block;
+            min-height: 35px;
             padding: 6px 35px;
             transition: background .3s ease-in-out;
             font-size: 16px;
@@ -166,9 +168,26 @@ $nav_color6: #b3b4b4;
                     text-align: right;
                 }
 
-                .edit-btn {
+                &:hover {
+                    .edit-btn-mod {
+                        opacity: 1;
+                    }
+                }
+
+                .edit-btn-mod {
                     margin-top: 0;
+                    cursor: pointer;
+                    position: absolute;
                     right: 22px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    opacity: 0;
+                    transition: all .3s ease-in-out;
+
+                    &:hover {
+                        color: $nav_color4;
+                        transform: translateY(-50%) scale(1.1);
+                    }
                 }
 
                 .remove-item {
@@ -177,13 +196,17 @@ $nav_color6: #b3b4b4;
                     top: 50%;
                     right: 18px;
                     transform: translateY(-50%);
-                    opacity: .5;
-                    transition: all .3s ease-in-out;
 
-                    &:hover {
-                        color: $nav_color4;
-                        opacity: 1;
-                    };
+                    &__icon {
+                        opacity: .5;
+                        transition: all .3s ease-in-out;
+
+                        &:hover {
+                            color: $nav_color4;
+                            opacity: 1;
+                            transform: scale(1.1);
+                        };
+                    }
                 }
             }
 
