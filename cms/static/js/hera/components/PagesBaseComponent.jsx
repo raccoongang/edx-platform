@@ -78,14 +78,14 @@ export default class PagesBaseComponent extends React.Component {
     }
 
     next() {
-        this.slider.slickNext();
+        this.sliderContent.slickNext();
         this.setState({
             activeSlideIndex: ++this.state.activeSlideIndex
         });
     }
 
     previous() {
-        this.slider.slickPrev();
+        this.sliderContent.slickPrev();
         this.setState({
             activeSlideIndex: --this.state.activeSlideIndex
         });
@@ -115,7 +115,7 @@ export default class PagesBaseComponent extends React.Component {
             <div className="author-block__wrapper">
                 <div className="author-block__content">
                     <div className="author-block__image">
-                        <Slider ref={c => (this.slider = c)} {...settingsImg} className="author-block__image__slider">
+                        <Slider ref={c => (this.sliderImg = c)} {...settingsImg} className="author-block__image__slider">
                             {data.imgUrl.map((img, ind) => {
                                 if (img) {
                                     return (
@@ -147,7 +147,7 @@ export default class PagesBaseComponent extends React.Component {
                         }
                     </div>
                     <div className="author-block__question">
-                        <Slider ref={c => (this.slider = c)} {...settings} className="author-block__question__slider">
+                        <Slider ref={c => (this.sliderContent = c)} {...settings} className="author-block__question__slider">
                             {data.sliderBar.map((bar, index) => {
                                 return (
                                     <div key={index} className="author-block__question__slider-item">
