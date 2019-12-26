@@ -33,7 +33,9 @@ export default class SwitchComponent extends React.Component{
         return (
             <div>
                 <a href="#" className={className} onClick={this.handleClick.bind(this)}>
-                    {this.props.title}
+                    {
+                        !this.state.showInput && this.props.title
+                    }
                 </a>
                 {
                     !this.props.isQuestion && (
