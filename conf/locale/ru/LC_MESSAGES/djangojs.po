@@ -7258,6 +7258,26 @@ msgid "LEARN MORE"
 msgstr "ПОДРОБНЕЕ"
 
 #: lms/templates/discovery/course_card.underscore
+msgid "Will start soon"
+msgstr "Скоро старт"
+
+#: lms/templates/discovery/course_card.underscore
+msgid "The enrollment is open"
+msgstr "Идет набор"
+
+#: lms/templates/discovery/course_card.underscore
+msgid "The course is on"
+msgstr "Курс начался"
+
+#: lms/templates/discovery/course_card.underscore
+msgid "The course has ended"
+msgstr "Курс завершился"
+
+#: lms/templates/discovery/course_card.underscore
+msgid "Free"
+msgstr "Бесплатно"
+
+#: lms/templates/discovery/course_card.underscore
 #, python-format
 msgid "Starts: %(start_date)s"
 msgstr "Начало: %(start_date)s"

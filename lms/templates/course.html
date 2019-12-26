@@ -1,6 +1,7 @@
 <%def name="online_help_token()"><% return "course" %></%def>
 <%namespace name='static' file='static_content.html'/>
 <%!
+from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 from certificates.api import get_active_web_certificate
@@ -44,16 +45,25 @@ from courseware.courses import get_course
         <!--end-->
       </h2>
       <%
+      current_time = timezone.now()
+      if course.enrollment_start and current_time < course.enrollment_start:
+          status = _("Will start soon")
+      elif current_time < course.start:
+          status = _("The enrollment is open")
+      else:
+          status = _("The course is on")
       if course.start is not None:
           course_date_string = course.start.strftime('%Y-%m-%dT%H:%M:%S%z')
           course_date_string_format = course.start.strftime('%d %b. %Y')
       else:
           course_date_string = ''
       %>
+      <div>%{status}</div>
+      <div>%{_(course.price)}</div>
       % if course.advertised_start is not None:
-          <div class="course-date" aria-hidden="true">${_("Starts")}: ${course.advertised_start}</div>
+          <div class="course-date" aria-hidden="true">${course.advertised_start}</div>
       % else:
-          <div class="course-date localized_datetime" aria-hidden="true" data-format="shortDate">${_("Course starts: ")}${course_date_string_format}</div>
+          <div class="course-date localized_datetime" aria-hidden="true" data-format="shortDate">${course_date_string_format}</div>
           <div style="display:none" class="course-date localized_datetime" aria-hidden="true" data-format="shortDate" data-datetime="${course_date_string}" data-string="${_("Starts: {date}")}"></div>
       % endif
     </div>
