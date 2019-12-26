@@ -50,8 +50,9 @@ const IntroductionReducer = function(state=initialState, action) {
             return {
                 ...state,
                 sliderBar: state.sliderBar.filter((el, ind) => {
-                    return ind !== action.data.index
-                })
+                    return ind !== action.data.index;
+                }),
+                shouldReset: true
             };
         case INTRODUCTION_LOADED:
             return {

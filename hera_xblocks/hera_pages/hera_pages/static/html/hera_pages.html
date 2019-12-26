@@ -2,7 +2,9 @@
     <div class="wrapper-page" id="wrapper-page">
         <div class="image-wrapper">
         {% if data.imgUrl %}
-            <img src="{{ data.imgUrl }}" alt=""/>
+            {% for img in data.imgUrl %}
+                <img src="{{ img }}" alt=""/>
+            {% endfor %}
         {% elif data.iframeUrl %}
             <iframe src="{{ data.iframeUrl }}">
         {% else %}

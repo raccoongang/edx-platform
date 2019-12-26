@@ -58,7 +58,7 @@ class HeraPagesXBlock(StudioEditableXBlockMixin, XBlock):
         frag = Fragment(html.format(self=self))
         frag.add_css(self.resource_string("static/css/hera_pages.css"))
         frag.add_javascript(self.resource_string("static/js/src/hera_pages.js"))
-        
+
         # slick jquery cdn
         frag.add_css_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css")
         frag.add_css_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css")
