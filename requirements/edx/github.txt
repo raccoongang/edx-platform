@@ -99,7 +99,7 @@ git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.15#egg=xblock-
 git+https://github.com/raccoongang/xblock-pdf@v1.0.0-rg-ua#egg=xblock-pdf
 
 #Microsoft Azure AD SSO
-#-e git+https://github.com/raccoongang/microsoft-oauth2-client.git@ficus-rg#egg=microsoft_oauth2_client
+-e git+https://github.com/raccoongang/microsoft-oauth2-client.git@ifnmu-ficus-rg#egg=microsoft_oauth2_client
 
 #Third Party XBlocks Microsoft installation
 -e git+https://github.com/OfficeDev/xblock-officemix.git@3f876b5f0267b017812620239533a29c7d562d24#egg=xblock_officemix
