@@ -47,9 +47,10 @@ export default class PagesBaseComponent extends React.Component {
         this.props[this.addContentHandler]();
         setTimeout(()=>{
             const lastSlideNumber = this.props[this.componentType].sliderBar.length -1;
-            this.sliderContent.slickGoTo(lastSlideNumber);
             this.setState({
                 activeSlideIndex: lastSlideNumber
+            }, ()=>{
+                this.sliderContent.slickGoTo(lastSlideNumber);
             });
         }, 300);
     }
@@ -78,16 +79,18 @@ export default class PagesBaseComponent extends React.Component {
     }
 
     next() {
-        this.sliderContent.slickNext();
         this.setState({
-            activeSlideIndex: ++this.state.activeSlideIndex
+            activeSlideIndex: this.state.activeSlideIndex+1
+        }, ()=>{
+            this.sliderContent.slickNext();
         });
     }
 
     previous() {
-        this.sliderContent.slickPrev();
         this.setState({
-            activeSlideIndex: --this.state.activeSlideIndex
+            activeSlideIndex: this.state.activeSlideIndex-1
+        }, ()=>{
+            this.sliderContent.slickPrev();
         });
     }
 
@@ -115,24 +118,28 @@ export default class PagesBaseComponent extends React.Component {
             <div className="author-block__wrapper">
                 <div className="author-block__content">
                     <div className="author-block__image">
-                        <Slider ref={c => (this.sliderImg = c)} {...settingsImg} className="author-block__image__slider">
-                            {data.imgUrl.map((img, ind) => {
-                                if (img) {
-                                    return (
-                                        <div className="author-block__image__slider-item">
-                                            <img src={img} key={ind} alt=""/>
-                                        </div>
-                                    )
-                                }
-                            })}
-                        </Slider>
+                        {
+                            data.imgUrl.length > 0 && (
+                                <Slider ref={c => (this.sliderImg = c)} {...settingsImg} className="author-block__image__slider">
+                                    {data.imgUrl.map((img, ind) => {
+                                        if (img) {
+                                            return (
+                                                <div className="author-block__image__slider-item">
+                                                    <img src={img} key={ind} alt=""/>
+                                                </div>
+                                            )
+                                        }
+                                    })}
+                                </Slider>
+                            )
+                        }
                         {
                             data.iframeUrl && (
                                 <iframe src={data.iframeUrl} frameborder="0"></iframe>
                             )
                         }
                         {
-                            !data.imgUrl.length > 0 && !this.state.iframeAdding ? (
+                            !data.imgUrl.length > 0 && !data.iframeUrl && !this.state.iframeAdding ? (
                                 <div className="author-block__image-selector">
                                     <i className="fa fa-picture-o" aria-hidden="true"></i>
                                     <br/>
@@ -147,7 +154,7 @@ export default class PagesBaseComponent extends React.Component {
                         }
                     </div>
                     <div className="author-block__question">
-                        <Slider ref={c => (this.sliderContent = c)} {...settings} className="author-block__question__slider">
+                        <Slider ref={c => (this.sliderContent = c)} {...settings}  className="author-block__question__slider">
                             {data.sliderBar.map((bar, index) => {
                                 return (
                                     <div key={index} className="author-block__question__slider-item">
