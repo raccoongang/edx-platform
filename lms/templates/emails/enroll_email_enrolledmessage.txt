@@ -12,9 +12,3 @@ ${_("You have been enrolled in {course_name} at {site_name} by a member "
 ${_("To start accessing course materials, please visit {course_url}").format(
 		course_url=course_url
 	)}
-
-----
-${_("This email was automatically sent from {site_name} to "
-	"{full_name}").format(
-		site_name=site_name, full_name=full_name
-	)}

@@ -16269,7 +16269,7 @@ msgstr ""
 #: lms/templates/emails/enroll_email_enrolledmessage.txt
 msgid "To start accessing course materials, please visit {course_url}"
 msgstr ""
-"Для доступа к материалам курса, пожалуйста, перейдите по ссылке {course_url}"
+"Для доступа к материалам курса, пожалуйста, авторизуйтесь на платформе"
 
 #: lms/templates/emails/add_beta_tester_email_message.txt
 msgid "Visit {course_about_url} to join the course and begin the beta test."
@@ -16521,15 +16521,14 @@ msgstr ""
 
 #: lms/templates/emails/enroll_email_allowedmessage.txt
 msgid "Dear student,"
-msgstr "Уважаемый слушатель!"
+msgstr "Дорогой студент!"
 
 #: lms/templates/emails/enroll_email_allowedmessage.txt
 msgid ""
 "You have been invited to join {course_name} at {site_name} by a member of "
 "the course staff."
 msgstr ""
-"Вы получили приглашение пройти курс «{course_name}» на {site_name} от "
-"сотрудника курса."
+"Сотрудник курса приглашает Вас присоединиться к курсу {course_name} по адресу {site_name}."
 
 #: lms/templates/emails/enroll_email_allowedmessage.txt
 msgid "To access the course visit {course_url} and login."
@@ -16550,17 +16549,17 @@ msgid ""
 "the registration form making sure to use {email_address} in the E-mail "
 "field."
 msgstr ""
-"Для завершения регистрации, пожалуйста, пройдите по ссылке "
-"{registration_url} и заполните форму регистрации. Обязательно укажите адрес "
-"{email_address} в поле «Электронная почта»."
+"Чтобы завершить регистрацию, пожалуйста, перейдите по ссылке "
+"{registration_url} и заполните регистрационную форму, убедившись, что Вы используете "
+"{email_address} в поле E-mail."
 
 #: lms/templates/emails/enroll_email_allowedmessage.txt
 msgid ""
 "Once you have registered and activated your account, you will see "
 "{course_name} listed on your dashboard."
 msgstr ""
-"Как только вы зарегистрируетесь и активируете свою учётную запись, "
-"«{course_name}» появится в вашей панели управления."
+"После того как Вы зарегистрируете и активируете свой аккаунт, "
+"Вы увидите курс {course_name} в разделе «Мои курсы»"
 
 #: lms/templates/emails/enroll_email_allowedmessage.txt
 msgid ""
@@ -16576,7 +16575,7 @@ msgstr "Затем вы сможете записаться на курс «{cou
 
 #: lms/templates/emails/enroll_email_allowedsubject.txt
 msgid "You have been invited to register for {course_name}"
-msgstr "Приглашение записаться на курс «{course_name}»"
+msgstr "Вы были приглашены на курс «{course_name}»"
 
 #: lms/templates/emails/enroll_email_enrolledmessage.txt
 msgid ""
@@ -16584,7 +16583,7 @@ msgid ""
 "course staff. The course should now appear on your {site_name} dashboard."
 msgstr ""
 "Вы записаны на курс «{course_name}» на {site_name} сотрудником курса. Курс "
-"теперь должен появиться в вашей панели управления {site_name}."
+"теперь должен появиться в разделе «Мои курсы» на платформе {site_name}."
 
 #: lms/templates/emails/enroll_email_enrolledmessage.txt
 #: lms/templates/emails/unenroll_email_enrolledmessage.txt
