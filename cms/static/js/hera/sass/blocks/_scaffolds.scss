@@ -1,0 +1,28 @@
+$scaffolds_color1: #2b6797;
+$scaffolds_color2: #fff;
+
+.scaffolds {
+    &__wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    &__btn {
+        font-size: 12px;
+        box-sizing: border-box;
+        display: inline-block;
+        border: none;
+        box-shadow: none;
+        background: $scaffolds_color1;
+        outline: none;
+        border-radius: 4px;
+        text-align: center;
+        color: $scaffolds_color2;
+        padding: 6px 8px;
+        transition: all .3s ease-in-out;
+        position: relative;
+        width: 32%;
+        max-width: 32%;
+    }
+}
