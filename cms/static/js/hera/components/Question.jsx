@@ -59,7 +59,7 @@ export default class Question extends React.Component{
                                 </div>
                             </div>
 
-                            <div className="questions__list checkboxes">
+                            <div className="questions__list checkbox">
                                 <div className="questions__list__item">
                                     <label className="questions__list__label">
                                         <input className="questions__list__checkbox" type="checkbox" name="checkbox" />
@@ -101,7 +101,7 @@ export default class Question extends React.Component{
 
                             <div className="questions__list textarea">
                                 <div className="questions__list__item">
-                                    <textarea className="questions__list__textarea" name="text"></textarea>
+                                    <textarea className="questions__list__textarea" name="text" />
                                 </div>
 
                                 <div className="questions__list__add-item">

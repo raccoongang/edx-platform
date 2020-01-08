@@ -16,7 +16,7 @@ $question_color5: #008000;
         }
 
         &.is-checkbox {
-            .questions__list.checkboxes {
+            .questions__list.checkbox {
                 display: block;
                 visibility: visible;
             }
@@ -41,7 +41,7 @@ $question_color5: #008000;
         margin: 0 0 20px;
 
         &.radio,
-        &.checkboxes,
+        &.checkbox,
         &.numerical,
         &.textarea {
             display: none;
@@ -160,7 +160,6 @@ $question_color5: #008000;
             opacity: 1;
         }
 
-        &__checkbox:focus + &__text:before,
         &__checkbox:checked + &__text:before {
             box-shadow: none;
             background: $question_color1;
