@@ -45,6 +45,7 @@ class ContentLibraryTransformer(FilteringTransformerMixin, BlockStructureTransfo
         block_structure.request_xblock_fields('max_count')
         block_structure.request_xblock_fields('category')
         block_structure.request_xblock_fields('unit_level')
+        block_structure.request_xblock_fields('lesson_logo')
         store = modulestore()
 
         # needed for analytics purposes

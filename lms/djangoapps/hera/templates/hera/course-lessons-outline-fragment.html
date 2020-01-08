@@ -14,36 +14,47 @@ from openedx.core.djangolib.markup import HTML, Text
 subsection_new = subsection_vertical.get('children')
 %>
 <main role="main" class="course-outline" id="main" tabindex="-1">
-    % if course_sections is not None:
-        <button class="btn btn-primary"
-                id="expand-collapse-outline-all-button"
-                aria-expanded="false"
-                aria-controls="course-outline-block-tree"
-                >
-          <span class="expand-collapse-outline-all-extra-padding" id="expand-collapse-outline-all-span">${_("Expand All")}</span>
-        </button>
-        <ol class="block-tree accordion"
-            id="course-outline-block-tree"
-            aria-labelledby="expand-collapse-outline-all-button">
 
-        % for vertical in subsection_new:
-                                    <li class="vertical outline-item focusable">
-                                        <a class="outline-item focusable"
-                                            href="${ vertical['lms_web_url'] }"
-                                            id="${ vertical['id'] }">
-                                            <div class="vertical-details">
-                                              <div class="vertical-title">
-                                                ${ vertical['display_name'] }
-                                              </div>
-                                            </div>
-                        % if vertical.get('complete'):
-                                                <span class="complete-checkmark fa fa-check"></span>
+% if course_sections is not None:
+    <!-- select page -->
+    <div class="onboarding-holder">
+        <div class="mascot mascot__left">
+            <img class="mascot-image" src="/static/${settings.DEFAULT_SITE_THEME}/images/hera_mascot.png" alt="HERA-mascot" />
+        </div>
+        <div class="onboarding-content">
+            <h1>
+                Choose a lesson
+            </h1>
+            <div class="selection-holder">
+            % for vertical in subsection_new:
+                % if vertical.get('complete'):
+                    <a href="${ vertical['lms_web_url'] }" class="selection-item passed" id="${ vertical['id'] }">
+                        % if vertical.get('lesson_logo'):
+                            <img src="${ vertical['lesson_logo'] }" alt="Lesson-image">
+                        % else:
+                            <img src="/static/${settings.DEFAULT_SITE_THEME}/images/selection/selection-1.png" alt="Lesson-image">
                         % endif
-                                        </a>
-                                    </li>
-                    % endfor
-        </ol>
-    % endif
+                        <span>
+                        ${ vertical['display_name'] }
+                        </span>
+                    </a>
+                % else:
+                    <a href="${ vertical['lms_web_url'] }" class="selection-item" id="${ vertical['id'] }">
+                        % if vertical.get('lesson_logo'):
+                            <img src="${ vertical['lesson_logo'] }" alt="Lesson-image">
+                        % else:
+                            <img src="/static/${settings.DEFAULT_SITE_THEME}/images/selection/selection-1.png" alt="Lesson-image">
+                        % endif
+                        <span>
+                        ${ vertical['display_name'] }
+                        </span>
+                    </a>
+                % endif
+            % endfor
+            </div>
+        </div>
+    </div>
+% endif
 </main>
 
 <%static:require_module_async module_name="js/dateutil_factory" class_name="DateUtilFactory">
