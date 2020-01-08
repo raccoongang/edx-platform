@@ -119,7 +119,7 @@ export const saveIntroductionXBlockData = (locator, data) => {
 
 // Questions
 // {
-//     imgUrl: "link",
+//     imgUrls: ["link"],
 //     iframeUrl: "link",
 //     description: "html content",
 //     options: [

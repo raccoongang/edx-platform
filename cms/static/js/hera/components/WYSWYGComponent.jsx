@@ -6,10 +6,20 @@ export default class WYSWYGComponent extends React.Component {
     changeHandler(e) {
         this.props.saveContent(this.props.index, e.target.getContent());
     }
+
+    getSelectorName() {
+        return `.${this.getClassName()}`;
+    }
+
+    getClassName() {
+        return `hera-tinymce${this.props.index}`;
+    }
+
     componentDidMount() {
         const self = this;
+
         tinymce.init({
-            selector: `.hera-tinymce${self.props.index}`,
+            selector: self.getSelectorName(),
             theme: "modern",
             skin: 'studio-tmce4',
             // skin_url: "https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.5.10/skins/lightgray/,
@@ -52,11 +62,9 @@ export default class WYSWYGComponent extends React.Component {
         // hack to load newly loaded content into editor
         if (this.editor && this.props.shouldReset) {
             this.editor.setContent(this.props.content);
-            this.isReset = true;
         }
-        this.isReset = this.props.shouldReset;
         return (
-            <textarea key={this.props.index} className={`hera-tinymce${this.props.index}`} defaultValue={this.props.content}>
+            <textarea key={this.props.index} className={this.getClassName()} defaultValue={this.props.content}>
             </textarea>
         )
     }

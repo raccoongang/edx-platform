@@ -49,6 +49,7 @@ export class TeacherTemplate extends React.Component{
         this.switchComponent = this.switchComponent.bind(this);
         this.closeBar = this.closeBar.bind(this);
         this.changeTitle = this.changeTitle.bind(this);
+        this.changeQuestionTitle = this.changeQuestionTitle.bind(this);
 
         this.state = {
             activeComponent: 'introduction',
@@ -73,7 +74,7 @@ export class TeacherTemplate extends React.Component{
         this.setState({
             activeComponent: 'introduction',
             isQuestion: false,
-            activeQuestionIndex: null,
+            activeQuestionIndex: 0,
             isSaving: false
         });
     }
@@ -93,10 +94,34 @@ export class TeacherTemplate extends React.Component{
         });
     }
 
+    removeComponent(index) {
+        let activeIndex = this.state.activeQuestionIndex;
+        if (activeIndex > this.props.questions.questions.length - 2) {
+            activeIndex = this.props.questions.questions.length - 2;
+        }
+        if (activeIndex < 0) {
+            this.setState({
+                activeComponent: 'introduction'
+            });
+        } else {
+            this.setState({
+                activeQuestionIndex: activeIndex
+            });
+        }
+        this.props.questionRemoved(index);
+    }
+
     changeTitle(e, storeName, handlerName) {
         this.props[handlerName]({
             ...this.props[storeName],
             title: e.target.value
+        });
+    }
+
+    changeQuestionTitle(title, questionIndex) {
+        this.props.questionTitleChanged({
+            index: questionIndex,
+            title: title
         });
     }
 
@@ -106,8 +131,6 @@ export class TeacherTemplate extends React.Component{
     save() {
         // Pages saving
         const introductionData = this.props.introduction;
-        const simulationData = this.props.simulation;
-        const subsectionData = this.props.subsectionData;
 
         this.setState({
             isSaving: true
@@ -132,8 +155,6 @@ export class TeacherTemplate extends React.Component{
                 });
                 console.log(error);
             });
-
-
         } else {
             this.props.createSubsection().then((response => {
                 this.closeBar();
@@ -154,11 +175,19 @@ export class TeacherTemplate extends React.Component{
         if (event.target.parentElement.className.includes('hera-edit-subsection')) {
             const locator = event.target.parentElement.dataset.locator;
             if (locator.includes('sequential')) {
+                this.props.questionsReset();
                 getData(locator).then(data => {
-                    this.props.subsectionDataChanged(data.id, data.category, data.display_name);
                     const subsectionChildren = data.child_info.children;
+                    let theLast = false;
+                    let questionsParentLocators = [];
                     for (let childInfo in subsectionChildren) {
+                        if (+childInfo === subsectionChildren.length-1) {
+                            theLast = true;
+                        }
                         if (subsectionChildren[childInfo].child_info && subsectionChildren[childInfo].child_info.children.length && subsectionChildren[childInfo].child_info.children[0].id) {
+                            questionsParentLocators.push({
+                                locator: subsectionChildren[childInfo].id
+                            });
                             getXblockData(subsectionChildren[childInfo].child_info.children[0].id).then(response => {
                                 const data = {
                                     ...response.data,
@@ -175,10 +204,26 @@ export class TeacherTemplate extends React.Component{
                                 } else if (response.data && response.data.blockType && response.data.blockType === 'simulation') {
                                     // save data into Simulation component
                                     this.props.simulationLoaded(data);
+                                } else if (response.data && response.data.blockType && response.data.blockType === 'question') {
+                                    questionsParentLocators.forEach((v,i) => {
+                                        if (data.parentLocator === v.locator) {
+                                            v.data = data;
+                                        }
+                                    });
+                                }
+                                if (theLast) {
+                                    let questions = questionsParentLocators.map((question) => {
+                                        if (question.data) {
+                                            return question.data;
+                                        }
+                                    });
+                                    this.props.questionLoaded(questions.filter(value=>{return value}));
+                                    this.props.subsectionDataLocatorsChanged(questionsParentLocators);
                                 }
                             })
                         }
                     }
+                    this.props.subsectionDataChanged(data.id, data.category, data.display_name);
                     document.getElementById('hera-popup').classList.add("popup-open");
                     this.setState({
                         doSaveNewSubsection: false
@@ -194,6 +239,7 @@ export class TeacherTemplate extends React.Component{
     handleNewSubsection(event) {
         const target = event.target;
         if (event.target.className.includes('button-new') && target.dataset.category === 'sequential') {
+            this.props.questionsReset();
             event.preventDefault();
             const rootElement = document.getElementById('hera-popup');
             rootElement.classList.add("popup-open");
@@ -238,10 +284,14 @@ export class TeacherTemplate extends React.Component{
                             </li>
                             <li className="nav-panel-list__item with-add-list">
                                 <LeftSidebarQuestions
+                                    questionAdded={this.props.questionAdded}
+                                    questionRemoved={this.removeComponent.bind(this)}
+                                    changeQuestionTitle={this.changeQuestionTitle}
                                     activeComponent={this.state.activeComponent}
                                     activeQuestionIndex={this.state.activeQuestionIndex}
                                     switchComponent={this.switchComponent}
                                     questions={this.props.questions.questions}
+                                    questionChanges={this.props.questionChanged}
                                     blockType={this.props.questions.blockType}/>
                             </li>
                             <li className="nav-panel-list__item">
@@ -283,6 +333,8 @@ export class TeacherTemplate extends React.Component{
                     simulationImageRemove={this.props.simulationImageRemove}
                     simulationAddContent={this.props.simulationAddContent}
                     simulationRemoveContent={this.props.simulationRemoveContent}
+
+                    questionChanged={this.props.questionChanged}
 
                 />
                 <button className="close-popup" onClick={this.closeBar} />
@@ -358,6 +410,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         simulationImageRemove: (data) => {
             return dispatch({type: actionTypes.SIMULATION_IMAGE_REMOVE, data: data});
         },
+        // subsection data
         subsectionDataChanged: (parentLocator, category, displayName) => {
             const data = {
                 parentLocator: parentLocator,
@@ -365,6 +418,34 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                 displayName: displayName
             }
             return dispatch({type: actionTypes.SUBSECTION_DATA_CHANGED, data: data});
+        },
+        subsectionDataLocatorsChanged: (questionsParentLocators) => {
+            let onlyLocators = [];
+            questionsParentLocators.map(el => {
+                if (el.data) {
+                    onlyLocators.push(el.locator)
+                }
+            });
+            return dispatch({type: actionTypes.SUBSECTION_DATA_PARENT_LOCATORS_CHANGED, data: onlyLocators});
+        },
+        // questions
+        questionTitleChanged: (data) => {
+            return dispatch({type: actionTypes.QUESTION_TITLE_CHANGED, data: data});
+        },
+        questionChanged: (index, data) => {
+            return dispatch({type: actionTypes.QUESTION_CHANGED, index: index, data: data});
+        },
+        questionAdded: () => {
+            return dispatch({type: actionTypes.QUESTION_ADDED});
+        },
+        questionRemoved: (index) => {
+            return dispatch({type: actionTypes.QUESTION_DELETED, index: index});
+        },
+        questionLoaded: (data) => {
+            return dispatch({type: actionTypes.QUESTION_LOADED, data: data});
+        },
+        questionsReset: () => {
+            return dispatch({type: actionTypes.QUESTIONS_RESET});
         }
     };
 };

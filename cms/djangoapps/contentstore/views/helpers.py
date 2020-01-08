@@ -185,7 +185,7 @@ def remove_entrance_exam_graders(course_key, user):
             CourseGradingModel.delete_grader(course_key, i, user)
 
 
-def create_xblock(parent_locator, user, category, display_name, boilerplate=None, is_entrance_exam=False):
+def create_xblock(parent_locator, user, category, display_name, boilerplate=None, is_entrance_exam=False, position=None):
     """
     Performs the actual grunt work of creating items/xblocks -- knows nothing about requests, views, etc.
     """
@@ -214,7 +214,7 @@ def create_xblock(parent_locator, user, category, display_name, boilerplate=None
         fields = {}
 
         # Entrance Exams: Chapter module positioning
-        child_position = None
+        child_position = position
         if is_entrance_exams_enabled():
             if category == 'chapter' and is_entrance_exam:
                 fields['is_entrance_exam'] = is_entrance_exam

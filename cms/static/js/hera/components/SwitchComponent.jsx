@@ -25,7 +25,15 @@ export default class SwitchComponent extends React.Component{
     }
 
     changeTitle(e) {
-        this.props.changeTitle(e, this.props.storeName, this.props.changeHandler);
+        if (this.props.isQuestion) {
+            this.props.changeQuestionTitle(e.target.value, this.props.index);
+        } else {
+            this.props.changeTitle(e, this.props.storeName, this.props.changeHandler);
+        }
+    }
+
+    questionRemoved() {
+        this.props.questionRemoved(this.props.index);
     }
 
     render() {
@@ -37,20 +45,20 @@ export default class SwitchComponent extends React.Component{
                         !this.state.showInput && this.props.title
                     }
                 </a>
-                {
-                    !this.props.isQuestion && (
-                        <div>
-
-                            <input 
-                                className={`edit-input${!this.state.showInput ? ' is-hidden' : ''}`}
-                                onBlur={this.toggleShowInput}
-                                value={this.props.title}
-                                type="text"
-                                onChange={this.changeTitle.bind(this)} />
-                            <i className="edit-btn fa fa-pencil" aria-hidden="true" onClick={this.toggleShowInput} />
-                        </div>
-                    )
-                }
+                <input
+                    className={`edit-input${!this.state.showInput ? ' is-hidden' : ''}`}
+                    onBlur={this.toggleShowInput}
+                    value={this.props.title}
+                    type="text"
+                    onChange={this.changeTitle.bind(this)} />
+                <span className="remove-item">
+                    <i className="edit-btn fa fa-pencil" aria-hidden="true" onClick={this.toggleShowInput} />
+                    {
+                        this.props.isQuestion && (
+                            <i className="remove-item__icon fa fa-trash-o" aria-hidden="true" onClick={this.questionRemoved.bind(this)}></i>
+                        )
+                    }
+                </span>
             </div>
         )
     }
