@@ -107,4 +107,4 @@ git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.18#egg=xblock-
 -e git+https://code.greenhost.net/totem/ind.git#egg=xblock_ind==0.1
 
 # Custom video_xblock
-git+https://github.com/raccoongang/xblock-video.git@greenhost-ginkgo-v0.9.3#egg=video_xblock==0.9.3
+git+https://github.com/raccoongang/xblock-video.git@greenhost-ginkgo-v0.9.4#egg=video_xblock==0.9.4
