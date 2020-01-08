@@ -64,7 +64,7 @@ class CourseOverview(TimeStampedModel):
     announcement = DateTimeField(null=True)
 
     # Course price
-    price = TextField(null=True)
+    price = TextField(default="Free")
 
     # URLs
     course_image_url = TextField()

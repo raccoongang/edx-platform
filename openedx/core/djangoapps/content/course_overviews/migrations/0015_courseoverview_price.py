@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='courseoverview',
             name='price',
-            field=models.TextField(null=True),
+            field=models.TextField(default=b'Free'),
         ),
     ]
