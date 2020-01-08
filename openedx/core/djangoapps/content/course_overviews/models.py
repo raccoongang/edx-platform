@@ -63,6 +63,9 @@ class CourseOverview(TimeStampedModel):
     advertised_start = TextField(null=True)
     announcement = DateTimeField(null=True)
 
+    # Course price
+    price = TextField(null=True)
+
     # URLs
     course_image_url = TextField()
     social_sharing_url = TextField(null=True)
@@ -162,6 +165,8 @@ class CourseOverview(TimeStampedModel):
         course_overview.end = end
         course_overview.advertised_start = course.advertised_start
         course_overview.announcement = course.announcement
+
+        course_overview.price = course.price
 
         course_overview.course_image_url = course_image_url(course)
         course_overview.social_sharing_url = course.social_sharing_url

@@ -33,10 +33,21 @@
                 var data = _.clone(this.model.attributes);
                 var userLanguage = '',
                     userTimezone = '';
+                var currentDate = new Date();
+                var courseStatus = "The course is on";
                 if (this.model.userPreferences !== undefined) {
                     userLanguage = this.model.userPreferences.userLanguage;
                     userTimezone = this.model.userPreferences.userTimezone;
                 }
+
+                if (data.enrollment_start && (currentDate < new Date(data.enrollment_start))) {
+                    courseStatus = "Will start soon";
+                } else if (currentDate < new Date(data.start)) {
+                    courseStatus = "The enrollment is open";
+                }
+
+                data.status = courseStatus;
+
                 if (data.advertised_start !== undefined) {
                     data.start = data.advertised_start;
                 } else {

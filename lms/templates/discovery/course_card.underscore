@@ -13,10 +13,9 @@
                 <span class="course-title"><%- content.display_name %></span>
             </h2>
             <div class="course-date" aria-hidden="true">
-                <%- interpolate(
-                      gettext("Starts: %(start_date)s"),
-                      { start_date: start }, true
-                    ) %>
+            <div><%- gettext(status) %></div>
+            <div><%- gettext(price) %></div>
+                <%- start %>
             </div>
         </section>
         <div class="sr">

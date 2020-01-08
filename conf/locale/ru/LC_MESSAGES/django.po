@@ -2649,6 +2649,10 @@ msgid "LTI Passports"
 msgstr "Регистрационные данные LTI"
 
 #: common/lib/xmodule/xmodule/course_module.py
+msgid "Set the course price."
+msgstr "Установите стоимость курса."
+
+#: common/lib/xmodule/xmodule/course_module.py
 msgid ""
 "Enter the passports for course LTI tools in the following format: "
 "\"id:client_key:client_secret\"."
@@ -14968,6 +14972,26 @@ msgstr "Вы записаны на этот курс"
 #: lms/templates/shoppingcart/registration_code_receipt.html
 msgid "View Course"
 msgstr "Просмотр курса"
+
+#: lms/templates/course.html
+#: lms/templates/dashboard/_dashboard_course_listing.html
+msgid "Will start soon"
+msgstr "Скоро старт"
+
+#: lms/templates/course.html
+#: lms/templates/dashboard/_dashboard_course_listing.html
+msgid "The enrollment is open"
+msgstr "Идет набор"
+
+#: lms/templates/course.html
+#: lms/templates/dashboard/_dashboard_course_listing.html
+msgid "The course is on"
+msgstr "Курс начался"
+
+#: lms/templates/course.html
+#: lms/templates/dashboard/_dashboard_course_listing.html
+msgid "The course has ended"
+msgstr "Курс завершился"
 
 #: lms/templates/courseware/course_about.html
 msgid "This course is in your <a href=\"{cart_link}\">cart</a>."
