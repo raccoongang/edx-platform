@@ -2,19 +2,22 @@
 function HeraPagesXBlock(runtime, element) {
     var isFormValid;
     $('#slider-popup').popup();
-    $('.slidebar-wrapper').slick({
+    $('.slidebar-wrapper, .image-wrapper').slick({
         slidesToShow: 1,
         slidesToScroll: 1,
-        arrows: true,
         fade: true,
-        adaptiveHeight: true
+        adaptiveHeight: true,
+        infinite: false
         // asNavFor: '.slider-nav'
       });
 
     let shouldShowMessage = true;
-      
+
     $(".button-prev").click((e) => {
-        $(".slick-prev").trigger("click")
+        var imgSlideId = $('.image-wrapper').slick('slickCurrentSlide');
+        var contentSlideId = $('.slidebar-wrapper').slick('slickCurrentSlide');
+        var slideId = imgSlideId < contentSlideId ? contentSlideId : imgSlideId;
+        $('.image-wrapper, .slidebar-wrapper').slick('slickGoTo', slideId-1)
     });
 
     $(".button-next").click((e) => {
@@ -22,7 +25,7 @@ function HeraPagesXBlock(runtime, element) {
             shouldShowMessage = false;
             $('#slider-popup').popup('show')
         } else {
-            $(".slick-next").trigger("click")
+            $('.image-wrapper, .slidebar-wrapper').slick('slickNext')
         }
     })  
     
