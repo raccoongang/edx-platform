@@ -62,7 +62,7 @@
     <div class="u-field u-field-text u-field-<%- id %> editable-always mode-edit">
     <div class="u-field-value field">
         <label class="u-field-title field-label" for="u-field-select-<%- id %>">Other Position</label>
-        <input class="field-input input-text" type="text" id="field-input-<%- id %>" title="Input field for <%- id %>" aria-describedby="u-field-message-help-<%- id %>" name="input" value="<%- otherPosition %>" />
+        <input class="field-input input-text" type="text" id="field-input-other-position" title="Input field for <%- id %>" aria-describedby="u-field-message-help-<%- id %>" name="input" value="<%- otherPosition %>" />
     </div>
     <div class="u-field-message u-field-message__custom" id="u-field-message-<%- id %>">
         <span class="u-field-message-notification" aria-live="polite"></span>

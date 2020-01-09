@@ -4,6 +4,8 @@ Django REST Framework serializers for the User API Accounts sub-application
 import json
 import logging
 
+from datetime import date
+
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -19,6 +21,7 @@ from openedx.core.djangoapps.user_api.models import (
     UserPreference,
     UserRetirementStatus
 )
+from openedx.core.djangoapps.user_api.errors import AccountValidationError
 from openedx.core.djangoapps.user_api.serializers import ReadOnlyFieldsSerializerMixin
 from student.models import UserProfile, LanguageProficiency, SocialLink
 
@@ -245,6 +248,40 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
         unique_social_links = set(social_link["platform"] for social_link in social_links)
         if len(social_links) != len(unique_social_links):
             raise serializers.ValidationError("The social_links field must consist of unique social platforms.")
+        return value
+
+    def validate_date_of_birth(self, value):
+        """
+        Method which validates date of birth that should be in the past.
+        """
+
+        value = self.convert_empty_to_None(value)
+
+        if value is not None and value > date.today():
+            raise AccountValidationError({
+                "date_of_birth": {
+                    "developer_message": "Value is not valid for field date_of_birth",
+                    "date_of_birth": [u"The date_of_birth field should be in the past."],
+                    "user_message": "This value is invalid.",
+                }
+            })
+
+        return value
+
+    def validate_phone(self, value):
+        """
+        Method which validates the phone field that should contain only numbers and brackets.
+        """
+
+        if value is not None and "_" in value:
+            raise AccountValidationError({
+                "phone": {
+                    "developer_message": "Value is not valid for field phone",
+                    'phone': [u'The phone field should contain only numbers and brackets.'],
+                    "user_message": "This value is invalid.",
+                }
+            })
+
         return value
 
     def transform_gender(self, user_profile, value):  # pylint: disable=unused-argument
