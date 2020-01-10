@@ -3,6 +3,7 @@ Django REST Framework serializers for the User API Accounts sub-application
 """
 import json
 import logging
+import re
 
 from datetime import date
 
@@ -270,19 +271,19 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
 
     def validate_phone(self, value):
         """
-        Method which validates the phone field that should contain only numbers and brackets.
+        Method which validates the phone field that should contain only numbers, brackets and white spaces.
         """
 
-        if value is not None and "_" in value:
-            raise AccountValidationError({
-                "phone": {
-                    "developer_message": "Value is not valid for field phone",
-                    'phone': [u'The phone field should contain only numbers and brackets.'],
-                    "user_message": "This value is invalid.",
-                }
-            })
+        if re.match('^[0-9()\s]+$', value) or not value:
+            return value
 
-        return value
+        raise AccountValidationError({
+            "phone": {
+                "developer_message": "Value is not valid for field phone",
+                'phone': [u'The phone field should contain only numbers and brackets.'],
+                "user_message": "This value is invalid.",
+            }
+        })
 
     def transform_gender(self, user_profile, value):  # pylint: disable=unused-argument
         """
