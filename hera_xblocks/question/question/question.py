@@ -21,8 +21,8 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     user_answer = List(scope=Scope.user_state)
 
     @property
-    def img_url(self):
-        return self.data.get("imgUrl")
+    def img_urls(self):
+        return self.data.get("imgUrls")
 
     @property
     def iframe_url(self):
@@ -91,7 +91,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         return {
             "user_answer": self.user_answer,
             "question": self.question,
-            "img_url": self.img_url,
+            "img_urls": self.img_urls,
             "iframe_url": self.iframe_url,
             "description": self.description,
             "confidence_text": self.confidence_text,
@@ -114,8 +114,11 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         )
         frag = Fragment(html.format(self=self))
         frag.add_css(self.resource_string("static/css/question.css"))
-        frag.add_javascript_url("https://cdn.jsdelivr.net/gh/vast-engineering/jquery-popup-overlay@2/jquery.popupoverlay.min.js")
         frag.add_javascript(self.resource_string("static/js/src/question.js"))
+
+        frag.add_css_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css")
+        frag.add_javascript_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.js")
+
         frag.initialize_js('QuestionXBlock', json_args=self.get_context())
         return frag
 
@@ -134,9 +137,8 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             self.user_confidence = None
 
         if self.question.get('type') == "number":
-            for answer in answers:
                 try:
-                    user_answer = float(answer.get('value'))
+                    user_answer = float(answers.get('value'))
                     user_answers.append(user_answer)
                     correct_answer = self.answer
                     if correct_answer - self.preciseness <= user_answer <= correct_answer + self.preciseness:
@@ -145,8 +147,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
                     user_answer = None
 
         elif self.question.get('type') == "text":
-            for answer in answers:
-                user_answers.append(answer.get('value'))
+                user_answers.append(answers.get('value'))
                 if answer.get('value') == self.answer:
                     correct = True
 
