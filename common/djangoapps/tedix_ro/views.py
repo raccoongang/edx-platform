@@ -1,50 +1,98 @@
 import datetime
-from csv import DictReader
 import json
-import pytz
+from csv import DictReader
 from urlparse import urljoin
 
 from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db import transaction
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views import View
+
+from courseware.courses import get_course_with_access
 from edxmako.shortcuts import render_to_response
+from rest_framework import permissions, status, viewsets
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.response import Response
 from opaque_keys.edx.keys import CourseKey
-from opaque_keys import InvalidKeyError
-from rest_framework import generics, viewsets
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
-from openedx.core.djangoapps.user_api.accounts.utils import generate_password
+import pytz
+from student.helpers import do_create_account, get_next_url_for_login_page
 from student.models import CourseEnrollment
-from student.helpers import get_next_url_for_login_page, do_create_account
+from xmodule.modulestore.django import modulestore
 
-from .admin import STUDENT_PARENT_EXPORT_FIELD_NAMES, INSTRUCTOR_EXPORT_FIELD_NAMES
+from .admin import INSTRUCTOR_EXPORT_FIELD_NAMES, STUDENT_PARENT_EXPORT_FIELD_NAMES
 from .forms import (
-    StudentEnrollForm,
-    StudentImportRegisterForm,
+    FORM_FIELDS_MAP,
+    AccountImportValidationForm,
+    CityImportForm,
+    CityImportValidationForm,
     InstructorImportValidationForm,
     ProfileImportForm,
-    StudentProfileImportForm,
-    AccountImportValidationForm,
-    StudentProfileImportForm,
-    CityImportForm,
-    AccountImportValidationForm,
-    CityImportValidationForm,
     SchoolImportValidationForm,
-    FORM_FIELDS_MAP
+    StudentEnrollForm,
+    StudentImportRegisterForm,
+    StudentProfileImportForm,
 )
-from .models import StudentProfile, StudentCourseDueDate, City, School
-from .serializers import CitySerializer, SchoolSerilizer, SingleCitySerializer, SingleSchoolSerilizer
-from .utils import get_payment_link
+from .models import City, School, StudentCourseDueDate, StudentProfile, VideoLesson
+from .serializers import (
+    CitySerializer,
+    SchoolSerilizer,
+    SingleCitySerializer,
+    SingleSchoolSerilizer,
+    VideoLessonSerializer,
+)
+from .signals import VIDEO_LESSON_COMPLETED
+from .utils import get_payment_link, report_data_preparation
+
+
+def extended_report(request, course_key):
+    """
+    Provides an extended report, depending on the role
+    """
+    user = request.user
+    if not user.is_authenticated():
+        return redirect(get_next_url_for_login_page(request))
+
+    course_key = CourseKey.from_string(course_key)
+    course = get_course_with_access(user, 'load', course_key, check_if_enrolled=True)
+    header = []
+    report_data = []
+    modulestore_course = modulestore().get_course(course_key)
+    if user.is_superuser:
+        for student in User.objects.filter(courseenrollment__course_id=course.id, is_staff=False).select_related('profile'):
+            header, user_data = report_data_preparation(student, modulestore_course)
+            report_data.append(user_data)
+    elif user.is_staff and hasattr(user, 'instructorprofile'):
+        for student_profile in user.instructorprofile.students.filter(
+            user__courseenrollment__course_id=course.id
+        ).select_related('user__profile'):
+            header, user_data = report_data_preparation(student_profile.user, modulestore_course)
+            report_data.append(user_data)
+    else:
+        header, user_data = report_data_preparation(user, modulestore_course)
+        report_data.append(user_data)
+
+    if not report_data:
+        raise Http404
+
+    context = {
+        'course_name': course.display_name,
+        'header': header,
+        'report_data': report_data,
+        'user': user,
+    }
+    return render_to_response('extended_report.html', context)
+
 
 
 def manage_courses(request):
@@ -181,6 +229,31 @@ class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
         if self.kwargs.get('pk'):
             return SchoolSerilizer
         return SingleCitySerializer
+
+
+class VideoLessonViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = VideoLessonSerializer
+    queryset = VideoLesson.objects.all()
+    paginator = None
+    pagination_class = None
+
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
+        data['user'] = request.user.id
+        serializer = self.get_serializer(data=data, context=self.get_serializer_context())
+        if serializer.is_valid():
+            serializer.save()
+            if not( any(d['attempt_count'] == 0 for d in data['questions'])):
+                VIDEO_LESSON_COMPLETED.send(
+                    sender=VideoLesson,
+                    user=request.user,
+                    course_id=data['course']
+                )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProfileImportView(View):

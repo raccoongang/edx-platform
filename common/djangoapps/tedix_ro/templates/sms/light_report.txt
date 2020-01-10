@@ -1,0 +1,23 @@
+<%!
+from django.utils.translation import ugettext as _
+from openedx.features.enterprise_support.utils import get_enterprise_learner_generic_name
+%>
+<%!
+from django.utils.translation import ugettext as _
+%>
+<%namespace name='static' file='/static_content.html' />
+%for lesson_report in lesson_reports:
+%for user_data in lesson_report.get('report_data'):
+${static.get_platform_name()}
+
+${_("Student name")}: ${ user_data['full_name'] }
+
+${_("Activity report for lesson")}: "${ lesson_report['course_name'] }"
+${_("Lesson completed")}: ${'Yes' if user_data['completion'] == 1 else 'No'}
+${_("Number of question completed from first attempt")}: ${ user_data['percent'] }% (${user_data['count_answer_first_attempt']} out of ${len(user_data['questions'])})
+${_("Lesson deadline")}: ${due_date}
+%endfor
+
+Report link: 
+${ lesson_report['report_url'] }
+%endfor

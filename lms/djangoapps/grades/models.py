@@ -207,8 +207,8 @@ class VisibleBlocks(models.Model):
                 hashed=brl.hash_value,
                 course_id=course_key,
             )
-            for brl in block_record_lists
-        ])
+            for brl in block_record_lists],
+        )
         cls._update_cache(user_id, course_key, created)
         return created
 
@@ -219,8 +219,9 @@ class VisibleBlocks(models.Model):
         BlockRecordList objects for the given user and course_key, but
         only for those that aren't already created.
         """
-        cached_records = cls.bulk_read(user_id, course_key)
-        non_existent_brls = {brl.hash_value for brl in block_record_lists if brl.hash_value not in cached_records}
+        cls.bulk_read(user_id, course_key)
+        cached_records = cls.objects.filter(course_id=course_key).values_list('hashed',flat=True)
+        non_existent_brls = {brl for brl in block_record_lists if brl.hash_value not in cached_records}
         cls.bulk_create(user_id, course_key, non_existent_brls)
 
     @classmethod

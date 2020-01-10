@@ -1,0 +1,40 @@
+<%!
+from django.utils.translation import ugettext as _
+%>
+
+<%block name="headextra">
+<%static:css group='style-course-vendor'/>
+<%static:css group='style-course'/>
+</%block>
+
+<%namespace name='static' file='/static_content.html' />
+
+
+<img class="logo-image" src="${ lms_url }${static.url("red-theme/images/logo.png")}" alt="${_("{platform_name} Home Page").format(platform_name=static.get_platform_name())}" itemprop="logo" />
+<%
+teacher_report = user.is_superuser or user.is_staff and hasattr(user, 'instructorprofile')
+%>
+%if teacher_report:
+    <%
+    roll = _('Superuser') if user.is_superuser else _('Teacher')
+    %>
+    <h2 class="hd hd-2">
+        ${_("Students Progress for {roll} '{username}'").format(roll=roll, username=user.username)}
+    </h2>
+%endif
+%for lesson_report in lesson_reports:
+    %if teacher_report:
+        <%include
+            file="/includes/teacher_extended_report.html"
+            args="report_data=lesson_report.get('report_data'), header=lesson_report.get('header'), course_name=lesson_report.get('course_name')"
+        />
+    %else:
+        <%include
+            file="/includes/student_extended_report.html"
+            args="report_data=lesson_report.get('report_data'), course_name=lesson_report.get('course_name')"
+        />
+    %endif
+    <p style="font-weight: bold">Report link:<br>
+    ${lesson_report.get('report_url')}
+    <p>
+%endfor

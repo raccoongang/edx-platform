@@ -1,6 +1,8 @@
+from opaque_keys.edx.keys import CourseKey
 from rest_framework import serializers
 
-from .models import City, School, InstructorProfile
+from .models import City, School, InstructorProfile, VideoLesson, Question
+
 
 
 class InstructorProfileSerilizer(serializers.ModelSerializer):
@@ -61,3 +63,31 @@ class SingleCitySerializer(serializers.ModelSerializer):
         model = City
         fields = ('id', 'name')
         read_only_fields = ('name',)
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Question
+        fields = ('question_id', 'attempt_count')
+
+
+class VideoLessonSerializer(serializers.ModelSerializer):
+    questions = QuestionSerializer(many=True)
+
+    class Meta:
+        model = VideoLesson
+        fields = ('user', 'course', 'video_id', 'questions')
+
+    def create(self, validated_data):
+        questions_answered = validated_data.pop('questions')
+        course = CourseKey.from_string(validated_data.pop('course'))
+        video_lesson, create = VideoLesson.objects.get_or_create(course=course, **validated_data)
+        for question_data in questions_answered:
+            question_id = question_data.pop('question_id')
+            question = Question.objects.update_or_create(
+                video_lesson=video_lesson,
+                question_id=question_id,
+                defaults=question_data,
+            )
+        return video_lesson
