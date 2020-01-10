@@ -58,6 +58,12 @@ class InheritanceMixin(XBlockMixin):
         default="middle",
         scope=Scope.settings,
     )
+    lesson_logo = String(
+        help=_("The logo picture of the Lesson"),
+        display_name=_("lesson logo"),
+        default="",
+        scope=Scope.settings,
+    )
     course_edit_method = String(
         display_name=_("Course Editor"),
         help=_("Enter the method by which this course is edited (\"XML\" or \"Studio\")."),

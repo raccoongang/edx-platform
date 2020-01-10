@@ -149,7 +149,8 @@ def get_course_outline_block_tree(request, course_id):
             'special_exam_info',
             'show_gated_sections',
             'format',
-            'unit_level'
+            'unit_level',
+            'lesson_logo'
         ],
         block_types_filter=block_types_filter
     )

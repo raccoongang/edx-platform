@@ -42,43 +42,6 @@ from openedx.features.portfolio_project import INCLUDE_PORTFOLIO_UPSELL_MODAL
         )}
     % endif
 
-    <header class="page-header has-secondary">
-        <div class="page-header-main">
-            <nav aria-label="${_('Course Outline')}" class="sr-is-focusable" tabindex="-1">
-                <h2 class="hd hd-3 page-title">${course.display_name_with_default}</h2>
-            </nav>
-        </div>
-        <div class="page-header-secondary">
-            % if settings.FEATURES.get('ENABLE_COURSEWARE_SEARCH'):
-                <div class="page-header-search">
-                    <form class="search-form input-group" role="search" action="${reverse('openedx.course_search.course_search_results', args=[course_key])}">
-                        <label class="field-label sr-only" for="search" id="search-hint">${_('Search the course')}</label>
-                        <input
-                                class="field-input input-text search-input form-control"
-                                type="search"
-                                name="query"
-                                id="search"
-                                placeholder="${_('Search the course')}"
-                        />
-                        <span class="input-group-btn">
-                            <button class="btn btn-outline-primary search-button" type="submit">${_('Search')}</button>
-                        </span>
-                    </form>
-                </div>
-            % endif
-            <div class="form-actions">
-                % if resume_course_url:
-                    <a class="btn btn-primary action-resume-course" href="${resume_course_url}">
-                        % if has_visited_course:
-                            <span data-action-type="resume">${_("Resume Course")}</span>
-                        % else:
-                            <span data-action-type="start">${_("Start Course")}</span>
-                        % endif
-                    </a>
-                % endif
-            </div>
-        </div>
-    </header>
     <div class="page-content">
         <div class="page-content-main">
             % if course_home_message_fragment:
@@ -95,76 +58,6 @@ from openedx.features.portfolio_project import INCLUDE_PORTFOLIO_UPSELL_MODAL
                 ${HTML(outline_fragment.body_html())}
             % endif
         </div>
-        <aside class="page-content-secondary course-sidebar">
-            % if has_goal_permission:
-                <div class="section section-goals ${'' if current_goal else 'hidden'}">
-                    <div class="current-goal-container">
-                        <label class="title title-label hd-6" for="goal">
-                            <h3 class="hd-6">${_("Goal: ")}</h3>
-                        </label>
-                        <h3 class="title hd-6">${_("Goal: ")}</h3>
-                        <div class="goal">
-                            <span class="text">${goal_options[current_goal.goal_key] if current_goal else ""}</span>
-                        </div>
-                        <select class="edit-goal-select" id="goal">
-                            % for goal, goal_text in goal_options.items():
-                                <option value="${goal}" ${"selected" if current_goal and current_goal.goal_key == goal else ""}>${goal_text}</option>
-                            % endfor
-                        </select>
-                        <span class="sr sr-update-response-msg" aria-live="polite"></span>
-                        <span class="response-icon" aria-hidden="true"></span>
-                        <span class="sr">${_("Edit your course goal:")}</span>
-                        <button class="edit-icon">
-                            <span class="sr">${_("Edit your course goal:")}</span>
-                            <span class="fa fa-pencil" aria-hidden="true"></span>
-                        </button>
-                    </div>
-                </div>
-            % endif
-            % if course_tools:
-                <div class="section section-tools">
-                    <h3 class="hd-6 section-title">${_("Course Tools")}</h3>
-                    <ul class="list-unstyled">
-                        % for course_tool in course_tools:
-                            <li class="course-tool">
-                                <a class="course-tool-link" data-analytics-id="${course_tool.analytics_id()}" href="${course_tool.url(course_key)}">
-                                    <span class="icon ${course_tool.icon_classes()}" aria-hidden="true"></span>
-                                    ${course_tool.title()}
-                                </a>
-                            </li>
-                        % endfor
-                    </ul>
-                </div>
-            % endif
-            % if upgrade_url and upgrade_price:
-                <div class="section section-upgrade course-home-sidebar-upgrade">
-                    <h3 class="hd hd-6">${_("Pursue a verified certificate")}</h3>
-                        <img src="https://courses.edx.org/static/images/edx-verified-mini-cert.png" alt="">
-                        <div class="upgrade-container">
-                            <p>
-                                <a class="btn-brand btn-upgrade"
-                                   href="${upgrade_url}"
-                                   data-creative="sidebarupsell"
-                                   data-position="sidebar-message">
-                                   ${_("Upgrade ({price})").format(price=upgrade_price)}
-                                </a>
-                            </p>
-                    <p><button class="btn-link btn-small promo-learn-more">${_('Learn More')}</button></p>
-                        </div>
-                </div>
-            % endif
-            % if dates_fragment:
-                <div class="section section-dates">
-                    ${HTML(dates_fragment.body_html())}
-                </div>
-            % endif
-            % if handouts_html:
-                <div class="section section-handouts">
-                    <h3 class="hd-6 section-title">${_("Course Handouts")}</h3>
-                    ${HTML(handouts_html)}
-                </div>
-            % endif
-        </aside>
     </div>
     % if course_sock_fragment:
         ${HTML(course_sock_fragment.body_html())}

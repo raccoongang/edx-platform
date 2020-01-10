@@ -60,7 +60,7 @@ def unit_grade_level(earned, course_block_tree, subsection_active, request, cour
                 tree (dict): Contains whole data of the course.
             Return pair of two blocks to be dispayed to user.
         """
-        pair = [{},{}]
+        pair = [{}, {}]
         for section in tree['children']:
             for sub in section['children']:
                 if sub['block_id'] == first_id:
@@ -82,7 +82,13 @@ def unit_grade_level(earned, course_block_tree, subsection_active, request, cour
         first_sub, next_sub = get_pair(lesson_pair.get('block_id'), lesson_pair.get('next_id'), course_block_tree)
         # levels the same and at least one hasn't completed - return current pair
         if lesson_pair[LEVEL] == next_level and (not first_sub.get('complete', True) or not next_sub.get('complete', True)):
-            return {'children': [first_sub, next_sub]}
+            children = []
+            if first_sub:
+                children.append(first_sub)
+            if next_sub:
+                children.append(next_sub)
+
+            return {'children': children }
     else: # means that student is here for the first time
         next_level = get_next_level(earned)
 
@@ -94,6 +100,9 @@ def unit_grade_level(earned, course_block_tree, subsection_active, request, cour
                     break
                 continue
     to_set = {}
+    to_unset = {}
+    to_update = {}
+    
     if subsection_vertical['children'] and len(subsection_vertical['children']) > 1:
         to_set = {
                 BLOCK_ID: subsection_vertical['children'][0]['block_id'],
@@ -105,12 +114,20 @@ def unit_grade_level(earned, course_block_tree, subsection_active, request, cour
                 BLOCK_ID: subsection_vertical['children'][0]['block_id'],
                 LEVEL: next_level
         }
-
+        to_unset = {
+            NEXT_ID: 1
+        }
+    
     if to_set:
+        to_update['$set'] = to_set
+    if to_unset:
+        to_update['$unset'] = to_unset
+        
+    if to_update:
         c_selection_page().update({
             COURSE_KEY: course_id,
             USER: request.user.id},
-            {'$set': to_set}
+            to_update
         , upsert=True)
 
     return subsection_vertical
@@ -137,7 +154,7 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
         field_data_cache = FieldDataCache.cache_for_descriptor_descendents(
             course.id, request.user, course, depth=2
         )
-        
+
         course_module = get_module_for_descriptor(
             request.user, request, course, field_data_cache, course.id, course=course
         )
@@ -189,4 +206,3 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
 
         html = render_to_string('hera/course-lessons-outline-fragment.html', context)
         return Fragment(html)
-                      
