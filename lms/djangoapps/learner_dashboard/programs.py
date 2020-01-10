@@ -22,6 +22,15 @@ from openedx.core.djangoapps.programs.utils import (
     get_program_marketing_url
 )
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preferences
+from opaque_keys.edx.keys import CourseKey
+from student.models import CourseEnrollment
+
+
+def get_course_ids(courses):
+    course_ids = []
+    for course in courses:
+        course_ids.extend([CourseKey.from_string(c['key']) for c in course['course_runs']])
+    return course_ids
 
 
 class ProgramsFragmentView(EdxFragmentView):
@@ -102,7 +111,20 @@ class ProgramDetailsFragmentView(EdxFragmentView):
         course_data = meter.progress(programs=[program_data], count_only=False)[0]
         certificate_data = get_certificates(request.user, program_data)
 
-        program_data.pop('courses')
+        course_ids = get_course_ids(program_data.pop('courses'))
+        total_courses_count = len(course_ids)
+
+        started_courses_count = CourseEnrollment.enrollments_for_user(request.user).filter(
+            course_id__in=course_ids
+        ).count()
+
+        # started_courses_count depends on the count of courses in a program
+        # it's impossible to have started_courses > 0 if total_courses_count == 0
+        if started_courses_count:
+            program_data['price'] = '%.2f' % (
+                (float(program_data['price']) / total_courses_count * (total_courses_count - started_courses_count))
+            )
+
         skus = program_data.get('skus')
         ecommerce_service = EcommerceService()
 
@@ -129,7 +151,8 @@ class ProgramDetailsFragmentView(EdxFragmentView):
             'user_preferences': get_user_preferences(request.user),
             'program_data': program_data,
             'course_data': course_data,
-            'certificate_data': certificate_data
+            'certificate_data': certificate_data,
+            'add_to_cart_url': reverse('add_program_to_cart', kwargs={'uuid': program_data['uuid']}),
         }
 
         html = render_to_string('learner_dashboard/program_details_fragment.html', context)

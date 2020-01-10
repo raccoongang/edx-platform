@@ -63,6 +63,7 @@ from courseware.url_helpers import get_redirect_url
 from courseware.user_state_client import DjangoXBlockUserStateClient
 from edxmako.shortcuts import marketing_link, render_to_response, render_to_string
 from enrollment.api import add_enrollment
+from learner_dashboard.programs import get_course_ids
 from lms.djangoapps.ccx.custom_exception import CCXLocatorValidationException
 from lms.djangoapps.commerce.utils import EcommerceService
 from lms.djangoapps.courseware.exceptions import CourseAccessRedirect, Redirect
@@ -898,12 +899,28 @@ def program_marketing(request, program_uuid):
     if not program_data:
         raise Http404
 
+    course_ids = get_course_ids(program_data['courses'])
+    total_courses_count = len(course_ids)
+
+    started_courses_count = CourseEnrollment.enrollments_for_user(request.user).filter(course_id__in=course_ids).count()
+
     program = ProgramMarketingDataExtender(program_data, request.user).extend()
     program['type_slug'] = slugify(program['type'])
     skus = program.get('skus')
     ecommerce_service = EcommerceService()
 
-    context = {'program': program}
+    price = program.get('price', '0.00')
+    # started_courses_count depends on the count of courses in a program
+    # it's impossible to have started_courses > 0 if total_courses_count == 0
+    if price != '0.00' and started_courses_count:
+        program['full_program_price'] = (float(price) / total_courses_count) * (total_courses_count - started_courses_count)
+    elif price != '0.00':
+        program['full_program_price'] = float(price)
+
+    context = {
+        'program': program,
+        'add_to_cart_url': reverse('add_program_to_cart', kwargs={'uuid': program_data['uuid']})
+    }
 
     if program.get('is_learner_eligible_for_one_click_purchase') and skus:
         context['buy_button_href'] = ecommerce_service.get_checkout_page_url(*skus, program_uuid=program_uuid)
