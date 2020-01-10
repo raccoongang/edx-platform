@@ -832,12 +832,10 @@ def update_position_settings(request):
 
     user = UserProfile.objects.get(user=request.user)
 
-    user_position = user.position
-
     if position:
         position = Position.objects.get(id=position)
 
-        if sub_position and user_position is not None and position in [user_position, user_position.parent]:
+        if sub_position and user.position is not None and position in [user.position, user.position.parent]:
             position = Position.objects.get(id=sub_position)
 
         user.position = position
