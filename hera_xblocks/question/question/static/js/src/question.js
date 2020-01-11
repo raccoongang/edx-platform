@@ -11,7 +11,7 @@ function QuestionXBlock(runtime, element, init_args) {
         var $skipBtn = $('.skip', element);
         var $questionForm = $(".question-form", element);
         var $questionSlider = $(".image-slider", element);
-        var $scaffoldHelpImage = $(".scaffold_help_image", element)
+        var $scaffoldHelpImage = $(".scaffold_help_image", element);
         var $questionContent = $(".question__content", element);
         var $submit = $('.submit', element);
 
@@ -19,7 +19,7 @@ function QuestionXBlock(runtime, element, init_args) {
             $confidenceInfo.removeClass("hidden");
             $confidenceInput.removeClass("hidden is-not-valid");
             $submit.removeAttr("disabled");
-            $confidenceInfo.text(init_args.confidence_text)
+            $confidenceInfo.text(init_args.confidence_text);
         });
 
         $submit.bind('click', function () {
@@ -29,7 +29,7 @@ function QuestionXBlock(runtime, element, init_args) {
                 if (init_args.question.questionType == "text" || init_args.question.questionType == "number"){
                     answer = answer[0].value;
                 } else {
-                    answer = answer.map(el => {
+                    answer = answer.map(function(el) {
                         return el.value;
                     });
                 }
