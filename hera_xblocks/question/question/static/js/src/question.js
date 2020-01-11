@@ -24,14 +24,18 @@ function QuestionXBlock(runtime, element, init_args) {
 
         $submit.bind('click', function () {
             if ($confidenceInput.val() && $confidenceInput.is(':valid')){
-                var answers = $questionForm.serializeArray();
+                var answer = $questionForm.serializeArray();
                 var confidence = $(".confidence-input", element).val();
-                if (init_args.question.type == "text" || init_args.question.type == "number"){
-                    answers = answers[0];
-                };
+                if (init_args.question.questionType == "text" || init_args.question.questionType == "number"){
+                    answer = answer[0].value;
+                } else {
+                    answer = answer.map(el => {
+                        return el.value;
+                    });
+                }
                 $.post(
                     submithHandlerUrl,
-                    JSON.stringify({"answers":answers, "confidence":confidence})
+                    JSON.stringify({"answer": answer, "confidence": confidence})
                 ).done(function (response) {
                     if (response === true) {
                         $skipBtn.addClass("hidden");

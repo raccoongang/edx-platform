@@ -15,9 +15,9 @@
         <div class="author-block__question">
             <div class="question__content">{{description|safe}}</div>
             <form class="question-form">
-                {% if question.type == "text" or question.type == "number" %}
-                    <input type="{{question.type}}" name="answer" value="{{user_answer|first}}"/>
-                {% elif question.type == "select" %}
+                {% if question.questionType == "text" or question.questionType == "number" %}
+                    <input type="{{question.questionType}}" name="answer" value="{{user_answer|first}}"/>
+                {% elif question.questionType == "select" %}
                     <select name="answer">
                         <option value=""> ------- </option>
                         {% for option in options %}
@@ -28,7 +28,7 @@
                     {% for option in options %}
                         <p>
                             <input
-                                type="{{question.type}}"
+                                type="{{question.questionType}}"
                                 name="answer"
                                 value="{{option.title}}"
                                 {% if option.title in user_answer %} checked{% endif %}

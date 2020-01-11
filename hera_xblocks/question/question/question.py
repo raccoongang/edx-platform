@@ -22,7 +22,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
 
     @property
     def img_urls(self):
-        return self.data.get("imgUrls")
+        return self.data.get("imgUrls", [])
 
     @property
     def iframe_url(self):
@@ -41,7 +41,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         return self.data.get("question", {}).get("options")
 
     @property
-    def answer(self):
+    def correct_answer(self):
         return self.question.get("answer")
 
     @property
@@ -54,7 +54,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             preciseness_value = 0
 
         if preciseness.rfind('%') > -1:
-            return preciseness_value * self.answer / 100
+            return preciseness_value * self.correct_answer / 100
         else:
             return preciseness_value
 
@@ -108,9 +108,10 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         The primary view of the QuestionXBlock, shown to students
         when viewing courses.
         """
+        context = self.get_context()
         html = loader.render_django_template(
             'static/html/question.html',
-            context=self.get_context()
+            context=context
         )
         frag = Fragment(html.format(self=self))
         frag.add_css(self.resource_string("static/css/question.css"))
@@ -119,7 +120,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         frag.add_css_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css")
         frag.add_javascript_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.js")
 
-        frag.initialize_js('QuestionXBlock', json_args=self.get_context())
+        frag.initialize_js('QuestionXBlock', json_args=context)
         return frag
 
     @XBlock.json_handler
@@ -128,37 +129,36 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
 
     @XBlock.json_handler
     def submit(self, data, suffix=''):
-        user_answers = []
         correct = False
-        answers = data.get("answers")
+        answer = data.get("answer")
+        question_type = self.question.get('questionType')
+
         try:
-            self.user_confidence = int(data.get("confidence"))
+            user_confidence = int(data.get("confidence"))
         except ValueError:
-            self.user_confidence = None
+            user_confidence = None
 
-        if self.question.get('type') == "number":
-                try:
-                    user_answer = float(answers.get('value'))
-                    user_answers.append(user_answer)
-                    correct_answer = self.answer
-                    if correct_answer - self.preciseness <= user_answer <= correct_answer + self.preciseness:
-                        correct = True
-                except ValueError:
-                    user_answer = None
-
-        elif self.question.get('type') == "text":
-                user_answers.append(answers.get('value'))
-                if answer.get('value') == self.answer:
+        if question_type == "number":
+            try:
+                answer = float(answer)
+                preciseness = self.preciseness
+                if self.correct_answer - preciseness <= answer <= self.correct_answer + preciseness:
                     correct = True
+            except ValueError:
+                answer = None
 
-        elif self.question.get('type') in ["select", "radio", "checkbox"]:
+        elif question_type == "text":
+            if answer == self.correct_answer:
+                correct = True
+
+        elif question_type in ["select", "radio", "checkbox"]:
             correct_answers = [ option["title"] for option in self.options if option["correct"] is True ]
-            for answer in answers:
-                user_answers.append(answer.get('value'))
-            if set(user_answers) == set(correct_answers):
+            if set(answer) == set(correct_answers):
                 correct = True
 
         grade_value = 1 if correct else 0
         self.runtime.publish(self, 'grade', {'value': grade_value, 'max_value': 1})
-        self.user_answer = user_answers
+
+        self.user_answer = answer
+        self.user_confidence = user_confidence
         return correct
