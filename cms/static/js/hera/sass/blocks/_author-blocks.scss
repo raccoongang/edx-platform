@@ -214,6 +214,7 @@ $author_radius: 4px;
                 &__prev,
                 &__next {
                     border: 0;
+                    background: none;
                     outline: none;
                     box-shadow: none;
                     color: $author_color2;
