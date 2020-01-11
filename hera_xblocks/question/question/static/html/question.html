@@ -1,20 +1,65 @@
 <div class="author-block__wrapper">
     <div class="author-block__content">
         <div class="author-block__image">
-            <img src="{{img_url}}" alt="">
-            <button type="button" class="iframe_open">iframe</button>
+            <span class="close-image-icon">
+                <div class="close scaffold-img-close-btn hidden">&times;</div>
+            </span>
+            <div class="image-slider">
+                {% for img_url in img_urls %}
+                    <img class="question__image" src="{{img_url}}" alt="Question image">
+                {% endfor %}
+            </div>
+            <img class="scaffold_help_image hidden" src="" alt="Scaffold help image">
+            <button type="button" class="show-simulation">Show simulation</button>
         </div>
         <div class="author-block__question">
-        {{description|safe}}
-        <form id="question">
-        {% for option in options %}
-            <p><input type="radio" name="answer" value="{{option.title}}"> {{option.title}} </option><p>
-        {% endfor %}
-        </form>
+            <div class="question__content">{{description|safe}}</div>
+            <form class="question-form">
+                {% if question.questionType == "text" or question.questionType == "number" %}
+                    <input type="{{question.questionType}}" name="answer" value="{{user_answer|first}}"/>
+                {% elif question.questionType == "select" %}
+                    <select name="answer">
+                        <option value=""> ------- </option>
+                        {% for option in options %}
+                            <option value="{{option.title}}"{% if option.title in user_answer %} selected{% endif %}>{{option.title}}</option>
+                        {% endfor %}
+                    </select>
+                {% else %}
+                    {% for option in options %}
+                        <p>
+                            <input
+                                type="{{question.questionType}}"
+                                name="answer"
+                                value="{{option.title}}"
+                                {% if option.title in user_answer %} checked{% endif %}
+                            /> {{option.title}}
+                        </p>
+                    {% endfor %}
+                {% endif %}
+            </form>
+            <div class="scaffold-info hidden">
+                <img class="scaffold-img" src="" alt="scaffold img">
+                <div class="scaffold-description">scaffold description</div>
+                <button type="button" class="author-block__btn try_again">Try Again</button>
+            </div>
+            <div class="scaffolds hidden">
+                <button type="button" class="scaffold" data-img-url="{{rephrase.imgUrl}}" data-content="{{rephrase.content}}">{{rephrase.content}}</button>
+                <button type="button" class="scaffold" data-img-url="{{break_down.imgUrl}}" data-content="{{break_down.content}}">{{break_down.content}}</button>
+                <button type="button" class="scaffold" data-img-url="{{teach_me.imgUrl}}" data-content="{{teach_me.content}}">{{teach_me.content}}</button>
+            </div>
         </div>
     </div>
-    <div class="author-block__buttons"><button type="button" class="author-block__btn" id="submit">Submit</button></div>
-    <div id="iframe">
-        <iframe src="{{iframe_url}}" style="display: block; width: 600px; height: 600px;"></iframe>
+    <div class="author-holder author-block__buttons">
+        <span class="confidence-text info hidden"></span>
+        <input type="number" class="confidence-input hidden" min="0" max="100"/>
+        <span class="confidence-text error">Please tell us how confident you are about your answer.</span>
+        <button type="button" class="author-block__btn skip hidden">Skip</button>
+        <button type="button" class="author-block__btn submit" disabled>Submit</button>
+    </div>
+    <div class="simulation-overlay">
+        <div class="simulation-popup">
+            <div class="close simulation-close-btn">&times;</div>
+            <iframe src="{{iframe_url}}" class="simulation-iframe"></iframe>
+        </div>
     </div>
 </div>
