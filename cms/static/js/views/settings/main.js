@@ -24,7 +24,6 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    'click .action-upload-image': 'uploadImage',
                    'click .add-course-learning-info': 'addLearningFields',
                    'click .add-course-instructor-info': 'addInstructorFields',
-                   'click .action-upload-course-image': "uploadImage",
                    'click .action-upload-cert-image1': "uploadCertImage1",
                    'click .action-upload-cert-image2': "uploadCertImage2",
                    'click .action-upload-cert-image3': "uploadCertImage3"
@@ -457,49 +456,26 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
 
                uploadImage: function(event, success) {
                    event.preventDefault();
-                   var title = '',
-                       selector = '',
-                       image_key = '',
-                       image_path_key = '';
-                   switch (event.currentTarget.id) {
-                   case 'upload-course-image':
-                       title = gettext('Upload your course image.');
-                       selector = '#course-image';
-                       image_key = 'course_image_name';
-                       image_path_key = 'course_image_asset_path';
-                       break;
-                   case 'upload-banner-image':
-                       title = gettext('Upload your banner image.');
-                       selector = '#banner-image';
-                       image_key = 'banner_image_name';
-                       image_path_key = 'banner_image_asset_path';
-                       break;
-                   case 'upload-video-thumbnail-image':
-                       title = gettext('Upload your video thumbnail image.');
-                       selector = '#video-thumbnail-image';
-                       image_key = 'video_thumbnail_image_name';
-                       image_path_key = 'video_thumbnail_image_asset_path';
-                       break;
-                   }
-
                    var upload = new FileUploadModel({
-                       title: title,
-                       message: gettext('Files must be in JPEG or PNG format.'),
+                       title: gettext("Upload your image."),
+                       message: gettext("Files must be in JPEG or PNG format."),
                        mimeTypes: ['image/jpeg', 'image/png']
                    });
                    var self = this;
-                   var modal = new FileUploadDialog({
-                       model: upload,
-                       onSuccess: function(response) {
-                           var options = {};
-                           if (!success) {
-                               options[image_key] = response.asset.display_name;
-                               options[image_path_key] = response.asset.url;
+                   if (!success) {
+                       success = function (response) {
+                           var options = {
+                               'course_image_name': response.asset.display_name,
+                               'course_image_asset_path': response.asset.url
                            }
                            self.model.set(options);
                            self.render();
-                           $(selector).attr('src', self.model.get(image_path_key));
+                           $('#course-image').attr('src', self.model.get('course_image_asset_path'));
                        }
+                   }
+                   var modal = new FileUploadDialog({
+                       model: upload,
+                       onSuccess: success
                    });
                    modal.show();
                },
