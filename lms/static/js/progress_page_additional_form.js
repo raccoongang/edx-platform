@@ -19,13 +19,10 @@ $("#profile-form-save-action").on("click", function (e) {
         form.find(".u-field-message-help").show();
         form.find(".u-field-message-notification").hide();
 
+        var nonRequiredFields = ['sub-position', 'spec', 'diploma-number', 'additional_email', 'other-position'];
+
         for (key in ajaxData) {
-            if(
-                ajaxData[key] === ""
-                && key !== 'c45'
-                && key !== 'sub-c45'
-                && key !== 'spec-c45'
-            ) {
+            if(ajaxData[key] === "" && !nonRequiredFields.includes(key)) {
                 errorCount++;
                 $(".u-field-" + key).addClass("progress-form-error");
             }

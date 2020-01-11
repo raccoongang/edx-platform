@@ -3566,4 +3566,6 @@ REGIONS = (
     ('cherkasskaya', u'Черкаська область'),
     ('chernovetskaya', u'Чернівецька область'),
     ('chernigovskaya', u'Чернігівська область'),
+    ('sevastopol', u'Севастополь'),
+    ('kyiv', u'Київ'),
 )

@@ -149,32 +149,12 @@ def update_account_settings(requesting_user, update, username=None):
 
     date_of_birth = update.get("date_of_birth")
 
-    if date_of_birth is not None and len(date_of_birth):
-        update_date = datetime.datetime.strptime(update.get("date_of_birth"), '%Y-%m-%d')
-
-        if update_date.date() > datetime.date.today():
-            raise AccountValidationError({
-                "field_errors": {
-                    "date_of_birth": {
-                        "developer_message": "Value is not valid for field phone",
-                        'date_of_birth': [u'Date of birth should be in the past.'],
-                        "user_message": "This value is invalid.",
-                    }
-                }
-            })
-
-        update['year_of_birth'] = update_date.year
-
-    if update.get("phone") is not None and "_" in update.get("phone"):
-        raise AccountValidationError({
-            "field_errors": {
-                "phone": {
-                    "developer_message": "Value is not valid for field phone",
-                    'phone': [u'The phone field should contain only numbers and brackets.'],
-                    "user_message": "This value is invalid.",
-                }
-            }
-        })
+    # Updates year_of_birth from date_of_birth field for correct working learner full profile page.
+    if date_of_birth is not None:
+        try:
+            update.update({"year_of_birth": datetime.datetime.strptime(date_of_birth, '%Y-%m-%d').year})
+        except (TypeError, ValueError):
+            update.update({"year_of_birth": None, "date_of_birth": None})
 
     # Check for fields that are not editable. Marking them read-only causes them to be ignored, but we wish to 400.
     read_only_fields = set(update.keys()).intersection(
@@ -808,6 +788,8 @@ def get_position_settings(request):
         'other_position': user_profile.other_position,
         'selected_position': None,
         'specialization': None,
+        'selected_sub_position': None,
+        'sub_positions': [],
     }
 
     if user_profile.position is None:
@@ -843,6 +825,7 @@ def update_position_settings(request):
 
     data = request.data
     position = data.get('position')
+    sub_position = data.get('sub_position')
     other_position = data.get('other_position')
     specialization = data.get('specialization')
     diploma_id = data.get('diploma_id')
@@ -851,10 +834,14 @@ def update_position_settings(request):
 
     if position:
         position = Position.objects.get(id=position)
+
+        if sub_position and user.position is not None and position in [user.position, user.position.parent]:
+            position = Position.objects.get(id=sub_position)
+
         user.position = position
+        user.specialization.clear()
 
         if specialization is not None:
-            user.specialization.clear()
             if position.has_specialization:
                 user.specialization.add(*specialization)
     else:
@@ -862,12 +849,10 @@ def update_position_settings(request):
 
     if other_position and len(other_position) > 255:
         raise AccountValidationError({
-            "field_errors": {
-                "other_position": {
-                    "developer_message": "Value is not valid for field other_position",
-                    'other_position': [u'Ensure this value has at most 30 characters.'],
-                    "user_message": "This value is invalid.",
-                }
+            "other_position": {
+                "developer_message": "Value is not valid for field other_position",
+                'other_position': [u'Ensure this value has at most 30 characters.'],
+                "user_message": "This value is invalid.",
             }
         })
 

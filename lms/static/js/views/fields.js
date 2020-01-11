@@ -719,10 +719,10 @@
 
             saveFieldsValues: function() {
                 if (this.persistChanges === true) {
-                    var valueOtherPosition = this.$('#field-input-other-position' + this.model.cid).val(),
-                        valuePosition = this.$('#u-field-select-' + this.model.cid).val(),
-                        valueSubPosition = this.$('#u-field-select-sub-' + this.model.cid).val(),
-                        valueSpecialization = this.$('#u-field-select-spec-' + this.model.cid).val(),
+                    var valueOtherPosition = this.$('#field-input-other-position').val(),
+                        valuePosition = this.$('#u-field-select-position').val(),
+                        valueSubPosition = this.$('#u-field-select-sub-position').val(),
+                        valueSpecialization = this.$('#u-field-select-spec').val(),
                         valueDiplomaNumber = this.$('#field-input-diploma-number').val();
 
                     var view = this;
@@ -738,14 +738,12 @@
                     };
 
                     var postData = {
+                        position: valuePosition,
+                        sub_position: valueSubPosition,
                         other_position: valueOtherPosition,
                         specialization: valueSpecialization,
-                        diploma_id: valueDiplomaNumber
+                        diploma_id: valueDiplomaNumber,
                     };
-
-                    postData.position = (
-                        valuePosition != this.model.get('selected_position') ? valuePosition : valueSubPosition
-                    );
 
                     this.showInProgressMessage();
                     this.model.save(postData, options);

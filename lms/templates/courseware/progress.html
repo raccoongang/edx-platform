@@ -142,7 +142,7 @@ username = get_enterprise_learner_generic_name(request) or student.username
                                     <button class="btn generate_certs" data-endpoint="${post_url}" id="btn_generate_cert">${_('Request Certificate')}</button>
                                     %endif
                                 </div>
-                                %if not can_request_certificate:
+                                %if not can_request_certificate and certificate_data.cert_web_view_url or certificate_data.cert_status == CertificateStatuses.requesting:
                                 <button id="modal-button" type="button" class="btn btn-primary" data-popup=".progress-form-modal">${_('Update profile info and Request Certificate')}</button>
                                 %endif
                             </div>
