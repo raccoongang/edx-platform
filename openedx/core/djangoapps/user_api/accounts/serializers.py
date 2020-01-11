@@ -274,7 +274,7 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
         Method which validates the phone field that should contain only numbers, brackets and white spaces.
         """
 
-        if re.match('^[0-9()\s]+$', value) or not value:
+        if not value or re.match('^[0-9()\s]+$', value):
             return value
 
         raise AccountValidationError({
