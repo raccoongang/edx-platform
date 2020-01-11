@@ -1,0 +1,18 @@
+## mako
+
+<%page expression_filter="h"/>
+
+<%namespace name='static' file='../static_content.html'/>
+
+
+<main role="main" class="course-outline" id="main" tabindex="-1">
+    <h1>Dashboard</h1>
+</main>
+
+<%static:require_module_async module_name="js/dateutil_factory" class_name="DateUtilFactory">
+    DateUtilFactory.transform('.localized-datetime');
+</%static:require_module_async>
+
+<%static:webpack entry="CourseOutline">
+    new CourseOutline();
+</%static:webpack>

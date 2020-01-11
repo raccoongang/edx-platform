@@ -206,3 +206,13 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
 
         html = render_to_string('hera/course-lessons-outline-fragment.html', context)
         return Fragment(html)
+
+
+class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
+    """
+    View for Selection page with shown actual pare of the questions (units)
+    """
+    def render_to_fragment(self, request, course_id=None, page_context=None, **kwargs):
+        context = {}
+        html = render_to_string('hera/dashboard-outline-fragment.html', context)
+        return Fragment(html)

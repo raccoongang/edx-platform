@@ -9,9 +9,10 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 
 from edxmako.shortcuts import render_to_response
+from lms.djangoapps.courseware.views.views import CourseTabView
 
 from hera.models import Onboarding, UserOnboarding
-from hera.fragments import SelectionPageOutlineFragmentView
+from hera.fragments import SelectionPageOutlineFragmentView, DashboardPageOutlineFragmentView
 from openedx.features.course_experience.views.course_home import CourseHomeFragmentView, CourseHomeView
 
 
@@ -63,4 +64,22 @@ class SelectionPageView(CourseHomeView):
     def render_to_fragment(self, request, course=None, tab=None, **kwargs):
         course_id = unicode(course.id)
         home_fragment_view = SelectionPageFragmentView()
+        return home_fragment_view.render_to_fragment(request, course_id=course_id, **kwargs)
+
+
+class DashboardPageFragmentView(CourseHomeFragmentView):
+    outline_fragment_view = DashboardPageOutlineFragmentView
+
+
+class DashboardPageView(CourseTabView):
+    """
+    The dashboard page
+    """
+    def get(self, request, **kwargs):
+        course_id = "course-v1:test+test+test_flou"
+        return super(DashboardPageView, self).get(request, course_id, 'courseware', **kwargs)
+
+    def render_to_fragment(self, request, course=None, tab=None, **kwargs):
+        course_id = unicode(course.id)
+        home_fragment_view = DashboardPageFragmentView()
         return home_fragment_view.render_to_fragment(request, course_id=course_id, **kwargs)
