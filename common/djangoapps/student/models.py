@@ -446,6 +446,14 @@ class UserProfile(models.Model):
     diploma_number = models.CharField(max_length=11, blank=True, null=True)
 
     @property
+    def get_full_name(self):
+        """
+        Method which returns full name.
+        """
+
+        return u' '.join([self.user.last_name, self.user.first_name, self.second_name])
+
+    @property
     def has_profile_image(self):
         """
         Convenience method that returns a boolean indicating whether or not
