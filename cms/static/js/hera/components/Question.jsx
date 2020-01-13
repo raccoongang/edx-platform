@@ -427,16 +427,16 @@ export default class Question extends React.Component{
                     </button>
                 </div>
 
-                <div className="scaffolds__modal">
-                    <div className="scaffolds__modal__content">
-                        <div className="scaffolds__modal__content-simple">
+                <div className="scaffolds-modal">
+                    <div className="scaffolds-modal__content">
+                        <div className="scaffolds-modal__content-simple">
                             <SingleWYSIWYGComponent
                                 shouldReset={shouldResetEditor}
                                 changeHandler={this.changeDescription}
                                 content={activeQuestion.description}
                             />
                         </div>
-                        <div className="scaffolds__modal__content-additional">
+                        <div className="scaffolds-modal__content-additional">
                             <div className="author-block__image">
                                 <div className="author-block__image-selector">
                                     <i className="fa fa-picture-o" aria-hidden="true" />
@@ -460,11 +460,11 @@ export default class Question extends React.Component{
                                 />
                             </div>
                         </div>
-                        <div className="scaffolds__modal__buttons">
-                            <button type="button" className="scaffolds__modal__btn is-cancel">
+                        <div className="scaffolds-modal__buttons">
+                            <button type="button" className="scaffolds-modal__btn is-cancel">
                                 cancel
                             </button>
-                            <button type="button" className="scaffolds__modal__btn is-save">
+                            <button type="button" className="scaffolds-modal__btn is-save">
                                 save
                             </button>
                         </div>

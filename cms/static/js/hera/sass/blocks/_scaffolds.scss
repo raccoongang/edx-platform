@@ -28,7 +28,7 @@ $scaffolds_color4: #ff0000;
         max-width: 32%;
     }
 
-    &__modal {
+    &-modal {
         display: none;
         background: rgba(0, 0, 0, .8);
         position: fixed;
@@ -119,8 +119,9 @@ $scaffolds_color4: #ff0000;
 }
 
 .author-block__wrapper {
+    // this class will show modal, when it added to the <author-block__wrapper> block
     &.is-scaffold-open {
-        .scaffolds__modal {
+        .scaffolds-modal {
             display: flex;
         }
     }
