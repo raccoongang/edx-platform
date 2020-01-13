@@ -550,8 +550,8 @@
     }
 
     // specific fields - course image
-    #field-course-image, #field-banner-image, #field-video-thumbnail-image {
-      .current-course-image {
+    #field-course-image, #field-banner-image, #field-video-thumbnail-image, .image {
+      .current-course-image, .current {
         margin-bottom: ($baseline/2);
         padding: ($baseline/2) $baseline;
         background: $gray-l6;
@@ -595,7 +595,8 @@
           margin-right: flex-gutter();
         }
 
-        .action-upload-image {
+        .action-upload-image,
+        [class*="action-upload-cert-image"] {
           @extend %ui-btn-flat-outline;
 
           @include float(right);
