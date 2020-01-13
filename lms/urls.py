@@ -20,6 +20,7 @@ from courseware.views.views import CourseTabView, EnrollStaffView, StaticCourseT
 from debug import views as debug_views
 from django_comment_common.models import ForumsConfig
 from django_openid_auth import views as django_openid_auth_views
+from hera import views as hera_views
 from lms.djangoapps.certificates import views as certificates_views
 from lms.djangoapps.discussion import views as discussion_views
 from lms.djangoapps.instructor.views import coupons as instructor_coupons_views
@@ -70,7 +71,8 @@ urlpatterns = [
 
     url(r'', include('student.urls')),
     # TODO: Move lms specific student views out of common code
-    url(r'^dashboard/?$', student_views.student_dashboard, name='dashboard'),
+    # url(r'^dashboard/?$', student_views.student_dashboard, name='dashboard'),
+    url(r'^dashboard/', hera_views.DashboardPageView.as_view(), name='dashboard'),
     url(r'^change_enrollment$', student_views.change_enrollment, name='change_enrollment'),
 
     # Event tracking endpoints

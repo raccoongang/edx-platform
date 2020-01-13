@@ -3,7 +3,7 @@ View which retrieve hera onboarding pages and handle user onboarding states.
 """
 
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden, JsonResponse, HttpResponseRedirect
+from django.http import HttpResponseForbidden, JsonResponse, HttpResponseRedirect, Http404
 from django.views.generic import View
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -11,7 +11,7 @@ from django.utils.decorators import method_decorator
 from edxmako.shortcuts import render_to_response
 from lms.djangoapps.courseware.views.views import CourseTabView
 
-from hera.models import Onboarding, UserOnboarding
+from hera.models import Onboarding, UserOnboarding, ActiveCourseSetting
 from hera.fragments import SelectionPageOutlineFragmentView, DashboardPageOutlineFragmentView
 from openedx.features.course_experience.views.course_home import CourseHomeFragmentView, CourseHomeView
 
@@ -76,10 +76,14 @@ class DashboardPageView(CourseTabView):
     The dashboard page
     """
     def get(self, request, **kwargs):
-        course_id = "course-v1:test+test+test_flou"
+        active_course = ActiveCourseSetting.objects.last()
+        if active_course:
+            course_id = unicode(active_course.course.id)
+        else:
+            raise Http404
         return super(DashboardPageView, self).get(request, course_id, 'courseware', **kwargs)
 
-    def render_to_fragment(self, request, course=None, tab=None, **kwargs):
+    def render_to_fragment(self, request, course=None, **kwargs):
         course_id = unicode(course.id)
         home_fragment_view = DashboardPageFragmentView()
         return home_fragment_view.render_to_fragment(request, course_id=course_id, **kwargs)

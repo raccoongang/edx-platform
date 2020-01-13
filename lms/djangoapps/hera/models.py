@@ -174,3 +174,10 @@ class UserOnboarding(models.Model):
 
     class Meta:
         app_label = 'hera'
+
+
+class ActiveCourseSetting(models.Model):
+    course = models.ForeignKey("course_overviews.CourseOverview", on_delete=models.CASCADE)
+
+    def __unicode__(self):
+        return unicode(self.course.id)
