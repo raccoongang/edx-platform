@@ -10,6 +10,7 @@ export default class PagesBaseComponent extends React.Component {
         this.next = this.next.bind(this);
         this.previous = this.previous.bind(this);
         this.saveContent = this.saveContent.bind(this);
+        this.sliderSpeed = 500;
         this.state = {
             activeSlideIndex: 0
         };
@@ -78,19 +79,35 @@ export default class PagesBaseComponent extends React.Component {
         });
     }
 
-    next() {
+    next(e) {
+        const target = e.target;
+        const self = this;
+        target.classList.add('is-disabled');
         this.setState({
             activeSlideIndex: this.state.activeSlideIndex+1
         }, ()=>{
-            this.sliderContent.slickNext();
+            this.sliderContent.slickGoTo(this.state.activeSlideIndex);
+            setTimeout(()=>{
+                if (this.state.activeSlideIndex < this.props[this.componentType].sliderBar.length-1) {
+                    target.classList.remove('is-disabled');
+                }
+            }, self.sliderSpeed);
         });
     }
 
-    previous() {
+    previous(e) {
+        const target = e.target;
+        const self = this;
+        target.classList.add('is-disabled');
         this.setState({
             activeSlideIndex: this.state.activeSlideIndex-1
         }, ()=>{
-            this.sliderContent.slickPrev();
+            this.sliderContent.slickGoTo(this.state.activeSlideIndex);
+            setTimeout(()=>{
+                if (this.state.activeSlideIndex > 0) {
+                    target.classList.remove('is-disabled');
+                }
+            }, self.sliderSpeed);
         });
     }
 
@@ -181,12 +198,8 @@ export default class PagesBaseComponent extends React.Component {
                         {
                             data.sliderBar.length > 1 && (
                                 <div className="author-block__question__slider-controls">
-                                    <button className={`author-block__question__slider-controls__prev ${this.state.activeSlideIndex === 0 ? "is-disabled" : ""}`} onClick={this.previous}>
-                                        <i className="fa fa-arrow-left" aria-hidden="true" />
-                                    </button>
-                                    <button className={`author-block__question__slider-controls__next ${this.state.activeSlideIndex === data.sliderBar.length-1 ? 'is-disabled' : ''}`} onClick={this.next}>
-                                        <i className="fa fa-arrow-right" aria-hidden="true" />
-                                    </button>
+                                    <button className={`author-block__question__slider-controls__prev ${this.state.activeSlideIndex === 0 ? "is-disabled" : ""}`} onClick={this.previous} />
+                                    <button className={`author-block__question__slider-controls__next ${this.state.activeSlideIndex === data.sliderBar.length-1 ? 'is-disabled' : ''}`} onClick={this.next} />
                                 </div>
                             )
                         }

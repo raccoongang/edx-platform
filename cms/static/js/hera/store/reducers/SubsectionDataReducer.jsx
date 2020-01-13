@@ -1,4 +1,4 @@
-import { SUBSECTION_DATA_CHANGED } from '../actionTypes';
+import { SUBSECTION_DATA_CHANGED, SUBSECTION_DATA_PARENT_LOCATORS_CHANGED } from '../actionTypes';
 
 
 const initialState = {
@@ -11,7 +11,8 @@ const initialState = {
         'simulation',
         'questions',
         'endSurvey'
-    ]
+    ],
+    questionsParentLocators: []
 };
 
 const SubsectionDataReducer = function(state=initialState, action) {
@@ -20,8 +21,14 @@ const SubsectionDataReducer = function(state=initialState, action) {
             // TODO: change to the right action
             return {
                 ...action.data,
-                componentsOrder: state.componentsOrder
+                componentsOrder: state.componentsOrder,
+                questionsParentLocators: state.questionsParentLocators
             };
+        case SUBSECTION_DATA_PARENT_LOCATORS_CHANGED:
+            return {
+                ...state,
+                questionsParentLocators: action.data
+            }
         default:
             return state;
     }

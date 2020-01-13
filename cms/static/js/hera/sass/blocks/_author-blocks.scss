@@ -25,9 +25,9 @@ $author_radius: 4px;
     overflow-y: scroll;
 
     .close-popup {
-        position: absolute;
+        position: sticky;
         top: 0;
-        right: 0;
+        right: 12px;
         width: 32px;
         height: 32px;
         color: $author_color5;
@@ -184,10 +184,19 @@ $author_radius: 4px;
     }
 
     &__question {
+        box-sizing: border-box;
         min-width: 322px;
         border: 1px solid $author_color2;
         padding: 12px;
         position: relative;
+        max-height: 648px;
+        overflow: scroll;
+
+        .text-editor__holder {
+            iframe {
+                height: 225px !important;
+            }
+        }
 
         &__slider {
             &-item {
@@ -230,6 +239,20 @@ $author_radius: 4px;
 
                     &:hover {
                         color: $author_color5;
+                    }
+                }
+
+                &__prev {
+                    &:before {
+                        content: '\f060';
+                        font-family: FontAwesome;
+                    }
+                }
+
+                &__next {
+                    &:before {
+                        content: '\f061';
+                        font-family: FontAwesome;
                     }
                 }
             }
