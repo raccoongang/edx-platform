@@ -141,8 +141,9 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         if question_type == "number":
             try:
                 answer = float(answer)
+                correct_answer = float(self.correct_answer)
                 preciseness = self.preciseness
-                if self.correct_answer - preciseness <= answer <= self.correct_answer + preciseness:
+                if correct_answer - preciseness <= answer <= correct_answer + preciseness:
                     correct = True
             except ValueError:
                 answer = None
