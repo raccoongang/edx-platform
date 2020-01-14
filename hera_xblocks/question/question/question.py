@@ -18,7 +18,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
 
     data = JSONField(default={})
     user_confidence = Integer(scope=Scope.user_state)
-    user_answer = List(scope=Scope.user_state)
+    user_answer = JSONField(scope=Scope.user_state)
 
     @property
     def img_urls(self):
