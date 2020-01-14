@@ -426,6 +426,50 @@ export default class Question extends React.Component{
                         Next
                     </button>
                 </div>
+
+                <div className="scaffolds-modal">
+                    <div className="scaffolds-modal__content">
+                        <div className="scaffolds-modal__content-simple">
+                            <SingleWYSIWYGComponent
+                                shouldReset={shouldResetEditor}
+                                changeHandler={this.changeDescription}
+                                content={activeQuestion.description}
+                            />
+                        </div>
+                        <div className="scaffolds-modal__content-additional">
+                            <div className="author-block__image">
+                                <div className="author-block__image-selector">
+                                    <i className="fa fa-picture-o" aria-hidden="true" />
+                                </div>
+                                <div>
+                                    <img src="https://cdn.vox-cdn.com/thumbor/NI4JSzAlBecM9hmBxevfLKNN2AM=/0x0:637x355/1200x800/filters:focal(269x128:369x228)/cdn.vox-cdn.com/uploads/chorus_image/image/65538905/adventuretime.0.png" alt=""/>
+                                </div>
+                                <div className="author-toolbar__row">
+                                    <input
+                                        className="author-toolbar__field"
+                                        type="text"
+                                        placeholder='Paste URL of the image'
+                                    />
+                                </div>
+                            </div>
+                            <div className="editor-holder">
+                                <SingleWYSIWYGComponent
+                                    shouldReset={shouldResetEditor}
+                                    changeHandler={this.changeDescription}
+                                    content={activeQuestion.description}
+                                />
+                            </div>
+                        </div>
+                        <div className="scaffolds-modal__buttons">
+                            <button type="button" className="scaffolds-modal__btn is-cancel">
+                                cancel
+                            </button>
+                            <button type="button" className="scaffolds-modal__btn is-save">
+                                save
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         )
     }
