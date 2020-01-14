@@ -16,7 +16,7 @@
             <div class="question__content">{{description|safe}}</div>
             <form class="question-form">
                 {% if question.questionType == "text" or question.questionType == "number" %}
-                    <input type="{{question.questionType}}" name="answer" value="{{user_answer|first}}"/>
+                    <input type="{{question.questionType}}" name="answer" value="{{user_answer}}"/>
                 {% elif question.questionType == "select" %}
                     <select name="answer">
                         <option value=""> ------- </option>
