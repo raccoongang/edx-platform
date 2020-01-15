@@ -64,7 +64,7 @@ export default class WYSWYGComponent extends React.Component {
             this.editor.setContent(this.props.content);
         }
         return (
-            <textarea key={this.props.index} className={this.getClassName()} defaultValue={this.props.content}>
+            <textarea key={this.props.index} className={this.getClassName()} placeholder="Enter a content" defaultValue={this.props.content}>
             </textarea>
         )
     }

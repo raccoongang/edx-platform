@@ -10,23 +10,23 @@ import {
 
 const questionTemplate = {
     title: "New Question",
-    description: "Enter some description",
+    description: "",
     imgUrls: [],
     iframeUrl: "",
     confidenceText: "How confident are you",
     correctAnswerText: "The correct answer text",
     incorrectAnswerText: "An incorrect answer text",
     rephrase: {
-        imgUrl: "https://preview.redd.it/5ew0yywuu5t31.png?auto=webp&s=62712b2bdf101b164de9c3005445b97ae5bf56bd",
-        content: "rephrase"
+        // imgUrls: ["https://preview.redd.it/5ew0yywuu5t31.png?auto=webp&s=62712b2bdf101b164de9c3005445b97ae5bf56bd"],
+        content: ""
     },
     breakDown: {
-        imgUrl: "https://i.ytimg.com/vi/8EMRcV4NWDY/maxresdefault.jpg",
-        content: "breakDown"
+        imgUrls: ["https://i.ytimg.com/vi/8EMRcV4NWDY/maxresdefault.jpg"],
+        content: ""
     },
     teachMe: {
-        imgUrl: "https://i.ytimg.com/vi/xLfYnBnnsCg/maxresdefault.jpg",
-        content: "teachMe"
+        imgUrls: ["https://i.ytimg.com/vi/xLfYnBnnsCg/maxresdefault.jpg"],
+        content: ""
     },
     question: {
         questionType: 'radio', // ['radio', 'checkbox', 'select', 'number', 'text']

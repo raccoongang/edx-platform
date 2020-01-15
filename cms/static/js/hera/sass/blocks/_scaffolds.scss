@@ -40,6 +40,12 @@ $scaffolds_color4: #ff0000;
         align-items: center;
         justify-content: center;
 
+        &__title {
+            font-weight: 600;
+            font-size: 18px;
+            margin: 0 0 12px;
+        }
+
         &__content {
             max-width: 720px;
             min-width: 720px;

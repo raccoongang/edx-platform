@@ -15,7 +15,12 @@ export default class Question extends React.Component{
         this.changeDescription = this.changeDescription.bind(this);
 
         this.state = {
-            showSimulation: false
+            showSimulation: false,
+            simpleScaffoldOpened: false,
+            advancedScaffoldOpened: false,
+            isTeachMe: false,
+            isRephrase: false,
+            isBreakDown: false,
         };
 
         this.settingsImg = {
@@ -192,7 +197,150 @@ export default class Question extends React.Component{
     showSimulation() {
         this.setState({
             showSimulation: !this.state.showSimulation
-        })
+        });
+    }
+
+    saveScaffoldData() {
+        const activeQuestion = {...this.props.questions[this.props.activeQuestionIndex]};
+        if (this.state.isRephrase) {
+            this.props.questionChanged(this.props.activeQuestionIndex, {
+                ...activeQuestion,
+                rephrase: {
+                    content: this.state.rephraseContent,
+                }
+            });
+        } else if (this.state.isBreakDown) {
+            this.props.questionChanged(this.props.activeQuestionIndex, {
+                ...activeQuestion,
+                breakDown: {
+                    content: this.state.breakDownContent,
+                    imgUrls: this.state.breakDownImgUrls
+                }
+            });
+        } else if (this.state.isTeachMe) {
+            this.props.questionChanged(this.props.activeQuestionIndex, {
+                ...activeQuestion,
+                teachMe: {
+                    content: this.state.teachMeContent,
+                    imgUrls: this.state.teachMeImgUrls
+                }
+            });
+        }
+        this.closeScaffoldsSettings();
+    }
+
+    closeScaffoldsSettings() {
+        this.setState({
+            advancedScaffoldOpened: false,
+            simpleScaffoldOpened: false,
+            isBreakDown: false,
+            isRephrase: false,
+            isTeachMe: false
+        });
+    }
+
+    openRephraseSettings() {
+        const activeQuestion = {...this.props.questions[this.props.activeQuestionIndex]};
+        this.setState({
+            simpleScaffoldOpened: true,
+            isRephrase: true,
+            isTeachMe: false,
+            isBreakDown: false,
+            scaffoldsSettingsMode: 'rephrase',
+            rephraseContent: activeQuestion.rephrase.content,
+        });
+    }
+
+    openTeachMeSettings() {
+        const activeQuestion = {...this.props.questions[this.props.activeQuestionIndex]};
+        this.setState({
+            advancedScaffoldOpened: true,
+            isRephrase: false,
+            isTeachMe: true,
+            isBreakDown: false,
+            scaffoldsSettingsMode: 'teachMe',
+            teachMeContent: activeQuestion.teachMe.content,
+            teachMeImgUrls: activeQuestion.teachMe.imgUrls,
+        });
+    }
+
+    openBreakDownSettings() {
+        const activeQuestion = {...this.props.questions[this.props.activeQuestionIndex]};
+        this.setState({
+            advancedScaffoldOpened: true,
+            isRephrase: false,
+            isTeachMe: false,
+            isBreakDown: true,
+            scaffoldsSettingsMode: 'breakDown',
+            breakDownContent: activeQuestion.breakDown.content,
+            breakDownImgUrls: activeQuestion.breakDown.imgUrls,
+        });
+    }
+
+    changeRephraseContent(content) {
+        this.setState({
+            rephraseContent: content
+        });
+    }
+
+    changeTeachMeBreakDownContent(content) {
+        if (this.state.isBreakDown) {
+            this.setState({
+                breakDownContent: content
+            });
+        } else if (this.state.isTeachMe) {
+            this.setState({
+                teachMeContent: content
+            });
+        }
+    }
+
+    changeAdvancedScaffoldImgUrl(e) {
+        if (this.state.isBreakDown) {
+            this.setState({
+                breakDownImgUrls: this.state.breakDownImgUrls.map((el, ind) => {
+                    if (ind === +e.target.dataset.index) {
+                        return e.target.value;
+                    } else {
+                        return el;
+                    }
+                })
+            });
+        } else if (this.state.isTeachMe) {
+            this.setState({
+                teachMeImgUrls: this.state.teachMeImgUrls.map((el, ind) => {
+                    if (ind === +e.target.dataset.index) {
+                        return e.target.value;
+                    } else {
+                        return el;
+                    }
+                })
+            });
+        }
+    }
+
+    removeScaffoldImage(e) {
+        if (this.state.isBreakDown) {
+            this.setState({
+                breakDownImgUrls: this.state.breakDownImgUrls.filter((el, ind) => {return ind !== +e.target.dataset.index})
+            });
+        } else if (this.state.isTeachMe) {
+            this.setState({
+                teachMeImgUrls: this.state.teachMeImgUrls.filter((el, ind) => {return ind !== +e.target.dataset.index})
+            });
+        }
+    }
+
+    addScaffoldImage(e) {
+        if (this.state.isBreakDown) {
+            this.setState({
+                breakDownImgUrls: this.state.breakDownImgUrls.concat([''])
+            });
+        } else if (this.state.isTeachMe) {
+            this.setState({
+                teachMeImgUrls: this.state.teachMeImgUrls.concat([''])
+            });
+        }
     }
 
     render() {
@@ -278,8 +426,35 @@ export default class Question extends React.Component{
             });
         };
 
+        const scaffoldEditing = this.state.simpleScaffoldOpened || this.state.advancedScaffoldOpened;
+        const getScaffoldAdvancedEditorContent = () => {
+            if (this.state.isBreakDown) {
+                return this.state.breakDownContent;
+            } else if (this.state.isTeachMe) {
+                return this.state.teachMeContent;
+            }
+        };
+        const getScaffoldAdvancedImgUrls = () => {
+            if (this.state.isBreakDown) {
+                return this.state.breakDownImgUrls;
+            } else if (this.state.isTeachMe) {
+                return this.state.teachMeImgUrls;
+            }
+            return [];
+        };
+        const getScaffoldTitle = () => {
+            if (this.state.isBreakDown) {
+                return 'Break Down';
+            } else if (this.state.isTeachMe) {
+                return 'Teach Me';
+            } else if (this.state.isRephrase) {
+                return 'Rephrase';
+            }
+        };
+        const scaffoldSettingsModeChanged = this.scaffoldsSettingsMode !== this.state.scaffoldsSettingsMode;
+        this.scaffoldsSettingsMode = this.state.scaffoldsSettingsMode;
         return (
-            <div className="author-block__wrapper">
+            <div className={`author-block__wrapper${scaffoldEditing ? ' is-scaffold-open' : ''}`}>
                 <div className="author-block__content">
                     <div className="author-block__image">
                         {
@@ -355,18 +530,6 @@ export default class Question extends React.Component{
                                 )}
                             </div>
                         </div>
-
-                        <div className="scaffolds__wrapper">
-                            <button type="button" className="scaffolds__btn">
-                                Scaffolds 1
-                            </button>
-                            <button type="button" className="scaffolds__btn">
-                                Scaffolds 2
-                            </button>
-                            <button type="button" className="scaffolds__btn">
-                                Scaffolds 3
-                            </button>
-                        </div>
                     </div>
                 </div>
                 <div className="author-toolbar">
@@ -420,6 +583,26 @@ export default class Question extends React.Component{
                             placeholder='Paste URL of the iframe'
                         />
                     </div>
+                    <div className="author-toolbar__row">
+                        <button
+                            type="button"
+                            className="scaffolds__btn"
+                            onClick={this.openRephraseSettings.bind(this)}>
+                            Rephrase
+                        </button>
+                        <button
+                            type="button"
+                            className="scaffolds__btn"
+                            onClick={this.openTeachMeSettings.bind(this)}>
+                            Teach Me
+                        </button>
+                        <button
+                            type="button"
+                            className="scaffolds__btn"
+                            onClick={this.openBreakDownSettings.bind(this)}>
+                            Break Down
+                        </button>
+                    </div>
                 </div>
                 <div className="author-block__buttons">
                     <button type="button" className="author-block__btn">
@@ -429,46 +612,90 @@ export default class Question extends React.Component{
 
                 <div className="scaffolds-modal">
                     <div className="scaffolds-modal__content">
-                        <div className="scaffolds-modal__content-simple">
-                            <SingleWYSIWYGComponent
-                                shouldReset={shouldResetEditor}
-                                changeHandler={this.changeDescription}
-                                content={activeQuestion.description}
-                            />
-                        </div>
-                        <div className="scaffolds-modal__content-additional">
-                            <div className="author-block__image">
-                                <div className="author-block__image-selector">
-                                    <i className="fa fa-picture-o" aria-hidden="true" />
-                                </div>
-                                <div>
-                                    <img src="https://cdn.vox-cdn.com/thumbor/NI4JSzAlBecM9hmBxevfLKNN2AM=/0x0:637x355/1200x800/filters:focal(269x128:369x228)/cdn.vox-cdn.com/uploads/chorus_image/image/65538905/adventuretime.0.png" alt=""/>
-                                </div>
-                                <div className="author-toolbar__row">
-                                    <input
-                                        className="author-toolbar__field"
-                                        type="text"
-                                        placeholder='Paste URL of the image'
+                        <h2 className="scaffolds-modal__title">
+                            {getScaffoldTitle()}
+                        </h2>
+                        {
+                            this.state.simpleScaffoldOpened && (
+                                <div className="scaffolds-modal__content-simple">
+                                    <SingleWYSIWYGComponent
+                                        shouldReset={scaffoldSettingsModeChanged}
+                                        changeHandler={this.changeRephraseContent.bind(this)}
+                                        content={activeQuestion.rephrase.content}
                                     />
                                 </div>
-                            </div>
-                            <div className="editor-holder">
-                                <SingleWYSIWYGComponent
-                                    shouldReset={shouldResetEditor}
-                                    changeHandler={this.changeDescription}
-                                    content={activeQuestion.description}
-                                />
-                            </div>
-                        </div>
+                            )
+                        }
+                        {
+                            this.state.advancedScaffoldOpened && (
+                                <div className="scaffolds-modal__content-additional">
+                                    <div className="author-block__image">
+                                        <div className="author-block__image-selector">
+                                            <i className="fa fa-picture-o" aria-hidden="true" />
+                                        </div>
+                                        <div>
+                                            {getScaffoldAdvancedImgUrls().map((src, ind) => {
+                                                return <img src={src} data-index={ind} key={ind} alt=""/>
+                                            })}
+                                        </div>
+                                    </div>
+                                    <div className="editor-holder">
+                                        <SingleWYSIWYGComponent
+                                            shouldReset={scaffoldSettingsModeChanged}
+                                            changeHandler={this.changeTeachMeBreakDownContent.bind(this)}
+                                            content={getScaffoldAdvancedEditorContent()}
+                                        />
+                                    </div>
+                                    
+                                </div>
+                            )
+                        }
                         <div className="scaffolds-modal__buttons">
-                            <button type="button" className="scaffolds-modal__btn is-cancel">
+                        <div className="author-toolbar__row">
+                            {
+                                getScaffoldAdvancedImgUrls().map((src, ind) => {
+                                    return (
+                                        <div key={ind}>
+                                            <input
+                                                className="author-toolbar__field"
+                                                type="text"
+                                                placeholder='Paste URL of the image'
+                                                value={src}
+                                                data-index={ind}
+                                                onChange={this.changeAdvancedScaffoldImgUrl.bind(this)}
+                                            />
+                                            <button className="author-toolbar__btn cancel" data-index={ind} onClick={this.removeScaffoldImage.bind(this)}>
+                                                <i className="fa fa-trash-o" aria-hidden="true" />
+                                            </button>
+                                        </div>
+                                    )
+                                })
+                            }
+                            {
+                                this.state.advancedScaffoldOpened && (
+                                <div className="author-toolbar__add">
+                                    <button className="author-toolbar__add__btn" onClick={this.addScaffoldImage.bind(this)}>
+                                        + add image
+                                    </button>
+                                </div>
+                                )
+                            }
+                        </div>
+                            <button
+                                type="button"
+                                className="scaffolds-modal__btn is-cancel"
+                                onClick={this.closeScaffoldsSettings.bind(this)}>
                                 cancel
                             </button>
-                            <button type="button" className="scaffolds-modal__btn is-save">
+                            <button
+                                type="button"
+                                className="scaffolds-modal__btn is-save"
+                                onClick={this.saveScaffoldData.bind(this)}>
                                 save
                             </button>
                         </div>
                     </div>
+                    
                 </div>
             </div>
         )
