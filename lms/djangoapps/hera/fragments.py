@@ -213,6 +213,41 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
     View for Selection page with shown actual pare of the questions (units)
     """
     def render_to_fragment(self, request, course_id=None, page_context=None, **kwargs):
-        context = {}
+        course_key = CourseKey.from_string(course_id)
+        course_overview = get_course_overview_with_access(request.user, 'load', course_key, check_if_enrolled=True)
+        course = modulestore().get_course(course_key)
+
+        course_block_tree = get_course_outline_block_tree(request, course_id)
+        if not course_block_tree:
+            return None
+
+        uncomplete_subsection = {}
+        popup = False
+        for section in course_block_tree.get('children'):
+            for subsection in section.get('children', []):
+                if not subsection['complete']:
+                    for unit in subsection.get('children', []):
+                        if unit['complete']:
+                            uncomplete_subsection = subsection
+                            popup = True
+                            break
+
+        units = uncomplete_subsection.get('children', [{}])
+        start_over_url = units[0].get('lms_web_url', '')
+        context = {
+            'resume_course_url': uncomplete_subsection.get('lms_web_url', ''),
+            'start_over_url': start_over_url or '',
+            'csrf': csrf(request)['csrf_token'],
+            'course': course_overview,
+            'due_date_display_format': course.due_date_display_format,
+            'blocks': course_block_tree
+        }
+
+        xblock_display_names = self.create_xblock_id_and_name_dict(course_block_tree)
+        gated_content = self.get_content_milestones(request, course_key)
+
+        context['gated_content'] = gated_content
+        context['xblock_display_names'] = xblock_display_names
+        context['popup'] = popup
         html = render_to_string('hera/dashboard-outline-fragment.html', context)
         return Fragment(html)

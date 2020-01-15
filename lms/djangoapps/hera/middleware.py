@@ -1,7 +1,7 @@
+from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
-from django.http import HttpResponseRedirect, Http404
-from .models import UserOnboarding, ActiveCourseSetting
 
+from .models import ActiveCourseSetting, UserOnboarding
 
 
 class AllowedUrlsMiddleware(object):
@@ -40,7 +40,7 @@ class AllowedUrlsMiddleware(object):
             if not ActiveCourseSetting.objects.all().exists():
                 raise Http404
             raise Http404
-        if not request.path == reverse('hera:onboarding'):
+        if not request.path == reverse('hera:onboarding') and request.user.is_authenticated():
             user_onboarding = UserOnboarding.objects.filter(user=request.user).first()
             if not user_onboarding or not user_onboarding.is_passed():
                 return HttpResponseRedirect(reverse('hera:onboarding'))
