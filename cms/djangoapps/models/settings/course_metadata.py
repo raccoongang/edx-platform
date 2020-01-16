@@ -144,8 +144,13 @@ class CourseMetadata(object):
             if help_args is not None:
                 field_help = field_help.format(**help_args)
 
+            value = field.read_json(descriptor)
+            if field.name == 'advanced_modules':
+                extended_value = set(value)
+                [extended_value.add(module) for module in settings.HERA_ADVANCED_MODULES]
+                value = list(extended_value)
             result[field.name] = {
-                'value': field.read_json(descriptor),
+                'value': value,
                 'display_name': _(field.display_name),    # pylint: disable=translation-of-non-string
                 'help': field_help,
                 'deprecated': field.runtime_options.get('deprecated', False)
