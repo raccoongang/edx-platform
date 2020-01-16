@@ -65,11 +65,9 @@ function QuestionXBlock(runtime, element, init_args) {
 
             $questionForm.addClass("hidden");
             $scaffoldHelpImage.html('');
-            console.log(scaffoldData);
             if (scaffoldData.imgUrls && scaffoldData.imgUrls.length) {
                 var needShowImageBlock = false;
                 scaffoldData.imgUrls.split(' ').forEach((el, ind) => {
-                    console.log(el);
                     if (el) {
                         needShowImageBlock = true;
                         $scaffoldHelpImage.append('<img src="' + el + '" alt="Scaffold help image"/>');

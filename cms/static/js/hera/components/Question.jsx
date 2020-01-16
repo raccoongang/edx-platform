@@ -373,8 +373,9 @@ export default class Question extends React.Component{
                                 type="text"
                                 value={activeQuestion.question.preciseness}
                                 onChange={this.changePreciseness.bind(this)}
-                                placeholder="Enter preciseness"
+                                placeholder="Add a tolerance"
                                 />
+                            <span className="questions__list__field-hint">It can be number or percentage like 12, 12.04 or 34%</span>
                         </div>
                     </div>
                 );
@@ -444,7 +445,7 @@ export default class Question extends React.Component{
         };
         const getScaffoldTitle = () => {
             if (this.state.isBreakDown) {
-                return 'Break Down';
+                return 'Break It Down';
             } else if (this.state.isTeachMe) {
                 return 'Teach Me';
             } else if (this.state.isRephrase) {
@@ -471,7 +472,7 @@ export default class Question extends React.Component{
                             )
                         }
                         {
-                            activeQuestion.imgUrls.length === 0 && (
+                            activeQuestion.imgUrls.length === 0 && !this.state.showSimulation && (
                                 <div className="author-block__image-selector">
                                     <i className="fa fa-picture-o" aria-hidden="true"></i>
                                     <br/>
@@ -532,58 +533,61 @@ export default class Question extends React.Component{
                         </div>
                     </div>
                 </div>
-                <div className="author-toolbar">
-                    {
-                        activeQuestion.iframeUrl && (
-                        <div className="author-toolbar__row">
-                            <button className="author-toolbar__btn cancel" onClick={this.showSimulation.bind(this)}>
-                                {this.state.showSimulation ? 'Show Images' : 'Show simulation'}
-                            </button>
-                        </div>
-                        )
-                    }
-
-                    <div className="author-toolbar__row">
+                <div className="questions-toolbar">
+                    <div className="author-toolbar">
                         {
-                            activeQuestion.imgUrls.map((img, ind) => {
-                                return (
-                                    <div>
-                                        <input
-                                        className="author-toolbar__field"
-                                        type="text"
-                                        onChange={this.changeImage.bind(this)}
-                                        value={img}
-                                        key={ind}
-                                        data-index={ind}
-                                        placeholder='Paste URL of the image'
-                                        />
-                                        <button className="author-toolbar__btn cancel" data-index={ind} onClick={this.removeImage.bind(this)}>
-                                            <i className="fa fa-trash-o" aria-hidden="true" />
-                                        </button>
-                                    </div>
-                            )})
-                        }
-                        {
-                            activeQuestion.imgUrls.length > 0 && (
-                                <div className="author-toolbar__add">
-                                    <button className="author-toolbar__add__btn" onClick={this.addImage.bind(this)}>
-                                        + add image
+                            activeQuestion.iframeUrl && (
+                                <div className="author-toolbar__row">
+                                    <button className="author-toolbar__btn cancel" onClick={this.showSimulation.bind(this)}>
+                                        {this.state.showSimulation ? 'Show Images' : 'Show simulation'}
                                     </button>
                                 </div>
                             )
                         }
+
+                        <div className="author-toolbar__row">
+                            {
+                                activeQuestion.imgUrls.map((img, ind) => {
+                                    return (
+                                        <div>
+                                            <input
+                                                className="author-toolbar__field"
+                                                type="text"
+                                                onChange={this.changeImage.bind(this)}
+                                                value={img}
+                                                key={ind}
+                                                data-index={ind}
+                                                placeholder='Paste URL of the image'
+                                            />
+                                            <button className="author-toolbar__btn cancel" data-index={ind} onClick={this.removeImage.bind(this)}>
+                                                <i className="fa fa-trash-o" aria-hidden="true" />
+                                            </button>
+                                        </div>
+                                    )})
+                            }
+                            {
+                                activeQuestion.imgUrls.length > 0 && (
+                                    <div className="author-toolbar__add">
+                                        <button className="author-toolbar__add__btn" onClick={this.addImage.bind(this)}>
+                                            + add image
+                                        </button>
+                                    </div>
+                                )
+                            }
+                        </div>
+                        <div className="author-toolbar__row">
+                            <p>"Show simulation" iframe url</p>
+                            <input
+                                className="author-toolbar__field"
+                                type="text"
+                                onChange={this.changeIframeUrl.bind(this)}
+                                value={activeQuestion.iframeUrl}
+                                placeholder='Paste URL of the iframe'
+                            />
+                        </div>
                     </div>
-                    <div className="author-toolbar__row">
-                        <p>"Show simulation" iframe url</p>
-                        <input
-                            className="author-toolbar__field"
-                            type="text"
-                            onChange={this.changeIframeUrl.bind(this)}
-                            value={activeQuestion.iframeUrl}
-                            placeholder='Paste URL of the iframe'
-                        />
-                    </div>
-                    <div className="author-toolbar__row">
+
+                    <div className="scaffolds-buttons">
                         <button
                             type="button"
                             className="scaffolds__btn"
@@ -600,10 +604,11 @@ export default class Question extends React.Component{
                             type="button"
                             className="scaffolds__btn"
                             onClick={this.openBreakDownSettings.bind(this)}>
-                            Break Down
+                            Break It Down
                         </button>
                     </div>
                 </div>
+
                 <div className="author-block__buttons">
                     <button type="button" className="author-block__btn">
                         Next
@@ -630,10 +635,15 @@ export default class Question extends React.Component{
                             this.state.advancedScaffoldOpened && (
                                 <div className="scaffolds-modal__content-additional">
                                     <div className="author-block__image">
-                                        <div className="author-block__image-selector">
-                                            <i className="fa fa-picture-o" aria-hidden="true" />
-                                        </div>
-                                        <div>
+                                        {
+                                            getScaffoldAdvancedImgUrls().length === 0 && (
+                                                <div className="author-block__image-selector">
+                                                    <i className="fa fa-picture-o" aria-hidden="true" />
+                                                </div>
+                                            )
+                                        }
+
+                                        <div className="author-block__image-holder">
                                             {getScaffoldAdvancedImgUrls().map((src, ind) => {
                                                 return <img src={src} data-index={ind} key={ind} alt=""/>
                                             })}
@@ -646,11 +656,10 @@ export default class Question extends React.Component{
                                             content={getScaffoldAdvancedEditorContent()}
                                         />
                                     </div>
-                                    
                                 </div>
                             )
                         }
-                        <div className="scaffolds-modal__buttons">
+
                         <div className="author-toolbar__row">
                             {
                                 getScaffoldAdvancedImgUrls().map((src, ind) => {
@@ -673,14 +682,16 @@ export default class Question extends React.Component{
                             }
                             {
                                 this.state.advancedScaffoldOpened && (
-                                <div className="author-toolbar__add">
-                                    <button className="author-toolbar__add__btn" onClick={this.addScaffoldImage.bind(this)}>
-                                        + add image
-                                    </button>
-                                </div>
+                                    <div className="author-toolbar__add">
+                                        <button className="author-toolbar__add__btn" onClick={this.addScaffoldImage.bind(this)}>
+                                            + add image
+                                        </button>
+                                    </div>
                                 )
                             }
                         </div>
+
+                        <div className="scaffolds-modal__buttons">
                             <button
                                 type="button"
                                 className="scaffolds-modal__btn is-cancel"
