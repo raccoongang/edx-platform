@@ -5,6 +5,9 @@
 #    make upgrade
 #
 # Hera-pages xblock
+-e hera_xblocks/hera_title
+-e hera_xblocks/lesson_complete
+-e hera_xblocks/lesson_summary
 -e hera_xblocks/question
 -e hera_xblocks/hera_pages
 -e hera_xblocks/end_survey

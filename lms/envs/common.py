@@ -3512,3 +3512,13 @@ TINYMCE_DEFAULT_CONFIG = {
         {'title' : 'Black background', 'inline' : 'span', 'styles': {'background': '#000'}},
     ]
 }
+
+# HERA Settings
+
+HERA_ADVANCED_MODULES = [
+    'hera_pages',
+    'question',
+    'hera_title',
+    'lesson_complete',
+    'lesson_summary',
+]
