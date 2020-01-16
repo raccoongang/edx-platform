@@ -352,6 +352,10 @@ def get_component_templates(courselike, library=False):
     # are the names of the modules in ADVANCED_COMPONENT_TYPES that should be
     # enabled for the course.
     course_advanced_keys = courselike.advanced_modules
+    if settings.HERA_ADVANCED_MODULES: # extend advanced_list if HERA_ADVANCED_MODULES is
+        course_advanced_keys_set = set(course_advanced_keys)
+        [course_advanced_keys_set.add(module) for module in settings.HERA_ADVANCED_MODULES]
+        course_advanced_keys = list(course_advanced_keys_set)
     advanced_component_templates = {
         "type": "advanced",
         "templates": [],

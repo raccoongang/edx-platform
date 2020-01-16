@@ -3,21 +3,21 @@
 import pkg_resources
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
-from xblock.fields import JSONField
+from xblock.fields import JSONField, String
 from xblockutils.studio_editable import StudioEditableXBlockMixin
 from xblockutils.resources import ResourceLoader
 
 loader = ResourceLoader(__name__)
+
+
 class HeraPagesXBlock(StudioEditableXBlockMixin, XBlock):
     """
     TO-DO: document what your XBlock does.
     """
 
-    # Fields are defined on the class.  You can access them in your code as
-    # self.<fieldname>.
-
-    # TO-DO: delete count, and define your own fields.
     editable_fields = ('data',)
+
+    display_name = String(default="Hera Pages")
     data = JSONField()
 
     @property

@@ -2,9 +2,11 @@
 import pkg_resources
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
-from xblock.fields import JSONField, Scope, List, Integer
+from xblock.scorable import ScorableXBlockMixin
+from xblock.fields import JSONField, Scope, List, Integer, String
 from xblockutils.resources import ResourceLoader
 from xblockutils.studio_editable import StudioEditableXBlockMixin
+
 
 loader = ResourceLoader(__name__)
 
@@ -15,7 +17,12 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     """
     editable_fields = ('data',)
     has_score = True
+    icon_class = 'problem'
 
+    def get_icon_class(self):
+        return self.icon_class
+
+    display_name = String(default="Question")
     data = JSONField(default={})
     user_confidence = Integer(scope=Scope.user_state)
     user_answer = JSONField(scope=Scope.user_state)
