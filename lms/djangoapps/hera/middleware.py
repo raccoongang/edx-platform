@@ -15,7 +15,7 @@ class AllowedUrlsMiddleware(object):
             'onboarding',
             'logout',
             'admin',
-            'dashboard'
+            'user_dashboard'
         ]
         course_urls = [
             'courseware',
