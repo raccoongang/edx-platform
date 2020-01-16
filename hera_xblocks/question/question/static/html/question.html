@@ -1,16 +1,17 @@
 <div class="author-block__wrapper">
     <div class="author-block__content">
         <div class="author-block__image">
-            <span class="close-image-icon">
-                <div class="close scaffold-img-close-btn hidden">&times;</div>
-            </span>
+            <span class="close-image-icon hidden js-close-scaffold-btn">&times;</span>
             <div class="image-slider">
                 {% for img_url in img_urls %}
                     <img class="question__image" src="{{img_url}}" alt="Question image">
                 {% endfor %}
             </div>
-            <img class="scaffold_help_image hidden" src="" alt="Scaffold help image">
-            <button type="button" class="show-simulation">Show simulation</button>
+            <div class="scaffold_help_image hidden">
+            </div>
+            {% if iframe_url %}
+                <button type="button" class="show-simulation">Show simulation</button>
+            {% endif %}
         </div>
         <div class="author-block__question">
             <div class="question__content">{{description|safe}}</div>
@@ -39,13 +40,13 @@
             </form>
             <div class="scaffold-info hidden">
                 <img class="scaffold-img" src="" alt="scaffold img">
-                <div class="scaffold-description">scaffold description</div>
+                <div class="scaffold-description"></div>
                 <button type="button" class="author-block__btn try_again">Try Again</button>
             </div>
             <div class="scaffolds hidden">
-                <button type="button" class="scaffold" data-img-url="{{rephrase.imgUrl}}" data-content="{{rephrase.content}}">{{rephrase.content}}</button>
-                <button type="button" class="scaffold" data-img-url="{{break_down.imgUrl}}" data-content="{{break_down.content}}">{{break_down.content}}</button>
-                <button type="button" class="scaffold" data-img-url="{{teach_me.imgUrl}}" data-content="{{teach_me.content}}">{{teach_me.content}}</button>
+                <button type="button" class="scaffold" data-content="{{rephrase.content}}">Rephrase</button>
+                <button type="button" class="scaffold" data-img-urls="{%for url in break_down.imgUrls%}{{url}} {% endfor %}" data-content="{{break_down.content}}">Break It Down</button>
+                <button type="button" class="scaffold" data-img-urls="{%for url in teach_me.imgUrls%}{{url}} {% endfor %}" data-content="{{teach_me.content}}">Teach Me</button>
             </div>
         </div>
     </div>

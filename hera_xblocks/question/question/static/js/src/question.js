@@ -7,7 +7,7 @@ function QuestionXBlock(runtime, element, init_args) {
         var $confidenceInput = $(".confidence-input", element);
         var $scaffolds = $(".scaffolds", element);
         var $blockScaffold = $(".scaffold-info", element);
-        var $closeBtn = $(".scaffold-img-close-btn", element);
+        var $closeBtn = $(".js-close-scaffold-btn", element);
         var $skipBtn = $('.skip', element);
         var $questionForm = $(".question-form", element);
         var $questionSlider = $(".image-slider", element);
@@ -22,7 +22,7 @@ function QuestionXBlock(runtime, element, init_args) {
             $confidenceInfo.text(init_args.confidence_text);
         });
 
-        $submit.bind('click', function () {
+        $submit.bind('click', function (e) {
             if ($confidenceInput.val() && $confidenceInput.is(':valid')){
                 var answer = $questionForm.serializeArray();
                 var confidence = $(".confidence-input", element).val();
@@ -48,6 +48,7 @@ function QuestionXBlock(runtime, element, init_args) {
                         $confidenceInfo.text(init_args.incorrect_answer_text);
                     }
                     $confidenceInput.addClass("hidden");
+                    $(e.currentTarget).attr('disabled', 'disabled');
                 });
             } else {
                 $confidenceInput.addClass("is-not-valid");
@@ -63,9 +64,20 @@ function QuestionXBlock(runtime, element, init_args) {
             // $(".scaffold-description", element).html("Some text");
 
             $questionForm.addClass("hidden");
-            $questionSlider.addClass("hidden");
-            $scaffoldHelpImage.removeClass("hidden");
-            $scaffoldHelpImage.attr('src', scaffoldData.imgUrl);
+            $scaffoldHelpImage.html('');
+            if (scaffoldData.imgUrls && scaffoldData.imgUrls.length) {
+                var needShowImageBlock = false;
+                scaffoldData.imgUrls.split(' ').forEach((el, ind) => {
+                    if (el) {
+                        needShowImageBlock = true;
+                        $scaffoldHelpImage.append('<img src="' + el + '" alt="Scaffold help image"/>');
+                    }
+                });
+                if (needShowImageBlock) {
+                    $questionSlider.addClass("hidden");
+                    $scaffoldHelpImage.removeClass("hidden");
+                }
+            }
             $questionContent.html(scaffoldData.content);
             $closeBtn.removeClass("hidden");
         });
