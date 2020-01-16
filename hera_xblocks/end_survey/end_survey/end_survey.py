@@ -25,11 +25,15 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
     data = JSONField(default={})
     user_count = Integer(default=0, scope=Scope.user_state_summary)
     result_summary = List(default=[], scope=Scope.user_state_summary)
-    user_result = List(default=[], scope=Scope.user_state_summary)
+    user_result = JSONField(scope=Scope.user_state)
 
     @property
     def questions(self):
         return self.data.get("questions")
+        
+    @property
+    def confidence(self):
+        return self.data.get("confidence")
 
     @property
     def title(self):
@@ -72,6 +76,7 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
             "user_result": self.user_result,
             "questions": self.questions,
             "title": self.title,
+            "confidence": self.confidence
         }
 
     def get_context_staff(self):
@@ -100,7 +105,8 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
 
         self.user_result = data
         self.result_summary.append(data)
-        self.user_count += 1
+        if not self.user_result:
+            self.user_count += 1
 
     def student_view(self, context=None):
         """
@@ -112,6 +118,12 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
         frag = Fragment(html)
         frag.add_css(self.resource_string("static/css/end_survey.css"))
         frag.add_javascript(self.resource_string("static/js/src/end_survey.js"))
+        
+        # slick jquery cdn
+        frag.add_css_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css")
+        frag.add_css_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css")
+        
+        frag.add_javascript_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.js")
         frag.add_javascript_url("https://cdn.jsdelivr.net/gh/vast-engineering/jquery-popup-overlay@2/jquery.popupoverlay.min.js")
 
         frag.initialize_js('EndSurveyXBlock')
