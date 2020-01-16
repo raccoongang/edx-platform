@@ -132,6 +132,7 @@
                 this.searchAlertCollection.on('reset', function() {
                     return self.$('.search-alerts').empty();
                 });
+                this.markdownConverter = new Markdown.Converter();
                 this.template = edx.HtmlUtils.template($('#thread-list-template').html());
                 this.threadListItemTemplate = edx.HtmlUtils.template($('#thread-list-item-template').html());
             };
@@ -348,8 +349,14 @@
                 var threadCommentCount = thread.get('comments_count'),
                     threadUnreadCommentCount = thread.get('unread_comments_count'),
                     neverRead = !thread.get('read') && threadUnreadCommentCount === threadCommentCount,
-                    threadPreview = this.containsMarkup(thread.get('body')) ? '' : thread.get('body'),
-                    context = _.extend(
+                    threadPreview = this.containsMarkup(thread.get('body')) ? '' : thread.get('body');
+                if (this.showThreadPreview) {
+                    // convert markdown in thread preview to html for further removing
+                    threadPreview = this.markdownConverter.makeHtml(threadPreview);
+                    // remove html markup from thread preview
+                    threadPreview = $("<div>").html(threadPreview).text();
+                }
+                var context = _.extend(
                         {
                             neverRead: neverRead,
                             threadUrl: thread.urlFor('retrieve'),
