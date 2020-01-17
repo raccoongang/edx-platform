@@ -373,7 +373,7 @@ export default class Question extends React.Component{
                     {
                         activeQuestion.iframeUrl && (
                         <div className="author-toolbar__row">
-                            <button className="author-toolbar__btn cancel" onClick={this.showSimulation.bind(this)}>
+                            <button className="author-toolbar__btn regular" onClick={this.showSimulation.bind(this)}>
                                 {this.state.showSimulation ? 'Show Images' : 'Show simulation'}
                             </button>
                         </div>
@@ -384,7 +384,7 @@ export default class Question extends React.Component{
                         {
                             activeQuestion.imgUrls.map((img, ind) => {
                                 return (
-                                    <div>
+                                    <div className="author-toolbar__row-holder">
                                         <input
                                         className="author-toolbar__field"
                                         type="text"
@@ -413,7 +413,7 @@ export default class Question extends React.Component{
                     <div className="author-toolbar__row">
                         <p>"Show simulation" iframe url</p>
                         <input
-                            className="author-toolbar__field"
+                            className="author-toolbar__field is-full"
                             type="text"
                             onChange={this.changeIframeUrl.bind(this)}
                             value={activeQuestion.iframeUrl}

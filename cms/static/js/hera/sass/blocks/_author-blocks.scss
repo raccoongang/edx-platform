@@ -11,9 +11,10 @@ $author_height: 32px;
 $author_radius: 4px;
 
 .author-holder {
+    box-sizing: border-box;
     position: relative;
-    width: 1365px;
-    max-height: 845px;
+    width: 1362px;
+    max-height: 765px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -26,10 +27,10 @@ $author_radius: 4px;
 
     .close-popup {
         position: sticky;
-        top: 0;
-        right: 12px;
+        top: 2px;
+        right: 18px;
         width: 32px;
-        height: 32px;
+        height: 16px;
         color: $author_color5;
         background: transparent;
         border: none;
@@ -58,7 +59,7 @@ $author_radius: 4px;
 
 .author-block {
     &__wrapper {
-        margin: 32px;
+        margin: 22px 22px 22px 32px;
         width: 1024px;
         height: 100%;
         padding: 12px;
@@ -86,7 +87,7 @@ $author_radius: 4px;
         border: 1px solid $author_color2;
         position: relative;
         margin-right: 12px;
-        min-width: 660px;
+        width: 660px;
         height: 646px;
         overflow: scroll;
 
@@ -185,7 +186,7 @@ $author_radius: 4px;
 
     &__question {
         box-sizing: border-box;
-        min-width: 322px;
+        width: 325px;
         border: 1px solid $author_color2;
         padding: 12px;
         position: relative;
@@ -201,7 +202,7 @@ $author_radius: 4px;
         &__slider {
             &-item {
                 position: relative;
-                padding-bottom: 32px;
+                padding-bottom: 24px;
 
                 .mce-tinymce {
                     width: 99% !important;
@@ -209,14 +210,14 @@ $author_radius: 4px;
                 }
 
                 iframe {
-                    min-height: 490px;
+                    min-height: 465px;
                 }
             }
 
             &-controls {
                 text-align: right;
                 position: absolute;
-                right: 8px;
+                right: 10px;
                 bottom: 12px;
                 background: $author_color7;
 
@@ -284,8 +285,9 @@ $author_radius: 4px;
     }
 
     &__add-btn {
+        line-height: 1;
         position: absolute;
-        left: 14px;
+        left: 12px;
         bottom: 14px;
         box-sizing: border-box;
         display: inline-block;
@@ -309,13 +311,14 @@ $author_radius: 4px;
 
         &.remove {
             position: absolute;
-            left: 24px;
-            bottom: 0;
+            left: 20px;
+            bottom: 2px;
             background: none;
             color: $author_color2;
-            height: 28px;
+            height: 18px;
             padding: 0 8px;
             font-size: 18px;
+            line-height: 1;
 
             &:hover {
                 color: $author_color3;
@@ -333,11 +336,16 @@ $author_radius: 4px;
     margin: 0 0 20px;
 
     &__row {
-        width: 65%;
+        width: 662px;
         margin: 0 0 12px;
 
         &:last-child {
             margin: 0;
+        }
+
+        &-holder {
+            display: flex;
+            justify-content: space-between;
         }
     }
 
@@ -364,6 +372,11 @@ $author_radius: 4px;
         &:active,
         &:focus {
             border-color: $author_color1 !important;
+        }
+
+        &.is-full {
+            min-width: 100% !important;
+            max-width: initial !important;
         }
     }
 
@@ -393,6 +406,10 @@ $author_radius: 4px;
 
         &.cancel {
             background: $author_color3;
+        }
+
+        &.regular {
+            background: $author_color1;
         }
 
         &.is-disabled {

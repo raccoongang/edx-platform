@@ -51,8 +51,10 @@ export default class SwitchComponent extends React.Component{
                     value={this.props.title}
                     type="text"
                     onChange={this.changeTitle.bind(this)} />
-                <span className="remove-item">
+                <span className="edit-item">
                     <i className="edit-btn fa fa-pencil" aria-hidden="true" onClick={this.toggleShowInput} />
+                </span>
+                <span className="remove-item">
                     {
                         this.props.isQuestion && (
                             <i className="remove-item__icon fa fa-trash-o" aria-hidden="true" onClick={this.questionRemoved.bind(this)}></i>
