@@ -597,14 +597,14 @@ export default class Question extends React.Component{
                         <button
                             type="button"
                             className="scaffolds__btn"
-                            onClick={this.openTeachMeSettings.bind(this)}>
-                            Teach Me
+                            onClick={this.openBreakDownSettings.bind(this)}>
+                            Break It Down
                         </button>
                         <button
                             type="button"
                             className="scaffolds__btn"
-                            onClick={this.openBreakDownSettings.bind(this)}>
-                            Break It Down
+                            onClick={this.openTeachMeSettings.bind(this)}>
+                            Teach Me
                         </button>
                     </div>
                 </div>
