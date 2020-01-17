@@ -664,7 +664,7 @@ export default class Question extends React.Component{
                             {
                                 getScaffoldAdvancedImgUrls().map((src, ind) => {
                                     return (
-                                        <div key={ind}>
+                                        <div className="author-toolbar__row-holder" key={ind}>
                                             <input
                                                 className="author-toolbar__field"
                                                 type="text"
