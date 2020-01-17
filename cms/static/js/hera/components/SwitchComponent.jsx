@@ -10,7 +10,8 @@ export default class SwitchComponent extends React.Component{
         this.state = {
             showInput: false
         };
-        this.toggleShowInput = this.toggleShowInput.bind(this);
+        this.showInput = this.showInput.bind(this);
+        this.hideInput = this.hideInput.bind(this);
     }
 
     handleClick(event) {
@@ -18,9 +19,15 @@ export default class SwitchComponent extends React.Component{
         this.props.switchComponent(this.props.blockType, this.props.isQuestion, this.props.index);
     }
 
-    toggleShowInput() {
+    showInput() {
         this.setState({
-            showInput: !this.state.showInput
+            showInput: true
+        });
+    }
+
+    hideInput() {
+        this.setState({
+            showInput: false
         });
     }
 
@@ -32,8 +39,20 @@ export default class SwitchComponent extends React.Component{
         }
     }
 
+    handleKeyPress(e) {
+        if (e.key === 'Enter') {
+            this.hideInput();
+        }
+    }
+
     questionRemoved() {
         this.props.questionRemoved(this.props.index);
+    }
+
+    toggleInputEdit() {
+        this.setState({
+            showInput: !this.state.showInput
+        });
     }
 
     render() {
@@ -47,12 +66,13 @@ export default class SwitchComponent extends React.Component{
                 </a>
                 <input
                     className={`edit-input${!this.state.showInput ? ' is-hidden' : ''}`}
-                    onBlur={this.toggleShowInput}
+                    onBlur={this.hideInput}
                     value={this.props.title}
                     type="text"
+                    onKeyPress={this.handleKeyPress.bind(this)}
                     onChange={this.changeTitle.bind(this)} />
                 <span className="edit-item">
-                    <i className="edit-btn fa fa-pencil" aria-hidden="true" onClick={this.toggleShowInput} />
+                    <i className="edit-btn fa fa-pencil" aria-hidden="true" onClick={this.toggleInputEdit.bind(this)} />
                 </span>
                 <span className="remove-item">
                     {

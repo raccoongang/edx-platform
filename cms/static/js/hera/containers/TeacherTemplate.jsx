@@ -19,8 +19,6 @@ import SwitchComponent from '../components/SwitchComponent';
 
 import '../sass/main.scss';
 
-import axios from 'axios';
-
 
 const ActiveComponentsMap = {
     'title': Title,
