@@ -64,7 +64,7 @@ $scaffolds_color4: #ff0000;
                     box-sizing: border-box;
                     width: 49%;
                     min-width: initial;
-                    height: 255px;
+                    height: 286px;
                     flex-direction: column;
 
                     .author-toolbar__row {
@@ -81,6 +81,7 @@ $scaffolds_color4: #ff0000;
 
                 .editor-holder {
                     width: 49%;
+                    height: 286px;
 
                     iframe {
                         height: 155px !important;
@@ -131,7 +132,7 @@ $scaffolds_color4: #ff0000;
     }
 
     .author-toolbar__field {
-        min-width: 85% !important;
+        min-width: 89.5% !important;
         max-width: initial !important;
     }
 
