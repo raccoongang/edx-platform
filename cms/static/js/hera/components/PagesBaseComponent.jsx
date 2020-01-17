@@ -213,7 +213,7 @@ export default class PagesBaseComponent extends React.Component {
                         {
                             data.imgUrl.map((img, ind) => {
                                 return (
-                                    <div>
+                                    <div className="author-toolbar__row-holder">
                                         <input 
                                         className="author-toolbar__field"
                                         type="text"
@@ -242,16 +242,18 @@ export default class PagesBaseComponent extends React.Component {
                     {
                         (this.state.iframeAdding || data.iframeUrl) && (
                         <div className="author-toolbar__row">
-                            <input 
-                                className="author-toolbar__field"
-                                type="text"
-                                onChange={this.changeIframeUrl.bind(this)}
-                                value={data.iframeUrl}
-                                placeholder='Paste URL of the iframe'
-                            />
-                            <button className="author-toolbar__btn cancel" onClick={this.cancelIframeUrl.bind(this)}>
-                                <i className="fa fa-trash-o" aria-hidden="true" />
-                            </button>
+                            <div className="author-toolbar__row-holder">
+                                <input
+                                    className="author-toolbar__field"
+                                    type="text"
+                                    onChange={this.changeIframeUrl.bind(this)}
+                                    value={data.iframeUrl}
+                                    placeholder='Paste URL of the iframe'
+                                />
+                                <button className="author-toolbar__btn cancel" onClick={this.cancelIframeUrl.bind(this)}>
+                                    <i className="fa fa-trash-o" aria-hidden="true" />
+                                </button>
+                            </div>
                         </div>
                         )
                     }

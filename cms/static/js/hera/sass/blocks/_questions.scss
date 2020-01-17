@@ -111,7 +111,6 @@ $question_color6: #96d063;
         &__item {
             display: flex;
             align-items: center;
-            justify-content: space-around;
             margin: 0 0 20px;
 
             &:last-child {
@@ -190,6 +189,7 @@ $question_color6: #96d063;
         }
 
         &__remove-item {
+            margin-left: 10px;
             color: $question_color5;
             border: none;
             box-shadow: none;
@@ -256,7 +256,7 @@ $question_color6: #96d063;
         background: none;
         height: auto;
         line-height: 1;
-        min-width: 250px;
+        min-width: 235px;
         border-radius: 0;
         transition: all .3s ease-in-out;
 
