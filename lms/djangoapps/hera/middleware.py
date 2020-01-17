@@ -21,7 +21,7 @@ class AllowedUrlsMiddleware(object):
             'courseware',
             'jump_to'
         ]
-        active_course = ActiveCourseSetting.objects.last()
+        active_course = ActiveCourseSetting.last()
         if active_course:
             for course_url in course_urls:
                 urls.append('courses{}{}'.format(active_course.course.id, course_url))
@@ -34,13 +34,14 @@ class AllowedUrlsMiddleware(object):
         return False
 
     def process_request(self, request):
-        is_path_allowed = self.is_allowed(request.path)
-        is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == 'XMLHttpRequest'
-        if request.user.is_authenticated() and not request.user.is_staff and not is_ajax and not is_path_allowed:
-            if not ActiveCourseSetting.objects.all().exists():
-                raise Http404
-            raise Http404
-        if not request.path == reverse('hera:onboarding') and request.user.is_authenticated():
-            user_onboarding = UserOnboarding.objects.filter(user=request.user).first()
-            if not user_onboarding or not user_onboarding.is_passed():
-                return HttpResponseRedirect(reverse('hera:onboarding'))
+        if request.user.is_authenticated():
+            is_path_allowed = self.is_allowed(request.path)
+            is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == 'XMLHttpRequest'
+            if not request.user.is_staff:
+                if not is_ajax and not is_path_allowed:
+                    raise Http404
+                if not ActiveCourseSetting.last():
+                    raise Http404
+            if not request.path == reverse('hera:onboarding'):
+                if not UserOnboarding.onboarding_is_passed(request.user.id):
+                    return HttpResponseRedirect(reverse('hera:onboarding'))

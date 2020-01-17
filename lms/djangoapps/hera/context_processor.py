@@ -2,6 +2,8 @@ from .models import UserOnboarding
 
 
 def user_onboarding(request):
+    #TODO: need to improve this logic, ideally to get onboarding pages via ajax request 
+    # in order not to request DB for onboarding data every time page loads
     if request.user.is_authenticated():
         user_onboarding = UserOnboarding.objects.filter(user=request.user).first()
         onboarding_data = {

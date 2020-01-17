@@ -5,14 +5,12 @@ View which retrieve hera onboarding pages and handle user onboarding states.
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponseRedirect, Http404
 from django.views.generic import View
-from django.urls import reverse
 from django.utils.decorators import method_decorator
 
 from edxmako.shortcuts import render_to_response
+from hera.fragments import DashboardPageOutlineFragmentView, SelectionPageOutlineFragmentView
+from hera.models import ActiveCourseSetting, UserOnboarding
 from lms.djangoapps.courseware.views.views import CourseTabView
-
-from hera.models import Onboarding, UserOnboarding, ActiveCourseSetting
-from hera.fragments import SelectionPageOutlineFragmentView, DashboardPageOutlineFragmentView
 from openedx.features.course_experience.views.course_home import CourseHomeFragmentView, CourseHomeView
 
 
@@ -28,7 +26,7 @@ class OnboardingPagesView(View):
         """
         user_onboarding, _ = UserOnboarding.objects.get_or_create(user=request.user)
         if user_onboarding.is_passed():
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect('hera:dashboard')
         context = {
             'pages': user_onboarding.get_pages(),
             'current_page': user_onboarding.get_current_page(),
@@ -62,9 +60,8 @@ class SelectionPageView(CourseHomeView):
     """
 
     def render_to_fragment(self, request, course=None, tab=None, **kwargs):
-        course_id = unicode(course.id)
         home_fragment_view = SelectionPageFragmentView()
-        return home_fragment_view.render_to_fragment(request, course_id=course_id, **kwargs)
+        return home_fragment_view.render_to_fragment(request, course_id=unicode(course.id), **kwargs)
 
 
 class DashboardPageFragmentView(CourseHomeFragmentView):
@@ -76,7 +73,7 @@ class DashboardPageView(CourseTabView):
     The dashboard page
     """
     def get(self, request, **kwargs):
-        active_course = ActiveCourseSetting.objects.last()
+        active_course = ActiveCourseSetting.last()
         if active_course:
             course_id = unicode(active_course.course.id)
         else:
@@ -84,6 +81,5 @@ class DashboardPageView(CourseTabView):
         return super(DashboardPageView, self).get(request, course_id, 'courseware', **kwargs)
 
     def render_to_fragment(self, request, course=None, **kwargs):
-        course_id = unicode(course.id)
         home_fragment_view = DashboardPageFragmentView()
-        return home_fragment_view.render_to_fragment(request, course_id=course_id, **kwargs)
+        return home_fragment_view.render_to_fragment(request, course_id=unicode(course.id), **kwargs)

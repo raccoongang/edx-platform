@@ -210,7 +210,7 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
 
 class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
     """
-    View for Selection page with shown actual pare of the questions (units)
+    View for Dashboard Page
     """
     def render_to_fragment(self, request, course_id=None, page_context=None, **kwargs):
         course_key = CourseKey.from_string(course_id)
@@ -221,33 +221,34 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
         if not course_block_tree:
             return None
 
-        uncomplete_subsection = {}
+        incomplete_subsection = {}
         popup = False
         for section in course_block_tree.get('children'):
             for subsection in section.get('children', []):
                 if not subsection['complete']:
                     for unit in subsection.get('children', []):
                         if unit['complete']:
-                            uncomplete_subsection = subsection
+                            incomplete_subsection = subsection
                             popup = True
                             break
 
-        units = uncomplete_subsection.get('children', [{}])
+        units = incomplete_subsection.get('children', [{}])
         start_over_url = units[0].get('lms_web_url', '')
-        context = {
-            'resume_course_url': uncomplete_subsection.get('lms_web_url', ''),
-            'start_over_url': start_over_url or '',
-            'csrf': csrf(request)['csrf_token'],
-            'course': course_overview,
-            'due_date_display_format': course.due_date_display_format,
-            'blocks': course_block_tree
-        }
 
         xblock_display_names = self.create_xblock_id_and_name_dict(course_block_tree)
         gated_content = self.get_content_milestones(request, course_key)
 
-        context['gated_content'] = gated_content
-        context['xblock_display_names'] = xblock_display_names
-        context['popup'] = popup
+        context = {
+            'popup': popup,
+            'resume_course_url': incomplete_subsection.get('lms_web_url', ''),
+            'start_over_url': start_over_url or '',
+            'csrf': csrf(request)['csrf_token'],
+            'course': course_overview,
+            'due_date_display_format': course.due_date_display_format,
+            'blocks': course_block_tree,
+            'gated_content': gated_content,
+            'xblock_display_names': xblock_display_names
+        }
+
         html = render_to_string('hera/dashboard-outline-fragment.html', context)
         return Fragment(html)
