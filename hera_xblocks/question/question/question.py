@@ -25,7 +25,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     display_name = String(default="Question")
     data = JSONField(default={})
     user_confidence = Integer(scope=Scope.user_state)
-    user_answer = JSONField(scope=Scope.user_state)
+    user_answer = JSONField(scope=Scope.user_state, default='')
 
     @property
     def img_urls(self):
@@ -61,7 +61,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             preciseness_value = 0
 
         if preciseness.rfind('%') > -1:
-            return preciseness_value * self.correct_answer / 100
+            return preciseness_value * float(self.correct_answer) / 100
         else:
             return preciseness_value
 
@@ -167,6 +167,6 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         grade_value = 1 if correct else 0
         self.runtime.publish(self, 'grade', {'value': grade_value, 'max_value': 1})
 
-        self.user_answer = answer
+        self.user_answer = data.get("answer")
         self.user_confidence = user_confidence
         return correct
