@@ -10,28 +10,40 @@ import {
 
 const questionTemplate = {
     title: "New Question",
-    description: "Enter some description",
+    description: "",
     imgUrls: [],
     iframeUrl: "",
     confidenceText: "How confident are you",
     correctAnswerText: "The correct answer text",
     incorrectAnswerText: "An incorrect answer text",
     rephrase: {
-        imgUrl: "https://preview.redd.it/5ew0yywuu5t31.png?auto=webp&s=62712b2bdf101b164de9c3005445b97ae5bf56bd",
-        content: "rephrase"
+        // imgUrls: ["https://preview.redd.it/5ew0yywuu5t31.png?auto=webp&s=62712b2bdf101b164de9c3005445b97ae5bf56bd"],
+        content: ""
     },
     breakDown: {
-        imgUrl: "https://i.ytimg.com/vi/8EMRcV4NWDY/maxresdefault.jpg",
-        content: "breakDown"
+        imgUrls: [],
+        content: ""
     },
     teachMe: {
-        imgUrl: "https://i.ytimg.com/vi/xLfYnBnnsCg/maxresdefault.jpg",
-        content: "teachMe"
+        imgUrls: [],
+        content: ""
     },
     question: {
         questionType: 'radio', // ['radio', 'checkbox', 'select', 'number', 'text']
         // 'radio', 'checkbox', 'select'
         options: [
+            {
+                correct: false,
+                title: "" // assume this will be the unique identificator
+            },
+            {
+                correct: false,
+                title: "" // assume this will be the unique identificator
+            },
+            {
+                correct: false,
+                title: "" // assume this will be the unique identificator
+            },
             {
                 correct: false,
                 title: "" // assume this will be the unique identificator
@@ -75,7 +87,7 @@ const QuestionsReducer = function(state=initialState, action) {
             });
         case QUESTION_ADDED:
             let newQuestion = {...questionTemplate};
-            newQuestion.title = newQuestion.title + state.questions.length;
+            newQuestion.title = newQuestion.title + ' ' + (state.questions.length+1);
             return Object.assign({}, state, {
                 questions: state.questions.concat([newQuestion])
             });

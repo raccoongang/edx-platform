@@ -40,6 +40,12 @@ $scaffolds_color4: #ff0000;
         align-items: center;
         justify-content: center;
 
+        &__title {
+            font-weight: 600;
+            font-size: 18px;
+            margin: 0 0 12px;
+        }
+
         &__content {
             max-width: 720px;
             min-width: 720px;
@@ -54,7 +60,7 @@ $scaffolds_color4: #ff0000;
 
                 .author-block__image {
                     display: flex;
-                    justify-content: flex-end;
+                    justify-content: center;
                     box-sizing: border-box;
                     width: 49%;
                     min-width: initial;
@@ -114,6 +120,44 @@ $scaffolds_color4: #ff0000;
             &:hover {
                 opacity: .65;
             }
+        }
+    }
+}
+
+.scaffolds-modal {
+    .author-toolbar__row {
+        width: 100%;
+        margin: 12px 0 0;
+    }
+
+    .author-toolbar__field {
+        min-width: 85% !important;
+        max-width: initial !important;
+    }
+
+    .author-block__image-holder {
+        overflow: scroll;
+        background: #fff;
+        position: relative;
+
+        img {
+            margin: 0 0 6px;
+
+            &:last-of-type {
+                margin: 0;
+            }
+
+            &:last-child {
+                margin: 0;
+            }
+        }
+    }
+
+    .author-block__image  {
+        img {
+            display: block;
+            width: 100%;
+            height: auto;
         }
     }
 }
