@@ -66,7 +66,7 @@ if settings.DEBUG or settings.FEATURES.get('ENABLE_DJANGO_ADMIN_SITE'):
 
 
 urlpatterns = [
-    url(r'', include('hera.urls', namespace='hera')),
+    url(r'^', include('hera.urls', namespace='hera')),
     url(r'^$', branding_views.index, name='root'),   # Main marketing page, or redirect to courseware
 
     url(r'', include('student.urls')),
