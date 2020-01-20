@@ -79,6 +79,49 @@ $author_radius: 4px;
         margin: 0 0 20px;
     }
 
+    &__content-mod {
+        display: block;
+        position: relative;
+        margin: 0 0 20px;
+
+        .author-block__image {
+            width: 100%;
+            height: 375px;
+            margin: 0 0 12px;
+        }
+
+        .author-block__question {
+            width: 100%;
+        }
+    }
+
+    &-title {
+        margin: 0 0 12px;
+
+        input[type="text"].author-block-title__field,
+        input[type="number"].author-block-title__field {
+            box-shadow: none;
+            box-sizing: border-box;
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: none;
+            border: 1px solid $author_color2;
+            transition: all .3s ease-in-out;
+            resize: none;
+            outline: none;
+            font-size: 14px;
+            border-radius: 0;
+
+            &:focus,
+            &:active {
+                outline: none;
+                box-shadow: none;
+                border-color: $author_color1;
+            }
+        }
+    }
+
     &__name {
         position: relative;
     }
