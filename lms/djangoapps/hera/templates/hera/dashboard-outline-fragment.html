@@ -16,14 +16,202 @@ from openedx.core.djangolib.markup import HTML, Text
 course_sections = blocks.get('children')
 %>
 <main role="main" class="course-outline" id="main" tabindex="-1">
+<div class="hera-dashboard">
+    <div class="hera-dashboard__header">
+        <div class="hera-message">
+            <div class="hera-message__text">
+                <p>
+                    Great work! You earned a Gold Medal for States of Matter! Keep going with the remaining lessons.
+                </p>
+            </div>
+            <div class="hera-mascot">
+                <img class="hera-mascot__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/mascots/mascot_general.png" alt="/">
+            </div>
+        </div>
+        <div class="hera-grades">
+            <div class="hera-grades__item">
+                <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_copp.jpg" alt="/">
+                <div class="hera-grades__points">
+                    60-69 points
+                </div>
+                <div class="hera-grades__title">
+                    Copper
+                </div>
+            </div>
+​
+            <div class="hera-grades__item">
+                <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_silv.jpg" alt="/">
+                <div class="hera-grades__points">
+                    70-79 points
+                </div>
+                <div class="hera-grades__title">
+                    Silver
+                </div>
+            </div>
+​
+            <div class="hera-grades__item">
+                <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_gld.jpg" alt="/">
+                <div class="hera-grades__points">
+                    80-89 points
+                </div>
+                <div class="hera-grades__title">
+                    Gold
+                </div>
+            </div>
+​
+            <div class="hera-grades__item">
+                <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_pt.jpg" alt="/">
+                <div class="hera-grades__points">
+                    90-100 points
+                </div>
+                <div class="hera-grades__title">
+                    Platinum
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hera-dashboard__body">
+        <div class="hera-dashboard-progress">
+            <div class="hera-dashboard-progress-header">
+                <div class="hera-dashboard-progress-header__item">
+                    <div class="hera-lesson__title">
+                        Projectile Motion
+                    </div>
+                    <div class="hera-lesson__status">
+                        Complete
+                    </div>
+                </div>
+​
+                <div class="hera-dashboard-progress-header__item">
+                    <div class="hera-lesson__title">
+                        States of Matter
+                    </div>
+                    <div class="hera-lesson__status">
+                        Complete
+                    </div>
+                </div>
+​
+                <div class="hera-dashboard-progress-header__item">
+                    <div class="hera-lesson__title">
+                        Lesson 3
+                    </div>
+                </div>
+​
+                <div class="hera-dashboard-progress-header__item">
+                    <div class="hera-lesson__title">
+                        Lesson 4
+                    </div>
+                </div>
+​
+                <div class="hera-dashboard-progress-header__item">
+                    <div class="hera-lesson__title">
+                        Lesson 5
+                    </div>
+                </div>
+​
+                <div class="hera-dashboard-progress-header__item">
+                    <div class="hera-lesson__title">
+                        Lesson 6
+                    </div>
+                </div>
+​
+                <div class="hera-dashboard-progress-header__item">
+                    <div class="hera-lesson__title">
+                        Lesson 7
+                    </div>
+                </div>
+​
+                <div class="hera-dashboard-progress-header__item">
+                    <div class="hera-lesson__title">
+                        Lesson 8
+                    </div>
+                </div>
+            </div>
+            <div class="hera-dashboard-progress-body">
+                <div class="hera-dna-bg">
+                    <img class="hera-dna-bg__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/DNA_bg.svg" alt="/">
+                </div>
+​
+                <div class="hera-dashboard-progress-body__item">
+                    <div class="dna-connector">
+                        <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/copper_top.svg" alt="/">
+                    </div>
+                    <div class="dna-text">
+                  <span class="dna-text__title">
+                    MMM
+                  </span>
+                        <span class="dna-text__points">
+                    points
+                  </span>
+                    </div>
+                </div>
+​
+                <div class="hera-dashboard-progress-body__item is-reverse">
+                    <div class="dna-connector">
+                        <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/copper_top.svg" alt="/">
+                    </div>
+                    <div class="dna-text">
+                  <span class="dna-text__title">
+                    MMM
+                  </span>
+                        <span class="dna-text__points">
+                    points
+                  </span>
+                    </div>
+                </div>
+​
+                <div class="hera-dashboard-progress-body__item is-unlocked">
+                    <div class="dna-unlocked">
+                        <div class="dna-icon"></div>
+                    </div>
+                </div>
+​
+                <div class="hera-dashboard-progress-body__item is-locked">
+                    <div class="dna-locked">
+                        <div class="dna-icon">
+                            <img class="dna-icon__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/lock_icon.svg" alt="/">
+                        </div>
+                    </div>
+                </div>
+​
+                <div class="hera-dashboard-progress-body__item is-locked">
+                    <div class="dna-locked">
+                        <div class="dna-icon">
+                            <img class="dna-icon__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/lock_icon.svg" alt="/">
+                        </div>
+                    </div>
+                </div>
+​
+                <div class="hera-dashboard-progress-body__item is-locked">
+                    <div class="dna-locked">
+                        <div class="dna-icon">
+                            <img class="dna-icon__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/lock_icon.svg" alt="/">
+                        </div>
+                    </div>
+                </div>
+​
+                <div class="hera-dashboard-progress-body__item is-locked">
+                    <div class="dna-locked">
+                        <div class="dna-icon">
+                            <img class="dna-icon__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/lock_icon.svg" alt="/">
+                        </div>
+                    </div>
+                </div>
+​
+                <div class="hera-dashboard-progress-body__item is-locked">
+                    <div class="dna-locked">
+                        <div class="dna-icon">
+                            <img class="dna-icon__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/lock_icon.svg" alt="/">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
     % if course_sections is not None:
-        <button class="btn btn-primary"
-                id="expand-collapse-outline-all-button"
-                aria-expanded="false"
-                aria-controls="course-outline-block-tree"
-                >
-          <span class="expand-collapse-outline-all-extra-padding" id="expand-collapse-outline-all-span">${_("Expand All")}</span>
-        </button>
         <ol class="block-tree accordion"
             id="course-outline-block-tree"
             aria-labelledby="expand-collapse-outline-all-button">
