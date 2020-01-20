@@ -10,7 +10,7 @@
             <div class="scaffold_help_image hidden">
             </div>
             {% if iframe_url %}
-                <button type="button" class="show-simulation">Show simulation</button>
+                <button type="button" class="show-simulation" data-iframe-url="{{iframe_url}}">Show simulation</button>
             {% endif %}
         </div>
         <div class="author-block__question">
@@ -59,7 +59,7 @@
     </div>
     <div class="simulation-overlay">
         <div class="simulation-popup">
-            <div class="close simulation-close-btn">&times;</div>
+            <div class="simulation-close-btn">&times;</div>
             <iframe src="{{iframe_url}}" class="simulation-iframe"></iframe>
         </div>
     </div>

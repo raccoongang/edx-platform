@@ -15,7 +15,9 @@ class AllowedUrlsMiddleware(object):
             'onboarding',
             'logout',
             'admin',
-            'user_dashboard'
+            'user_dashboard',
+            'event', # some system url,
+            'dashboard',
         ]
         course_urls = [
             'courseware',
@@ -44,6 +46,6 @@ class AllowedUrlsMiddleware(object):
                     return # let students logout
                 if not ActiveCourseSetting.last():
                     raise Http404
-            if not request.path == reverse('hera:onboarding'):
-                if not UserOnboarding.onboarding_is_passed(request.user.id):
-                    return HttpResponseRedirect(reverse('hera:onboarding'))
+                if not request.path == reverse('hera:onboarding'):
+                    if not UserOnboarding.onboarding_is_passed(request.user.id):
+                        return HttpResponseRedirect(reverse('hera:onboarding'))

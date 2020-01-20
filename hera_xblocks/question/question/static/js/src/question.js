@@ -96,12 +96,14 @@ function QuestionXBlock(runtime, element, init_args) {
 
 
         $(document).ready(function() {
-            $('.show-simulation', element).click(function() {
-               $('.simulation-overlay', element).fadeIn(300);
+            $('.show-simulation', element).click(function(e) {
+                var iframeUrl = $(e.currentTarget).data('iframeUrl');
+                $('.simulation-overlay', element).find('iframe').attr('src', iframeUrl);
+                $('.simulation-overlay', element).fadeIn(300);
             });
 
             $('.simulation-close-btn', element).click(function() {
-               $('.simulation-overlay', element).fadeOut(300);
+                $('.simulation-overlay', element).fadeOut(300);
             });
 
             $('.image-slider', element).slick({
