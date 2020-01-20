@@ -4,6 +4,7 @@ View which retrieve hera onboarding pages and handle user onboarding states.
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponseRedirect, Http404
+from django.urls import reverse
 from django.views.generic import View
 from django.utils.decorators import method_decorator
 
@@ -26,7 +27,7 @@ class OnboardingPagesView(View):
         """
         user_onboarding, _ = UserOnboarding.objects.get_or_create(user=request.user)
         if user_onboarding.is_passed():
-            return HttpResponseRedirect('hera:dashboard')
+            return HttpResponseRedirect(reverse('hera:dashboard'))
         context = {
             'pages': user_onboarding.get_pages(),
             'current_page': user_onboarding.get_current_page(),

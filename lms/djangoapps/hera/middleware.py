@@ -40,6 +40,8 @@ class AllowedUrlsMiddleware(object):
             if not request.user.is_staff:
                 if not is_ajax and not is_path_allowed:
                     raise Http404
+                if 'logout' in request.path:
+                    return # let students logout
                 if not ActiveCourseSetting.last():
                     raise Http404
             if not request.path == reverse('hera:onboarding'):
