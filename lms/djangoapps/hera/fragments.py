@@ -1,20 +1,17 @@
-from opaque_keys.edx.keys import CourseKey
-from django.template.loader import render_to_string
 from django.template.context_processors import csrf
-
+from django.template.loader import render_to_string
+from opaque_keys.edx.keys import CourseKey
 from web_fragments.fragment import Fragment
 
-from courseware.courses import get_course_overview_with_access
+from courseware.courses import get_course_overview_with_access, get_current_child
 from courseware.model_data import FieldDataCache
-from courseware.module_render import  get_module_for_descriptor
-from courseware.courses import get_current_child, get_problems_in_section
-
-from openedx.features.course_experience.views.course_outline import CourseOutlineFragmentView
+from courseware.module_render import get_module_for_descriptor
 from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
-
+from lms.djangoapps.hera.mongo import BLOCK_ID, COURSE_KEY, LEVEL, NEXT_ID, USER, c_selection_page
+from openedx.features.course_experience.utils import get_course_outline_block_tree
+from openedx.features.course_experience.views.course_outline import CourseOutlineFragmentView
 from xmodule.modulestore.django import modulestore
-from openedx.features.course_experience.utils import get_course_outline_block_tree, get_resume_block
-from lms.djangoapps.hera.mongo import c_selection_page, USER, COURSE_KEY, BLOCK_ID, NEXT_ID, LEVEL
+
 
 def unit_grade_level(earned, course_block_tree, subsection_active, request, course_id=None):
     """
@@ -213,41 +210,63 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
     View for Dashboard Page
     """
     def render_to_fragment(self, request, course_id=None, page_context=None, **kwargs):
+
+        def get_medal(points):
+            if 90 <= points <= 100:
+                return "platinum"
+            elif 80 <= points <= 89:
+                return "gold"
+            elif 70 <= points <= 79:
+                return "silver"
+            else:
+                return "copper"
+
         course_key = CourseKey.from_string(course_id)
-        course_overview = get_course_overview_with_access(request.user, 'load', course_key, check_if_enrolled=True)
         course = modulestore().get_course(course_key)
+
+        course_grade = CourseGradeFactory().read(request.user, course)
+        courseware_summary = course_grade.chapter_grades.values()
 
         course_block_tree = get_course_outline_block_tree(request, course_id)
         if not course_block_tree:
             return None
 
         incomplete_subsection = {}
+        completed_subsections = {}
+        last_completed_subsection_id = None
         popup = False
         for section in course_block_tree.get('children'):
             for subsection in section.get('children', []):
-                if not subsection['complete']:
+                if subsection['complete']:
+                    completed_subsections[subsection.get('block_id')] = {'display_name': subsection.get('display_name')}
+                    last_completed_subsection_id = subsection.get('block_id')
+                else:
                     for unit in subsection.get('children', []):
                         if unit['complete']:
                             incomplete_subsection = subsection
                             popup = True
-                            break
 
         units = incomplete_subsection.get('children', [{}])
         start_over_url = units[0].get('lms_web_url', '')
 
-        xblock_display_names = self.create_xblock_id_and_name_dict(course_block_tree)
-        gated_content = self.get_content_milestones(request, course_key)
+        for chapter in courseware_summary:
+            if not chapter['display_name'] == "hidden":
+                for subsection in chapter['sections']: # the sections in chapter are actually subsection
+                    if subsection.location.block_id in completed_subsections:
+                        try:
+                            points = int(subsection.all_total.earned / subsection.all_total.possible * 100)
+                        except ZeroDivisionError:
+                            points = 0
+                        completed_subsections[subsection.location.block_id].update({'points': points, 'medal': get_medal(points)})
 
+        last_completed_subsection = completed_subsections.get(last_completed_subsection_id, {})
         context = {
+            'last_completed_subsection': last_completed_subsection,
+            'completed_subsections': completed_subsections,
             'popup': popup,
-            'resume_course_url': incomplete_subsection.get('lms_web_url', ''),
+            'incomplete_subsection': incomplete_subsection,
             'start_over_url': start_over_url or '',
-            'csrf': csrf(request)['csrf_token'],
-            'course': course_overview,
-            'due_date_display_format': course.due_date_display_format,
-            'blocks': course_block_tree,
-            'gated_content': gated_content,
-            'xblock_display_names': xblock_display_names
+            'csrf': csrf(request)['csrf_token']
         }
 
         html = render_to_string('hera/dashboard-outline-fragment.html', context)
