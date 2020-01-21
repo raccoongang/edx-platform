@@ -83,8 +83,9 @@ class DashboardPageView(CourseTabView):
             raise Http404
         user = request.user
         course_key = active_course.course.id
-        if not CourseEnrollment.is_enrolled(user, course_key):
-            CourseEnrollment.enroll(user, course_key)
+        if user and user.is_authenticated:
+            if not CourseEnrollment.is_enrolled(user, course_key):
+                CourseEnrollment.enroll(user, course_key)
 
         return super(DashboardPageView, self).get(request, course_id, 'courseware', **kwargs)
 
