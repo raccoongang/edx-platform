@@ -72,7 +72,7 @@ export class TeacherTemplate extends React.Component{
         this.setState({
             activeComponent: 'introduction',
             isQuestion: false,
-            activeQuestionIndex: 0,
+            activeQuestionIndex: null, // clean activeQuestionIndex to unset an active mark from the last active question.
             isSaving: false
         });
     }

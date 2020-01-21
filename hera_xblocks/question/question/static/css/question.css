@@ -120,6 +120,14 @@
   color: #000;
 }
 
+.simulation-close-btn {
+  position: absolute;
+  top: 0;
+  right: -26px;
+  cursor: pointer;
+  color: #ccc;
+}
+
 .hidden {
   display: none !important;
 }
