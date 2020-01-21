@@ -586,7 +586,8 @@ CONTEXT_PROCESSORS = [
     'openedx.core.djangoapps.site_configuration.context_processors.configuration_context',
 
     # Mobile App processor (Detects if request is from the mobile app)
-    'mobile_api.context_processor.is_from_mobile_app'
+    'mobile_api.context_processor.is_from_mobile_app',
+    'hera.context_processor.user_onboarding',
 ]
 
 # Django templating
@@ -1307,6 +1308,7 @@ MIDDLEWARE_CLASSES = [
 
     # This must be last
     'openedx.core.djangoapps.site_configuration.middleware.SessionCookieDomainOverrideMiddleware',
+    'hera.middleware.AllowedUrlsMiddleware',
 ]
 
 # Clickjacking protection can be enabled by setting this to 'DENY'
@@ -3512,3 +3514,13 @@ TINYMCE_DEFAULT_CONFIG = {
         {'title' : 'Black background', 'inline' : 'span', 'styles': {'background': '#000'}},
     ]
 }
+
+# HERA Settings
+
+HERA_ADVANCED_MODULES = [
+    'hera_pages',
+    'question',
+    'hera_title',
+    'lesson_complete',
+    'lesson_summary',
+]

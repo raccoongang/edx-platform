@@ -20,6 +20,7 @@ from courseware.views.views import CourseTabView, EnrollStaffView, StaticCourseT
 from debug import views as debug_views
 from django_comment_common.models import ForumsConfig
 from django_openid_auth import views as django_openid_auth_views
+from hera import views as hera_views
 from lms.djangoapps.certificates import views as certificates_views
 from lms.djangoapps.discussion import views as discussion_views
 from lms.djangoapps.instructor.views import coupons as instructor_coupons_views
@@ -65,6 +66,7 @@ if settings.DEBUG or settings.FEATURES.get('ENABLE_DJANGO_ADMIN_SITE'):
 
 
 urlpatterns = [
+    url(r'^', include('hera.urls', namespace='hera')),
     url(r'^$', branding_views.index, name='root'),   # Main marketing page, or redirect to courseware
 
     url(r'', include('student.urls')),
@@ -799,15 +801,6 @@ urlpatterns += [
         ),
         StaticCourseTabView.as_view(),
         name='static_tab',
-    ),
-]
-
-urlpatterns += [
-    url(
-        r'^courses/{}/course/'.format(
-            settings.COURSE_ID_PATTERN,
-        ),
-        include('lms.djangoapps.hera.urls', namespace='hera'),
     ),
 ]
 

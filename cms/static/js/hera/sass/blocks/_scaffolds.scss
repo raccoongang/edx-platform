@@ -1,0 +1,173 @@
+$scaffolds_color1: #2b6797;
+$scaffolds_color2: #fff;
+$scaffolds_color3: #96d063;
+$scaffolds_color4: #ff0000;
+
+.scaffolds {
+    &__wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    &__btn {
+        font-size: 12px;
+        box-sizing: border-box;
+        display: inline-block;
+        border: none;
+        box-shadow: none;
+        background: $scaffolds_color1;
+        outline: none;
+        border-radius: 4px;
+        text-align: center;
+        color: $scaffolds_color2;
+        padding: 6px 8px;
+        transition: all .3s ease-in-out;
+        position: relative;
+        width: 32%;
+        max-width: 32%;
+    }
+
+    &-modal {
+        display: none;
+        background: rgba(0, 0, 0, .8);
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 999;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+
+        &__title {
+            font-weight: 600;
+            font-size: 18px;
+            margin: 0 0 12px;
+        }
+
+        &__content {
+            max-width: 720px;
+            min-width: 720px;
+            background: $scaffolds_color2;
+            padding: 15px;
+            border-radius: 4px;
+
+            &-additional {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+
+                .author-block__image {
+                    display: flex;
+                    justify-content: center;
+                    box-sizing: border-box;
+                    width: 49%;
+                    min-width: initial;
+                    height: 286px;
+                    flex-direction: column;
+
+                    .author-toolbar__row {
+                        width: 95%;
+                        margin: 12px auto 8px;
+
+                        input[type="text"] {
+                            min-width: initial !important;
+                            width: 100%;
+                            margin: 0;
+                        }
+                    }
+                }
+
+                .editor-holder {
+                    width: 49%;
+                    height: 286px;
+
+                    iframe {
+                        height: 155px !important;
+                    }
+                }
+            }
+        }
+
+        &__buttons {
+            margin: 12px 0 0;
+            text-align: right;
+        }
+
+        &__btn {
+            font-size: 14px;
+            box-sizing: border-box;
+            display: inline-block;
+            border: none;
+            box-shadow: none;
+            background: $scaffolds_color3;
+            outline: none;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            text-align: center;
+            color: $scaffolds_color2;
+            padding: 6px 8px;
+            transition: all .3s ease-in-out;
+            position: relative;
+            margin-left: 8px;
+            min-width: 80px;
+
+            &.is-cancel {
+                background: $scaffolds_color4;
+            }
+
+            &:hover {
+                opacity: .65;
+            }
+        }
+    }
+}
+
+.scaffolds-modal {
+    .author-toolbar__row {
+        width: 100%;
+        margin: 12px 0 0;
+    }
+
+    .author-toolbar__field {
+        min-width: 89.5% !important;
+        max-width: initial !important;
+    }
+
+    .author-block__image-holder {
+        overflow: scroll;
+        background: #fff;
+        position: relative;
+
+        img {
+            margin: 0 0 6px;
+
+            &:last-of-type {
+                margin: 0;
+            }
+
+            &:last-child {
+                margin: 0;
+            }
+        }
+    }
+
+    .author-block__image  {
+        img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+    }
+}
+
+.author-block__wrapper {
+    // this class will show modal, when it added to the <author-block__wrapper> block
+    &.is-scaffold-open {
+        .scaffolds-modal {
+            display: flex;
+        }
+    }
+}

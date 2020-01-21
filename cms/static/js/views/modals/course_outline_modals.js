@@ -840,8 +840,10 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
         templateName: 'content-visibility-editor',
         className: 'edit-content-visibility',
         events: {
-            'change input[name=content-visibility]': 'toggleUnlockWarning'
+            'change input[name=content-visibility]': 'toggleUnlockWarning',
+            'change #lesson_logo': 'setCurrentLogo'
         },
+        setCurrentLogo: function() {this.setLogo(this.getCurrentLogo())},
 
         modelVisibility: function() {
             if (this.model.get('has_explicit_staff_lock')) {
@@ -858,6 +860,7 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
             this.setVisibility(this.modelVisibility());
             this.$('input[name=content-visibility]:checked').change();
             this.setLevel(this.getUnitLevel());
+            this.setLogo(this.getLogo());
         },
 
         setLevel: function(value) {
@@ -868,9 +871,22 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
                 }
             });
         },
+        
+        getCurrentLogo: function(){
+            return this.$('#lesson_logo').val();
+        },
+        
+        setLogo: function(value) {
+            this.$('#prev_lesson_logo').attr('src', value || "/static/studio/images/hera-default-lesson-logo.png");
+            this.$('#lesson_logo').val(value);
+        },
 
         currentUnitLevel: function() {
             return this.$('#unit_level').val();
+        },
+        
+        currentLessonLogo: function() {
+            return this.$('#lesson_logo').val();
         },
 
         setVisibility: function(value) {
@@ -882,7 +898,7 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
         },
 
         hasChanges: function() {
-            return this.modelVisibility() !== this.currentVisibility() || this.getUnitLevel() !== this.currentUnitLevel();
+            return this.modelVisibility() !== this.currentVisibility() || this.getUnitLevel() !== this.currentUnitLevel() || this.getLogo() !== this.currentLessonLogo();
         },
 
         toggleUnlockWarning: function() {
@@ -903,6 +919,11 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
         getUnitLevel: function() {
             return this.model.get('unit_level');
         },
+        
+        getLogo: function() {
+            return this.model.get('lesson_logo');
+        },
+        
         getRequestData: function() {
             if (this.hasChanges()) {
                 var metadata = {};
@@ -917,6 +938,7 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
                     metadata.hide_after_due = null;
                 }
                 metadata.unit_level = this.currentUnitLevel();
+                metadata.lesson_logo = this.currentLessonLogo();
                 return {
                     publish: 'republish',
                     metadata: metadata
@@ -933,7 +955,8 @@ define(['jquery', 'backbone', 'underscore', 'gettext', 'js/views/baseview',
                 {
                     hide_after_due: this.modelVisibility() === 'hide_after_due',
                     self_paced: course.get('self_paced') === true,
-                    unit_level: this.currentUnitLevel()
+                    unit_level: this.currentUnitLevel(),
+                    lesson_logo: this.model.get('lesson_logo'),
                 }
             );
         }

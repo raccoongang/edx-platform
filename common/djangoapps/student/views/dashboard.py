@@ -547,6 +547,9 @@ def student_dashboard(request):
 
     """
     user = request.user
+    # if it's not staff - redirect them to hera dashboard so far.
+    if user and not user.is_staff:
+        return redirect(reverse('hera:dashboard'))
     if not UserProfile.objects.filter(user=user).exists():
         return redirect(reverse('account_settings'))
 

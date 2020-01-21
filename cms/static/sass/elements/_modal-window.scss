@@ -185,6 +185,15 @@
         }
       }
     }
+    .lesson_logo {
+      display: block;
+      width: 100%;
+      margin: 0 0 12px;
+    }
+    .prev_lesson_logo {
+      width: 100px;
+      height: 100px;
+    }
 
     // TODO: need to sync up (alongside general editing mode) with xblocks.scss UI
     .modal-chin,

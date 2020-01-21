@@ -73,6 +73,10 @@ SUPPORTED_FIELDS = [
     SupportedFieldType(
         'unit_level',
         serializer_field_name='unit_level',
+    ),
+    SupportedFieldType(
+        'lesson_logo',
+        serializer_field_name='lesson_logo',
     )
 
 ]

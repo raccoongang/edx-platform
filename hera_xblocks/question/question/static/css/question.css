@@ -1,0 +1,181 @@
+/* CSS for QuestionXBlock */
+.author-holder {
+  position: relative;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.author-holder .close-popup {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  color: #666;
+  background: #fff;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0;
+  line-height: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+.author-holder .close-popup:hover {
+  opacity: 0.75;
+}
+
+.author-block__wrapper {
+  margin: 12px auto;
+  padding: 12px;
+  background: #fff;
+}
+.author-block__title {
+  font-size: 22px;
+  font-weight: bold;
+  padding-left: 24px;
+  margin-bottom: 24px;
+}
+.author-block__content {
+  display: flex;
+  position: relative;
+}
+.author-block__name {
+  position: relative;
+}
+.author-block__image {
+  width: 60%;
+  border: 1px solid #ccc;
+  position: relative;
+  margin-right: 12px;
+}
+.author-block__image img,
+.author-block__image iframe {
+  display: block;
+  width: 100%;
+}
+.author-block__question {
+  width: 40%;
+  border: 1px solid #ccc;
+  padding: 12px;
+}
+.author-block__question-title {
+  font-size: 24px;
+  font-weight: bold;
+  position: relative;
+  margin: 0 0 18px;
+}
+.author-block__question-text {
+  font-size: 16px;
+  line-height: 1.5;
+  position: relative;
+}
+.scaffold-info{
+  width: 90%;
+  font-size: 16px;
+  line-height: 1.5;
+  position: relative;
+  margin: 0 auto;
+  display: flex;
+  padding: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.scaffold-img{
+  width: 40%
+}
+.author-block__buttons {
+  position: relative;
+  margin-top: 15px;
+  padding: 10px;
+  right: 0;
+  justify-content:flex-end
+  
+}
+.scaffolds {
+  position: absolute;
+  bottom: 0;
+}
+
+.author-block__image>div {
+  position: relative;
+  /* Чтобы .close не выходил за рамки .container */
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  color: #000;
+}
+
+.simulation-close-btn {
+  position: absolute;
+  top: 0;
+  right: -26px;
+  cursor: pointer;
+  color: #ccc;
+}
+
+.hidden {
+  display: none !important;
+}
+.confidence-input:invalid {
+  border-color: red !important;
+}
+
+.confidence-text.error {
+  display: none;
+}
+
+.confidence-input.is-not-valid + .confidence-text.error {
+  display: inline-block;
+}
+
+
+
+.simulation-overlay {
+  position: fixed;
+  z-index: 9999;
+  height: 100%; 
+  width: 100%;
+  top: 0;
+  right: 0;  
+  bottom: 0;
+  left: 0;
+  background: rgba(0,0,0,0.8);
+  display: none;
+}
+
+.simulation-popup {
+  max-width: 900px;
+  width: 80%;
+  max-height: 600px;
+  height: 80%;
+  position: relative;
+  background: #fff;
+  margin: 20px auto;
+}
+
+.simulation-iframe {
+  width: 100%;
+  height: 100%;
+}
+
+.close-image-icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+}

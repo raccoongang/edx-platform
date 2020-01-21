@@ -1,0 +1,26 @@
+<div class="end_survey_block">
+    <div class="servey-questions">
+        <h1>STAFF VIEW</h1>
+        <h2>{{ title }}</h2>
+        {% if  user_count %}
+            <h1> {{ user_count }} </h1>
+        {% endif %}
+        {% for q in questions %}
+            <div class=row>
+            <span>{{ q.questionText }}</span>
+            {% if q.type == 'options'%}
+            <div class="box">
+                <select class="possible-answers">
+                    {% for a in q.possibleAnswers %}
+                        <option {% if a == last_choice %}selected{% endif %}> {{a}} </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% elif q.type == 'text' %}
+                <input type="text" id="survey_answer"> {{a}} </input>
+            {% endif %}
+            </div>
+        {% endfor %}
+        <button class="button-submit" type="button">Submit Survey</button>
+    </div>
+</div>

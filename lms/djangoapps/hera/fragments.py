@@ -60,7 +60,7 @@ def unit_grade_level(earned, course_block_tree, subsection_active, request, cour
                 tree (dict): Contains whole data of the course.
             Return pair of two blocks to be dispayed to user.
         """
-        pair = [{},{}]
+        pair = [{}, {}]
         for section in tree['children']:
             for sub in section['children']:
                 if sub['block_id'] == first_id:
@@ -82,7 +82,13 @@ def unit_grade_level(earned, course_block_tree, subsection_active, request, cour
         first_sub, next_sub = get_pair(lesson_pair.get('block_id'), lesson_pair.get('next_id'), course_block_tree)
         # levels the same and at least one hasn't completed - return current pair
         if lesson_pair[LEVEL] == next_level and (not first_sub.get('complete', True) or not next_sub.get('complete', True)):
-            return {'children': [first_sub, next_sub]}
+            children = []
+            if first_sub:
+                children.append(first_sub)
+            if next_sub:
+                children.append(next_sub)
+
+            return {'children': children }
     else: # means that student is here for the first time
         next_level = get_next_level(earned)
 
@@ -94,6 +100,9 @@ def unit_grade_level(earned, course_block_tree, subsection_active, request, cour
                     break
                 continue
     to_set = {}
+    to_unset = {}
+    to_update = {}
+    
     if subsection_vertical['children'] and len(subsection_vertical['children']) > 1:
         to_set = {
                 BLOCK_ID: subsection_vertical['children'][0]['block_id'],
@@ -105,12 +114,20 @@ def unit_grade_level(earned, course_block_tree, subsection_active, request, cour
                 BLOCK_ID: subsection_vertical['children'][0]['block_id'],
                 LEVEL: next_level
         }
-
+        to_unset = {
+            NEXT_ID: 1
+        }
+    
     if to_set:
+        to_update['$set'] = to_set
+    if to_unset:
+        to_update['$unset'] = to_unset
+        
+    if to_update:
         c_selection_page().update({
             COURSE_KEY: course_id,
             USER: request.user.id},
-            {'$set': to_set}
+            to_update
         , upsert=True)
 
     return subsection_vertical
@@ -137,7 +154,7 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
         field_data_cache = FieldDataCache.cache_for_descriptor_descendents(
             course.id, request.user, course, depth=2
         )
-        
+
         course_module = get_module_for_descriptor(
             request.user, request, course, field_data_cache, course.id, course=course
         )
@@ -189,4 +206,49 @@ class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
 
         html = render_to_string('hera/course-lessons-outline-fragment.html', context)
         return Fragment(html)
-                      
+
+
+class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
+    """
+    View for Dashboard Page
+    """
+    def render_to_fragment(self, request, course_id=None, page_context=None, **kwargs):
+        course_key = CourseKey.from_string(course_id)
+        course_overview = get_course_overview_with_access(request.user, 'load', course_key, check_if_enrolled=True)
+        course = modulestore().get_course(course_key)
+
+        course_block_tree = get_course_outline_block_tree(request, course_id)
+        if not course_block_tree:
+            return None
+
+        incomplete_subsection = {}
+        popup = False
+        for section in course_block_tree.get('children'):
+            for subsection in section.get('children', []):
+                if not subsection['complete']:
+                    for unit in subsection.get('children', []):
+                        if unit['complete']:
+                            incomplete_subsection = subsection
+                            popup = True
+                            break
+
+        units = incomplete_subsection.get('children', [{}])
+        start_over_url = units[0].get('lms_web_url', '')
+
+        xblock_display_names = self.create_xblock_id_and_name_dict(course_block_tree)
+        gated_content = self.get_content_milestones(request, course_key)
+
+        context = {
+            'popup': popup,
+            'resume_course_url': incomplete_subsection.get('lms_web_url', ''),
+            'start_over_url': start_over_url or '',
+            'csrf': csrf(request)['csrf_token'],
+            'course': course_overview,
+            'due_date_display_format': course.due_date_display_format,
+            'blocks': course_block_tree,
+            'gated_content': gated_content,
+            'xblock_display_names': xblock_display_names
+        }
+
+        html = render_to_string('hera/dashboard-outline-fragment.html', context)
+        return Fragment(html)

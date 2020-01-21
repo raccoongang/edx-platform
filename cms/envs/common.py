@@ -141,6 +141,7 @@ from lms.envs.common import (
     RETIRED_USER_SALTS,
     RETIREMENT_SERVICE_WORKER_USERNAME,
     RETIREMENT_STATES,
+    HERA_ADVANCED_MODULES,
 
     # Methods to derive settings
     _make_mako_template_dirs,

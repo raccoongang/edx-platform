@@ -13,6 +13,14 @@
         </div>
     <% } %>
 </div>
+<div>
+<% if (!xblockInfo.isVertical()) {%>
+    <h3 class="modal-section-title"> <%- gettext('Lesson Image') %></h3>
+    <div class="modal-section-content">
+        <input class="lesson_logo" type="text" id="lesson_logo" name="lesson_logo"/>
+        <img src="" alt="Lesson Image" id="prev_lesson_logo" class="prev_lesson_logo"/>
+<% } %>
+</div>
 <h3 class="modal-section-title" id="content_visibility_label"><%- gettext('Subsection Visibility') %></h3>
 <div class="modal-section-content staff-lock">
     <div class="list-fields list-input content-visibility" role="group" aria-labelledby="content_visibility_label">

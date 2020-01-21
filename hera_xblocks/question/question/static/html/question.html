@@ -1,0 +1,66 @@
+<div class="author-block__wrapper">
+    <div class="author-block__content">
+        <div class="author-block__image">
+            <span class="close-image-icon hidden js-close-scaffold-btn">&times;</span>
+            <div class="image-slider">
+                {% for img_url in img_urls %}
+                    <img class="question__image" src="{{img_url}}" alt="Question image">
+                {% endfor %}
+            </div>
+            <div class="scaffold_help_image hidden">
+            </div>
+            {% if iframe_url %}
+                <button type="button" class="show-simulation" data-iframe-url="{{iframe_url}}">Show simulation</button>
+            {% endif %}
+        </div>
+        <div class="author-block__question">
+            <div class="question__content">{{description|safe}}</div>
+            <form class="question-form">
+                {% if question.questionType == "text" or question.questionType == "number" %}
+                    <input type="{{question.questionType}}" name="answer" value="{{user_answer}}"/>
+                {% elif question.questionType == "select" %}
+                    <select name="answer">
+                        <option value=""> ------- </option>
+                        {% for option in options %}
+                            <option value="{{option.title}}"{% if option.title in user_answer %} selected{% endif %}>{{option.title}}</option>
+                        {% endfor %}
+                    </select>
+                {% else %}
+                    {% for option in options %}
+                        <p>
+                            <input
+                                type="{{question.questionType}}"
+                                name="answer"
+                                value="{{option.title}}"
+                                {% if option.title in user_answer %} checked{% endif %}
+                            /> {{option.title}}
+                        </p>
+                    {% endfor %}
+                {% endif %}
+            </form>
+            <div class="scaffold-info hidden">
+                <img class="scaffold-img" src="" alt="scaffold img">
+                <div class="scaffold-description"></div>
+                <button type="button" class="author-block__btn try_again">Try Again</button>
+            </div>
+            <div class="scaffolds hidden">
+                <button type="button" class="scaffold" data-content="{{rephrase.content}}">Rephrase</button>
+                <button type="button" class="scaffold" data-img-urls="{%for url in break_down.imgUrls%}{{url}} {% endfor %}" data-content="{{break_down.content}}">Break It Down</button>
+                <button type="button" class="scaffold" data-img-urls="{%for url in teach_me.imgUrls%}{{url}} {% endfor %}" data-content="{{teach_me.content}}">Teach Me</button>
+            </div>
+        </div>
+    </div>
+    <div class="author-holder author-block__buttons">
+        <span class="confidence-text info hidden"></span>
+        <input type="number" class="confidence-input hidden" min="0" max="100"/>
+        <span class="confidence-text error">Please tell us how confident you are about your answer.</span>
+        <button type="button" class="author-block__btn skip hidden">Skip</button>
+        <button type="button" class="author-block__btn submit" disabled>Submit</button>
+    </div>
+    <div class="simulation-overlay">
+        <div class="simulation-popup">
+            <div class="simulation-close-btn">&times;</div>
+            <iframe src="{{iframe_url}}" class="simulation-iframe"></iframe>
+        </div>
+    </div>
+</div>

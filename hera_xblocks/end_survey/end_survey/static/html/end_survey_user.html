@@ -1,0 +1,61 @@
+{% load dictvalue %}
+<!-- TODO: Clear the classes because here is alot of junk -->
+<div class="wrapper-page" id="wrapper-page">
+    <div class="slidebar-wrapper">
+        <div class="single-item">
+            <form class="survey-form">
+                <div class="end_survey_block">
+                    <div class="servey-questions">
+                        <h2>{{ title }}</h2>
+                        {% for question in questions %}
+                            {% dictvalue user_result question.questionText as result %}
+                            <div class="row">
+                                <span>{{ question.questionText }}</span>
+                                {% if question.type == 'options'%}
+                                    <div class="box">
+                                        <select name="{{ question.questionText }}" required class="possible-answers">
+                                        <!-- TODO: Select word should be light grey -->
+                                            <option value="">Select</option>
+                                            {% for possible_answer in question.possibleAnswers %}
+                                                <option value="{{ possible_answer }}" {% if possible_answer == result %}selected{% endif %}>{{possible_answer}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <div class="button-wrapper">
+                            <button class="button-next" type="button">Submit Survey</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="single-item">
+            <form class="survey-form">
+                <div class="end_survey_block">
+                    <div class="servey-questions">
+                        {% dictvalue user_result confidence.questionText as result %}
+                        <div class="row">
+                            <span>{{ confidence.questionText }}</span>
+                            {% if confidence.type == 'options'%}
+                                <div class="box">
+                                    <select name="{{ confidence.questionText }}" required class="possible-answers">
+                                    <!-- TODO: Select word should be light grey -->
+                                        <option value="">Select</option>
+                                        {% for possible_answer in confidence.possibleAnswers %}
+                                            <option value="{{ possible_answer }}" {% if possible_answer == result %}selected{% endif %}>{{possible_answer}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="button-wrapper">
+                            <button class="button-submit" type="button">Submit Survey</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

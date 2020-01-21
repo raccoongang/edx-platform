@@ -2,6 +2,7 @@
 Common utilities for the course experience, including course outline.
 """
 from completion.models import BlockCompletion
+from django.conf import settings
 
 from lms.djangoapps.course_api.blocks.api import get_blocks
 from lms.djangoapps.course_blocks.utils import get_student_module_as_dict
@@ -135,6 +136,7 @@ def get_course_outline_block_tree(request, course_id):
         'poll',
         'word_cloud'
     ]
+    block_types_filter.extend(settings.HERA_ADVANCED_MODULES)
     all_blocks = get_blocks(
         request,
         course_usage_key,
@@ -149,7 +151,8 @@ def get_course_outline_block_tree(request, course_id):
             'special_exam_info',
             'show_gated_sections',
             'format',
-            'unit_level'
+            'unit_level',
+            'lesson_logo'
         ],
         block_types_filter=block_types_filter
     )
