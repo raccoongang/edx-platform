@@ -13,6 +13,8 @@ from hera.fragments import DashboardPageOutlineFragmentView, SelectionPageOutlin
 from hera.models import ActiveCourseSetting, UserOnboarding
 from lms.djangoapps.courseware.views.views import CourseTabView
 from openedx.features.course_experience.views.course_home import CourseHomeFragmentView, CourseHomeView
+from student.models import CourseEnrollment
+
 
 
 @method_decorator(login_required, name='dispatch')
@@ -79,6 +81,11 @@ class DashboardPageView(CourseTabView):
             course_id = unicode(active_course.course.id)
         else:
             raise Http404
+        user = request.user
+        course_key = active_course.course.id
+        if not CourseEnrollment.is_enrolled(user, course_key):
+            CourseEnrollment.enroll(user, course_key)
+
         return super(DashboardPageView, self).get(request, course_id, 'courseware', **kwargs)
 
     def render_to_fragment(self, request, course=None, **kwargs):
