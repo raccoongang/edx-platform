@@ -1,18 +1,27 @@
-import { TITLE_CHANGED } from '../actionTypes';
+import { TITLE_CHANGED, TITLE_DATA_LOADED, TITLE_NEW } from '../actionTypes';
 
 
 const initialState = {
-    content: 'Enter a text',
+    content: '',
     blockType: 'title',
-    title: 'Title'
+    title: 'Title',
+    heading: '',
+    imgUrl: '',
+    shouldReset: true
 };
 
 const TitleReducer = function(state=initialState, action) {
     switch(action.type) {
         case TITLE_CHANGED:
             return Object.assign({}, state, {
-                content: action.content
+                ...action.data
             });
+        case TITLE_DATA_LOADED:
+            return {
+                ...action.data
+            };
+        case TITLE_NEW:
+            return initialState;
         default:
             return state;
     }
