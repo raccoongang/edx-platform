@@ -7,7 +7,7 @@ from courseware.courses import get_course_overview_with_access, get_current_chil
 from courseware.model_data import FieldDataCache
 from courseware.module_render import get_module_for_descriptor
 from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
-from lms.djangoapps.hera.mongo import BLOCK_ID, COURSE_KEY, LEVEL, NEXT_ID, USER, c_selection_page
+from lms.djangoapps.hera.mongo import BLOCK_ID, COURSE_KEY, LEVEL, NEXT_ID, USER, COMPLETED_COURSES, c_selection_page
 from openedx.features.course_experience.utils import get_course_outline_block_tree
 from openedx.features.course_experience.views.course_outline import CourseOutlineFragmentView
 from xmodule.modulestore.django import modulestore
@@ -73,19 +73,46 @@ def unit_grade_level(earned, course_block_tree, subsection_active, request, cour
     subsection_level = subsection_active['unit_level']
     is_complete = subsection_active['complete']
     next_level = get_next_level(earned, subsection_level)
+    completed_subsection_ids = []
     if lesson_pair:
+        completed_subsection_ids = lesson_pair.get(COMPLETED_COURSES, [])
+
+        if is_complete and not subsection_active['block_id'] in completed_subsection_ids:
+            completed_subsection_ids.append(subsection_active['block_id'])
+
+        block_tree_completed_subsection_ids = []
+        for section in course_block_tree.get('children'):
+            for subsection in section.get('children', []):
+                if subsection['complete']:
+                    block_tree_completed_subsection_ids.append(subsection['block_id'])
+
+
+        for completed_subsection_id in completed_subsection_ids[:]:
+            if not completed_subsection_id in block_tree_completed_subsection_ids:
+                completed_subsection_ids.remove(completed_subsection_id)
+
         # get next level only if user finished the previous one.
         next_level = next_level if is_complete else lesson_pair[LEVEL]
         first_sub, next_sub = get_pair(lesson_pair.get('block_id'), lesson_pair.get('next_id'), course_block_tree)
         # levels the same and at least one hasn't completed - return current pair
-        if lesson_pair[LEVEL] == next_level and (not first_sub.get('complete', True) or not next_sub.get('complete', True)):
-            children = []
-            if first_sub:
-                children.append(first_sub)
-            if next_sub:
-                children.append(next_sub)
-
-            return {'children': children }
+        if first_sub and next_sub:
+            if lesson_pair[LEVEL] == next_level and (not first_sub.get('complete', True) or not next_sub.get('complete', True)):
+                children = []
+                if first_sub:
+                    children.append(first_sub)
+                if next_sub:
+                    children.append(next_sub)
+                c_selection_page().update({
+                    COURSE_KEY: course_id,
+                    USER: request.user.id},
+                    {
+                        '$set': {
+                            COMPLETED_COURSES: completed_subsection_ids,
+                        }
+                    },
+                    upsert=True
+                )
+                return {'children': children }, completed_subsection_ids
     else: # means that student is here for the first time
         next_level = get_next_level(earned)
 
@@ -99,7 +126,7 @@ def unit_grade_level(earned, course_block_tree, subsection_active, request, cour
     to_set = {}
     to_unset = {}
     to_update = {}
-    
+
     if subsection_vertical['children'] and len(subsection_vertical['children']) > 1:
         to_set = {
                 BLOCK_ID: subsection_vertical['children'][0]['block_id'],
@@ -114,12 +141,13 @@ def unit_grade_level(earned, course_block_tree, subsection_active, request, cour
         to_unset = {
             NEXT_ID: 1
         }
-    
+
+    to_set.update({COMPLETED_COURSES: completed_subsection_ids})
     if to_set:
         to_update['$set'] = to_set
     if to_unset:
         to_update['$unset'] = to_unset
-        
+
     if to_update:
         c_selection_page().update({
             COURSE_KEY: course_id,
@@ -127,7 +155,8 @@ def unit_grade_level(earned, course_block_tree, subsection_active, request, cour
             to_update
         , upsert=True)
 
-    return subsection_vertical
+    return subsection_vertical, completed_subsection_ids
+
 
 class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
     """
@@ -231,27 +260,36 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
         if not course_block_tree:
             return None
 
-        incomplete_subsection = {}
+        field_data_cache = FieldDataCache.cache_for_descriptor_descendents(
+            course.id, request.user, course, depth=2
+        )
+        course_module = get_module_for_descriptor(
+            request.user, request, course, field_data_cache, course.id, course=course
+        )
+        chapter_module = get_current_child(course_module)
+        section_module = get_current_child(chapter_module)
+        active_block_id = section_module.scope_ids.usage_id.block_id
+        subsection_active = ''
+
         completed_subsections = {}
-        last_completed_subsection_id = None
-        popup = False
+
         for section in course_block_tree.get('children'):
             for subsection in section.get('children', []):
+                if active_block_id == subsection['block_id'] and not subsection_active:
+                    course_block_id = subsection['block_id']
+                    subsection_active = subsection
                 if subsection['complete']:
-                    completed_subsections[subsection.get('block_id')] = {'display_name': subsection.get('display_name')}
-                    last_completed_subsection_id = subsection.get('block_id')
-                else:
-                    for unit in subsection.get('children', []):
-                        if unit['complete']:
-                            incomplete_subsection = subsection
-                            popup = True
-
-        units = incomplete_subsection.get('children', [{}])
-        start_over_url = units[0].get('lms_web_url', '')
+                    completed_subsections[subsection.get('block_id')] = {
+                        'display_name': subsection.get('display_name'),
+                        'lms_web_url': subsection.get('lms_web_url', '')
+                    }
 
         for chapter in courseware_summary:
             if not chapter['display_name'] == "hidden":
                 for subsection in chapter['sections']: # the sections in chapter are actually subsection
+                    if course_block_id == subsection.location.block_id:
+                        earned = subsection.all_total.earned
+                        total = subsection.all_total.possible
                     if subsection.location.block_id in completed_subsections:
                         try:
                             points = int(subsection.all_total.earned / subsection.all_total.possible * 100)
@@ -259,13 +297,50 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
                             points = 0
                         completed_subsections[subsection.location.block_id].update({'points': points, 'medal': get_medal(points)})
 
+        try:
+            earned = round(earned/total*10, 1)
+        except ZeroDivisionError:
+            earned = 0
+        selection_subsections, completed_subsection_ids = unit_grade_level(
+            earned,
+            course_block_tree,
+            subsection_active,
+            request,
+            course_id
+        )
+
+        ordered_subsections = []
+        popup = False
+        for subsection_id in completed_subsection_ids:
+            ordered_subsections.append(completed_subsections.get(subsection_id))
+        if not subsection_active['complete'] and len(ordered_subsections) < 8:
+            for unit in subsection_active.get('children', []):
+                if unit['complete']:
+                    popup = True
+                    ordered_subsections.append(subsection_active)
+                    break
+        if not popup:
+            for selection_subsection in selection_subsections['children']:
+                if not selection_subsection['complete'] and len(ordered_subsections) < 8:
+                    ordered_subsections.append(selection_subsection)
+        while len(ordered_subsections) < 8:
+            ordered_subsections.append(None)
+
+        try:
+            last_completed_subsection_id = completed_subsection_ids[-1]
+        except IndexError:
+            last_completed_subsection_id = None
+
         last_completed_subsection = completed_subsections.get(last_completed_subsection_id, {})
+        units = subsection_active.get('children', [{}])
+        start_over_url = units[0].get('lms_web_url', '')
         context = {
+            'selection_subsections': selection_subsections,
             'last_completed_subsection': last_completed_subsection,
-            'completed_subsections': completed_subsections,
+            'ordered_subsections': ordered_subsections,
             'popup': popup,
-            'incomplete_subsection': incomplete_subsection,
-            'start_over_url': start_over_url or '',
+            'continue_url': subsection_active.get('lms_web_url', ''),
+            'start_over_url': start_over_url,
             'csrf': csrf(request)['csrf_token']
         }
 
