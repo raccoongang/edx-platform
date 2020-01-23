@@ -17,24 +17,30 @@
             <div class="question__content">{{description|safe}}</div>
             <form class="question-form">
                 {% if question.questionType == "text" or question.questionType == "number" %}
-                    <input type="{{question.questionType}}" name="answer" value="{{user_answer}}"/>
+                    <input class="questions-list__field" type="{{question.questionType}}" name="answer" value="{{user_answer}}"/>
                 {% elif question.questionType == "select" %}
-                    <select name="answer">
-                        <option value=""> ------- </option>
+                    <select class="questions-list__select" name="answer">
+                        <option class="questions-list__select-item" value=""> ------- </option>
                         {% for option in options %}
                             <option value="{{option.title}}"{% if option.title in user_answer %} selected{% endif %}>{{option.title}}</option>
                         {% endfor %}
                     </select>
                 {% else %}
                     {% for option in options %}
-                        <p>
-                            <input
-                                type="{{question.questionType}}"
-                                name="answer"
-                                value="{{option.title}}"
-                                {% if option.title in user_answer %} checked{% endif %}
-                            /> {{option.title}}
-                        </p>
+                        <div class="questions-list__item">
+                            <label class="questions-list__label">
+                                <input
+                                        class="questions-list__input"
+                                        type="{{question.questionType}}"
+                                        name="answer"
+                                        value="{{option.title}}"
+                                        {% if option.title in user_answer %} checked{% endif %}
+                                />
+                                <span class="questions-list__text">
+                                    {{option.title}}
+                                </span>
+                            </label>
+                        </div>
                     {% endfor %}
                 {% endif %}
             </form>
@@ -44,9 +50,24 @@
                 <button type="button" class="author-block__btn try_again">Try Again</button>
             </div>
             <div class="scaffolds hidden">
-                <button type="button" class="scaffold" data-content="{{rephrase.content}}">Rephrase</button>
-                <button type="button" class="scaffold" data-img-urls="{%for url in break_down.imgUrls%}{{url}} {% endfor %}" data-content="{{break_down.content}}">Break It Down</button>
-                <button type="button" class="scaffold" data-img-urls="{%for url in teach_me.imgUrls%}{{url}} {% endfor %}" data-content="{{teach_me.content}}">Teach Me</button>
+                <button type="button" class="scaffold__btn is-rephrase" data-content="{{rephrase.content}}">
+                    <span class="scaffold__price">
+                        -20
+                    </span>
+                    Rephrase
+                </button>
+                <button type="button" class="scaffold__btn is-break" data-img-urls="{%for url in break_down.imgUrls%}{{url}} {% endfor %}" data-content="{{break_down.content}}">
+                    <span class="scaffold__price">
+                        -20
+                    </span>
+                    Break It Down
+                </button>
+                <button type="button" class="scaffold__btn is-teach" data-img-urls="{%for url in teach_me.imgUrls%}{{url}} {% endfor %}" data-content="{{teach_me.content}}">
+                    <span class="scaffold__price">
+                        -30
+                    </span>
+                    Teach Me
+                </button>
             </div>
         </div>
     </div>
