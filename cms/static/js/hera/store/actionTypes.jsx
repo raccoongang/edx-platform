@@ -1,5 +1,7 @@
 // title
 export const TITLE_CHANGED = 'TITLE_CHANGED';
+export const TITLE_DATA_LOADED = 'TITLE_DATA_LOADED';
+export const TITLE_NEW = 'TITLE_NEW';
 // questions
 export const QUESTION_CHANGED = 'QUESTION_CHANGED';
 export const QUESTION_TITLE_CHANGED = 'QUESTION_TITLE_CHANGED';

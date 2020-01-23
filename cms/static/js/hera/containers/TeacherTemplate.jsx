@@ -28,13 +28,15 @@ const ActiveComponentsMap = {
     'endSurvey': EndSurvey,
 };
 
+const DEFAULT_COMPONENT = 'title';
+
 const getComponentByTitle = (title) => {
     if (title.includes('question')) {
         return ActiveComponentsMap['question'];
     } else {
-        return ActiveComponentsMap[title] || ActiveComponentsMap['introduction'];
+        return ActiveComponentsMap[title] || ActiveComponentsMap[DEFAULT_COMPONENT];
     }
-}
+};
 
 
 export class TeacherTemplate extends React.Component{
@@ -50,7 +52,7 @@ export class TeacherTemplate extends React.Component{
         this.changeQuestionTitle = this.changeQuestionTitle.bind(this);
 
         this.state = {
-            activeComponent: 'introduction',
+            activeComponent: DEFAULT_COMPONENT,
             isQuestion: false
         };
     }
@@ -59,8 +61,9 @@ export class TeacherTemplate extends React.Component{
         this.props.subsectionDataChanged(target.dataset.parent, target.dataset.category, target.dataset.defaultName);
         this.props.introductionNew();
         this.props.simulationNew();
+        this.props.titleNew();
         this.setState({
-            activeComponent: 'introduction',
+            activeComponent: DEFAULT_COMPONENT,
             doSaveNewSubsection: true
         });
     }
@@ -70,7 +73,7 @@ export class TeacherTemplate extends React.Component{
         rootElement.classList.remove("popup-open");
         this.props.introductionNew();
         this.setState({
-            activeComponent: 'introduction',
+            activeComponent: DEFAULT_COMPONENT,
             isQuestion: false,
             activeQuestionIndex: null, // clean activeQuestionIndex to unset an active mark from the last active question.
             isSaving: false
@@ -99,7 +102,7 @@ export class TeacherTemplate extends React.Component{
         }
         if (activeIndex < 0) {
             this.setState({
-                activeComponent: 'introduction'
+                activeComponent: DEFAULT_COMPONENT
             });
         } else {
             this.setState({
@@ -133,15 +136,6 @@ export class TeacherTemplate extends React.Component{
         this.setState({
             isSaving: true
         });
-
-        /**
-         * Auxiliary Promise function, we need to wait the backend to handle our requests.
-         */
-        const sleeper = () => {
-            return function(x) {
-              return new Promise(resolve => setTimeout(() => resolve(x), 1000));
-            };
-        };
 
         if (introductionData.xBlockID) { // if xBlockID is located we assume all data are being edited
             this.props.saveChanges().then((response => {
@@ -199,6 +193,7 @@ export class TeacherTemplate extends React.Component{
                                     this.props.introductionLoaded(data);
                                 } else if (response.data && response.data.blockType && response.data.blockType === 'title') {
                                     // save data into Title component
+                                    this.props.titleLoaded(data);
                                 } else if (response.data && response.data.blockType && response.data.blockType === 'simulation') {
                                     // save data into Simulation component
                                     this.props.simulationLoaded(data);
@@ -258,7 +253,10 @@ export class TeacherTemplate extends React.Component{
                                     switchComponent={this.switchComponent}
                                     isActive={this.state.activeComponent === this.props.title.blockType}
                                     blockType={this.props.title.blockType}
-                                    title="Title"/>
+                                    title={this.props.title.title}
+                                    changeTitle={this.changeTitle}
+                                    storeName='title'
+                                    changeHandler="titleChanged"/>
                             </li>
                             <li className="nav-panel-list__item">
                                 <SwitchComponent
@@ -314,7 +312,8 @@ export class TeacherTemplate extends React.Component{
                     activeQuestionIndex={this.state.activeQuestionIndex}
                     questions={this.props.questions.questions}
 
-                    title={this.props.title}
+                    titleData={this.props.title}
+                    titleChanged={this.props.titleChanged}
 
                     introduction={this.props.introduction}
                     introductionChanged={this.props.introductionChanged}
@@ -355,8 +354,14 @@ const mapStateToProps = (store) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
-        changeTitle: (content) => {
-            return dispatch({type: actionTypes.TITLE_CHANGED, content: content});
+        titleChanged: (data) => {
+            return dispatch({type: actionTypes.TITLE_CHANGED, data: data});
+        },
+        titleLoaded: (data) => {
+            return dispatch({type: actionTypes.TITLE_DATA_LOADED, data: data});
+        },
+        titleNew: () => {
+            return dispatch({type: actionTypes.TITLE_NEW});
         },
         // introduction
         introductionChanged: (data) => {
