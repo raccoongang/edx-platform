@@ -854,6 +854,7 @@ def course_about(request, course_id):
             'course_image_urls': overview.image_urls,
             'reviews_fragment_view': reviews_fragment_view,
             'certificate_data': certificate_data,
+            'disable_window_wrap': True,
         }
 
         return render_to_response('courseware/course_about.html', context)
