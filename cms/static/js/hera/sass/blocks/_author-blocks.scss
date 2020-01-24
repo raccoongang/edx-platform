@@ -91,6 +91,11 @@ $author_radius: 4px;
         height: 646px;
         overflow: scroll;
 
+        &.is-small {
+            width: 235px;
+            margin-right: 0;
+        }
+
         &__slider {
             .slick-arrow {
                 position: absolute;
@@ -145,6 +150,7 @@ $author_radius: 4px;
             position: absolute;
             left: 50%;
             top: 50%;
+            width: 100%;
             transform: translate(-50%, -50%);
             text-align: center;
 
@@ -192,6 +198,11 @@ $author_radius: 4px;
         position: relative;
         max-height: 648px;
         overflow: scroll;
+
+        &.is-large {
+            width: 765px;
+            margin-right: 12px;
+        }
 
         .text-editor__holder {
             iframe {
@@ -334,6 +345,11 @@ $author_radius: 4px;
 .author-toolbar {
     width: 100%;
     margin: 0 0 20px;
+
+    &.is-right {
+        display: flex;
+        justify-content: flex-end;
+    }
 
     &__row {
         width: 662px;
