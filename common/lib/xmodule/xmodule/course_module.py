@@ -176,6 +176,53 @@ class CourseFields(object):
                           help=_('EdEos Secret'))
     edeos_key = String(display_name='EdEos Key', scope=Scope.settings, default="",
                        help=_('EdEos Key, also known as Client Id'))
+    learning_format = String(
+        display_name=_("Learning format"),
+        help=_(
+            'Set the learning format (for example "Intramural", "Online", "Webinars 2 times a week", '
+            '"Video lections" or "Evening online webinars").'
+        ),
+        default="Online",
+        scope=Scope.settings
+    )
+    qualification_level = String(
+        display_name=_("Qualification level"),
+        help=_(
+            'Set the qualification level (for example "From zero", "User", "Professional").'
+        ),
+        default="From zero",
+        scope=Scope.settings
+    )
+    course_availability = String(
+        display_name=_("Course availability"),
+        help=_('Set the course availability.'),
+        default="Always",
+        scope=Scope.settings
+    )
+    number_of_homeworks = Integer(
+        display_name=_("Number of homeworks"),
+        help=_('Set the number of homeworks in the course.'),
+        default=0,
+        scope=Scope.settings
+    )
+    number_of_tests = Integer(
+        display_name=_("Number of tests"),
+        help=_('Set the number of tests in the course.'),
+        default=0,
+        scope=Scope.settings
+    )
+    number_of_videos = Integer(
+        display_name=_("Number of videos"),
+        help=_('Set the number of videos in the course.'),
+        default=0,
+        scope=Scope.settings
+    )
+    number_of_lections = Integer(
+        display_name=_("Number of lections"),
+        help=_('Set the number of lections in the course.'),
+        default=0,
+        scope=Scope.settings
+    )
     price = String(
         display_name=_("Course Price"),
         help=_("Set the course price."),

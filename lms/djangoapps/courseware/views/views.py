@@ -814,6 +814,11 @@ def course_about(request, course_id):
         # Overview
         overview = CourseOverview.get_from_id(course.id)
 
+        # Course duration in weeks
+        if overview.end:
+            duration = (overview.end - overview.start).days // 7
+        else:
+            duration = None
         # This local import is due to the circularity of lms and openedx references.
         # This may be resolved by using stevedore to allow web fragments to be used
         # as plugins, and to avoid the direct import.
@@ -823,6 +828,12 @@ def course_about(request, course_id):
         reviews_fragment_view = CourseReviewsModuleFragmentView().render_to_fragment(request, course=course)
 
         certificate_data = certs_api.get_active_web_certificate(course)
+
+        course_block_tree = get_course_outline_block_tree(request, course_id)
+        course_start_end_date = strftime_localized(course.start, "%d %B")
+        if course.end:
+            end_date = strftime_localized(course.end, "%d %B")
+            course_start_end_date = course_start_end_date + "-" + end_date
 
         context = {
             'course': course,
@@ -855,6 +866,9 @@ def course_about(request, course_id):
             'reviews_fragment_view': reviews_fragment_view,
             'certificate_data': certificate_data,
             'disable_window_wrap': True,
+            'blocks': course_block_tree,
+            'duration': duration,
+            'course_start_end_date': course_start_end_date,
         }
 
         return render_to_response('courseware/course_about.html', context)

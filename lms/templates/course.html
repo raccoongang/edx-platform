@@ -58,8 +58,8 @@ from courseware.courses import get_course
       else:
           course_date_string = ''
       %>
-      <div>%{status}</div>
-      <div>%{_(course.price)}</div>
+      <div>${status}</div>
+      <div>${_(course.price)}</div>
       % if course.advertised_start is not None:
           <div class="course-date" aria-hidden="true">${course.advertised_start}</div>
       % else:

@@ -1,6 +1,7 @@
 """
 Common utilities for the course experience, including course outline.
 """
+from django.contrib.auth.models import AnonymousUser
 from opaque_keys.edx.keys import CourseKey
 
 from lms.djangoapps.course_api.blocks.api import get_blocks
@@ -61,11 +62,15 @@ def get_course_outline_block_tree(request, course_id):
 
     course_key = CourseKey.from_string(course_id)
     course_usage_key = modulestore().make_course_usage_key(course_key)
+    user = request.user
+
+    if isinstance(user, AnonymousUser):
+        user = None
 
     all_blocks = get_blocks(
         request,
         course_usage_key,
-        user=request.user,
+        user=user,
         nav_depth=3,
         requested_fields=['children', 'display_name', 'type', 'due', 'graded', 'special_exam_info', 'format'],
         block_types_filter=['course', 'chapter', 'sequential']
@@ -74,6 +79,6 @@ def get_course_outline_block_tree(request, course_id):
     course_outline_root_block = all_blocks['blocks'][all_blocks['root']]
     populate_children(course_outline_root_block, all_blocks['blocks'])
     set_last_accessed_default(course_outline_root_block)
-    mark_last_accessed(request.user, course_key, course_outline_root_block)
+    mark_last_accessed(user, course_key, course_outline_root_block)
 
     return course_outline_root_block
