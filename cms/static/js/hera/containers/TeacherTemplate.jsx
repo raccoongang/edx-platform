@@ -332,6 +332,8 @@ export class TeacherTemplate extends React.Component{
                     simulationRemoveContent={this.props.simulationRemoveContent}
 
                     questionChanged={this.props.questionChanged}
+                    questionRemoveProblemType={this.props.questionRemoveProblemType}
+                    questionAddNewProblemType={this.props.questionAddNewProblemType}
 
                 />
                 <button className="close-popup" onClick={this.closeBar} />
@@ -448,7 +450,13 @@ const mapDispatchToProps = (dispatch, ownProps) => {
             return dispatch({type: actionTypes.QUESTION_LOADED, data: data});
         },
         questionsReset: () => {
-            return dispatch({type: actionTypes.QUESTIONS_RESET});
+            return dispatch({type: actionTypes.QUESTION_RESET});
+        },
+        questionRemoveProblemType: (questionIndex, problemTypeIndex) => {
+            return dispatch({type: actionTypes.QUESTION_REMOVE_PROBLEM_TYPE, questionIndex: questionIndex, problemTypeIndex: problemTypeIndex});
+        },
+        questionAddNewProblemType: (questionIndex) => {
+            return dispatch({type: actionTypes.QUESTION_ADD_NEW_PROBLEM_TYPE, questionIndex: questionIndex});
         }
     };
 };

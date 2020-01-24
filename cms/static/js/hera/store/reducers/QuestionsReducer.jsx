@@ -4,12 +4,38 @@ import {
     QUESTION_ADDED,
     QUESTION_TITLE_CHANGED,
     QUESTION_DELETED,
-    QUESTIONS_RESET,
+    QUESTION_RESET,
+    QUESTION_REMOVE_PROBLEM_TYPE,
+    QUESTION_ADD_NEW_PROBLEM_TYPE,
 } from '../actionTypes';
 
+const defaultProblemType = {
+    type: 'radio', // ['radio', 'checkbox', 'select', 'number', 'text']
+    // 'radio', 'checkbox', 'select'
+    options: [
+        {
+            correct: false,
+            title: "" // assume this will be the unique identificator
+        },
+        {
+            correct: false,
+            title: "" // assume this will be the unique identificator
+        },
+        {
+            correct: false,
+            title: "" // assume this will be the unique identificator
+        },
+        {
+            correct: false,
+            title: "" // assume this will be the unique identificator
+        }
+    ],
+    answer: "",
+    preciseness: ""
+};
 
 const questionTemplate = {
-    title: "New Question",
+    title: "Question",
     description: "",
     imgUrls: [],
     iframeUrl: "",
@@ -28,30 +54,7 @@ const questionTemplate = {
         imgUrls: [],
         content: ""
     },
-    question: {
-        questionType: 'radio', // ['radio', 'checkbox', 'select', 'number', 'text']
-        // 'radio', 'checkbox', 'select'
-        options: [
-            {
-                correct: false,
-                title: "" // assume this will be the unique identificator
-            },
-            {
-                correct: false,
-                title: "" // assume this will be the unique identificator
-            },
-            {
-                correct: false,
-                title: "" // assume this will be the unique identificator
-            },
-            {
-                correct: false,
-                title: "" // assume this will be the unique identificator
-            }
-        ],
-        answer: "",
-        preciseness: ""
-    },
+    problemTypes: [defaultProblemType],
     blockType: 'question'
 };
 
@@ -98,15 +101,59 @@ const QuestionsReducer = function(state=initialState, action) {
                 })
             });
         case QUESTION_LOADED:
+            // transition. 
+            // question -> problemTypes - now it's list of problemTypes
+            // questionType -> type
+            const transitionedQuestions = action.data.map((question, ind) => {
+                if (question && question.question) {
+                    let problemType = {
+                        ...question.question,
+                        type: question.question.questionType
+                    };
+                    delete problemType['questionType'];
+                    let newQuestion = {...question, problemTypes: [problemType]};
+                    delete newQuestion['question'];
+                    return newQuestion;
+                }
+                return question;
+            });
             return {
                 blockType: 'questions',
-                questions: action.data
+                questions: transitionedQuestions
             };
-        case QUESTIONS_RESET:
+        case QUESTION_RESET:
             return {
                 blockType: 'questions',
                 questions: []
             }
+        case QUESTION_ADD_NEW_PROBLEM_TYPE:
+            return {
+                ...state,
+                questions: state.questions.map((question, ind) => {
+                    if (ind === action.questionIndex) {
+                        return {
+                            ...question,
+                            problemTypes: question.problemTypes.concat([defaultProblemType])
+                        }
+                    }
+                    return question;
+                })
+            };
+        case QUESTION_REMOVE_PROBLEM_TYPE:
+            return {
+                ...state,
+                questions: state.questions.map((question, ind) => {
+                    if (ind === action.questionIndex) {
+                        return {
+                            ...question,
+                            problemTypes: question.problemTypes.filter((el, ind) => {
+                                return ind !== action.problemTypeIndex;
+                            })
+                        }
+                    }
+                    return question;
+                })
+            };
         default:
             return state;
     }
