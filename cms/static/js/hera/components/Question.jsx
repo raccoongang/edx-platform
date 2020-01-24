@@ -15,6 +15,9 @@ export default class Question extends React.Component{
         this.changeOptionTitle = this.changeOptionTitle.bind(this);
         this.changeDescription = this.changeDescription.bind(this);
         this.scaffoldEditingStateChange = this.scaffoldEditingStateChange.bind(this);
+        this.changeAnswer = this.changeAnswer.bind(this);
+        this.getOptions = this.getOptions.bind(this);
+        this.getButtonAddOption = this.getButtonAddOption.bind(this);
 
         this.state = {
             showSimulation: false,
@@ -32,97 +35,136 @@ export default class Question extends React.Component{
     }
 
     changeQuestionType(e) {
+        const dataset = e.target.dataset;
         const activeQuestion = this.props.questions[this.props.activeQuestionIndex];
-        let question = {...activeQuestion.question};
-        question.questionType = e.target.dataset.type;
-        question.options = question.options.map(opt => {
-            return {
-                correct: false,
-                title: opt.title
-            };
+        const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
+            if (ind === +dataset.problemTypeIndex) {
+                return {
+                    type: dataset.type,
+                    options: problemType.options.map(opt => {
+                        return {
+                            correct: false,
+                            title: opt.title
+                        };
+                    })
+                };
+            }
+            return problemType;
         });
         this.props.questionChanged(this.props.activeQuestionIndex, {
             ...activeQuestion,
-            question: question
+            problemTypes: problemTypes
         });
     }
 
-    addOptionItem() {
+    addOptionItem(e) {
+        const problemTypeIndex = e.target.dataset.problemTypeIndex;
         const activeQuestion = this.props.questions[this.props.activeQuestionIndex];
-        let question = {...activeQuestion.question};
-        // adding new empty option
-        question.options = question.options.concat([{
-            correct: false,
-            title: ""
-        }]);
+
+        const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
+            if (ind === +problemTypeIndex) {
+                return {
+                    ...problemType,
+                    options: problemType.options.concat([{
+                        correct: false,
+                        title: ""
+                    }])
+                };
+            }
+            return problemType;
+        });
 
         this.props.questionChanged(this.props.activeQuestionIndex, {
             ...activeQuestion,
-            question: question
+            problemTypes: problemTypes
         });
     }
 
     removeOptionItem(e) {
+        const dataset = e.target.dataset;
         const activeQuestion = this.props.questions[this.props.activeQuestionIndex];
-        let question = {...activeQuestion.question};
 
-        question.options = question.options.filter((el, ind) => ind !== +e.target.dataset.index);
+        const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
+            if (ind === +dataset.problemTypeIndex) {
+                return {
+                    type: problemType.type,
+                    options: problemType.options.filter((el, ind) => ind !== +dataset.index)
+                };
+            }
+            return problemType;
+        });
 
         this.props.questionChanged(this.props.activeQuestionIndex, {
             ...activeQuestion,
-            question: question
+            problemTypes: problemTypes
         });
     }
 
     changeOptionCorrectness(e) {
+        const dataset = e.target.dataset;
         const activeQuestion = this.props.questions[this.props.activeQuestionIndex];
-        let question = {...activeQuestion.question};
-        question.options = question.options.map((opt, ind) => {
-            if (['select', 'radio'].includes(question.questionType)) {
-                if (ind === +e.target.dataset.index) {
-                    return {
-                        correct: e.target.checked,
-                        title: opt.title
-                    };
-                } else {
-                    return {
-                        correct: false,
-                        title: opt.title
-                    };
-                }
-            } else {
-                if (ind === +e.target.dataset.index) {
-                    return {
-                        correct: e.target.checked,
-                        title: opt.title
-                    };
-                } else {
-                    return opt;
-                }
+        const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
+            if (ind === +dataset.problemTypeIndex) {
+                return {
+                    ...problemType,
+                    options: problemType.options.map((opt, ind) => {
+                        if (['select', 'radio'].includes(problemType.type)) {
+                            if (ind === +dataset.index) {
+                                return {
+                                    correct: e.target.checked,
+                                    title: opt.title
+                                };
+                            } else {
+                                return {
+                                    correct: false,
+                                    title: opt.title
+                                };
+                            }
+                        } else {
+                            if (ind === +dataset.index) {
+                                return {
+                                    correct: e.target.checked,
+                                    title: opt.title
+                                };
+                            } else {
+                                return opt;
+                            }
+                        }
+                    })
+                };
             }
+            return problemType;
         });
         this.props.questionChanged(this.props.activeQuestionIndex, {
             ...activeQuestion,
-            question: question
+            problemTypes: problemTypes
         });
     }
 
     changeOptionTitle(e) {
         const activeQuestion = this.props.questions[this.props.activeQuestionIndex];
-        let question = {...activeQuestion.question};
-        question.options = question.options.map((opt, ind) => {
-            if (ind === +e.target.dataset.index) {
+        const dataset = e.target.dataset;
+        const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
+            if (ind === +dataset.problemTypeIndex) {
                 return {
-                    ...opt,
-                    title: e.target.value
-                };
-            } else {
-                return opt;
+                    ...problemType,
+                    options: problemType.options.map((opt, _ind) => {
+                        if (_ind === +dataset.index) {
+                            return {
+                                ...opt,
+                                title: e.target.value
+                            };
+                        } else {
+                            return opt;
+                        }
+                    })
+                }
             }
+            return problemType;
         });
         this.props.questionChanged(this.props.activeQuestionIndex, {
             ...activeQuestion,
-            question: question
+            problemTypes: problemTypes
         });
     }
 
@@ -143,7 +185,6 @@ export default class Question extends React.Component{
     }
 
     removeImage(e) {
-        console.log(+e.target.dataset.index);
         const activeQuestion = {...this.props.questions[this.props.activeQuestionIndex]};
         this.props.questionChanged(this.props.activeQuestionIndex, {
             ...activeQuestion,
@@ -173,22 +214,38 @@ export default class Question extends React.Component{
     }
 
     changeAnswer(e) {
+        const dataset = e.target.dataset;
         const activeQuestion = {...this.props.questions[this.props.activeQuestionIndex]};
-        let question = {...activeQuestion.question};
-        question.answer = e.target.value;
+        const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
+            if (ind === +dataset.problemTypeIndex) {
+                return {
+                    ...problemType,
+                    answer: e.target.value
+                };
+            }
+            return problemType;
+        });
         this.props.questionChanged(this.props.activeQuestionIndex, {
             ...activeQuestion,
-            question: question
+            problemTypes: problemTypes
         });
     }
 
     changePreciseness(e) {
+        const dataset = e.target.dataset;
         const activeQuestion = {...this.props.questions[this.props.activeQuestionIndex]};
-        let question = {...activeQuestion.question};
-        question.preciseness = e.target.value;
+        const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
+            if (ind === +dataset.problemTypeIndex) {
+                return {
+                    ...problemType,
+                    preciseness: e.target.value
+                };
+            }
+            return problemType;
+        });
         this.props.questionChanged(this.props.activeQuestionIndex, {
             ...activeQuestion,
-            question: question
+            problemTypes: problemTypes
         });
     }
 
@@ -204,6 +261,112 @@ export default class Question extends React.Component{
         });
     }
 
+    addProblemType() {
+        this.props.questionAddNewProblemType(this.props.activeQuestionIndex);
+    }
+
+    removeProblemType(e) {
+        this.props.questionRemoveProblemType(+this.props.activeQuestionIndex, +e.target.dataset.problemTypeIndex);
+    }
+
+    getOptions(problemType, index) {
+        const type = problemType.type === 'select' ? 'radio' : problemType.type;
+        if (type === 'number') {
+            return (
+                <div className="questions__list number">
+                    <div className="questions__list__item">
+                        <input
+                            className="questions__list__field"
+                            type="number"
+                            data-problem-type-index={index}
+                            placeholder="Type numbers here"
+                            value={problemType.answer}
+                            onChange={this.changeAnswer.bind(this)}
+                            />
+                    </div>
+                    <div className="questions__list__item">
+                        <input
+                            className="questions__list__field"
+                            type="text"
+                            data-problem-type-index={index}
+                            value={problemType.preciseness}
+                            onChange={this.changePreciseness.bind(this)}
+                            placeholder="Add a tolerance"
+                            />
+                        <span className="questions__list__field-hint">It can be number or percentage like 12, 12.04 or 34%</span>
+                    </div>
+                </div>
+            );
+        } else if (type === 'text') {
+            return (
+                <div className="questions__list number">
+                    <div className="questions__list__item">
+                        <input
+                            className="questions__list__field"
+                            type="text"
+                            data-problem-type-index={index}
+                            placeholder="Enter Text"
+                            value={problemType.answer}
+                            onChange={this.changeAnswer.bind(this)}
+                            />
+                    </div>
+                </div>
+            );
+        }
+        return problemType.options.map((option, ind) => {
+            return  (
+                <div className="questions__list__item">
+                    <label className="questions__list__label">
+                        <input
+                            key={ind}
+                            data-index={ind}
+                            data-problem-type-index={index}
+                            onChange={this.changeOptionCorrectness}
+                            className="questions__list__input"
+                            type={type}
+                            checked={option.correct}/>
+                        <div className="questions__list__text">
+                            <input
+                                onChange={this.changeOptionTitle}
+                                key={ind}
+                                data-index={ind}
+                                data-problem-type-index={index}
+                                className="questions__list__text-hint"
+                                type="text"
+                                placeholder="Type questions text here..."
+                                value={option.title}
+                                />
+                        </div>
+                    </label>
+                    {problemType.options.length > 1 && (
+                        <button className="questions__list__remove-item" title="Remove item">
+                            <i
+                                className="fa fa-trash-o"
+                                data-problem-type-index={index}
+                                aria-hidden="true" data-index={ind} onClick={this.removeOptionItem.bind(this)} />
+                        </button>
+                    )}
+                </div>
+            );
+        });
+    };
+
+    getButtonAddOption(type, index) {
+        if (!['number', 'text'].includes(type)) {
+            return (
+                <div className="questions__list__add-item">
+                    <button
+                        type="button"
+                        className="questions__list__add-item__btn"
+                        data-problem-type-index={index}
+                        onClick={this.addOptionItem.bind(this)}>
+                        + add item
+                    </button>
+                </div>
+            );
+        }
+    };
+
     render() {
         const activeQuestion = this.props.questions[this.props.activeQuestionIndex];
         if (!activeQuestion) {
@@ -213,80 +376,6 @@ export default class Question extends React.Component{
         const shouldResetEditor = this.props.activeQuestionIndex !== this.activeQuestionIndex;
 
         this.activeQuestionIndex = this.props.activeQuestionIndex;
-        const type = activeQuestion.question.questionType === 'select' ? 'radio' : activeQuestion.question.questionType;
-
-        const getOptions = () => {
-            if (type === 'number') {
-                return (
-                    <div className="questions__list number">
-                        <div className="questions__list__item">
-                            <input
-                                className="questions__list__field"
-                                type="number"
-                                placeholder="Type numbers here"
-                                value={activeQuestion.question.answer}
-                                onChange={this.changeAnswer.bind(this)}
-                                />
-                        </div>
-                        <div className="questions__list__item">
-                            <input
-                                className="questions__list__field"
-                                type="text"
-                                value={activeQuestion.question.preciseness}
-                                onChange={this.changePreciseness.bind(this)}
-                                placeholder="Add a tolerance"
-                                />
-                            <span className="questions__list__field-hint">It can be number or percentage like 12, 12.04 or 34%</span>
-                        </div>
-                    </div>
-                );
-            } else if (type === 'text') {
-                return (
-                    <div className="questions__list number">
-                        <div className="questions__list__item">
-                            <input
-                                className="questions__list__field"
-                                type="text"
-                                placeholder="Enter Text"
-                                value={activeQuestion.question.answer}
-                                onChange={this.changeAnswer.bind(this)}
-                                />
-                        </div>
-                    </div>
-                );
-            }
-            return activeQuestion.question.options.map((option, ind) => {
-                return (
-                    <div className="questions__list__item">
-                        <label className="questions__list__label">
-                            <input
-                                key={ind}
-                                data-index={ind}
-                                onChange={this.changeOptionCorrectness}
-                                className="questions__list__input"
-                                type={type}
-                                checked={option.correct}/>
-                            <div className="questions__list__text">
-                                <input
-                                    onChange={this.changeOptionTitle}
-                                    key={ind}
-                                    data-index={ind}
-                                    className="questions__list__text-hint"
-                                    type="text"
-                                    placeholder="Type questions text here..."
-                                    value={option.title}
-                                    />
-                            </div>
-                        </label>
-                        {activeQuestion.question.options.length > 1 && (
-                            <button className="questions__list__remove-item" title="Remove item">
-                                <i className="fa fa-trash-o" aria-hidden="true" data-index={ind} onClick={this.removeOptionItem.bind(this)} />
-                            </button>
-                        )}
-                    </div>
-                );
-            });
-        };
 
         return (
             <div className={`author-block__wrapper${this.state.scaffoldEditing ? ' is-scaffold-open' : ''}`}>
@@ -325,46 +414,80 @@ export default class Question extends React.Component{
                                 content={activeQuestion.description}
                                 />
                         </div>
-                        <div className={`questions__wrapper is-${activeQuestion.question.questionType}`}>
-                            <div className="questions__list__toolbar">
-                                <button
-                                    title='Radio'
-                                    type="button"
-                                    className={`questions__list__toolbar__btn ${activeQuestion.question.questionType === 'radio' ? 'is-active' : ''}`}>
-                                    <i className="fa fa-dot-circle-o" data-type="radio" aria-hidden="true" onClick={this.changeQuestionType}/>
-                                </button>
-                                <button
-                                    title='Checkbox'
-                                    type="button"
-                                    className={`questions__list__toolbar__btn ${activeQuestion.question.questionType === 'checkbox' ? 'is-active' : ''}`}>
-                                    <i className="fa fa-check-square-o" data-type="checkbox" aria-hidden="true" onClick={this.changeQuestionType} />
-                                </button>
-                                <button
-                                    title='Dropdown'
-                                    type="button"
-                                    className={`questions__list__toolbar__btn ${activeQuestion.question.questionType === 'select' ? 'is-active' : ''}`}>
-                                    <i className="fa fa-list-alt" data-type="select" aria-hidden="true" onClick={this.changeQuestionType} />
-                                </button>
-                                <button title='Numerical' type="button" data-type="number" onClick={this.changeQuestionType} className={`questions__list__toolbar__btn ${activeQuestion.question.questionType === 'number' ? 'is-active' : ''}`}>
-                                    123...
-                                </button>
-                                <button title='Text' type="button" data-type="text" onClick={this.changeQuestionType} className={`questions__list__toolbar__btn ${activeQuestion.question.questionType === 'text' ? 'is-active' : ''}`}>
-                                    Text
-                                </button>
-                            </div>
+                        {
+                            activeQuestion.problemTypes.map((problemType, index) => {
+                                return (
+                                    <div className={`questions__wrapper is-${problemType.type}`}>
+                                        <div className="questions__list__toolbar">
+                                            <button
+                                                title='Radio'
+                                                type="button"
+                                                className={`questions__list__toolbar__btn ${problemType.type === 'radio' ? 'is-active' : ''}`}>
+                                                <i
+                                                    className="fa fa-dot-circle-o"
+                                                    data-type="radio"
+                                                    data-problem-type-index={index}
+                                                    aria-hidden="true"
+                                                    onClick={this.changeQuestionType}/>
+                                            </button>
+                                            <button
+                                                title='Checkbox'
+                                                type="button"
+                                                className={`questions__list__toolbar__btn ${problemType.type === 'checkbox' ? 'is-active' : ''}`}>
+                                                <i
+                                                    className="fa fa-check-square-o"
+                                                    data-type="checkbox"
+                                                    data-problem-type-index={index}
+                                                    aria-hidden="true"
+                                                    onClick={this.changeQuestionType} />
+                                            </button>
+                                            <button
+                                                title='Dropdown'
+                                                type="button"
+                                                className={`questions__list__toolbar__btn ${problemType.type === 'select' ? 'is-active' : ''}`}>
+                                                <i
+                                                    className="fa fa-list-alt"
+                                                    data-type="select"
+                                                    data-problem-type-index={index}
+                                                    aria-hidden="true"
+                                                    onClick={this.changeQuestionType} />
+                                            </button>
+                                            <button
+                                                title='Numerical'
+                                                type="button"
+                                                data-type="number"
+                                                data-problem-type-index={index}
+                                                onClick={this.changeQuestionType}
+                                                className={`questions__list__toolbar__btn ${problemType.type === 'number' ? 'is-active' : ''}`}>
+                                                123...
+                                            </button>
+                                            <button
+                                                title='Text'
+                                                type="button"
+                                                data-type="text"
+                                                data-problem-type-index={index}
+                                                onClick={this.changeQuestionType}
+                                                className={`questions__list__toolbar__btn ${problemType.type === 'text' ? 'is-active' : ''}`}>
+                                                Text
+                                            </button>
+                                        </div>
 
-                            <div className="questions__list">
-                                {getOptions()}
-
-                                {!['number', 'text'].includes(type) && (
-                                    <div className="questions__list__add-item">
-                                        <button type="button" className="questions__list__add-item__btn" onClick={this.addOptionItem.bind(this)}>
-                                            + add item
-                                        </button>
+                                        <div className="questions__list">
+                                            {this.getOptions(problemType, index)}
+                                        </div>
+                                        {this.getButtonAddOption(problemType.type, index)}
+                                        <div>
+                                            <button type="button" onClick={this.addProblemType.bind(this)}>+</button>
+                                            {
+                                                activeQuestion.problemTypes.length > 1 && (
+                                                    <button type="button" data-problem-type-index={index} onClick={this.removeProblemType.bind(this)}>-</button>
+                                                )
+                                            }
+                                        </div>
                                     </div>
-                                )}
-                            </div>
-                        </div>
+                                )
+                            })
+                        }
                     </div>
                 </div>
                 <div className="questions-toolbar">
