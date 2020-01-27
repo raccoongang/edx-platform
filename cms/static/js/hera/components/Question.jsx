@@ -380,12 +380,12 @@ export default class Question extends React.Component{
         return (
             <div className={`author-block__wrapper${this.state.scaffoldEditing ? ' is-scaffold-open' : ''}`}>
                 <div className="author-block__content">
-                    <div className="author-block__image is-questions-img">
+                    <div className="author-block__image">
                         {
                             this.state.showSimulation ? (
                                 <iframe src={activeQuestion.iframeUrl} frameborder="0" />
                             ) : (
-                                <div ref={c => (this.sliderImg = c)} className="author-block__image__slider">
+                                <div ref={c => (this.sliderImg = c)} className="questions-images">
                                     {activeQuestion.imgUrls.map((imgUrl, ind) => {
                                         return (
                                             <img key={ind} src={imgUrl} alt=""/>

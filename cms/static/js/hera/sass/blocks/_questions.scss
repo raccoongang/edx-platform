@@ -7,6 +7,16 @@ $question_color5: #ff0000;
 $question_color6: #96d063;
 
 .questions {
+    &-images {
+        img {
+            margin: 0 0 8px;
+
+            &:last-child {
+                margin: 0;
+            }
+        }
+    }
+
     &-toolbar {
         display: flex;
         align-items: flex-start;
