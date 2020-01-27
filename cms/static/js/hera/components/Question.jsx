@@ -380,24 +380,24 @@ export default class Question extends React.Component{
         return (
             <div className={`author-block__wrapper${this.state.scaffoldEditing ? ' is-scaffold-open' : ''}`}>
                 <div className="author-block__content">
-                    <div className="author-block__image">
+                    <div className="author-block__image is-questions-img">
                         {
                             this.state.showSimulation ? (
-                                <iframe src={activeQuestion.iframeUrl} frameborder="0"></iframe>
+                                <iframe src={activeQuestion.iframeUrl} frameborder="0" />
                             ) : (
-                                <Slider ref={c => (this.sliderImg = c)} {...this.settingsImg} className="author-block__image__slider">
+                                <div ref={c => (this.sliderImg = c)} className="author-block__image__slider">
                                     {activeQuestion.imgUrls.map((imgUrl, ind) => {
                                         return (
                                             <img key={ind} src={imgUrl} alt=""/>
                                         )
                                     })}
-                                </Slider>
+                                </div>
                             )
                         }
                         {
                             activeQuestion.imgUrls.length === 0 && !this.state.showSimulation && (
                                 <div className="author-block__image-selector">
-                                    <i className="fa fa-picture-o" aria-hidden="true"></i>
+                                    <i className="fa fa-picture-o" aria-hidden="true" />
                                     <br/>
                                     <button type="button" onClick={this.addImage.bind(this)} className="author-block__image-selector__btn">
                                         + Add image
@@ -476,11 +476,15 @@ export default class Question extends React.Component{
                                             {this.getOptions(problemType, index)}
                                         </div>
                                         {this.getButtonAddOption(problemType.type, index)}
-                                        <div>
-                                            <button type="button" onClick={this.addProblemType.bind(this)}>+</button>
+                                        <div className="questions-toolbar-add">
+                                            <button className="questions-toolbar-add__btn is-add" type="button" onClick={this.addProblemType.bind(this)}>
+                                                <i className="fa fa-plus-square" aria-hidden="true" />
+                                            </button>
                                             {
                                                 activeQuestion.problemTypes.length > 1 && (
-                                                    <button type="button" data-problem-type-index={index} onClick={this.removeProblemType.bind(this)}>-</button>
+                                                    <button className="questions-toolbar-add__btn is-remove" type="button" data-problem-type-index={index} onClick={this.removeProblemType.bind(this)}>
+                                                        <i className="fa fa-trash" aria-hidden="true" />
+                                                    </button>
                                                 )
                                             }
                                         </div>

@@ -225,6 +225,16 @@ $author_radius: 4px;
             position: relative;
             z-index: 2;
         }
+
+        &.is-questions-img {
+            img {
+                margin: 0 0 6px;
+
+                &:last-child {
+                    margin: 0;
+                }
+            }
+        }
     }
 
     &__question {

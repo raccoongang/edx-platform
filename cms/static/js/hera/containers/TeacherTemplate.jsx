@@ -303,6 +303,9 @@ export class TeacherTemplate extends React.Component{
                                 save
                                 <span className="panel-btn__loader" />
                             </button>
+                            <button className="panel-btn is-cancel" type="button" onClick={this.closeBar}>
+                                close
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -336,7 +339,6 @@ export class TeacherTemplate extends React.Component{
                     questionAddNewProblemType={this.props.questionAddNewProblemType}
 
                 />
-                <button className="close-popup" onClick={this.closeBar} />
             </div>
         );
     }

@@ -4,6 +4,7 @@ $nav_color3: #2b6797;
 $nav_color4: #fff;
 $nav_color5: #191c1c;
 $nav_color6: #b3b4b4;
+$nav_color7: #ff0000;
 
 #hera-popup {
     position: fixed;
@@ -321,6 +322,9 @@ $nav_color6: #b3b4b4;
     }
 
     .panel-btn-holder {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
         padding: 12px 15px 0;
         text-align: center;
 
@@ -401,7 +405,7 @@ $nav_color6: #b3b4b4;
             padding: 8px 28px;
             text-transform: uppercase;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
             transition: all .3s ease-in-out;
             position: relative;
 
@@ -418,6 +422,10 @@ $nav_color6: #b3b4b4;
                 .panel-btn__loader {
                     opacity: 1;
                 }
+            }
+
+            &.is-cancel {
+                background: $nav_color7;
             }
         }
     }
