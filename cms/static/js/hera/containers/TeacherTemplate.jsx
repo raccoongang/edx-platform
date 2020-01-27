@@ -1,10 +1,8 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import ReactDOM from 'react-dom';
 
 import { connect } from 'react-redux';
 
-import {getData, addSubsection, createUnit, createIntroductionXBlock, saveIntroductionXBlockData, getXblockData, changeUnitName} from '../utils/api';
+import {getData, getXblockData} from '../utils/api';
 
 import * as actionTypes from '../store/actionTypes';
 
@@ -15,6 +13,7 @@ import Simulation from '../components/Simulation';
 import Question from '../components/Question';
 import LeftSidebarQuestions from './LeftSidebarQuestions';
 import EndSurvey from '../components/EndSurvey';
+import LessonSummary from "../components/LessonSummary";
 import SwitchComponent from '../components/SwitchComponent';
 
 import '../sass/main.scss';
@@ -26,6 +25,7 @@ const ActiveComponentsMap = {
     'simulation': Simulation,
     'question': Question,
     'endSurvey': EndSurvey,
+    'lessonSummary': LessonSummary,
 };
 
 const DEFAULT_COMPONENT = 'title';
@@ -297,6 +297,13 @@ export class TeacherTemplate extends React.Component{
                                     blockType={this.props.endSurvey.blockType}
                                     title="End Survey"/>
                             </li>
+                            <li className="nav-panel-list__item">
+                                <SwitchComponent
+                                    switchComponent={this.switchComponent}
+                                    isActive={this.state.activeComponent === this.props.lessonSummary.blockType}
+                                    blockType={this.props.lessonSummary.blockType}
+                                    title="Lesson Summary"/>
+                            </li>
                         </ul>
                         <div className="panel-btn-holder">
                             <button type="button" className={`panel-btn ${this.state.isSaving ? 'is-pending' : ''}`} onClick={this.save.bind(this)}>
@@ -350,7 +357,8 @@ const mapStateToProps = (store) => {
         simulation: store.simulation,
         questions: store.questions,
         subsectionData: store.subsectionData,
-        endSurvey: store.endSurvey
+        endSurvey: store.endSurvey,
+        lessonSummary: store.lessonSummary,
     };
 };
 

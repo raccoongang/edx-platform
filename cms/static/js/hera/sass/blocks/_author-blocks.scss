@@ -77,6 +77,10 @@ $author_radius: 4px;
         display: flex;
         position: relative;
         margin: 0 0 20px;
+
+        &.is-mod {
+            flex-direction: column;
+        }
     }
 
     &__content-mod {
@@ -137,6 +141,12 @@ $author_radius: 4px;
         &.is-small {
             width: 235px;
             margin-right: 0;
+        }
+
+        &.is-full-width {
+            width: 100%;
+            margin-right: 0;
+            height: 355px;
         }
 
         &__slider {
@@ -245,6 +255,11 @@ $author_radius: 4px;
         &.is-large {
             width: 765px;
             margin-right: 12px;
+        }
+
+        &.is-full-width {
+            width: 100%;
+            margin: 0 0 20px;
         }
 
         .text-editor__holder {
@@ -405,6 +420,10 @@ $author_radius: 4px;
         &-holder {
             display: flex;
             justify-content: space-between;
+        }
+
+        &.is-full {
+            width: 100%;
         }
     }
 

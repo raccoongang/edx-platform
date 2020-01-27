@@ -6,6 +6,7 @@ import IntroductionReducer from './IntroductionReducer';
 import SimulationReducer from './SimulationReducer';
 import SubsectionDataReducer from './SubsectionDataReducer';
 import EndSurvey from './EndSurveyReducer';
+import LessonSummary from "./LessonSummaryReducer";
 
 var reducers = combineReducers({
     title: TitleReducer,
@@ -13,7 +14,8 @@ var reducers = combineReducers({
     simulation: SimulationReducer,
     questions: QuestionsReducer,
     subsectionData: SubsectionDataReducer,
-    endSurvey: EndSurvey
+    endSurvey: EndSurvey,
+    lessonSummary: LessonSummary,
 });
 
 export default reducers;
