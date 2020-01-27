@@ -1,4 +1,5 @@
 import React from 'react';
+import WYSWYGComponent from "./WYSWYGComponent";
 
 
 export default class EndSurvey extends React.Component{
@@ -7,24 +8,145 @@ export default class EndSurvey extends React.Component{
         return (
             <div className="author-block__wrapper">
                 <div className="author-block__content">
-                    <div className="author-block__image">
-                        <img
-                        src="https://d1icd6shlvmxi6.cloudfront.net/gsc/THB1PC/52/ec/b3/52ecb386d0d140898c3a931c5caaccba/images/scenario_page/u620.png?token=937ef3394f9bbd5177382de1fe4cbf677b95681186e42c8b44b00217fe8c6834"
-                        alt=""/>
-                    </div>
-                    <div className="author-block__question">
-                        <div className="author-block__question-title">
-                            End Servey
+                    <div className="author-block__question is-large">
+                        <div className="end-survey__row">
+                            <div className="end-survey__field">
+                                <div className="end-survey__field-title">
+                                    <input className="end-survey__field-title__input" placeholder="Enter title of the page" type="text"/>
+                                </div>
+                            </div>
                         </div>
-                        <div className="author-block__question-text">
-                            Imagine that you are standing on a cliff, and you've just been hooked up to a bungee cord. The instructor gives you a pat on the back and then it's time to jump. What will happen?
+                        <div className="end-survey__row">
+                            <div className="end-survey__field">
+                                <div className="end-survey__field-title">
+                                    <label className="end-survey__field-title__label">
+                                        Text of the question
+                                    </label>
+                                    <input className="end-survey__field-title__input" type="text"/>
+                                </div>
+                                <div className="end-survey__field-radios">
+                                    <div className="questions__wrapper is-radio">
+                                        <div className="questions__list__item">
+                                            <label className="questions__list__label">
+                                                <input className="questions__list__input" type="radio" />
+                                                <div className="questions__list__text">
+                                                    <input className="questions__list__text-hint" placeholder="Question text" type="text" />
+                                                </div>
+                                            </label>
+                                            <div className="end-survey__radio-buttons">
+                                                <button className="end-survey__radio-btn is-add" type="button">
+                                                    <i className="fa fa-plus-square" aria-hidden="true" />
+                                                </button>
+                                                <button className="end-survey__radio-btn is-remove" type="button">
+                                                    <i className="fa fa-trash-o" aria-hidden="true" />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="questions__list__item">
+                                            <label className="questions__list__label">
+                                                <input className="questions__list__input" type="radio" />
+                                                <div className="questions__list__text">
+                                                    <input className="questions__list__text-hint" placeholder="Question text" type="text" />
+                                                </div>
+                                            </label>
+                                            <div className="end-survey__radio-buttons">
+                                                <button className="end-survey__radio-btn is-add" type="button">
+                                                    <i className="fa fa-plus-square" aria-hidden="true" />
+                                                </button>
+                                                <button className="end-survey__radio-btn is-remove" type="button">
+                                                    <i className="fa fa-trash-o" aria-hidden="true" />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="questions__list__item">
+                                            <label className="questions__list__label">
+                                                <input className="questions__list__input" type="radio" />
+                                                <div className="questions__list__text">
+                                                    <input className="questions__list__text-hint" placeholder="Question text" type="text" />
+                                                </div>
+                                            </label>
+                                            <div className="end-survey__radio-buttons">
+                                                <button className="end-survey__radio-btn is-add" type="button">
+                                                    <i className="fa fa-plus-square" aria-hidden="true" />
+                                                </button>
+                                                <button className="end-survey__radio-btn is-remove" type="button">
+                                                    <i className="fa fa-trash-o" aria-hidden="true" />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="questions__list__item">
+                                            <label className="questions__list__label">
+                                                <input className="questions__list__input" type="radio" />
+                                                <div className="questions__list__text">
+                                                    <input className="questions__list__text-hint" placeholder="Question text" type="text" />
+                                                </div>
+                                            </label>
+                                            <div className="end-survey__radio-buttons">
+                                                <button className="end-survey__radio-btn is-add" type="button">
+                                                    <i className="fa fa-plus-square" aria-hidden="true" />
+                                                </button>
+                                                <button className="end-survey__radio-btn is-remove" type="button">
+                                                    <i className="fa fa-trash-o" aria-hidden="true" />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="questions__list__item">
+                                            <label className="questions__list__label">
+                                                <input className="questions__list__input" type="radio" />
+                                                <div className="questions__list__text">
+                                                    <input className="questions__list__text-hint" placeholder="Question text" type="text" />
+                                                </div>
+                                            </label>
+                                            <div className="end-survey__radio-buttons">
+                                                <button className="end-survey__radio-btn is-add" type="button">
+                                                    <i className="fa fa-plus-square" aria-hidden="true" />
+                                                </button>
+                                                <button className="end-survey__radio-btn is-remove" type="button">
+                                                    <i className="fa fa-trash-o" aria-hidden="true" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="end-survey__row-buttons">
+                                <button className="end-survey__row-btn is-remove" type="button">
+                                    <i className="fa fa-trash-o" aria-hidden="true" />
+                                    Remove row
+                                </button>
+                                <button className="end-survey__row-btn is-add" type="button">
+                                    <i className="fa fa-plus-circle" aria-hidden="true" />
+                                    Add row with items
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="author-block__image is-small">
+                        <div className="author-block__image-selector">
+                            <i className="fa fa-picture-o" aria-hidden="true" />
+                            <br/>
+                            <button type="button" className="author-block__image-selector__btn">+ Add image</button>
                         </div>
                     </div>
                 </div>
-                <div className="author-block__buttons">
-                    <button type="button" className="author-block__btn">
-                        Next
-                    </button>
+                <div className="author-toolbar is-right">
+                    <div className="author-toolbar__row">
+                        <div className="author-toolbar__row-holder">
+                            <input
+                                className="author-toolbar__field"
+                                type="text"
+                                placeholder='Paste URL of the image'
+                            />
+                            <button className="author-toolbar__btn cancel">
+                                <i className="fa fa-trash-o" aria-hidden="true" />
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         )
