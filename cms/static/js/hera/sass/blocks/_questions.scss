@@ -73,6 +73,10 @@ $question_color6: #96d063;
                 &.is-remove {
                     background: $question_color5;
                 }
+
+                i {
+                    pointer-events: none;
+                }
             }
         }
     }
