@@ -1,6 +1,4 @@
 import React from 'react';
-import WYSWYGComponent from "./WYSWYGComponent";
-
 
 export default class EndSurvey extends React.Component{
 

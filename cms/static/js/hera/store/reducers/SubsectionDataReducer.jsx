@@ -10,7 +10,8 @@ const initialState = {
         'introduction',
         'simulation',
         'questions',
-        'endSurvey'
+        'endSurvey',
+        'lessonSummary'
     ],
     questionsParentLocators: []
 };
