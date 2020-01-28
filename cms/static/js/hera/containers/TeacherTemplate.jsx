@@ -164,7 +164,7 @@ export class TeacherTemplate extends React.Component{
      * Click on "Edit Subsection"
      */
     handleEditSubsection(event) {
-        if (event.target.parentElement.className.includes('hera-edit-subsection')) {
+        if (event.target.parentElement && event.target.parentElement.className.includes('hera-edit-subsection')) {
             const locator = event.target.parentElement.dataset.locator;
             if (locator.includes('sequential')) {
                 this.props.questionsReset();
@@ -303,6 +303,9 @@ export class TeacherTemplate extends React.Component{
                                 save
                                 <span className="panel-btn__loader" />
                             </button>
+                            <button className="panel-btn is-cancel" type="button" onClick={this.closeBar}>
+                                close
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -336,7 +339,6 @@ export class TeacherTemplate extends React.Component{
                     questionAddNewProblemType={this.props.questionAddNewProblemType}
 
                 />
-                <button className="close-popup" onClick={this.closeBar} />
             </div>
         );
     }

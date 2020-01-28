@@ -55,6 +55,7 @@ export default class Question extends React.Component{
             ...activeQuestion,
             problemTypes: problemTypes
         });
+        setTimeout(this.scrollProblemTypes, 100);
     }
 
     addOptionItem(e) {
@@ -261,12 +262,24 @@ export default class Question extends React.Component{
         });
     }
 
+    scrollProblemTypes() {
+        // smooth scroll to the last added problemType;
+        const problemTypesHolder = document.getElementById('problem-types-holder');
+        problemTypesHolder.style.height = problemTypesHolder.scrollHeight + 'px';
+        problemTypesHolder.scrollTo({
+            top: problemTypesHolder.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+
     addProblemType() {
         this.props.questionAddNewProblemType(this.props.activeQuestionIndex);
+        setTimeout(this.scrollProblemTypes, 100);
     }
 
     removeProblemType(e) {
         this.props.questionRemoveProblemType(+this.props.activeQuestionIndex, +e.target.dataset.problemTypeIndex);
+        setTimeout(this.scrollProblemTypes, 100);
     }
 
     getOptions(problemType, index) {
@@ -383,21 +396,21 @@ export default class Question extends React.Component{
                     <div className="author-block__image">
                         {
                             this.state.showSimulation ? (
-                                <iframe src={activeQuestion.iframeUrl} frameborder="0"></iframe>
+                                <iframe src={activeQuestion.iframeUrl} frameborder="0" />
                             ) : (
-                                <Slider ref={c => (this.sliderImg = c)} {...this.settingsImg} className="author-block__image__slider">
+                                <div className="questions-images">
                                     {activeQuestion.imgUrls.map((imgUrl, ind) => {
                                         return (
                                             <img key={ind} src={imgUrl} alt=""/>
                                         )
                                     })}
-                                </Slider>
+                                </div>
                             )
                         }
                         {
                             activeQuestion.imgUrls.length === 0 && !this.state.showSimulation && (
                                 <div className="author-block__image-selector">
-                                    <i className="fa fa-picture-o" aria-hidden="true"></i>
+                                    <i className="fa fa-picture-o" aria-hidden="true" />
                                     <br/>
                                     <button type="button" onClick={this.addImage.bind(this)} className="author-block__image-selector__btn">
                                         + Add image
@@ -406,7 +419,7 @@ export default class Question extends React.Component{
                             )
                         }
                     </div>
-                    <div className="author-block__question">
+                    <div className="author-block__question" id="problem-types-holder">
                         <div className="text-editor__holder">
                             <SingleWYSIWYGComponent
                                 shouldReset={shouldResetEditor}
@@ -476,11 +489,19 @@ export default class Question extends React.Component{
                                             {this.getOptions(problemType, index)}
                                         </div>
                                         {this.getButtonAddOption(problemType.type, index)}
-                                        <div>
-                                            <button type="button" onClick={this.addProblemType.bind(this)}>+</button>
+                                        <div className="questions-toolbar-add">
+                                            {
+                                                index === activeQuestion.problemTypes.length - 1 && (
+                                                    <button className="questions-toolbar-add__btn is-add" type="button" onClick={this.addProblemType.bind(this)}>
+                                                        <i className="fa fa-plus-square" aria-hidden="true" />
+                                                    </button>
+                                                )
+                                            }
                                             {
                                                 activeQuestion.problemTypes.length > 1 && (
-                                                    <button type="button" data-problem-type-index={index} onClick={this.removeProblemType.bind(this)}>-</button>
+                                                    <button className="questions-toolbar-add__btn is-remove" type="button" data-problem-type-index={index} onClick={this.removeProblemType.bind(this)}>
+                                                        <i className="fa fa-trash" aria-hidden="true" />
+                                                    </button>
                                                 )
                                             }
                                         </div>
