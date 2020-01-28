@@ -594,7 +594,14 @@ class CourseAboutSearchIndexer(object):
             'content': {},
             'image_url': course_image_url(course),
             'catalog_visibility': course.catalog_visibility,
-            'price': course.price
+            'price': course.price,
+            'learning_format': course.learning_format,
+            'qualification_level': course.qualification_level,
+            'course_availability': course.course_availability,
+            'number_of_homeworks': course.number_of_homeworks,
+            'number_of_tests': course.number_of_tests,
+            'number_of_videos': course.number_of_videos,
+            'number_of_lections': course.number_of_lections,
         }
 
         # load data for all of the 'about' modules for this course into a dictionary

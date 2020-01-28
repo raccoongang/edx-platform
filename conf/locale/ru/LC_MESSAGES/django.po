@@ -2183,6 +2183,7 @@ msgstr ""
 "Настраивается для подраздела."
 
 #: common/lib/xmodule/xmodule/capa_base.py
+#: cms/templates/settings.html lms/templates/courseware/course_about.html
 msgid "Always"
 msgstr "Всегда"
 
@@ -11562,6 +11563,18 @@ msgstr "Настройки"
 #: cms/templates/settings.html lms/templates/courseware/course_about.html
 msgid "Course Number"
 msgstr "Номер курса"
+
+#: cms/templates/settings.html lms/templates/courseware/course_about.html
+msgid "Online"
+msgstr "Онлайн"
+
+#: cms/templates/settings.html lms/templates/courseware/course_about.html
+msgid "From zero"
+msgstr "С нуля"
+
+#: cms/templates/settings.html lms/templates/courseware/course_about.html
+msgid "ru"
+msgstr "рус."
 
 #: cms/templates/course_info.html
 #: openedx/features/course_experience/templates/course_experience/course-updates-fragment.html
