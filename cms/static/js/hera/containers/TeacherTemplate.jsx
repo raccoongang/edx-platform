@@ -203,6 +203,8 @@ export class TeacherTemplate extends React.Component{
                                             v.data = data;
                                         }
                                     });
+                                } else if (response.data && response.data.blockType && response.data.blockType === 'lessonSummary') {
+                                    this.props.lessonSummaryLoaded(data);
                                 }
                                 if (theLast) {
                                     let questions = questionsParentLocators.map((question) => {
@@ -299,10 +301,13 @@ export class TeacherTemplate extends React.Component{
                             </li>
                             <li className="nav-panel-list__item">
                                 <SwitchComponent
+                                    changeHandler="lessonSummaryChanged"
+                                    storeName='lessonSummary'
                                     switchComponent={this.switchComponent}
+                                    changeTitle={this.changeTitle}
                                     isActive={this.state.activeComponent === this.props.lessonSummary.blockType}
                                     blockType={this.props.lessonSummary.blockType}
-                                    title="Lesson Summary"/>
+                                    title={this.props.lessonSummary.title}/>
                             </li>
                         </ul>
                         <div className="panel-btn-holder">
@@ -344,6 +349,9 @@ export class TeacherTemplate extends React.Component{
                     questionChanged={this.props.questionChanged}
                     questionRemoveProblemType={this.props.questionRemoveProblemType}
                     questionAddNewProblemType={this.props.questionAddNewProblemType}
+
+                    lessonSummary={this.props.lessonSummary}
+                    lessonSummaryChanged={this.props.lessonSummaryChanged}
 
                 />
             </div>
@@ -467,7 +475,13 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         },
         questionAddNewProblemType: (questionIndex) => {
             return dispatch({type: actionTypes.QUESTION_ADD_NEW_PROBLEM_TYPE, questionIndex: questionIndex});
-        }
+        },
+        lessonSummaryLoaded: (data) => {
+            return dispatch({type: actionTypes.LESSON_SUMMARY_LOADED, data: data});
+        },
+        lessonSummaryChanged: (data) => {
+            return dispatch({type: actionTypes.LESSON_SUMMARY_CHANGED, data: data});
+        },
     };
 };
 

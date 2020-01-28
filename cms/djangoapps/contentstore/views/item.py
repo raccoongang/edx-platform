@@ -128,7 +128,8 @@ def create_xblock_manipulations(xblock_data, created_block, request, position=No
             'introduction': 'hera_pages',
             'simulation': 'hera_pages',
             'question': 'question',
-            'title': 'hera_title'
+            'title': 'hera_title',
+            'lessonSummary': 'lesson_summary',
         }
         unit = create_xblock(
             parent_locator=unicode(created_block.location),
