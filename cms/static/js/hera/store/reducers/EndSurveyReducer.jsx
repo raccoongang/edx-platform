@@ -11,7 +11,7 @@ const initialState = {
         ]
     },
     heading: '',
-    imgUrl: 'https://qrius.com/wp-content/uploads/2019/07/cute.jpeg',
+    imgUrl: '',
     questions: [
         {
             "type": "options",
