@@ -140,7 +140,7 @@ $survey_color7: #96d063;
     .questions__wrapper {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: left;
     }
 
     .questions__wrapper input[type="text"].questions__list__text-hint {
