@@ -6,7 +6,7 @@ export default class LessonSummary extends React.Component{
         this.props.lessonSummaryChanged({
             ...this.props.lessonSummary,
             imgUrl: e.target.value
-        })
+        });
     }
 
     render() {
