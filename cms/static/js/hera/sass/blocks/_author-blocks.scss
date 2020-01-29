@@ -1,15 +1,3 @@
-$author_color1: #2b6797;
-$author_color2: #ccc;
-$author_color3: #ff0000;
-$author_color4: #f2f2f2;
-$author_color5: #666;
-$author_color6: #fff;
-$author_color7: #fff;
-$author_color8: #008000;
-
-$author_height: 32px;
-$author_radius: 4px;
-
 .author-holder {
     box-sizing: border-box;
     position: relative;
@@ -75,6 +63,8 @@ $author_radius: 4px;
 
     &__content {
         display: flex;
+        align-items: initial;
+        justify-content: space-between;
         position: relative;
         margin: 0 0 20px;
 
@@ -131,15 +121,17 @@ $author_radius: 4px;
     }
 
     &__image {
+        box-sizing: border-box;
         border: 1px solid $author_color2;
         position: relative;
         margin-right: 12px;
-        width: 660px;
-        height: 646px;
+        width: $block-image__width;
+        height: $block-question__height;
         overflow: scroll;
 
         &.is-small {
-            width: 235px;
+            box-sizing: border-box;
+            width: $block-image__width-small;
             margin-right: 0;
         }
 
@@ -206,6 +198,7 @@ $author_radius: 4px;
             width: 100%;
             transform: translate(-50%, -50%);
             text-align: center;
+            z-index: 1;
 
             .fa-picture-o {
                 font-size: 96px;
@@ -245,11 +238,11 @@ $author_radius: 4px;
 
     &__question {
         box-sizing: border-box;
-        width: 325px;
+        width: $block-question__width;
         border: 1px solid $author_color2;
         padding: 12px;
         position: relative;
-        max-height: 648px;
+        max-height: $block-question__height;
         overflow: scroll;
 
         &.is-large {
@@ -271,7 +264,7 @@ $author_radius: 4px;
         &__slider {
             &-item {
                 position: relative;
-                padding-bottom: 24px;
+                padding-bottom: 28px;
 
                 .mce-tinymce {
                     width: 99% !important;
@@ -288,7 +281,7 @@ $author_radius: 4px;
                 position: absolute;
                 right: 10px;
                 bottom: 12px;
-                background: $author_color7;
+                background: transparent;
 
                 &__prev,
                 &__next {
@@ -357,9 +350,10 @@ $author_radius: 4px;
         line-height: 1;
         position: absolute;
         left: 12px;
-        bottom: 14px;
+        bottom: 12px;
         box-sizing: border-box;
         display: inline-block;
+        height: 25px;
         border: none;
         box-shadow: none;
         background: none;
@@ -381,10 +375,10 @@ $author_radius: 4px;
         &.remove {
             position: absolute;
             left: 20px;
-            bottom: 2px;
+            bottom: -2px;
             background: none;
             color: $author_color2;
-            height: 18px;
+            height: 25px;
             padding: 0 8px;
             font-size: 18px;
             line-height: 1;
@@ -410,7 +404,7 @@ $author_radius: 4px;
     }
 
     &__row {
-        width: 662px;
+        width: $block-image__width;
         margin: 0 0 12px;
 
         &:last-child {
@@ -424,6 +418,16 @@ $author_radius: 4px;
 
         &.is-full {
             width: 100%;
+        }
+
+        &.is-small {
+            width: $block-image__width-small;
+
+            input[type="text"] {
+                width: 100%;
+                min-width: auto !important;
+                margin: 0;
+            }
         }
     }
 

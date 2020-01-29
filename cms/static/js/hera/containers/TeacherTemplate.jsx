@@ -311,7 +311,7 @@ export class TeacherTemplate extends React.Component{
                                 <span className="panel-btn__loader" />
                             </button>
                             <button className="panel-btn is-cancel" type="button" onClick={this.closeBar}>
-                                close
+                                cancel
                             </button>
                         </div>
                     </div>

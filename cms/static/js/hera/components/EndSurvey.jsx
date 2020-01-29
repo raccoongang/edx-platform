@@ -133,16 +133,13 @@ export default class EndSurvey extends React.Component{
                     </div>
                 </div>
                 <div className="author-toolbar is-right">
-                    <div className="author-toolbar__row">
+                    <div className="author-toolbar__row is-small">
                         <div className="author-toolbar__row-holder">
                             <input
                                 className="author-toolbar__field"
                                 type="text"
                                 placeholder='Paste URL of the image'
                             />
-                            <button className="author-toolbar__btn cancel">
-                                <i className="fa fa-trash-o" aria-hidden="true" />
-                            </button>
                         </div>
                     </div>
                 </div>
