@@ -1,31 +1,37 @@
 import React from 'react';
-import partial from '../utils/partial';
-import WYSWYGComponent from "./WYSWYGComponent";
 
 
 class SurveyAnswer extends React.Component {
     render() {
-        const {dataKey, isLast, answer} = this.props;
+        const {
+            dataKey,
+            isLast,
+            answer,
+            handleQuestionAnswerChange,
+            handleQuestionAnswerAdd,
+            hideTrashbox,
+            handleQuestionAnswerRemove
+        } = this.props;
         return <div className="questions__list__item">
             <label className="questions__list__label">
                 <div className="questions__list__text is-single">
                     <input className="questions__list__text-hint"
                         placeholder="Answer text"
                         type="text"
-                        onChange={(event) => this.props.handleQuestionAnswerChange(event, dataKey)}
+                        onChange={(event) => handleQuestionAnswerChange(event, dataKey)}
                         value={answer}/>
                 </div>
             </label>
             <div className="end-survey__radio-buttons">
                 {isLast && <button className="end-survey__radio-btn is-add"
                                    type="button"
-                                   onClick={(event) => this.props.handleQuestionAnswerAdd(event, dataKey)}>
+                                   onClick={(event) => handleQuestionAnswerAdd(event, dataKey)}>
                     <i className="fa fa-plus-square" aria-hidden="true"/>
                 </button>}
-                {!this.props.hideTrashbox && (
+                {!hideTrashbox && (
                     <button className="end-survey__radio-btn is-remove"
                             type="button"
-                            onClick={(event) => this.props.handleQuestionAnswerRemove(event, dataKey)}>
+                            onClick={(event) => handleQuestionAnswerRemove(event, dataKey)}>
                         <i className="fa fa-trash-o" aria-hidden="true"/>
                     </button>
                 )}
@@ -60,7 +66,7 @@ class SurveyQuestion extends React.Component {
                 if (ind === idx) {
                     return answer;
                 }
-                return item
+                return item;
             }),
             questionText: this.props.questionText,
             type: this.props.type
@@ -86,17 +92,16 @@ class SurveyQuestion extends React.Component {
     }
 
     render() {
-        const {possibleAnswers, questionText} = this.props;
+        const {possibleAnswers, questionText, removeHandler, index, isConfidence} = this.props;
         const hasAnswers = !!(possibleAnswers.length);
         return (
             <div className="end-survey__field">
-                
                 <div className="end-survey__field-title">
                     <label className="end-survey__field-title__label">
-                        {this.props.isConfidence ? 'Confidence Question ' : 'Survey Question'}
+                        {isConfidence ? 'Confidence Question ' : 'Survey Question'}
                         {
-                            !this.props.isConfidence && (
-                            <button class="end-survey__row-btn is-remove" type="button" onClick={() => this.props.removeHandler(this.props.index)}>
+                            !isConfidence && (
+                            <button class="end-survey__row-btn is-remove" type="button" onClick={() => removeHandler(index)}>
                                 <i class="fa fa-trash-o" aria-hidden="true"></i>
                                 Remove question
                             </button>
@@ -138,6 +143,8 @@ export default class EndSurvey extends React.Component {
         this.endSurveyConfidenceChanged = this.endSurveyConfidenceChanged.bind(this);
         this.addEndSurveyQuestion = this.addEndSurveyQuestion.bind(this);
         this.removeEndSurveyQuestion = this.removeEndSurveyQuestion.bind(this);
+        this.changeImgUrl = this.changeImgUrl.bind(this);
+        this.changeHeading = this.changeHeading.bind(this);
     }
 
     endSurveyQuestionChanged(index, data) {
@@ -149,7 +156,7 @@ export default class EndSurvey extends React.Component {
                         ...data
                     };
                 }
-                return item
+                return item;
             })
         });
     }
@@ -158,7 +165,7 @@ export default class EndSurvey extends React.Component {
         this.props.endSurveyChanged({
             ...this.props.endSurvey,
             confidence: data
-        })
+        });
     }
 
     addEndSurveyQuestion() {
@@ -169,31 +176,30 @@ export default class EndSurvey extends React.Component {
                 questionText: '',
                 possibleAnswers: ['']
             }])
-        })
+        });
     }
 
     removeEndSurveyQuestion(index) {
-        console.log(index);
         this.props.endSurveyChanged({
             ...this.props.endSurvey,
             questions: this.props.endSurvey.questions.filter((item, ind) => {
                 return ind !== index;
             })
-        })
+        });
     }
 
     changeHeading(event) {
         this.props.endSurveyChanged({
             ...this.props.endSurvey,
             heading: event.target.value
-        })
+        });
     }
 
     changeImgUrl(event) {
         this.props.endSurveyChanged({
             ...this.props.endSurvey,
             imgUrl: event.target.value
-        })
+        });
     }
 
     render() {
@@ -209,7 +215,7 @@ export default class EndSurvey extends React.Component {
                                            placeholder="Enter title of the page"
                                            type="text"
                                            value={heading}
-                                           onChange={this.changeHeading.bind(this)}/>
+                                           onChange={this.changeHeading}/>
                                 </div>
                             </div>
                         </div>
@@ -261,7 +267,7 @@ export default class EndSurvey extends React.Component {
                                 type="text"
                                 placeholder='Paste URL of the image'
                                 value={imgUrl}
-                                onChange={this.changeImgUrl.bind(this)}
+                                onChange={this.changeImgUrl}
                             />
                         </div>
                     </div>
