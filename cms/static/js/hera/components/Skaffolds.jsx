@@ -192,7 +192,7 @@ export default class Scaffolds extends React.Component{
         const scaffoldSettingsModeChanged = this.scaffoldsSettingsMode !== this.state.scaffoldsSettingsMode;
         this.scaffoldsSettingsMode = this.state.scaffoldsSettingsMode;
         return (
-            <div>
+            <div className="scaffolds-holder">
                 <div className="scaffolds-modal">
                     <div className="scaffolds-modal__content">
                         <h2 className="scaffolds-modal__title">
