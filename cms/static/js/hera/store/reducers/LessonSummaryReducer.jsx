@@ -1,4 +1,4 @@
-import {LESSON_SUMMARY_LOADED, LESSON_SUMMARY_CHANGED} from '../actionTypes';
+import {LESSON_SUMMARY_LOADED, LESSON_SUMMARY_CHANGED, LESSON_SUMMARY_NEW} from '../actionTypes';
 
 const initialState = {
     imgUrl: '',
@@ -20,6 +20,8 @@ const LessonSummary = function (state=initialState, action) {
                 ...state,
                 ...action.data
             };
+        case LESSON_SUMMARY_NEW:
+            return initialState;
         default:
             return state;
     }

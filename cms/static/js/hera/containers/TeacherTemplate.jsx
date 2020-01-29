@@ -61,7 +61,10 @@ export class TeacherTemplate extends React.Component{
         this.props.subsectionDataChanged(target.dataset.parent, target.dataset.category, target.dataset.defaultName);
         this.props.introductionNew();
         this.props.simulationNew();
+        this.props.questionsReset();
         this.props.titleNew();
+        this.props.endSurveyNew();
+        this.props.lessonSummaryNew();
         this.setState({
             activeComponent: DEFAULT_COMPONENT,
             doSaveNewSubsection: true
@@ -237,7 +240,6 @@ export class TeacherTemplate extends React.Component{
     handleNewSubsection(event) {
         const target = event.target;
         if (event.target.className.includes('button-new') && target.dataset.category === 'sequential') {
-            this.props.questionsReset();
             event.preventDefault();
             const rootElement = document.getElementById('hera-popup');
             rootElement.classList.add("popup-open");
@@ -322,7 +324,7 @@ export class TeacherTemplate extends React.Component{
                                 <span className="panel-btn__loader" />
                             </button>
                             <button className="panel-btn is-cancel" type="button" onClick={this.closeBar}>
-                                close
+                                cancel
                             </button>
                         </div>
                     </div>
@@ -491,11 +493,17 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         endSurveyLoaded: (data) => {
             return dispatch({type: actionTypes.END_SURVEY_LOADED, data: data});
         },
+        endSurveyNew: () => {
+            return dispatch({type: actionTypes.END_SURVEY_NEW});
+        },
         lessonSummaryLoaded: (data) => {
             return dispatch({type: actionTypes.LESSON_SUMMARY_LOADED, data: data});
         },
         lessonSummaryChanged: (data) => {
             return dispatch({type: actionTypes.LESSON_SUMMARY_CHANGED, data: data});
+        },
+        lessonSummaryNew: () => {
+            return dispatch({type: actionTypes.LESSON_SUMMARY_NEW});
         },
     };
 };

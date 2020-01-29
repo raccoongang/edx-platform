@@ -1,4 +1,4 @@
-import {END_SURVEY_CHANGED, END_SURVEY_LOADED} from '../actionTypes';
+import {END_SURVEY_CHANGED, END_SURVEY_LOADED, END_SURVEY_NEW} from '../actionTypes';
 
 const initialState = {
     blockType: 'endSurvey',
@@ -44,14 +44,15 @@ const initialState = {
 const EndSurvey = function(state=initialState, action) {
     switch(action.type) {
         case END_SURVEY_CHANGED:
-            // return state
             return Object.assign({}, state, {
                 ...action.data
             });
         case END_SURVEY_LOADED:
             return {
                 ...action.data
-            }
+            };
+        case END_SURVEY_NEW:
+            return initialState;
         default:
             return state;
     }

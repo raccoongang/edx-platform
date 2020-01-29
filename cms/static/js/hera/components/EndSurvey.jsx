@@ -263,9 +263,6 @@ export default class EndSurvey extends React.Component {
                                 value={imgUrl}
                                 onChange={this.changeImgUrl.bind(this)}
                             />
-                            {/* <button className="author-toolbar__btn cancel">
-                                <i className="fa fa-trash-o" aria-hidden="true"/>
-                            </button> */}
                         </div>
                     </div>
                 </div>
