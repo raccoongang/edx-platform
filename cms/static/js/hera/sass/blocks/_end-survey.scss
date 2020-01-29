@@ -7,6 +7,14 @@ $survey_color6: #ff0000;
 $survey_color7: #96d063;
 
 .end-survey {
+    &__img {
+        height: auto !important;
+        position: absolute !important;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+    }
+
     &__row {
         margin: 0 0 24px;
 
@@ -28,7 +36,7 @@ $survey_color7: #96d063;
             background: none;
             cursor: pointer;
             padding: 0;
-            font-size: 16px;
+            font-size: 12px;
             line-height: 1;
             opacity: .65;
             transition: all .3s ease-in-out;
@@ -59,13 +67,15 @@ $survey_color7: #96d063;
     }
 
     &__field {
-        margin: 0 0 18px;
+        margin: 0 0 32px;
 
         &-title {
             margin: 0 0 12px;
 
             &__label {
-                display: block;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
                 font-weight: bold;
                 margin: 0 0 8px;
             }
@@ -97,7 +107,7 @@ $survey_color7: #96d063;
         align-items: center;
         justify-content: space-around;
         position: absolute;
-        right: 8px;
+        right: 12px;
         top: 50%;
         transform: translateY(-50%);
     }
@@ -145,7 +155,7 @@ $survey_color7: #96d063;
 
     .questions__wrapper input[type="text"].questions__list__text-hint {
         min-width: auto;
-        width: 85px;
+        width: 120px;
         font-size: 10px;
         padding: 4px;
     }

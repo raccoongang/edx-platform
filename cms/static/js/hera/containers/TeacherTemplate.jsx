@@ -203,6 +203,9 @@ export class TeacherTemplate extends React.Component{
                                             v.data = data;
                                         }
                                     });
+                                } else if (response.data && response.data.blockType && response.data.blockType === 'endSurvey') {
+                                    // save data into Simulation component
+                                    this.props.endSurveyLoaded(data);
                                 }
                                 if (theLast) {
                                     let questions = questionsParentLocators.map((question) => {
@@ -292,10 +295,13 @@ export class TeacherTemplate extends React.Component{
                             </li>
                             <li className="nav-panel-list__item">
                                 <SwitchComponent
+                                    changeTitle={this.changeTitle}
                                     switchComponent={this.switchComponent}
                                     isActive={this.state.activeComponent === this.props.endSurvey.blockType}
                                     blockType={this.props.endSurvey.blockType}
-                                    title="End Survey"/>
+                                    title={this.props.endSurvey.title}
+                                    changeHandler="endSurveyChanged"
+                                    storeName='endSurvey'/>
                             </li>
                         </ul>
                         <div className="panel-btn-holder">
@@ -337,6 +343,9 @@ export class TeacherTemplate extends React.Component{
                     questionChanged={this.props.questionChanged}
                     questionRemoveProblemType={this.props.questionRemoveProblemType}
                     questionAddNewProblemType={this.props.questionAddNewProblemType}
+
+                    endSurvey={this.props.endSurvey}
+                    endSurveyChanged={this.props.endSurveyChanged}
 
                 />
             </div>
@@ -459,6 +468,13 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         },
         questionAddNewProblemType: (questionIndex) => {
             return dispatch({type: actionTypes.QUESTION_ADD_NEW_PROBLEM_TYPE, questionIndex: questionIndex});
+        },
+        // endSurvey
+        endSurveyChanged: (data) => {
+            return dispatch({type: actionTypes.END_SURVEY_CHANGED, data: data});
+        },
+        endSurveyLoaded: (data) => {
+            return dispatch({type: actionTypes.END_SURVEY_LOADED, data: data});
         }
     };
 };
