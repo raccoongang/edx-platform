@@ -130,6 +130,7 @@ def create_xblock_manipulations(xblock_data, created_block, request, position=No
             'question': 'question',
             'title': 'hera_title',
             'endSurvey': 'end_survey',
+            'lessonSummary': 'lesson_summary',
         }
         unit = create_xblock(
             parent_locator=unicode(created_block.location),

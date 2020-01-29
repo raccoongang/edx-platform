@@ -1,10 +1,8 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import ReactDOM from 'react-dom';
 
 import { connect } from 'react-redux';
 
-import {getData, addSubsection, createUnit, createIntroductionXBlock, saveIntroductionXBlockData, getXblockData, changeUnitName} from '../utils/api';
+import {getData, getXblockData} from '../utils/api';
 
 import * as actionTypes from '../store/actionTypes';
 
@@ -15,6 +13,7 @@ import Simulation from '../components/Simulation';
 import Question from '../components/Question';
 import LeftSidebarQuestions from './LeftSidebarQuestions';
 import EndSurvey from '../components/EndSurvey';
+import LessonSummary from "../components/LessonSummary";
 import SwitchComponent from '../components/SwitchComponent';
 
 import '../sass/main.scss';
@@ -26,6 +25,7 @@ const ActiveComponentsMap = {
     'simulation': Simulation,
     'question': Question,
     'endSurvey': EndSurvey,
+    'lessonSummary': LessonSummary,
 };
 
 const DEFAULT_COMPONENT = 'title';
@@ -206,6 +206,8 @@ export class TeacherTemplate extends React.Component{
                                 } else if (response.data && response.data.blockType && response.data.blockType === 'endSurvey') {
                                     // save data into Simulation component
                                     this.props.endSurveyLoaded(data);
+                                } else if (response.data && response.data.blockType && response.data.blockType === 'lessonSummary') {
+                                    this.props.lessonSummaryLoaded(data);
                                 }
                                 if (theLast) {
                                     let questions = questionsParentLocators.map((question) => {
@@ -303,6 +305,16 @@ export class TeacherTemplate extends React.Component{
                                     changeHandler="endSurveyChanged"
                                     storeName='endSurvey'/>
                             </li>
+                            <li className="nav-panel-list__item">
+                                <SwitchComponent
+                                    changeHandler="lessonSummaryChanged"
+                                    storeName='lessonSummary'
+                                    switchComponent={this.switchComponent}
+                                    changeTitle={this.changeTitle}
+                                    isActive={this.state.activeComponent === this.props.lessonSummary.blockType}
+                                    blockType={this.props.lessonSummary.blockType}
+                                    title={this.props.lessonSummary.title}/>
+                            </li>
                         </ul>
                         <div className="panel-btn-holder">
                             <button type="button" className={`panel-btn ${this.state.isSaving ? 'is-pending' : ''}`} onClick={this.save.bind(this)}>
@@ -346,6 +358,8 @@ export class TeacherTemplate extends React.Component{
 
                     endSurvey={this.props.endSurvey}
                     endSurveyChanged={this.props.endSurveyChanged}
+                    lessonSummary={this.props.lessonSummary}
+                    lessonSummaryChanged={this.props.lessonSummaryChanged}
 
                 />
             </div>
@@ -361,7 +375,8 @@ const mapStateToProps = (store) => {
         simulation: store.simulation,
         questions: store.questions,
         subsectionData: store.subsectionData,
-        endSurvey: store.endSurvey
+        endSurvey: store.endSurvey,
+        lessonSummary: store.lessonSummary,
     };
 };
 
@@ -475,7 +490,13 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         },
         endSurveyLoaded: (data) => {
             return dispatch({type: actionTypes.END_SURVEY_LOADED, data: data});
-        }
+        },
+        lessonSummaryLoaded: (data) => {
+            return dispatch({type: actionTypes.LESSON_SUMMARY_LOADED, data: data});
+        },
+        lessonSummaryChanged: (data) => {
+            return dispatch({type: actionTypes.LESSON_SUMMARY_CHANGED, data: data});
+        },
     };
 };
 
