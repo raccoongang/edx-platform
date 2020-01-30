@@ -299,16 +299,6 @@ export class TeacherTemplate extends React.Component{
                             </li>
                             <li className="nav-panel-list__item">
                                 <SwitchComponent
-                                    changeHandler="lessonSummaryChanged"
-                                    storeName='lessonSummary'
-                                    switchComponent={this.switchComponent}
-                                    changeTitle={this.changeTitle}
-                                    isActive={this.state.activeComponent === this.props.lessonSummary.blockType}
-                                    blockType={this.props.lessonSummary.blockType}
-                                    title={this.props.lessonSummary.title}/>
-                            </li>
-                            <li className="nav-panel-list__item">
-                                <SwitchComponent
                                     changeTitle={this.changeTitle}
                                     switchComponent={this.switchComponent}
                                     isActive={this.state.activeComponent === this.props.endSurvey.blockType}
@@ -316,6 +306,16 @@ export class TeacherTemplate extends React.Component{
                                     title={this.props.endSurvey.title}
                                     changeHandler="endSurveyChanged"
                                     storeName='endSurvey'/>
+                            </li>
+                            <li className="nav-panel-list__item">
+                                <SwitchComponent
+                                    changeHandler="lessonSummaryChanged"
+                                    storeName='lessonSummary'
+                                    switchComponent={this.switchComponent}
+                                    changeTitle={this.changeTitle}
+                                    isActive={this.state.activeComponent === this.props.lessonSummary.blockType}
+                                    blockType={this.props.lessonSummary.blockType}
+                                    title={this.props.lessonSummary.title}/>
                             </li>
                         </ul>
                         <div className="panel-btn-holder">
