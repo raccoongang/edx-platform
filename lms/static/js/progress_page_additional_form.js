@@ -48,8 +48,6 @@ $("#profile-form-save-action").on("click", function (e) {
     var isCheckEmptyFields = checkEmptyFields();
 
     if(!isCheckEmptyFields || isCheckEmptyFields === undefined) {
-
-        console.log(ajaxData);
         $.ajax({
             url: formUrl,
             method: "PATCH",
