@@ -13,7 +13,8 @@ $("#profile-form-save-action").on("click", function (e) {
     }
 
     function checkEmptyFields() {
-        var errorCount = 0;
+        var errorCount = 0,
+            termsOfService =  form.find("#terms-of-service");
 
         form.find("div[class*='u-field-']").removeClass("progress-form-error");
         form.find(".u-field-message-help").show();
@@ -28,6 +29,15 @@ $("#profile-form-save-action").on("click", function (e) {
             }
         }
 
+        if(termsOfService.attr('checked') === undefined) {
+            if (!$('.terms-of-service-error').length) {
+                $('<div class="terms-of-service-error">This field is required</div>').insertAfter(termsOfService);
+            }
+            return true;
+        } else {
+            $('.terms-of-service-error').remove();
+        }
+
         if(errorCount) {
             form.find(".form-incomplete-error").text("All fields are required");
             $(".progress-form-modal .modal-body").first().animate({scrollTop: 0}, "slow");
@@ -35,7 +45,11 @@ $("#profile-form-save-action").on("click", function (e) {
         }
     }
 
-    if(!checkEmptyFields() || checkEmptyFields() === undefined) {
+    var isCheckEmptyFields = checkEmptyFields();
+
+    if(!isCheckEmptyFields || isCheckEmptyFields === undefined) {
+
+        console.log(ajaxData);
         $.ajax({
             url: formUrl,
             method: "PATCH",
