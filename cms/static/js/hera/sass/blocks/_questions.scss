@@ -205,6 +205,15 @@
                 transition: all .3s ease-in-out;
                 transform: translateY(-50%);
             }
+
+            &.is-single {
+                padding: 0;
+
+                &:before,
+                &:after {
+                    display: none;
+                }
+            }
         }
 
         &__add-item {

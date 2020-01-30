@@ -61,7 +61,10 @@ export class TeacherTemplate extends React.Component{
         this.props.subsectionDataChanged(target.dataset.parent, target.dataset.category, target.dataset.defaultName);
         this.props.introductionNew();
         this.props.simulationNew();
+        this.props.questionsReset();
         this.props.titleNew();
+        this.props.endSurveyNew();
+        this.props.lessonSummaryNew();
         this.setState({
             activeComponent: DEFAULT_COMPONENT,
             doSaveNewSubsection: true
@@ -203,6 +206,11 @@ export class TeacherTemplate extends React.Component{
                                             v.data = data;
                                         }
                                     });
+                                } else if (response.data && response.data.blockType && response.data.blockType === 'endSurvey') {
+                                    // save data into Simulation component
+                                    this.props.endSurveyLoaded(data);
+                                } else if (response.data && response.data.blockType && response.data.blockType === 'lessonSummary') {
+                                    this.props.lessonSummaryLoaded(data);
                                 }
                                 if (theLast) {
                                     let questions = questionsParentLocators.map((question) => {
@@ -232,7 +240,6 @@ export class TeacherTemplate extends React.Component{
     handleNewSubsection(event) {
         const target = event.target;
         if (event.target.className.includes('button-new') && target.dataset.category === 'sequential') {
-            this.props.questionsReset();
             event.preventDefault();
             const rootElement = document.getElementById('hera-popup');
             rootElement.classList.add("popup-open");
@@ -292,17 +299,23 @@ export class TeacherTemplate extends React.Component{
                             </li>
                             <li className="nav-panel-list__item">
                                 <SwitchComponent
+                                    changeTitle={this.changeTitle}
                                     switchComponent={this.switchComponent}
                                     isActive={this.state.activeComponent === this.props.endSurvey.blockType}
                                     blockType={this.props.endSurvey.blockType}
-                                    title="End Survey"/>
+                                    title={this.props.endSurvey.title}
+                                    changeHandler="endSurveyChanged"
+                                    storeName='endSurvey'/>
                             </li>
                             <li className="nav-panel-list__item">
                                 <SwitchComponent
+                                    changeHandler="lessonSummaryChanged"
+                                    storeName='lessonSummary'
                                     switchComponent={this.switchComponent}
+                                    changeTitle={this.changeTitle}
                                     isActive={this.state.activeComponent === this.props.lessonSummary.blockType}
                                     blockType={this.props.lessonSummary.blockType}
-                                    title="Lesson Summary"/>
+                                    title={this.props.lessonSummary.title}/>
                             </li>
                         </ul>
                         <div className="panel-btn-holder">
@@ -344,6 +357,11 @@ export class TeacherTemplate extends React.Component{
                     questionChanged={this.props.questionChanged}
                     questionRemoveProblemType={this.props.questionRemoveProblemType}
                     questionAddNewProblemType={this.props.questionAddNewProblemType}
+
+                    endSurvey={this.props.endSurvey}
+                    endSurveyChanged={this.props.endSurveyChanged}
+                    lessonSummary={this.props.lessonSummary}
+                    lessonSummaryChanged={this.props.lessonSummaryChanged}
 
                 />
             </div>
@@ -467,7 +485,26 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         },
         questionAddNewProblemType: (questionIndex) => {
             return dispatch({type: actionTypes.QUESTION_ADD_NEW_PROBLEM_TYPE, questionIndex: questionIndex});
-        }
+        },
+        // endSurvey
+        endSurveyChanged: (data) => {
+            return dispatch({type: actionTypes.END_SURVEY_CHANGED, data: data});
+        },
+        endSurveyLoaded: (data) => {
+            return dispatch({type: actionTypes.END_SURVEY_LOADED, data: data});
+        },
+        endSurveyNew: () => {
+            return dispatch({type: actionTypes.END_SURVEY_NEW});
+        },
+        lessonSummaryLoaded: (data) => {
+            return dispatch({type: actionTypes.LESSON_SUMMARY_LOADED, data: data});
+        },
+        lessonSummaryChanged: (data) => {
+            return dispatch({type: actionTypes.LESSON_SUMMARY_CHANGED, data: data});
+        },
+        lessonSummaryNew: () => {
+            return dispatch({type: actionTypes.LESSON_SUMMARY_NEW});
+        },
     };
 };
 

@@ -57,9 +57,14 @@ export default class PagesBaseComponent extends React.Component {
     }
 
     removeContent(e) {
+        const target = e.target;
+        target.classList.add('is-disabled');
         this.props[this.removeContentHandler]({
             index: +e.target.dataset.index
         })
+        setTimeout(()=>{
+            target.classList.remove('is-disabled');
+        }, 300);
     }
 
     addImage() {

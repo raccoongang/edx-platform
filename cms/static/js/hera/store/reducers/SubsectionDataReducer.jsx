@@ -11,7 +11,7 @@ const initialState = {
         'simulation',
         'questions',
         'endSurvey',
-        'lessonSummary'
+        'lessonSummary',
     ],
     questionsParentLocators: []
 };

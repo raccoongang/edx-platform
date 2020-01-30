@@ -3523,4 +3523,5 @@ HERA_ADVANCED_MODULES = [
     'hera_title',
     'lesson_complete',
     'lesson_summary',
+    'end_survey',
 ]

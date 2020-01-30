@@ -403,6 +403,22 @@
         justify-content: flex-end;
     }
 
+    &.is-end {
+        justify-content: flex-end;
+
+        .author-toolbar__row {
+            width: 100%;
+        }
+
+        .author-toolbar__row-holder {
+            justify-content: flex-end;
+        }
+
+        input[type="text"] {
+            margin: 0;
+        }
+    }
+
     &__row {
         width: $block-image__width;
         margin: 0 0 12px;
