@@ -270,7 +270,7 @@
                                 model: userAccountModel,
                                 title: gettext('Phone'),
                                 valueAttribute: 'phone',
-                                helpMessage: gettext('Phone number'),
+                                helpMessage: gettext('Select your phone number'),
                                 persistChanges: persistChanges
                             })
                         },
