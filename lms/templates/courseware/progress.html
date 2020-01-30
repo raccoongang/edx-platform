@@ -308,6 +308,10 @@ username = get_enterprise_learner_generic_name(request) or student.username
             <form action="#" id="progress-form" data-url="${accounts_api_url}">
                 <div class="form-incomplete-error"></div>
                 <div class="wrapper-account-settings"></div>
+                <label class="terms-of-service-wrapper">
+                    ${_("I agree to the ")}<a href="https://courses-test.phc.org.ua/honor">${_("Terms of Service")}</a>
+                    <input type="checkbox" name="terms-of-service" id="terms-of-service" required>
+                </label>
             </form>
             <div class="actions">
                 <button type="button" class="btn btn-primary" id="profile-form-save-action">Save changes</button>
