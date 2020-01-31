@@ -101,8 +101,8 @@ class SurveyQuestion extends React.Component {
                         {isConfidence ? 'Confidence Question ' : 'Survey Question'}
                         {
                             !isConfidence && (
-                            <button class="end-survey__row-btn is-remove" type="button" onClick={() => removeHandler(index)}>
-                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                            <button className="end-survey__row-btn is-remove" type="button" onClick={() => removeHandler(index)}>
+                                <i className="fa fa-trash-o" aria-hidden="true"></i>
                                 Remove question
                             </button>
                             )
