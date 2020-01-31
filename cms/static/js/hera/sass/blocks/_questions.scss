@@ -9,6 +9,93 @@
         }
     }
 
+    &-title {
+        margin: 22px 0 0;
+
+        &__input {
+            position: relative;
+
+            textarea {
+                box-sizing: border-box;
+                display: block;
+                width: 95%;
+                font-size: 14px;
+                border: none;
+                border-bottom: 1px solid $question_color2;
+                box-shadow: none;
+                padding: 0 32px 8px 2px;
+                background: none;
+                height: 40px;
+                line-height: 1.3;
+                border-radius: 0;
+                resize: none;
+                transition: all .3s ease-in-out;
+
+                &:active,
+                &:focus {
+                    box-shadow: none;
+                    outline: none;
+                    border-color: $question_color1;
+                }
+            }
+        }
+
+        &__btn-remove {
+            position: absolute;
+            right: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-top: -6px;
+            box-sizing: border-box;
+            display: inline-block;
+            border: none;
+            box-shadow: none;
+            background: none;
+            outline: none;
+            text-align: center;
+            color: $question_color5;
+            padding: 0;
+            text-transform: initial;
+            font-weight: normal;
+            font-size: 16px;
+            opacity: .5;
+            transition: all .3s ease-in-out;
+
+            &:hover {
+                opacity: 1;
+            }
+
+            i {
+                pointer-events: none;
+            }
+        }
+
+        &__buttons {
+            text-align: left;
+
+            .btn-add {
+                box-sizing: border-box;
+                display: inline-block;
+                border: none;
+                box-shadow: none;
+                background: none;
+                outline: none;
+                text-align: center;
+                color: $question_color4;
+                padding: 0;
+                text-transform: initial;
+                font-weight: normal;
+                font-size: 16px;
+                line-height: 1;
+                transition: all .3s ease-in-out;
+
+                &:hover {
+                    color: $question_color6;
+                }
+            }
+        }
+    }
+
     &-toolbar {
         display: flex;
         align-items: flex-start;
@@ -115,7 +202,7 @@
         &__toolbar {
             background: $question_color1;
             position: relative;
-            margin: 20px 0 22px;
+            margin: 12px 0 22px;
             padding: 8px;
 
             &__btn {

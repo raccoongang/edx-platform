@@ -431,6 +431,19 @@ export default class Question extends React.Component{
                             activeQuestion.problemTypes.map((problemType, index) => {
                                 return (
                                     <div className={`questions__wrapper is-${problemType.type}`}>
+                                        <div className="questions-title">
+                                            <div className="questions-title__input">
+                                                <textarea placeholder="Name of the question" />
+                                                <button type="button" className="questions-title__btn-remove">
+                                                    <i className="fa fa-trash" aria-hidden="true" />
+                                                </button>
+                                            </div>
+                                            <div className="questions-title__buttons">
+                                                <button type="button" className="btn-add">
+                                                    + add title
+                                                </button>
+                                            </div>
+                                        </div>
                                         <div className="questions__list__toolbar">
                                             <button
                                                 title='Radio'
