@@ -1,30 +1,276 @@
 import React from 'react';
 
 
-export default class EndSurvey extends React.Component{
+class SurveyAnswer extends React.Component {
+    render() {
+        const {
+            dataKey,
+            isLast,
+            answer,
+            handleQuestionAnswerChange,
+            handleQuestionAnswerAdd,
+            hideTrashbox,
+            handleQuestionAnswerRemove
+        } = this.props;
+        return <div className="questions__list__item">
+            <label className="questions__list__label">
+                <div className="questions__list__text is-single">
+                    <input className="questions__list__text-hint"
+                        placeholder="Answer text"
+                        type="text"
+                        onChange={(event) => handleQuestionAnswerChange(event, dataKey)}
+                        value={answer}/>
+                </div>
+            </label>
+            <div className="end-survey__radio-buttons">
+                {isLast && <button className="end-survey__radio-btn is-add"
+                                   type="button"
+                                   onClick={(event) => handleQuestionAnswerAdd(event, dataKey)}>
+                    <i className="fa fa-plus-square" aria-hidden="true"/>
+                </button>}
+                {!hideTrashbox && (
+                    <button className="end-survey__radio-btn is-remove"
+                            type="button"
+                            onClick={(event) => handleQuestionAnswerRemove(event, dataKey)}>
+                        <i className="fa fa-trash-o" aria-hidden="true"/>
+                    </button>
+                )}
+            </div>
+        </div>;
+    }
+};
+
+
+class SurveyQuestion extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleQuestionTextChange = this.handleQuestionTextChange.bind(this);
+        this.handleQuestionAnswerChange = this.handleQuestionAnswerChange.bind(this);
+        this.handleQuestionAnswerAdd = this.handleQuestionAnswerAdd.bind(this);
+        this.handleQuestionAnswerRemove = this.handleQuestionAnswerRemove.bind(this);
+    }
+
+    handleQuestionTextChange(event) {
+        const questionText = event.target.value;
+        this.props.changeHandler(this.props.index, {
+            type: this.props.type,
+            possibleAnswers: this.props.possibleAnswers,
+            questionText
+        });
+    }
+
+    handleQuestionAnswerChange(event, idx) {
+        const answer = event.target.value;
+        this.props.changeHandler(this.props.index, {
+            possibleAnswers: this.props.possibleAnswers.map((item, ind) => {
+                if (ind === idx) {
+                    return answer;
+                }
+                return item;
+            }),
+            questionText: this.props.questionText,
+            type: this.props.type
+        });
+    }
+
+    handleQuestionAnswerAdd(event, idx) {
+        this.props.changeHandler(this.props.index, {
+            possibleAnswers: this.props.possibleAnswers.concat(['']),
+            questionText: this.props.questionText,
+            type: this.props.type
+        });
+    }
+
+    handleQuestionAnswerRemove(event, idx) {
+        this.props.changeHandler(this.props.index, {
+            questionText: this.props.questionText,
+            possibleAnswers: this.props.possibleAnswers.filter((item, ind) => {
+                return ind !== idx;
+            }),
+            type: this.props.type
+        });
+    }
 
     render() {
+        const {possibleAnswers, questionText, removeHandler, index, isConfidence} = this.props;
+        const hasAnswers = !!(possibleAnswers.length);
+        return (
+            <div className="end-survey__field">
+                <div className="end-survey__field-title">
+                    <label className="end-survey__field-title__label">
+                        {isConfidence ? 'Confidence Question ' : 'Survey Question'}
+                        {
+                            !isConfidence && (
+                            <button class="end-survey__row-btn is-remove" type="button" onClick={() => removeHandler(index)}>
+                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                Remove question
+                            </button>
+                            )
+                        }
+                    </label>
+                    <input className="end-survey__field-title__input"
+                        type="text"
+                        value={questionText}
+                        onChange={this.handleQuestionTextChange}
+                    />
+                </div>
+                <div className="end-survey__field-radios">
+                    <div className="questions__wrapper is-radio">
+                        {hasAnswers && possibleAnswers.map((item, idx) => (
+                            <SurveyAnswer
+                                key={idx}
+                                dataKey={idx}
+                                isLast={idx === (possibleAnswers.length - 1)}
+                                hideTrashbox={possibleAnswers.length === 1}
+                                answer={item}
+                                handleQuestionAnswerChange={this.handleQuestionAnswerChange}
+                                handleQuestionAnswerAdd={this.handleQuestionAnswerAdd}
+                                handleQuestionAnswerRemove={this.handleQuestionAnswerRemove}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
+
+export default class EndSurvey extends React.Component {
+    constructor(props) {
+        super(props);
+        this.endSurveyQuestionChanged = this.endSurveyQuestionChanged.bind(this);
+        this.endSurveyConfidenceChanged = this.endSurveyConfidenceChanged.bind(this);
+        this.addEndSurveyQuestion = this.addEndSurveyQuestion.bind(this);
+        this.removeEndSurveyQuestion = this.removeEndSurveyQuestion.bind(this);
+        this.changeImgUrl = this.changeImgUrl.bind(this);
+        this.changeHeading = this.changeHeading.bind(this);
+    }
+
+    endSurveyQuestionChanged(index, data) {
+        this.props.endSurveyChanged({
+            ...this.props.endSurvey,
+            questions: this.props.endSurvey.questions.map((item, idx) => {
+                if (idx === index) {
+                    return {
+                        ...data
+                    };
+                }
+                return item;
+            })
+        });
+    }
+
+    endSurveyConfidenceChanged(index, data) {
+        this.props.endSurveyChanged({
+            ...this.props.endSurvey,
+            confidence: data
+        });
+    }
+
+    addEndSurveyQuestion() {
+        this.props.endSurveyChanged({
+            ...this.props.endSurvey,
+            questions: this.props.endSurvey.questions.concat([{
+                type: 'options',
+                questionText: '',
+                possibleAnswers: ['']
+            }])
+        });
+    }
+
+    removeEndSurveyQuestion(index) {
+        this.props.endSurveyChanged({
+            ...this.props.endSurvey,
+            questions: this.props.endSurvey.questions.filter((item, ind) => {
+                return ind !== index;
+            })
+        });
+    }
+
+    changeHeading(event) {
+        this.props.endSurveyChanged({
+            ...this.props.endSurvey,
+            heading: event.target.value
+        });
+    }
+
+    changeImgUrl(event) {
+        this.props.endSurveyChanged({
+            ...this.props.endSurvey,
+            imgUrl: event.target.value
+        });
+    }
+
+    render() {
+        const {questions, confidence, heading, imgUrl} = this.props.endSurvey;
         return (
             <div className="author-block__wrapper">
                 <div className="author-block__content">
-                    <div className="author-block__image">
-                        <img
-                        src="https://d1icd6shlvmxi6.cloudfront.net/gsc/THB1PC/52/ec/b3/52ecb386d0d140898c3a931c5caaccba/images/scenario_page/u620.png?token=937ef3394f9bbd5177382de1fe4cbf677b95681186e42c8b44b00217fe8c6834"
-                        alt=""/>
+                    <div className="author-block__question is-large">
+                        <div className="end-survey__row">
+                            <div className="end-survey__field">
+                                <div className="end-survey__field-title">
+                                    <input className="end-survey__field-title__input"
+                                           placeholder="Enter title of the page"
+                                           type="text"
+                                           value={heading}
+                                           onChange={this.changeHeading}/>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="end-survey__row">
+                            {!!(questions.length) && questions.map((item, idx) => {
+                                return (
+                                        <SurveyQuestion
+                                            key={idx}
+                                            index={idx}
+                                            removeHandler={this.removeEndSurveyQuestion}
+                                            changeHandler={this.endSurveyQuestionChanged}
+                                            {...item}/>
+                                    )
+                            })}
+
+                            <div className="end-survey__row-buttons">
+                                <button className="end-survey__row-btn is-add" type="button" onClick={this.addEndSurveyQuestion}>
+                                    <i className="fa fa-plus-circle" aria-hidden="true"/>
+                                    Add a question
+                                </button>
+                            </div>
+                        </div>
+                        <div className="end-survey__row">
+                            <SurveyQuestion
+                                index={1}
+                                isConfidence={true}
+                                changeHandler={this.endSurveyConfidenceChanged}
+                                {...confidence}
+                                />
+                        </div>
                     </div>
-                    <div className="author-block__question">
-                        <div className="author-block__question-title">
-                            End Servey
-                        </div>
-                        <div className="author-block__question-text">
-                            Imagine that you are standing on a cliff, and you've just been hooked up to a bungee cord. The instructor gives you a pat on the back and then it's time to jump. What will happen?
-                        </div>
+                    <div className="author-block__image is-small">
+                        {
+                            imgUrl ? (
+                                <img className="end-survey__img" src={imgUrl} alt=""/>
+                            ) : (
+                                <div className="author-block__image-selector">
+                                    <i className="fa fa-picture-o" aria-hidden="true"/>
+                                </div>
+                            )
+                        }
                     </div>
                 </div>
-                <div className="author-block__buttons">
-                    <button type="button" className="author-block__btn">
-                        Next
-                    </button>
+                <div className="author-toolbar is-end">
+                    <div className="author-toolbar__row">
+                        <div className="author-toolbar__row-holder">
+                            <input
+                                className="author-toolbar__field"
+                                type="text"
+                                placeholder='Paste URL of the image'
+                                value={imgUrl}
+                                onChange={this.changeImgUrl}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         )

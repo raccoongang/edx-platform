@@ -1,9 +1,8 @@
-$scaffolds_color1: #2b6797;
-$scaffolds_color2: #fff;
-$scaffolds_color3: #96d063;
-$scaffolds_color4: #ff0000;
-
 .scaffolds {
+    &-holder {
+        width: $block-question__width;
+    }
+
     &__wrapper {
         display: flex;
         align-items: center;
@@ -14,6 +13,9 @@ $scaffolds_color4: #ff0000;
         font-size: 12px;
         box-sizing: border-box;
         display: inline-block;
+        width: 32%;
+        max-width: 32%;
+        height: 32px;
         border: none;
         box-shadow: none;
         background: $scaffolds_color1;
@@ -24,8 +26,6 @@ $scaffolds_color4: #ff0000;
         padding: 6px 8px;
         transition: all .3s ease-in-out;
         position: relative;
-        width: 32%;
-        max-width: 32%;
     }
 
     &-modal {
@@ -49,9 +49,11 @@ $scaffolds_color4: #ff0000;
         &__content {
             max-width: 720px;
             min-width: 720px;
+            max-height: 470px;
             background: $scaffolds_color2;
             padding: 15px;
             border-radius: 4px;
+            overflow-y: scroll;
 
             &-additional {
                 display: flex;
@@ -91,7 +93,7 @@ $scaffolds_color4: #ff0000;
         }
 
         &__buttons {
-            margin: 12px 0 0;
+            margin: 12px 0;
             text-align: right;
         }
 

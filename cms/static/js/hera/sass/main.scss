@@ -1,3 +1,6 @@
+// Variables for the blocks
+@import "variables";
+
 // CMS overrides
 @import "blocks/cms-override";
 
@@ -12,3 +15,9 @@
 
 // Scaffolds buttons
 @import "blocks/scaffolds";
+
+// End survey
+@import "blocks/end-survey";
+
+// Lesson summary
+@import "blocks/lesson-summary";

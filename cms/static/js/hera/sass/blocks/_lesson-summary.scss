@@ -1,0 +1,27 @@
+.field {
+    &__label {
+        display: block;
+        font-weight: 600;
+        font-size: 16px;
+        margin: 0 0 12px;
+    }
+
+    input[type="text"] {
+        display: block;
+        width: 100%;
+        border: 1px solid $lesson-summary_color2;
+        box-shadow: none;
+        padding: 4px 8px;
+        background: none;
+        height: auto;
+        font-size: 16px;
+        line-height: 1;
+        border-radius: 0;
+        transition: all .3s ease-in-out;
+
+        &:active,
+        &:focus {
+            border-color: $lesson-summary_color1;
+        }
+    }
+}
