@@ -26858,3 +26858,9 @@ msgid ""
 "A new revision was created: Merge between Revision #%(r1)d and Revision "
 "#%(r2)d"
 msgstr "Нова версія була створена: злиття версій #%(r1)d і #%(r2)d"
+
+msgid "Update profile info and Request Certificate"
+msgstr "Оновити інформацію профілю та запросити сертифікат"
+
+msgid "I agree to the "
+msgstr "Я погоджуюсь з "

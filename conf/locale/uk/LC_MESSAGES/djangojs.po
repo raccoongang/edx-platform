@@ -11844,3 +11844,79 @@ msgstr ""
 #: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 msgid "Use Current Transcript"
 msgstr "Використати Поточний Транскрипт"
+
+msgid "Date of Birth"
+msgstr "Дата народження"
+
+msgid "Select your date of birth"
+msgstr "Вкажіть дату народження"
+
+
+msgid "Phone"
+msgstr "Телефон"
+
+msgid "Select your phone number"
+msgstr "Вкажіть контактний телефон"
+
+msgid "Additional Email"
+msgstr "Додатковий E-mail"
+
+msgid "Add your additional Email."
+msgstr "Вкажіть ваш додатковий E-mail"
+
+msgid "Region"
+msgstr "Місце проживання"
+
+msgid "The region where you live."
+msgstr "Вкажіть ваше місце проживання"
+
+msgid "Position"
+msgstr "Тип посади"
+
+msgid "Select type of your position."
+msgstr "Вкажіть тип вашої посади"
+
+msgid "Select your position."
+msgstr "Вкажіть вашу посаду"
+
+msgid "Select your specialization."
+msgstr "Вкажіть вашу спеціалізацію"
+
+msgid "Sub Position"
+msgstr "Посада"
+
+msgid "Specialization"
+msgstr "Спеціалізація"
+
+msgid "Diploma ID"
+msgstr "Диплом про освіту"
+
+msgid "Write your diploma number"
+msgstr "Вкажіть серію та номер диплома про освіту"
+
+msgid "Other Position"
+msgstr "Посада"
+
+msgid "First Name"
+msgstr "Ім'я"
+
+msgid "Add your first name."
+msgstr "Вкажіть своє ім'я."
+
+msgid "Second Name"
+msgstr "По батькові"
+
+msgid "Add your second name."
+msgstr "Вкажіть своє по батькові."
+
+msgid "Last Name"
+msgstr "Прізвище"
+
+msgid "Add your last name."
+msgstr "Вкажіть своє прізвище."
+
+msgid "Update profile info and Request Certificate"
+msgstr "Оновити інформацію профілю та запросити сертифікат"
+
+msgid "I agree to the "
+msgstr "Я погоджуюсь з "

@@ -15,7 +15,7 @@
 
 <% if (selectSubPositions && selectSubPositions.length) { %>
     <div class="u-field-value field">
-        <label class="u-field-title field-label" for="u-field-select-sub-position">Sub Position</label>
+        <label class="u-field-title field-label" for="u-field-select-sub-position"><%- gettext("Sub Position")  %></label>
         <select name="select" id="u-field-select-sub-position" aria-describedby="u-field-help-message-<%- id %>">
             <option value="">-----</option>
             <% _.each(selectSubPositions, function(selectOption) { %>
@@ -31,7 +31,7 @@
 
     <% if (specialization && specialization.length) { %>
         <div class="u-field-value field">
-            <label class="u-field-title field-label" for="u-field-select-spec">Specialization</label>
+            <label class="u-field-title field-label" for="u-field-select-spec"><%- gettext("Specialization") %></label>
             <select name="select" multiple id="u-field-select-spec" aria-describedby="u-field-help-message-<%- id %>">
                 <% _.each(specialization, function(selectOption) { %>
                     <option value="<%- selectOption[0] %>" <% if (selectedSpecializations.indexOf(selectOption[0]) != -1) { %> selected <% } %> ><%- selectOption[1] %></option>
@@ -48,12 +48,12 @@
     <% if (hasDiploma) { %>
         <div class="u-field u-field-text u-field-<%- id %> editable-always mode-edit">
         <div class="u-field-value field">
-            <label class="u-field-title field-label" for="field-input-diploma-number">Diploma ID</label>
+            <label class="u-field-title field-label" for="field-input-diploma-number"><%- gettext("Diploma ID") %></label>
             <input class="field-input input-text" maxlength="11" type="text" id="field-input-diploma-number" title="Put your diploma number" aria-describedby="u-field-message-help-diploma-number" name="input" value="<%- diplomaNumber %>" />
         </div>
         <div class="u-field-message u-field-message__custom" id="u-field-message-<%- id %>">
             <span class="u-field-message-notification" aria-live="polite"></span>
-            <span class="u-field-message-help" id="u-field-help-message-<%- id %>">Write your diploma number.</span>
+            <span class="u-field-message-help" id="u-field-help-message-<%- id %>"><%- gettext("Write your diploma number.") %></span>
         </div>
         </div>
     <% } %>
@@ -61,12 +61,12 @@
 <% } else { %>
     <div class="u-field u-field-text u-field-other-position editable-always mode-edit">
     <div class="u-field-value field">
-        <label class="u-field-title field-label" for="field-input-other-position">Other Position</label>
+        <label class="u-field-title field-label" for="field-input-other-position"><%- gettext("Other Position") %></label>
         <input class="field-input input-text" type="text" id="field-input-other-position" title="Input field for other position" aria-describedby="u-field-message-help-other-position" name="input" value="<%- otherPosition %>" />
     </div>
     <div class="u-field-message u-field-message__custom" id="u-field-message-other-position">
         <span class="u-field-message-notification" aria-live="polite"></span>
-        <span class="u-field-message-help" id="u-field-help-message-other-position">Write your position.</span>
+        <span class="u-field-message-help" id="u-field-help-message-other-position"><%- gettext("Write your position.") %></span>
     </div>
     </div>
 <% } %>
