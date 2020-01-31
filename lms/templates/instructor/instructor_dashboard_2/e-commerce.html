@@ -146,13 +146,25 @@ import pytz
          %endif
         </div>
       </div><!-- end wrap -->
+      %else:
+        <!-- Section needed for js constructor correct work -->
+          <div class="running-tasks-container action-type-container hidden">
+            <hr>
+            <h3 class="hd hd-3">${_("Pending Tasks")}</h3>
+            <div class="running-tasks-section">
+              <p>${_("The status for any active tasks appears in a table below.")} </p>
+              <br/>
+              <div class="running-tasks-table" data-endpoint="${ section_data['list_instructor_tasks_url'] }"></div>
+            </div>
+            <div class="no-pending-tasks-message"></div>
+          </div>
       %endif
       %if section_data['coupons_enabled'] and not section_data['is_ecommerce_course']:
       <div class="wrap">
          <h3 class="hd hd-3">${_("Coupon Code List")}</h3>
          <div>
 
-            <span class="csv_tip">${_("Download a .csv file of all coupon codes for this course.")}
+           <span class="csv_tip">${_("Download a .csv file of all coupon codes for this course.")}
                 <input class="add blue-button" type="button" name="download-coupon-codes-csv" value="${_("Download Coupon Codes")}" data-endpoint="${ section_data['download_coupon_codes_url'] }" data-csv="true">
             </span>
 
