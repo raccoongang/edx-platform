@@ -1,2 +1,18 @@
-/* CSS for HeraTitleXBlock */
+img {
+    display: block;
+    width: 100%;
+}
 
+.title-block-heading {
+    font-size: 24px;
+    font-weight: bold;
+    position: relative;
+    margin: 0 0 18px;
+}
+
+.title-block-content {
+    top: 15px;
+    font-size: 16px;
+    line-height: 1.5;
+    position: relative;
+}
