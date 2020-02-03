@@ -323,11 +323,13 @@
                     // input mask for 'phone' field
                     $('#field-input-phone').inputmask("(999) 999 99 99");
                     // datepicker for 'date of birth' field
-                    $('#field-input-date_of_birth').attr('autocomplete','off').datepicker({
-                        format: 'yyyy-mm-dd',
-                        autoHide: true,
-                        endDate: new Date()
-                    });
+                    $('#field-input-date_of_birth')
+                        .attr('placeholder', gettext('dd-mm-yyyy'))
+                        .attr('autocomplete','off').datepicker({
+                            format: 'dd-mm-yyyy',
+                            autoHide: true,
+                            endDate: new Date()
+                        });
                 },
                 error: showLoadingError
             });

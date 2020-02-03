@@ -163,7 +163,7 @@ class UserReadOnlySerializer(serializers.Serializer):
                     "additional_email": user_profile.additional_email,
                     "region": user_profile.region,
                     "date_of_birth": user_profile.date_of_birth.strftime(
-                        "%Y-%m-%d"
+                        "%d-%m-%Y"
                     ) if user_profile.date_of_birth is not None else None,
                 }
             )
@@ -211,6 +211,7 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
     requires_parental_consent = serializers.SerializerMethodField()
     language_proficiencies = LanguageProficiencySerializer(many=True, required=False)
     social_links = SocialLinkSerializer(many=True, required=False)
+    date_of_birth = serializers.DateField(format="%d-%m-%Y", input_formats=["%d-%m-%Y"], required=False, allow_null=True)
 
     class Meta(object):
         model = UserProfile
