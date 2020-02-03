@@ -16,6 +16,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    'change select': 'updateModel',
                    'click .remove-course-introduction-video': 'removeVideo',
                    'focus #course-overview': 'codeMirrorize',
+                   'focus #course-overview-teacher': 'codeMirrorizeTeacher',
                    'mouseover .timezone': 'updateTime',
         // would love to move to a general superclass, but event hashes don't inherit in backbone :-(
                    'focus :input': 'inputFocus',
@@ -84,6 +85,8 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
 
                    this.$el.find('#' + this.fieldToSelectorMap['overview']).val(this.model.get('overview'));
                    this.codeMirrorize(null, $('#course-overview')[0]);
+                   this.$el.find('#' + this.fieldToSelectorMap['overview_teacher']).val(this.model.get('overview_teacher'));
+                   this.codeMirrorizeTeacher(null, $('#course-overview-teacher')[0]);
 
                    if (this.model.get('title') !== '') {
                        this.$el.find('#' + this.fieldToSelectorMap.title).val(this.model.get('title'));
@@ -160,6 +163,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    'enrollment_start': 'enrollment-start',
                    'enrollment_end': 'enrollment-end',
                    'overview': 'course-overview',
+                   'overview_teacher': 'course-overview-teacher',
                    'title': 'course-title',
                    'subtitle': 'course-subtitle',
                    'duration': 'course-duration',
@@ -368,6 +372,35 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        });
                        cmTextArea = this.codeMirrors[thisTarget.id].getInputField();
                        cmTextArea.setAttribute('id', 'course-overview-cm-textarea');
+                   }
+               },
+               codeMirrorsTeacher: {},
+               codeMirrorizeTeacher: function(e, forcedTarget) {
+                   var thisTarget, cachethis, field, cmTextArea;
+                   if (forcedTarget) {
+                       thisTarget = forcedTarget;
+                       thisTarget.id = $(thisTarget).attr('id');
+                   } else if (e !== null) {
+                       thisTarget = e.currentTarget;
+                   } else {
+                       return;
+                   }
+
+                   if (!this.codeMirrorsTeacher[thisTarget.id]) {
+                       cachethis = this;
+                       field = this.selectorToField[thisTarget.id];
+                       this.codeMirrorsTeacher[thisTarget.id] = CodeMirror.fromTextArea(thisTarget, {
+                           mode: 'text/html', lineNumbers: true, lineWrapping: true});
+                       this.codeMirrorsTeacher[thisTarget.id].on('change', function(mirror) {
+                           mirror.save();
+                           cachethis.clearValidationErrors();
+                           var newVal = mirror.getValue();
+                           if (cachethis.model.get(field) != newVal) {
+                               cachethis.setAndValidate(field, newVal);
+                           }
+                       });
+                       cmTextArea = this.codeMirrorsTeacher[thisTarget.id].getInputField();
+                       cmTextArea.setAttribute('id', 'course-overview-teacher-cm-textarea');
                    }
                },
 

@@ -155,6 +155,7 @@ def get_course_about_section(request, course, section_key):
 
     Valid keys:
     - overview
+    - overview_teacher
     - short_description
     - description
     - key_dates (includes start, end, exams, etc)
@@ -187,6 +188,7 @@ def get_course_about_section(request, course, section_key):
         'faq',
         'more_info',
         'overview',
+        'overview_teacher',
         'effort',
         'end_date',
         'prerequisites',
