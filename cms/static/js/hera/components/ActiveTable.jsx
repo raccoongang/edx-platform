@@ -143,16 +143,26 @@ export default class ActiveTable extends React.PureComponent{
 
     removeColumn(col_idx) {
         let {columns, rows} = this.getData();
-        let colName;
+        if (col_idx === columns.length -1) {
+            rows = rows.map((row, r_idx) => {
+                delete row[col_idx];
+                return row;
+            });
+        } else { // move all indexes backward
+            rows = rows.map((row, r_idx) => {
+                let newRow = {};
+                for (let i in Object.keys(row)) {
+                    if (+i > col_idx) {
+                        newRow[+i-1] = row[+i];
+                    } else {
+                        newRow[+i] = row[+i];
+                    }
+                }
+                return newRow;
+            });
+        }
         columns = columns.filter((col, c_idx) => {
-            if (col_idx === c_idx) {
-                colName = col;
-            }
             return col_idx !== c_idx;
-        });
-        rows = rows.map((row, r_idx) => {
-            delete row[col_idx];
-            return row;
         });
         this.props.saveHandler({
             columns, rows
@@ -175,34 +185,32 @@ export default class ActiveTable extends React.PureComponent{
         return (
             <div className="table-wrapper">
                 <table>
-                    <thead>
-                        <tr>
-                            {
-                                columns.map((column, idx) => {
-                                    return  (
-                                        <TableCell key={idx} type={column.type}>
-                                            <input
-                                                type="text"
-                                                value={column.value}
-                                                onBlur={(event)=>{this.changeCellType(event, idx)}}
-                                                onKeyPress={(event)=>{this.handleKeyPress(event, idx)}}
-                                                onChange={(event)=>{this.changeCell(event, idx)}}
-                                            />
-                                            <div className="table-buttons">
-                                                <button type="button" className="table-buttons__btn is-add" onClick={() => {this.addColumn(idx+1)}}>+</button>
-                                                {
-                                                    columns.length > 1 && (
-                                                        <button type="button" className="table-buttons__btn is-remove" onClick={() => {this.removeColumn(idx)}}>-</button>
-                                                    )
-                                                }
-                                            </div>
-                                        </TableCell>
-                                    )
-                                })
-                            }
-                        </tr>
-                    </thead>
                     <tbody>
+                    <tr>
+                        {
+                            columns.map((column, idx) => {
+                                return  (
+                                    <TableCell key={idx} type={column.type}>
+                                        <input
+                                            type="text"
+                                            value={column.value}
+                                            onBlur={(event)=>{this.changeCellType(event, idx)}}
+                                            onKeyPress={(event)=>{this.handleKeyPress(event, idx)}}
+                                            onChange={(event)=>{this.changeCell(event, idx)}}
+                                        />
+                                        <div className="table-buttons">
+                                            <button type="button" className="table-buttons__btn is-add" onClick={() => {this.addColumn(idx+1)}}>+</button>
+                                            {
+                                                columns.length > 1 && (
+                                                    <button type="button" className="table-buttons__btn is-remove" onClick={() => {this.removeColumn(idx)}}>-</button>
+                                                )
+                                            }
+                                        </div>
+                                    </TableCell>
+                                )
+                            })
+                        }
+                    </tr>
                     {
                         rows && rows.map((row, r_idx) => {
                             return (
@@ -236,7 +244,7 @@ export default class ActiveTable extends React.PureComponent{
                             )
                         })
                     }
-                    <tr className="is-add-row">
+                    {/* <tr className="is-add-row">
                         {
                             columns && (
                                 <td>
@@ -253,7 +261,7 @@ export default class ActiveTable extends React.PureComponent{
                                 )
                             })
                         }
-                    </tr>
+                    </tr> */}
                     </tbody>
                 </table>
             </div>

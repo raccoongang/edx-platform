@@ -33,6 +33,7 @@ const SimulationReducer = function(state=initialState, action) {
                 sliderBar: state.sliderBar.map((slide, ind) => {
                     if (ind === index) {
                         return {
+                            ...slide,
                             content: action.data.content
                         };
                     }

@@ -241,8 +241,9 @@ export default class Scaffolds extends React.Component{
                             {
                                 this.getScaffoldAdvancedImgUrls().map((src, ind) => {
                                     return (
-                                        <div className="author-toolbar__row-holder" key={ind}>
+                                        <div className="author-toolbar__row-holder">
                                             <input
+                                                key={ind}
                                                 className="author-toolbar__field"
                                                 type="text"
                                                 placeholder='Paste URL of the image'

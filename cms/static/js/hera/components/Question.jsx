@@ -322,7 +322,6 @@ export default class Question extends React.Component{
 
     getOptions(problemType, index) {
         const type = problemType.type === 'select' ? 'radio' : problemType.type;
-        // const tableData = problemType.tableData === undefined ? {rows: [{0: ''}], columns: [{title: ''}]} : problemType.tableData;
         if (type === 'table') {
             return (
                 <div className="questions__list number">
@@ -373,10 +372,10 @@ export default class Question extends React.Component{
         }
         return problemType.options.map((option, ind) => {
             return  (
-                <div className="questions__list__item" key={ind}>
+                <div className="questions__list__item" key={ind+index}>
                     <label className="questions__list__label">
                         <input
-                            key={ind}
+                            key={ind+index}
                             data-index={ind}
                             data-problem-type-index={index}
                             onChange={this.changeOptionCorrectness}
@@ -386,7 +385,7 @@ export default class Question extends React.Component{
                         <div className="questions__list__text">
                             <input
                                 onChange={this.changeOptionTitle}
-                                key={ind}
+                                key={ind+index}
                                 data-index={ind}
                                 data-problem-type-index={index}
                                 className="questions__list__text-hint"
@@ -476,8 +475,8 @@ export default class Question extends React.Component{
                             activeQuestion.problemTypes.map((problemType, index) => {
                                 return (
                                     <div className={`questions__wrapper is-${problemType.type}`} key={index}>
-                                    <input type="text" key={this.props.activeQuestionIndex + index} value={problemType.title} onChange={(event) => {this.changeProblemTypeTitle(event, index)}}/>
-                                        <div className="questions__list__toolbar">
+                                    {/* <input type="text" key={this.props.activeQuestionIndex + index} value={problemType.title} onChange={(event) => {this.changeProblemTypeTitle(event, index)}}/> */}
+                                        <div key={index} className="questions__list__toolbar">
                                             <button
                                                 title='Radio'
                                                 type="button"

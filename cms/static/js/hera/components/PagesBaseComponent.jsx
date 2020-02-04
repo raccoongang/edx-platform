@@ -1,6 +1,7 @@
 import React from 'react';
 import Slider from "react-slick";
 
+import ActiveTable from './ActiveTable';
 import WYSWYGComponent from './WYSWYGComponent';
 
 export default class PagesBaseComponent extends React.Component {
@@ -10,10 +11,21 @@ export default class PagesBaseComponent extends React.Component {
         this.next = this.next.bind(this);
         this.previous = this.previous.bind(this);
         this.saveContent = this.saveContent.bind(this);
+        this.removeContent = this.removeContent.bind(this);
+        this.addImage = this.addImage.bind(this);
+        this.addContent = this.addContent.bind(this);
+        this.changeImage = this.changeImage.bind(this);
+        this.removeImage = this.removeImage.bind(this);
+        this.changeIframeUrl = this.changeIframeUrl.bind(this);
+        this.cancelIframeUrl = this.cancelIframeUrl.bind(this);
+        this.addTable = this.addTable.bind(this);
+        this.removeTable = this.removeTable.bind(this);
+
         this.sliderSpeed = 500;
         this.state = {
             activeSlideIndex: 0
         };
+
     }
 
     changeIframeUrl(e) {
@@ -116,6 +128,48 @@ export default class PagesBaseComponent extends React.Component {
         });
     }
 
+    changeTableData(tableData, sliderIndex) {
+        const data = this.props[this.componentType];
+        this.props[this.changeHandlerName]({
+            ...data,
+            sliderBar: data.sliderBar.map((item, idx) => {
+                if (idx === sliderIndex) {
+                    item.tableData = tableData;
+                    return item;
+                }
+                return item;
+            })
+        });
+    }
+
+    addTable(sliderIndex) {
+        const data = this.props[this.componentType];
+        this.props[this.changeHandlerName]({
+            ...data,
+            sliderBar: data.sliderBar.map((item, idx) => {
+                if (idx === sliderIndex) {
+                    item.tableData = {};
+                    return item;
+                }
+                return item;
+            })
+        });
+    }
+
+    removeTable(sliderIndex) {
+        const data = this.props[this.componentType];
+        this.props[this.changeHandlerName]({
+            ...data,
+            sliderBar: data.sliderBar.map((item, idx) => {
+                if (idx === sliderIndex) {
+                    delete item['tableData'];
+                    return item;
+                }
+                return item;
+            })
+        });
+    }
+
     render() {
         const settingsImg = {
             arrows: true,
@@ -157,7 +211,7 @@ export default class PagesBaseComponent extends React.Component {
                         }
                         {
                             data.iframeUrl && (
-                                <iframe src={data.iframeUrl} frameborder="0"></iframe>
+                                <iframe src={data.iframeUrl} frameBorder="0"></iframe>
                             )
                         }
                         {
@@ -165,7 +219,7 @@ export default class PagesBaseComponent extends React.Component {
                                 <div className="author-block__image-selector">
                                     <i className="fa fa-picture-o" aria-hidden="true"></i>
                                     <br/>
-                                    <button type="button" onClick={this.addImage.bind(this)} className="author-block__image-selector__btn">
+                                    <button type="button" onClick={this.addImage} className="author-block__image-selector__btn">
                                         + Add image
                                     </button>
                                     <button type="button" onClick={()=>{this.setState({iframeAdding: true})}} className="author-block__image-selector__btn">
@@ -190,9 +244,27 @@ export default class PagesBaseComponent extends React.Component {
                                             {...data}
                                         />
                                         {
+                                            this.componentType === 'simulation' && bar.tableData && (
+                                                <div>
+                                                    <button type="button" onClick={() => this.removeTable(index)}>Remove Table</button>
+                                                    <ActiveTable tableData={bar.tableData} saveHandler={(data) => this.changeTableData(data, index)}/>
+                                                </div>
+                                            )
+                                        }
+                                        {
                                             data.sliderBar.length > 1 && (
-                                                <button className="author-block__add-btn remove" data-index={index} onClick={this.removeContent.bind(this)} title="Remove slide">
+                                                <button className="author-block__add-btn remove" data-index={index} onClick={this.removeContent} title="Remove slide">
                                                     <i className="fa fa-trash-o" aria-hidden="true" />
+                                                </button>
+                                            )
+                                        }
+                                        {
+                                            !bar.tableData && (
+                                                <button onClick={() => this.addTable(index)} title="Add Table" className="author-block__add-btn">
+                                                    <i
+                                                        className="fa fa-table"
+                                                        aria-hidden="true"
+                                                        ></i>
                                                 </button>
                                             )
                                         }
@@ -208,7 +280,7 @@ export default class PagesBaseComponent extends React.Component {
                                 </div>
                             )
                         }
-                        <button onClick={this.addContent.bind(this)} title="Add slide" className="author-block__add-btn">
+                        <button onClick={this.addContent} title="Add slide" className="author-block__add-btn">
                             <i className="fa fa-plus-circle" aria-hidden="true" />
                         </button>
                     </div>
@@ -222,13 +294,13 @@ export default class PagesBaseComponent extends React.Component {
                                         <input 
                                         className="author-toolbar__field"
                                         type="text"
-                                        onChange={this.changeImage.bind(this)}
+                                        onChange={this.changeImage}
                                         value={img}
                                         key={ind}
                                         data-index={ind}
                                         placeholder='Paste URL of the image'
                                         />
-                                        <button className="author-toolbar__btn cancel" data-index={ind} onClick={this.removeImage.bind(this)}>
+                                        <button className="author-toolbar__btn cancel" data-index={ind} onClick={this.removeImage}>
                                             <i className="fa fa-trash-o" aria-hidden="true" />
                                         </button>    
                                     </div>
@@ -237,7 +309,7 @@ export default class PagesBaseComponent extends React.Component {
                         {
                             data.imgUrl.length > 0 && (
                                 <div className="author-toolbar__add">
-                                    <button className="author-toolbar__add__btn" onClick={this.addImage.bind(this)}>
+                                    <button className="author-toolbar__add__btn" onClick={this.addImage}>
                                         + add image
                                     </button>
                                 </div>
@@ -251,11 +323,11 @@ export default class PagesBaseComponent extends React.Component {
                                 <input
                                     className="author-toolbar__field"
                                     type="text"
-                                    onChange={this.changeIframeUrl.bind(this)}
+                                    onChange={this.changeIframeUrl}
                                     value={data.iframeUrl}
                                     placeholder='Paste URL of the iframe'
                                 />
-                                <button className="author-toolbar__btn cancel" onClick={this.cancelIframeUrl.bind(this)}>
+                                <button className="author-toolbar__btn cancel" onClick={this.cancelIframeUrl}>
                                     <i className="fa fa-trash-o" aria-hidden="true" />
                                 </button>
                             </div>
