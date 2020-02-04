@@ -40,6 +40,7 @@ export default class Question extends React.Component{
         const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
             if (ind === +dataset.problemTypeIndex) {
                 return {
+                    ...problemType,
                     type: dataset.type,
                     options: problemType.options.map(opt => {
                         return {
@@ -282,6 +283,57 @@ export default class Question extends React.Component{
         setTimeout(this.scrollProblemTypes, 100);
     }
 
+    changeProblemTypeTitle(event, problemTypeIndex) {
+        const activeQuestion = {...this.props.questions[this.props.activeQuestionIndex]};
+        const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
+            if (ind === problemTypeIndex) {
+                return {
+                    ...problemType,
+                    title: event.target.value,
+                };
+            }
+            return problemType;
+        });
+        this.props.questionChanged(this.props.activeQuestionIndex, {
+            ...activeQuestion,
+            problemTypes: problemTypes
+        });
+    }
+
+    removeProblemTypeTitle(event, problemTypeIndex) {
+        const activeQuestion = {...this.props.questions[this.props.activeQuestionIndex]};
+        const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
+            if (ind === problemTypeIndex) {
+                const copyProblemType = {...problemType};
+                delete copyProblemType['title'];
+                return copyProblemType;
+            }
+            return problemType;
+        });
+        this.props.questionChanged(this.props.activeQuestionIndex, {
+            ...activeQuestion,
+            problemTypes: problemTypes
+        });
+    }
+
+    addProblemTypeTitle(event, problemTypeIndex) {
+        const activeQuestion = {...this.props.questions[this.props.activeQuestionIndex]};
+        const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
+            if (ind === problemTypeIndex) {
+                return {
+                    ...problemType,
+                    title: ''
+                };
+            }
+            return problemType;
+        });
+        this.props.questionChanged(this.props.activeQuestionIndex, {
+            ...activeQuestion,
+            problemTypes: problemTypes
+        });
+    }
+
+
     getOptions(problemType, index) {
         const type = problemType.type === 'select' ? 'radio' : problemType.type;
         if (type === 'number') {
@@ -346,7 +398,7 @@ export default class Question extends React.Component{
                                 data-problem-type-index={index}
                                 className="questions__list__text-hint"
                                 type="text"
-                                placeholder="Type questions text here..."
+                                placeholder="Type answer text here..."
                                 value={option.title}
                                 />
                         </div>
@@ -433,15 +485,31 @@ export default class Question extends React.Component{
                                     <div className={`questions__wrapper is-${problemType.type}`}>
                                         <div className="questions-title">
                                             <div className="questions-title__input">
-                                                <textarea placeholder="Name of the question" />
-                                                <button type="button" className="questions-title__btn-remove">
-                                                    <i className="fa fa-trash" aria-hidden="true" />
-                                                </button>
-                                            </div>
-                                            <div className="questions-title__buttons">
-                                                <button type="button" className="btn-add">
-                                                    + add title
-                                                </button>
+                                                {
+                                                    problemType.title !== undefined ? (
+                                                        <div>
+                                                            <textarea
+                                                                placeholder="Add the question text"
+                                                                key={this.props.activeQuestionIndex + index}
+                                                                value={problemType.title}
+                                                                onChange={(event) => {this.changeProblemTypeTitle(event, index)}}/>
+                                                            <button
+                                                                type="button"
+                                                                className="questions-title__btn-remove"
+                                                                onClick={(event) => this.removeProblemTypeTitle(event, index)}>
+                                                                <i className="fa fa-trash" aria-hidden="true" />
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="questions-title__buttons">
+                                                            <button type="button"
+                                                                className="btn-add"
+                                                                onClick={(event) => this.addProblemTypeTitle(event, index)}>
+                                                                + add title
+                                                            </button>
+                                                        </div>
+                                                    )
+                                                }
                                             </div>
                                         </div>
                                         <div className="questions__list__toolbar">

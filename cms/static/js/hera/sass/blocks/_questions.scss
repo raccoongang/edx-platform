@@ -18,14 +18,14 @@
             textarea {
                 box-sizing: border-box;
                 display: block;
-                width: 95%;
+                width: 90%;
                 font-size: 14px;
                 border: none;
-                border-bottom: 1px solid $question_color2;
+                border: 1px solid $question_color2;
                 box-shadow: none;
-                padding: 0 32px 8px 2px;
+                padding: 8px 32px 8px 8px;
                 background: none;
-                height: 40px;
+                height: auto;
                 line-height: 1.3;
                 border-radius: 0;
                 resize: none;
@@ -42,10 +42,9 @@
 
         &__btn-remove {
             position: absolute;
-            right: 2px;
+            right: 6px;
             top: 50%;
             transform: translateY(-50%);
-            margin-top: -6px;
             box-sizing: border-box;
             display: inline-block;
             border: none;
