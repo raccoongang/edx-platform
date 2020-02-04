@@ -110,6 +110,7 @@ class CourseDetailSerializer(CourseSerializer):  # pylint: disable=abstract-meth
     """
 
     overview = serializers.SerializerMethodField()
+    overview_teacher = serializers.SerializerMethodField()
 
     def get_overview(self, course_overview):
         """
@@ -119,3 +120,13 @@ class CourseDetailSerializer(CourseSerializer):  # pylint: disable=abstract-meth
         # fields from CourseSerializer, which get their data
         # from the CourseOverview object in SQL.
         return CourseDetails.fetch_about_attribute(course_overview.id, 'overview')
+
+    def get_overview_teacher(self, course_overview):
+        """
+        Get the representation for SerializerMethodField `overview_teacher`
+        """
+        # Note: This makes a call to the modulestore, unlike the other
+        # fields from CourseSerializer, which get their data
+        # from the CourseOverview object in SQL.
+        return CourseDetails.fetch_about_attribute(course_overview.id, 'overview_teacher')
+

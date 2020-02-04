@@ -1,0 +1,24 @@
+---
+metadata:
+    display_name: overview_teacher
+
+data: |
+  <section class="course-staff">
+    <section class="course-teacher course-page-section">
+    <h2 class="h2">Преподаватель курса</h2>
+    <div class="course-teacher-persone">
+      <div class="course-teacher-persone__image">
+        <img class="course-result-list__image" src="/static/edx-theme/images/course-teacher.png" alt="">
+      </div>
+      <div class="course-teacher-persone__content">
+        <div class="course-teacher-persone__name">Иванов Александр</div>
+        <p>
+          Генеральный директор агентства интернет-маркетинга Level-Ads, совладелец компании HelpTrucks LLC.
+          Специализируется на контекстной рекламе и SEO-продвижении.
+          В маркетинге более 7 лет, специалист комплексного интернет-продвижения, сторонник UX подхода.
+          Более 3 лет занимается продвижением на западные рынки - США, Канаду и Австралию.
+          Продвигал digital-проекты с аудиторией более, чем 1 000 000 пользователей в месяц
+        </p>
+      </div>
+    </div>
+  </section>
