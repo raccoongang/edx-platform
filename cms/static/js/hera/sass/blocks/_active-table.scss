@@ -1,0 +1,116 @@
+.table {
+    &-wrapper {
+        overflow-x: auto;
+
+        table {
+            display: block;
+            width: 100%;
+
+            thead {
+                input[type="text"],
+                input[type="email"],
+                input[type="password"],
+                textarea.text {
+                    background-color: #f0f0f0;
+                    font-weight: 600;
+                }
+            }
+
+            tr {
+                &.is-add-row {
+                    position: relative;
+
+                    td {
+                        position: static;
+                    }
+                }
+            }
+
+            td {
+                position: relative;
+            }
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        textarea.text {
+            display: block;
+            border: 1px solid $table_color2;
+            box-shadow: none;
+            padding: 4px 42px 4px 8px;
+            background: none;
+            width: 162px;
+            height: auto;
+            font-size: 12px;
+            line-height: 1;
+            border-radius: 0;
+            transition: all .3s ease-in-out;
+
+            &:active,
+            &:focus {
+                border-color: $table_color1;
+            }
+        }
+    }
+
+
+    &-buttons {
+        display: flex;
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+
+        &.is-row {
+            top: auto;
+            bottom: auto;
+            justify-content: flex-end;
+            padding: 6px;
+            position: static;
+            transform: initial;
+
+            .table-buttons__btn {
+                font-size: 14px;
+            }
+        }
+
+        &__btn {
+            margin-left: 6px;
+            border: none;
+            box-shadow: none;
+            outline: none;
+            background: none;
+            cursor: pointer;
+            padding: 0;
+            font-size: 22px;
+            line-height: 1;
+            opacity: .65;
+            transition: all .3s ease-in-out;
+
+            &:active,
+            &:focus {
+                box-shadow: none;
+                background: none;
+                outline: none;
+            }
+
+            &:hover {
+                opacity: 1;
+            }
+
+            &.is-add {
+                color: $table_color3;
+            }
+
+            &.is-remove {
+                color: $table_color4;
+                margin-top: -5px;
+            }
+
+            &.is-row {
+
+            }
+        }
+    }
+}
