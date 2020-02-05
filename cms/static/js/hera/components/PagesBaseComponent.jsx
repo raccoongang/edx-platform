@@ -72,9 +72,16 @@ export default class PagesBaseComponent extends React.Component {
         const target = e.target;
         target.classList.add('is-disabled');
         this.props[this.removeContentHandler]({
-            index: +e.target.dataset.index
-        })
+            index: this.state.activeSlideIndex
+        });
         setTimeout(()=>{
+            const sliderBarLength = this.props[this.componentType].sliderBar.length;
+            if (this.state.activeSlideIndex > sliderBarLength - 1 ) {
+                this.setState({
+                    activeSlideIndex: sliderBarLength - 1
+                });
+            }
+            this.sliderContent.slickGoTo(this.state.activeSlideIndex);
             target.classList.remove('is-disabled');
         }, 300);
     }
@@ -252,13 +259,6 @@ export default class PagesBaseComponent extends React.Component {
                                             )
                                         }
                                         {
-                                            data.sliderBar.length > 1 && (
-                                                <button className="author-block__add-btn remove" data-index={index} onClick={this.removeContent} title="Remove slide">
-                                                    <i className="fa fa-trash-o" aria-hidden="true" />
-                                                </button>
-                                            )
-                                        }
-                                        {
                                             !bar.tableData && (
                                                 <button onClick={() => this.addTable(index)} title="Add Table" className="author-block__add-btn is-add-table">
                                                     <i className="fa fa-table" aria-hidden="true" />
@@ -272,7 +272,7 @@ export default class PagesBaseComponent extends React.Component {
                         <div className="author-block-navigation">
                             {
                                 data.sliderBar.length > 1 && (
-                                    <button className="author-block__add-btn" data-index="1" title="Remove slide">
+                                    <button className="author-block__add-btn" onClick={this.removeContent} title="Remove slide">
                                         <i className="fa fa-trash-o" aria-hidden="true" />
                                     </button>
                                 )

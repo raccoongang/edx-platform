@@ -51,7 +51,8 @@ const SimulationReducer = function(state=initialState, action) {
                 ...state,
                 sliderBar: state.sliderBar.filter((el, ind) => {
                     return ind !== action.data.index
-                })
+                }),
+                shouldReset: true
             };
         case SIMULATION_LOADED:
             return {
