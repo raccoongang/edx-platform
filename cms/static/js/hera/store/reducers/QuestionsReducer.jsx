@@ -10,6 +10,7 @@ import {
 } from '../actionTypes';
 
 const defaultProblemType = {
+    title: "",
     type: 'radio', // ['radio', 'checkbox', 'select', 'number', 'text']
     // 'radio', 'checkbox', 'select'
     options: [
