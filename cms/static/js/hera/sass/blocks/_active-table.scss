@@ -1,20 +1,55 @@
 .table {
+    &-description {
+        padding: 4px 0;
+
+        p {
+            display: block;
+            color: #757575;
+            font-size: 10px;
+            margin: 0 0 8px;
+            line-height: 1;
+        }
+    }
+
+    &-holder {
+        position: relative;
+        padding: 12px 0 18px;
+
+        &__btn {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            border: none;
+            box-shadow: none;
+            outline: none;
+            background: none;
+            cursor: pointer;
+            padding: 0;
+            color: $table_color4;
+            font-size: 14px;
+            font-weight: normal;
+            line-height: 1;
+            transition: all .3s ease-in-out;
+
+            &:active,
+            &:focus {
+                box-shadow: none;
+                background: none;
+                outline: none;
+            }
+
+            &:hover {
+                opacity: .65;
+            }
+        }
+    }
+
     &-wrapper {
         overflow-x: auto;
 
         table {
             display: block;
             width: 100%;
-
-            thead {
-                input[type="text"],
-                input[type="email"],
-                input[type="password"],
-                textarea.text {
-                    background-color: #f0f0f0;
-                    font-weight: 600;
-                }
-            }
 
             tr {
                 &.is-add-row {
@@ -26,7 +61,18 @@
                 }
             }
 
-            td {
+            th {
+                input[type="text"],
+                input[type="email"],
+                input[type="password"],
+                textarea.text {
+                    background-color: #f0f0f0;
+                    font-weight: 600;
+                }
+            }
+
+            td,
+            th {
                 position: relative;
             }
         }

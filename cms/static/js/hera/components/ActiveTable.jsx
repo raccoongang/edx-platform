@@ -183,68 +183,77 @@ export default class ActiveTable extends React.PureComponent{
     render() {
         const {columns, rows} = this.getData();
         return (
-            <div className="table-wrapper">
-                <table>
-                    <tbody>
-                    <tr>
+            <div>
+                <div className="table-description">
+                    <p>
+                        Use '<b>!</b>' to make cell of the table as a header (e.g. !text).
+                    </p>
+                    <p>
+                        Use '<b>?</b>' to make cell editable for the student answers (e.g. ?text).
+                    </p>
+                </div>
+                <div className="table-wrapper">
+                    <table>
+                        <tbody>
+                        <tr>
+                            {
+                                columns.map((column, idx) => {
+                                    return  (
+                                        <TableCell key={idx} type={column.type}>
+                                            <input
+                                                type="text"
+                                                value={column.value}
+                                                onBlur={(event)=>{this.changeCellType(event, idx)}}
+                                                onKeyPress={(event)=>{this.handleKeyPress(event, idx)}}
+                                                onChange={(event)=>{this.changeCell(event, idx)}}
+                                            />
+                                            <div className="table-buttons">
+                                                <button type="button" className="table-buttons__btn is-add" onClick={() => {this.addColumn(idx+1)}}>+</button>
+                                                {
+                                                    columns.length > 1 && (
+                                                        <button type="button" className="table-buttons__btn is-remove" onClick={() => {this.removeColumn(idx)}}>-</button>
+                                                    )
+                                                }
+                                            </div>
+                                        </TableCell>
+                                    )
+                                })
+                            }
+                        </tr>
                         {
-                            columns.map((column, idx) => {
-                                return  (
-                                    <TableCell key={idx} type={column.type}>
-                                        <input
-                                            type="text"
-                                            value={column.value}
-                                            onBlur={(event)=>{this.changeCellType(event, idx)}}
-                                            onKeyPress={(event)=>{this.handleKeyPress(event, idx)}}
-                                            onChange={(event)=>{this.changeCell(event, idx)}}
-                                        />
-                                        <div className="table-buttons">
-                                            <button type="button" className="table-buttons__btn is-add" onClick={() => {this.addColumn(idx+1)}}>+</button>
-                                            {
-                                                columns.length > 1 && (
-                                                    <button type="button" className="table-buttons__btn is-remove" onClick={() => {this.removeColumn(idx)}}>-</button>
+                            rows && rows.map((row, r_idx) => {
+                                return (
+                                    <tr key={r_idx}>
+                                        {
+                                            columns.map((column, c_idx) => {
+                                                return (
+                                                    <TableCell key={c_idx} type={row[c_idx].type}>
+                                                        <input
+                                                            type="text"
+                                                            value={row[c_idx].value}
+                                                            onChange={(event)=>{this.changeCell(event, c_idx, r_idx)}}
+                                                            onBlur={(event)=>{this.changeCellType(event, c_idx, r_idx)}}
+                                                            onKeyPress={(event)=>{this.handleKeyPress(event, c_idx, r_idx)}}
+                                                        />
+                                                    </TableCell>
                                                 )
-                                            }
-                                        </div>
-                                    </TableCell>
+                                            })
+                                        }
+                                        <td>
+                                            <div className="table-buttons">
+                                                <button type="button" className="table-buttons__btn is-add" onClick={() => {this.addRow(r_idx+1)}}>+</button>
+                                                {
+                                                    rows.length > 1 && (
+                                                        <button type="button" className="table-buttons__btn is-remove" onClick={() => {this.removeRow(r_idx)}}>-</button>
+                                                    )
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
                                 )
                             })
                         }
-                    </tr>
-                    {
-                        rows && rows.map((row, r_idx) => {
-                            return (
-                                <tr key={r_idx}>
-                                    {
-                                        columns.map((column, c_idx) => {
-                                            return (
-                                                <TableCell key={c_idx} type={row[c_idx].type}>
-                                                    <input
-                                                        type="text"
-                                                        value={row[c_idx].value}
-                                                        onChange={(event)=>{this.changeCell(event, c_idx, r_idx)}}
-                                                        onBlur={(event)=>{this.changeCellType(event, c_idx, r_idx)}}
-                                                        onKeyPress={(event)=>{this.handleKeyPress(event, c_idx, r_idx)}}
-                                                    />
-                                                </TableCell>
-                                            )
-                                        })
-                                    }
-                                    <td>
-                                        <div className="table-buttons">
-                                            <button type="button" className="table-buttons__btn is-add" onClick={() => {this.addRow(r_idx+1)}}>+</button>
-                                            {
-                                                rows.length > 1 && (
-                                                    <button type="button" className="table-buttons__btn is-remove" onClick={() => {this.removeRow(r_idx)}}>-</button>
-                                                )
-                                            }
-                                        </div>
-                                    </td>
-                                </tr>
-                            )
-                        })
-                    }
-                    {/* <tr className="is-add-row">
+                        {/* <tr className="is-add-row">
                         {
                             columns && (
                                 <td>
@@ -262,8 +271,9 @@ export default class ActiveTable extends React.PureComponent{
                             })
                         }
                     </tr> */}
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         )
     }

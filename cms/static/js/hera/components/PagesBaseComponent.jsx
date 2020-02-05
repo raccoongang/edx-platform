@@ -244,9 +244,9 @@ export default class PagesBaseComponent extends React.Component {
                                             {...data}
                                         />
                                         {
-                                            this.componentType === 'simulation' && bar.tableData && (
-                                                <div>
-                                                    <button type="button" onClick={() => this.removeTable(index)}>Remove Table</button>
+                                            bar.tableData && (
+                                                <div className="table-holder">
+                                                    <button type="button" className="table-holder__btn" onClick={() => this.removeTable(index)}>- remove table</button>
                                                     <ActiveTable tableData={bar.tableData} saveHandler={(data) => this.changeTableData(data, index)}/>
                                                 </div>
                                             )
@@ -260,11 +260,8 @@ export default class PagesBaseComponent extends React.Component {
                                         }
                                         {
                                             !bar.tableData && (
-                                                <button onClick={() => this.addTable(index)} title="Add Table" className="author-block__add-btn">
-                                                    <i
-                                                        className="fa fa-table"
-                                                        aria-hidden="true"
-                                                        ></i>
+                                                <button onClick={() => this.addTable(index)} title="Add Table" className="author-block__add-btn is-add-table">
+                                                    <i className="fa fa-table" aria-hidden="true" />
                                                 </button>
                                             )
                                         }
@@ -272,17 +269,26 @@ export default class PagesBaseComponent extends React.Component {
                                 )
                             })}
                         </Slider>
-                        {
-                            data.sliderBar.length > 1 && (
-                                <div className="author-block__question__slider-controls">
-                                    <button className={`author-block__question__slider-controls__prev ${this.state.activeSlideIndex === 0 ? "is-disabled" : ""}`} onClick={this.previous} />
-                                    <button className={`author-block__question__slider-controls__next ${this.state.activeSlideIndex === data.sliderBar.length-1 ? 'is-disabled' : ''}`} onClick={this.next} />
-                                </div>
-                            )
-                        }
-                        <button onClick={this.addContent} title="Add slide" className="author-block__add-btn">
-                            <i className="fa fa-plus-circle" aria-hidden="true" />
-                        </button>
+                        <div className="author-block-navigation">
+                            {
+                                data.sliderBar.length > 1 && (
+                                    <button className="author-block__add-btn" data-index="1" title="Remove slide">
+                                        <i className="fa fa-trash-o" aria-hidden="true" />
+                                    </button>
+                                )
+                            }
+                            {
+                                data.sliderBar.length > 1 && (
+                                    <div className="author-block__question__slider-controls">
+                                        <button className={`author-block__question__slider-controls__prev ${this.state.activeSlideIndex === 0 ? "is-disabled" : ""}`} onClick={this.previous} />
+                                        <button className={`author-block__question__slider-controls__next ${this.state.activeSlideIndex === data.sliderBar.length-1 ? 'is-disabled' : ''}`} onClick={this.next} />
+                                    </div>
+                                )
+                            }
+                            <button onClick={this.addContent} title="Add slide" className="author-block__add-btn">
+                                <i className="fa fa-plus-circle" aria-hidden="true" />
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div className="author-toolbar">
