@@ -303,23 +303,6 @@ export default class Question extends React.Component{
         });
     }
 
-    changeProblemTypeTitle(event, problemTypeIndex) {
-        const activeQuestion = {...this.props.questions[this.props.activeQuestionIndex]};
-        const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
-            if (ind === problemTypeIndex) {
-                return {
-                    ...problemType,
-                    title: event.target.value
-                };
-            }
-            return problemType;
-        });
-        this.props.questionChanged(this.props.activeQuestionIndex, {
-            ...activeQuestion,
-            problemTypes: problemTypes
-        });
-    }
-
     getOptions(problemType, index) {
         const type = problemType.type === 'select' ? 'radio' : problemType.type;
         if (type === 'table') {
@@ -475,7 +458,6 @@ export default class Question extends React.Component{
                             activeQuestion.problemTypes.map((problemType, index) => {
                                 return (
                                     <div className={`questions__wrapper is-${problemType.type}`} key={index}>
-                                    {/* <input type="text" key={this.props.activeQuestionIndex + index} value={problemType.title} onChange={(event) => {this.changeProblemTypeTitle(event, index)}}/> */}
                                         <div key={index} className="questions__list__toolbar">
                                             <button
                                                 title='Radio'
