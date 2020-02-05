@@ -152,7 +152,7 @@ def update_account_settings(requesting_user, update, username=None):
     # Updates year_of_birth from date_of_birth field for correct working learner full profile page.
     if date_of_birth is not None:
         try:
-            update.update({"year_of_birth": datetime.datetime.strptime(date_of_birth, '%Y-%m-%d').year})
+            update.update({"year_of_birth": datetime.datetime.strptime(date_of_birth, '%d-%m-%Y').year})
         except (TypeError, ValueError):
             update.update({"year_of_birth": None, "date_of_birth": None})
 
