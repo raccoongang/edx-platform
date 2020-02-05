@@ -51,6 +51,7 @@ from .serializers import (
     SingleSchoolSerilizer,
     VideoLessonSerializer,
 )
+from .sms_client import SMSClient
 from .signals import VIDEO_LESSON_COMPLETED
 from .utils import get_payment_link, report_data_preparation
 
@@ -130,6 +131,7 @@ def manage_courses(request):
         )
         form = StudentEnrollForm(data=data, courses=courses, students=students)
         if form.is_valid():
+            sms_client = SMSClient()
             for student in form.cleaned_data['students']:
                 courses_list = []
                 for course in form.cleaned_data['courses']:
@@ -197,8 +199,15 @@ def manage_courses(request):
                         send_mail(subject, txt_message, from_address, [parent.user.email], html_message=html_message)
 
                 if form.cleaned_data['send_sms']:
-                    # sending sms logic to be here
-                    pass
+                    parent = student.parents.first()
+                    context.update({
+                        'student_name': student.user.profile.name or student.user.username
+                    })
+                    sms_message = render_to_string(
+                        'sms/manage_course_notify.txt',
+                        context
+                    )
+                    sms_client.send_message(parent.phone, sms_message)
             messages.success(request, 'Successfully assigned.')
             return redirect(reverse('manage_courses'))
 
