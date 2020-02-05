@@ -8,7 +8,7 @@ data: |
     <h2 class="h2">Преподаватель курса</h2>
     <div class="course-teacher-persone">
       <div class="course-teacher-persone__image">
-        <img class="course-result-list__image" src="/static/edx-theme/images/course-teacher.png" alt="">
+        <img class="course-result-list__image" src="/static/images/course-teacher.png" alt="">
       </div>
       <div class="course-teacher-persone__content">
         <div class="course-teacher-persone__name">Иванов Александр</div>
@@ -22,3 +22,4 @@ data: |
       </div>
     </div>
   </section>
+
