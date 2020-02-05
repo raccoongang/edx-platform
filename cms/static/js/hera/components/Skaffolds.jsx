@@ -241,7 +241,7 @@ export default class Scaffolds extends React.Component{
                             {
                                 this.getScaffoldAdvancedImgUrls().map((src, ind) => {
                                     return (
-                                        <div className="author-toolbar__row-holder">
+                                        <div className="author-toolbar__row-holder" key={ind}>
                                             <input
                                                 key={ind}
                                                 className="author-toolbar__field"
