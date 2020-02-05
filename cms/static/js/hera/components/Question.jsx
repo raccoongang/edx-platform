@@ -51,7 +51,6 @@ export default class Question extends React.Component{
                             title: opt.title
                         };
                     }),
-                    tableData: problemType.tableData || {}
                 };
             }
             return problemType;
@@ -60,7 +59,6 @@ export default class Question extends React.Component{
             ...activeQuestion,
             problemTypes: problemTypes
         });
-        // setTimeout(this.scrollProblemTypes, 100);
     }
 
     addOptionItem(e) {
@@ -357,10 +355,11 @@ export default class Question extends React.Component{
 
     getOptions(problemType, index) {
         const type = problemType.type === 'select' ? 'radio' : problemType.type;
+        const tableData = problemType.tableData || {};
         if (type === 'table') {
             return (
                 <div className="questions__list number">
-                    <ActiveTable tableData={problemType.tableData} problemTypeIndex={index} saveHandler={this.changeTableData}/>
+                    <ActiveTable tableData={tableData} problemTypeIndex={index} saveHandler={this.changeTableData}/>
                 </div>
             );
         } else if (type === 'number') {
