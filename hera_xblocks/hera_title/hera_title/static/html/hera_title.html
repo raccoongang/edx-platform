@@ -1,3 +1,15 @@
 <div class="hera_title_block">
-<p>HeraTitleXBlock</p>
+
+    {% if heading %}
+        <h1 class="title-block-heading">{{heading}}</h1>
+    {% endif %}
+
+    {% if img_url %}
+        <img src="{{img_url}}">
+    {% endif %}
+
+    {% if content %}
+    <div class="title-block-content">{{content|safe}}</div>
+    {% endif %}
+
 </div>
