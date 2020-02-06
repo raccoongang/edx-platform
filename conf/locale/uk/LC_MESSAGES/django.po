@@ -26864,3 +26864,12 @@ msgstr "Оновити інформацію профілю та запросит
 
 msgid "I agree to the "
 msgstr "Я погоджуюсь з "
+
+msgid "Provided by the specialists of the State Institution "
+"\"Center for Public Health of the Ministry of Health of Ukraine\""
+"and the Charitable Organization \"Ukrainian Institute of Public Health Policy\""
+msgstr "Наданий фахівцями Державної установи «Центр громадського здоров`я Міністерства "
+"охорони здоров`я України» та Благодійної організації «Український інститут політики громадського здоров`я»"
+
+msgid "Course info for certificate"
+msgstr "Інформація про курс на сертифікаті"

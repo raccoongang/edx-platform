@@ -53,7 +53,7 @@
         </div>
         <div class="u-field-message u-field-message__custom" id="u-field-message-<%- id %>">
             <span class="u-field-message-notification" aria-live="polite"></span>
-            <span class="u-field-message-help" id="u-field-help-message-<%- id %>"><%- gettext("Write your diploma number.") %></span>
+            <span class="u-field-message-help" id="u-field-help-message-<%- id %>"><%- gettext("Write your diploma number") %></span>
         </div>
         </div>
     <% } %>
