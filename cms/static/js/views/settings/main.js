@@ -33,6 +33,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    options = options || {};
         // fill in fields
                     this.$el.find('#course-category').val(this.model.get('category'));
+                    this.$el.find("#course-info").val(this.model.get('course_info'));
                     this.$el.find('#course-language').val(this.model.get('language'));
                     this.$el.find('#course-organization').val(this.model.get('org'));
                     this.$el.find('#course-number').val(this.model.get('course_id'));
@@ -174,6 +175,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                },
                fieldToSelectorMap: {
                     category: 'course-category',
+                    course_info : 'course-info',
                     language: 'course-language',
                     start_date: 'course-start',
                     end_date: 'course-end',
@@ -334,6 +336,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        this.model.set('self_paced', JSON.parse(event.currentTarget.value));
                        break;
                    case 'course-language':
+                   case 'course-info':
                    case 'course-category':
                    case 'course-effort':
                    case 'course-title':
