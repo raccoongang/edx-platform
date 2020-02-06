@@ -161,6 +161,7 @@ export default class PagesBaseComponent extends React.Component {
                 return item;
             })
         });
+        setTimeout(this.scrollContent, 100);
     }
 
     removeTable(sliderIndex) {
@@ -175,6 +176,19 @@ export default class PagesBaseComponent extends React.Component {
                 return item;
             })
         });
+    }
+
+    scrollContent() {
+        // smooth scroll to the last added problemType;
+        const sliders = document.getElementsByClassName('author-block__question');
+        for (let i=0; i<sliders.length; i++) {
+            let el = sliders.item(i);
+            el.style.height = el.scrollHeight + 'px';
+            el.scrollTo({
+                top: el.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
     }
 
     render() {
