@@ -3,6 +3,7 @@ import Slider from "react-slick";
 
 import SingleWYSIWYGComponent from './SingleWYSIWYGComponent';
 import Skaffolds from './Skaffolds';
+import ActiveTable from './ActiveTable';
 
 
 export default class Question extends React.Component{
@@ -18,6 +19,8 @@ export default class Question extends React.Component{
         this.changeAnswer = this.changeAnswer.bind(this);
         this.getOptions = this.getOptions.bind(this);
         this.getButtonAddOption = this.getButtonAddOption.bind(this);
+        this.changeTableData = this.changeTableData.bind(this);
+        this.changeProblemTypeTitle = this.changeProblemTypeTitle.bind(this);
 
         this.state = {
             showSimulation: false,
@@ -40,13 +43,14 @@ export default class Question extends React.Component{
         const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
             if (ind === +dataset.problemTypeIndex) {
                 return {
+                    ...problemType,
                     type: dataset.type,
                     options: problemType.options.map(opt => {
                         return {
                             correct: false,
                             title: opt.title
                         };
-                    })
+                    }),
                 };
             }
             return problemType;
@@ -55,7 +59,6 @@ export default class Question extends React.Component{
             ...activeQuestion,
             problemTypes: problemTypes
         });
-        setTimeout(this.scrollProblemTypes, 100);
     }
 
     addOptionItem(e) {
@@ -282,9 +285,84 @@ export default class Question extends React.Component{
         setTimeout(this.scrollProblemTypes, 100);
     }
 
+    changeTableData(tableData, index) {
+        const activeQuestion = {...this.props.questions[this.props.activeQuestionIndex]};
+        const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
+            if (ind === index) {
+                return {
+                    ...problemType,
+                    tableData,
+                };
+            }
+            return problemType;
+        });
+        this.props.questionChanged(this.props.activeQuestionIndex, {
+            ...activeQuestion,
+            problemTypes: problemTypes
+        });
+    }
+
+    changeProblemTypeTitle(event, problemTypeIndex) {
+        const activeQuestion = {...this.props.questions[this.props.activeQuestionIndex]};
+        const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
+            if (ind === problemTypeIndex) {
+                return {
+                    ...problemType,
+                    title: event.target.value,
+                };
+            }
+            return problemType;
+        });
+        this.props.questionChanged(this.props.activeQuestionIndex, {
+            ...activeQuestion,
+            problemTypes: problemTypes
+        });
+    }
+
+    removeProblemTypeTitle(event, problemTypeIndex) {
+        const activeQuestion = {...this.props.questions[this.props.activeQuestionIndex]};
+        const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
+            if (ind === problemTypeIndex) {
+                const copyProblemType = {...problemType};
+                delete copyProblemType['title'];
+                return copyProblemType;
+            }
+            return problemType;
+        });
+        this.props.questionChanged(this.props.activeQuestionIndex, {
+            ...activeQuestion,
+            problemTypes: problemTypes
+        });
+    }
+
+    addProblemTypeTitle(event, problemTypeIndex) {
+        const activeQuestion = {...this.props.questions[this.props.activeQuestionIndex]};
+        const problemTypes = activeQuestion.problemTypes.map((problemType, ind) => {
+            if (ind === problemTypeIndex) {
+                return {
+                    ...problemType,
+                    title: ''
+                };
+            }
+            return problemType;
+        });
+        this.props.questionChanged(this.props.activeQuestionIndex, {
+            ...activeQuestion,
+            problemTypes: problemTypes
+        });
+    }
+
+
     getOptions(problemType, index) {
         const type = problemType.type === 'select' ? 'radio' : problemType.type;
-        if (type === 'number') {
+        const tableData = problemType.tableData || {};
+        if (type === 'table') {
+            return (
+                <div className="questions__list number">
+                    <ActiveTable tableData={tableData} problemTypeIndex={index} saveHandler={this.changeTableData}/>
+                </div>
+            );
+        } else if (type === 'number') {
             return (
                 <div className="questions__list number">
                     <div className="questions__list__item">
@@ -328,10 +406,10 @@ export default class Question extends React.Component{
         }
         return problemType.options.map((option, ind) => {
             return  (
-                <div className="questions__list__item">
+                <div className="questions__list__item" key={ind+index}>
                     <label className="questions__list__label">
                         <input
-                            key={ind}
+                            key={ind+index}
                             data-index={ind}
                             data-problem-type-index={index}
                             onChange={this.changeOptionCorrectness}
@@ -341,12 +419,12 @@ export default class Question extends React.Component{
                         <div className="questions__list__text">
                             <input
                                 onChange={this.changeOptionTitle}
-                                key={ind}
+                                key={ind+index}
                                 data-index={ind}
                                 data-problem-type-index={index}
                                 className="questions__list__text-hint"
                                 type="text"
-                                placeholder="Type questions text here..."
+                                placeholder="Type answer text here..."
                                 value={option.title}
                                 />
                         </div>
@@ -365,7 +443,7 @@ export default class Question extends React.Component{
     };
 
     getButtonAddOption(type, index) {
-        if (!['number', 'text'].includes(type)) {
+        if (!['number', 'text', 'table'].includes(type)) {
             return (
                 <div className="questions__list__add-item">
                     <button
@@ -430,7 +508,36 @@ export default class Question extends React.Component{
                         {
                             activeQuestion.problemTypes.map((problemType, index) => {
                                 return (
-                                    <div className={`questions__wrapper is-${problemType.type}`}>
+                                    <div className={`questions__wrapper is-${problemType.type}`} key={index}>
+                                        <div className="questions-title">
+                                            <div className="questions-title__input">
+                                                {
+                                                    problemType.title !== undefined ? (
+                                                        <div>
+                                                            <textarea
+                                                                placeholder="Add the question text"
+                                                                key={this.props.activeQuestionIndex + index}
+                                                                value={problemType.title}
+                                                                onChange={(event) => {this.changeProblemTypeTitle(event, index)}}/>
+                                                            <button
+                                                                type="button"
+                                                                className="questions-title__btn-remove"
+                                                                onClick={(event) => this.removeProblemTypeTitle(event, index)}>
+                                                                <i className="fa fa-trash" aria-hidden="true" />
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="questions-title__buttons">
+                                                            <button type="button"
+                                                                className="btn-add"
+                                                                onClick={(event) => this.addProblemTypeTitle(event, index)}>
+                                                                + add title
+                                                            </button>
+                                                        </div>
+                                                    )
+                                                }
+                                            </div>
+                                        </div>
                                         <div className="questions__list__toolbar">
                                             <button
                                                 title='Radio'
@@ -482,6 +589,19 @@ export default class Question extends React.Component{
                                                 onClick={this.changeQuestionType}
                                                 className={`questions__list__toolbar__btn ${problemType.type === 'text' ? 'is-active' : ''}`}>
                                                 Text
+                                            </button>
+                                            <button
+                                                title="Table"
+                                                type="button"
+                                                className={`questions__list__toolbar__btn ${problemType.type === 'table' ? 'is-active' : ''}`}>
+                                                <i
+                                                    className="fa fa-table"
+                                                    aria-hidden="true"
+                                                    data-type="table"
+                                                    data-problem-type-index={index}
+                                                    onClick={this.changeQuestionType}
+                                                    
+                                                    ></i>
                                             </button>
                                         </div>
 

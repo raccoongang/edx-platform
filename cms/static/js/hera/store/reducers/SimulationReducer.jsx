@@ -33,6 +33,7 @@ const SimulationReducer = function(state=initialState, action) {
                 sliderBar: state.sliderBar.map((slide, ind) => {
                     if (ind === index) {
                         return {
+                            ...slide,
                             content: action.data.content
                         };
                     }
@@ -50,7 +51,8 @@ const SimulationReducer = function(state=initialState, action) {
                 ...state,
                 sliderBar: state.sliderBar.filter((el, ind) => {
                     return ind !== action.data.index
-                })
+                }),
+                shouldReset: true
             };
         case SIMULATION_LOADED:
             return {

@@ -241,7 +241,7 @@
         width: $block-question__width;
         border: 1px solid $author_color2;
         padding: 12px;
-        position: relative;
+        position: static;
         max-height: $block-question__height;
         overflow: scroll;
 
@@ -268,19 +268,16 @@
 
                 .mce-tinymce {
                     width: 99% !important;
-                    min-height: 545px;
+                    min-height: auto;
                 }
 
                 iframe {
-                    min-height: 465px;
+                    min-height: 415px;
                 }
             }
 
             &-controls {
                 text-align: right;
-                position: absolute;
-                right: 10px;
-                bottom: 12px;
                 background: transparent;
 
                 &__prev,
@@ -346,14 +343,20 @@
         position: relative;
     }
 
+    &-navigation {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: $author_color6;
+        position: relative;
+    }
+
     &__add-btn {
         line-height: 1;
-        position: absolute;
-        left: 12px;
-        bottom: 12px;
         box-sizing: border-box;
         display: inline-block;
         height: 25px;
+        margin-right: 8px;
         border: none;
         box-shadow: none;
         background: none;
@@ -372,20 +375,20 @@
             color: $author_color8;
         }
 
-        &.remove {
-            position: absolute;
-            left: 20px;
-            bottom: -2px;
+        &.is-remove {
             background: none;
             color: $author_color2;
             height: 25px;
-            padding: 0 8px;
             font-size: 18px;
             line-height: 1;
 
             &:hover {
                 color: $author_color3;
             }
+        }
+
+        &.is-add-table {
+            position: static;
         }
 
         i {

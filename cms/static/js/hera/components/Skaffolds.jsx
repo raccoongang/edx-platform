@@ -243,6 +243,7 @@ export default class Scaffolds extends React.Component{
                                     return (
                                         <div className="author-toolbar__row-holder" key={ind}>
                                             <input
+                                                key={ind}
                                                 className="author-toolbar__field"
                                                 type="text"
                                                 placeholder='Paste URL of the image'
