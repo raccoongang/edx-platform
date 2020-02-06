@@ -64,22 +64,26 @@ export default class ActiveTable extends React.PureComponent{
         if (row_idx === undefined) {
             columns = columns.map((col, c_idx) => {
                 if (c_idx === col_idx) {
+                    const newCol = {...col};
                     if (value.startsWith('!')) {
-                        col.type = 'head'
+                        newCol.type = 'head';
                     } else {
-                        col.type = ''
+                        newCol.type = '';
                     }
-                    return col;
+                    return newCol;
                 }
                 return col;
             });
         } else {
             rows = rows.map((row, idx) => {
                 if (idx === row_idx) {
-                    if (row[col_idx].value.startsWith('!')) {
-                        row[col_idx].type = 'head';
+                    const newRow = {...row};
+                    if (newRow[col_idx].value.startsWith('!')) {
+                        newRow[col_idx].type = 'head';
+                    } else {
+                        newRow[col_idx].type = '';
                     }
-                    return row;
+                    return newRow;
                 }
                 return row;
             });
