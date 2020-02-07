@@ -5872,12 +5872,8 @@ msgstr "{partner_short_name} {course_number} сертифікат | {platform_na
 #. certificate information displayed to the user
 #: lms/djangoapps/certificates/views/webview.py
 #, python-brace-format
-msgid ""
-"successfully completed, received a passing grade, and was awarded this "
-"{platform_name} {certificate_type} Certificate of Completion in "
-msgstr ""
-"успішно завершив, отримав прохідний бал, і був удостоєний Сертифіката "
-"{certificate_type} про закінчення курсу на {platform_name}"
+msgid "successfully completed the course"
+msgstr "успішно закінчив(ла) курс"
 
 #. Translators: This text describes the purpose (and therefore, value) of a
 #. course certificate
@@ -26873,3 +26869,12 @@ msgstr "Наданий фахівцями Державної установи «
 
 msgid "Course info for certificate"
 msgstr "Інформація про курс на сертифікаті"
+
+msgid "Certificate"
+msgstr "Сертифікат"
+
+msgid "Issued on"
+msgstr "Виданий"
+
+msgid "This certificate certifies that"
+msgstr "Цей сертифікат засівдчує, що"
