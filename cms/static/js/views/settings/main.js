@@ -40,6 +40,9 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                     this.$el.find('#course-name').val(this.model.get('run'));
                     this.$el.find('.set-date').datepicker({'dateFormat': 'm/d/yy'});
 
+                    // reload custom multiple select
+                    $('#course-category').multipleSelect('refreshOptions', {});
+
         // Avoid showing broken image on mistyped/nonexistent image
                    this.$el.find('img').error(function() {
                        $(this).hide();

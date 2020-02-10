@@ -718,6 +718,7 @@ PIPELINE_CSS = {
             'css/vendor/jquery.qtip.min.css',
             'js/vendor/markitup/skins/simple/style.css',
             'js/vendor/markitup/sets/wiki/style.css',
+            'js/vendor/multiple-select/multiple-select.css',
         ],
         'output_filename': 'css/cms-style-vendor.css',
     },
@@ -798,6 +799,9 @@ base_vendor_js = [
     # Load Bootstrap and supporting libraries
     'common/js/vendor/popper.js',
     'common/js/vendor/bootstrap.js',
+
+    # Custom select libraries
+    'js/vendor/multiple-select/multiple-select.js',
 
     # Finally load RequireJS
     'common/js/vendor/require.js'
