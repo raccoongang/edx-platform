@@ -132,7 +132,7 @@ def _update_certificate_context(context, course, user_certificate, platform_name
 
     # Translators:  This text fragment appears after the student's name (displayed in a large font) on the certificate
     # screen.  The text describes the accomplishment represented by the certificate information displayed to the user
-    context['accomplishment_copy_description_full'] = _("successfully completed the course")
+    context['accomplishment_copy_description_full'] = _("successfully completed the distance course")
 
     certificate_type_description = get_certificate_description(user_certificate.mode, certificate_type, platform_name)
     if certificate_type_description:
