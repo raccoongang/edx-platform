@@ -322,9 +322,12 @@
                     accountSettingsView.render();
                     // input mask for 'phone' field
                     $('#field-input-phone').inputmask("(999) 999 99 99");
-                    // datepicker for 'date of birth' field
+                    // datepicker and mask for 'date of birth' field
                     $('#field-input-date_of_birth')
-                        .attr('placeholder', gettext('dd-mm-yyyy'))
+                        .inputmask("99-99-9999", {
+                            "placeholder": gettext('dd-mm-yyyy'),
+                            "clearMaskOnLostFocus": false
+                        })
                         .attr('autocomplete','off').datepicker({
                             format: 'dd-mm-yyyy',
                             autoHide: true,
