@@ -152,7 +152,7 @@ def _assets_json(request, course_key):
         assets, total_count = _get_assets_for_page(course_key, query_options)
 
     last_asset_to_display_index = first_asset_to_display_index + len(assets)
-    assets_in_json_format = _get_assets_in_json_format(assets, course_key)
+    assets_in_json_format = _get_assets_in_json_format(assets, course_key, use_https=request.is_secure())
 
     response_payload = {
         'start': first_asset_to_display_index,
@@ -334,7 +334,7 @@ def _update_options_to_requery_final_page(query_options, total_asset_count):
     query_options['current_page'] = int(math.floor((total_asset_count - 1) / query_options['page_size']))
 
 
-def _get_assets_in_json_format(assets, course_key):
+def _get_assets_in_json_format(assets, course_key, use_https=False):
     assets_in_json_format = []
     for asset in assets:
         thumbnail_asset_key = _get_thumbnail_asset_key(asset, course_key)
@@ -346,7 +346,8 @@ def _get_assets_in_json_format(assets, course_key):
             asset['uploadDate'],
             asset['asset_key'],
             thumbnail_asset_key,
-            asset_is_locked
+            asset_is_locked,
+            use_https=use_https,
         )
 
         assets_in_json_format.append(asset_in_json)
@@ -567,19 +568,20 @@ def _delete_thumbnail(thumbnail_location, course_key, asset_key):
             logging.warning('Could not delete thumbnail: %s', thumbnail_location)
 
 
-def _get_asset_json(display_name, content_type, date, location, thumbnail_location, locked):
+def _get_asset_json(display_name, content_type, date, location, thumbnail_location, locked, use_https=False):
     '''
     Helper method for formatting the asset information to send to client.
     '''
     asset_url = StaticContent.serialize_asset_key_with_slash(location)
-    external_url = settings.LMS_BASE + asset_url
+    protocol = 'https://' if use_https else 'http://'
+    external_url = protocol + settings.LMS_BASE + asset_url
     return {
         'display_name': display_name,
         'content_type': content_type,
         'date_added': get_default_time_display(date),
         'url': asset_url,
         'external_url': external_url,
-        'portable_url': StaticContent.get_static_path_from_location(location),
+        'portable_url': external_url,
         'thumbnail': StaticContent.serialize_asset_key_with_slash(thumbnail_location) if thumbnail_location else None,
         'locked': locked,
         # needed for Backbone delete/update.
