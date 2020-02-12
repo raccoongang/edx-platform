@@ -84,10 +84,17 @@
   width: 100%;
 }
 
+.author-block__image iframe {
+  height: 100%;
+  min-height: 395px;
+}
+
 .author-block__question {
   width: 30%;
   border: 1px solid var(--color2);
   padding: 12px;
+  position: relative;
+  overflow: auto;
   position: relative;
 }
 .author-block__question-title {
