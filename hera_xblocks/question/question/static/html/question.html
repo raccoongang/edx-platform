@@ -16,7 +16,6 @@
         <div class="author-block__question">
             <div class="question__content">${description}</div>
             <form class="question-form">
-
                 % for index, problem_type in enumerate(problem_types):
                     % if problem_type.get('title'):
                         <p>${problem_type['title']}</p>
@@ -28,10 +27,46 @@
                             <option class="questions-list__select-item" value=""> ------- </option>
                             % for option in problem_type['options']:
                                 % if option.get('title'):
-                                    <option value="${ option['title'] }">${option['title']}</option>
+                                    <% selected = 'selected' if user_answer and option['title'] in user_answer[index] else '' %>
+                                    <option value="${option['title']}" ${selected}>${option['title']}</option>
                                 % endif
                             % endfor
                         </select>
+                    % elif problem_type['type'] == "table":
+                        <table>
+                            <tbody>
+                                % if problem_type['tableData'].get('columns'):
+                                    <tr>
+                                        % for column in problem_type['tableData']['columns']:
+                                            % if column['type'] == 'head':
+                                                <th>${column['value'].replace('!', '', 1)}</th>
+                                            % else:
+                                                <td>${column['value']}</td>
+                                            % endif
+                                        % endfor
+                                    </tr>
+                                % endif
+                                % if problem_type['tableData'].get('rows'):
+                                    <% user_answer_input_index = 0 %>
+                                    % for row in problem_type['tableData']['rows']:
+                                        <tr>
+                                            % for idx, col in enumerate(problem_type['tableData'].get('columns')):
+                                                % if row[str(idx)]['value'].startswith('?'):
+                                                    <td>
+                                                        <input type="text" name="${index}" value="${user_answer[index][user_answer_input_index] if user_answer else ''}"/>
+                                                    </td>
+                                                    <% user_answer_input_index += 1 %>
+                                                % elif row[str(idx)]['type'] == 'head':
+                                                    <th>${row[str(idx)]['value'].replace('!', '', 1)}</th>
+                                                % else:
+                                                    <td>${row[str(idx)]['value']}</td>
+                                                % endif
+                                            % endfor
+                                        </tr>
+                                    % endfor
+                                % endif
+                            </tbody>
+                        </table>
                     % else:
                         % for option in problem_type['options']:
                             % if option.get('title'):
@@ -63,24 +98,33 @@
                 <div class="scaffold-description"></div>
                 <button type="button" class="author-block__btn try_again">Try Again</button>
             </div>
+            <div id="${'rephrase-content-{}'.format(location_id)}" class="rephrase-content" hidden>
+                ${rephrase.get('content')}
+            </div>
+            <div id="${'break-down-{}'.format(location_id)}" class="break-down-content" hidden>
+                ${break_down.get('content')}
+            </div>
+            <div id="${'teach-me-{}'.format(location_id)}" class="teach-me-content" hidden>
+                ${teach_me.get('content')}
+            </div>
             <div class="scaffolds hidden">
-                <button type="button" class="scaffold scaffold__btn is-rephrase" data-content="${rephrase['content']}">
+                <%
+                    break_down_img_urls = ' '.join(break_down.get('imgUrls', []))
+                    teach_me_img_urls = ' '.join(teach_me.get('imgUrls', []))
+                %>
+                <button type="button" class="scaffold scaffold__btn is-rephrase" data-scaffold-name="rephrase-content">
                     <span class="scaffold__price">
                         -20
                     </span>
                     Rephrase
                 </button>
-                <%
-                    break_down_img_urls = ' '.join(break_down.get('imgUrls', []))
-                    teach_me_img_urls = ' '.join(teach_me.get('imgUrls', []))
-                %>
-                <button type="button" class="scaffold scaffold__btn is-break" data-img-urls="${break_down_img_urls}" data-content="${break_down['content']}">
+                <button type="button" class="scaffold scaffold__btn is-break" data-img-urls="${break_down_img_urls}" data-scaffold-name="break-down">
                     <span class="scaffold__price">
                         -20
                     </span>
                     Break It Down
                 </button>
-                <button type="button" class="scaffold scaffold__btn is-teach" data-img-urls="${teach_me_img_urls}" data-content="${teach_me['content']}">
+                <button type="button" class="scaffold scaffold__btn is-teach" data-img-urls="${teach_me_img_urls}" data-scaffold-name="teach-me">
                     <span class="scaffold__price">
                         -30
                     </span>
