@@ -1,31 +1,37 @@
-<div class="hera_pages_block">
-    <div class="wrapper-page" id="wrapper-page">
-        <div class="image-wrapper">
-        {% if data.imgUrl %}
-            {% for img in data.imgUrl %}
+<div class="author-block__wrapper">
+    <div class="author-block__content">
+        <div class="author-block__image">
+            <div class="image-wrapper">
+                {% if data.imgUrl %}
+                {% for img in data.imgUrl %}
                 <img src="{{ img }}" alt=""/>
-            {% endfor %}
-        {% elif data.iframeUrl %}
-            <iframe src="{{ data.iframeUrl }}"></iframe>
-        {% else %}
-            <img alt="Unfortunately no image"/>
-        {% endif %}
+                {% endfor %}
+                {% elif data.iframeUrl %}
+                <iframe src="{{ data.iframeUrl }}"></iframe>
+                {% else %}
+                <img alt="Unfortunately no image"/>
+                {% endif %}
+            </div>
         </div>
-        <div class="slidebar-wrapper">
-            {% for i in  data.sliderBar %}
-            <div class="single-item">{{ i.content|safe }}</div>
-            {% endfor %}
+        <div class="author-block__question">
+            <div class="slidebar-wrapper">
+                {% for i in  data.sliderBar %}
+                <div class="single-item">{{ i.content|safe }}</div>
+                {% endfor %}
+            </div>
+            <div class="slider-button-wrapper">
+                <button class="slider-button button-prev" type="button">
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                </button>
+                <button class="slider-button button-next" type="button">
+                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                </button>
+            </div>
         </div>
     </div>
-    <div class="button-wrapper">
-        <button class="button-prev" type="button">Previous</button>
-        <button class="button-next" type="button">Next</button>
+    <div id="slider-popup">
+        <p>Give it another try.
+            <br />
+            If you'd like to exit the simulation instead, click exit.</p>
     </div>
 </div>
-
-
-<section id="slider-popup">
-    <p>Give it another try.
-    <br />
-    If you'd like to exit the simulation instead, click exit.</p>
-</section>
