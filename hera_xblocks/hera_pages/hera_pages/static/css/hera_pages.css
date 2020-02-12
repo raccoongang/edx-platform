@@ -5,62 +5,47 @@
     align-items: flex-end;
 }
 
-.instructor-info-action {
-    display: none;
-    visibility: hidden;
+.hera_pages_block .count {
+    font-weight: bold;
 }
 
-.bookmark-button {
-    display: none;
-    visibility: hidden;
-}
-
-.slick-arrow {
-    display: none;
-    visibility: hidden;
-}
-
-.slider-button-wrapper {
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    position: absolute;
-    bottom: 0;
-    left: 0;
+.wrapper-page {
     width: 100%;
-    padding: 0 0 12px;
+    display: flex;
 }
 
-.slider-button {
-    margin: 0 12px;
-    color: #ccc;
-    background: none;
-    border: none;
-    box-shadow: none;
-    outline: none;
-    padding: 0;
-    line-height: 1;
-    height: auto;
-    transition: all .3s ease-in-out;
+.image-wrapper {
+    width: 800px;
+    /* float: left; */
 }
 
-.slider-button i {
-    font-size: 22px;
+.slidebar-wrapper {
+    /* float:left; */
+    width:600px;
 }
 
-.slider-button:hover {
-    opacity: .55;
-    border: none !important;
-    background: none !important;
-    box-shadow: none !important;
-    transform: scale(1.15);
+.column {
+    float: left;
+    width: 33%;
 }
 
-.slider-button:focus,
-.slider-button:active {
-    outline: none !important;
-    box-shadow: none !important;
-    background: none !important;
-    border: none !important;
+.popup_content {
+    margin: 10px;
+    padding: 0 10px;
+    max-width: 60%;
+    border: 2px solid #444;
+    background: white;
+  }
+  
+  .instructor-info-action {
+      visibility: hidden;
+  }
+  
+  .bookmark-button {
+    visibility: hidden;
+  }
+  
+.slick-arrow {
+    visibility: hidden;
 }
+  
