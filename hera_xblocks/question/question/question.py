@@ -40,20 +40,11 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         return self.data.get("description")
 
     @property
-    def question(self):
-        return self.data.get("question")
+    def problem_types(self):
+        return self.data.get("problemTypes", [])
 
-    @property
-    def options(self):
-        return self.data.get("question", {}).get("options")
-
-    @property
-    def correct_answer(self):
-        return self.question.get("answer")
-
-    @property
-    def preciseness(self):
-        preciseness = self.question.get("preciseness")
+    def preciseness(self, problem_type):
+        preciseness = problem_type.get("preciseness")
         preciseness_values = preciseness.split('%')
         try:
             preciseness_value = float(preciseness_values[0]) if preciseness_values else 0
@@ -61,7 +52,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             preciseness_value = 0
 
         if preciseness.rfind('%') > -1:
-            return preciseness_value * float(self.correct_answer) / 100
+            return preciseness_value * float(problem_type['answer']) / 100
         else:
             return preciseness_value
 
@@ -97,14 +88,13 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     def get_context(self):
         return {
             "user_answer": self.user_answer,
-            "question": self.question,
+            "problem_types": self.problem_types,
             "img_urls": self.img_urls,
             "iframe_url": self.iframe_url,
             "description": self.description,
             "confidence_text": self.confidence_text,
             "correct_answer_text": self.correct_answer_text,
             "incorrect_answer_text": self.incorrect_answer_text,
-            "options": self.options,
             "rephrase": self.rephrase,
             "break_down": self.break_down,
             "teach_me": self.teach_me
@@ -116,7 +106,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         when viewing courses.
         """
         context = self.get_context()
-        html = loader.render_django_template(
+        html = loader.render_mako_template(
             'static/html/question.html',
             context=context
         )
@@ -136,37 +126,43 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
 
     @XBlock.json_handler
     def submit(self, data, suffix=''):
-        correct = False
-        answer = data.get("answer")
-        question_type = self.question.get('questionType')
+        answers = data.get("answers")
 
         try:
             user_confidence = int(data.get("confidence"))
         except ValueError:
             user_confidence = None
 
-        if question_type == "number":
-            try:
-                answer = float(answer)
-                correct_answer = float(self.correct_answer)
-                preciseness = self.preciseness
-                if correct_answer - preciseness <= answer <= correct_answer + preciseness:
-                    correct = True
-            except ValueError:
-                answer = None
+        user_answers = []
 
-        elif question_type == "text":
-            if answer == self.correct_answer:
-                correct = True
+        for index, question in enumerate(self.problem_types):
 
-        elif question_type in ["select", "radio", "checkbox"]:
-            correct_answers = [ option["title"] for option in self.options if option["correct"] is True ]
-            if set(answer) == set(correct_answers):
-                correct = True
+            if question['type'] == "number":
+                answer = False
+                if answers[index][0]:
+                    try:
+                        temp_answer = float(answers[index][0])
+                        correct_answer = float(question['answer'])
+                        preciseness = self.preciseness(question)
+                        answer = correct_answer - preciseness <= temp_answer <= correct_answer + preciseness
+                    except ValueError:
+                        pass
+                user_answers.append(answer)
 
-        grade_value = 1 if correct else 0
+            elif question['type'] == "text":
+                answer = answers[index][0].replace(' ', '') == question['answer'].replace(' ', '')
+                user_answers.append(answer)
+
+            elif question['type'] in ["select", "radio", "checkbox"]:
+                correct_answers = [option["title"] for option in question['options'] if option["correct"]]
+                answer = set(answers[index]) == set(correct_answers)
+                user_answers.append(answer)
+
+        result_answer = all(user_answers)
+
+        grade_value = 1 if result_answer else 0
+
         self.runtime.publish(self, 'grade', {'value': grade_value, 'max_value': 1})
-
-        self.user_answer = data.get("answer")
+        self.user_answer = answers
         self.user_confidence = user_confidence
-        return correct
+        return result_answer
