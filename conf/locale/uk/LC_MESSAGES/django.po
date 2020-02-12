@@ -26877,4 +26877,4 @@ msgid "Issued on"
 msgstr "Виданий"
 
 msgid "This certificate certifies that"
-msgstr "Цей сертифікат засівдчує, що"
+msgstr "Цей сертифікат засвідчує, що"
