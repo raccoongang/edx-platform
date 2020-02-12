@@ -3,7 +3,7 @@
         'use strict';
 
         return Backbone.Model.extend({
-            idAttribute: 'term',
+            idAttribute: 'term_facet',
             defaults: {
                 facet: '',
                 term: '',
