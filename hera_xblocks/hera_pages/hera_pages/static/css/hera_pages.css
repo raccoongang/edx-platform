@@ -6,11 +6,13 @@
 }
 
 .instructor-info-action {
-  visibility: hidden;
+    display: none;
+    visibility: hidden;
 }
 
 .bookmark-button {
-visibility: hidden;
+    display: none;
+    visibility: hidden;
 }
 
 .slick-arrow {
