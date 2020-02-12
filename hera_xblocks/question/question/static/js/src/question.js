@@ -14,9 +14,8 @@ function QuestionXBlock(runtime, element, init_args) {
         var $scaffoldHelpImage = $(".scaffold_help_image", element);
         var $questionContent = $(".question__content", element);
         var $submit = $('.submit', element);
-        var invalidChars = ["-", "+", "e", "E"];
 
-        $('input', element).on("change blur keyup", function() {
+        $('[name=answer]', element).on("change blur keyup", function() {
             $confidenceInfo.removeClass("hidden");
             $confidenceInput.removeClass("hidden is-not-valid");
             $submit.removeAttr("disabled");
@@ -25,18 +24,18 @@ function QuestionXBlock(runtime, element, init_args) {
 
         $submit.bind('click', function (e) {
             if ($confidenceInput.val() && $confidenceInput.is(':valid')){
-                var confidence = $confidenceInput.val();
-                var serializedForm = $questionForm.serializeArray();
-                var userAnswers = [];
-                for (var i in init_args.problem_types) {
-                    userAnswers.push([]);
-                }
-                for (var i in serializedForm) {
-                    userAnswers[serializedForm[i].name].push(serializedForm[i].value);
+                var answer = $questionForm.serializeArray();
+                var confidence = $(".confidence-input", element).val();
+                if (init_args.question.questionType == "text" || init_args.question.questionType == "number"){
+                    answer = answer[0].value;
+                } else {
+                    answer = answer.map(function(el) {
+                        return el.value;
+                    });
                 }
                 $.post(
                     submithHandlerUrl,
-                    JSON.stringify({"answers": userAnswers, "confidence": confidence})
+                    JSON.stringify({"answer": answer, "confidence": confidence})
                 ).done(function (response) {
                     if (response === true) {
                         $skipBtn.addClass("hidden");
@@ -56,14 +55,9 @@ function QuestionXBlock(runtime, element, init_args) {
             };
         });
 
-        $('input[type=number]').on('keypress', function(e) {
-            if (invalidChars.includes(e.key)) {
-                e.preventDefault();
-            }
-        });
-
         $('.scaffold', element).bind('click', function (event) {
-            var scaffoldData = $(this).data();
+            scaffoldData = $(event.target).data();
+
             $blockScaffold.removeClass("hidden");
             // TODO: need to substitute img and description for mascot
             // $(".scaffold-img", element).attr('src', scaffoldData.imgUrl);
