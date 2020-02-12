@@ -1,9 +1,8 @@
 /* Javascript for EndSurveyXBlock. */
 function EndSurveyXBlock(runtime, element) {
     let handlerUrl = runtime.handlerUrl(element, 'vote');
-    const $questionForm = $(".survey-form", element);
-    // TODO: Write function do not show button submit if user already answered
-    //  $(document).ready(function() {check user already answered context have self.user_result or not});
+    const $questionsForm = $(".survey-form-questions", element);
+    const $confidenceForm = $(".survey-form-confidence", element);
     $('.slidebar-wrapper').slick({
         slidesToShow: 1,
         slidesToScroll: 1,
@@ -11,34 +10,48 @@ function EndSurveyXBlock(runtime, element) {
         adaptiveHeight: true,
         infinite: false
       });
-    
-    $(".button-next").click((e) => {
+
+    $(".survey-button-next").click(function(e) {
         $('.slidebar-wrapper').slick('slickNext')
     });
-    
-    $(".button-submit").click((e)=> {
+
+    $(".button-submit").click(function(e) {
         $('.button-submit').prop('disabled', true);
-        const answer = $questionForm.serializeArray();
+        const answers = $questionsForm.serializeArray();
+        const confidence = $confidenceForm.serializeArray();
         let answersData = {};
-        for (let i in answer) {
-            let answerObj = answer[i];
+        for (let i in answers) {
+            let answerObj = answers[i];
             answersData[answerObj.name] = answerObj.value;
         };
+        let confidenceData = {};
+        confidenceData[confidence[0].name] = confidence[0].value;
+        data = {
+            answersData: answersData,
+            confidenceData: confidenceData
+        }
         $.ajax({
             type: "POST",
             url: handlerUrl,
-            data: JSON.stringify(answer), // TODO: send all data but could use answersData dict
-            success: console.log('SUCCESS') // TODO: need to create logic for success response ?  
+            data: JSON.stringify(data),
+            success: function(response) {
+                $("#wrapper-page").html(response);
+                $(".button-next").prop('disabled', false);
+            }
         })
     });
-    
-    $(".possible-answers").on('change', (e)=> {
-        if ($(".possible-answers:valid").length === $(".possible-answers").length) {
-            
-            $('.button-next').attr('disabled', false);
+
+    $(".possible-answers").change(function(e) {
+        if ($(".possible-answers:checked").length === $(".question-title").length) {
+            $('.survey-button-next').attr('disabled', false);
+        } else {
+            $('.survey-button-next').attr('disabled', 'disabled');
+        }
+    });
+    $(".confidence-answers").change(function(e) {
+        if ($(".confidence-answers:checked").length === $(".confidence-title").length) {
             $('.button-submit').attr('disabled', false);
         } else {
-            $('.button-next').attr('disabled', 'disabled');
             $('.button-submit').attr('disabled', 'disabled');
         }
     });

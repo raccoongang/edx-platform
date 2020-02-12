@@ -13,19 +13,18 @@ body {
     padding: 0;
     background-color: #004882;
   }
-  
+
   .box {
     /* position: absolute; */
     /* top: 50%; */
     /* left: 50%; */
     /* transform: translate(-50%, -50%); */
   }
-  
+
   .box select {
     background-color: #0563af;
     color: white;
     padding: 12px;
-    width: 80px;
     border: none;
     font-size: 20px;
     box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
@@ -33,7 +32,7 @@ body {
     appearance: button;
     outline: none;
   }
-  
+
   .box::before {
     display: none;
     content: "\f13a";
@@ -50,23 +49,23 @@ body {
     background-color: rgba(255, 255, 255, 0.1);
     pointer-events: none;
   }
-  
+
   .box:hover::before {
     color: rgba(255, 255, 255, 0.6);
     background-color: rgba(255, 255, 255, 0.2);
   }
-  
+
   .box select option {
     padding: 30px;
   }
   .instructor-info-action {
       display: none;
   }
-  
+
   .bookmark-button{
       display: none;
   }
-  
+
   .unit-title {
       display: none;
   }

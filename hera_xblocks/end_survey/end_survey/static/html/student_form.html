@@ -1,0 +1,75 @@
+<div class="slidebar-wrapper">
+    <div class="single-item">
+        <form class="survey-form-questions">
+            <div class="end_survey_block">
+                <div class="servey-questions">
+                    <h2>${title}</h2>
+                    <table>
+                    % for question in questions:
+                        <tr>
+                            <th class="question-title">${question['questionText']}</th>
+                            <td>
+                                <tr>
+                                    <td></td>
+                                    % for possible_answer in question['possibleAnswers']:
+                                        <td>${possible_answer}</td>
+                                    % endfor
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    % for possible_answer in question['possibleAnswers']:
+                                        <td>
+                                            <input class="possible-answers" type="radio" name="${question['questionText']}" value="${possible_answer}">
+                                        </td>
+                                    % endfor
+                                </tr>
+                            </td>
+                        </tr>
+                    % endfor
+                    </table>
+                    <div class="button-wrapper">
+                        <button class="survey-button-next" type="button" disabled>Submit Survey</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="single-item">
+        <form class="survey-form-confidence">
+            <div class="end_survey_block">
+                <div class="servey-questions">
+                    <table>
+                        <tr>
+                            <th class="confidence-title">${confidence['questionText']}</th>
+                            <td>
+                                <tr>
+                                    <td></td>
+                                    % for possible_answer in confidence['possibleAnswers']:
+                                        <td>${possible_answer}</td>
+                                    % endfor
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    % for possible_answer in confidence['possibleAnswers']:
+                                        <td>
+                                            <input class="confidence-answers" type="radio" name="${confidence['questionText']}" value="${possible_answer}">
+                                        </td>
+                                    % endfor
+                                </tr>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="button-wrapper">
+                        <button class="button-submit" type="button" disabled>Submit Survey</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+## Student mustn't be able to clic "Next" button before survey was submitted.
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".button-next").prop('disabled', true);
+    });
+</script>
