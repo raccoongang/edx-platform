@@ -1,26 +1,57 @@
-<div class="end_survey_block">
-    <div class="servey-questions">
-        <h1>STAFF VIEW</h1>
-        <h2>{{ title }}</h2>
-        {% if  user_count %}
-            <h1> {{ user_count }} </h1>
-        {% endif %}
-        {% for q in questions %}
-            <div class=row>
-            <span>{{ q.questionText }}</span>
-            {% if q.type == 'options'%}
-            <div class="box">
-                <select class="possible-answers">
-                    {% for a in q.possibleAnswers %}
-                        <option {% if a == last_choice %}selected{% endif %}> {{a}} </option>
-                    {% endfor %}
-                </select>
-            </div>
-            {% elif q.type == 'text' %}
-                <input type="text" id="survey_answer"> {{a}} </input>
-            {% endif %}
-            </div>
-        {% endfor %}
-        <button class="button-submit" type="button">Submit Survey</button>
+<div class="wrapper1">
+    <h2>${title}</h2>
+    <div class="questions-summary">
+        <h2>Questions:</h2>
+        <table>
+            %for question in results_percentage.get('questions', {}):
+            <tr>
+                <th>${question}</th>
+                <%
+                possible_answers = results_percentage['questions'][question]
+                %>
+                <td>
+                    <tr>
+                        <td></td>
+                        %for possible_answer in possible_answers:
+                            <td>${possible_answer}</td>
+                        %endfor
+                    </tr>
+                    <tr>
+                        <td></td>
+                        %for possible_answer in possible_answers:
+                            <td>${possible_answers.get(possible_answer)}</td>
+                        %endfor
+                    </tr>
+                </td>
+            </tr>
+            %endfor
+        </table>
+    </div>
+    <div class="confidence-summary">
+        <h2>Confidence:</h2>
+        <table>
+            %for confidence in results_percentage.get('confidence', {}):
+            <tr>
+                <th>${confidence}</th>
+                <%
+                possible_answers = results_percentage['confidence'][confidence]
+                %>
+                <td>
+                    <tr>
+                        <td></td>
+                        %for possible_answer in possible_answers:
+                            <td>${possible_answer}</td>
+                        %endfor
+                    </tr>
+                    <tr>
+                        <td></td>
+                        %for possible_answer in possible_answers:
+                            <td>${possible_answers[possible_answer]}</td>
+                        %endfor
+                    </tr>
+                </td>
+            </tr>
+            %endfor
+        </table>
     </div>
 </div>

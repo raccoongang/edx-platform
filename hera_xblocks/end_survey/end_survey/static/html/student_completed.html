@@ -1,0 +1,68 @@
+<div class="student-complited">
+    <h2>${title}</h2>
+    <div class="questions-result">
+        <h2>Questions:</h2>
+        <table>
+            % for question in questions:
+            <tr>
+                <th>${question['questionText']}</th>
+                <td>
+                    <tr>
+                        <td></td>
+                        % for possible_answer in question['possibleAnswers']:
+                            <td>${possible_answer}</td>
+                        % endfor
+                    </tr>
+                    <tr>
+                        <td></td>
+                        % for possible_answer in question['possibleAnswers']:
+                            <%
+                            result = user_result.get('answersData', {}).get(question['questionText'])
+                            if result == possible_answer:
+                                checked = 'checked'
+                            else:
+                                checked = 'disabled'
+                            %>
+                            <td>
+                                <input type="radio" ${checked}>
+                            </td>
+                        % endfor
+                    </tr>
+                </td>
+            </tr>
+            % endfor
+        </table>
+    </div>
+    <div class="confidence-result">
+        <h2>Confidence:</h2>
+        <table>
+            <tr>
+                <th>${confidence['questionText']}</th>
+                <td>
+                    <tr>
+                        <td></td>
+                        % for possible_answer in confidence['possibleAnswers']:
+                            <td>${possible_answer}</td>
+                        % endfor
+                    </tr>
+                    <tr>
+                        <td></td>
+                        % for possible_answer in confidence['possibleAnswers']:
+                            <%
+                            result = user_result.get('confidenceData', {}).get(confidence['questionText'])
+                            if result == possible_answer:
+                                checked = 'checked'
+                            else:
+                                checked = 'disabled'
+                            %>
+                            <td>
+                                <input type="radio" ${checked}>
+                            </td>
+                        % endfor
+                    </tr>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
