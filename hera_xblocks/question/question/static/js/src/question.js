@@ -65,6 +65,7 @@ function QuestionXBlock(runtime, element, init_args) {
         $('.scaffold', element).bind('click', function (event) {
             var scaffoldData = $(this).data();
             $blockScaffold.removeClass("hidden");
+            var contentID = '#' + scaffoldData.scaffoldName + '-' + init_args.location_id;
             // TODO: need to substitute img and description for mascot
             // $(".scaffold-img", element).attr('src', scaffoldData.imgUrl);
             // $(".scaffold-description", element).html("Some text");
@@ -84,7 +85,7 @@ function QuestionXBlock(runtime, element, init_args) {
                     $scaffoldHelpImage.removeClass("hidden");
                 }
             }
-            $questionContent.html(scaffoldData.content);
+            $questionContent.html($(contentID).html());
             $closeBtn.removeClass("hidden");
         });
 

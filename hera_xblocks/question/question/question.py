@@ -97,7 +97,8 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             "incorrect_answer_text": self.incorrect_answer_text,
             "rephrase": self.rephrase,
             "break_down": self.break_down,
-            "teach_me": self.teach_me
+            "teach_me": self.teach_me,
+            'location_id': self.location.block_id
         }
 
     def student_view(self, context=None):
@@ -155,6 +156,15 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
 
             elif question['type'] in ["select", "radio", "checkbox"]:
                 correct_answers = [option["title"] for option in question['options'] if option["correct"]]
+                answer = set(answers[index]) == set(correct_answers)
+                user_answers.append(answer)
+
+            elif question['type'] == "table":
+                correct_answers = []
+                for row in question['tableData'].get('rows', []):
+                    correct_answers += [
+                        val['value'].replace('?', '', 1) for key, val in row.items() if val['value'].startswith('?')
+                    ]
                 answer = set(answers[index]) == set(correct_answers)
                 user_answers.append(answer)
 
