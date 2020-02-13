@@ -1,57 +1,52 @@
-<div class="wrapper1">
-    <h2>${title}</h2>
-    <div class="questions-summary">
-        <h2>Questions:</h2>
-        <table>
+<div class="author-block__wrapper questions-summary">
+    <h2 class="author-title">${title}</h2>
+    <h2 class="author-title">Questions:</h2>
+    <div class="author-block__content is-column">
+        <div class="author-block__question is-full-width">
             %for question in results_percentage.get('questions', {}):
-            <tr>
-                <th>${question}</th>
+                <div class="survey-question-title">${question}</div>
                 <%
-                possible_answers = results_percentage['questions'][question]
+                    possible_answers = results_percentage['questions'][question]
                 %>
-                <td>
-                    <tr>
-                        <td></td>
-                        %for possible_answer in possible_answers:
-                            <td>${possible_answer}</td>
-                        %endfor
-                    </tr>
-                    <tr>
-                        <td></td>
-                        %for possible_answer in possible_answers:
-                            <td>${possible_answers.get(possible_answer)}</td>
-                        %endfor
-                    </tr>
-                </td>
-            </tr>
+                <div class="survey-holder survey-results">
+                    %for possible_answer in possible_answers:
+                        <div class="survey-results-item">
+                            <div class="survey-results-item__title">
+                                ${possible_answer}
+                            </div>
+                            <div class="survey-results-item__percents">
+                                ${possible_answers.get(possible_answer)}
+                            </div>
+                        </div>
+                    %endfor
+                </div>
             %endfor
-        </table>
+        </div>
     </div>
-    <div class="confidence-summary">
-        <h2>Confidence:</h2>
-        <table>
+</div>
+
+<div class="author-block__wrapper confidence-summary">
+    <h2 class="author-title">Confidence:</h2>
+    <div class="author-block__content is-column">
+        <div class="author-block__question is-full-width">
             %for confidence in results_percentage.get('confidence', {}):
-            <tr>
-                <th>${confidence}</th>
-                <%
-                possible_answers = results_percentage['confidence'][confidence]
-                %>
-                <td>
-                    <tr>
-                        <td></td>
-                        %for possible_answer in possible_answers:
-                            <td>${possible_answer}</td>
-                        %endfor
-                    </tr>
-                    <tr>
-                        <td></td>
-                        %for possible_answer in possible_answers:
-                            <td>${possible_answers[possible_answer]}</td>
-                        %endfor
-                    </tr>
-                </td>
-            </tr>
+                <div class="survey-question-title">${confidence}</div>
             %endfor
-        </table>
+            <%
+                possible_answers = results_percentage['confidence'][confidence]
+            %>
+            <div class="survey-holder survey-results">
+                %for possible_answer in possible_answers:
+                    <div class="survey-results-item">
+                        <div class="survey-results-item__title">
+                            ${possible_answer}
+                        </div>
+                        <div class="survey-results-item__percents">
+                            ${possible_answers[possible_answer]}
+                        </div>
+                    </div>
+                %endfor
+            </div>
+        </div>
     </div>
 </div>

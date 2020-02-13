@@ -7,7 +7,8 @@ function HeraPagesXBlock(runtime, element) {
         slidesToScroll: 1,
         fade: true,
         adaptiveHeight: true,
-        infinite: false
+        infinite: false,
+        draggable: false,
         // asNavFor: '.slider-nav'
       });
 
