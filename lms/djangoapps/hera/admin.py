@@ -28,6 +28,31 @@ class OnboardingAdmin(admin.ModelAdmin):
             'js/tinymce_initializer.js'
         )
 
+    def get_queryset(self, request):
+        """
+        Create a default onboarding object in case we have none yet.
+        """
+        qs = super(OnboardingAdmin, self).get_queryset(request)
+
+        if not qs:
+            default_onboarding = self.model()
+            default_onboarding.save()
+
+            qs = super(OnboardingAdmin, self).get_queryset(request)
+
+        return qs
+
+    def has_add_permission(self, request):
+        """
+        Allow to add Onboarding only if no objects exist.
+        """
+        return not self.model.objects.exists()
+
+    def get_actions(self, request):
+        """
+        Remove all actions by returning an empty dictionary.
+        """
+        return dict()
 
 class UserOnboardingAdmin(admin.ModelAdmin):
     """
