@@ -11937,7 +11937,7 @@ msgstr "Начало курса: {date}"
 
 #: lms/templates/courses_list.html
 msgid "View all Courses"
-msgstr "Все курсы"
+msgstr "Показать все"
 
 #: lms/templates/dashboard.html lms/templates/user_dropdown.html
 #: themes/edx.org/lms/templates/dashboard.html
