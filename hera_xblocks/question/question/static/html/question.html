@@ -1,19 +1,21 @@
 <div class="author-block__wrapper">
-    <div class="author-block__content">
-        <div class="author-block__image">
+    <div class="author-block__content ">
+        <div class="author-block__image questions-image-wrapper">
             <span class="close-image-icon hidden js-close-scaffold-btn">&times;</span>
-            % for img_url in img_urls:
-                <div class="image-slider">
+            <div class="image-holder">
+                % for img_url in img_urls:
                     <img class="question__image" src="${img_url}" alt="Question image">
-                </div>
-            % endfor
+                % endfor
+                % if iframe_url:
+                    <div class="show-simulation-holder">
+                        <button type="button" class="btn-simulation show-simulation" data-iframe-url="${iframe_url}">Show simulation</button>
+                    </div>
+                % endif
+            </div>
             <div class="scaffold_help_image hidden">
             </div>
-            % if iframe_url:
-                <button type="button" class="show-simulation" data-iframe-url="${iframe_url}">Show simulation</button>
-            % endif
         </div>
-        <div class="author-block__question">
+        <div class="author-block__question questions-wrapper">
             <div class="question__content">${description}</div>
             <form class="question-form">
                 % for index, problem_type in enumerate(problem_types):
@@ -33,40 +35,42 @@
                             % endfor
                         </select>
                     % elif problem_type['type'] == "table":
-                        <table>
-                            <tbody>
+                        <div class="table-wrapper">
+                            <table>
+                                <tbody>
                                 % if problem_type['tableData'].get('columns'):
-                                    <tr>
-                                        % for column in problem_type['tableData']['columns']:
-                                            % if column['type'] == 'head':
-                                                <th>${column['value'].replace('!', '', 1)}</th>
-                                            % else:
-                                                <td>${column['value']}</td>
-                                            % endif
-                                        % endfor
-                                    </tr>
+                                <tr>
+                                    % for column in problem_type['tableData']['columns']:
+                                    % if column['type'] == 'head':
+                                    <th>${column['value'].replace('!', '', 1)}</th>
+                                    % else:
+                                    <td>${column['value']}</td>
+                                    % endif
+                                    % endfor
+                                </tr>
                                 % endif
                                 % if problem_type['tableData'].get('rows'):
-                                    <% user_answer_input_index = 0 %>
-                                    % for row in problem_type['tableData']['rows']:
-                                        <tr>
-                                            % for idx, col in enumerate(problem_type['tableData'].get('columns')):
-                                                % if row[str(idx)]['value'].startswith('?'):
-                                                    <td>
-                                                        <input type="text" name="${index}" value="${user_answer[index][user_answer_input_index] if user_answer else ''}"/>
-                                                    </td>
-                                                    <% user_answer_input_index += 1 %>
-                                                % elif row[str(idx)]['type'] == 'head':
-                                                    <th>${row[str(idx)]['value'].replace('!', '', 1)}</th>
-                                                % else:
-                                                    <td>${row[str(idx)]['value']}</td>
-                                                % endif
-                                            % endfor
-                                        </tr>
+                                <% user_answer_input_index = 0 %>
+                                % for row in problem_type['tableData']['rows']:
+                                <tr>
+                                    % for idx, col in enumerate(problem_type['tableData'].get('columns')):
+                                    % if row[str(idx)]['value'].startswith('?'):
+                                    <td>
+                                        <input type="text" name="${index}" value="${user_answer[index][user_answer_input_index] if user_answer else ''}"/>
+                                    </td>
+                                    <% user_answer_input_index += 1 %>
+                                    % elif row[str(idx)]['type'] == 'head':
+                                    <th>${row[str(idx)]['value'].replace('!', '', 1)}</th>
+                                    % else:
+                                    <td>${row[str(idx)]['value']}</td>
+                                    % endif
                                     % endfor
+                                </tr>
+                                % endfor
                                 % endif
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     % else:
                         % for option in problem_type['options']:
                             % if option.get('title'):
@@ -94,8 +98,10 @@
                 % endfor
             </form>
             <div class="scaffold-info hidden">
-                <img class="scaffold-img" src="" alt="scaffold img">
-                <div class="scaffold-description"></div>
+<!--                <img class="scaffold-img" src="" alt="scaffold img">-->
+                <div class="scaffold-description">
+                    Check above for a new version of the question.
+                </div>
                 <button type="button" class="author-block__btn try_again">Try Again</button>
             </div>
             <div id="${'rephrase-content-{}'.format(location_id)}" class="rephrase-content" hidden>
@@ -112,19 +118,33 @@
                     break_down_img_urls = ' '.join(break_down.get('imgUrls', []))
                     teach_me_img_urls = ' '.join(teach_me.get('imgUrls', []))
                 %>
-                <button type="button" class="scaffold scaffold__btn is-rephrase" data-scaffold-name="rephrase-content">
+                <button
+                        type="button"
+                        class="scaffold scaffold__btn is-rephrase"
+                        data-scaffold-name="rephrase-content"
+                        data-scaffold-class-name="is-rephrase">
                     <span class="scaffold__price">
                         -20
                     </span>
                     Rephrase
                 </button>
-                <button type="button" class="scaffold scaffold__btn is-break" data-img-urls="${break_down_img_urls}" data-scaffold-name="break-down">
+                <button
+                        type="button"
+                        class="scaffold scaffold__btn is-break"
+                        data-img-urls="${break_down_img_urls}"
+                        data-scaffold-name="break-down"
+                        data-scaffold-class-name="is-break">
                     <span class="scaffold__price">
                         -20
                     </span>
                     Break It Down
                 </button>
-                <button type="button" class="scaffold scaffold__btn is-teach" data-img-urls="${teach_me_img_urls}" data-scaffold-name="teach-me">
+                <button
+                        type="button"
+                        class="scaffold scaffold__btn is-teach"
+                        data-img-urls="${teach_me_img_urls}"
+                        data-scaffold-name="teach-me"
+                        data-scaffold-class-name="is-teach">
                     <span class="scaffold__price">
                         -30
                     </span>
