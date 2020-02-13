@@ -1,25 +1,43 @@
 /* CSS for EndSurveyXBlock */
-
-.end_survey_block .count {
-    font-weight: bold;
+.author-title {
+  color: #0a0a0a !important;
+  font-size: 22px !important;
+  font-weight: 600 !important;
 }
 
-.end_survey_block p {
-    cursor: pointer;
+.survey-question-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0 0 8px;
 }
 
-body {
-    margin: 0;
-    padding: 0;
-    background-color: #004882;
-  }
+.survey-holder {
+  display: flex;
+}
 
-  .box {
-    /* position: absolute; */
-    /* top: 50%; */
-    /* left: 50%; */
-    /* transform: translate(-50%, -50%); */
-  }
+.survey-holder .questions-list__item {
+  margin-right: 12px;
+}
+
+.survey-results {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 18px;
+}
+
+.survey-results-item {
+  margin: 0 0 12px;
+}
+
+.survey-results-item__title {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.survey-results-item__percents {
+  font-size: 12px;
+  text-align: right;
+}
 
   .box select {
     background-color: #0563af;
