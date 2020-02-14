@@ -1,6 +1,7 @@
 /* Javascript for QuestionXBlock. */
 function QuestionXBlock(runtime, element, init_args) {
     var submithHandlerUrl = runtime.handlerUrl(element, 'submit');
+    var skipHandlerUrl = runtime.handlerUrl(element, 'skip');
 
     $(function ($) {
         var $confidenceInfo = $(".confidence-text.info", element);
@@ -14,16 +15,18 @@ function QuestionXBlock(runtime, element, init_args) {
         var $scaffoldHelpImage = $(".scaffold_help_image", element);
         var $questionContent = $(".question__content", element);
         var $submit = $('.submit', element);
-        var $scaffoldContent = $('.author-block__content', element);
         var $questioonsImageWrapper = $('.questions-image-wrapper', element);
         var $questionWrapper = $('.questions-wrapper', element);
         var invalidChars = ["-", "+", "e", "E"];
+        var isSubmissionAllowed = init_args.is_submission_allowed;
 
         $('input', element).on("change blur keyup", function() {
-            $confidenceInfo.removeClass("hidden");
-            $confidenceInput.removeClass("hidden is-not-valid");
-            $submit.removeAttr("disabled");
-            $confidenceInfo.text(init_args.confidence_text);
+            if (isSubmissionAllowed) {
+                $confidenceInfo.removeClass("hidden");
+                $confidenceInput.removeClass("hidden is-not-valid");
+                $submit.removeAttr("disabled");
+                $confidenceInfo.text(init_args.confidence_text);
+            }
         });
 
         $submit.bind('click', function (e) {
@@ -41,22 +44,23 @@ function QuestionXBlock(runtime, element, init_args) {
                     submithHandlerUrl,
                     JSON.stringify({"answers": userAnswers, "confidence": confidence})
                 ).done(function (response) {
-                    if (response === true) {
+                    isSubmissionAllowed = response.is_submission_allowed;
+                    if (response.correct) {
                         $skipBtn.addClass("hidden");
                         $scaffolds.addClass("hidden");
                         $confidenceInfo.text(init_args.correct_answer_text);
                     }
-                    else {
-                        $skipBtn.removeClass("hidden");
+                    else if (isSubmissionAllowed) {
                         $scaffolds.removeClass("hidden");
                         $confidenceInfo.text(init_args.incorrect_answer_text);
                     }
                     $confidenceInput.addClass("hidden");
+                    $confidenceInfo.addClass("hidden");
                     $(e.currentTarget).attr('disabled', 'disabled');
                 });
             } else {
                 $confidenceInput.addClass("is-not-valid");
-            };
+            }
         });
 
         $('input[type=number]').on('keypress', function(e) {
@@ -70,6 +74,7 @@ function QuestionXBlock(runtime, element, init_args) {
             var contentID = '#' + scaffoldData.scaffoldName + '-' + init_args.location_id;
             var scaffoldimages = '';
             var needShowImageBlock = false;
+            $skipBtn.removeClass("hidden");
 
             var scaffoldContent = $(contentID).html();
 
@@ -117,6 +122,19 @@ function QuestionXBlock(runtime, element, init_args) {
             $closeBtn.addClass("hidden");
         });
 
+        $skipBtn.bind('click', function (event) {
+            $.post(
+                skipHandlerUrl, JSON.stringify({"skip": true})
+            ).done(function(response) {
+                isSubmissionAllowed = response.is_submission_allowed;
+                $confidenceInput.addClass("hidden");
+                $confidenceInfo.addClass("hidden");
+                $submit.attr('disabled', 'disabled');
+                }
+            ).error(function(error){
+                console.log(error);
+            });
+        });
 
         $(document).ready(function() {
             $('.show-simulation', element).click(function(e) {
