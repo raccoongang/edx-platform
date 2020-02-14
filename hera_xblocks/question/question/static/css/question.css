@@ -12,15 +12,15 @@
 }
 
 .is-rephrase .questions-wrapper {
-  background: var(--color-repharse);
+  border: 8px solid var(--color-repharse);
 }
 
 .is-break .questions-wrapper {
-  background: var(--color-break);
+  border: 8px solid var(--color-break);
 }
 
 .is-teach .questions-wrapper {
-  background: var(--color-teach);
+  border: 8px solid var(--color-teach);
 }
 
 .is-rephrase .scaffold-info .author-block__btn {
@@ -47,19 +47,30 @@
   background: var(--color-teach) !important;
 }
 
-.is-rephrase .questions-wrapper,
-.is-break .questions-wrapper,
-.is-teach .questions-wrapper {
-  color: #fff;
+.is-rephrase .questions-wrapper .scaffolds,
+.is-break .questions-wrapper .scaffolds,
+.is-teach .questions-wrapper .scaffolds {
+  display: none;
+  visibility: hidden;
 }
 
 .questions-image-wrapper {
+  position: relative;
   transition: all .3s ease-in-out;
 }
 
 .questions-wrapper {
   background: #fff;
   transition: background .3s ease-in-out;
+}
+
+.questions-wrapper p.question-title {
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+
+.questions-wrapper .questions-list-item-holder {
+  margin: 0 0 18px;
 }
 
 .image-holder {
@@ -151,9 +162,9 @@ button:focus:not(:disabled) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 16px 0;
+  padding: 0;
   background: var(--color3);
-  border: 1px solid var(--color2);
+  border: none;
   border-radius: 4px;
 }
 
@@ -198,10 +209,13 @@ button:focus:not(:disabled) {
   transition: all .3s ease-in-out;
   position: relative;
   margin-left: 12px;
+  line-height: 1;
 }
 
 .author-block__btn.skip {
-  background: var(--color6);
+  color: var(--color1);
+  background: var(--color3);
+  border: 1px solid var(--color1);
 }
 
 button.author-block__btn:hover:not(:disabled) {
@@ -212,7 +226,8 @@ button.author-block__btn:hover:not(:disabled) {
 }
 
 .author-block__btn.skip:hover {
-  background: var(--color6) !important;
+  color: var(--color3);
+  background: var(--color1) !important;
 }
 
 .author-block__image>div {
@@ -367,6 +382,7 @@ select.questions-list__select {
   cursor: pointer;
   display: block;
   width: 100%;
+  margin: 0 0 12px;
   transition: all .3s ease-in-out;
 }
 
@@ -379,7 +395,7 @@ select.questions-list__select:focus {
 }
 
 .show-simulation-holder {
-  position: absolute;
+  position: absolute !important;
   left: 24px;
   bottom: 0;
 }
@@ -406,21 +422,42 @@ button.btn-simulation:hover:not(:disabled) {
   text-shadow: none;
 }
 
+button.btn-simulation:active:not(:disabled),
+button.btn-simulation:focus:not(:disabled) {
+  color: #fff;
+  background: var(--color1);
+  border: 1px solid var(--color1);
+  box-shadow: none;
+  text-shadow: none;
+}
+
 /* Styles for table */
 .table-wrapper {
+  margin: 18px 0 0;
   overflow-x: auto;
-  padding: 6px 0;
-  width: 250px;
+  border: 1px solid var(--color2);
 }
 
 .table-wrapper table {
-  display: block;
-  width: 100%;
 }
 
 .table-wrapper table td,
 .table-wrapper table th {
+  padding: 6px 8px;
   position: relative;
+  min-width: 110px;
+  max-width: 110px;
+  word-break: initial;
+  border: 1px solid var(--color2);
+}
+
+.table-wrapper table th {
+  background: #f0f0f0;
+  font-size: 14px;
+}
+
+.table-wrapper table td {
+  font-size: 12px;
 }
 
 .table-wrapper table th input[type="text"],
@@ -436,11 +473,11 @@ button.btn-simulation:hover:not(:disabled) {
 .table-wrapper input[type="password"],
 .table-wrapper textarea.text {
   display: block;
-  border: 1px solid #ccc;
+  border: none;
   box-shadow: none;
-  padding: 4px 42px 4px 8px;
+  padding: 0;
   background: none;
-  width: 162px;
+  width: 100%;
   height: auto;
   font-size: 12px;
   line-height: 1;

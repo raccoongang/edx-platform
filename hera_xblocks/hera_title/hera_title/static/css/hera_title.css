@@ -91,7 +91,7 @@
 
 .author-block__image.is-full-width {
     width: initial;
-    margin: 0 0 12px;
+    margin: 0 auto 12px;
     min-height: auto;
     max-height: initial;
 }
@@ -147,7 +147,7 @@
 .questions-list__item {
     display: flex;
     align-items: center;
-    margin: 0 0 20px;
+    margin: 0 0 8px;
 }
 
 .question-form .questions-list__item:last-child {

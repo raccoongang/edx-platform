@@ -6,102 +6,101 @@
                 % for img_url in img_urls:
                     <img class="question__image" src="${img_url}" alt="Question image">
                 % endfor
-                % if iframe_url:
-                    <div class="show-simulation-holder">
-                        <button type="button" class="btn-simulation show-simulation" data-iframe-url="${iframe_url}">Show simulation</button>
-                    </div>
-                % endif
             </div>
             <div class="scaffold_help_image hidden">
             </div>
+            % if iframe_url:
+                <div class="show-simulation-holder">
+                    <button type="button" class="btn-simulation show-simulation" data-iframe-url="${iframe_url}">Show simulation</button>
+                </div>
+            % endif
         </div>
         <div class="author-block__question questions-wrapper">
             <div class="question__content">${description}</div>
             <form class="question-form">
                 % for index, problem_type in enumerate(problem_types):
-                    % if problem_type.get('title'):
-                        <p>${problem_type['title']}</p>
-                    % endif
-                    % if problem_type['type'] == "text" or problem_type['type'] == "number":
-                        <input class="questions-list__field" type="${problem_type['type']}" name="${index}" value="${user_answer[index][0] if user_answer else ''}"/>
-                    % elif problem_type['type'] == "select":
-                        <select class="questions-list__select" name="${index}">
-                            <option class="questions-list__select-item" value=""> ------- </option>
-                            % for option in problem_type['options']:
-                                % if option.get('title'):
-                                    <% selected = 'selected' if user_answer and option['title'] in user_answer[index] else '' %>
-                                    <option value="${option['title']}" ${selected}>${option['title']}</option>
-                                % endif
-                            % endfor
-                        </select>
-                    % elif problem_type['type'] == "table":
+                    <div class="questions-list-item-holder">
+                        % if problem_type.get('title'):
+                            <p class="question-title">${problem_type['title']}</p>
+                        % endif
+                        % if problem_type['type'] == "text" or problem_type['type'] == "number":
+                            <input class="questions-list__field" type="${problem_type['type']}" name="${index}" value="${user_answer[index][0] if user_answer else ''}"/>
+                        % elif problem_type['type'] == "select":
+                            <select class="questions-list__select" name="${index}">
+                                <option class="questions-list__select-item" value=""> ------- </option>
+                                % for option in problem_type['options']:
+                                    % if option.get('title'):
+                                        <% selected = 'selected' if user_answer and option['title'] in user_answer[index] else '' %>
+                                        <option value="${option['title']}" ${selected}>${option['title']}</option>
+                                    % endif
+                                % endfor
+                            </select>
+                        % elif problem_type['type'] == "table":
                         <div class="table-wrapper">
                             <table>
                                 <tbody>
                                 % if problem_type['tableData'].get('columns'):
-                                <tr>
-                                    % for column in problem_type['tableData']['columns']:
-                                    % if column['type'] == 'head':
-                                    <th>${column['value'].replace('!', '', 1)}</th>
-                                    % else:
-                                    <td>${column['value']}</td>
-                                    % endif
-                                    % endfor
-                                </tr>
+                                    <tr>
+                                        % for column in problem_type['tableData']['columns']:
+                                            % if column['type'] == 'head':
+                                                <th>${column['value'].replace('!', '', 1)}</th>
+                                            % else:
+                                                <td>${column['value']}</td>
+                                            % endif
+                                        % endfor
+                                    </tr>
                                 % endif
                                 % if problem_type['tableData'].get('rows'):
-                                <% user_answer_input_index = 0 %>
+                                    <% user_answer_input_index = 0 %>
                                 % for row in problem_type['tableData']['rows']:
-                                <tr>
-                                    % for idx, col in enumerate(problem_type['tableData'].get('columns')):
-                                    % if row[str(idx)]['value'].startswith('?'):
-                                    <td>
-                                        <input type="text" name="${index}" value="${user_answer[index][user_answer_input_index] if user_answer else ''}"/>
-                                    </td>
-                                    <% user_answer_input_index += 1 %>
-                                    % elif row[str(idx)]['type'] == 'head':
-                                    <th>${row[str(idx)]['value'].replace('!', '', 1)}</th>
-                                    % else:
-                                    <td>${row[str(idx)]['value']}</td>
-                                    % endif
+                                    <tr>
+                                        % for idx, col in enumerate(problem_type['tableData'].get('columns')):
+                                            % if row[str(idx)]['value'].startswith('?'):
+                                                <td>
+                                                    <input placeholder="Enter data here" type="text" name="${index}" value="${user_answer[index][user_answer_input_index] if user_answer else ''}"/>
+                                                </td>
+                                                <% user_answer_input_index += 1 %>
+                                            % elif row[str(idx)]['type'] == 'head':
+                                                <th>${row[str(idx)]['value'].replace('!', '', 1)}</th>
+                                            % else:
+                                                <td>${row[str(idx)]['value']}</td>
+                                            % endif
+                                        % endfor
+                                    </tr>
                                     % endfor
-                                </tr>
-                                % endfor
                                 % endif
                                 </tbody>
                             </table>
                         </div>
-                    % else:
-                        % for option in problem_type['options']:
-                            % if option.get('title'):
-                                <% checked_flag = '' %>
-                                %if user_answer and option['title'] in user_answer[index]:
-                                    <% checked_flag = 'checked' %>
-                                %endif
-                                <div class="questions-list__item">
-                                    <label class="questions-list__label">
-                                        <input
-                                                class="questions-list__input"
-                                                type="${problem_type['type']}"
-                                                name="${index}"
-                                                value="${option['title']}"
-                                                ${checked_flag}
-                                        />
-                                        <span class="questions-list__text">
-                                            ${option['title']}
-                                        </span>
-                                    </label>
-                                </div>
-                            % endif
-                        % endfor
-                    % endif
+                        % else:
+                            % for option in problem_type['options']:
+                                % if option.get('title'):
+                                    <% checked_flag = '' %>
+                                    %if user_answer and option['title'] in user_answer[index]:
+                                        <% checked_flag = 'checked' %>
+                                    %endif
+                                        <div class="questions-list__item">
+                                            <label class="questions-list__label">
+                                                <input
+                                                        class="questions-list__input"
+                                                        type="${problem_type['type']}"
+                                                        name="${index}"
+                                                        value="${option['title']}"
+                                                        ${checked_flag}
+                                                />
+                                                <span class="questions-list__text">
+                                                        ${option['title']}
+                                                    </span>
+                                            </label>
+                                        </div>
+                                % endif
+                            % endfor
+                        % endif
+                    </div>
                 % endfor
             </form>
             <div class="scaffold-info hidden">
 <!--                <img class="scaffold-img" src="" alt="scaffold img">-->
-                <div class="scaffold-description">
-                    Check above for a new version of the question.
-                </div>
                 <button type="button" class="author-block__btn try_again">Try Again</button>
             </div>
             <div id="${'rephrase-content-{}'.format(location_id)}" class="rephrase-content" hidden>
