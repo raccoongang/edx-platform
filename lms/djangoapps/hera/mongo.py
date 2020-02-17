@@ -43,6 +43,7 @@ USER = 'user'
 BLOCK_ID = 'block_id'
 NEXT_ID = 'next_id'
 LEVEL = 'unit_level'
+COMPLETED_SUBSECTIONS = 'COMPLETED_SUBSECTIONS'
 
 
 

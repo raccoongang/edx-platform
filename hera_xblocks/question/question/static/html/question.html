@@ -34,11 +34,17 @@
                         <div class="table-wrapper">
                             <table>
                                 <tbody>
+                                <% user_answer_input_index = 0 %>
                                 % if problem_type['tableData'].get('columns'):
                                     <tr>
                                         % for column in problem_type['tableData']['columns']:
                                             % if column['type'] == 'head':
                                                 <th>${column['value'].replace('!', '', 1)}</th>
+                                            % elif column['value'].startswith('?'):
+                                                <td>
+                                                    <input type="text" name="${index}" value="${user_answer[index][user_answer_input_index] if user_answer else ''}"/>
+                                                </td>
+                                                <% user_answer_input_index += 1 %>
                                             % else:
                                                 <td>${column['value']}</td>
                                             % endif
@@ -46,7 +52,7 @@
                                     </tr>
                                 % endif
                                 % if problem_type['tableData'].get('rows'):
-                                    <% user_answer_input_index = 0 %>
+
                                 % for row in problem_type['tableData']['rows']:
                                     <tr>
                                         % for idx, col in enumerate(problem_type['tableData'].get('columns')):
