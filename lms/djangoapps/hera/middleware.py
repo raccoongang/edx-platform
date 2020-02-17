@@ -1,6 +1,8 @@
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 
+from student.models import CourseEnrollment
+
 from .models import ActiveCourseSetting, UserOnboarding
 
 
@@ -36,15 +38,20 @@ class AllowedUrlsMiddleware(object):
         return False
 
     def process_request(self, request):
-        if request.user.is_authenticated():
+        user = request.user
+        if user.is_authenticated():
             is_path_allowed = self.is_allowed(request.path)
             is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == 'XMLHttpRequest'
-            if not request.user.is_staff:
+            if not user.is_staff:
                 if not is_ajax and not is_path_allowed:
                     raise Http404
                 if 'logout' in request.path:
                     return # let students logout
-                if not ActiveCourseSetting.last():
+                active_course = ActiveCourseSetting.last()
+                if active_course:
+                    if not CourseEnrollment.is_enrolled(user, active_course.course.id):
+                        raise Http404
+                else:
                     raise Http404
                 if not request.path == reverse('hera:onboarding'):
                     if not UserOnboarding.onboarding_is_passed(request.user.id):
