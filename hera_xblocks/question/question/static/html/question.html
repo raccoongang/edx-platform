@@ -9,11 +9,6 @@
             </div>
             <div class="scaffold_help_image hidden">
             </div>
-            % if iframe_url:
-                <div class="show-simulation-holder">
-                    <button type="button" class="btn-simulation show-simulation" data-iframe-url="${iframe_url}">Show simulation</button>
-                </div>
-            % endif
         </div>
         <div class="author-block__question questions-wrapper">
             <div class="question__content">${description}</div>
@@ -112,45 +107,50 @@
             <div id="${'teach-me-{}'.format(location_id)}" class="teach-me-content" hidden>
                 ${teach_me.get('content')}
             </div>
-            <div class="scaffolds hidden">
-                <%
-                    break_down_img_urls = ' '.join(break_down.get('imgUrls', []))
-                    teach_me_img_urls = ' '.join(teach_me.get('imgUrls', []))
-                %>
-                <button
-                        type="button"
-                        class="scaffold scaffold__btn is-rephrase"
-                        data-scaffold-name="rephrase-content"
-                        data-scaffold-class-name="is-rephrase">
+        </div>
+        <div class="scaffolds hidden">
+            <%
+            break_down_img_urls = ' '.join(break_down.get('imgUrls', []))
+            teach_me_img_urls = ' '.join(teach_me.get('imgUrls', []))
+            %>
+            <button
+                    type="button"
+                    class="scaffold scaffold__btn is-rephrase"
+                    data-scaffold-name="rephrase-content"
+                    data-scaffold-class-name="is-rephrase">
                     <span class="scaffold__price">
                         -20
                     </span>
-                    Rephrase
-                </button>
-                <button
-                        type="button"
-                        class="scaffold scaffold__btn is-break"
-                        data-img-urls="${break_down_img_urls}"
-                        data-scaffold-name="break-down"
-                        data-scaffold-class-name="is-break">
+                Rephrase
+            </button>
+            <button
+                    type="button"
+                    class="scaffold scaffold__btn is-break"
+                    data-img-urls="${break_down_img_urls}"
+                    data-scaffold-name="break-down"
+                    data-scaffold-class-name="is-break">
                     <span class="scaffold__price">
                         -20
                     </span>
-                    Break It Down
-                </button>
-                <button
-                        type="button"
-                        class="scaffold scaffold__btn is-teach"
-                        data-img-urls="${teach_me_img_urls}"
-                        data-scaffold-name="teach-me"
-                        data-scaffold-class-name="is-teach">
+                Break It Down
+            </button>
+            <button
+                    type="button"
+                    class="scaffold scaffold__btn is-teach"
+                    data-img-urls="${teach_me_img_urls}"
+                    data-scaffold-name="teach-me"
+                    data-scaffold-class-name="is-teach">
                     <span class="scaffold__price">
                         -30
                     </span>
-                    Teach Me
-                </button>
-            </div>
+                Teach Me
+            </button>
         </div>
+        % if iframe_url:
+            <div class="show-simulation-holder">
+                <button type="button" class="btn-simulation show-simulation" data-iframe-url="${iframe_url}">Show simulation</button>
+            </div>
+        % endif
     </div>
     <div class="author-holder author-block__buttons">
         <span class="confidence-text info hidden"></span>

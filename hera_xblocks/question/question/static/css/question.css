@@ -47,9 +47,9 @@
   background: var(--color-teach) !important;
 }
 
-.is-rephrase .questions-wrapper .scaffolds,
-.is-break .questions-wrapper .scaffolds,
-.is-teach .questions-wrapper .scaffolds {
+.is-rephrase .scaffolds,
+.is-break .scaffolds,
+.is-teach .scaffolds {
   display: none;
   visibility: hidden;
 }
@@ -95,9 +95,9 @@
   position: absolute;
   bottom: 0;
   left: auto;
-  right: auto;
+  right: 12px;
   margin: 0 auto;
-  width: 295px;
+  width: 298px;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   border: 1px solid var(--color2);
