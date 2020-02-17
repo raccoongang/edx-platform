@@ -25,9 +25,11 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    position: static;
-    width: 100%;
-    padding: 0 0 12px;
+    width: 314px;
+    padding: 4px 0 12px;
+    position: absolute;
+    bottom: 1px;
+    right: 12px;
 }
 
 .wrapper-page {

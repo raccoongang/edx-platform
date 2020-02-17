@@ -14,6 +14,7 @@ function QuestionXBlock(runtime, element, init_args) {
         var $scaffoldHelpImage = $(".scaffold_help_image", element);
         var $questionContent = $(".question__content", element);
         var $submit = $('.submit', element);
+        var $scaffoldContent = $('.author-block__content', element);
         var invalidChars = ["-", "+", "e", "E"];
 
         $('input', element).on("change blur keyup", function() {
@@ -65,6 +66,7 @@ function QuestionXBlock(runtime, element, init_args) {
         $('.scaffold', element).bind('click', function (event) {
             var scaffoldData = $(this).data();
             $blockScaffold.removeClass("hidden");
+            $scaffoldContent.removeClass('is-teach is-break is-rephrase');
             var contentID = '#' + scaffoldData.scaffoldName + '-' + init_args.location_id;
             // TODO: need to substitute img and description for mascot
             // $(".scaffold-img", element).attr('src', scaffoldData.imgUrl);
@@ -85,6 +87,7 @@ function QuestionXBlock(runtime, element, init_args) {
                     $scaffoldHelpImage.removeClass("hidden");
                 }
             }
+            $scaffoldContent.addClass(scaffoldData.scaffoldClassName);
             $questionContent.html($(contentID).html());
             $closeBtn.removeClass("hidden");
         });
@@ -93,6 +96,7 @@ function QuestionXBlock(runtime, element, init_args) {
             $blockScaffold.addClass("hidden");
             $questionForm.removeClass("hidden");
             $questionContent.html(init_args.description);
+            $scaffoldContent.removeClass('is-teach is-break is-rephrase');
         });
 
         $closeBtn.bind('click', function (event) {
