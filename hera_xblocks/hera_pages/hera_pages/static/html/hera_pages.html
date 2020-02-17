@@ -23,7 +23,9 @@
                             </div>
                             % if item.get('tableData'):
                                 <% user_answer_input_index = 0 %>
+
                                 <form class="table-form">
+                                    <div class="table-wrapper">
                                     <table>
                                         <tbody>
                                             % if item['tableData'].get('columns'):
@@ -39,7 +41,7 @@
                                                                     except IndexError:
                                                                         column_answer = ''
                                                                 %>
-                                                                <input type="text" name="${index}" value="${column_answer}"/>
+                                                                <input placeholder="Enter data here" type="text" name="${index}" value="${column_answer}"/>
                                                             </td>
                                                             <% user_answer_input_index += 1 %>
                                                         % else:
@@ -60,7 +62,7 @@
                                                                         except IndexError:
                                                                             row_answer = ''
                                                                     %>
-                                                                    <input type="text" name="${index}" value="${row_answer}"/>
+                                                                    <input placeholder="Enter data here" type="text" name="${index}" value="${row_answer}"/>
                                                                 </td>
                                                                 <% user_answer_input_index += 1 %>
                                                             % elif row[str(idx)].get('type') == 'head':
@@ -74,27 +76,24 @@
                                             % endif
                                         </tbody>
                                     </table>
+                                    </div>
                                 </form>
                             % endif
                         </div>
                     % endfor
                 % endif
             </div>
-            <!-- Oleksandr Buhaienko. It's message which shown and hide by next or prev button actions -->
-            <div class="js-show-hide-warning-message">
-                <p>Warning message</p>
-            </div>
-            % if data.get('imgUrl') and len(data.get('imgUrl')) > 1 or data.get(sliderBar) and len(data.get(sliderBar)) > 1:
-                <div class="slider-button-wrapper">
-                    <button class="slider-button button-prev js-click-prev" type="button">
-                        <i class="fa fa-arrow-left" aria-hidden="true"></i>
-                    </button>
-                    <button class="slider-button button-next js-click-next" type="button">
-                        <i class="fa fa-arrow-right" aria-hidden="true"></i>
-                    </button>
-                </div>
-            % endif
         </div>
+        % if data.get('imgUrl') and len(data.get('imgUrl')) > 1 or data.get(sliderBar) and len(data.get(sliderBar)) > 1:
+            <div class="slider-button-wrapper">
+                <button class="slider-button button-prev js-click-prev" type="button">
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                </button>
+                <button class="slider-button button-next js-click-next" type="button">
+                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                </button>
+            </div>
+        % endif
     </div>
     <div id="slider-popup">
         <p>Give it another try.
