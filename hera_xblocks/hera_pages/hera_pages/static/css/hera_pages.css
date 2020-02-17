@@ -25,7 +25,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    width: 314px;
+    width: 100%;
     padding: 4px 0 12px;
     position: absolute;
     bottom: 1px;
@@ -87,4 +87,8 @@
 
 .slick-arrow {
     visibility: hidden;
+}
+
+.slick-list {
+    min-height: 500px;
 }
