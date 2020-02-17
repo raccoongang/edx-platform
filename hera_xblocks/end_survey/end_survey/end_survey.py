@@ -40,6 +40,10 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
     def title(self):
         return self.data.get("title")
 
+    @property
+    def mascot_url(self):
+        return self.data.get("imgUrl")
+
     def result_summary_count(self):
         """
         Counter for survey results.
@@ -77,7 +81,7 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
                 }
             }
         }
-        # Count procentage:
+        # Count percentage:
         for single_student_result in self.result_summary:
             for question, answer in single_student_result['answersData'].items():
                 results["questions"][question][answer] += (round((1.0/float(self.user_count))*100, 1))
@@ -139,14 +143,15 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
             "user_result": self.user_result,
             "questions": self.questions,
             "title": self.title,
-            "confidence": self.confidence
+            "confidence": self.confidence,
+            "mascot_url": self.mascot_url
         }
 
     def get_context_staff(self):
         """Staff context."""
         return {
             "title": self.title,
-            "results_percentage": self.results_percentage,
+            "results_percentage": self.result_summary_count(),
         }
 
     def resource_string(self, path):
@@ -167,7 +172,6 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
         self.user_count += 1
         self.user_result = data
         self.result_summary.append(data)
-        self.results_percentage = self.result_summary_count()
         context = self.get_context()
         return loader.render_mako_template(
                     'static/html/student_completed.html',

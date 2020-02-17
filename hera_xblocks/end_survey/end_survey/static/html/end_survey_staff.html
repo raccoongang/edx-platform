@@ -31,12 +31,11 @@
         <div class="author-block__question is-full-width">
             %for confidence in results_percentage.get('confidence', {}):
                 <div class="survey-question-title">${confidence}</div>
-            %endfor
-            <%
+                <%
                 possible_answers = results_percentage['confidence'][confidence]
-            %>
-            <div class="survey-holder survey-results">
-                %for possible_answer in possible_answers:
+                %>
+                <div class="survey-holder survey-results">
+                    %for possible_answer in possible_answers:
                     <div class="survey-results-item">
                         <div class="survey-results-item__title">
                             ${possible_answer}
@@ -45,7 +44,8 @@
                             ${possible_answers[possible_answer]}
                         </div>
                     </div>
-                %endfor
+                    %endfor
+            %endfor
             </div>
         </div>
     </div>
