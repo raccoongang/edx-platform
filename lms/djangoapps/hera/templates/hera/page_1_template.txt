@@ -1,0 +1,13 @@
+<div>
+<div>
+<h1 style="font-variant-numeric: normal; font-variant-east-asian: normal; font-weight: normal; font-stretch: normal; line-height: 1.4em; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #313131; margin: 0px 0px 30px; text-align: center;">Hi! Welcome to HERA.</h1>
+<h3 style="color: #313131; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 1.2em; line-height: 1.2em; margin: 0px 0px 6px; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;">What is HERA?</h3>
+<div style="font-weight: 400; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #222222; font-size: 16px;">
+<p style="color: inherit; margin: 0px 0px 24px; line-height: 1.5;">The HERA system is designed to help you learn scientific thinking skills in an easy and engaging way.</p>
+</div>
+<h3 style="color: #313131; font-variant-numeric: normal; font-variant-east-asian: normal; font-stretch: normal; font-size: 1.2em; line-height: 1.2em; margin: 0px 0px 6px; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;">What is Scientific Thinking?</h3>
+<div style="font-weight: 400; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #222222; font-size: 16px;">
+<p style="color: inherit; margin: 0px 0px 24px; line-height: 1.5;">Every new invention or discovery is a result of scientific work. Scientific thinking also teaches you problem solving skills, and includes reasoning and critical thinking.</p>
+</div>
+</div>
+</div>

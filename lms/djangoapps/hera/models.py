@@ -15,7 +15,7 @@ def render_template(page_number):
     """
     Return rendered template as a string.
     """
-    template = Template(render_to_string('hera/{}.html'.format(page_number)))
+    template = Template(render_to_string('hera/{}_template.txt'.format(page_number)))
     return template.render(**{'settings': settings})
 
 

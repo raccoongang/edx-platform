@@ -1,0 +1,7 @@
+
+<div>
+<h1 style="font-variant-numeric: normal; font-variant-east-asian: normal; font-weight: normal; font-stretch: normal; line-height: 1.4em; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #313131; margin: 0px 0px 30px; text-align: center;">If you need a break...</h1>
+<div style="font-weight: 400; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #222222; font-size: 16px;">
+<p style="color: inherit; margin: 0px 0px 24px; text-align: center; line-height: 1.5;">Try to complete each lesson in one session. If you have to stop in the middle of a lesson for longer than 30 minutes, you'll start at the beginning of that lesson when you come back.</p>
+</div>
+</div>

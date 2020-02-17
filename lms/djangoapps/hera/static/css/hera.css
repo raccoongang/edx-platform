@@ -1,0 +1,8 @@
+.module.aligned .form-row > div {
+    display: flex;
+    height: 100%;
+}
+
+.module.aligned .form-row .mce-edit-area iframe {
+    height: 450px !important;
+}
