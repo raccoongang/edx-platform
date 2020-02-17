@@ -38,7 +38,7 @@
                                 % if problem_type['tableData'].get('columns'):
                                     <tr>
                                         % for column in problem_type['tableData']['columns']:
-                                            % if column['type'] == 'head':
+                                            % if column.get('type') == 'head':
                                                 <th>${column['value'].replace('!', '', 1)}</th>
                                             % elif column['value'].startswith('?'):
                                                 <td>
@@ -61,7 +61,7 @@
                                                     <input placeholder="Enter data here" type="text" name="${index}" value="${user_answer[index][user_answer_input_index] if user_answer else ''}"/>
                                                 </td>
                                                 <% user_answer_input_index += 1 %>
-                                            % elif row[str(idx)]['type'] == 'head':
+                                            % elif row[str(idx)].get('type') == 'head':
                                                 <th>${row[str(idx)]['value'].replace('!', '', 1)}</th>
                                             % else:
                                                 <td>${row[str(idx)]['value']}</td>
