@@ -3,7 +3,7 @@
 import pkg_resources
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
-from xblock.fields import JSONField, String
+from xblock.fields import JSONField, Scope, String
 from xblockutils.studio_editable import StudioEditableXBlockMixin
 from xblockutils.resources import ResourceLoader
 
@@ -19,6 +19,7 @@ class HeraPagesXBlock(StudioEditableXBlockMixin, XBlock):
 
     display_name = String(default="Hera Pages")
     data = JSONField()
+    user_answers = JSONField(scope=Scope.user_state, default='')
 
     @property
     def img_url(self):
@@ -51,9 +52,9 @@ class HeraPagesXBlock(StudioEditableXBlockMixin, XBlock):
         when viewing courses.
         """
         
-        html = loader.render_django_template(
+        html = loader.render_mako_template(
             'static/html/hera_pages.html',
-            context={"data": self.data}
+            context={"data": self.data, "user_answers": self.user_answers}
         )
         frag = Fragment(html.format(self=self))
         frag.add_css(self.resource_string("static/css/hera_pages.css"))
@@ -69,3 +70,8 @@ class HeraPagesXBlock(StudioEditableXBlockMixin, XBlock):
       
         frag.initialize_js('HeraPagesXBlock')
         return frag
+
+    @XBlock.json_handler
+    def submit(self, data, suffix=''):
+        self.user_answers = data.get("answers")
+        return True
