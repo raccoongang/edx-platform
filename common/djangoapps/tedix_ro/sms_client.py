@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Client to deal with SMS provider
 """
@@ -128,7 +129,7 @@ class SMSClient(Singletone):
                 return
         settings = {
             'number': number,
-            'message': quote_plus(quote_plus(message)), # the durty hack, didn't find another solution to handle the message
+            'message': quote_plus(quote_plus(message.encode('utf8'))), # the durty hack, didn't find another solution to handle the message
         }
         response_data = self._get(self.SEND_MESSAGE_TEMPLATE, **settings)
         if response_data:
