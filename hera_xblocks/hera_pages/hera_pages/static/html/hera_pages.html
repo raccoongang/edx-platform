@@ -1,17 +1,17 @@
 <div class="author-block__wrapper">
     <div class="author-block__content">
         <div class="author-block__image">
-            <div class="image-wrapper">
-                % if data.get('imgUrl'):
+            % if data.get('imgUrl'):
+                <div class="image-wrapper">
                     % for img in data['imgUrl']:
                         <img src="${ img }" alt=""/>
                     % endfor
-                % elif data.get('iframeUrl'):
-                    <iframe src="${ data['iframeUrl'] }"></iframe>
-                % else:
-                    <img alt="Unfortunately no image"/>
-                % endif
-            </div>
+                </div>
+            % elif data.get('iframeUrl'):
+                <iframe src="${ data['iframeUrl'] }"></iframe>
+            % else:
+                <img alt="Unfortunately no image"/>
+            % endif
         </div>
         <div class="author-block__question">
             <div class="slidebar-wrapper">
@@ -84,7 +84,7 @@
                 % endif
             </div>
         </div>
-        % if data.get('imgUrl') and len(data.get('imgUrl')) > 1 or data.get(sliderBar) and len(data.get(sliderBar)) > 1:
+        % if len(data.get('imgUrl', [])) > 1 or len(data.get('sliderBar', [])) > 1 or data.get('iframeUrl'):
             <div class="slider-button-wrapper">
                 <button class="slider-button button-prev js-click-prev" type="button">
                     <i class="fa fa-arrow-left" aria-hidden="true"></i>

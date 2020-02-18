@@ -92,3 +92,19 @@
 .slick-list {
     min-height: 500px;
 }
+
+.author-block-no-image {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 100%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 1;
+}
+
+.author-block-no-image i {
+    font-size: 96px;
+    color: var(--color2);
+    margin-bottom: 12px;
+}
