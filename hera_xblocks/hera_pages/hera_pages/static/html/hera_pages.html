@@ -83,17 +83,17 @@
                     % endfor
                 % endif
             </div>
+            % if len(data.get('imgUrl', [])) > 1 or len(data.get('sliderBar', [])) > 1 or data.get('iframeUrl'):
+                <div class="slider-button-wrapper">
+                    <button class="slider-button button-prev js-click-prev hidden" type="button">
+                        <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                    </button>
+                    <button class="slider-button button-next js-click-next" type="button">
+                        <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+            % endif
         </div>
-        % if len(data.get('imgUrl', [])) > 1 or len(data.get('sliderBar', [])) > 1 or data.get('iframeUrl'):
-            <div class="slider-button-wrapper">
-                <button class="slider-button button-prev js-click-prev" type="button">
-                    <i class="fa fa-arrow-left" aria-hidden="true"></i>
-                </button>
-                <button class="slider-button button-next js-click-next" type="button">
-                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
-                </button>
-            </div>
-        % endif
     </div>
     <div id="slider-popup">
         <p>Give it another try.
