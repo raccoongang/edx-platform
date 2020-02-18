@@ -1,28 +1,23 @@
 /* Javascript for HeraPagesXBlock. */
-function HeraPagesXBlock(runtime, element) {
+function HeraPagesXBlock(runtime, element, init_args) {
     var submithHandlerUrl = runtime.handlerUrl(element, 'submit');
     var isFormValid;
     var $questionForm = $(".table-form", element);
     var $submit = $('.submit', element);
+    var blockId = init_args.block_id;
+    var slickImagesSelector = '.image-wrapper-' + blockId;
+    var slickSliderBarSelector = '.slidebar-wrapper-' + blockId;
+    var slickSelectors = slickSliderBarSelector + ', ' +  slickImagesSelector;
 
     $('#slider-popup').popup();
-    $('.slidebar-wrapper, .image-wrapper').slick({
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        fade: true,
-        adaptiveHeight: true,
-        infinite: false,
-        draggable: false,
-        // asNavFor: '.slider-nav'
-      });
 
     let shouldShowMessage = true;
 
     $(".button-prev", element).click(function(e){
-        var imgSlideId = $('.image-wrapper', element).slick('slickCurrentSlide');
+        var imgSlideId = $(slickImagesSelector, element).slick('slickCurrentSlide');
         var contentSlideId = $('.slidebar-wrapper', element).slick('slickCurrentSlide');
         var slideId = imgSlideId < contentSlideId ? contentSlideId : imgSlideId;
-        $('.image-wrapper, .slidebar-wrapper', element).slick('slickGoTo', slideId-1)
+        $(slickSelectors, element).slick('slickGoTo', slideId-1)
     });
 
     $(".button-next", element).click(function(e){
@@ -30,7 +25,7 @@ function HeraPagesXBlock(runtime, element) {
             shouldShowMessage = false;
             $('#slider-popup', element).popup('show')
         } else {
-            $('.image-wrapper, .slidebar-wrapper', element).slick('slickNext')
+            $(slickSelectors, element).slick('slickNext')
         }
     });
 
@@ -49,7 +44,7 @@ function HeraPagesXBlock(runtime, element) {
 
     $(document).ready(function() {
         $('#slider-popup').popup();
-        $('.slidebar-wrapper, .image-wrapper').slick({
+        $(slickSelectors).slick({
             slidesToShow: 1,
             slidesToScroll: 1,
             fade: true,

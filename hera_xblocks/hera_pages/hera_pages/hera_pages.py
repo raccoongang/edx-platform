@@ -54,21 +54,21 @@ class HeraPagesXBlock(StudioEditableXBlockMixin, XBlock):
         
         html = loader.render_mako_template(
             'static/html/hera_pages.html',
-            context={"data": self.data, "user_answers": self.user_answers}
+            context={"data": self.data, "user_answers": self.user_answers, 'block_id': self.location.block_id}
         )
         frag = Fragment(html.format(self=self))
         frag.add_css(self.resource_string("static/css/hera_pages.css"))
         frag.add_javascript(self.resource_string("static/js/src/hera_pages.js"))
 
         # slick jquery cdn
-        frag.add_css_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css")
-        frag.add_css_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css")
+        # frag.add_css_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css")
+        # frag.add_css_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css")
         
-        frag.add_javascript_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.js")
+        # frag.add_javascript_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.js")
         
-        frag.add_javascript_url("https://cdn.jsdelivr.net/gh/vast-engineering/jquery-popup-overlay@2/jquery.popupoverlay.min.js")
+        # frag.add_javascript_url("https://cdn.jsdelivr.net/gh/vast-engineering/jquery-popup-overlay@2/jquery.popupoverlay.min.js")
       
-        frag.initialize_js('HeraPagesXBlock')
+        frag.initialize_js('HeraPagesXBlock', json_args={'block_id': self.location.block_id})
         return frag
 
     @XBlock.json_handler

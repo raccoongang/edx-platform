@@ -90,7 +90,7 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
 
         return results
 
-    def user_is_staff(self):
+    def html_for_role(self):
         """
         This is a function which return different html templates, depends whether user is staff or not.
              - end_survey_staff is template with statistics from all the students.
@@ -137,22 +137,31 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
 
         return html
 
+    def get_common_context(self):
+        return {
+            'block_id': self.location.block_id
+        }
+
     def get_context(self):
         """User context."""
-        return {
+        context = self.get_common_context()
+        context.update({
             "user_result": self.user_result,
             "questions": self.questions,
             "title": self.title,
             "confidence": self.confidence,
             "mascot_url": self.mascot_url
-        }
+        })
+        return context
 
     def get_context_staff(self):
         """Staff context."""
-        return {
+        context = self.get_common_context()
+        context.update({
             "title": self.title,
             "results_percentage": self.result_summary_count(),
-        }
+        })
+        return context
 
     def resource_string(self, path):
         """Handy helper for getting resources from our kit."""
@@ -183,18 +192,11 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
         The primary view of the EndSurveyXBlock, shown to students
         when viewing courses.
         """
-        html = self.user_is_staff()
+        html = self.html_for_role()
         frag = Fragment(html)
         frag.add_css(self.resource_string("static/css/end_survey.css"))
         frag.add_javascript(self.resource_string("static/js/src/end_survey.js"))
 
-        # slick jquery cdn
-        frag.add_css_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css")
-        frag.add_css_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css")
-
-        frag.add_javascript_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.js")
-        frag.add_javascript_url("https://cdn.jsdelivr.net/gh/vast-engineering/jquery-popup-overlay@2/jquery.popupoverlay.min.js")
-
-        frag.initialize_js('EndSurveyXBlock')
+        frag.initialize_js('EndSurveyXBlock', json_args={'block_id': self.location.block_id})
 
         return frag
