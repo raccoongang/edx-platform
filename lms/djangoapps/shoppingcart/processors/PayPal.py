@@ -107,8 +107,7 @@ def _record_purchase(params, order):
     # Mark the order as purchased and store the billing information
     payer = params.get('payer', {})
     payer_info = payer.get('payer_info', {})
-    # Data was formerly present under 'billing_address', but now it seems to be at 'shipping_address'
-    billing_address = payer_info.get('billing_address') or payer_info.get('shipping_address', {})
+    billing_address = payer_info.get('billing_address', {})
     order.purchase(
         first=payer_info.get('first_name', ''),
         last=payer_info.get('last_name', ''),
