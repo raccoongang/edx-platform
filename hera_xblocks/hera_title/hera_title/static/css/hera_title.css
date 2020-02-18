@@ -111,12 +111,30 @@
     box-sizing: border-box;
     width: 30%;
     border: 1px solid var(--color2);
-    padding: 12px;
+    padding: 12px 12px 38px;
     position: relative;
     max-height: var(--height);
     min-height: var(--height);
     overflow-y: auto;
 }
+
+/* Firefox padding scroll bug fix */
+@-moz-document url-prefix() {
+    .author-block__question:after {
+        content: '';
+        height: 50px;
+        display: block;
+    }
+}
+
+/* Safari padding scroll bug fix */
+@media not all and (min-resolution:.001dpcm){ @supports (-webkit-appearance:none) {
+    .author-block__question:after {
+        content: '';
+        height: 50px;
+        display: block;
+    }
+}}
 
 .author-block__question.is-full-width {
     box-sizing: border-box;

@@ -453,6 +453,7 @@ button.btn-simulation:focus:not(:disabled) {
 
 .table-wrapper table th {
   background: #f0f0f0;
+  border-right-color: #969393;
   font-size: 14px;
 }
 
