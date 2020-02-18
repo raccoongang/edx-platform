@@ -48,6 +48,12 @@ class OnboardingAdmin(admin.ModelAdmin):
         """
         return not self.model.objects.exists()
 
+    def has_delete_permission(self, request, obj=None):
+        """
+        Forbid to delete onboarding item(s).
+        """
+        return False
+
     def get_actions(self, request):
         """
         Remove all actions by returning an empty dictionary.
