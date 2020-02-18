@@ -105,6 +105,7 @@
 .author-block__image iframe {
     height: 100%;
     min-height: 395px;
+    border: none !important;
 }
 
 .author-block__question {
