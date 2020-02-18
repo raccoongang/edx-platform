@@ -444,7 +444,7 @@ define([
                 var MockCollection = Backbone.Collection.extend({
                     hasNextPage: function() {},
                     latestModelsCount: 0,
-                    pageSize: 20,
+                    pageSize: 8,
                     latestModels: function() {
                         return SearchCollection.prototype.latestModels.apply(this, arguments);
                     }
