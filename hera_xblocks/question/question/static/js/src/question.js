@@ -10,7 +10,7 @@ function QuestionXBlock(runtime, element, init_args) {
         var $closeBtn = $(".js-close-scaffold-btn", element);
         var $skipBtn = $('.skip', element);
         var $questionForm = $(".question-form", element);
-        var $questionSlider = $(".image-slider", element);
+        var $questionSlider = $(".image-holder", element);
         var $scaffoldHelpImage = $(".scaffold_help_image", element);
         var $questionContent = $(".question__content", element);
         var $submit = $('.submit', element);
@@ -68,21 +68,19 @@ function QuestionXBlock(runtime, element, init_args) {
             $blockScaffold.removeClass("hidden");
             $scaffoldContent.removeClass('is-teach is-break is-rephrase');
             var contentID = '#' + scaffoldData.scaffoldName + '-' + init_args.location_id;
-            // TODO: need to substitute img and description for mascot
-            // $(".scaffold-img", element).attr('src', scaffoldData.imgUrl);
-            // $(".scaffold-description", element).html("Some text");
 
             $questionForm.addClass("hidden");
-            $scaffoldHelpImage.html('');
+            var scaffoldContent = '';
             if (scaffoldData.imgUrls && scaffoldData.imgUrls.length) {
                 var needShowImageBlock = false;
                 scaffoldData.imgUrls.split(' ').forEach((el, ind) => {
                     if (el) {
                         needShowImageBlock = true;
-                        $scaffoldHelpImage.append('<img src="' + el + '" alt="Scaffold help image"/>');
+                        scaffoldContent+='<img src="' + el + '" alt="Scaffold help image"/>';
                     }
                 });
                 if (needShowImageBlock) {
+                    $scaffoldHelpImage.html(scaffoldContent);
                     $questionSlider.addClass("hidden");
                     $scaffoldHelpImage.removeClass("hidden");
                 }
@@ -100,6 +98,7 @@ function QuestionXBlock(runtime, element, init_args) {
         });
 
         $closeBtn.bind('click', function (event) {
+            $scaffoldContent.removeClass('is-teach is-break is-rephrase');
             $scaffoldHelpImage.addClass("hidden");
             $questionSlider.removeClass("hidden");
             $closeBtn.addClass("hidden");
@@ -115,12 +114,6 @@ function QuestionXBlock(runtime, element, init_args) {
 
             $('.simulation-close-btn', element).click(function() {
                 $('.simulation-overlay', element).fadeOut(300);
-            });
-
-            $('.image-slider', element).slick({
-                infinite: false,
-                arrows: true,
-                adaptiveHeight: true
             });
         });
     });
