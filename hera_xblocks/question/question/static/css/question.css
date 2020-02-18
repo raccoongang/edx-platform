@@ -435,10 +435,6 @@ button.btn-simulation:focus:not(:disabled) {
 .table-wrapper {
   margin: 18px 0 0;
   overflow-x: auto;
-  border: 1px solid var(--color2);
-}
-
-.table-wrapper table {
 }
 
 .table-wrapper table td,
@@ -453,7 +449,8 @@ button.btn-simulation:focus:not(:disabled) {
 
 .table-wrapper table th {
   background: #f0f0f0;
-  border-right-color: #969393;
+  border-color: #969393;
+  background-clip: padding-box;
   font-size: 14px;
 }
 
