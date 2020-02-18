@@ -189,14 +189,22 @@
         };
 
         Sequence.prototype.enableButton = function(buttonClass, buttonAction) {
+            var classToBeRemoved = 'disabled';
+            if (buttonClass === '.sequence-nav-button.button-previous') {
+                classToBeRemoved += '  hidden';
+            }
             this.$(buttonClass)
-                .removeClass('disabled')
+                .removeClass(classToBeRemoved)
                 .removeAttr('disabled')
                 .click(buttonAction);
         };
 
         Sequence.prototype.disableButton = function(buttonClass) {
-            this.$(buttonClass).addClass('disabled').attr('disabled', true);
+            var classToBeAdded = 'disabled';
+            if (buttonClass === '.sequence-nav-button.button-previous') {
+                classToBeAdded += '  hidden';
+            }
+            this.$(buttonClass).addClass(classToBeAdded).attr('disabled', true);
         };
 
         Sequence.prototype.updateButtonState = function(buttonClass, buttonAction, isAtBoundary, boundaryUrl) {
