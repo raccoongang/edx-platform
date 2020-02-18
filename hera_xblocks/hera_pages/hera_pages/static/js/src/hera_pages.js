@@ -34,6 +34,30 @@ function HeraPagesXBlock(runtime, element) {
         }
     });
 
+    var slidebarSlideCount = 0;
+    var imageSlideCount = 0;
+    $('.slidebar-wrapper, .image-wrapper', element).on('beforeChange', function(event, slick) {
+        if($( event.target ).is('.slidebar-wrapper')){
+            slidebarSlideCount = slick.slideCount;
+        } else if($( event.target ).is('.image-wrapper')){
+            imageSlideCount = slick.slideCount;
+        }
+    });
+
+    $('.slidebar-wrapper, .image-wrapper', element).on('afterChange', function(event, slick) {
+        $(".button-prev, .button-next", element).removeClass('hidden');
+        var imgSlideId = $('.image-wrapper', element).slick('slickCurrentSlide');
+        var contentSlideId = $('.slidebar-wrapper', element).slick('slickCurrentSlide');
+        var slideId = imgSlideId < contentSlideId ? contentSlideId : imgSlideId;
+        var slideCount = slidebarSlideCount < imageSlideCount ? imageSlideCount : slidebarSlideCount;
+        if (slideId == 0) {
+            $(".button-prev", element).addClass('hidden');
+        } else if(slideId + 1 == slideCount){
+            $(".button-next", element).addClass('hidden');
+        }
+    });
+
+
     isFormValid = function () {
         const $inputElements = $('.slick-active .column-input', element);
         let result = true;
