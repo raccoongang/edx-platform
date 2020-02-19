@@ -13,7 +13,7 @@ function HeraPagesXBlock(runtime, element, init_args) {
 
     $(".button-prev", element).click(function(e){
         var imgSlideId = $(slickImagesSelector, element).slick('slickCurrentSlide');
-        var contentSlideId = $('.slidebar-wrapper', element).slick('slickCurrentSlide');
+        var contentSlideId = $(slickSliderBarSelector, element).slick('slickCurrentSlide');
         var slideId = imgSlideId < contentSlideId ? contentSlideId : imgSlideId;
         $(slickSelectors, element).slick('slickGoTo', slideId-1)
     });
@@ -29,18 +29,18 @@ function HeraPagesXBlock(runtime, element, init_args) {
 
     var slidebarSlideCount = 0;
     var imageSlideCount = 0;
-    $('.slidebar-wrapper, .image-wrapper', element).on('beforeChange', function(event, slick) {
-        if($( event.target ).is('.slidebar-wrapper')){
+    $(slickImagesSelector, element).add(slickSliderBarSelector, element).on('beforeChange', function(event, slick) {
+        if($( event.target ).is(slickSliderBarSelector)){
             slidebarSlideCount = slick.slideCount;
-        } else if($( event.target ).is('.image-wrapper')){
+        } else if($( event.target ).is(slickImagesSelector)){
             imageSlideCount = slick.slideCount;
         }
     });
 
-    $('.slidebar-wrapper, .image-wrapper', element).on('afterChange', function(event, slick) {
+    $(slickImagesSelector, element).add(slickSliderBarSelector, element).on('afterChange', function(event, slick) {
         $(".button-prev, .button-next", element).removeClass('hidden');
-        var imgSlideId = $('.image-wrapper', element).slick('slickCurrentSlide');
-        var contentSlideId = $('.slidebar-wrapper', element).slick('slickCurrentSlide');
+        var imgSlideId = $(slickImagesSelector, element).slick('slickCurrentSlide');
+        var contentSlideId = $(slickSliderBarSelector, element).slick('slickCurrentSlide');
         var slideId = imgSlideId < contentSlideId ? contentSlideId : imgSlideId;
         var slideCount = slidebarSlideCount < imageSlideCount ? imageSlideCount : slidebarSlideCount;
         if (slideId == 0) {
