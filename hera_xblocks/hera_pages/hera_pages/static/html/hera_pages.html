@@ -41,7 +41,7 @@
                                                                     except IndexError:
                                                                         column_answer = ''
                                                                 %>
-                                                                <input placeholder="Enter data here" type="text" name="${index}" value="${column_answer}"/>
+                                                                <input placeholder="Enter data here" type="text" name="${index}" value="${column_answer}" required/>
                                                             </td>
                                                             <% user_answer_input_index += 1 %>
                                                         % else:
@@ -62,7 +62,7 @@
                                                                         except IndexError:
                                                                             row_answer = ''
                                                                     %>
-                                                                    <input placeholder="Enter data here" type="text" name="${index}" value="${row_answer}"/>
+                                                                    <input placeholder="Enter data here" type="text" name="${index}" value="${row_answer}" required/>
                                                                 </td>
                                                                 <% user_answer_input_index += 1 %>
                                                             % elif row[str(idx)].get('type') == 'head':
@@ -95,12 +95,7 @@
             % endif
         </div>
     </div>
-    <div class="author-holder author-block__buttons">
+    <div class="author-holder author-block__buttons submit-button-holder">
         <button type="button" class="author-block__btn submit">Submit</button>
-    </div>
-    <div id="slider-popup">
-        <p>Give it another try.
-            <br />
-            If you'd like to exit the simulation instead, click exit.</p>
     </div>
 </div>

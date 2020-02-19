@@ -1,34 +1,29 @@
 /* Javascript for HeraPagesXBlock. */
 function HeraPagesXBlock(runtime, element, init_args) {
     var submithHandlerUrl = runtime.handlerUrl(element, 'submit');
-    var isFormValid;
-    var $questionForm = $(".table-form", element);
-    var $submit = $('.submit', element);
+    var $submitButton = $('.submit', element);
     var blockId = init_args.block_id;
     var slickImagesSelector = '.image-wrapper-' + blockId;
     var slickSliderBarSelector = '.slidebar-wrapper-' + blockId;
     var slickSelectors = slickSliderBarSelector + ', ' +  slickImagesSelector;
-    let shouldShowMessage = true;
-    var userAttempts = 0;
-
-    $(".button-prev", element).click(function(e){
-        var imgSlideId = $(slickImagesSelector, element).slick('slickCurrentSlide');
-        var contentSlideId = $(slickSliderBarSelector, element).slick('slickCurrentSlide');
-        var slideId = imgSlideId < contentSlideId ? contentSlideId : imgSlideId;
-        $(slickSelectors, element).slick('slickGoTo', slideId-1)
-    });
-
-    $(".button-next", element).click(function(e){
-        if(shouldShowMessage && !isFormValid()) {
-            shouldShowMessage = false;
-            $('#slider-popup', element).popup('show')
-        } else {
-            $(slickSelectors, element).slick('slickNext')
-        }
-    });
-
+    var showMessage = true;
     var slidebarSlideCount = 0;
     var imageSlideCount = 0;
+
+    // click on the next arrow
+    $(".button-prev", element).click(function(e){
+        var currentImgSlideId = $(slickImagesSelector, element).slick('slickCurrentSlide');
+        var currentContentSlideId = $(slickSliderBarSelector, element).slick('slickCurrentSlide');
+        var slideId = currentImgSlideId < currentContentSlideId ? currentContentSlideId : currentImgSlideId;
+        $(slickSelectors, element).slick('slickGoTo', slideId-1);
+    });
+
+    // click on the prev arrow
+    $(".button-next", element).click(function(e){
+        $(slickSelectors, element).slick('slickNext');
+    });
+
+    // get number of sliders
     $(slickImagesSelector, element).add(slickSliderBarSelector, element).on('beforeChange', function(event, slick) {
         if($( event.target ).is(slickSliderBarSelector)){
             slidebarSlideCount = slick.slideCount;
@@ -37,6 +32,7 @@ function HeraPagesXBlock(runtime, element, init_args) {
         }
     });
 
+    // functionality to show/hide appropriate arrows
     $(slickImagesSelector, element).add(slickSliderBarSelector, element).on('afterChange', function(event, slick) {
         $(".button-prev, .button-next", element).removeClass('hidden');
         var imgSlideId = $(slickImagesSelector, element).slick('slickCurrentSlide');
@@ -50,22 +46,12 @@ function HeraPagesXBlock(runtime, element, init_args) {
         }
     });
 
-
-    isFormValid = function () {
-        const $inputElements = $('.slick-active .column-input', element);
-        let result = true;
-        if ($inputElements.length) {
-            $inputElements.each(function(i, el){
-                if(!$(el).val()) {
-                    result = false;
-                }
-            });
-        }
-        return result;
-    };
-
     $(document).ready(function() {
-        $('#slider-popup').popup();
+        if ($('input', element).length) {
+            $('.submit-button-holder').show();
+        } else {
+            $('.submit-button-holder').hide();
+        }
         $(slickSelectors).slick({
             slidesToShow: 1,
             slidesToScroll: 1,
@@ -77,36 +63,17 @@ function HeraPagesXBlock(runtime, element, init_args) {
         });
     });
 
-    checkFilledForm = function(serializedForm) {
-        var emptyFormChecker = [];
+    $submitButton.bind('click', function (e) {
+        var $questionForm = $(".table-form", element);
 
-        $(serializedForm).each(function( index, element ) {
-            if (element.value) {
-                emptyFormChecker.push(true)
-            } else {
-                emptyFormChecker.push(false)
-            }
-        });
-
-        const every = (element) => element === true;
-
-        if (emptyFormChecker.every(every) || userAttempts > 0) {
-            $(document).find('.js-show-hide-warning-message').hide();
-            userAttempts = 0;
-            return true;
-        } else {
+        if (!$questionForm.is(':valid') && showMessage) {
             $(document).find('.js-show-hide-warning-message').show();
-            userAttempts += 1;
-            return false;
-        }
-    };
+            showMessage = false;
+        } else {
+            $(document).find('.js-show-hide-warning-message').hide();
+            var serializedForm = $questionForm.serializeArray();
+            var userAnswers = [];
 
-
-    $submit.bind('click', function (e) {
-        var serializedForm = $questionForm.serializeArray();
-        var userAnswers = [];
-        var formChecker = checkFilledForm(serializedForm);
-        if (formChecker) {
             for (var i = 0; i < $questionForm.length; i++) {
                 userAnswers.push([]);
             }
@@ -116,8 +83,9 @@ function HeraPagesXBlock(runtime, element, init_args) {
             $.post(
                 submithHandlerUrl,
                 JSON.stringify({"answers": userAnswers})
-            )
+            ).error(function(error){
+                console.log(error);
+            });
         }
     });
-
 }
