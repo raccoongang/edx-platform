@@ -6,15 +6,15 @@
 </div>
 <div style="font-weight: 400; display: flex; justify-content: space-between; position: relative; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #222222; font-size: 16px;">
 <div style="position: relative; width: 159px;">
-<div style="display: flex; align-items: center; margin: 0px 0px 12px;"><img style="border: 0px; vertical-align: middle; margin-right: 8px; width: 82px; position: relative;" src="/static/edx-theme/images/atoms/icon_atom_1.png" alt="atom_icon1" /><span class="onboarding-atom-counter" style="color: inherit; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: 26px; line-height: inherit; position: relative;">300</span></div>
+<div style="display: flex; align-items: center; margin: 0px 0px 12px;"><img style="border: 0px; vertical-align: middle; margin-right: 8px; width: 82px; position: relative;" src="/static/${settings.DEFAULT_SITE_THEME}/images/atoms/icon_atom_1.png" alt="atom_icon1" /><span class="onboarding-atom-counter" style="color: inherit; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: 26px; line-height: inherit; position: relative;">300</span></div>
 <p style="color: inherit; margin: 0px;">Start with 300 lightning bolts to use if you need help</p>
 </div>
 <div style="position: relative; width: 159px;">
-<div style="display: flex; align-items: center; margin: 0px 0px 12px;"><img style="border: 0px; vertical-align: middle; margin-right: 8px; width: 82px; position: relative;" src="/static/edx-theme/images/atoms/icon_atom_2.png" alt="atom_icon2" /><span class="onboarding-atom-counter" style="color: inherit; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: 26px; line-height: inherit; position: relative;">100</span></div>
+<div style="display: flex; align-items: center; margin: 0px 0px 12px;"><img style="border: 0px; vertical-align: middle; margin-right: 8px; width: 82px; position: relative;" src="/static/${settings.DEFAULT_SITE_THEME}/images/atoms/icon_atom_2.png" alt="atom_icon2" /><span class="onboarding-atom-counter" style="color: inherit; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: 26px; line-height: inherit; position: relative;">100</span></div>
 <p style="color: inherit; margin: 0px;">Earn 10 atoms for each question.</p>
 </div>
 <div style="position: relative; width: 159px;">
-<div style="display: flex; align-items: center; margin: 0px 0px 12px;"><img style="border: 0px; vertical-align: middle; margin-right: 8px; width: 82px; position: relative;" src="/static/edx-theme/images/atoms/icon_atom_3.png" alt="atom_icon3" /><span class="onboarding-atom-counter" style="color: inherit; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: 26px; line-height: inherit; position: relative;">Gold</span></div>
+<div style="display: flex; align-items: center; margin: 0px 0px 12px;"><img style="border: 0px; vertical-align: middle; margin-right: 8px; width: 82px; position: relative;" src="/static/${settings.DEFAULT_SITE_THEME}/images/atoms/icon_atom_3.png" alt="atom_icon3" /><span class="onboarding-atom-counter" style="color: inherit; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: 26px; line-height: inherit; position: relative;">Gold</span></div>
 <p style="color: inherit; margin: 0px;">Convert atoms to a medal after each lesson!</p>
 </div>
 </div>
