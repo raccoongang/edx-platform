@@ -115,9 +115,6 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         frag.add_css(self.resource_string("static/css/question.css"))
         frag.add_javascript(self.resource_string("static/js/src/question.js"))
 
-        frag.add_css_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css")
-        frag.add_javascript_url("https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.js")
-
         frag.initialize_js('QuestionXBlock', json_args=context)
         return frag
 

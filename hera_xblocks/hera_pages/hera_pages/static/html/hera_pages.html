@@ -2,7 +2,7 @@
     <div class="author-block__content">
         <div class="author-block__image">
             % if data.get('imgUrl'):
-                <div class="image-wrapper">
+                <div class="image-wrapper-${block_id}">
                     % for img in data['imgUrl']:
                         <img src="${ img }" alt=""/>
                     % endfor
@@ -14,7 +14,7 @@
             % endif
         </div>
         <div class="author-block__question">
-            <div class="slidebar-wrapper">
+            <div class="slidebar-wrapper-${block_id}">
                 % if data.get('sliderBar'):
                     % for index, item in enumerate(data['sliderBar']):
                         <div class="single-item">

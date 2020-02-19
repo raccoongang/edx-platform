@@ -1,9 +1,11 @@
 /* Javascript for EndSurveyXBlock. */
-function EndSurveyXBlock(runtime, element) {
-    let handlerUrl = runtime.handlerUrl(element, 'vote');
-    const $questionsForm = $(".survey-form-questions", element);
-    const $confidenceForm = $(".survey-form-confidence", element);
-    $('.slidebar-wrapper').slick({
+function EndSurveyXBlock(runtime, element, init_args) {
+    var handlerUrl = runtime.handlerUrl(element, 'vote');
+    var $questionsForm = $(".survey-form-questions", element);
+    var $confidenceForm = $(".survey-form-confidence", element);
+    var blockId = init_args.block_id;
+    var sclickSliderSelector = '.slidebar-wrapper-' + blockId;
+    $(sclickSliderSelector).slick({
         slidesToShow: 1,
         slidesToScroll: 1,
         fade: true,
@@ -12,7 +14,7 @@ function EndSurveyXBlock(runtime, element) {
       });
 
     $(".survey-button-next").click(function(e) {
-        $('.slidebar-wrapper').slick('slickNext')
+        $(sclickSliderSelector).slick('slickNext');
     });
 
     $(".button-submit").click(function(e) {
