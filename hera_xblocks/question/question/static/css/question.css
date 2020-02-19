@@ -1,17 +1,17 @@
 /* Questions page elements */
-.is-rephrase .questions-image-wrapper {
+.is-rephrase {
   border: 8px solid var(--color-repharse);
 }
 
-.is-break .questions-image-wrapper {
+.is-break {
   border: 8px solid var(--color-break);
 }
 
-.is-teach .questions-image-wrapper {
+.is-teach {
   border: 8px solid var(--color-teach);
 }
 
-.is-rephrase .questions-wrapper {
+/* .is-rephrase .questions-wrapper {
   border: 8px solid var(--color-repharse);
 }
 
@@ -21,7 +21,7 @@
 
 .is-teach .questions-wrapper {
   border: 8px solid var(--color-teach);
-}
+}*/
 
 .is-rephrase .scaffold-info .author-block__btn {
   background: var(--color-repharse);
