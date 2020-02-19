@@ -7945,7 +7945,7 @@ msgstr "Зарегистрироваться через edX"
 
 #: lms/templates/student_account/login.underscore
 msgid "First time here?"
-msgstr "Вы здесь первый раз?"
+msgstr "Вы здесь впервые?"
 
 #: lms/templates/student_account/login.underscore
 msgid "Sign In"
