@@ -225,7 +225,21 @@ button.author-block__btn:hover:not(:disabled) {
   background-image: none;
 }
 
+button.author-block__btn:active:not(:disabled),
+button.author-block__btn:focus:not(:disabled) {
+  opacity: 1;
+  box-shadow: none;
+  background: var(--color1);
+  background-image: none;
+}
+
 .author-block__btn.skip:hover {
+  color: var(--color3);
+  background: var(--color1) !important;
+}
+
+.author-block__btn.skip:active,
+.author-block__btn.skip:focus {
   color: var(--color3);
   background: var(--color1) !important;
 }
@@ -290,6 +304,10 @@ input[type=number].confidence-input {
 
 .confidence-input:invalid {
   border-color: var(--color6) !important;
+}
+
+.confidence-text {
+  margin-left: 12px;
 }
 
 .confidence-text.error {
