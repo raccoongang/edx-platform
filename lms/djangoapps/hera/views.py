@@ -26,7 +26,7 @@ class OnboardingPagesView(View):
         Render user onboarding pages.
         """
         user_onboarding, _ = UserOnboarding.objects.get_or_create(user=request.user)
-        if request.user and not request.user.is_staff and user_onboarding.is_passed():
+        if request.user and user_onboarding.is_passed():
             return HttpResponseRedirect(reverse('hera:dashboard'))
         context = {
             'pages': user_onboarding.get_pages(),
