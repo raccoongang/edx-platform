@@ -8,10 +8,8 @@ function HeraPagesXBlock(runtime, element, init_args) {
     var slickImagesSelector = '.image-wrapper-' + blockId;
     var slickSliderBarSelector = '.slidebar-wrapper-' + blockId;
     var slickSelectors = slickSliderBarSelector + ', ' +  slickImagesSelector;
-
-    $('#slider-popup').popup();
-
     let shouldShowMessage = true;
+    var userAttempts = 0;
 
     $(".button-prev", element).click(function(e){
         var imgSlideId = $(slickImagesSelector, element).slick('slickCurrentSlide');
@@ -79,8 +77,7 @@ function HeraPagesXBlock(runtime, element, init_args) {
         });
     });
 
-    $questionForm.on('change blur keyup', function(e) {
-        var serializedForm = $questionForm.serializeArray();
+    checkFilledForm = function(serializedForm) {
         var emptyFormChecker = [];
 
         $(serializedForm).each(function( index, element ) {
@@ -93,29 +90,34 @@ function HeraPagesXBlock(runtime, element, init_args) {
 
         const every = (element) => element === true;
 
-        if (emptyFormChecker.every(every)) {
-            $submit.removeAttr("disabled");
+        if (emptyFormChecker.every(every) || userAttempts > 0) {
+            $(document).find('.js-show-hide-warning-message').hide();
+            userAttempts = 0;
+            return true;
         } else {
-            $submit.attr("disabled", 'disabled');
+            $(document).find('.js-show-hide-warning-message').show();
+            userAttempts += 1;
+            return false;
         }
-    });
+    };
 
 
     $submit.bind('click', function (e) {
         var serializedForm = $questionForm.serializeArray();
         var userAnswers = [];
-
-        for (var i = 0; i < $questionForm.length; i++) {
-            userAnswers.push([]);
+        var formChecker = checkFilledForm(serializedForm);
+        if (formChecker) {
+            for (var i = 0; i < $questionForm.length; i++) {
+                userAnswers.push([]);
+            }
+            for (var i in serializedForm) {
+                userAnswers[serializedForm[i].name].push(serializedForm[i].value);
+            }
+            $.post(
+                submithHandlerUrl,
+                JSON.stringify({"answers": userAnswers})
+            )
         }
-        for (var i in serializedForm) {
-            userAnswers[serializedForm[i].name].push(serializedForm[i].value);
-        }
-
-        $.post(
-            submithHandlerUrl,
-            JSON.stringify({"answers": userAnswers})
-        )
     });
 
 }
