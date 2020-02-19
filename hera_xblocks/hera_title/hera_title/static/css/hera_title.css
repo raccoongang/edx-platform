@@ -7,9 +7,9 @@
     --color5: #000;
     --color6: #ff0000;
     --color-op: rgba(0,0,0,0.8);
-    --color-repharse: #29abe2;
-    --color-break: #00a99d;
-    --color-teach: #f7931e;
+    --color-repharse: rgb(37, 123, 186);
+    --color-break: rgb(103, 65, 114);
+    --color-teach: rgb(236, 139, 34);
     --height: 650px;
 }
 

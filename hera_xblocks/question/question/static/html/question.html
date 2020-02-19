@@ -159,8 +159,10 @@
     </div>
     <div class="author-holder author-block__buttons">
         <span class="confidence-text info hidden"></span>
-        <input type="number" class="confidence-input hidden" min="0" max="100"/>
-        <span class="confidence-text error">Please tell us how confident you are about your answer.</span>
+        <div class="confidence-holder">
+            <input type="number" class="confidence-input hidden" min="0" max="100"/>
+            <span class="confidence-text error">Please tell us how confident you are about your answer.</span>
+        </div>
         <button type="button" class="author-block__btn skip hidden">Skip</button>
         <button type="button" class="author-block__btn submit" disabled>Submit</button>
     </div>

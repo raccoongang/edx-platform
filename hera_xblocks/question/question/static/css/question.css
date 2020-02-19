@@ -225,7 +225,21 @@ button.author-block__btn:hover:not(:disabled) {
   background-image: none;
 }
 
+button.author-block__btn:active:not(:disabled),
+button.author-block__btn:focus:not(:disabled) {
+  opacity: 1;
+  box-shadow: none;
+  background: var(--color1);
+  background-image: none;
+}
+
 .author-block__btn.skip:hover {
+  color: var(--color3);
+  background: var(--color1) !important;
+}
+
+.author-block__btn.skip:active,
+.author-block__btn.skip:focus {
   color: var(--color3);
   background: var(--color1) !important;
 }
@@ -258,6 +272,7 @@ button.author-block__btn:hover:not(:disabled) {
 .confidence-input {
   display: inline-block;
   box-sizing: border-box;
+  width: 50px;
   height: 38px;
   border: 1px solid var(--color2);
   box-shadow: none;
@@ -281,6 +296,10 @@ input[type=number].confidence-input {
   -moz-appearance:textfield;
 }
 
+.confidence-holder {
+  position: relative;
+}
+
 .confidence-input:active,
 .confidence-input:focus {
   border-color: var(--color1);
@@ -292,8 +311,39 @@ input[type=number].confidence-input {
   border-color: var(--color6) !important;
 }
 
+.confidence-text {
+  margin-left: 12px;
+}
+
 .confidence-text.error {
   display: none;
+  margin: 0;
+  position: absolute;
+  left: -88px;
+  top: -100px;
+  width: 222px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, .85);
+  padding: 20px;
+  color: var(--color2);
+  font-size: 14px;
+  text-align: center;
+}
+
+.confidence-text.error:before {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  margin-left: -16px;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 15px 12.5px 0 12.5px;
+  border-color: #000 transparent transparent transparent;
+  opacity: .85;
 }
 
 .confidence-input.is-not-valid + .confidence-text.error {
