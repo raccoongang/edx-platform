@@ -40,7 +40,7 @@ const questionTemplate = {
     description: "",
     imgUrls: [],
     iframeUrl: "",
-    confidenceText: "How confident are you",
+    confidenceText: "How confident are you about your answer on a scale of 0-100?",
     correctAnswerText: "The correct answer text",
     incorrectAnswerText: "An incorrect answer text",
     rephrase: {
