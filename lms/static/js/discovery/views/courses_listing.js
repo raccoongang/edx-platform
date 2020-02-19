@@ -55,7 +55,7 @@
 
             isNearBottom: function() {
                 var scrollBottom = this.$window.scrollTop() + this.$window.height();
-                var threshold = this.$document.height() - 200;
+                var threshold = this.$document.height() - 400;
                 return scrollBottom >= threshold;
             }
 

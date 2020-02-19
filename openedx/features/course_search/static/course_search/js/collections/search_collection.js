@@ -9,7 +9,7 @@
         return Backbone.Collection.extend({
 
             model: SearchResult,
-            pageSize: 20,
+            pageSize: 8,
             totalCount: 0,
             latestModelsCount: 0,
             accessDeniedCount: 0,
