@@ -84,3 +84,9 @@ class DashboardPageView(CourseTabView):
     def render_to_fragment(self, request, course=None, **kwargs):
         home_fragment_view = DashboardPageFragmentView()
         return home_fragment_view.render_to_fragment(request, course_id=unicode(course.id), **kwargs)
+
+
+class RegisterSuccessView(View):
+
+    def get(self, equest, **kwargs):
+        return render_to_response("hera/register_success.html")

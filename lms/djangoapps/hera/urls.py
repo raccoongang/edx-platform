@@ -15,4 +15,5 @@ urlpatterns = [
             settings.COURSE_ID_PATTERN,
         ),
         views.SelectionPageView.as_view(), name='selection_page'),
+    url(r'^register_success/$', views.RegisterSuccessView.as_view(), name="register_success"),
 ]
