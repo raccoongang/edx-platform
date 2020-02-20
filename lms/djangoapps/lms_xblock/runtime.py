@@ -16,6 +16,7 @@ from xmodule.modulestore.django import modulestore, ModuleI18nService
 from xmodule.partitions.partitions_service import PartitionService
 from xmodule.services import SettingsService
 from xmodule.x_module import ModuleSystem
+from completion.services import CompletionService
 
 from lms.djangoapps.lms_xblock.models import XBlockAsidesConfig
 
@@ -151,6 +152,7 @@ class LmsModuleSystem(ModuleSystem):  # pylint: disable=abstract-method
     def __init__(self, **kwargs):
         request_cache_dict = RequestCache.get_request_cache().data
         services = kwargs.setdefault('services', {})
+        services['completion'] = CompletionService(user=kwargs.get('user'), course_key=kwargs.get('course_id'))
         services['fs'] = xblock.reference.plugins.FSService()
         services['i18n'] = ModuleI18nService
         services['library_tools'] = LibraryToolsService(modulestore())

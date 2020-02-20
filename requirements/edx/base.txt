@@ -52,9 +52,11 @@ edx-django-oauth2-provider==1.1.4
 edx-django-sites-extensions==2.1.1
 edx-enterprise==0.9.0
 edx-oauth2-provider==1.2.0
-edx-opaque-keys==0.4.0
+edx-opaque-keys==0.4.4
 edx-organizations==0.4.1
+edx-completion==0.1.7
 edx-rest-api-client==1.6.0
+event-tracking==0.2.4
 # Replaced by RG fork in github.txt
 # edx-search==0.1.2
 facebook-sdk==0.4.0
@@ -77,6 +79,7 @@ nose-xunitmp==0.3.2
 oauthlib==1.0.3
 paramiko==1.9.0
 path.py==8.2.1
+pathtools==0.1.2          # via watchdog
 piexif==1.0.2
 Pillow==3.4
 polib==1.0.3
@@ -107,8 +110,11 @@ xmltodict==0.4.1
 django-ratelimit-backend==1.0
 unicodecsv==0.9.4
 django-require==1.0.11
+django-waffle==0.12.0
 pyuca==1.1
 wrapt==1.10.5
+xblock==1.2.1
+xblock-review==1.1.5
 zendesk==1.1.1
 
 # This needs to be installed *after* Cython, which is in pre.txt

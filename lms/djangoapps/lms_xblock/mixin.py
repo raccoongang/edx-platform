@@ -9,7 +9,8 @@ from xblock.fields import Boolean, Scope, String, XBlockMixin, Dict
 from xblock.validation import ValidationMessage
 from xmodule.modulestore.inheritance import UserPartitionList
 from xmodule.partitions.partitions import NoSuchUserPartitionError, NoSuchUserPartitionGroupError
-
+from xblock.exceptions import JsonHandlerError
+from xblock.core import XBlock
 # Please do not remove, this is a workaround for Django 1.8.
 # more information can be found here: https://openedx.atlassian.net/browse/PLAT-902
 _ = lambda text: text
@@ -25,7 +26,8 @@ class GroupAccessDict(Dict):
         if access_dict is not None:
             return {unicode(k): access_dict[k] for k in access_dict}
 
-
+@XBlock.needs('i18n')
+@XBlock.wants('completion')
 class LmsBlockMixin(XBlockMixin):
     """
     Mixin that defines fields common to all blocks used in the LMS
@@ -174,3 +176,18 @@ class LmsBlockMixin(XBlockMixin):
                 )
             )
         return validation
+
+    @XBlock.json_handler
+    def publish_completion(self, data, suffix=''):  # pylint: disable=unused-argument
+        """
+        Publish completion data from the front end.
+        """
+        completion_service = self.runtime.service(self, 'completion')
+        if completion_service is None:
+            raise JsonHandlerError(500, u"No completion service found")
+        elif not completion_service.completion_tracking_enabled():
+            raise JsonHandlerError(404, u"Completion tracking is not enabled and API calls are unexpected")
+        if not completion_service.can_mark_block_complete_on_view(self):
+            raise JsonHandlerError(400, u"Block not configured for completion on view.")
+        self.runtime.publish(self, "completion", data)
+        return {'result': 'ok'}

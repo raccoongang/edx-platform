@@ -21,6 +21,7 @@ CLASS_PRIORITY = ['video', 'problem']
 
 
 @XBlock.needs('user', 'bookmarks')
+@XBlock.wants('completion')
 class VerticalBlock(SequenceFields, XModuleFields, StudioEditableBlock, XmlParserMixin, MakoTemplateBlockBase, XBlock):
     """
     Layout XBlock for rendering subblocks vertically.
@@ -54,14 +55,27 @@ class VerticalBlock(SequenceFields, XModuleFields, StudioEditableBlock, XmlParse
             user_service = self.runtime.service(self, 'user')
             child_context['username'] = user_service.get_current_user().opt_attrs['edx-platform.username']
 
+        child_blocks = self.get_display_items()
+
+        child_blocks_to_complete_on_view = set()
+        completion_service = self.runtime.service(self, 'completion')
+        if completion_service and completion_service.completion_tracking_enabled():
+            child_blocks_to_complete_on_view = completion_service.blocks_to_mark_complete_on_view(child_blocks)
+            complete_on_view_delay = completion_service.get_complete_on_view_delay_ms()
+
         child_context['child_of_vertical'] = True
 
         is_child_of_vertical = context.get('child_of_vertical', False)
 
         # pylint: disable=no-member
-        for child in self.get_display_items():
-            rendered_child = child.render(STUDENT_VIEW, child_context)
-            fragment.add_frag_resources(rendered_child)
+        for child in child_blocks:
+            child_block_context = copy(child_context)
+            if child in child_blocks_to_complete_on_view:
+                child_block_context['wrap_xblock_data'] = {
+                    'mark-completed-on-view-after-delay': complete_on_view_delay
+                }
+            rendered_child = child.render(STUDENT_VIEW, child_block_context)
+            fragment.add_fragment_resources(rendered_child)
 
             contents.append({
                 'id': child.location.to_deprecated_string(),

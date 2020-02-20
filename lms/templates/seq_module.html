@@ -28,6 +28,13 @@
            data-path="${item['path']}"
            id="tab_${idx}">
             <span class="icon fa seq_${item['type']}" aria-hidden="true"></span>
+            % if 'complete' in item:
+              <span
+                class="fa fa-check-circle check-circle ${"is-hidden" if not item['complete'] else ""}"
+                style="color:green"
+                aria-hidden="true"
+              ></span>
+            % endif
             <span class="fa fa-fw fa-bookmark bookmark-icon ${"is-hidden" if not item['bookmarked'] else "bookmarked"}" aria-hidden="true"></span>
             <div class="sequence-tooltip sr"><span class="sr">${item['type']}&nbsp;</span>${item['page_title']}<span class="sr bookmark-icon-sr">&nbsp;${_("Bookmarked") if item['bookmarked'] else ""}</span></div>
           </button>

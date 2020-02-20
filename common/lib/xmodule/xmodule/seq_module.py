@@ -12,9 +12,12 @@ from pkg_resources import resource_string
 
 from lxml import etree
 from xblock.core import XBlock
+from xblock.completable import XBlockCompletionMode
 from xblock.fields import Integer, Scope, Boolean, String
 from xblock.fragment import Fragment
 import newrelic.agent
+from opaque_keys.edx.keys import UsageKey
+from six import text_type
 
 from .exceptions import NotFoundError
 from .fields import Date
@@ -36,6 +39,7 @@ _ = lambda text: text
 
 class SequenceFields(object):
     has_children = True
+    completion_mode = XBlockCompletionMode.AGGREGATOR
 
     # NOTE: Position is 1-indexed.  This is silly, but there are now student
     # positions saved on prod, so it's not easy to fix.
@@ -154,6 +158,7 @@ class ProctoringFields(object):
 @XBlock.wants('verification')
 @XBlock.wants('milestones')
 @XBlock.wants('credit')
+@XBlock.wants('completion')
 @XBlock.needs('user')
 @XBlock.needs('bookmarks')
 class SequenceModule(SequenceFields, ProctoringFields, XModule):
@@ -199,6 +204,20 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
                 self.position = 1
             return json.dumps({'success': True})
 
+        if dispatch == 'get_completion':
+            completion_service = self.runtime.service(self, 'completion')
+
+            usage_key = data.get('usage_key', None)
+            if not usage_key:
+                return None
+            item = self.get_child(UsageKey.from_string(usage_key))
+            if not item:
+                return None
+
+            complete = completion_service.vertical_is_complete(item)
+            return json.dumps({
+                'complete': complete
+            })
         raise NotFoundError('Unexpected dispatch type')
 
     @classmethod
@@ -290,6 +309,10 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
             self.verify_current_content_visibility(self.due, self.hide_after_due)
         )
 
+    def is_user_authenticated(self, context):
+        # NOTE (CCB): We default to true to maintain the behavior in place prior to allowing anonymous access access.
+        return context.get('user_authenticated', True)
+
     def _student_view(self, context, banner_text=None):
         """
         Returns the rendered student view of the content of this
@@ -339,29 +362,54 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
         display_items.  Returns a list of dict objects with information about
         the given display_items.
         """
-        bookmarks_service = self.runtime.service(self, "bookmarks")
-        context["username"] = self.runtime.service(self, "user").get_current_user().opt_attrs['edx-platform.username']
+        is_user_authenticated = self.is_user_authenticated(context)
+        bookmarks_service = self.runtime.service(self, 'bookmarks')
+        completion_service = self.runtime.service(self, 'completion')
+        context['username'] = self.runtime.service(self, 'user').get_current_user().opt_attrs.get(
+            'edx-platform.username')
         display_names = [
             self.get_parent().display_name_with_default,
             self.display_name_with_default
         ]
         contents = []
         for item in display_items:
-            is_bookmarked = bookmarks_service.is_bookmarked(usage_key=item.scope_ids.usage_id)
-            context["bookmarked"] = is_bookmarked
+            # NOTE (CCB): This seems like a hack, but I don't see a better method of determining the type/category.
+            item_type = item.get_icon_class()
+            usage_id = item.scope_ids.usage_id
+
+            if item_type == 'problem' and not is_user_authenticated:
+                log.info(
+                    'Problem [%s] was not rendered because anonymous access is not allowed for graded content',
+                    usage_id
+                )
+                continue
+
+            show_bookmark_button = False
+            is_bookmarked = False
+
+            if is_user_authenticated:
+                show_bookmark_button = True
+                is_bookmarked = bookmarks_service.is_bookmarked(usage_key=usage_id)
+
+            context['show_bookmark_button'] = show_bookmark_button
+            context['bookmarked'] = is_bookmarked
 
             rendered_item = item.render(STUDENT_VIEW, context)
-            fragment.add_frag_resources(rendered_item)
+            fragment.add_fragment_resources(rendered_item)
 
             iteminfo = {
                 'content': rendered_item.content,
                 'page_title': getattr(item, 'tooltip_title', ''),
-                'type': item.get_icon_class(),
-                'id': item.scope_ids.usage_id.to_deprecated_string(),
+                'type': item_type,
+                'id': text_type(usage_id),
                 'bookmarked': is_bookmarked,
                 'path': " > ".join(display_names + [item.display_name_with_default]),
+                'graded': item.graded
             }
 
+            if is_user_authenticated:
+                if item.location.block_type == 'vertical':
+                    iteminfo['complete'] = completion_service.vertical_is_complete(item)
             contents.append(iteminfo)
 
         return contents

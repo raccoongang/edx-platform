@@ -1099,7 +1099,8 @@ class CapaMixin(CapaFields):
 
     def publish_grade(self, only_if_higher=None):
         """
-        Publishes the student's current grade to the system as an event
+        Publishes the student's current grade to the system as an event.
+        When answering a subsection, a passage mark will be created
         """
         score = self.lcp.get_score()
         self.runtime.publish(
@@ -1109,7 +1110,14 @@ class CapaMixin(CapaFields):
                 'value': score['score'],
                 'max_value': score['total'],
                 'only_if_higher': only_if_higher,
-            }
+            },
+        )
+        self.runtime.publish(
+            self,
+            'problem',
+            {
+                'completion': 1.0
+            },
         )
 
         return {'grade': score['score'], 'max_grade': score['total']}

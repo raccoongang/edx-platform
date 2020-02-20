@@ -59,10 +59,12 @@ DJFS = {
 
 ################################ DEBUG TOOLBAR ################################
 
-INSTALLED_APPS += ('debug_toolbar', 'debug_toolbar_mongo')
+INSTALLED_APPS += ('debug_toolbar', 'debug_toolbar_mongo', 'waffle', 'openedx.core.djangoapps.waffle_utils',
+                   'completion')
 MIDDLEWARE_CLASSES += (
     'django_comment_client.utils.QueryCountDebugMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'waffle.middleware.WaffleMiddleware',
 )
 INTERNAL_IPS = ('127.0.0.1',)
 
