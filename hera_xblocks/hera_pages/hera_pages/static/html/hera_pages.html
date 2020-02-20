@@ -4,7 +4,7 @@
             % if data.get('imgUrl'):
                 <div class="image-wrapper-${block_id}">
                     % for img in data['imgUrl']:
-                        <img src="${ img }" alt=""/>
+                        <img src="${ img }" alt="" class="js-image-counter"/>
                     % endfor
                 </div>
             % elif data.get('iframeUrl'):
@@ -15,75 +15,73 @@
         </div>
         <div class="author-block__question">
             <div class="slidebar-wrapper-${block_id}">
-                % if data.get('sliderBar'):
-                    % for index, item in enumerate(data['sliderBar']):
-                        <div class="single-item">
-                            <div>
-                                ${ item['content'] }
-                            </div>
-                            % if item.get('tableData'):
-                                <% user_answer_input_index = 0 %>
+                % for index, item in enumerate(data.get('sliderBar', [])):
+                    <div class="single-item js-content-counter">
+                        <div>
+                            ${ item['content'] }
+                        </div>
+                        % if item.get('tableData'):
+                            <% user_answer_input_index = 0 %>
 
-                                <form class="table-form">
-                                    <div class="table-wrapper">
-                                    <table>
-                                        <tbody>
-                                            % if item['tableData'].get('columns'):
+                            <form class="table-form">
+                                <div class="table-wrapper">
+                                <table>
+                                    <tbody>
+                                        % if item['tableData'].get('columns'):
+                                            <tr>
+                                                % for column in item['tableData']['columns']:
+                                                    % if column.get('type') == 'head':
+                                                        <th>${column['value'].replace('!', '', 1)}</th>
+                                                    % elif column['value'].startswith('?'):
+                                                        <td>
+                                                            <%
+                                                                try:
+                                                                    column_answer = user_answers[index][user_answer_input_index] if user_answers else ''
+                                                                except IndexError:
+                                                                    column_answer = ''
+                                                            %>
+                                                            <input placeholder="Enter data here" type="text" name="${index}" value="${column_answer}" required/>
+                                                        </td>
+                                                        <% user_answer_input_index += 1 %>
+                                                    % else:
+                                                        <td>${column['value']}</td>
+                                                    % endif
+                                                % endfor
+                                            </tr>
+                                        % endif
+                                        % if item['tableData'].get('rows'):
+                                            % for row in item['tableData']['rows']:
                                                 <tr>
-                                                    % for column in item['tableData']['columns']:
-                                                        % if column.get('type') == 'head':
-                                                            <th>${column['value'].replace('!', '', 1)}</th>
-                                                        % elif column['value'].startswith('?'):
+                                                    % for idx, col in enumerate(item['tableData'].get('columns')):
+                                                        % if row[str(idx)]['value'].startswith('?'):
                                                             <td>
                                                                 <%
                                                                     try:
-                                                                        column_answer = user_answers[index][user_answer_input_index] if user_answers else ''
+                                                                        row_answer = user_answers[index][user_answer_input_index] if user_answers else ''
                                                                     except IndexError:
-                                                                        column_answer = ''
+                                                                        row_answer = ''
                                                                 %>
-                                                                <input placeholder="Enter data here" type="text" name="${index}" value="${column_answer}" required/>
+                                                                <input placeholder="Enter data here" type="text" name="${index}" value="${row_answer}" required/>
                                                             </td>
                                                             <% user_answer_input_index += 1 %>
+                                                        % elif row[str(idx)].get('type') == 'head':
+                                                            <th>${row[str(idx)]['value'].replace('!', '', 1)}</th>
                                                         % else:
-                                                            <td>${column['value']}</td>
+                                                            <td>${row[str(idx)]['value']}</td>
                                                         % endif
                                                     % endfor
                                                 </tr>
-                                            % endif
-                                            % if item['tableData'].get('rows'):
-                                                % for row in item['tableData']['rows']:
-                                                    <tr>
-                                                        % for idx, col in enumerate(item['tableData'].get('columns')):
-                                                            % if row[str(idx)]['value'].startswith('?'):
-                                                                <td>
-                                                                    <%
-                                                                        try:
-                                                                            row_answer = user_answers[index][user_answer_input_index] if user_answers else ''
-                                                                        except IndexError:
-                                                                            row_answer = ''
-                                                                    %>
-                                                                    <input placeholder="Enter data here" type="text" name="${index}" value="${row_answer}" required/>
-                                                                </td>
-                                                                <% user_answer_input_index += 1 %>
-                                                            % elif row[str(idx)].get('type') == 'head':
-                                                                <th>${row[str(idx)]['value'].replace('!', '', 1)}</th>
-                                                            % else:
-                                                                <td>${row[str(idx)]['value']}</td>
-                                                            % endif
-                                                        % endfor
-                                                    </tr>
-                                                % endfor
-                                            % endif
-                                        </tbody>
-                                    </table>
-                                    </div>
-                                </form>
-                            % endif
-                        </div>
-                    % endfor
-                % endif
+                                            % endfor
+                                        % endif
+                                    </tbody>
+                                </table>
+                                </div>
+                            </form>
+                        % endif
+                    </div>
+                % endfor
             </div>
-            % if len(data.get('imgUrl', [])) > 1 or len(data.get('sliderBar', [])) > 1 or data.get('iframeUrl'):
+            % if len(data.get('imgUrl', [])) > 1 or len(data.get('sliderBar', [])) > 1:
                 <div class="slider-button-wrapper">
                     <button class="slider-button button-prev js-click-prev hidden" type="button">
                         <i class="fa fa-arrow-left" aria-hidden="true"></i>
