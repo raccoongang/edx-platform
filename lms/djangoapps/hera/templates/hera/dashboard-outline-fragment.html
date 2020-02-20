@@ -134,25 +134,29 @@ from openedx.core.djangolib.markup import HTML, Text
             % endfor
         </div>
 
-    <div id="modal-continue" data-show-popup="${popup}" class="onboarding-holder" style="display:none">
-        <button class="modal-continue_close" title="Close" aria-label="Close"><span aria-hidden="true">×</span></button>
+    <div id="modal-continue" data-show-popup="${popup}" style="display:none">
         <div class="onboarding-holder">
-            <div class="onboarding-content">
-                <h1>
-                    What is HERA?
-                </h1>
-                <div class="onboarding-text-block">
-                    <p>
-                    Last time you signed out you were in the middle of a lesson. Would you like to pick up where you left off, or start that lesson over?
-                    </p>
+            <button class="modal-continue_close popup_close" title="Close" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <div class="onboarding-holder">
+                <div class="onboarding-content">
+                    <h1>
+                        Welcome back!
+                    </h1>
+                    <div class="onboarding-text-block">
+                        <p>
+                            Last time you signed out you were in the middle of a lesson.
+                            <br />
+                            Would you like to pick up where you left off, or start that lesson over?
+                        </p>
+                    </div>
+                    <div class="footer-controls-buttons-holder">
+                        <a href="${start_over_url}" class="btn btn-prev">Start Over</a>
+                        <a href="${continue_url}" class="btn btn-primary">Continue</a>
+                    </div>
                 </div>
-                <div class="footer-controls-buttons-holder">
-                    <a href="${start_over_url}" class="btn btn-prev">Start Over</a>
-                    <a href="${continue_url}" class="btn btn-primary">Continue</a>
+                <div class="mascot">
+                    <img class="mascot-image" src="/static/edx-theme/images/mascots/mascot_pose-welcome.svg" alt="HERA-mascot" />
                 </div>
-            </div>
-            <div class="mascot">
-                <img class="mascot-image" src="/static/edx-theme/images/hera_mascot.png" alt="HERA-mascot" />
             </div>
         </div>
     </div>
