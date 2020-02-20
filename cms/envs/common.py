@@ -1156,6 +1156,9 @@ INSTALLED_APPS = [
 
     # API Documentation
     'rest_framework_swagger',
+
+    # Course Categories
+    'course_category',
 ]
 
 

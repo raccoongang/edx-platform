@@ -6,6 +6,7 @@ define(['backbone', 'underscore', 'gettext', 'js/models/validation_helpers', 'js
                 course_id: '',
                 run: '',
                 language: '',
+                course_category: [],
                 start_date: null,	// maps to 'start'
                 end_date: null,		// maps to 'end'
                 certificate_available_date: null,

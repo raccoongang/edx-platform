@@ -733,6 +733,12 @@ class CourseFields(object):
         default=None,
         scope=Scope.settings
     )
+    course_category = List(
+        display_name=_("Course Category"),
+        help=_("Specify the category of your course."),
+        default=[],
+        scope=Scope.settings
+    )
 
     teams_configuration = Dict(
         display_name=_("Teams Configuration"),

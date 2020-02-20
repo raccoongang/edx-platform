@@ -572,6 +572,7 @@ class CourseAboutSearchIndexer(object):
         AboutInfo("modes", AboutInfo.PROPERTY, AboutInfo.FROM_COURSE_MODE),
         AboutInfo("language", AboutInfo.PROPERTY, AboutInfo.FROM_COURSE_PROPERTY),
         AboutInfo("catalog_visibility", AboutInfo.PROPERTY, AboutInfo.FROM_COURSE_PROPERTY),
+        AboutInfo("course_category", AboutInfo.PROPERTY, AboutInfo.FROM_COURSE_PROPERTY),
     ]
 
     @classmethod

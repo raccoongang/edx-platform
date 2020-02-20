@@ -2324,6 +2324,9 @@ INSTALLED_APPS = [
     'tinymce',
     'info_pages',
     'hvad',
+
+    # Course Categories
+    'course_category',
 ]
 
 ######################### CSRF #########################################
@@ -3509,3 +3512,6 @@ TINYMCE_DEFAULT_CONFIG = {
         {'title' : 'Black background', 'inline' : 'span', 'styles': {'background': '#000'}},
     ]
 }
+
+if FEATURES.get('ENABLE_COURSE_CATEGORIES'):
+    COURSE_DISCOVERY_FILTERS = ["org", "language", "modes", "course_category"]

@@ -104,6 +104,8 @@ from xmodule.modulestore.exceptions import ItemNotFoundError, NoPathToItem
 from xmodule.tabs import CourseTabList
 from xmodule.x_module import STUDENT_VIEW
 
+from course_category.models import CourseCategory
+
 from ..entrance_exams import user_can_skip_entrance_exam
 from ..module_render import get_module, get_module_by_usage_id, get_module_for_descriptor
 
@@ -214,6 +216,15 @@ def courses(request):
     """
     courses_list = []
     course_discovery_meanings = getattr(settings, 'COURSE_DISCOVERY_MEANINGS', {})
+
+    if settings.FEATURES.get('ENABLE_COURSE_CATEGORIES'):
+        course_categories_queryset = CourseCategory.objects.values_list('id', "name")
+        if 'course_category' not in course_discovery_meanings:
+            course_discovery_meanings["course_category"] = {}
+        course_discovery_meanings["course_category"]["terms"] = {
+            'course_category_{}'.format(x[0]): x[1] for x in course_categories_queryset
+        }
+
     if not settings.FEATURES.get('ENABLE_COURSE_DISCOVERY'):
         courses_list = get_courses(request.user)
 

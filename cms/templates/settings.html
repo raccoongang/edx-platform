@@ -7,6 +7,7 @@
 <%namespace name='static' file='static_content.html'/>
 <%!
   import urllib
+  from django.conf import settings
   from django.utils.translation import ugettext as _
   from contentstore import utils
   from openedx.core.djangoapps.certificates.api import can_show_certificate_available_date_field
@@ -311,6 +312,19 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
               <span class="tip tip-stacked">${_("Identify the course language here. This is used to assist users find courses that are taught in a specific language. It is also used to localize the 'From:' field in bulk emails.")}</span>
             </li>
           </ol>
+          % if settings.FEATURES.get('ENABLE_COURSE_CATEGORIES'):
+          <ol class="list-input course-category">
+            <li class="field" id="field-course-category">
+              <label for="course-category">${_("Course Category")}</label>
+              <select id="course-category" multiple>
+                % for id, name in course_category_options.items():
+                  <option value="${id}">${name}</option>
+                % endfor
+              </select>
+                <span class="tip tip-stacked">${_("Pick one or several course categories")}</span>
+            </li>
+          </ol>
+          % endif
         </div>
         % endif
 

@@ -11,6 +11,8 @@ from xmodule.modulestore.exceptions import ItemNotFoundError
 from openedx.core.lib.courses import course_image_url
 from xmodule.modulestore.django import modulestore
 
+import course_category
+
 
 # This list represents the attribute keys for a course's 'about' info.
 # Note: The 'video' attribute is intentionally excluded as it must be
@@ -73,6 +75,7 @@ class CourseDetails(object):
         self.self_paced = None
         self.learning_info = []
         self.instructor_info = []
+        self.course_category = []
 
     @classmethod
     def fetch_about_attribute(cls, course_key, attribute):
@@ -117,6 +120,7 @@ class CourseDetails(object):
         course_details.video_thumbnail_image_name = course_descriptor.video_thumbnail_image
         course_details.video_thumbnail_image_asset_path = course_image_url(course_descriptor, 'video_thumbnail_image')
         course_details.language = course_descriptor.language
+        course_details.course_category = course_descriptor.course_category
         course_details.self_paced = course_descriptor.self_paced
         course_details.learning_info = course_descriptor.learning_info
         course_details.instructor_info = course_descriptor.instructor_info
@@ -274,6 +278,11 @@ class CourseDetails(object):
 
         if 'language' in jsondict and jsondict['language'] != descriptor.language:
             descriptor.language = jsondict['language']
+            dirty = True
+
+        if 'course_category' in jsondict and jsondict['course_category'] != descriptor.course_category:
+            descriptor.course_category = jsondict['course_category']
+            course_category.models.CourseCategory.update_course_category_models(course_key, jsondict['course_category'])
             dirty = True
 
         if (descriptor.can_toggle_course_pacing

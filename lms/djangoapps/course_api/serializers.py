@@ -10,6 +10,8 @@ from rest_framework import serializers
 from openedx.core.djangoapps.models.course_details import CourseDetails
 from openedx.core.lib.api.fields import AbsoluteURLField
 
+from course_category.models import CourseCategory
+
 
 class _MediaSerializer(serializers.Serializer):  # pylint: disable=abstract-method
     """
@@ -74,6 +76,7 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
     mobile_available = serializers.BooleanField()
     hidden = serializers.SerializerMethodField()
     invitation_only = serializers.BooleanField()
+    course_category = serializers.SerializerMethodField()
 
     # 'course_id' is a deprecated field, please use 'id' instead.
     course_id = serializers.CharField(source='id', read_only=True)
@@ -95,6 +98,12 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
             urllib.urlencode({'course_id': course_overview.id}),
         ])
         return self.context['request'].build_absolute_uri(base_url)
+
+    def get_course_category(self, course_overview):
+        """
+        Get the representation for SerializerMethodField `category`
+        """
+        return dict(course_overview.course_categories.values_list('id', 'name'))
 
 
 class CourseDetailSerializer(CourseSerializer):  # pylint: disable=abstract-method
