@@ -1,48 +1,49 @@
 /* Javascript for HeraPagesXBlock. */
 function HeraPagesXBlock(runtime, element, init_args) {
     var submithHandlerUrl = runtime.handlerUrl(element, 'submit');
-    var $submitButton = $('.submit', element);
     var blockId = init_args.block_id;
     var slickImagesSelector = '.image-wrapper-' + blockId;
     var slickSliderBarSelector = '.slidebar-wrapper-' + blockId;
     var slickSelectors = slickSliderBarSelector + ', ' +  slickImagesSelector;
     var showMessage = true;
-    var slidebarSlideCount = 0;
-    var imageSlideCount = 0;
+    var contentSlideCount = $('.js-content-counter').length;
+    var imageSlideCount = $('.js-image-counter').length;
+    var theBiggestCount = Math.max(imageSlideCount, contentSlideCount);
 
-    // click on the next arrow
-    $(".button-prev", element).click(function(e){
-        var currentImgSlideId = $(slickImagesSelector, element).slick('slickCurrentSlide');
-        var currentContentSlideId = $(slickSliderBarSelector, element).slick('slickCurrentSlide');
-        var slideId = currentImgSlideId < currentContentSlideId ? currentContentSlideId : currentImgSlideId;
-        $(slickSelectors, element).slick('slickGoTo', slideId-1);
-    });
+    var $submitButton = $('.submit', element);
+    var $buttonPrevSlide = $(".button-prev", element);
+    var $buttonNextSlide = $(".button-next", element);
+    var $warningMessage = $('.js-show-hide-warning-message');
+    var $imageSlider = $(slickImagesSelector, element);
+    var $contentSlider = $(slickSliderBarSelector, element);
+    var $slidesTogether =  $(slickSelectors, element);
+
+    function getCurrentSlideId() {
+        // if there is no $imageSlider - slick('slickCurrentSlide') returns jquery element but we need a number
+        var currentImgSlideId = imageSlideCount ? $imageSlider.slick('slickCurrentSlide') : imageSlideCount;
+        var currentContentSlideId = contentSlideCount ? $contentSlider.slick('slickCurrentSlide') : contentSlideCount;
+        return Math.max(currentImgSlideId, currentContentSlideId);
+    }
 
     // click on the prev arrow
-    $(".button-next", element).click(function(e){
-        $(slickSelectors, element).slick('slickNext');
+    $buttonPrevSlide.click(function(e){
+        $slidesTogether.slick('slickGoTo', getCurrentSlideId() - 1);
     });
 
-    // get number of sliders
-    $(slickImagesSelector, element).add(slickSliderBarSelector, element).on('beforeChange', function(event, slick) {
-        if($( event.target ).is(slickSliderBarSelector)){
-            slidebarSlideCount = slick.slideCount;
-        } else if($( event.target ).is(slickImagesSelector)){
-            imageSlideCount = slick.slideCount;
-        }
+    // click on the next arrow
+    $buttonNextSlide.click(function(e){
+        $slidesTogether.slick('slickNext');
     });
 
     // functionality to show/hide appropriate arrows
-    $(slickImagesSelector, element).add(slickSliderBarSelector, element).on('afterChange', function(event, slick) {
+    $slidesTogether.on('afterChange', function(event, slick) {
         $(".button-prev, .button-next", element).removeClass('hidden');
-        var imgSlideId = $(slickImagesSelector, element).slick('slickCurrentSlide');
-        var contentSlideId = $(slickSliderBarSelector, element).slick('slickCurrentSlide');
-        var slideId = imgSlideId < contentSlideId ? contentSlideId : imgSlideId;
-        var slideCount = slidebarSlideCount < imageSlideCount ? imageSlideCount : slidebarSlideCount;
-        if (slideId == 0) {
-            $(".button-prev", element).addClass('hidden');
-        } else if(slideId + 1 == slideCount){
-            $(".button-next", element).addClass('hidden');
+        var slideId = getCurrentSlideId();
+
+        if (slideId === 0) {
+            $buttonPrevSlide.addClass('hidden');
+        } else if(slideId + 1 === theBiggestCount){
+            $buttonNextSlide.addClass('hidden');
         }
     });
 
@@ -59,7 +60,6 @@ function HeraPagesXBlock(runtime, element, init_args) {
             adaptiveHeight: true,
             infinite: false,
             draggable: false,
-            // asNavFor: '.slider-nav'
         });
     });
 
@@ -67,10 +67,10 @@ function HeraPagesXBlock(runtime, element, init_args) {
         var $questionForm = $(".table-form", element);
 
         if (!$questionForm.is(':valid') && showMessage) {
-            $(document).find('.js-show-hide-warning-message').show();
+            $warningMessage.show();
             showMessage = false;
         } else {
-            $(document).find('.js-show-hide-warning-message').hide();
+            $warningMessage.hide();
             var serializedForm = $questionForm.serializeArray();
             var userAnswers = [];
 
