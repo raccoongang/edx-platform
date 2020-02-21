@@ -81,17 +81,17 @@
                     </div>
                 % endfor
             </div>
-            % if len(data.get('imgUrl', [])) > 1 or len(data.get('sliderBar', [])) > 1:
-                <div class="slider-button-wrapper">
-                    <button class="slider-button button-prev js-click-prev hidden" type="button">
-                        <i class="fa fa-arrow-left" aria-hidden="true"></i>
-                    </button>
-                    <button class="slider-button button-next js-click-next" type="button">
-                        <i class="fa fa-arrow-right" aria-hidden="true"></i>
-                    </button>
-                </div>
-            % endif
         </div>
+        % if len(data.get('imgUrl', [])) > 1 or len(data.get('sliderBar', [])) > 1:
+            <div class="slider-button-wrapper">
+                <button class="slider-button button-prev js-click-prev hidden" type="button">
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                </button>
+                <button class="slider-button button-next js-click-next" type="button">
+                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                </button>
+            </div>
+        % endif
     </div>
     <div class="author-holder author-block__buttons submit-button-holder">
         <button type="button" class="author-block__btn submit">Submit</button>
