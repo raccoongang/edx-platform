@@ -69,23 +69,15 @@
     border: none !important;
 }
 
-.popup_content {
-    margin: 10px;
-    padding: 0 10px;
-    max-width: 60%;
-    border: 2px solid #444;
-    background: white;
-  }
+.popup_content .slick-arrow {
+    visibility: visible !important;
+}
 
-  .instructor-info-action {
-      visibility: hidden;
-  }
-
-  .bookmark-button {
+.instructor-info-action {
     visibility: hidden;
-  }
+}
 
-.slick-arrow {
+.bookmark-button {
     visibility: hidden;
 }
 
