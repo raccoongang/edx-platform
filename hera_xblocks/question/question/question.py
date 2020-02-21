@@ -3,12 +3,14 @@ import pkg_resources
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
 from xblock.scorable import ScorableXBlockMixin
-from xblock.fields import JSONField, Scope, List, Integer, String
+from xblock.fields import JSONField, Scope, Integer, String
 from xblockutils.resources import ResourceLoader
 from xblockutils.studio_editable import StudioEditableXBlockMixin
 
 
 loader = ResourceLoader(__name__)
+
+MAX_ALLOWED_SUBMISSON = 2
 
 
 class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
@@ -26,6 +28,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     data = JSONField(default={})
     user_confidence = Integer(scope=Scope.user_state)
     user_answer = JSONField(scope=Scope.user_state, default='')
+    submission_counter = Integer(scope=Scope.user_state, default=0)
 
     @property
     def img_urls(self):
@@ -80,6 +83,10 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     def teach_me(self):
         return self.data.get("teachMe")
 
+    @property
+    def is_submission_allowed(self):
+        return self.submission_counter < MAX_ALLOWED_SUBMISSON
+
     def resource_string(self, path):
         """Handy helper for getting resources from our kit."""
         data = pkg_resources.resource_string(__name__, path)
@@ -88,6 +95,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     def get_context(self):
         return {
             "user_answer": self.user_answer,
+            "is_submission_allowed": self.is_submission_allowed,
             "problem_types": self.problem_types,
             "img_urls": self.img_urls,
             "iframe_url": self.iframe_url,
@@ -125,7 +133,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     @XBlock.json_handler
     def submit(self, data, suffix=''):
         answers = data.get("answers")
-
+        self.submission_counter += 1
         try:
             user_confidence = int(data.get("confidence"))
         except ValueError:
@@ -172,4 +180,12 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         self.runtime.publish(self, 'grade', {'value': grade_value, 'max_value': 1})
         self.user_answer = answers
         self.user_confidence = user_confidence
-        return result_answer
+        return {
+            'correct': result_answer,
+            'is_submission_allowed': self.is_submission_allowed
+        }
+
+    @XBlock.json_handler
+    def skip(self, somedata, sufix=''):
+        self.submission_counter += 1
+        return {'is_submission_allowed': self.is_submission_allowed}
