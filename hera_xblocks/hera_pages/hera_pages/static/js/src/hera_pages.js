@@ -88,4 +88,10 @@ function HeraPagesXBlock(runtime, element, init_args) {
             });
         }
     });
+    $('.button-next-' + blockId, element).click(function() {
+        $('.sequence-nav-button.button-next').get(0).click();
+    });
+    $('.button-previous-' + blockId, element).click(function() {
+        $('.sequence-nav-button.button-previous').get(0).click();
+    });
 }

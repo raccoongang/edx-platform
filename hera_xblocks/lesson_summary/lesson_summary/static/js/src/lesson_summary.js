@@ -1,7 +1,12 @@
-/* Javascript for LessonSummaryXBlock. */
-function LessonSummaryXBlock(runtime, element) {
-
+function LessonSummaryXBlock(runtime, element, initArgs) {
+    var blockId = initArgs.block_id;
+    var userDashboardURL = initArgs.user_dashboard_url;
     $(function ($) {
-        /* Here's where you'd do things on page load. */
+        $('.button-previous-' + blockId, element).click(function() {
+            $('.sequence-nav-button.button-previous').get(0).click();
+        });
+        $('.button-next-' + blockId, element).click(function() {
+            window.location.href = userDashboardURL;
+        });
     });
 }

@@ -19,6 +19,7 @@ function QuestionXBlock(runtime, element, init_args) {
         var $questionWrapper = $('.questions-wrapper', element);
         var invalidChars = ["-", "+", "e", "E"];
         var isSubmissionAllowed = init_args.is_submission_allowed;
+        var blockId = init_args.block_id;
 
         $('input', element).on("change blur keyup", function() {
             if (isSubmissionAllowed) {
@@ -71,7 +72,7 @@ function QuestionXBlock(runtime, element, init_args) {
 
         $('.js-scaffold-button', element).bind('click', function (event) {
             var scaffoldData = $(this).data();
-            var contentID = '#' + scaffoldData.scaffoldName + '-' + init_args.location_id;
+            var contentID = '#' + scaffoldData.scaffoldName + '-' + blockId;
             var scaffoldimages = '';
             var needShowImageBlock = false;
             $skipBtn.removeClass("hidden");
@@ -146,6 +147,13 @@ function QuestionXBlock(runtime, element, init_args) {
             $('.simulation-close-btn', element).click(function() {
                 $('.simulation-overlay', element).fadeOut(300);
             });
+        });
+
+        $('.button-next-' + blockId, element).click(function() {
+            $('.sequence-nav-button.button-next').get(0).click();
+        });
+        $('.button-previous-' + blockId, element).click(function() {
+            $('.sequence-nav-button.button-previous').get(0).click();
         });
     });
 }

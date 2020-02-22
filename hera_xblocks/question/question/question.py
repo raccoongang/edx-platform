@@ -106,7 +106,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             "rephrase": self.rephrase,
             "break_down": self.break_down,
             "teach_me": self.teach_me,
-            'location_id': self.location.block_id
+            'block_id': self.location.block_id
         }
 
     def student_view(self, context=None):
