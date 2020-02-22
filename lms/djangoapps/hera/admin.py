@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib import admin
 from opaque_keys.edx.keys import CourseKey
 
-from hera.models import ActiveCourseSetting, Onboarding, UserOnboarding
+from hera.models import ActiveCourseSetting, Mascot, Onboarding, UserOnboarding
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 
@@ -88,6 +88,16 @@ class ActiveCourseSettingAdmin(admin.ModelAdmin):
         return True
 
 
+class MascotAdmin(admin.ModelAdmin):
+
+    def has_add_permission(self, request):
+        """
+        Allow to add Mascot only if no objects exist.
+        """
+        return not self.model.objects.exists()
+
+
 admin.site.register(Onboarding, OnboardingAdmin)
 admin.site.register(UserOnboarding, UserOnboardingAdmin)
 admin.site.register(ActiveCourseSetting, ActiveCourseSettingAdmin)
+admin.site.register(Mascot, MascotAdmin)
