@@ -189,18 +189,26 @@
         };
 
         Sequence.prototype.enableButton = function(buttonClass, buttonAction) {
+            var classToBeRemoved = 'disabled';
+            if (buttonClass === '.sequence-nav-button.button-previous') {
+                classToBeRemoved += ' hidden';
+            }
             this.$(buttonClass)
-                .removeClass('disabled')
+                .removeClass(classToBeRemoved)
                 .removeAttr('disabled')
                 .click(buttonAction);
         };
 
         Sequence.prototype.disableButton = function(buttonClass) {
-            this.$(buttonClass).addClass('disabled').attr('disabled', true);
+            var classToBeAdded = 'disabled';
+            if (buttonClass === '.sequence-nav-button.button-previous') {
+                classToBeAdded += ' hidden';
+            }
+            this.$(buttonClass).addClass(classToBeAdded).attr('disabled', true);
         };
 
-        Sequence.prototype.updateButtonState = function(buttonClass, buttonAction, isAtBoundary, boundaryUrl) {
-            if (isAtBoundary && boundaryUrl === 'None') {
+        Sequence.prototype.updateButtonState = function(buttonClass, buttonAction, isAtBoundary, boundaryUrl, isFirstTab) {
+            if (isFirstTab || (isAtBoundary && boundaryUrl === 'None')) {
                 this.disableButton(buttonClass);
             } else {
                 this.enableButton(buttonClass, buttonAction);
@@ -215,7 +223,7 @@
             // previous button
             isFirstTab = this.position === 1;
             previousButtonClass = '.sequence-nav-button.button-previous';
-            this.updateButtonState(previousButtonClass, this.selectPrevious, isFirstTab, this.prevUrl);
+            this.updateButtonState(previousButtonClass, this.selectPrevious, isFirstTab, this.prevUrl, isFirstTab);
 
             // next button
             // use inequality in case contents.length is 0 and position is 1.

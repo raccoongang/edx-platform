@@ -1,77 +1,106 @@
 /* CSS for EndSurveyXBlock */
-
-.end_survey_block .count {
-    font-weight: bold;
+.author-title {
+  color: #0a0a0a !important;
+  font-size: 22px !important;
+  font-weight: 600 !important;
 }
 
-.end_survey_block p {
-    cursor: pointer;
+.survey-question-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0 0 8px;
 }
 
-body {
-    margin: 0;
-    padding: 0;
-    background-color: #004882;
-  }
-  
-  .box {
-    /* position: absolute; */
-    /* top: 50%; */
-    /* left: 50%; */
-    /* transform: translate(-50%, -50%); */
-  }
-  
-  .box select {
-    background-color: #0563af;
-    color: white;
-    padding: 12px;
-    width: 80px;
-    border: none;
-    font-size: 20px;
-    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
-    -webkit-appearance: button;
-    appearance: button;
-    outline: none;
-  }
-  
-  .box::before {
+.survey-holder {
+  display: flex;
+}
+
+.survey-holder .questions-list__item {
+  margin-right: 12px;
+}
+
+.survey-results {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 18px;
+}
+
+.survey-results-item {
+  margin: 0 0 12px;
+}
+
+.survey-results-item__title {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.survey-results-item__percents {
+  font-size: 12px;
+  text-align: right;
+}
+
+.box select {
+  background-color: #0563af;
+  color: white;
+  padding: 12px;
+  border: none;
+  font-size: 20px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  -webkit-appearance: button;
+  appearance: button;
+  outline: none;
+}
+
+.box::before {
+  display: none;
+  content: "\f13a";
+  font-family: FontAwesome;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20%;
+  height: 100%;
+  text-align: center;
+  font-size: 28px;
+  line-height: 45px;
+  color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}
+
+.box:hover::before {
+  color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.box select option {
+  padding: 30px;
+}
+.instructor-info-action {
     display: none;
-    content: "\f13a";
-    font-family: FontAwesome;
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 20%;
-    height: 100%;
-    text-align: center;
-    font-size: 28px;
-    line-height: 45px;
-    color: rgba(255, 255, 255, 0.5);
-    background-color: rgba(255, 255, 255, 0.1);
-    pointer-events: none;
-  }
-  
-  .box:hover::before {
-    color: rgba(255, 255, 255, 0.6);
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-  
-  .box select option {
-    padding: 30px;
-  }
-  .instructor-info-action {
-      display: none;
-  }
-  
-  .bookmark-button{
-      display: none;
-  }
-  
-  .unit-title {
-      display: none;
-  }
-  .row {
-    margin: 0 0 20px;
-    display: flex;
-    justify-content: space-between;
-  }
+}
+
+.bookmark-button{
+    display: none;
+}
+
+.unit-title {
+    display: none;
+}
+.row {
+  margin: 0 0 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.mascot-img {
+  width: 225px;
+  float: right;
+  position: absolute;
+  top: 179px;
+  right: 113px;
+}
+
+.wrapper-page{
+  position: relative;
+}

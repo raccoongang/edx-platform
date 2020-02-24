@@ -1,31 +1,99 @@
-<div class="hera_pages_block">
-    <div class="wrapper-page" id="wrapper-page">
-        <div class="image-wrapper">
-        {% if data.imgUrl %}
-            {% for img in data.imgUrl %}
-                <img src="{{ img }}" alt=""/>
-            {% endfor %}
-        {% elif data.iframeUrl %}
-            <iframe src="{{ data.iframeUrl }}"></iframe>
-        {% else %}
-            <img alt="Unfortunately no image"/>
-        {% endif %}
+<div class="author-block__wrapper">
+    <div class="author-block__content">
+        <div class="author-block__image">
+            % if data.get('imgUrl'):
+                <div class="image-wrapper-${block_id}">
+                    % for img in data['imgUrl']:
+                        <img src="${ img }" alt="" class="js-image-counter"/>
+                    % endfor
+                </div>
+            % elif data.get('iframeUrl'):
+                <iframe src="${ data['iframeUrl'] }"></iframe>
+            % else:
+                <img alt="Unfortunately no image"/>
+            % endif
         </div>
-        <div class="slidebar-wrapper">
-            {% for i in  data.sliderBar %}
-            <div class="single-item">{{ i.content|safe }}</div>
-            {% endfor %}
+        <div class="author-block__question">
+            <div class="slidebar-wrapper-${block_id}">
+                % for index, item in enumerate(data.get('sliderBar', [])):
+                    <div class="single-item js-content-counter">
+                        <div>
+                            ${ item['content'] }
+                        </div>
+                        % if item.get('tableData'):
+                            <% user_answer_input_index = 0 %>
+
+                            <form class="table-form">
+                                <div class="table-wrapper">
+                                <table>
+                                    <tbody>
+                                        % if item['tableData'].get('columns'):
+                                            <tr>
+                                                % for column in item['tableData']['columns']:
+                                                    % if column.get('type') == 'head':
+                                                        <th>${column['value'].replace('!', '', 1)}</th>
+                                                    % elif column['value'].startswith('?'):
+                                                        <td>
+                                                            <%
+                                                                try:
+                                                                    column_answer = user_answers[index][user_answer_input_index] if user_answers else ''
+                                                                except IndexError:
+                                                                    column_answer = ''
+                                                            %>
+                                                            <input placeholder="Enter data here" type="text" name="${index}" value="${column_answer}" required/>
+                                                        </td>
+                                                        <% user_answer_input_index += 1 %>
+                                                    % else:
+                                                        <td>${column['value']}</td>
+                                                    % endif
+                                                % endfor
+                                            </tr>
+                                        % endif
+                                        % if item['tableData'].get('rows'):
+                                            % for row in item['tableData']['rows']:
+                                                <tr>
+                                                    % for idx, col in enumerate(item['tableData'].get('columns')):
+                                                        % if row[str(idx)]['value'].startswith('?'):
+                                                            <td>
+                                                                <%
+                                                                    try:
+                                                                        row_answer = user_answers[index][user_answer_input_index] if user_answers else ''
+                                                                    except IndexError:
+                                                                        row_answer = ''
+                                                                %>
+                                                                <input placeholder="Enter data here" type="text" name="${index}" value="${row_answer}" required/>
+                                                            </td>
+                                                            <% user_answer_input_index += 1 %>
+                                                        % elif row[str(idx)].get('type') == 'head':
+                                                            <th>${row[str(idx)]['value'].replace('!', '', 1)}</th>
+                                                        % else:
+                                                            <td>${row[str(idx)]['value']}</td>
+                                                        % endif
+                                                    % endfor
+                                                </tr>
+                                            % endfor
+                                        % endif
+                                    </tbody>
+                                </table>
+                                </div>
+                            </form>
+                        % endif
+                    </div>
+                % endfor
+            </div>
         </div>
+        % if len(data.get('imgUrl', [])) > 1 or len(data.get('sliderBar', [])) > 1:
+            <div class="slider-button-wrapper">
+                <button class="slider-button button-prev js-click-prev hidden" type="button">
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                </button>
+                <button class="slider-button button-next js-click-next" type="button">
+                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                </button>
+            </div>
+        % endif
     </div>
-    <div class="button-wrapper">
-        <button class="button-prev" type="button">Previous</button>
-        <button class="button-next" type="button">Next</button>
+    <div class="author-holder author-block__buttons submit-button-holder">
+        <button type="button" class="author-block__btn submit">Submit</button>
     </div>
 </div>
-
-
-<section id="slider-popup">
-    <p>Give it another try.
-    <br />
-    If you'd like to exit the simulation instead, click exit.</p>
-</section>

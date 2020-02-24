@@ -5,47 +5,98 @@
     align-items: flex-end;
 }
 
-.hera_pages_block .count {
-    font-weight: bold;
+.instructor-info-action {
+    display: none;
+    visibility: hidden;
+}
+
+.bookmark-button {
+    display: none;
+    visibility: hidden;
+}
+
+.slick-arrow {
+    display: none;
+    visibility: hidden;
+}
+
+.slider-button-wrapper {
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 318px;
+    padding: 0 0 12px;
+    position: absolute;
+    bottom: 1px;
+    right: 12px;
 }
 
 .wrapper-page {
     width: 100%;
-    display: flex;
 }
 
-.image-wrapper {
-    width: 800px;
-    /* float: left; */
+.slider-button {
+    margin: 0 12px;
+    color: #ccc;
+    background: none;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    padding: 0;
+    line-height: 1;
+    height: auto;
+    transition: all .3s ease-in-out;
 }
 
-.slidebar-wrapper {
-    /* float:left; */
-    width:600px;
+.slider-button i {
+    font-size: 22px;
 }
 
-.column {
-    float: left;
-    width: 33%;
+.slider-button:hover {
+    opacity: .55;
+    border: none !important;
+    background: none !important;
+    box-shadow: none !important;
+    transform: scale(1.15);
 }
 
-.popup_content {
-    margin: 10px;
-    padding: 0 10px;
-    max-width: 60%;
-    border: 2px solid #444;
-    background: white;
-  }
-  
-  .instructor-info-action {
-      visibility: hidden;
-  }
-  
-  .bookmark-button {
+.slider-button:focus,
+.slider-button:active {
+    outline: none !important;
+    box-shadow: none !important;
+    background: none !important;
+    border: none !important;
+}
+
+.popup_content .slick-arrow {
+    visibility: visible !important;
+}
+
+.instructor-info-action {
     visibility: hidden;
-  }
-  
-.slick-arrow {
+}
+
+.bookmark-button {
     visibility: hidden;
 }
-  
+
+.slick-list {
+    min-height: 500px;
+}
+
+.author-block-no-image {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 100%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 1;
+}
+
+.author-block-no-image i {
+    font-size: 96px;
+    color: var(--color2);
+    margin-bottom: 12px;
+}

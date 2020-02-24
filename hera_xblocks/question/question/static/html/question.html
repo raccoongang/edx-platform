@@ -1,87 +1,175 @@
 <div class="author-block__wrapper">
-    <div class="author-block__content">
-        <div class="author-block__image">
+    <div class="author-block__content ">
+        <div class="author-block__image questions-image-wrapper">
             <span class="close-image-icon hidden js-close-scaffold-btn">&times;</span>
-            <div class="image-slider">
-                {% for img_url in img_urls %}
-                    <img class="question__image" src="{{img_url}}" alt="Question image">
-                {% endfor %}
+            <div class="image-holder">
+                % for img_url in img_urls:
+                    <img class="question__image" src="${img_url}" alt="Question image">
+                % endfor
             </div>
             <div class="scaffold_help_image hidden">
             </div>
-            {% if iframe_url %}
-                <button type="button" class="show-simulation" data-iframe-url="{{iframe_url}}">Show simulation</button>
-            {% endif %}
         </div>
-        <div class="author-block__question">
-            <div class="question__content">{{description|safe}}</div>
+        <div class="author-block__question questions-wrapper">
+            <div class="question__content">${description}</div>
             <form class="question-form">
-                {% if question.questionType == "text" or question.questionType == "number" %}
-                    <input class="questions-list__field" type="{{question.questionType}}" name="answer" value="{{user_answer}}"/>
-                {% elif question.questionType == "select" %}
-                    <select class="questions-list__select" name="answer">
-                        <option class="questions-list__select-item" value=""> ------- </option>
-                        {% for option in options %}
-                            <option value="{{option.title}}"{% if option.title in user_answer %} selected{% endif %}>{{option.title}}</option>
-                        {% endfor %}
-                    </select>
-                {% else %}
-                    {% for option in options %}
-                        <div class="questions-list__item">
-                            <label class="questions-list__label">
-                                <input
-                                        class="questions-list__input"
-                                        type="{{question.questionType}}"
-                                        name="answer"
-                                        value="{{option.title}}"
-                                        {% if option.title in user_answer %} checked{% endif %}
-                                />
-                                <span class="questions-list__text">
-                                    {{option.title}}
-                                </span>
-                            </label>
+                % for index, problem_type in enumerate(problem_types):
+                    <div class="questions-list-item-holder">
+                        % if problem_type.get('title'):
+                            <p class="question-title">${problem_type['title']}</p>
+                        % endif
+                        % if problem_type['type'] == "text" or problem_type['type'] == "number":
+                            <input class="questions-list__field" type="${problem_type['type']}" name="${index}" value="${user_answer[index][0] if user_answer else ''}"/>
+                        % elif problem_type['type'] == "select":
+                            <select class="questions-list__select" name="${index}">
+                                <option class="questions-list__select-item" value=""> ------- </option>
+                                % for option in problem_type['options']:
+                                    % if option.get('title'):
+                                        <% selected = 'selected' if user_answer and option['title'] in user_answer[index] else '' %>
+                                        <option value="${option['title']}" ${selected}>${option['title']}</option>
+                                    % endif
+                                % endfor
+                            </select>
+                        % elif problem_type['type'] == "table":
+                        <div class="table-wrapper">
+                            <table>
+                                <tbody>
+                                <% user_answer_input_index = 0 %>
+                                % if problem_type['tableData'].get('columns'):
+                                    <tr>
+                                        % for column in problem_type['tableData']['columns']:
+                                            % if column.get('type') == 'head':
+                                                <th>${column['value'].replace('!', '', 1)}</th>
+                                            % elif column['value'].startswith('?'):
+                                                <td>
+                                                    <input type="text" name="${index}" value="${user_answer[index][user_answer_input_index] if user_answer else ''}"/>
+                                                </td>
+                                                <% user_answer_input_index += 1 %>
+                                            % else:
+                                                <td>${column['value']}</td>
+                                            % endif
+                                        % endfor
+                                    </tr>
+                                % endif
+                                % if problem_type['tableData'].get('rows'):
+
+                                % for row in problem_type['tableData']['rows']:
+                                    <tr>
+                                        % for idx, col in enumerate(problem_type['tableData'].get('columns')):
+                                            % if row[str(idx)]['value'].startswith('?'):
+                                                <td>
+                                                    <input placeholder="Enter data here" type="text" name="${index}" value="${user_answer[index][user_answer_input_index] if user_answer else ''}"/>
+                                                </td>
+                                                <% user_answer_input_index += 1 %>
+                                            % elif row[str(idx)].get('type') == 'head':
+                                                <th>${row[str(idx)]['value'].replace('!', '', 1)}</th>
+                                            % else:
+                                                <td>${row[str(idx)]['value']}</td>
+                                            % endif
+                                        % endfor
+                                    </tr>
+                                    % endfor
+                                % endif
+                                </tbody>
+                            </table>
                         </div>
-                    {% endfor %}
-                {% endif %}
+                        % else:
+                            % for option in problem_type['options']:
+                                % if option.get('title'):
+                                    <% checked_flag = '' %>
+                                    %if user_answer and option['title'] in user_answer[index]:
+                                        <% checked_flag = 'checked' %>
+                                    %endif
+                                        <div class="questions-list__item">
+                                            <label class="questions-list__label">
+                                                <input
+                                                        class="questions-list__input"
+                                                        type="${problem_type['type']}"
+                                                        name="${index}"
+                                                        value="${option['title']}"
+                                                        ${checked_flag}
+                                                />
+                                                <span class="questions-list__text">
+                                                        ${option['title']}
+                                                    </span>
+                                            </label>
+                                        </div>
+                                % endif
+                            % endfor
+                        % endif
+                    </div>
+                % endfor
             </form>
             <div class="scaffold-info hidden">
-                <img class="scaffold-img" src="" alt="scaffold img">
-                <div class="scaffold-description"></div>
                 <button type="button" class="author-block__btn try_again">Try Again</button>
             </div>
-            <div class="scaffolds hidden">
-                <button type="button" class="scaffold__btn is-rephrase" data-content="{{rephrase.content}}">
+            <div id="${'rephrase-content-{}'.format(location_id)}" class="rephrase-content" hidden>
+                ${rephrase.get('content')}
+            </div>
+            <div id="${'break-down-{}'.format(location_id)}" class="break-down-content" hidden>
+                ${break_down.get('content')}
+            </div>
+            <div id="${'teach-me-{}'.format(location_id)}" class="teach-me-content" hidden>
+                ${teach_me.get('content')}
+            </div>
+        </div>
+        <div class="scaffolds hidden">
+            <%
+            break_down_img_urls = ' '.join(break_down.get('imgUrls', []))
+            teach_me_img_urls = ' '.join(teach_me.get('imgUrls', []))
+            %>
+            <button
+                    type="button"
+                    class="scaffold scaffold__btn is-rephrase js-scaffold-button"
+                    data-scaffold-name="rephrase-content"
+                    data-scaffold-class-name="is-rephrase">
+                    <span class="scaffold__price">
+                        -10
+                    </span>
+                Rephrase
+            </button>
+            <button
+                    type="button"
+                    class="scaffold scaffold__btn is-break js-scaffold-button"
+                    data-img-urls="${break_down_img_urls}"
+                    data-scaffold-name="break-down"
+                    data-scaffold-class-name="is-break">
                     <span class="scaffold__price">
                         -20
                     </span>
-                    Rephrase
-                </button>
-                <button type="button" class="scaffold__btn is-break" data-img-urls="{%for url in break_down.imgUrls%}{{url}} {% endfor %}" data-content="{{break_down.content}}">
-                    <span class="scaffold__price">
-                        -20
-                    </span>
-                    Break It Down
-                </button>
-                <button type="button" class="scaffold__btn is-teach" data-img-urls="{%for url in teach_me.imgUrls%}{{url}} {% endfor %}" data-content="{{teach_me.content}}">
+                Break It Down
+            </button>
+            <button
+                    type="button"
+                    class="scaffold scaffold__btn is-teach js-scaffold-button"
+                    data-img-urls="${teach_me_img_urls}"
+                    data-scaffold-name="teach-me"
+                    data-scaffold-class-name="is-teach">
                     <span class="scaffold__price">
                         -30
                     </span>
-                    Teach Me
-                </button>
-            </div>
+                Teach Me
+            </button>
         </div>
+        % if iframe_url:
+            <div class="show-simulation-holder">
+                <button type="button" class="btn-simulation show-simulation" data-iframe-url="${iframe_url}">Show simulation</button>
+            </div>
+        % endif
     </div>
     <div class="author-holder author-block__buttons">
         <span class="confidence-text info hidden"></span>
-        <input type="number" class="confidence-input hidden" min="0" max="100"/>
-        <span class="confidence-text error">Please tell us how confident you are about your answer.</span>
+        <div class="confidence-holder">
+            <input type="number" class="confidence-input hidden" min="0" max="100"/>
+            <span class="confidence-text error">Please tell us how confident you are about your answer.</span>
+        </div>
         <button type="button" class="author-block__btn skip hidden">Skip</button>
         <button type="button" class="author-block__btn submit" disabled>Submit</button>
     </div>
     <div class="simulation-overlay">
         <div class="simulation-popup">
             <div class="simulation-close-btn">&times;</div>
-            <iframe src="{{iframe_url}}" class="simulation-iframe"></iframe>
+            <iframe src="${iframe_url}" class="simulation-iframe"></iframe>
         </div>
     </div>
 </div>

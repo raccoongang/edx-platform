@@ -13,8 +13,6 @@ from hera.fragments import DashboardPageOutlineFragmentView, SelectionPageOutlin
 from hera.models import ActiveCourseSetting, UserOnboarding
 from lms.djangoapps.courseware.views.views import CourseTabView
 from openedx.features.course_experience.views.course_home import CourseHomeFragmentView, CourseHomeView
-from student.models import CourseEnrollment
-
 
 
 @method_decorator(login_required, name='dispatch')
@@ -28,7 +26,7 @@ class OnboardingPagesView(View):
         Render user onboarding pages.
         """
         user_onboarding, _ = UserOnboarding.objects.get_or_create(user=request.user)
-        if request.user and not request.user.is_staff and user_onboarding.is_passed():
+        if request.user and user_onboarding.is_passed():
             return HttpResponseRedirect(reverse('hera:dashboard'))
         context = {
             'pages': user_onboarding.get_pages(),
@@ -81,14 +79,14 @@ class DashboardPageView(CourseTabView):
             course_id = unicode(active_course.course.id)
         else:
             raise Http404
-        user = request.user
-        course_key = active_course.course.id
-        if user and user.is_authenticated:
-            if not CourseEnrollment.is_enrolled(user, course_key):
-                CourseEnrollment.enroll(user, course_key)
-
         return super(DashboardPageView, self).get(request, course_id, 'courseware', **kwargs)
 
     def render_to_fragment(self, request, course=None, **kwargs):
         home_fragment_view = DashboardPageFragmentView()
         return home_fragment_view.render_to_fragment(request, course_id=unicode(course.id), **kwargs)
+
+
+class RegisterSuccessView(View):
+
+    def get(self, equest, **kwargs):
+        return render_to_response("hera/register_success.html")

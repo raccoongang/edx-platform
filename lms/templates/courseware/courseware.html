@@ -55,6 +55,13 @@ from openedx.features.course_experience import course_home_page_title, COURSE_OU
 <%static:css group='style-student-notes'/>
 % endif
 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/vast-engineering/jquery-popup-overlay@2/jquery.popupoverlay.min.js"></script>
+
+<link rel="icon" type="image/x-icon" href="${static.url(static.get_value('favicon_path', settings.FAVICON_PATH))}" />
+<link rel="icon" type="image/x-icon" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css" />
+<link rel="icon" type="image/x-icon" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css" />
+
 <script type="text/javascript" src="${static.url('js/jquery.autocomplete.js')}"></script>
 <script type="text/javascript" src="${static.url('js/src/tooltip_manager.js')}"></script>
 

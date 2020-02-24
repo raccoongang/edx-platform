@@ -1,0 +1,22 @@
+<div>
+<div>
+<h1 style="font-variant-numeric: normal; font-variant-east-asian: normal; font-weight: normal; font-stretch: normal; line-height: 1.4em; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #313131; margin: 0px 0px 30px; text-align: center;">You will earn "atoms" for<br />correct answers!</h1>
+<div style="font-weight: 400; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #222222; font-size: 16px;">
+<p style="color: inherit; margin: 0px 0px 24px; text-align: center; line-height: 1.5;">Each question is worth 10 atoms, for up to 100 total atoms per lesson.<br />You can earn a badge at the end of the lesson based on your total atoms.<br />60 = Bronze&nbsp;&nbsp; |&nbsp;&nbsp; 70 = Silver&nbsp;&nbsp; |&nbsp;&nbsp; 80 = Gold&nbsp;&nbsp; |&nbsp;&nbsp; 90/100 = Platinum.<br />Use help when you need it, and see how high you can score!</p>
+</div>
+<div style="font-weight: 400; display: flex; justify-content: space-between; position: relative; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #222222; font-size: 16px;">
+<div style="position: relative; width: 159px;">
+<div style="display: flex; align-items: center; margin: 0px 0px 12px;"><img style="border: 0px; vertical-align: middle; margin-right: 8px; width: 82px; position: relative;" src="/static/${settings.DEFAULT_SITE_THEME}/images/coins.svg" alt="atom_icon1" /><span class="onboarding-atom-counter" style="color: inherit; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: 26px; line-height: inherit; position: relative;">300</span></div>
+<p style="color: inherit; margin: 0px;">Start with 300 lightning bolts to use if you need help</p>
+</div>
+<div style="position: relative; width: 159px;">
+<div style="display: flex; align-items: center; margin: 0px 0px 12px;"><img style="border: 0px; vertical-align: middle; margin-right: 8px; width: 82px; position: relative;" src="/static/${settings.DEFAULT_SITE_THEME}/images/points.svg" alt="atom_icon2" /><span class="onboarding-atom-counter" style="color: inherit; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: 26px; line-height: inherit; position: relative;">100</span></div>
+<p style="color: inherit; margin: 0px;">Earn 10 atoms for each question.</p>
+</div>
+<div style="position: relative; width: 159px;">
+<div style="display: flex; align-items: center; margin: 0px 0px 12px;"><img style="border: 0px; vertical-align: middle; margin-right: 8px; width: 82px; position: relative;" src="/static/${settings.DEFAULT_SITE_THEME}/images/medal.svg" alt="atom_icon3" /><span class="onboarding-atom-counter" style="color: inherit; font-style: inherit; font-variant: inherit; font-weight: bold; font-stretch: inherit; font-size: 26px; line-height: inherit; position: relative;">Gold</span></div>
+<p style="color: inherit; margin: 0px;">Convert atoms to a medal after each lesson!</p>
+</div>
+</div>
+</div>
+</div>

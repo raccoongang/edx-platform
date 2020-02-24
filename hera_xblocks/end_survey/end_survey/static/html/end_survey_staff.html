@@ -1,26 +1,52 @@
-<div class="end_survey_block">
-    <div class="servey-questions">
-        <h1>STAFF VIEW</h1>
-        <h2>{{ title }}</h2>
-        {% if  user_count %}
-            <h1> {{ user_count }} </h1>
-        {% endif %}
-        {% for q in questions %}
-            <div class=row>
-            <span>{{ q.questionText }}</span>
-            {% if q.type == 'options'%}
-            <div class="box">
-                <select class="possible-answers">
-                    {% for a in q.possibleAnswers %}
-                        <option {% if a == last_choice %}selected{% endif %}> {{a}} </option>
-                    {% endfor %}
-                </select>
+<div class="author-block__wrapper questions-summary">
+    <h2 class="author-title">${title}</h2>
+    <h2 class="author-title">Questions:</h2>
+    <div class="author-block__content is-column">
+        <div class="author-block__question is-full-width">
+            %for question in results_percentage.get('questions', {}):
+                <div class="survey-question-title">${question}</div>
+                <%
+                    possible_answers = results_percentage['questions'][question]
+                %>
+                <div class="survey-holder survey-results">
+                    %for possible_answer in possible_answers:
+                        <div class="survey-results-item">
+                            <div class="survey-results-item__title">
+                                ${possible_answer}
+                            </div>
+                            <div class="survey-results-item__percents">
+                                ${possible_answers.get(possible_answer)}
+                            </div>
+                        </div>
+                    %endfor
+                </div>
+            %endfor
+        </div>
+    </div>
+</div>
+
+<div class="author-block__wrapper confidence-summary">
+    <h2 class="author-title">Confidence:</h2>
+    <div class="author-block__content is-column">
+        <div class="author-block__question is-full-width">
+            %for confidence in results_percentage.get('confidence', {}):
+                <div class="survey-question-title">${confidence}</div>
+                <%
+                possible_answers = results_percentage['confidence'][confidence]
+                %>
+                <div class="survey-holder survey-results">
+                    %for possible_answer in possible_answers:
+                    <div class="survey-results-item">
+                        <div class="survey-results-item__title">
+                            ${possible_answer}
+                        </div>
+                        <div class="survey-results-item__percents">
+                            ${possible_answers[possible_answer]}
+                        </div>
+                    </div>
+                    %endfor
+            %endfor
             </div>
-            {% elif q.type == 'text' %}
-                <input type="text" id="survey_answer"> {{a}} </input>
-            {% endif %}
-            </div>
-        {% endfor %}
-        <button class="button-submit" type="button">Submit Survey</button>
+        </div>
     </div>
 </div>

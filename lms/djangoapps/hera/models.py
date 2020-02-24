@@ -15,7 +15,7 @@ def render_template(page_number):
     """
     Return rendered template as a string.
     """
-    template = Template(render_to_string('hera/{}.html'.format(page_number)))
+    template = Template(render_to_string('hera/{}_template.txt'.format(page_number)))
     return template.render(**{'settings': settings})
 
 
@@ -239,7 +239,7 @@ class ActiveCourseSetting(models.Model):
 def reset_active_course(sender, instance, *args, **kwargs):
     """
     Reset '_active_course' and '_active_course_exists'
-    The signal is used due to the fact that when deleting from the admin 
+    The signal is used due to the fact that when deleting from the admin
     using action 'delete_selected', 'Model.delete' is not called.
     """
     sender._active_course = None
