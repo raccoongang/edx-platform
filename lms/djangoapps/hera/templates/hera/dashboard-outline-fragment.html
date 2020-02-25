@@ -33,12 +33,12 @@ from openedx.core.djangolib.markup import HTML, Text
 
                 </div>
                 <div class="hera-mascot">
-                    <img class="hera-mascot__img" src="${dashboard_mascots.get('user_dashboard') or '/static/{}/images/mascots/mascot_general.png'.format(settings.DEFAULT_SITE_THEME)}" alt="/">
+                    <img class="hera-mascot__img" src="${dashboard_mascots.get('user_dashboard') or '/static/{}/images/mascots/mascot_pose-welcome.svg'.format(settings.DEFAULT_SITE_THEME)}" alt="/">
                 </div>
             </div>
             <div class="hera-grades">
                 <div class="hera-grades__item">
-                    <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_copp.jpg" alt="/">
+                    <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_copp.svg" alt="/">
                     <div class="hera-grades__points">
                         60-69 points
                     </div>
@@ -48,7 +48,7 @@ from openedx.core.djangolib.markup import HTML, Text
                 </div>
     ​
                 <div class="hera-grades__item">
-                    <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_silv.jpg" alt="/">
+                    <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_silv.svg" alt="/">
                     <div class="hera-grades__points">
                         70-79 points
                     </div>
@@ -58,7 +58,7 @@ from openedx.core.djangolib.markup import HTML, Text
                 </div>
     ​
                 <div class="hera-grades__item">
-                    <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_gld.jpg" alt="/">
+                    <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_gold.svg" alt="/">
                     <div class="hera-grades__points">
                         80-89 points
                     </div>
@@ -68,7 +68,7 @@ from openedx.core.djangolib.markup import HTML, Text
                 </div>
     ​
                 <div class="hera-grades__item">
-                    <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_pt.jpg" alt="/">
+                    <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_pt.svg" alt="/">
                     <div class="hera-grades__points">
                         90-100 points
                     </div>
@@ -78,17 +78,16 @@ from openedx.core.djangolib.markup import HTML, Text
                 </div>
             </div>
         </div>
-
         <div class="hera-dashboard-progress-body">
-            <div class="hera-dna-bg">
-                <img class="hera-dna-bg__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/DNA_bg.svg" alt="/">
-            </div>
             % for subsection in ordered_subsections:
                 % if not subsection:
                     <div class="hera-dashboard-progress-body__item is-locked">
                         <div class="hera-dashboard-progress-header__item">
                             <div class="hera-lesson__title">
                                 Lesson ${loop.index + 1}
+                            </div>
+                            <div class="hera-lesson__status">
+                                Complete
                             </div>
                         </div>
                         <div class="dna-locked">
@@ -107,17 +106,12 @@ from openedx.core.djangolib.markup import HTML, Text
                                 Complete
                             </div>
                         </div>
-                        <a href="${ subsection.get('lms_web_url', '') }" class="dna-connector">
-                            <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/${subsection.get('medal')}_${loop.cycle('top', 'bottom')}.svg" alt="/">
-                        </a>
-                        <div class="dna-text is-bottom">
-                            <span class="dna-text__title">
-                                ${subsection['points']}
-                            </span>
-                            <span class="dna-text__points">
-                                points
-                            </span>
+                        <div class="dna-connector">
+                            <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/copper.svg" alt="/">
                         </div>
+<!--                        <a href="${ subsection.get('lms_web_url', '') }" class="dna-connector">-->
+<!--                            <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/${subsection.get('medal')}_${loop.cycle('top', 'bottom')}.svg" alt="/">-->
+<!--                        </a>-->
                     </div>
                 % else:
                     <div class="hera-dashboard-progress-body__item is-unlocked">
@@ -127,11 +121,21 @@ from openedx.core.djangolib.markup import HTML, Text
                             </div>
                         </div>
                         <div class="dna-unlocked">
-                            <div class="dna-icon"><a href="${ subsection.get('lms_web_url', '') }"></a></div>
+                            <div class="dna-icon">
+                                <a href="${ subsection.get('lms_web_url', '') }">
+                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                            <div class="dna-connector">
+                                <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/copper.svg" alt="/">
+                            </div>
                         </div>
                     </div>
                 % endif
             % endfor
+        </div>
+        <div class="hera-dna-bg">
+            <img class="hera-dna-bg__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/DNA_bg.svg" alt="/">
         </div>
     </div>
 
