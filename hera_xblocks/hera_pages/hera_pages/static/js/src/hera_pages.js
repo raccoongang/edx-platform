@@ -65,16 +65,15 @@ function HeraPagesXBlock(runtime, element, init_args) {
 
     $submitButton.bind('click', function (e) {
         var $questionForm = $(".table-form", element);
-
-        if (!$questionForm.is(':valid') && showMessage) {
+        $questionForm.find('input').validate();
+        if (!$questionForm.find('input').valid() && showMessage) {
             $warningMessage.show();
             showMessage = false;
         } else {
             $warningMessage.hide();
             var serializedForm = $questionForm.serializeArray();
             var userAnswers = [];
-
-            for (var i = 0; i < $questionForm.length; i++) {
+            for (var i = 0; i < contentSlideCount; i++) {
                 userAnswers.push([]);
             }
             for (var i in serializedForm) {
