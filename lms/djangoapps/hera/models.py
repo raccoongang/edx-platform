@@ -244,3 +244,31 @@ def reset_active_course(sender, instance, *args, **kwargs):
     """
     sender._active_course = None
     sender._active_course_exists = False
+
+
+class Mascot(models.Model):
+    user_dashboard = models.ImageField(upload_to='hera', null=True, blank=True)
+    user_dashboard_modal = models.ImageField(upload_to='hera', null=True, blank=True)
+    onboarding = models.ImageField(upload_to='hera', null=True, blank=True)
+
+    @classmethod
+    def _instance(cls):
+        return cls.objects.first()
+
+    @classmethod
+    def onboarding_img_url(cls):
+        instance = cls._instance()
+        if instance:
+            return instance.onboarding.url if instance.onboarding else None
+
+    @classmethod
+    def user_dashboard_img_urls(cls):
+        instance = cls._instance()
+        if instance:
+            user_dashboard = instance.user_dashboard.url if instance.user_dashboard else None
+            user_dashboard_modal = instance.user_dashboard_modal.url if instance.user_dashboard_modal else None
+            return {
+                'user_dashboard': user_dashboard,
+                'user_dashboard_modal': user_dashboard_modal
+            }
+        return {}

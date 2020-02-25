@@ -103,13 +103,13 @@
             <div class="scaffold-info hidden">
                 <button type="button" class="author-block__btn try_again">Try Again</button>
             </div>
-            <div id="${'rephrase-content-{}'.format(location_id)}" class="rephrase-content" hidden>
+            <div id="${'rephrase-content-{}'.format(block_id)}" class="rephrase-content" hidden>
                 ${rephrase.get('content')}
             </div>
-            <div id="${'break-down-{}'.format(location_id)}" class="break-down-content" hidden>
+            <div id="${'break-down-{}'.format(block_id)}" class="break-down-content" hidden>
                 ${break_down.get('content')}
             </div>
-            <div id="${'teach-me-{}'.format(location_id)}" class="teach-me-content" hidden>
+            <div id="${'teach-me-{}'.format(block_id)}" class="teach-me-content" hidden>
                 ${teach_me.get('content')}
             </div>
         </div>
@@ -170,6 +170,15 @@
         <div class="simulation-popup">
             <div class="simulation-close-btn">&times;</div>
             <iframe src="${iframe_url}" class="simulation-iframe"></iframe>
+        </div>
+    </div>
+    <div class="footer-controls-buttons-holder">
+        <div class="js-show-hide-warning-message" style="display: none;">
+            It seems like you haven't fully interacted with the table. Give it another try. If you'd like to exit, press next again!
+        </div>
+        <div class="footer-controls-btns">
+            <button class="btn btn-prev button-previous-${block_id}">Previous</button>
+            <button class="btn btn-primary button-next-${block_id}">Next</button>
         </div>
     </div>
 </div>

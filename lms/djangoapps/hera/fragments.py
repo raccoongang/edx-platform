@@ -3,6 +3,8 @@ from django.template.loader import render_to_string
 from opaque_keys.edx.keys import CourseKey
 from web_fragments.fragment import Fragment
 
+from hera.models import Mascot
+
 from courseware.courses import get_course_overview_with_access, get_current_child
 from courseware.model_data import FieldDataCache
 from courseware.module_render import get_module_for_descriptor
@@ -343,7 +345,8 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
             'popup': popup,
             'continue_url': last_visited_subsection.get('lms_web_url', ''),
             'start_over_url': start_over_url,
-            'csrf': csrf(request)['csrf_token']
+            'csrf': csrf(request)['csrf_token'],
+            'dashboard_mascots': Mascot.user_dashboard_img_urls(),
         }
 
         html = render_to_string('hera/dashboard-outline-fragment.html', context)

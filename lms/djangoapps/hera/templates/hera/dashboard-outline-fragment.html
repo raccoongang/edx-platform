@@ -33,7 +33,7 @@ from openedx.core.djangolib.markup import HTML, Text
 
                 </div>
                 <div class="hera-mascot">
-                    <img class="hera-mascot__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/mascots/mascot_pose-welcome.svg" alt="/">
+                    <img class="hera-mascot__img" src="${dashboard_mascots.get('user_dashboard') or '/static/{}/images/mascots/mascot_pose-welcome.svg'.format(settings.DEFAULT_SITE_THEME)}" alt="/">
                 </div>
             </div>
             <div class="hera-grades">
@@ -160,7 +160,7 @@ from openedx.core.djangolib.markup import HTML, Text
                     </div>
                 </div>
                 <div class="mascot">
-                    <img class="mascot-image" src="/static/${settings.DEFAULT_SITE_THEME}/images/mascots/mascot_pose-welcome.svg" alt="HERA-mascot" />
+                    <img class="mascot-image" src="${dashboard_mascots.get('user_dashboard_modal') or '/static/{}/images/mascots/mascot_pose-welcome.svg'.format(settings.DEFAULT_SITE_THEME)}" alt="HERA-mascot" />
                 </div>
             </div>
         </div>
