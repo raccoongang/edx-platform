@@ -38,7 +38,7 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
 
     @property
     def title(self):
-        return self.data.get("title")
+        return self.data.get("heading")
 
     @property
     def mascot_url(self):
