@@ -38,7 +38,7 @@ function EndSurveyXBlock(runtime, element, init_args) {
             data: JSON.stringify(data),
             success: function(response) {
                 $("#wrapper-page").html(response);
-                $(".button-next").prop('disabled', false);
+                $(".button-next-" + blockId).prop('disabled', false);
             }
         })
     });
@@ -56,5 +56,16 @@ function EndSurveyXBlock(runtime, element, init_args) {
         } else {
             $('.button-submit').attr('disabled', 'disabled');
         }
+    });
+    
+    if ($('input:checked', element).length === $('.survey-holder', element).length) {
+        $('.button-next-' + blockId, element).attr('disabled', false);
+    }
+
+    $('.button-next-' + blockId, element).click(function() {
+        $('.sequence-nav-button.button-next').get(0).click();
+    });
+    $('.button-previous-' + blockId, element).click(function() {
+        $('.sequence-nav-button.button-previous').get(0).click();
     });
 }

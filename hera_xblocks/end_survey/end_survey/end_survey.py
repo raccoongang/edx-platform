@@ -90,24 +90,25 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
 
         return results
 
+    def get_user(self):
+        user_service = self.runtime.service(self, 'user')
+        xb_user = user_service.get_current_user()
+        email = xb_user.emails[0] if xb_user.emails else None
+        if email:
+            try:
+                user = get_user_by_username_or_email(username_or_email=email)
+            except User.DoesNotExist:
+                pass
+            return user
+
     def html_for_role(self):
         """
         This is a function which return different html templates, depends whether user is staff or not.
              - end_survey_staff is template with statistics from all the students.
              - end_survey_user is template with survey questions or results for the current student.
         """
-
-        user_service = self.runtime.service(self, 'user')
-        xb_user = user_service.get_current_user()
-        email = xb_user.emails[0] if xb_user.emails else None
-
-        try:
-            if email:
-                user = get_user_by_username_or_email(username_or_email=email)
-        except User.DoesNotExist:
-            return None
-
-        if user.is_staff:
+        user = self.get_user()
+        if user and user.is_staff:
             context = self.get_context_staff()
             template = 'static/html/end_survey_staff.html'
         else:
@@ -139,7 +140,8 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
 
     def get_common_context(self):
         return {
-            'block_id': self.location.block_id
+            'block_id': self.location.block_id,
+            'user': self.get_user()
         }
 
     def get_context(self):
@@ -183,9 +185,9 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
         self.result_summary.append(data)
         context = self.get_context()
         return loader.render_mako_template(
-                    'static/html/student_completed.html',
-                    context=context
-                )
+            'static/html/student_completed.html',
+            context=context
+        )
 
     def student_view(self, context=None):
         """
@@ -193,10 +195,16 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
         when viewing courses.
         """
         html = self.html_for_role()
-        frag = Fragment(html)
+        context = self.get_common_context()
+        context.update({
+            'content': html
+        })
+        main = loader.render_mako_template(
+            'static/html/main.html', context
+        )
+        frag = Fragment(main)
         frag.add_css(self.resource_string("static/css/end_survey.css"))
         frag.add_javascript(self.resource_string("static/js/src/end_survey.js"))
 
         frag.initialize_js('EndSurveyXBlock', json_args={'block_id': self.location.block_id})
-
         return frag

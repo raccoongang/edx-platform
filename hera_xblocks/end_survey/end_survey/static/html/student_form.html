@@ -63,10 +63,3 @@
         </form>
     </div>
 </div>
-## Student mustn't be able to clic "Next" button before survey was submitted.
-<script type="text/javascript">
-    $(document).ready(function() {
-        // because we are waiting the Backbone to render this button;
-        setTimeout(function(){$(".button-next", document).prop('disabled', true);}, 300);
-    });
-</script>
