@@ -80,57 +80,54 @@ from openedx.core.djangolib.markup import HTML, Text
         </div>
         <div class="hera-dashboard-progress-body">
             % for subsection in ordered_subsections:
-                % if not subsection:
-                    <div class="hera-dashboard-progress-body__item is-locked">
-                        <div class="hera-dashboard-progress-header__item">
-                            <div class="hera-lesson__title">
-                                Lesson ${loop.index + 1}
-                            </div>
-                        </div>
-                        <div class="dna-locked">
-                            <div class="dna-icon">
-                                <img class="dna-icon__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/lock_icon.svg" alt="/">
-                            </div>
-                        </div>
-                    </div>
-                % elif subsection.get('points') is not None:
-                    <div class="hera-dashboard-progress-body__item">
+                    <div class="hera-dashboard-progress-body__item is-unlocked">
                         <div class="hera-dashboard-progress-header__item">
                             <div class="hera-lesson__title">
                                 ${subsection.get('display_name')}
                             </div>
                             <div class="hera-lesson__status">
-                                Complete
+                                % if subsection.get('points') is not None:
+                                    Complete
+                                % endif
                             </div>
                         </div>
                         <div class="dna-unlocked">
                             <div class="dna-icon">
                                 <a href="${ subsection.get('lms_web_url', '') }">
-                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                    % if subsection.get('points') is not None:
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                    % endif
                                 </a>
                             </div>
-                            <div class="dna-connector">
-                                <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/copper.svg" alt="/">
-                            </div>
+                            % if subsection.get('points') is not None:
+                                <div class="dna-connector">
+                                    % if 60 < subsection.get('points') <= 69:
+                                        <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/copper.svg" alt="/">
+                                    % elif 69 < subsection.get('points') <= 79:
+                                        <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/silver.svg" alt="/">
+                                    % elif 79 < subsection.get('points') <= 89:
+                                        <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/gold.svg" alt="/">
+                                    % elif subsection.get('points') > 89:
+                                        <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/platinum.svg" alt="/">
+                                    % endif
+                                </div>
+                            % endif
                         </div>
                     </div>
-                % else:
-                    <div class="hera-dashboard-progress-body__item is-unlocked">
-                        <div class="hera-dashboard-progress-header__item">
-                            <div class="hera-lesson__title">
-                                ${subsection['display_name']}
-                            </div>
-                        </div>
-                        <div class="dna-unlocked">
-                            <div class="dna-icon">
-                                <a href="${ subsection.get('lms_web_url', '') }"></a>
-                            </div>
-                            <div class="dna-connector">
-                                <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/copper.svg" alt="/">
-                            </div>
+            % endfor
+            % for i in range(8 - len(ordered_subsections)):
+                <div class="hera-dashboard-progress-body__item is-locked">
+                    <div class="hera-dashboard-progress-header__item">
+                        <div class="hera-lesson__title">
+                            Lesson ${i + len(ordered_subsections) + 1}
                         </div>
                     </div>
-                % endif
+                    <div class="dna-locked">
+                        <div class="dna-icon">
+                            <img class="dna-icon__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/lock_icon.svg" alt="/">
+                        </div>
+                    </div>
+                </div>
             % endfor
         </div>
         <div class="hera-dna-bg">
