@@ -4,9 +4,11 @@ Hera app admin panel.
 from django import forms
 from django.conf import settings
 from django.contrib import admin
+from django.forms import ModelForm
+from django.forms.widgets import TextInput
 from opaque_keys.edx.keys import CourseKey
 
-from hera.models import ActiveCourseSetting, Mascot, Onboarding, UserOnboarding
+from hera.models import ActiveCourseSetting, Mascot, Onboarding, UserOnboarding, Scaffold
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 
@@ -97,6 +99,28 @@ class MascotAdmin(admin.ModelAdmin):
         return not self.model.objects.exists()
 
 
+class ScaffoldForm(ModelForm):
+    class Meta:
+        model = Scaffold
+        fields = '__all__'
+        widgets = {
+            'rephrase_color': TextInput(attrs={'type': 'color'}),
+            'break_it_down_color': TextInput(attrs={'type': 'color'}),
+            'teach_me_color': TextInput(attrs={'type': 'color'}),
+        }
+
+
+class ScaffoldAdmin(admin.ModelAdmin):
+    form = ScaffoldForm
+
+    def has_add_permission(self, request):
+        """
+        Allow to add Scaffold only if no objects exist.
+        """
+        return not self.model.objects.exists()
+
+
+admin.site.register(Scaffold, ScaffoldAdmin)
 admin.site.register(Onboarding, OnboardingAdmin)
 admin.site.register(UserOnboarding, UserOnboardingAdmin)
 admin.site.register(ActiveCourseSetting, ActiveCourseSettingAdmin)

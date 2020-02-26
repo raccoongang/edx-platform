@@ -2,16 +2,20 @@
 import pkg_resources
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
-from xblock.scorable import ScorableXBlockMixin
-from xblock.fields import JSONField, Scope, Integer, String
+from xblock.fields import JSONField, Scope, Integer, String, Boolean
 from xblockutils.resources import ResourceLoader
 from xblockutils.studio_editable import StudioEditableXBlockMixin
+
+from hera.utils import recalculate_coints, get_scaffold
 
 
 loader = ResourceLoader(__name__)
 
 MAX_ALLOWED_SUBMISSON = 2
 
+REPHRASE = 'rephrase'
+BREAK_IT_DOWN = 'break_down'
+TEACH_ME = 'teach_me'
 
 class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     """
@@ -29,6 +33,9 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     user_confidence = Integer(scope=Scope.user_state)
     user_answer = JSONField(scope=Scope.user_state, default='')
     submission_counter = Integer(scope=Scope.user_state, default=0)
+    rephrase_paid = Boolean(scope=Scope.user_state, default=False)
+    break_down_paid = Boolean(scope=Scope.user_state, default=False)
+    teach_me_paid = Boolean(scope=Scope.user_state, default=False)
 
     @property
     def img_urls(self):
@@ -87,6 +94,10 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     def is_submission_allowed(self):
         return self.submission_counter < MAX_ALLOWED_SUBMISSON
 
+    @property
+    def scaffolds(self):
+        return get_scaffold()
+
     def resource_string(self, path):
         """Handy helper for getting resources from our kit."""
         data = pkg_resources.resource_string(__name__, path)
@@ -103,10 +114,30 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             "confidence_text": self.confidence_text,
             "correct_answer_text": self.correct_answer_text,
             "incorrect_answer_text": self.incorrect_answer_text,
-            "rephrase": self.rephrase,
-            "break_down": self.break_down,
-            "teach_me": self.teach_me,
-            'block_id': self.location.block_id
+            "rephrase_name": REPHRASE,
+            "break_down_name": BREAK_IT_DOWN,
+            "teach_me_name": TEACH_ME,
+            "block_id": self.location.block_id,
+            "scaffolds": {
+                REPHRASE: {
+                    "cost": self.scaffolds.rephrase_cost,
+                    "color": self.scaffolds.rephrase_color,
+                    "paid": self.rephrase_paid,
+                    "data": self.rephrase,
+                },
+                BREAK_IT_DOWN: {
+                    "cost": self.scaffolds.break_it_down_cost,
+                    "color": self.scaffolds.break_it_down_color,
+                    "paid": self.break_down_paid,
+                    "data": self.break_down,
+                },
+                TEACH_ME: {
+                    "cost": self.scaffolds.teach_me_cost,
+                    "color": self.scaffolds.teach_me_color,
+                    "paid": self.teach_me_paid,
+                    "data": self.teach_me,
+                },
+            }
         }
 
     def get_content_html(self):
@@ -141,6 +172,26 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     @XBlock.json_handler
     def get_data(self, somedata, sufix=''):
         return self.data
+
+    @XBlock.json_handler
+    def scaffold_payment(self, data, sufix=''):
+        scaffold_name = data.get("scaffold_name")
+        cost = 0
+        if scaffold_name == REPHRASE:
+            self.rephrase_paid = True
+            cost = self.scaffolds.rephrase_cost
+        elif scaffold_name == BREAK_IT_DOWN:
+            self.break_down_paid = True
+            cost = self.scaffolds.break_it_down_cost
+        elif scaffold_name == TEACH_ME:
+            self.teach_me_paid = True
+            cost = self.scaffolds.teach_me_cost
+
+        coins = recalculate_coints(str(self.course_id), self.location.block_id, self.scope_ids.user_id, cost)
+        return {
+            'coins': coins,
+            'status': True if not coins is None else False
+        }
 
     @XBlock.json_handler
     def submit(self, data, suffix=''):

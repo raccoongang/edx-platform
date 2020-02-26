@@ -103,28 +103,28 @@
             <div class="scaffold-info hidden">
                 <button type="button" class="author-block__btn try_again">Try Again</button>
             </div>
-            <div id="${'rephrase-content-{}'.format(block_id)}" class="rephrase-content" hidden>
-                ${rephrase.get('content')}
+            <div id="${'{}-{}'.format(rephrase_name, block_id)}" class="rephrase-content" hidden>
+                ${scaffolds.get(rephrase_name, {}).get('data').get('content')}
             </div>
-            <div id="${'break-down-{}'.format(block_id)}" class="break-down-content" hidden>
-                ${break_down.get('content')}
+            <div id="${'{}-{}'.format(break_down_name, block_id)}" class="break-down-content" hidden>
+                ${scaffolds.get(break_down_name, {}).get('data').get('content')}
             </div>
-            <div id="${'teach-me-{}'.format(block_id)}" class="teach-me-content" hidden>
-                ${teach_me.get('content')}
+            <div id="${'{}-{}'.format(teach_me_name, block_id)}" class="teach-me-content" hidden>
+                ${scaffolds.get(teach_me_name, {}).get('data').get('content')}
             </div>
         </div>
         <div class="scaffolds hidden">
             <%
-            break_down_img_urls = ' '.join(break_down.get('imgUrls', []))
-            teach_me_img_urls = ' '.join(teach_me.get('imgUrls', []))
+            break_down_img_urls = ' '.join(scaffolds.get(break_down_name, {}).get('data').get('imgUrls', []))
+            teach_me_img_urls = ' '.join(scaffolds.get(teach_me_name, {}).get('data').get('imgUrls', []))
             %>
             <button
                     type="button"
                     class="scaffold scaffold__btn is-rephrase js-scaffold-button"
-                    data-scaffold-name="rephrase-content"
+                    data-scaffold-name="${rephrase_name}"
                     data-scaffold-class-name="is-rephrase">
                     <span class="scaffold__price">
-                        -10
+                        -${scaffolds.get(rephrase_name, {}).get('cost')}
                     </span>
                 Rephrase
             </button>
@@ -132,10 +132,10 @@
                     type="button"
                     class="scaffold scaffold__btn is-break js-scaffold-button"
                     data-img-urls="${break_down_img_urls}"
-                    data-scaffold-name="break-down"
+                    data-scaffold-name="${break_down_name}"
                     data-scaffold-class-name="is-break">
                     <span class="scaffold__price">
-                        -20
+                        -${scaffolds.get(break_down_name, {}).get('cost')}
                     </span>
                 Break It Down
             </button>
@@ -143,10 +143,10 @@
                     type="button"
                     class="scaffold scaffold__btn is-teach js-scaffold-button"
                     data-img-urls="${teach_me_img_urls}"
-                    data-scaffold-name="teach-me"
+                    data-scaffold-name="${teach_me_name}"
                     data-scaffold-class-name="is-teach">
                     <span class="scaffold__price">
-                        -30
+                        -${scaffolds.get(teach_me_name, {}).get('cost')}
                     </span>
                 Teach Me
             </button>
