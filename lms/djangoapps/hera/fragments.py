@@ -347,6 +347,7 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
             'start_over_url': start_over_url,
             'csrf': csrf(request)['csrf_token'],
             'dashboard_mascots': Mascot.user_dashboard_img_urls(),
+            'lesson_passed': len(selected_subsections['children']) == 0,
         }
 
         html = render_to_string('hera/dashboard-outline-fragment.html', context)
