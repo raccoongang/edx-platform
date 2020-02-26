@@ -26,6 +26,9 @@ def signup(request):
     """
     Display the signup form.
     """
+    if settings.FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
+        return redirect(reverse('homepage'))
+
     csrf_token = csrf(request)['csrf_token']
     if request.user.is_authenticated():
         return redirect('/course/')
@@ -44,6 +47,9 @@ def login_page(request):
     """
     Display the login form.
     """
+    if settings.FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
+        return redirect(reverse('homepage'))
+
     csrf_token = csrf(request)['csrf_token']
     if (settings.FEATURES['AUTH_USE_CERTIFICATES'] and
             ssl_get_cert_from_request(request)):
