@@ -244,12 +244,9 @@ def personal_due_dates(request):
 
     context = {'show_dashboard_tabs': True}
     try:
-        student = ParentProfile.objects.get(user=user).students.all()[0]
-    except ParentProfile.DoesNotExist:
-        try:
-            student = StudentProfile.objects.get(user=user)
-        except (StudentProfile.DoesNotExist, StudentProfile.MultipleObjectsReturned):
-            return redirect(reverse('dashboard'))
+        student = StudentProfile.objects.get(user=user)
+    except (StudentProfile.DoesNotExist, StudentProfile.MultipleObjectsReturned):
+        return redirect(reverse('dashboard'))
 
     now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
     course_ids = CourseOverview.objects.filter(
@@ -268,7 +265,7 @@ def personal_due_dates(request):
             reverse(
                 'openedx.course_experience.course_home',
                 kwargs={'course_id': student_due_date.course_id})),
-         CourseOverview.objects.get(id=student_due_date.course_id),
+         CourseOverview.objects.get(id=student_due_date.course_id).display_name,
          format_due_date(student, student_due_date.due_date)
         ] for student_due_date in student_due_dates
     ]
