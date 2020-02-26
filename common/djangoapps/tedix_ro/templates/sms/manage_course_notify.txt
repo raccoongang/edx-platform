@@ -1,10 +1,6 @@
-
-Draga Parinte, elevul {{student_name}} a primit tema de casa {% if courses|length > 1 %}lectiile{% else %} lectia{% endif %}:
-{% for course_url, course_name in courses %}
-    {{course_name}}
-{% endfor %}
+Draga Parinte, elevul {{student_name}} a primit tema de casa.
 Data limita pentru aceasta tema de casa este: {{due_date}}.
 Puteti vedea tema de casa aici:
-{% for course_url, course_name in courses %}
-    {{course_url}}
-{% endfor %}
+{{courses_due_dates_url}}
+
+Echipa Tedix.

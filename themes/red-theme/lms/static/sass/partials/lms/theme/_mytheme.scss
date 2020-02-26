@@ -60,7 +60,7 @@ display: block;
 	margin:5px 0 10px 0;
 }
 #footer-openedx .wrapper-logo img{
-	max-height:60px;	
+	max-height:60px;
 }
 @media screen and (max-width: 320px) {
        .hd-2, .xblock .xblock h2{
@@ -621,6 +621,18 @@ display: block;
 			height: 100% !important;
 			box-sizing: border-box;
 		}
+	}
+}
+.due-date-wrapper {
+	max-width: 790px;
+	margin: 0 auto 30px;
+	padding: 0 20px;
+
+	p {
+		text-align: center;
+	}
+	li.nowrap {
+		white-space: nowrap;
 	}
 }
 
