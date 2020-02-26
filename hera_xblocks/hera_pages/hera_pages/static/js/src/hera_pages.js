@@ -66,6 +66,15 @@ function HeraPagesXBlock(runtime, element, init_args) {
                     infinite: false,
                     draggable: false,
                 });
+
+                // Feedback tooltip
+                $(".feedback-holder .feedback-open").on("click", function() {
+                    $('.feedback-holder').addClass('tooltip-is-open');
+                });
+
+                $(".feedback-close").on("click", function () {
+                    $(".feedback-holder").toggleClass('tooltip-is-open');
+                });
             });
 
             $submitButton.bind('click', function (e) {
