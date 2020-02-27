@@ -107,6 +107,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         return {
             "user_answer": self.user_answer,
             "is_submission_allowed": self.is_submission_allowed,
+            "submission_counter": self.submission_counter,
             "problem_types": self.problem_types,
             "img_urls": self.img_urls,
             "iframe_url": self.iframe_url,

@@ -15,9 +15,12 @@ function QuestionXBlock(runtime, element, init_args) {
                 async: false,
             }
             ).done(function(response) {
-                console.log(response);
                 status = response.status;
                 scaffolds[scaffoldName].paid = response.status;
+                if (response.status){
+                    $('.user-coins').html(response.coins);
+                    $('.scaffold__price.'+scaffoldName).html('&#10004');
+                }
             }
             ).error(function(error){
                 console.log(error);
