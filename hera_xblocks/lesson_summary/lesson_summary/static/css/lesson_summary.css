@@ -7,11 +7,19 @@
 .block-bubble {
     box-sizing: border-box;
     width: 65%;
+    min-height: var(--height);
     background: #f2f2f2;
     border-radius: 28px;
     padding: 20px;
     margin-right: 24px;
     position: relative;
+}
+
+.block-bubble.is-flex-bubble {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .bubble-title {
@@ -20,8 +28,17 @@
     margin: 0 0 18px;
 }
 
+.bubble-title.is-center {
+    text-align: center;
+}
+
 .bubble-text {
-    margin: 0 0 12px;
+    width: 100%;
+    margin: 0 0 24px;
+}
+
+.bubble-text:last-child {
+    margin: 0;
 }
 
 .bubble-text p {

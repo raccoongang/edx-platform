@@ -2,8 +2,8 @@
     <div class="author-block__wrapper questions-result">
         <div class="author-block__content">
             <div class="lms-holder">
-                <div class="block-bubble">
-                    <div class="bubble-title">
+                <div class="block-bubble is-flex-bubble">
+                    <div class="bubble-title is-center">
                         Questions:
                     </div>
                     <div class="bubble-text">
@@ -30,24 +30,12 @@
                             </div>
                         % endfor
                     </div>
-                </div>
-                <div class="block-mascot">
-                    <div class="block-mascot__img">
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="author-block__wrapper confidence-result">
-        <div class="author-block__content">
-            <div class="lms-holder">
-                <div class="block-bubble">
-                    <div class="bubble-title">
-                        ${confidence['questionText']}
+                    <div class="bubble-title is-center">
+                        Confidence:
                     </div>
                     <div class="bubble-text">
                         <div class="survey-holder">
+                            <div class="survey-question-title">${confidence['questionText']}</div>
                             % for possible_answer in confidence['possibleAnswers']:
                                 <div class="questions-list__item">
                                     <label class="questions-list__label">
@@ -70,6 +58,7 @@
                 </div>
                 <div class="block-mascot">
                     <div class="block-mascot__img">
+                        <img src="${mascot_url}" alt="/">
                     </div>
                 </div>
             </div>
