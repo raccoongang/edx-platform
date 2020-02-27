@@ -188,7 +188,7 @@
     display: inline-block;
     font-size: 16px;
     position: relative;
-    padding: 0 0 0 35px;
+    padding: 0 0 0 30px;
     cursor: pointer;
 }
 
@@ -200,7 +200,7 @@
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: transparent;
+    background: var(--color3);
     border: 1px solid var(--color1);
 }
 

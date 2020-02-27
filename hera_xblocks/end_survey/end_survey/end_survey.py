@@ -160,6 +160,7 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
         """Staff context."""
         context = self.get_common_context()
         context.update({
+            "mascot_url": self.mascot_url,
             "title": self.title,
             "results_percentage": self.result_summary_count(),
         })
