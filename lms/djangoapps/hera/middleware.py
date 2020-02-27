@@ -27,10 +27,10 @@ class AllowedUrlsMiddleware(object):
             'courseware',
             'jump_to'
         ]
-        active_course = ActiveCourseSetting.last()
-        if active_course:
+        active_course_id = ActiveCourseSetting.get()
+        if active_course_id:
             for course_url in course_urls:
-                urls.append('courses{}{}'.format(active_course.course.id, course_url))
+                urls.append('courses{}{}'.format(active_course_id, course_url))
         return urls
 
     def is_allowed(self, current_path):
@@ -58,9 +58,9 @@ class AllowedUrlsMiddleware(object):
                             return HttpResponseRedirect(reverse('hera:register_success'))
                         else:
                             return
-                active_course = ActiveCourseSetting.last()
-                if active_course:
-                    if not CourseEnrollment.is_enrolled(user, active_course.course.id):
+                active_course_id = ActiveCourseSetting.get()
+                if active_course_id:
+                    if not CourseEnrollment.is_enrolled(user, active_course_id):
                         raise Http404
                 else:
                     raise Http404
