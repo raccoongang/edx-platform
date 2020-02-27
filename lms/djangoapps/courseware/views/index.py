@@ -122,6 +122,14 @@ class CoursewareIndex(View):
                 },
                 upsert=True
             )
+            user_lesson_coins = c_user_lesson_coins().find_one(
+                {
+                    BLOCK_ID: section,
+                    USER: request.user.id,
+                }
+            )
+
+        self.user_coins = user_lesson_coins.get('coins')
 
         self.original_chapter_url_name = chapter
         self.original_section_url_name = section
@@ -385,8 +393,12 @@ class CoursewareIndex(View):
         """
         course_url_name = default_course_url_name(self.course.id)
         course_url = reverse(course_url_name, kwargs={'course_id': unicode(self.course.id)})
+        scaffold = Scaffold.get_scaffold()
 
         courseware_context = {
+            'is_show_coins': True,
+            'user_coins': self.user_coins,
+            'coins_img_url': scaffold.coin_icon.url if scaffold.coin_icon else None,
             'csrf': csrf(self.request)['csrf_token'],
             'course': self.course,
             'course_url': course_url,
