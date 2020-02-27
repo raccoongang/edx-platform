@@ -323,7 +323,7 @@ class StudentEnrollForm(forms.Form):
         super(StudentEnrollForm, self).__init__(*args, **kwargs)
         self.fields['courses'].queryset = courses
         self.fields['courses'].error_messages={
-            'invalid_choice': 'The enrollment end date has passed. The following courses are no longer available for enrollment: "%(value)s".',
+            'invalid_choice': u'The enrollment end date has passed. The following courses are no longer available for enrollment: "%(value)s".',
         }
         self.fields['students'].queryset = students
 
@@ -340,7 +340,7 @@ class StudentEnrollForm(forms.Form):
                 elif due_date_utc < course.start or due_date_utc < utcnow:
                     error_course_list.append(course.display_name)
             if error_course_list:
-                self.add_error('due_date', 'This due date is not valid for the following courses: "{}".'.format('", "'.join(error_course_list)))
+                self.add_error('due_date', u'This due date is not valid for the following courses: "{}".'.format('", "'.join(error_course_list)))
         return due_date_utc
 
 
