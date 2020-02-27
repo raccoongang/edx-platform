@@ -19,7 +19,7 @@ from openedx.core.djangolib.markup import HTML, Text
             <div class="hera-message">
                 <div class="hera-message__text">
                     <p>
-                    % if lesson_passed:
+                    % if is_lesson_complete:
                         You did it!<br>All lessons are complete.
                     % elif last_completed_subsection:
                         Great work! You earned a
