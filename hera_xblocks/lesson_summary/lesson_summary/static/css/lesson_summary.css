@@ -26,6 +26,7 @@
     color: #222524;
     font-size: 24px;
     margin: 0 0 18px;
+    text-align: center;
 }
 
 .bubble-title.is-center {
@@ -75,7 +76,7 @@
 }
 
 .bubble-columns__text {
-    font-size: 13px;
+    font-size: 16px;
 }
 
 .block-mascot {

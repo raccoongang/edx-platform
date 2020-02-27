@@ -4,6 +4,7 @@ from opaque_keys.edx.keys import CourseKey
 from web_fragments.fragment import Fragment
 
 from hera.models import Mascot
+from hera.utils import get_medal
 
 from courseware.courses import get_course_overview_with_access, get_current_child
 from courseware.model_data import FieldDataCache
@@ -243,17 +244,6 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
     View for Dashboard Page
     """
     def render_to_fragment(self, request, course_id=None, page_context=None, **kwargs):
-
-        def get_medal(points):
-            if 90 <= points <= 100:
-                return "platinum"
-            elif 80 <= points <= 89:
-                return "gold"
-            elif 70 <= points <= 79:
-                return "silver"
-            else:
-                return "copper"
-
         course_key = CourseKey.from_string(course_id)
         course = modulestore().get_course(course_key)
 
