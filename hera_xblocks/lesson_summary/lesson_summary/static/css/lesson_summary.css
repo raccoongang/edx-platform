@@ -1,6 +1,7 @@
 /* CSS for LessonSummaryXBlock */
 .lms-holder {
     display: flex;
+    width: 100%;
 }
 
 .block-bubble {
