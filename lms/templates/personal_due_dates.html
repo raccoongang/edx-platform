@@ -1,0 +1,37 @@
+<%page expression_filter="h"/>
+<%inherit file="main.html" />
+<%namespace name='static' file='static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+from django.urls import reverse
+
+from openedx.core.djangolib.markup import HTML, Text
+%>
+<%block name="head_extra_js">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+
+</%block>
+<%block name="head_extra_css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css"/>
+</%block>
+
+<%block name="pagetitle">${_("Personal Due Dates")}</%block>
+
+<main id="main">
+    <h1>Personal Due Dates</h1>
+
+    <div class="due-date-wrapper">
+      % if len(courses_due_dates) > 0:
+        <ul>
+        % for due_date_string in courses_due_dates:
+            <li class="nowrap">
+              <a href="${due_date_string[0]}">${due_date_string[1]}</a> - ${due_date_string[2]}
+            </li>
+        % endfor
+        </ul>
+      % else:
+        <p>No due dates are available.</p>
+      % endif
+    </div>
+
+</main>

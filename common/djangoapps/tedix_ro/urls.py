@@ -9,6 +9,7 @@ from .views import (
     VideoLessonViewSet,
     city_import,
     manage_courses,
+    personal_due_dates,
     extended_report,
 )
 
@@ -20,6 +21,7 @@ router.register(r'schools', SchoolViewSet)
 urlpatterns = [
     url(r'^extended_report/(?P<course_key>[^/]*)/$', extended_report, name='extended_report'),
     url(r'^manage_courses$', manage_courses, name='manage_courses'),
+    url(r'^personal_due_dates$', personal_due_dates, name='personal_due_dates'),
     url(r'^admin/tedix_ro/instructorprofile/import/$', InstructorProfileImportView.as_view(), name='teacher_import'),
     url(r'^admin/tedix_ro/studentprofile/import/$', StudentProfileImportView.as_view(), name='students_import'),
     url(r'^admin/tedix_ro/city/import/$', city_import, name='sities_import'),
