@@ -405,11 +405,11 @@ class RegistrationView(APIView):
         """
         # Translators: This label appears above a field on the registration form
         # meant to hold the user's email address.
-        email_label = _(u"Email")
+        email_label = _(u"Email*")
 
         # Translators: This example email address is used as a placeholder in
         # a field on the registration form meant to hold the user's email address.
-        email_placeholder = _(u"username@domain.com")
+        email_placeholder = _(u"")
 
         # Translators: These instructions appear on the registration form, immediately
         # below a field meant to hold the user's email address.
@@ -464,7 +464,7 @@ class RegistrationView(APIView):
         """
         # Translators: This label appears above a field on the registration form
         # meant to hold the user's full name.
-        name_label = _(u"Full Name")
+        name_label = _(u"Full Name*")
 
         # Translators: This example name is used as a placeholder in
         # a field on the registration form meant to hold the user's name.
@@ -534,7 +534,7 @@ class RegistrationView(APIView):
         """
         # Translators: This label appears above a field on the registration form
         # meant to hold the user's password.
-        password_label = _(u"Password")
+        password_label = _(u"Password*")
 
         form_desc.add_field(
             "password",
@@ -842,14 +842,14 @@ class RegistrationView(APIView):
             # in order to register a new account.
             terms_label = _(u"Terms of Service and Honor Code")
             terms_link = marketing_link("HONOR")
-            terms_text = _(u"Review the Terms of Service and Honor Code")
+            terms_text = _(u"{platform_name} Terms of Service and Honor Code").format(
+                platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME)
+            )
 
         # Translators: "Terms of Service" is a legal document users must agree to
         # in order to register a new account.
-        label = _(u"I agree to the {platform_name} {terms_of_service}").format(
-            platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
-            terms_of_service=terms_label
-        )
+        # Skillonomy customisation: honor link moved to the label in form_field.underscore template
+        label = _(u"I agree to the ")
 
         # Translators: "Terms of Service" is a legal document users must agree to
         # in order to register a new account.

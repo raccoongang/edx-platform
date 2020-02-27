@@ -7575,13 +7575,20 @@ msgstr "Срок сдачи задания для этого обучающег�
 #. meant to hold the user's full name.
 #: lms/djangoapps/instructor/views/tools.py
 #: lms/djangoapps/instructor_task/tasks_helper/enrollments.py
-#: openedx/core/djangoapps/user_api/views.py cms/templates/register.html
+#: cms/templates/register.html
 #: lms/templates/register-form.html lms/templates/register-shib.html
 #: lms/templates/signup_modal.html lms/templates/sysadmin_dashboard.html
 #: themes/stanford-style/lms/templates/register-form.html
 #: themes/stanford-style/lms/templates/register-shib.html
 msgid "Full Name"
 msgstr "Полное имя"
+
+#. #-#-#-#-#  django-partial.po (0.1a)  #-#-#-#-#
+#. Translators: This label appears above a field on the registration form
+#. meant to hold the user's full name.
+#: openedx/core/djangoapps/user_api/views.py
+msgid "Full Name*"
+msgstr "Полное имя*"
 
 #: lms/djangoapps/instructor/views/tools.py
 msgid "Extended Due Date"
@@ -10772,8 +10779,8 @@ msgid "Terms of Service and Honor Code"
 msgstr "Условия предоставления услуг и Кодекс чести"
 
 #: openedx/core/djangoapps/user_api/views.py
-msgid "Review the Terms of Service and Honor Code"
-msgstr "Условия предоставления услуг и кодекс чести"
+msgid "{platform_name} Terms of Service and Honor Code"
+msgstr "Условия предоставления услуг и кодекс чести {platform_name}"
 
 #. Translators: "Terms of Service" is a legal document users must agree to
 #. in order to register a new account.
@@ -10783,6 +10790,15 @@ msgstr "Условия предоставления услуг и кодекс �
 #, python-brace-format
 msgid "I agree to the {platform_name} {terms_of_service}"
 msgstr "Я принимаю {terms_of_service} {platform_name}"
+
+#. Translators: "Terms of Service" is a legal document users must agree to
+#. in order to register a new account.
+#. Translators: "Terms of service" is a legal document users must agree to
+#. in order to register a new account.
+#: openedx/core/djangoapps/user_api/views.py
+#, python-brace-format
+msgid "I agree to the "
+msgstr "Я принимаю "
 
 #. Translators: "Terms of Service" is a legal document users must agree to
 #. in order to register a new account.

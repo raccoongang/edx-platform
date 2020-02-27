@@ -59,11 +59,6 @@
             <% } %>
     <% } else { %>
         <% if ( type === 'checkbox' ) { %>
-            <% if (supplementalLink && supplementalText) { %>
-                <div class="supplemental-link">
-                    <a href="<%- supplementalLink %>" target="_blank"><%- supplementalText %></a>
-                </div>
-            <% } %>
         <% } %>
         <input id="<%= form %>-<%= name %>"
            type="<%= type %>"
@@ -83,7 +78,9 @@
         />
         <% if ( type === 'checkbox' ) { %>
             <label for="<%= form %>-<%= name %>">
-                <span class="label-text"><%= label %></span>
+                <span class="label-text">
+                    <%=label%><a href="<%- supplementalLink %>" target="_blank"><%- supplementalText %></a>
+                </span>
                 <% if ( required && requiredStr ) { %><span class="label-required"><%= requiredStr %></span><% } %>
                 <% if ( !required && optionalStr ) { %><span class="label-optional"><%= optionalStr %></span><% } %>
             </label>
