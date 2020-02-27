@@ -74,12 +74,11 @@ class DashboardPageView(CourseTabView):
     The dashboard page
     """
     def get(self, request, **kwargs):
-        active_course = ActiveCourseSetting.last()
-        if active_course:
-            course_id = unicode(active_course.course.id)
+        active_course_id = ActiveCourseSetting.get()
+        if active_course_id:
+            return super(DashboardPageView, self).get(request, unicode(active_course_id), 'courseware', **kwargs)
         else:
             raise Http404
-        return super(DashboardPageView, self).get(request, course_id, 'courseware', **kwargs)
 
     def render_to_fragment(self, request, course=None, **kwargs):
         home_fragment_view = DashboardPageFragmentView()
