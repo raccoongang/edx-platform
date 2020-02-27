@@ -4,11 +4,19 @@ Model which store and override hera onboarding pages templates and user onboardi
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch.dispatcher import receiver
 from django.template.loader import render_to_string
 from mako.template import Template
+
+
+CACHING_USER_ONBOARDING_TEMPLATE = 'hera:useronboarding:{user_id}'
+CACHING_ONBOARDING_KEY = 'hera:onboarding'
+CACHING_PAGES_KEY = 'hera:onboarding_pages'
+CACHING_ACTIVE_COURSE_KEY = 'hera:active_course'
+CACHING_TIMEOUT = 60 * 15
 
 
 def render_template(page_number):
@@ -72,6 +80,11 @@ class Onboarding(models.Model):
     class Meta:
         app_label = 'hera'
 
+    def save(self, *args, **kwargs):
+        super(Onboarding, self).save(*args, **kwargs)
+        cache.delete(CACHING_ONBOARDING_KEY)
+        cache.delete(CACHING_PAGES_KEY)
+
 
 class UserOnboarding(models.Model):
     """
@@ -83,14 +96,18 @@ class UserOnboarding(models.Model):
     page_3 = models.BooleanField(default=False)
     page_4 = models.BooleanField(default=False)
 
-    _user_onboarding_is_passed = {}
-
     def __unicode__(self):
         return self.user.username
 
     @property
     def onboarding(self):
-        return Onboarding.objects.last()
+        cached_onboarding = cache.get(CACHING_ONBOARDING_KEY)
+        if cached_onboarding:
+            return cached_onboarding
+        onboarding = Onboarding.objects.last()
+        if onboarding:
+            cache.set(CACHING_ONBOARDING_KEY, onboarding, CACHING_TIMEOUT)
+            return onboarding
 
     def is_passed(self):
         """
@@ -100,14 +117,36 @@ class UserOnboarding(models.Model):
             return True
         return False
 
+    @staticmethod
+    def get_cache(user_id):
+        return cache.get(
+            CACHING_USER_ONBOARDING_TEMPLATE.format(user_id=user_id)
+        )
+
+    @staticmethod
+    def set_cache(user_id):
+        cache.set(
+            CACHING_USER_ONBOARDING_TEMPLATE.format(user_id=user_id),
+            True,
+            CACHING_TIMEOUT
+        )
+
+    @staticmethod
+    def delete_cache(user_id):
+        cache.delete(
+            CACHING_USER_ONBOARDING_TEMPLATE.format(user_id=user_id)
+        )
+
     @classmethod
     def onboarding_is_passed(cls, user_id):
-        if cls._user_onboarding_is_passed.get(user_id):
+        if cls.get_cache(user_id):
             return True
-        user_onboarding = cls.objects.filter(user_id=user_id).first()
-        if user_onboarding and user_onboarding.is_passed():
-            cls._user_onboarding_is_passed[user_id] = True
-            return True
+        else:
+            user_onboarding = cls.objects.filter(user_id=user_id).first()
+            if user_onboarding and user_onboarding.is_passed():
+                cls.set_cache(user_id)
+                return True
+            return False
         return False
 
     @classmethod
@@ -118,16 +157,17 @@ class UserOnboarding(models.Model):
         """
         user_onboarding, _ = cls.objects.update_or_create(user=user, defaults={page_number: True})
         if user_onboarding.is_passed():
-            cls._user_onboarding_is_passed[user.id] = True
+            cls.set_cache(user.id)
         return user_onboarding
 
     def save(self, *args, **kwargs):
         super(UserOnboarding, self).save(*args, **kwargs)
-        self._user_onboarding_is_passed[self.user_id] = True if self.is_passed() else False
+        self.__class__.delete_cache(self.user_id)
 
     def delete(self, *args, **kwargs):
         super(UserOnboarding, self).delete(*args, **kwargs)
-        self._user_onboarding_is_passed[self.user_id] = False
+        self.__class__.delete_cache(self.user_id)
+
 
     def get_last_passed(self):
         """
@@ -196,6 +236,29 @@ class UserOnboarding(models.Model):
             }
         ]
 
+    @staticmethod
+    def get_static_pages():
+        cached_pages = cache.get(CACHING_PAGES_KEY)
+        if cached_pages:
+            return cached_pages
+        onboarding = Onboarding.objects.last()
+        pages = [
+            {
+                'content': onboarding.first if onboarding else render_template('page_1'),
+            },
+            {
+                'content': onboarding.second if onboarding else render_template('page_2'),
+            },
+            {
+                'content': onboarding.third if onboarding else render_template('page_3'),
+            },
+            {
+                'content': onboarding.fourth if onboarding else render_template('page_4'),
+            }
+        ]
+        cache.set(CACHING_PAGES_KEY, pages, CACHING_TIMEOUT)
+        return pages
+
     class Meta:
         app_label = 'hera'
 
@@ -203,47 +266,32 @@ class UserOnboarding(models.Model):
 class ActiveCourseSetting(models.Model):
     course = models.ForeignKey("course_overviews.CourseOverview", on_delete=models.CASCADE)
 
-    _active_course = None
-    _active_course_exists = None
-
 
     def __unicode__(self):
         return unicode(self.course.id)
 
     @classmethod
-    def last(cls):
+    def get(cls):
         """
-        If _active_course exists in memory, _active_course is taken, else it returns
-        the active course from the database and stores it in memory
+        Returns a cached active course if is.
         """
-        if cls._active_course_exists:
-            return cls._active_course
-        elif cls._active_course_exists is not None:
-            return cls._active_course
-
-        cls._active_course = cls.objects.last()
-        if cls._active_course:
-            cls._active_course_exists = True
-            return cls._active_course
+        cached_course = cache.get(CACHING_ACTIVE_COURSE_KEY)
+        if cached_course:
+            return cached_course
         else:
-            cls._active_course_exists = False
+            last = cls.objects.last()
+            if last:
+                last_course_id = last.course.id
+                cache.set(CACHING_ACTIVE_COURSE_KEY, last_course_id, CACHING_TIMEOUT)
+                return last_course_id
 
     def save(self, *args, **kwargs):
         super(ActiveCourseSetting, self).save(*args, **kwargs)
-        ActiveCourseSetting._active_course = self
-        ActiveCourseSetting._active_course_exists = True
+        cache.delete(CACHING_ACTIVE_COURSE_KEY)
 
-
-
-@receiver(post_delete, sender=ActiveCourseSetting)
-def reset_active_course(sender, instance, *args, **kwargs):
-    """
-    Reset '_active_course' and '_active_course_exists'
-    The signal is used due to the fact that when deleting from the admin
-    using action 'delete_selected', 'Model.delete' is not called.
-    """
-    sender._active_course = None
-    sender._active_course_exists = False
+    def delete(self, *args, **kwargs):
+        super(ActiveCourseSetting, self).delete(*args, **kwargs)
+        cache.delete(CACHING_ACTIVE_COURSE_KEY)
 
 
 class Mascot(models.Model):
@@ -272,3 +320,25 @@ class Mascot(models.Model):
                 'user_dashboard_modal': user_dashboard_modal
             }
         return {}
+
+
+@receiver(post_delete, sender=ActiveCourseSetting)
+def reset_active_course(sender, instance, *args, **kwargs):
+    """
+    Reset cache for ActiveCourseSetting.
+    The signal is used due to the fact that when deleting from the admin
+    using action 'delete_selected', 'Model.delete' is not called.
+    """
+    cache.delete(CACHING_ACTIVE_COURSE_KEY)
+
+
+@receiver(post_delete, sender=UserOnboarding)
+def reset_user_onboarding(sender, instance, *args, **kwargs):
+    """
+    Reset cache for UserOnboarding.
+    The signal is used due to the fact that when deleting from the admin
+    using action 'delete_selected', 'Model.delete' is not called.
+    """
+    cache.delete(
+        CACHING_USER_ONBOARDING_TEMPLATE.format(user_id=instance.user_id, model_name=sender.__name__)
+    )

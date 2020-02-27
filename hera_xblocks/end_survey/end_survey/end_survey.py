@@ -38,7 +38,7 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
 
     @property
     def title(self):
-        return self.data.get("title")
+        return self.data.get("heading")
 
     @property
     def mascot_url(self):
@@ -190,16 +190,18 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
             context=context
         )
 
+    @XBlock.json_handler
+    def render_html(self, data, sufix=''):
+        return {
+            'content': self.html_for_role()
+        }
+
     def student_view(self, context=None):
         """
         The primary view of the EndSurveyXBlock, shown to students
         when viewing courses.
         """
-        html = self.html_for_role()
         context = self.get_common_context()
-        context.update({
-            'content': html
-        })
         main = loader.render_mako_template(
             'static/html/main.html', context
         )

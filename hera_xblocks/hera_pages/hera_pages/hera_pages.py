@@ -41,11 +41,23 @@ class HeraPagesXBlock(StudioEditableXBlockMixin, XBlock):
         data = pkg_resources.resource_string(__name__, path)
         return data.decode("utf8")
     
+    def get_content_html(self):
+        html = loader.render_mako_template(
+            'static/html/hera_pages.html',
+            context={"data": self.data, "user_answers": self.user_answers, 'block_id': self.location.block_id}
+        )
+        return html
+
+    @XBlock.json_handler
+    def render_html(self, data, sufix=''):
+        return {
+            'content': self.get_content_html()
+        }
+
     @XBlock.json_handler
     def get_data(self, somedata, sufix=''):
         return self.data
 
-    # TO-DO: change this view to display your data your own way.
     def student_view(self, context=None):
         """
         The primary view of the HeraPagesXBlock, shown to students
@@ -53,8 +65,8 @@ class HeraPagesXBlock(StudioEditableXBlockMixin, XBlock):
         """
         
         html = loader.render_mako_template(
-            'static/html/hera_pages.html',
-            context={"data": self.data, "user_answers": self.user_answers, 'block_id': self.location.block_id}
+            'static/html/main.html',
+            context={'block_id': self.location.block_id}
         )
         frag = Fragment(html.format(self=self))
         frag.add_css(self.resource_string("static/css/hera_pages.css"))

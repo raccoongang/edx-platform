@@ -328,8 +328,6 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
             for selection_subsection in selected_subsections['children']:
                 if not selection_subsection['complete'] and len(ordered_subsections) < 8:
                     ordered_subsections.append(selection_subsection)
-        while len(ordered_subsections) < 8:
-            ordered_subsections.append(None)
 
         try:
             last_completed_subsection_id = completed_subsection_ids[-1]
@@ -340,6 +338,7 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
         units = last_visited_subsection.get('children', [{}])
         start_over_url = units[0].get('lms_web_url', '')
         context = {
+            'is_lesson_complete': len(selected_subsections['children']) == 0,
             'last_completed_subsection': last_completed_subsection,
             'ordered_subsections': ordered_subsections,
             'popup': popup,

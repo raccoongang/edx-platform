@@ -109,22 +109,34 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             'block_id': self.location.block_id
         }
 
-    def student_view(self, context=None):
-        """
-        The primary view of the QuestionXBlock, shown to students
-        when viewing courses.
-        """
+    def get_content_html(self):
         context = self.get_context()
         html = loader.render_mako_template(
             'static/html/question.html',
             context=context
         )
+        return html
+
+    def student_view(self, context=None):
+        """
+        The primary view of the QuestionXBlock, shown to students
+        when viewing courses.
+        """
+        html = loader.render_mako_template(
+            'static/html/main.html'
+        )
         frag = Fragment(html.format(self=self))
         frag.add_css(self.resource_string("static/css/question.css"))
         frag.add_javascript(self.resource_string("static/js/src/question.js"))
 
-        frag.initialize_js('QuestionXBlock', json_args=context)
+        frag.initialize_js('QuestionXBlock', json_args=self.get_context())
         return frag
+
+    @XBlock.json_handler
+    def render_html(self, data, sufix=''):
+        return {
+            'content': self.get_content_html()
+        }
 
     @XBlock.json_handler
     def get_data(self, somedata, sufix=''):
