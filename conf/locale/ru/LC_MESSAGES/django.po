@@ -6820,6 +6820,13 @@ msgstr "ID пользователя"
 msgid "Email"
 msgstr "Электронная почта"
 
+#. Translators: This label appears above a field on the login form
+#. meant to hold the user's email address (skillonomy customisation).
+#. openedx/core/djangoapps/user_api/views.py
+#: themes/stanford-style/lms/templates/register-form.html
+msgid "Email*"
+msgstr "E-mail*"
+
 #: lms/djangoapps/instructor/views/api.py
 #: lms/djangoapps/instructor_task/tasks_helper/enrollments.py
 msgid "Language"
@@ -10621,6 +10628,13 @@ msgstr ""
 #: themes/stanford-style/lms/templates/register-form.html
 msgid "Password"
 msgstr "Пароль"
+
+#. Translators: This label appears above a field on the login form
+#. meant to hold the user's password (skillonomy customisation).
+#. openedx/core/djangoapps/user_api/views.py
+#: themes/stanford-style/lms/templates/register-form.html
+msgid "Password*"
+msgstr "Пароль*"
 
 #: openedx/core/djangoapps/user_api/views.py lms/templates/login.html
 msgid "Remember me"

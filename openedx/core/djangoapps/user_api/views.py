@@ -73,11 +73,11 @@ class LoginSessionView(APIView):
 
         # Translators: This label appears above a field on the login form
         # meant to hold the user's email address.
-        email_label = _(u"Email")
+        email_label = _(u"Email*")
 
         # Translators: This example email address is used as a placeholder in
         # a field on the login form meant to hold the user's email address.
-        email_placeholder = _(u"username@domain.com")
+        email_placeholder = _(u"")
 
         # Translators: These instructions appear on the login form, immediately
         # below a field meant to hold the user's email address.
@@ -99,7 +99,7 @@ class LoginSessionView(APIView):
 
         # Translators: This label appears above a field on the login form
         # meant to hold the user's password.
-        password_label = _(u"Password")
+        password_label = _(u"Password*")
 
         form_desc.add_field(
             "password",
