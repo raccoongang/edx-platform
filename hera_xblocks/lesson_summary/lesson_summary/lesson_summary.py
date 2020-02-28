@@ -3,7 +3,7 @@
 import pkg_resources
 
 from django.urls import reverse
-from lms.djangoapps.hera.utils import get_lesson_summary_xblock_context
+from lms.djangoapps.hera.utils import get_lesson_summary_xblock_context, get_scaffold, recalculate_coints
 
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
@@ -30,7 +30,10 @@ class LessonSummaryXBlock(StudioEditableXBlockMixin, XBlock):
         return data.decode("utf8")
 
     def get_context(self):
+        scaffold = get_scaffold()
         return {
+            'coins_icon_url': scaffold.coin_icon.url if scaffold.coin_icon else None,
+            'user_coins': recalculate_coints(str(self.location.course_key), self.location.block_id, self.scope_ids.user_id),
             'block_id': self.location.block_id,
             'user_dashboard_url': reverse('hera:dashboard'),
             'data': self.data
