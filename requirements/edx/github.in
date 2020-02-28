@@ -108,4 +108,4 @@
 -e git+https://github.com/raccoongang/rg_instructor_analytics_log_collector@release-0.1.0#egg=rg_instructor_analytics_log_collector
 
 #RG SCORM
-git+https://github.com/raccoongang/edx_xblock_scorm.git#egg=edx_xblock_scorm
+git+https://github.com/raccoongang/edx_xblock_scorm.git@su-master#egg=edx_xblock_scorm
