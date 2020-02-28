@@ -32,6 +32,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     data = JSONField(default={})
     user_confidence = Integer(scope=Scope.user_state)
     user_answer = JSONField(scope=Scope.user_state, default='')
+    user_answer_correct = Boolean(scope=Scope.user_state, default=False)
     submission_counter = Integer(scope=Scope.user_state, default=0)
     rephrase_paid = Boolean(scope=Scope.user_state, default=False)
     break_down_paid = Boolean(scope=Scope.user_state, default=False)
@@ -92,7 +93,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
 
     @property
     def is_submission_allowed(self):
-        return self.submission_counter < MAX_ALLOWED_SUBMISSON
+        return not self.user_answer_correct and self.submission_counter < MAX_ALLOWED_SUBMISSON
 
     @property
     def scaffolds(self):
@@ -237,15 +238,15 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
                 answer = set(answers[index]) == set(correct_answers)
                 user_answers.append(answer)
 
-        result_answer = all(user_answers)
+        self.user_answer_correct = all(user_answers)
 
-        grade_value = 1 if result_answer else 0
+        grade_value = 1 if self.user_answer_correct else 0
 
         self.runtime.publish(self, 'grade', {'value': grade_value, 'max_value': 1})
         self.user_answer = answers
         self.user_confidence = user_confidence
         return {
-            'correct': result_answer,
+            'correct': self.user_answer_correct,
             'is_submission_allowed': self.is_submission_allowed
         }
 

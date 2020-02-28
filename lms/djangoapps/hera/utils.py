@@ -47,7 +47,6 @@ def get_lesson_summary_xblock_context(user, course_key, current_unit):
     return {'lesson_title': lesson_title, 'points': points, 'medal': get_medal(points)}
 
 
-
 def recalculate_coints(course_id, block_id, user_id, cost=0):
     course = modulestore().get_course(CourseKey.from_string(course_id))
     subsection_id = None
