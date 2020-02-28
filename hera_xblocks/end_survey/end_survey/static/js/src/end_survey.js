@@ -4,11 +4,11 @@ function EndSurveyXBlock(runtime, element, init_args) {
     var renderHTMLHandlerUrl = runtime.handlerUrl(element, 'render_html');
     var blockId = init_args.block_id;
 
-    var $questionsForm = $(".survey-form-questions", element);
-    var $confidenceForm = $(".survey-form-confidence", element);
-    var sclickSliderSelector = '.slidebar-wrapper-' + blockId;
     $.post(renderHTMLHandlerUrl, '{}').done(function(response) {
         $('#main-content-' + blockId, element).html(response.content);
+        var $questionsForm = $(".survey-form-questions", element);
+        var $confidenceForm = $(".survey-form-confidence", element);
+        var sclickSliderSelector = '.slidebar-wrapper-' + blockId;
         $(sclickSliderSelector).slick({
             slidesToShow: 1,
             slidesToScroll: 1,
@@ -42,7 +42,7 @@ function EndSurveyXBlock(runtime, element, init_args) {
                 data: JSON.stringify(data),
                 success: function(response) {
                     $("#wrapper-page").html(response);
-                    $(".button-next-" + blockId).prop('disabled', false);
+                    $(".button-next-" + blockId, element).prop('disabled', false);
                 }
             });
         });
