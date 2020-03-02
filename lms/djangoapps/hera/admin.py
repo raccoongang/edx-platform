@@ -8,7 +8,7 @@ from django.forms import ModelForm
 from django.forms.widgets import TextInput
 from opaque_keys.edx.keys import CourseKey
 
-from hera.models import ActiveCourseSetting, Mascot, Onboarding, UserOnboarding, Scaffold
+from hera.models import ActiveCourseSetting, Mascot, Onboarding, UserOnboarding, ScaffoldsSettings
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 
@@ -99,9 +99,9 @@ class MascotAdmin(admin.ModelAdmin):
         return not self.model.objects.exists()
 
 
-class ScaffoldForm(ModelForm):
+class ScaffoldsSettingsForm(ModelForm):
     class Meta:
-        model = Scaffold
+        model = ScaffoldsSettings
         fields = '__all__'
         widgets = {
             'rephrase_color': TextInput(attrs={'type': 'color'}),
@@ -110,17 +110,17 @@ class ScaffoldForm(ModelForm):
         }
 
 
-class ScaffoldAdmin(admin.ModelAdmin):
-    form = ScaffoldForm
+class ScaffoldsSettingsAdmin(admin.ModelAdmin):
+    form = ScaffoldsSettingsForm
 
     def has_add_permission(self, request):
         """
-        Allow to add Scaffold only if no objects exist.
+        Allow to add ScaffoldsSettings only if no objects exist.
         """
         return not self.model.objects.exists()
 
 
-admin.site.register(Scaffold, ScaffoldAdmin)
+admin.site.register(ScaffoldsSettings, ScaffoldsSettingsAdmin)
 admin.site.register(Onboarding, OnboardingAdmin)
 admin.site.register(UserOnboarding, UserOnboardingAdmin)
 admin.site.register(ActiveCourseSetting, ActiveCourseSettingAdmin)

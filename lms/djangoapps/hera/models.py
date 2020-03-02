@@ -322,7 +322,7 @@ class Mascot(models.Model):
         return {}
 
 
-class Scaffold(models.Model):
+class ScaffoldsSettings(models.Model):
     coin_icon = models.ImageField(upload_to='hera', null=True, blank=True)
     rephrase_cost = models.IntegerField(default=10)
     rephrase_color = models.CharField(max_length=7, default="#257bba")
@@ -332,9 +332,15 @@ class Scaffold(models.Model):
     teach_me_color = models.CharField(max_length=7, default="#ec8b22")
     starting_coins = models.IntegerField(default=300)
 
+    class Meta(object):
+        verbose_name_plural = "Scaffolds settings"
+
     @classmethod
-    def get_scaffold(cls):
+    def get(cls):
         return cls.objects.first() or cls()
+
+    def get_coin_img_url(self):
+        return self.coin_icon.url if self.coin_icon else None
 
 
 @receiver(post_delete, sender=ActiveCourseSetting)

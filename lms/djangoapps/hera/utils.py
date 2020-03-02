@@ -47,7 +47,11 @@ def get_lesson_summary_xblock_context(user, course_key, current_unit):
     return {'lesson_title': lesson_title, 'points': points, 'medal': get_medal(points)}
 
 
-def recalculate_coints(course_id, block_id, user_id, cost=0):
+def recalculate_coins(course_id, block_id, user_id, cost=0):
+    """
+    Return difference between the user coins and cost.
+    If user has less coins than given cost - return None.
+    """
     course = modulestore().get_course(CourseKey.from_string(course_id))
     subsection_id = None
     for section in course.get_children():
@@ -62,8 +66,9 @@ def recalculate_coints(course_id, block_id, user_id, cost=0):
         BLOCK_ID: subsection_id,
         USER: user_id,
     })
-    if user_lesson_coins and cost <= user_lesson_coins.get('coins'):
-        coins_balance = user_lesson_coins.get('coins') - cost
+    user_coins = user_lesson_coins.get('coins', 0)
+    if cost <= user_coins:
+        coins_balance = user_coins - cost
         c_user_lesson_coins().update(
             {
                 BLOCK_ID: subsection_id,
@@ -80,6 +85,6 @@ def recalculate_coints(course_id, block_id, user_id, cost=0):
     return None
 
 
-def get_scaffold():
-    Scaffold = apps.get_model('hera', 'Scaffold')
-    return Scaffold.get_scaffold()
+def get_scaffolds_settings():
+    ScaffoldsSettings = apps.get_model('hera', 'ScaffoldsSettings')
+    return ScaffoldsSettings.get()

@@ -5,22 +5,20 @@
                 <div class="bubble-title">Your Results for ${lesson_title}</div>
                 <div class="bubble-columns">
                     <div class="bubble-columns__item">
-                        <div class="bubble-columns__icon default-icon__currency">
-                            <img src="${coins_icon_url}" alt="/">
+                        <div class="bubble-columns__icon ${'default-icon__currency' if not coins_icon_url else '' }">
+                            %if coins_icon_url:
+                                <img src="${coins_icon_url}" alt="/">
+                            %endif
                         </div>
                         <div class="bubble-columns__text">You have ${user_coins} coins remaining for this lesson</div>
                     </div>
                     <div class="bubble-columns__item">
-                        <div class="bubble-columns__icon default-icon__points">
-                            <img src="" alt="/">
-                        </div>
+                        <div class="bubble-columns__icon default-icon__points"></div>
                         <div class="bubble-columns__text">You earned ${points} points for this lesson</div>
                     </div>
                     % if medal:
                         <div class="bubble-columns__item">
-                            <div class="bubble-columns__icon default-icon__medal">
-                                <img src="" alt="/">
-                            </div>
+                            <div class="bubble-columns__icon default-icon__medal"></div>
                             <div class="bubble-columns__text">You earned a ${medal} medal</div>
                         </div>
                     % endif
@@ -28,7 +26,9 @@
             </div>
             <div class="block-mascot">
                 <div class="block-mascot__img default-icon__mascot">
-                    <img src="${data.get('imgUrl')}" alt="/">
+                    %if data.get('imgUrl'):
+                        <img src="${data.get('imgUrl')}" alt="/">
+                    %endif
                 </div>
             </div>
         </div>

@@ -104,19 +104,19 @@
                 <button type="button" class="author-block__btn try_again">Try Again</button>
             </div>
             <div id="${'{}-{}'.format(rephrase_name, block_id)}" class="rephrase-content" hidden>
-                ${scaffolds.get(rephrase_name, {}).get('data').get('content')}
+                ${scaffolds[rephrase_name]['data'].get('content')}
             </div>
-            <div id="${'{}-{}'.format(break_down_name, block_id)}" class="break-down-content" hidden>
-                ${scaffolds.get(break_down_name, {}).get('data').get('content')}
+            <div id="${'{}-{}'.format(break_it_down_name, block_id)}" class="break-it-down-content" hidden>
+                ${scaffolds[break_it_down_name]['data'].get('content')}
             </div>
             <div id="${'{}-{}'.format(teach_me_name, block_id)}" class="teach-me-content" hidden>
-                ${scaffolds.get(teach_me_name, {}).get('data').get('content')}
+                ${scaffolds[teach_me_name]['data'].get('content')}
             </div>
         </div>
         <div class="scaffolds ${'' if is_submission_allowed and submission_counter > 0 else 'hidden'}">
             <%
-            break_down_img_urls = ' '.join(scaffolds.get(break_down_name, {}).get('data').get('imgUrls', []))
-            teach_me_img_urls = ' '.join(scaffolds.get(teach_me_name, {}).get('data').get('imgUrls', []))
+            break_it_down_img_urls = ' '.join(scaffolds[break_it_down_name]['data'].get('imgUrls', []))
+            teach_me_img_urls = ' '.join(scaffolds[teach_me_name]['data'].get('imgUrls', []))
             %>
             <button
                     type="button"
@@ -124,10 +124,10 @@
                     data-scaffold-name="${rephrase_name}"
                     data-scaffold-class-name="is-rephrase">
                     <span class="scaffold__price ${rephrase_name}">
-                        %if scaffolds.get(rephrase_name, {}).get('paid'):
+                        %if scaffolds[rephrase_name]['paid']:
                             &#10004
                         %else:
-                            -${scaffolds.get(rephrase_name, {}).get('cost')}
+                            -${scaffolds[rephrase_name]['cost']}
                         %endif
                     </span>
                 Rephrase
@@ -135,14 +135,14 @@
             <button
                     type="button"
                     class="scaffold scaffold__btn is-break js-scaffold-button"
-                    data-img-urls="${break_down_img_urls}"
-                    data-scaffold-name="${break_down_name}"
+                    data-img-urls="${break_it_down_img_urls}"
+                    data-scaffold-name="${break_it_down_name}"
                     data-scaffold-class-name="is-break">
-                    <span class="scaffold__price ${break_down_name}">
-                        %if scaffolds.get(break_down_name, {}).get('paid'):
+                    <span class="scaffold__price ${break_it_down_name}">
+                        %if scaffolds[break_it_down_name]['paid']:
                             &#10004
                         %else:
-                            -${scaffolds.get(break_down_name, {}).get('cost')}
+                            -${scaffolds[break_it_down_name]['cost']}
                         %endif
                     </span>
                 Break It Down
@@ -154,10 +154,10 @@
                     data-scaffold-name="${teach_me_name}"
                     data-scaffold-class-name="is-teach">
                     <span class="scaffold__price ${teach_me_name}">
-                        %if scaffolds.get(teach_me_name, {}).get('paid'):
+                        %if scaffolds[teach_me_name]['paid']:
                             &#10004
                         %else:
-                            -${scaffolds.get(teach_me_name, {}).get('cost')}
+                            -${scaffolds[teach_me_name]['cost']}
                         %endif
                     </span>
                 Teach Me
