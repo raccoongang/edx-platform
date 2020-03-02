@@ -34,7 +34,7 @@ from opaque_keys.edx.keys import CourseKey, UsageKey
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from rest_framework import status
 
-from lms.djangoapps.certificates.views.support import _validate_post_params
+from lms.djangoapps.certificates.views.support import _validate_post_params, generate_certificate_for_user
 from lms.djangoapps.courseware.masquerade import MASQUERADE_SETTINGS_KEY, CourseMasquerade
 from lms.djangoapps.instructor.views.api import require_global_staff
 from lms.djangoapps.ccx.utils import prep_course_for_grading
@@ -1517,34 +1517,8 @@ def financial_assistance_form(request):
     })
 
 
-@transaction.non_atomic_requests
-@require_POST
 def end_course(request):
-    params, response = _validate_post_params(request.POST)
-    if response is not None:
-        return response
-
-    try:
-        # Check that the course exists
-        CourseOverview.get_from_id(params["course_key"])
-    except CourseOverview.DoesNotExist:
-        msg = _("The course {course_key} does not exist").format(course_key=params["course_key"])
-        return HttpResponseBadRequest(msg)
-    else:
-        # Check that the user is enrolled in the course
-        if not CourseEnrollment.is_enrolled(params["user"], params["course_key"]):
-            msg = _("User {username} is not enrolled in the course {course_key}").format(
-                username=params["user"].username,
-                course_key=params["course_key"]
-            )
-            return HttpResponseBadRequest(msg)
-
-        # Attempt to generate certificate
-        generate_certificates_for_students(
-            request,
-            params["course_key"],
-            student_set="specific_student",
-            specific_student_id=params["user"].id
-        )
-
-    return redirect(reverse("dashboard"))
+    response = generate_certificate_for_user(request)
+    if response.status_code == 200:
+        return redirect(reverse("dashboard"))
+    return response
