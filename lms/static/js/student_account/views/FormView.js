@@ -227,7 +227,13 @@
                     if (!_.compact(this.errors).length) {
                         data = this.setExtraData(data);
                         this.model.set(data);
-                        this.model.save();
+                        this.model.save({
+                            success: function () {
+                                var _hsq = window._hsq = window._hsq || [];
+                                _hsq.push(["identify", data]);
+                                _hsq.push(['trackPageView'])
+                            }
+                        });
                         this.clearFormErrors();
                     } else {
                         this.renderErrors(this.defaultFormErrorsTitle, this.errors);
