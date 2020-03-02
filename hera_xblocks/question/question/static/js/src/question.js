@@ -129,6 +129,7 @@ function QuestionXBlock(runtime, element, init_args) {
                     ).done(function (response) {
                         isSubmissionAllowed = response.is_submission_allowed;
                         var submissionCount = response.submission_count;
+                        var isScaffoldsEnabled = response.is_scaffolds_enabled;
                         if (response.correct) {
                             enableNextButton();
                             $skipBtn.addClass("hidden");
@@ -142,7 +143,7 @@ function QuestionXBlock(runtime, element, init_args) {
                             $('input', element).attr('disabled', true);
                             enableNextButton();
                         }
-                        if (submissionCount > 1 && !response.correct) {
+                        if (submissionCount > 1 && !response.correct && isScaffoldsEnabled) {
                             $skipBtn.addClass("hidden");
                             // also separated conditions to eas reading a code
                             if (
@@ -158,6 +159,8 @@ function QuestionXBlock(runtime, element, init_args) {
                                 }
                                 $buttonFillTables.show();
                             }
+                        } else if (!isScaffoldsEnabled) {
+                            changeFeedbackMessage('You have submitted your answer.');
                         }
                         showFeedback();
                         $confidenceInput.addClass("hidden");
