@@ -19,7 +19,7 @@ locales:
     # - cs  # Czech
     # - cy  # Welsh
     # - da  # Danish
-    # - de_DE  # German (Germany)
+    - de_DE  # German (Germany)
     # - el  # Greek
     # - en_GB  # English (United Kingdom)
     # # Don't pull these until we figure out why pages randomly display in these locales,
