@@ -1,0 +1,86 @@
+[
+  {
+    "description": "1. Letters only, no numbers: wallet name",
+    "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u1111111111s",
+    "wallet_name": "dddddddddddd",
+    "result": true
+  },
+  {
+    "description": "2. numbers only, no letters: wallet name",
+    "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u1111111111s",
+    "wallet_name": "111111111111",
+    "result": true
+  },
+  {
+    "description": "3. 13 - more than 12 symbols: wallet name",
+    "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u1111111111s",
+    "wallet_name": "ddddddd111111",
+    "result": false
+  },
+  {
+    "description": "4. 10 - less than 12 symbols: wallet name",
+    "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u1111111111s",
+    "wallet_name": "ddddddd1111",
+    "result": false
+  },
+  {
+    "description": "5. Special character: wallet name",
+    "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u1111111111s",
+    "wallet_name": "dddddd_11111",
+    "result": false
+  },
+  {
+    "description": "6. Special character: wallet name",
+    "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u1111111111s",
+    "wallet_name": "dddddd?11111",
+    "result": false
+  },
+  {
+    "description": "7. Special character: wallet name",
+    "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u1111111111s",
+    "wallet_name": "dddddd#11111",
+    "result": false
+  },
+  {
+    "description": "8. Special character: wallet name",
+    "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u1111111111s",
+    "wallet_name": "dddddd'11111",
+    "result": false
+  },
+  {
+    "description": "9. Uppercase: wallet name",
+    "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u1111111111s",
+    "wallet_name": "Ddddddd11111",
+    "result": false
+  },
+  {
+    "description": "10. Number max value is 5: wallet name",
+    "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u1111111111s",
+    "wallet_name": "ddddddd11116",
+    "result": false
+  },
+  {
+    "description": "11. Success",
+    "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u1111111111s",
+    "wallet_name": "ddddddd11111",
+    "result": true
+  },
+  {
+    "description": "12. Success",
+    "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u1111111111s",
+    "wallet_name": "ddddddd11115",
+    "result": true
+  },
+  {
+    "description": "13. Non-ascii: wallet name",
+    "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u1111111111s",
+    "wallet_name": "11111ddwørld",
+    "result": false
+  },
+  {
+    "description": "14. Success; length (interval [1:64]): profitonomy_public_key",
+    "profitonomy_public_key": "EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDH",
+    "wallet_name": "ddddddd11115",
+    "result": true
+  }
+]

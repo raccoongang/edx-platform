@@ -2947,6 +2947,7 @@ ACCOUNT_VISIBILITY_CONFIGURATION = {
         "accomplishments_shared",
         "mobytize_id",
         "mobytize_token",
+        "profitonomy_public_key",
     ]
 }
 
@@ -3238,5 +3239,6 @@ COURSES_API_CACHE_TIMEOUT = 3600  # Value is in seconds
 ############## Settings for CourseGraph ############################
 COURSEGRAPH_JOB_QUEUE = LOW_PRIORITY_QUEUE
 
-############## Settings User Statistics ############################
+############## Custom Skillonomy Settings ############################
 EDEOS_API_URL = ''
+DISPLAY_WALLETS = False

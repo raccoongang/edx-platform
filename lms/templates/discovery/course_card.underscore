@@ -13,10 +13,24 @@
                 <span class="course-title"><%- content.display_name %></span>
             </h2>
             <div class="course-date" aria-hidden="true">
-                <%- interpolate(
-                      gettext("Starts: %(start_date)s"),
-                      { start_date: start }, true
-                    ) %>
+                <div class="course-date__text">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <use xlink:href="#ic-round-people-outline"></use>
+                    </svg>
+                    <span><%- gettext(status) %></span>
+                </div>
+                <div class="course-date__text">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <use xlink:href="#ic-round-clock"></use>
+                    </svg>
+                    <span><%- start %></span>
+                </div>
+                <div class="course-date__text">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <use xlink:href="#ic-round-dollar"></use>
+                    </svg>
+                    <span><%- gettext(price) %></span>
+                </div>
             </div>
         </section>
         <div class="sr">

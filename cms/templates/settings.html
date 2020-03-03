@@ -342,6 +342,15 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
                       a_link_end=HTML("</a>")
                     )}</span>
                 </li>
+                <li class="field text" id="field-course-overview-teacher">
+                  <label for="course-overview-teacher">${_("Course Teachers")}</label>
+                  <textarea class="tinymce text-editor" id="course-overview-teacher"></textarea>
+                  <label class="sr" for="course-overview-cm-textarea">
+                    ${_('HTML Code Editor')}
+                  </label>
+                  <span class="tip tip-stacked">${
+                    Text(_("Fulfill the info about course teachers"))}</span>
+                </li>
                 % endif
 
                 <li class="field image" id="field-course-image">

@@ -3,51 +3,122 @@ metadata:
     display_name: overview
 
 data: |
-    <section class="about">
-      <h2>About This Course</h2>
-      <p>Include your long course description here. The long course description should contain 150-400 words.</p>
-
-      <p>This is paragraph 2 of the long course description. Add more paragraphs as needed. Make sure to enclose them in paragraph tags.</p>
-    </section>
-
-    <section class="prerequisites">
-      <h2>Requirements</h2>
-      <p>Add information about the skills and knowledge students need to take this course.</p>
-    </section>
-
-    <section class="course-staff">
-      <h2>Course Staff</h2>
-      <article class="teacher">
-        <div class="teacher-image">
-          <img src="/static/images/placeholder-faculty.png" align="left" style="margin:0 20 px 0" alt="Course Staff Image #1">
+  <div class="details">
+  <section class="course-about course-page-section">
+    <h2 class="h2">Чему вы научитесь</h2>
+    <ul class="course-about-list">
+      <li class="course-about-list__item">
+        <div class="course-about-list__title">
+          <div class="course-about-list__ico course-about-list__ico_1"></div>
+          <span>Работать с ценностями бренда</span>
         </div>
-
-        <h3>Staff Member #1</h3>
-        <p>Biography of instructor/staff member #1</p>
-      </article>
-
-      <article class="teacher">
-        <div class="teacher-image">
-          <img src="/static/images/placeholder-faculty.png" align="left" style="margin:0 20 px 0" alt="Course Staff Image #2">
+        <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+        </p>
+      </li>
+      <!-- 2 -->
+      <li class="course-about-list__item">
+        <div class="course-about-list__title">
+          <div class="course-about-list__ico course-about-list__ico_2"></div>
+          <span>Правильно общаться</span>
         </div>
-
-        <h3>Staff Member #2</h3>
-        <p>Biography of instructor/staff member #2</p>
-      </article>
-    </section>
-
-    <section class="faq">
-      <section class="responses">
-        <h2>Frequently Asked Questions</h2>
-        <article class="response">
-          <h3>What web browser should I use?</h3>
-          <p>The Open edX platform works best with current versions of Chrome, Firefox or Safari, or with Internet Explorer version 9 and above.</p>
-          <p>See our <a href="http://edx.readthedocs.org/projects/open-edx-learner-guide/en/latest/front_matter/browsers.html">list of supported browsers</a> for the most up-to-date information.</p>
-        </article>
-
-        <article class="response">
-          <h3>Question #2</h3>
-          <p>Your answer would be displayed here.</p>
-        </article>
-      </section>
-    </section>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+        </p>
+      </li>
+      <!-- 3 -->
+      <li class="course-about-list__item">
+        <div class="course-about-list__title">
+          <div class="course-about-list__ico course-about-list__ico_3"></div>
+          <span>Проводить мероприятия</span>
+        </div>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+        </p>
+      </li>
+      <!-- 4 -->
+      <li class="course-about-list__item">
+        <div class="course-about-list__title">
+          <div class="course-about-list__ico course-about-list__ico_4"></div>
+          <span>Оценивать результат</span>
+        </div>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+        </p>
+      </li>
+      <!-- 5 -->
+      <li class="course-about-list__item">
+        <div class="course-about-list__title">
+          <div class="course-about-list__ico course-about-list__ico_5"></div>
+          <span>Вовлекать аудиторию</span>
+        </div>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+        </p>
+      </li>
+      <!-- 6 -->
+      <li class="course-about-list__item">
+        <div class="course-about-list__title">
+          <div class="course-about-list__ico course-about-list__ico_6"></div>
+          <span>Формировать ядро общества</span>
+        </div>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+        </p>
+      </li>
+    </ul>
+  </section>
+  </div>
+  <section class="course-result course-page-section">
+  <h2 class="h2">Результат того стоит</h2>
+  <ul class="course-result-list">
+    <li class="course-result-list__item">
+      <div class="course-result-list__container">
+        <div class="course-result-list__image course-result-list__image1"></div>
+        <span class="course-result-list__text">Выстроите развитие сообщества по прогнозам</span>
+      </div>
+    </li>
+    <!-- 2 -->
+    <li class="course-result-list__item">
+      <div class="course-result-list__container">
+        <div class="course-result-list__image course-result-list__image2"></div>
+        <span class="course-result-list__text">Заведете полезные контакты с практикующими экспертами и коллегами</span>
+      </div>
+    </li>
+    <!-- 3 -->
+    <li class="course-result-list__item">
+      <div class="course-result-list__container">
+        <div class="course-result-list__image course-result-list__image3"></div>
+        <span class="course-result-list__text">Получите фундамент для профессионального роста до уровня миддл</span>
+      </div>
+    </li>
+  </ul>
+  </section>
+  <section class="course-how-to course-page-section">
+  <h2 class="h2">Как проходит обучение</h2>
+  <ul class="course-how-to-list">
+    <li class="course-how-to-list__item">
+      <div class="course-how-to-list__number"><span>1</span></div>
+      <div class="course-how-to-list__title">Просмотр видео-лекций</div>
+      <p>
+        Достижения и регалии Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+    </li>
+    <!-- 2 -->
+    <li class="course-how-to-list__item">
+      <div class="course-how-to-list__number"><span>2</span></div>
+      <div class="course-how-to-list__title">Домашнее задание</div>
+      <p>
+        Достижения и регалии Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+    </li>
+    <!-- 3 -->
+    <li class="course-how-to-list__item">
+      <div class="course-how-to-list__number"><span>3</span></div>
+      <div class="course-how-to-list__title">Комментарии преподавателя</div>
+      <p>
+        Достижения и регалии Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+    </li>
+  </ul>
+  </section>

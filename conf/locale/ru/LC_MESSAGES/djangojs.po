@@ -7258,6 +7258,26 @@ msgid "LEARN MORE"
 msgstr "ПОДРОБНЕЕ"
 
 #: lms/templates/discovery/course_card.underscore
+msgid "Will start soon"
+msgstr "Скоро старт"
+
+#: lms/templates/discovery/course_card.underscore
+msgid "The enrollment is open"
+msgstr "Идет набор"
+
+#: lms/templates/discovery/course_card.underscore
+msgid "The course is on"
+msgstr "Курс начался"
+
+#: lms/templates/discovery/course_card.underscore
+msgid "The course has ended"
+msgstr "Курс завершился"
+
+#: lms/templates/discovery/course_card.underscore
+msgid "Free"
+msgstr "Бесплатно"
+
+#: lms/templates/discovery/course_card.underscore
 #, python-format
 msgid "Starts: %(start_date)s"
 msgstr "Начало: %(start_date)s"
@@ -7884,8 +7904,9 @@ msgstr "Забыли пароль?"
 
 #: lms/templates/student_account/hinted_login.underscore
 #: lms/templates/student_account/login.underscore
-msgid "Sign in"
-msgstr "Вход"
+#: lms/templates/student_account/register.underscore
+msgid "Sign In"
+msgstr "Войти"
 
 #: lms/templates/student_account/hinted_login.underscore
 #, python-format
@@ -7925,11 +7946,7 @@ msgstr "Зарегистрироваться через edX"
 
 #: lms/templates/student_account/login.underscore
 msgid "First time here?"
-msgstr "Вы здесь первый раз?"
-
-#: lms/templates/student_account/login.underscore
-msgid "Sign In"
-msgstr "Войти"
+msgstr "Вы здесь впервые?"
 
 #: lms/templates/student_account/login.underscore
 msgid ""
@@ -7976,10 +7993,6 @@ msgstr ""
 #: lms/templates/student_account/password_reset.underscore
 msgid "Reset my password"
 msgstr "Сбросить пароль"
-
-#: lms/templates/student_account/register.underscore
-msgid "Sign in."
-msgstr "Войти."
 
 #: lms/templates/student_account/register.underscore
 msgid "Create an Account"

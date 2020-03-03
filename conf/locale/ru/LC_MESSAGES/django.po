@@ -2183,6 +2183,7 @@ msgstr ""
 "Настраивается для подраздела."
 
 #: common/lib/xmodule/xmodule/capa_base.py
+#: cms/templates/settings.html lms/templates/courseware/course_about.html
 msgid "Always"
 msgstr "Всегда"
 
@@ -2647,6 +2648,10 @@ msgstr "Настроить исходные компоненты"
 #: common/lib/xmodule/xmodule/course_module.py
 msgid "LTI Passports"
 msgstr "Регистрационные данные LTI"
+
+#: common/lib/xmodule/xmodule/course_module.py
+msgid "Set the course price."
+msgstr "Установите стоимость курса."
 
 #: common/lib/xmodule/xmodule/course_module.py
 msgid ""
@@ -6815,6 +6820,13 @@ msgstr "ID пользователя"
 msgid "Email"
 msgstr "Электронная почта"
 
+#. Translators: This label appears above a field on the login form
+#. meant to hold the user's email address (skillonomy customisation).
+#. openedx/core/djangoapps/user_api/views.py
+#: themes/stanford-style/lms/templates/register-form.html
+msgid "Email*"
+msgstr "E-mail*"
+
 #: lms/djangoapps/instructor/views/api.py
 #: lms/djangoapps/instructor_task/tasks_helper/enrollments.py
 msgid "Language"
@@ -7563,13 +7575,20 @@ msgstr "Срок сдачи задания для этого обучающег�
 #. meant to hold the user's full name.
 #: lms/djangoapps/instructor/views/tools.py
 #: lms/djangoapps/instructor_task/tasks_helper/enrollments.py
-#: openedx/core/djangoapps/user_api/views.py cms/templates/register.html
+#: cms/templates/register.html
 #: lms/templates/register-form.html lms/templates/register-shib.html
 #: lms/templates/signup_modal.html lms/templates/sysadmin_dashboard.html
 #: themes/stanford-style/lms/templates/register-form.html
 #: themes/stanford-style/lms/templates/register-shib.html
 msgid "Full Name"
 msgstr "Полное имя"
+
+#. #-#-#-#-#  django-partial.po (0.1a)  #-#-#-#-#
+#. Translators: This label appears above a field on the registration form
+#. meant to hold the user's full name.
+#: openedx/core/djangoapps/user_api/views.py
+msgid "Full Name*"
+msgstr "Полное имя*"
 
 #: lms/djangoapps/instructor/views/tools.py
 msgid "Extended Due Date"
@@ -10617,6 +10636,13 @@ msgstr ""
 msgid "Password"
 msgstr "Пароль"
 
+#. Translators: This label appears above a field on the login form
+#. meant to hold the user's password (skillonomy customisation).
+#. openedx/core/djangoapps/user_api/views.py
+#: themes/stanford-style/lms/templates/register-form.html
+msgid "Password*"
+msgstr "Пароль*"
+
 #: openedx/core/djangoapps/user_api/views.py lms/templates/login.html
 msgid "Remember me"
 msgstr "Запомнить меня"
@@ -10753,8 +10779,8 @@ msgid "Terms of Service and Honor Code"
 msgstr "Условия предоставления услуг и Кодекс чести"
 
 #: openedx/core/djangoapps/user_api/views.py
-msgid "Review the Terms of Service and Honor Code"
-msgstr "Условия предоставления услуг и кодекс чести"
+msgid "{platform_name} Terms of Service and Honor Code"
+msgstr "Условия предоставления услуг и кодекс чести {platform_name}"
 
 #. Translators: "Terms of Service" is a legal document users must agree to
 #. in order to register a new account.
@@ -10764,6 +10790,15 @@ msgstr "Условия предоставления услуг и кодекс �
 #, python-brace-format
 msgid "I agree to the {platform_name} {terms_of_service}"
 msgstr "Я принимаю {terms_of_service} {platform_name}"
+
+#. Translators: "Terms of Service" is a legal document users must agree to
+#. in order to register a new account.
+#. Translators: "Terms of service" is a legal document users must agree to
+#. in order to register a new account.
+#: openedx/core/djangoapps/user_api/views.py
+#, python-brace-format
+msgid "I agree to the "
+msgstr "Я принимаю "
 
 #. Translators: "Terms of Service" is a legal document users must agree to
 #. in order to register a new account.
@@ -11559,6 +11594,18 @@ msgstr "Настройки"
 msgid "Course Number"
 msgstr "Номер курса"
 
+#: cms/templates/settings.html lms/templates/courseware/course_about.html
+msgid "Online"
+msgstr "Онлайн"
+
+#: cms/templates/settings.html lms/templates/courseware/course_about.html
+msgid "From zero"
+msgstr "С нуля"
+
+#: cms/templates/settings.html lms/templates/courseware/course_about.html
+msgid "ru"
+msgstr "рус."
+
 #: cms/templates/course_info.html
 #: openedx/features/course_experience/templates/course_experience/course-updates-fragment.html
 msgid "Course Updates"
@@ -11920,7 +11967,7 @@ msgstr "Начало курса: {date}"
 
 #: lms/templates/courses_list.html
 msgid "View all Courses"
-msgstr "Все курсы"
+msgstr "Показать все"
 
 #: lms/templates/dashboard.html lms/templates/user_dropdown.html
 #: themes/edx.org/lms/templates/dashboard.html
@@ -14968,6 +15015,26 @@ msgstr "Вы записаны на этот курс"
 #: lms/templates/shoppingcart/registration_code_receipt.html
 msgid "View Course"
 msgstr "Просмотр курса"
+
+#: lms/templates/course.html
+#: lms/templates/dashboard/_dashboard_course_listing.html
+msgid "Will start soon"
+msgstr "Скоро старт"
+
+#: lms/templates/course.html
+#: lms/templates/dashboard/_dashboard_course_listing.html
+msgid "The enrollment is open"
+msgstr "Идет набор"
+
+#: lms/templates/course.html
+#: lms/templates/dashboard/_dashboard_course_listing.html
+msgid "The course is on"
+msgstr "Курс начался"
+
+#: lms/templates/course.html
+#: lms/templates/dashboard/_dashboard_course_listing.html
+msgid "The course has ended"
+msgstr "Курс завершился"
 
 #: lms/templates/courseware/course_about.html
 msgid "This course is in your <a href=\"{cart_link}\">cart</a>."
@@ -24756,3 +24823,35 @@ msgstr ""
 "Если Вы не создавали учетную запись, дальнейших действий не требуется; "
 "Вы больше не будете получать от нас сообщения. Если Вам потребуется помощь, пожалуйста, не отвечайте на это сообщение. "
 "Обратитесь к разделу \"Помощь\" на веб-сайте {platform_name}."
+
+#: common/templates/edeos/update_wallet.html
+msgid "The EOS account name must be exactly 12 characters long and must consist of lowercase letters and numbers up to 5."
+msgstr "Имя аккаунта EOS должно быть ровно 12 символов и состоять из строчных букв и цифр до 5."
+
+#: common/templates/edeos/update_wallet.html
+msgid "Add"
+msgstr "Добавить"
+
+#: common/templates/edeos/update_wallet.html
+msgid "Wallet Name"
+msgstr "Имя кошелька"
+
+#: common/templates/edeos/update_wallet.html
+msgid "Public Key"
+msgstr "Публичный ключ"
+
+#: common/templates/edeos/update_wallet.html
+msgid "Couldn't create a new wallet."
+msgstr "Не удалось создать новый кошелек."
+
+#: common/templates/edeos/update_wallet.html
+msgid "Name is already taken."
+msgstr "Имя уже занято."
+
+#: common/templates/edeos/update_wallet.html
+msgid "New wallet has been created."
+msgstr "Новый кошелек создан."
+
+#: common/templates/edeos/update_wallet.html
+msgid "Create your wallet:"
+msgstr "Создать свой кошелек:"

@@ -63,6 +63,16 @@ class CourseOverview(TimeStampedModel):
     advertised_start = TextField(null=True)
     announcement = DateTimeField(null=True)
 
+    # Skillonomy advanced settings
+    price = TextField(default="Free")
+    learning_format = TextField(default="Online")
+    qualification_level = TextField(default="From zero")
+    course_availability = TextField(default="Always")
+    number_of_homeworks = IntegerField(default=0)
+    number_of_tests = IntegerField(default=0)
+    number_of_videos = IntegerField(default=0)
+    number_of_lections = IntegerField(default=0)
+
     # URLs
     course_image_url = TextField()
     social_sharing_url = TextField(null=True)
@@ -162,6 +172,15 @@ class CourseOverview(TimeStampedModel):
         course_overview.end = end
         course_overview.advertised_start = course.advertised_start
         course_overview.announcement = course.announcement
+
+        course_overview.price = course.price
+        course_overview.learning_format = course.learning_format
+        course_overview.qualification_level = course.qualification_level
+        course_overview.course_availability = course.course_availability
+        course_overview.number_of_homeworks = course.number_of_homeworks
+        course_overview.number_of_tests = course.number_of_tests
+        course_overview.number_of_videos = course.number_of_videos
+        course_overview.number_of_lections = course.number_of_lections
 
         course_overview.course_image_url = course_image_url(course)
         course_overview.social_sharing_url = course.social_sharing_url

@@ -30,6 +30,7 @@ import os
 
 from path import Path as path
 from xmodule.modulestore.modulestore_settings import convert_module_store_setting_if_needed
+from django.utils.encoding import force_str
 
 # SERVICE_VARIANT specifies name of the variant used, which decides what JSON
 # configuration files are read during startup.
@@ -583,7 +584,8 @@ DOC_STORE_CONFIG = AUTH_TOKENS.get('DOC_STORE_CONFIG', DOC_STORE_CONFIG)
 MONGODB_LOG = AUTH_TOKENS.get('MONGODB_LOG', {})
 
 EMAIL_HOST_USER = AUTH_TOKENS.get('EMAIL_HOST_USER', '')  # django default is ''
-EMAIL_HOST_PASSWORD = AUTH_TOKENS.get('EMAIL_HOST_PASSWORD', '')  # django default is ''
+# convert from unicode to ascii to fix this issue - https://code.djangoproject.com/ticket/27131
+EMAIL_HOST_PASSWORD = force_str(AUTH_TOKENS.get('EMAIL_HOST_PASSWORD', '')) # django default is ''
 
 # Datadog for events!
 DATADOG = AUTH_TOKENS.get("DATADOG", {})
@@ -700,6 +702,7 @@ if FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
             'social_core.backends.google.GoogleOAuth2',
             'social_core.backends.linkedin.LinkedinOAuth2',
             'social_core.backends.facebook.FacebookOAuth2',
+            'social_core.backends.auth0.Auth0OAuth2',
             'social_core.backends.azuread.AzureADOAuth2',
             'third_party_auth.saml.SAMLAuthBackend',
             'third_party_auth.lti.LTIAuthBackend',
@@ -1033,8 +1036,13 @@ ORA2_FILEUPLOAD_CACHE_NAME = ENV_TOKENS.get('ORA2_FILEUPLOAD_CACHE_NAME', 'defau
 ############## Settings for CourseGraph ############################
 COURSEGRAPH_JOB_QUEUE = ENV_TOKENS.get('COURSEGRAPH_JOB_QUEUE', LOW_PRIORITY_QUEUE)
 
+# Custom Skillonomy settings
+DISPLAY_WALLETS = FEATURES.get("DISPLAY_WALLETS", False)
 # EDEOS
 EDEOS_API_KEY = AUTH_TOKENS.get('EDEOS_API_KEY', '')
 EDEOS_API_SECRET = AUTH_TOKENS.get('EDEOS_API_SECRET', '')
 EDEOS_API_URL = AUTH_TOKENS.get('EDEOS_API_URL', '')
 # EDEOS
+
+# Number of courses per page setting (for home page)
+HOMEPAGE_COURSE_MAX = ENV_TOKENS.get('HOMEPAGE_COURSE_MAX', HOMEPAGE_COURSE_MAX)

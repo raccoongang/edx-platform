@@ -3,16 +3,19 @@ Various utils for communication with Edeos API.
 """
 import hashlib
 import logging
+import re
 from urlparse import urlparse
 
-from django.contrib.sites.models import Site
+from django.contrib.auth.models import User
 from opaque_keys.edx.keys import CourseKey
 from xmodule.modulestore.django import modulestore
 
 from api_calls import ALLOWED_EDEOS_API_ENDPOINTS_NAMES, EdeosApiClient
-from configs import EDEOS_STUDIO_FIELDS
-
-from django.contrib.auth.models import User
+from configs import (
+    EDEOS_STUDIO_FIELDS,
+    WALLET_NAME_LENGTH,
+    PROFITONOMY_PUBLIC_KEY_LENGTH_INTERVAL,
+)
 
 log = logging.getLogger(__name__)
 
@@ -123,3 +126,35 @@ def prepare_edeos_data(model_obj, event_type, event_details=None):
             }
             return data
     return None
+
+
+def validate_wallets_data(wallet_name, profitonomy_public_key):
+    """
+    Validate wallets data.
+
+    Rules:
+        both: length strict check, non-empty
+        wallet_name:
+            length equals to 12,
+            all symbols lowercase,
+            all numbers (value 1 to 5),
+            order (symbols/numbers) does'n metter,
+            no special characters (should be alphanumeric).
+
+    Arguments:
+          wallet_name (str): wallet name, e.g. "mywallet"
+          profitonomy_public_key (str): public key, e.g.
+              ```
+              EOS7qFLiLsdYYogZUbqNGnQVdn7YBiYeDPoadTDHGLEFi6kxtBb8u1111111111s
+              ```
+    """
+    return (
+        # Only lowercase letters and digits (1 to 5)
+        bool(re.match("^[a-z1-5]*$", wallet_name.strip()))
+        and len(wallet_name.strip()) == WALLET_NAME_LENGTH
+        and (
+            PROFITONOMY_PUBLIC_KEY_LENGTH_INTERVAL[0]
+            <= len(profitonomy_public_key.strip())
+            <= PROFITONOMY_PUBLIC_KEY_LENGTH_INTERVAL[1]
+        )
+    )

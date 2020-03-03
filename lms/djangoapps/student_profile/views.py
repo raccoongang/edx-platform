@@ -26,7 +26,7 @@ from openedx.core.djangoapps.user_api.errors import (UserNotAuthorized,
 from openedx.core.djangoapps.user_api.preferences.api import \
     get_user_preferences
 
-from student.models import User, CourseEnrollment
+from student.models import User, UserProfile, CourseEnrollment
 
 
 @login_required
@@ -94,7 +94,6 @@ def learner_profile_context(request, profile_username, user_is_staff):
     edeos_resp = send_edeos_api_request(**d)
     context = {
         'data': {
-            'edeos_balance': edeos_resp,
             'profile_user_id': profile_user.id,
             'default_public_account_fields': settings.ACCOUNT_VISIBILITY_CONFIGURATION['public_fields'],
             'default_visibility': settings.ACCOUNT_VISIBILITY_CONFIGURATION['default_visibility'],
@@ -117,16 +116,33 @@ def learner_profile_context(request, profile_username, user_is_staff):
             'backpack_ui_img': staticfiles_storage.url('certificates/images/backpack-ui.png'),
             'platform_name': configuration_helpers.get_value('platform_name', settings.PLATFORM_NAME),
             'active_course': True if active_course else False,
-            "mobytize_token":profile_user.profile.mobytize_token,
-            "users":profile_user.profile.mobytize_id
+            # Skillonomy customization.
+            # Branding/environments tend to update (Edeos, Mobytize, Protifonomy)
+            'edeos_balance': edeos_resp,
+            "mobytize_token": profile_user.profile.mobytize_token,
+            "users": profile_user.profile.mobytize_id,
+            "wallets_data": get_user_wallets_data(profile_user),
         },
         'disable_courseware_js': True,
+        # Skillonomy customization
+        "display_wallets_data": profile_user.is_active and own_profile and settings.FEATURES["DISPLAY_WALLETS"],
     }
-
     if badges_enabled():
         context['data']['badges_api_url'] = reverse("badges_api:user_assertions", kwargs={'username': profile_username})
 
     return context
+
+
+def get_user_wallets_data(requesting_user):
+    """
+    Get wallets data for a user.
+    """
+    profile = UserProfile.objects.get(user=requesting_user)
+    return {
+        "profitonomy_public_key": profile.profitonomy_public_key if profile else "",
+        "wallet_name": profile.wallet_name if profile else "",
+    }
+
 
 def learner_profile_statistics_context(profile_username, profile_statistics):
     """Context for the learner student_profile/profile_statistics.html page.

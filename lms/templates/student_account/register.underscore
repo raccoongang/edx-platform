@@ -3,7 +3,7 @@
 
 <div class="toggle-form">
     <span class="text"><%- edx.StringUtils.interpolate(gettext('Already have an {platformName} account?'), {platformName: context.platformName }) %></span>
-    <a href="#login" class="form-toggle" data-type="login"><%- gettext("Sign in.") %></a>
+    <a href="#login" class="form-toggle" data-type="login"><%- gettext("Sign In") %></a>
 </div>
 
 <div class="form-controls">
