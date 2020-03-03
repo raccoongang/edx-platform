@@ -1,4 +1,4 @@
-from .models import UserOnboarding
+from .models import UserOnboarding, Mascot
 
 
 def user_onboarding(request):
@@ -11,5 +11,6 @@ def user_onboarding(request):
         if UserOnboarding.onboarding_is_passed(request.user.id):
             onboarding_data['is_onboarding_passed'] = True
             onboarding_data['onboarding_pages'] = UserOnboarding.get_static_pages()
+            onboarding_data['onboarding_mascot'] = Mascot.onboarding_img_url()
         return onboarding_data
     return {}
