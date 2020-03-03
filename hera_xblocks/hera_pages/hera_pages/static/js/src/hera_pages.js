@@ -12,7 +12,7 @@ function HeraPagesXBlock(runtime, element, init_args) {
             var slickImagesSelector = '.image-wrapper-' + blockId;
             var slickSliderBarSelector = '.slidebar-wrapper-' + blockId;
             var slickSelectors = slickSliderBarSelector + ', ' +  slickImagesSelector;
-            var showMessage = true;
+            var feedbackMessageCounter = 0;
             var contentSlideCount = $('.js-content-counter').length;
             var imageSlideCount = $('.js-image-counter').length;
             var theBiggestCount = Math.max(imageSlideCount, contentSlideCount);
@@ -23,6 +23,7 @@ function HeraPagesXBlock(runtime, element, init_args) {
             var $contentSlider = $(slickSliderBarSelector, element);
             var $slidesTogether =  $(slickSelectors, element);
             var answerCounter = 0;
+            var tableRendered = false;
             function getCurrentSlideId() {
                 // if there is no $imageSlider - slick('slickCurrentSlide') returns jquery element but we need a number
                 var currentImgSlideId = imageSlideCount ? $imageSlider.slick('slickCurrentSlide') : imageSlideCount;
@@ -72,6 +73,7 @@ function HeraPagesXBlock(runtime, element, init_args) {
                     $questionForm.each(function(index) {
                         if (tablesData[index]){
                             $(this).html(tablesData[index]);
+                            tableRendered = true;
                         }
                     });
                 }).error(function(error) {
@@ -83,11 +85,17 @@ function HeraPagesXBlock(runtime, element, init_args) {
                 $.post(
                     submithHandlerUrl,
                     JSON.stringify({"answers": userAnswers})
-                ).done(function(response) {
-                    $('.sequence-nav-button.button-next').get(0).click();
-                }).error(function(error){
+                ).error(function(error){
                     console.log(error);
                 });
+            }
+
+            function clickNext() {
+                $('.sequence-nav-button.button-next').get(0).click();
+            }
+
+            function changeFeedbackMessage(message) {
+                $('#feedback-content-' + blockId).text(message);
             }
 
             // click on the prev arrow
@@ -133,17 +141,26 @@ function HeraPagesXBlock(runtime, element, init_args) {
             $submitButton.bind('click', function (e) {
                 var $questionForm = $(".table-form", element);
                 var userAnswers = getUserAnswers($questionForm);
-                if (answerCounter > 3 && showMessage) {
-                    renderTablesWithCorrectAnswers();
-                    $('#feedback-content-' + blockId).text("Alright. Let's move on. Here is the completed table.");
-                    showFeedback();
-                } else if (!isFormValid($questionForm) && showMessage) {
-                    showFeedback();
-                    showMessage = false;
-                } else {
-                    hideFeedback();
+                if (!tableRendered && !isFormValid($questionForm) && answerCounter >= 3 && feedbackMessageCounter < 2) {
                     postUserAnswers(userAnswers);
+                    renderTablesWithCorrectAnswers();
+                    changeFeedbackMessage("Alright. Let's move on. Here is the completed table.");
+                    showFeedback();
+                    feedbackMessageCounter++;
+                    return null;
+                } else if (!tableRendered && !isFormValid($questionForm) && feedbackMessageCounter === 0) {
+                    showFeedback();
+                    feedbackMessageCounter++;
+                    changeFeedbackMessage(
+                        "It seems like you haven't fully interacted with the simulation." +
+                        " Give it another try. If you'd like to exit the simulation instead, press next."
+                    );
+                    return null;
+                } else if (!tableRendered) {
+                    postUserAnswers(userAnswers);
+                    hideFeedback();
                 }
+                clickNext();
             });
             $('.button-previous-' + blockId, element).click(function() {
                 $('.sequence-nav-button.button-previous').get(0).click();
