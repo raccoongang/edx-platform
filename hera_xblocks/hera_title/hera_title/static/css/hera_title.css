@@ -270,12 +270,16 @@ input[type="checkbox"].questions-list__input:checked + .questions-list__text:bef
 }
 
 /* Feedback tooltips */
+.footer-controls-btns {
+	display: flex;
+	align-items: center;
+}
+
 .feedback-holder {
     display: inline-block;
     width: 22px;
-    margin-left: 12px;
+    margin: 0 12px;
     line-height: 1;
-    cursor: pointer;
     position: relative;
     transition: opacity .3s ease-in-out;
 }

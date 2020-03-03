@@ -183,12 +183,12 @@ function QuestionXBlock(runtime, element, init_args) {
             });
 
             // Feedback tooltip
-            $(".feedback-holder .feedback-open").on("click", function() {
-                $('.feedback-holder').addClass('tooltip-is-open');
+            $(".feedback-holder .feedback-open", element).on("click", function() {
+                $('.feedback-holder', element).addClass('tooltip-is-open');
             });
 
-            $(".feedback-close").on("click", function () {
-                $(".feedback-holder").toggleClass('tooltip-is-open');
+            $(".feedback-close", element).on("click", function () {
+                $(".feedback-holder", element).toggleClass('tooltip-is-open');
             });
 
             $('.button-next-' + blockId, element).click(function() {
