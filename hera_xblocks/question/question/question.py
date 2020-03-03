@@ -103,6 +103,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     def get_context(self):
         scaffolds = get_scaffolds_settings()
         return {
+            "user_answer_correct": self.user_answer_correct,
             "user_answer": self.user_answer,
             "is_submission_allowed": self.is_submission_allowed,
             "submission_counter": self.submission_counter,
@@ -136,7 +137,8 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
                     "paid": self.teach_me_paid,
                     "data": self.teach_me,
                 },
-            }
+            },
+            'correct_answers': self.get_correct_answers(),
         }
 
     def get_content_html(self):
@@ -146,6 +148,15 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             context=context
         )
         return html
+
+    def get_correct_answers(self):
+        answer = ''
+        for question in self.problem_types:
+            if question['type'] in ["number", "text"]:
+                answer = question['answer']
+            if question['type'] in ["select", "radio", "checkbox"]:
+                answer = ', '.join([option["title"] for option in question['options'] if option["correct"]])
+        return answer
 
     def student_view(self, context=None):
         """
@@ -253,10 +264,16 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         self.user_confidence = user_confidence
         return {
             'correct': self.user_answer_correct,
-            'is_submission_allowed': self.is_submission_allowed
+            'is_submission_allowed': self.is_submission_allowed,
+            'correct_answers': self.get_correct_answers(),
+            'submission_count': self.submission_counter
         }
 
     @XBlock.json_handler
     def skip(self, somedata, sufix=''):
         self.submission_counter += 1
-        return {'is_submission_allowed': self.is_submission_allowed}
+
+        return {
+            'is_submission_allowed': self.is_submission_allowed,
+            'correct_answers': self.get_correct_answers()
+        }

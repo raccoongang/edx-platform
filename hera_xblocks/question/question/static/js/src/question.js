@@ -3,7 +3,35 @@ function QuestionXBlock(runtime, element, init_args) {
     var skipHandlerUrl = runtime.handlerUrl(element, 'skip');
     var renderHtmlHandlerUrl = runtime.handlerUrl(element, 'render_html');
     var scaffoldPaymentHandlerUrl = runtime.handlerUrl(element, 'scaffold_payment');
+
     var scaffolds = init_args.scaffolds;
+    var blockId = init_args.block_id;
+    var skipped = false;
+
+    function getUserAnswers($form) {
+        var userAnswers = [];
+        var serializedForm = $form.serializeArray();
+        for (var i in init_args.problem_types) {
+            userAnswers.push([]);
+        }
+        for (var i in serializedForm) {
+            userAnswers[serializedForm[i].name].push(serializedForm[i].value);
+        }
+        return userAnswers;
+    }
+
+    function changeFeedbackMessage(message) {
+        $('#feedback-message-' + blockId, element).text(message);
+    }
+
+    function showFeedback() {
+        $('.feedback-open', element).attr('disabled', false);
+        $('.feedback-holder').addClass('tooltip-is-open');
+    }
+
+    function hideFeedback() {
+        $('.feedback-holder').removeClass('tooltip-is-open');
+    }
 
     function scaffoldPayment(scaffoldName){
         var isScaffoldPaid = true;
@@ -46,7 +74,6 @@ function QuestionXBlock(runtime, element, init_args) {
             var $questionWrapper = $('.questions-wrapper', element);
             var invalidChars = ["-", "+", "e", "E"];
             var isSubmissionAllowed = init_args.is_submission_allowed;
-            var blockId = init_args.block_id;
 
             $('input', element).on("change blur keyup", function() {
                 if (isSubmissionAllowed) {
@@ -60,28 +87,27 @@ function QuestionXBlock(runtime, element, init_args) {
             $submit.bind('click', function (e) {
                 if ($confidenceInput.val() && $confidenceInput.is(':valid')){
                     var confidence = $confidenceInput.val();
-                    var serializedForm = $questionForm.serializeArray();
-                    var userAnswers = [];
-                    for (var i in init_args.problem_types) {
-                        userAnswers.push([]);
-                    }
-                    for (var i in serializedForm) {
-                        userAnswers[serializedForm[i].name].push(serializedForm[i].value);
-                    }
+                    var userAnswers = getUserAnswers($questionForm);
+
                     $.post(
                         submithHandlerUrl,
                         JSON.stringify({"answers": userAnswers, "confidence": confidence})
                     ).done(function (response) {
                         isSubmissionAllowed = response.is_submission_allowed;
+                        var submissionCount = response.submission_count;
                         if (response.correct) {
                             $skipBtn.addClass("hidden");
                             $scaffolds.addClass("hidden");
-                            $confidenceInfo.text(init_args.correct_answer_text);
+                            changeFeedbackMessage("Correct!");
                         }
                         else if (isSubmissionAllowed) {
                             $scaffolds.removeClass("hidden");
-                            $confidenceInfo.text(init_args.incorrect_answer_text);
                         }
+                        if (submissionCount > 1 && !response.correct) {
+                            $skipBtn.addClass("hidden");
+                            changeFeedbackMessage(`The correct answer is "${response.correct_answers}". Let’s move on.`);
+                        }
+                        showFeedback();
                         $confidenceInput.addClass("hidden");
                         $confidenceInfo.addClass("hidden");
                         $(e.currentTarget).attr('disabled', 'disabled');
@@ -153,17 +179,22 @@ function QuestionXBlock(runtime, element, init_args) {
             });
 
             $skipBtn.bind('click', function (event) {
-                $.post(
-                    skipHandlerUrl, JSON.stringify({"skip": true})
-                ).done(function(response) {
-                    isSubmissionAllowed = response.is_submission_allowed;
-                    $confidenceInput.addClass("hidden");
-                    $confidenceInfo.addClass("hidden");
-                    $submit.attr('disabled', 'disabled');
-                    }
-                ).error(function(error){
-                    console.log(error);
-                });
+                if (!skipped) {
+                    $.post(
+                        skipHandlerUrl, JSON.stringify({"skip": true})
+                    ).done(function(response) {
+                        skipped = true;
+                        isSubmissionAllowed = response.is_submission_allowed;
+                        changeFeedbackMessage(`The correct answer is ${response.correct_answers}. Let’s move on.`);
+                        $confidenceInput.addClass("hidden");
+                        $confidenceInfo.addClass("hidden");
+                        $submit.attr('disabled', 'disabled');
+                        showFeedback();
+                        }
+                    ).error(function(error){
+                        console.log(error);
+                    });
+                }
             });
 
             $(document).ready(function() {
@@ -183,16 +214,11 @@ function QuestionXBlock(runtime, element, init_args) {
             });
 
             // Feedback tooltip
-            $(".feedback-holder .feedback-open", element).on("click", function() {
-                $('.feedback-holder', element).addClass('tooltip-is-open');
-            });
+            $(".feedback-holder .feedback-open", element).on("click", showFeedback);
 
-            $(".feedback-close", element).on("click", function () {
-                $(".feedback-holder", element).toggleClass('tooltip-is-open');
-            });
+            $(".feedback-close", element).on("click", hideFeedback);
 
             $('.button-next-' + blockId, element).click(function() {
-                console.log('click')
                 $('.sequence-nav-button.button-next').get(0).click();
             });
             $('.button-previous-' + blockId, element).click(function() {

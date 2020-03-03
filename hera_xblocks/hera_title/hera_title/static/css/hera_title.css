@@ -307,6 +307,7 @@ input[type="checkbox"].questions-list__input:checked + .questions-list__text:bef
     transition: all .4s cubic-bezier(.46, .265, .285, 1.635);
     border: 1px solid #d9d9de;
     padding: 18px;
+    z-index:5;
 }
 
 .feedback-content:after {

@@ -1,3 +1,7 @@
+<%
+    def disable_input():
+        return 'disabled' if not is_submission_allowed else ''
+%>
 <div class="author-block__wrapper">
     <div class="author-block__content">
         <div class="author-block__image questions-image-wrapper">
@@ -19,9 +23,14 @@
                             <p class="question-title">${problem_type['title']}</p>
                         % endif
                         % if problem_type['type'] == "text" or problem_type['type'] == "number":
-                            <input class="questions-list__field" type="${problem_type['type']}" name="${index}" value="${user_answer[index][0] if user_answer else ''}"/>
+                            <input
+                                class="questions-list__field"
+                                type="${problem_type['type']}"
+                                name="${index}"
+                                value="${user_answer[index][0] if user_answer else ''}"
+                                ${disable_input()}/>
                         % elif problem_type['type'] == "select":
-                            <select class="questions-list__select" name="${index}">
+                            <select class="questions-list__select" name="${index}" ${disable_input()}>
                                 <option class="questions-list__select-item" value=""> ------- </option>
                                 % for option in problem_type['options']:
                                     % if option.get('title'):
@@ -42,7 +51,11 @@
                                                 <th>${column['value'].replace('!', '', 1)}</th>
                                             % elif column['value'].startswith('?'):
                                                 <td>
-                                                    <input type="text" name="${index}" value="${user_answer[index][user_answer_input_index] if user_answer else ''}"/>
+                                                    <input
+                                                        type="text"
+                                                        name="${index}"
+                                                        value="${user_answer[index][user_answer_input_index] if user_answer else ''}"
+                                                        ${disable_input()}/>
                                                 </td>
                                                 <% user_answer_input_index += 1 %>
                                             % else:
@@ -58,7 +71,12 @@
                                         % for idx, col in enumerate(problem_type['tableData'].get('columns')):
                                             % if row[str(idx)]['value'].startswith('?'):
                                                 <td>
-                                                    <input placeholder="Enter data here" type="text" name="${index}" value="${user_answer[index][user_answer_input_index] if user_answer else ''}"/>
+                                                    <input
+                                                        placeholder="Enter data here"
+                                                        type="text"
+                                                        name="${index}"
+                                                        value="${user_answer[index][user_answer_input_index] if user_answer else ''}"
+                                                        ${disable_input()}/>
                                                 </td>
                                                 <% user_answer_input_index += 1 %>
                                             % elif row[str(idx)].get('type') == 'head':
@@ -88,6 +106,7 @@
                                                         name="${index}"
                                                         value="${option['title']}"
                                                         ${checked_flag}
+                                                        ${disable_input()}
                                                 />
                                                 <span class="questions-list__text">
                                                         ${option['title']}
@@ -176,9 +195,17 @@
             <span class="confidence-text error">Please tell us how confident you are about your answer.</span>
         </div>
         <div class="feedback-holder">
-            <button type="button" class="feedback-open"></button>
+            <button type="button" class="feedback-open" ${'disabled' if submission_counter == 0 else ''}></button>
             <div class="feedback-content">
-                Incorrect, please try again. You can ask for help first if you like.
+                <span id="feedback-message-${block_id}">
+                    %if user_answer_correct:
+                        Correct!
+                    %elif not is_submission_allowed:
+                        ${'The correct answer is "{}". Let`s move on.'.format(correct_answers)}
+                    %else:
+                        Incorrect, please try again. You can ask for help first if you like.
+                    %endif
+                </span>
                 <button type="button" class="feedback-close">
                     ×
                 </button>
@@ -194,9 +221,6 @@
         </div>
     </div>
     <div class="footer-controls-buttons-holder">
-        <div class="js-show-hide-warning-message" style="display: none;">
-            It seems like you haven't fully interacted with the table. Give it another try. If you'd like to exit, press next again!
-        </div>
         <div class="footer-controls-btns">
             <button class="btn btn-prev button-previous-${block_id}">Previous</button>
             <button class="btn btn-primary button-next-${block_id}">Next</button>
