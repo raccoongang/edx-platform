@@ -2,9 +2,33 @@ function QuestionXBlock(runtime, element, init_args) {
     var submithHandlerUrl = runtime.handlerUrl(element, 'submit');
     var skipHandlerUrl = runtime.handlerUrl(element, 'skip');
     var renderHtmlHandlerUrl = runtime.handlerUrl(element, 'render_html');
+    var scaffoldPaymentHandlerUrl = runtime.handlerUrl(element, 'scaffold_payment');
+    var scaffolds = init_args.scaffolds;
+
+    function scaffoldPayment(scaffoldName){
+        var isScaffoldPaid = true;
+        if (!scaffolds[scaffoldName].paid){
+            $.ajax({
+                method: "POST",
+                url: scaffoldPaymentHandlerUrl,
+                data: JSON.stringify({"scaffold_name": scaffoldName}),
+                async: false,
+            }).done(function(response) {
+                isScaffoldPaid = response.scaffold_paid;
+                scaffolds[scaffoldName].paid = response.scaffold_paid;
+                if (response.scaffold_paid){
+                    $('.user-coins').html(response.coins);
+                    $('.scaffold__price.'+scaffoldName).html('&#10004');
+                }
+            }).error(function(error){
+                console.log(error);
+            });
+        }
+        return isScaffoldPaid;
+    }
 
     $.post(renderHtmlHandlerUrl, '{}').done(function(response) {
-        $('#main-question-content', element).html($.parseHTML(response.content))
+        $('#main-question-content', element).html($.parseHTML(response.content));
 
         $(function ($) {
             var $confidenceInfo = $(".confidence-text.info", element);
@@ -81,33 +105,35 @@ function QuestionXBlock(runtime, element, init_args) {
                 $skipBtn.removeClass("hidden");
 
                 var scaffoldContent = $(contentID).html();
+                var isScaffoldPaid = scaffoldPayment(scaffoldData.scaffoldName);
+                if (isScaffoldPaid){
+                    $questionWrapper.removeClass('is-teach is-break is-rephrase');
 
-                $questionWrapper.removeClass('is-teach is-break is-rephrase');
-
-                if (scaffoldData.imgUrls && scaffoldData.imgUrls.length) {
-                    scaffoldData.imgUrls.split(' ').forEach((el, ind) => {
-                        if (el) {
-                            needShowImageBlock = true;
-                            scaffoldimages+='<img src="' + el + '" alt="Scaffold help image"/>';
-                        }
-                    });
-                }
-                // do we need to rerender the images block
-                if (needShowImageBlock) {
-                    $questioonsImageWrapper.removeClass('is-teach is-break is-rephrase');
-                    $questioonsImageWrapper.addClass(scaffoldData.scaffoldClassName);
-                    $scaffoldHelpImage.html(scaffoldimages);
-                    $questionSlider.addClass("hidden");
-                    $scaffoldHelpImage.removeClass("hidden");
-                    $closeBtn.removeClass("hidden");
-                }
-                // do we need to rerender the content block
-                if (scaffoldContent.trim().length > 0) {
-                    $questionWrapper.addClass(scaffoldData.scaffoldClassName);
-                    $questionContent.html(scaffoldContent);
-                    $blockScaffold.removeClass("hidden");
-                    $questionForm.addClass("hidden");
-                    $scaffolds.addClass('hidden');
+                    if (scaffoldData.imgUrls && scaffoldData.imgUrls.length) {
+                        scaffoldData.imgUrls.split(' ').forEach((el, ind) => {
+                            if (el) {
+                                needShowImageBlock = true;
+                                scaffoldimages+='<img src="' + el + '" alt="Scaffold help image"/>';
+                            }
+                        });
+                    }
+                    // do we need to rerender the images block
+                    if (needShowImageBlock) {
+                        $questioonsImageWrapper.removeClass('is-teach is-break is-rephrase');
+                        $questioonsImageWrapper.addClass(scaffoldData.scaffoldClassName);
+                        $scaffoldHelpImage.html(scaffoldimages);
+                        $questionSlider.addClass("hidden");
+                        $scaffoldHelpImage.removeClass("hidden");
+                        $closeBtn.removeClass("hidden");
+                    }
+                    // do we need to rerender the content block
+                    if (scaffoldContent.trim().length > 0) {
+                        $questionWrapper.addClass(scaffoldData.scaffoldClassName);
+                        $questionContent.html(scaffoldContent);
+                        $blockScaffold.removeClass("hidden");
+                        $questionForm.addClass("hidden");
+                        $scaffolds.addClass('hidden');
+                    }
                 }
             });
 
@@ -141,6 +167,10 @@ function QuestionXBlock(runtime, element, init_args) {
             });
 
             $(document).ready(function() {
+                $('.author-block__wrapper', element).get(0).style.setProperty('--color-repharse', init_args.scaffolds[init_args.rephrase_name].color);
+                $('.author-block__wrapper', element).get(0).style.setProperty('--color-break', init_args.scaffolds[init_args.break_it_down_name].color);
+                $('.author-block__wrapper', element).get(0).style.setProperty('--color-teach', init_args.scaffolds[init_args.teach_me_name].color);
+
                 $('.show-simulation', element).click(function(e) {
                     var iframeUrl = $(e.currentTarget).data('iframeUrl');
                     $('.simulation-overlay', element).find('iframe').attr('src', iframeUrl);

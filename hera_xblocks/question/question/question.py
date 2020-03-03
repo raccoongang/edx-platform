@@ -2,16 +2,20 @@
 import pkg_resources
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
-from xblock.scorable import ScorableXBlockMixin
-from xblock.fields import JSONField, Scope, Integer, String
+from xblock.fields import JSONField, Scope, Integer, String, Boolean
 from xblockutils.resources import ResourceLoader
 from xblockutils.studio_editable import StudioEditableXBlockMixin
+
+from hera.utils import recalculate_coins, get_scaffolds_settings
 
 
 loader = ResourceLoader(__name__)
 
 MAX_ALLOWED_SUBMISSON = 2
 
+REPHRASE = 'rephrase'
+BREAK_IT_DOWN = 'break_it_down'
+TEACH_ME = 'teach_me'
 
 class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     """
@@ -28,7 +32,11 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     data = JSONField(default={})
     user_confidence = Integer(scope=Scope.user_state)
     user_answer = JSONField(scope=Scope.user_state, default='')
+    user_answer_correct = Boolean(scope=Scope.user_state, default=False)
     submission_counter = Integer(scope=Scope.user_state, default=0)
+    rephrase_paid = Boolean(scope=Scope.user_state, default=False)
+    break_it_down_paid = Boolean(scope=Scope.user_state, default=False)
+    teach_me_paid = Boolean(scope=Scope.user_state, default=False)
 
     @property
     def img_urls(self):
@@ -76,7 +84,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         return self.data.get("rephrase")
 
     @property
-    def break_down(self):
+    def break_it_down(self):
         return self.data.get("breakDown")
 
     @property
@@ -85,7 +93,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
 
     @property
     def is_submission_allowed(self):
-        return self.submission_counter < MAX_ALLOWED_SUBMISSON
+        return not self.user_answer_correct and self.submission_counter < MAX_ALLOWED_SUBMISSON
 
     def resource_string(self, path):
         """Handy helper for getting resources from our kit."""
@@ -93,9 +101,11 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         return data.decode("utf8")
 
     def get_context(self):
+        scaffolds = get_scaffolds_settings()
         return {
             "user_answer": self.user_answer,
             "is_submission_allowed": self.is_submission_allowed,
+            "submission_counter": self.submission_counter,
             "problem_types": self.problem_types,
             "img_urls": self.img_urls,
             "iframe_url": self.iframe_url,
@@ -103,10 +113,30 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             "confidence_text": self.confidence_text,
             "correct_answer_text": self.correct_answer_text,
             "incorrect_answer_text": self.incorrect_answer_text,
-            "rephrase": self.rephrase,
-            "break_down": self.break_down,
-            "teach_me": self.teach_me,
-            'block_id': self.location.block_id
+            "rephrase_name": REPHRASE,
+            "break_it_down_name": BREAK_IT_DOWN,
+            "teach_me_name": TEACH_ME,
+            "block_id": self.location.block_id,
+            "scaffolds": {
+                REPHRASE: {
+                    "cost": scaffolds.rephrase_cost,
+                    "color": scaffolds.rephrase_color,
+                    "paid": self.rephrase_paid,
+                    "data": self.rephrase,
+                },
+                BREAK_IT_DOWN: {
+                    "cost": scaffolds.break_it_down_cost,
+                    "color": scaffolds.break_it_down_color,
+                    "paid": self.break_it_down_paid,
+                    "data": self.break_it_down,
+                },
+                TEACH_ME: {
+                    "cost": scaffolds.teach_me_cost,
+                    "color": scaffolds.teach_me_color,
+                    "paid": self.teach_me_paid,
+                    "data": self.teach_me,
+                },
+            }
         }
 
     def get_content_html(self):
@@ -141,6 +171,35 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     @XBlock.json_handler
     def get_data(self, somedata, sufix=''):
         return self.data
+
+    @XBlock.json_handler
+    def scaffold_payment(self, data, sufix=''):
+        scaffold_name = data.get("scaffold_name")
+        scaffolds_settings = get_scaffolds_settings()
+
+        scaffold_name_mapping = {
+            REPHRASE: scaffolds_settings.rephrase_cost,
+            BREAK_IT_DOWN: scaffolds_settings.break_it_down_cost,
+            TEACH_ME: scaffolds_settings.teach_me_cost
+        }
+        coins = recalculate_coins(
+            str(self.course_id),
+            self.location.block_id,
+            self.scope_ids.user_id,
+            scaffold_name_mapping[scaffold_name]
+        )
+
+        scaffold_paid_mapping = {
+            REPHRASE: 'rephrase_paid',
+            BREAK_IT_DOWN: 'break_it_down_paid',
+            TEACH_ME: 'teach_me_paid'
+        }
+        if coins is not None:
+            setattr(self, scaffold_paid_mapping[scaffold_name], True)
+        return {
+            'coins': coins,
+            'scaffold_paid': getattr(self, scaffold_paid_mapping[scaffold_name])
+        }
 
     @XBlock.json_handler
     def submit(self, data, suffix=''):
@@ -185,15 +244,15 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
                 answer = set(answers[index]) == set(correct_answers)
                 user_answers.append(answer)
 
-        result_answer = all(user_answers)
+        self.user_answer_correct = all(user_answers)
 
-        grade_value = 1 if result_answer else 0
+        grade_value = 1 if self.user_answer_correct else 0
 
         self.runtime.publish(self, 'grade', {'value': grade_value, 'max_value': 1})
         self.user_answer = answers
         self.user_confidence = user_confidence
         return {
-            'correct': result_answer,
+            'correct': self.user_answer_correct,
             'is_submission_allowed': self.is_submission_allowed
         }
 

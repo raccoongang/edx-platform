@@ -322,6 +322,27 @@ class Mascot(models.Model):
         return {}
 
 
+class ScaffoldsSettings(models.Model):
+    coin_icon = models.ImageField(upload_to='hera', null=True, blank=True)
+    rephrase_cost = models.IntegerField(default=10)
+    rephrase_color = models.CharField(max_length=7, default="#257bba")
+    break_it_down_cost = models.IntegerField(default=20)
+    break_it_down_color = models.CharField(max_length=7, default="#674172")
+    teach_me_cost = models.IntegerField(default=30)
+    teach_me_color = models.CharField(max_length=7, default="#ec8b22")
+    starting_coins = models.IntegerField(default=300)
+
+    class Meta(object):
+        verbose_name_plural = "Scaffolds settings"
+
+    @classmethod
+    def get(cls):
+        return cls.objects.first() or cls()
+
+    def get_coin_img_url(self):
+        return self.coin_icon.url if self.coin_icon else None
+
+
 @receiver(post_delete, sender=ActiveCourseSetting)
 def reset_active_course(sender, instance, *args, **kwargs):
     """
