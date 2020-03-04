@@ -18947,6 +18947,10 @@ msgstr "Profil"
 msgid "Discover New"
 msgstr "Kursauswahl"
 
+#: lms/templates/header/navbar-authenticated.html
+msgid "Find courses"
+msgstr "Kursauswahl"
+
 #. Translators: This is short for "System administration".
 #: lms/templates/header/navbar-authenticated.html
 #: lms/templates/navigation/navbar-authenticated.html
@@ -23763,7 +23767,7 @@ msgid ""
 "easy drag and drop to help you and your students stay organized."
 msgstr ""
 "Das wichtigste Ihres Kurses ist die Organisation. {studio_name} bietet einen"
-" {stark_start}Übersichts{stark_end} Editor, der eine einfache Hierarchie und"
+" {strong_start}Übersichts{strong_end} Editor, der eine einfache Hierarchie und"
 " einfaches Drag & Drop bietet, um Ihnen und Ihren Studenten zu helfen, "
 "möglichst organisiert zu bleiben."
 
@@ -23902,7 +23906,7 @@ msgid ""
 " it to go live and {studio_name} takes care of the rest. Build your course "
 "incrementally."
 msgstr ""
-"Wenn Sie eine {starken_Start}Einheit{starkes_Ende} beendet haben, wählen Sie"
+"Wenn Sie eine {strong_start}Einheit{strong_end} beendet haben, wählen Sie"
 " aus, wann sie live gehen soll, und {studio_name} kümmert sich um den Rest. "
 "Bauen Sie Ihren Kurs schrittweise auf."
 
@@ -24481,7 +24485,7 @@ msgstr ""
 "{studio_name} ist eine geschützte Lösung für unsere xConsortium-Partner und "
 "ausgewählte Gäste. Kurse, für die Sie ein Teammitglied sind, erscheinen "
 "oben, damit Sie sie bearbeiten können, während die Rechte zum Erstellen von "
-"Kursen durch {platform_Name} gewährt werden. Unser Team wird Ihre Anfrage "
+"Kursen durch {platform_name} gewährt werden. Unser Team wird Ihre Anfrage "
 "auswerten und Ihnen innerhalb von 24 Stunden während der Arbeitswoche "
 "Feedback geben."
 
