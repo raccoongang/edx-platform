@@ -33,6 +33,10 @@ function QuestionXBlock(runtime, element, init_args) {
         $('.feedback-holder').removeClass('tooltip-is-open');
     }
 
+    function enableNextButton() {
+        $('.sequence-nav-button.button-next').attr('disabled', false);
+    }
+
     function scaffoldPayment(scaffoldName){
         var isScaffoldPaid = true;
         if (!scaffolds[scaffoldName].paid){
@@ -96,12 +100,16 @@ function QuestionXBlock(runtime, element, init_args) {
                         isSubmissionAllowed = response.is_submission_allowed;
                         var submissionCount = response.submission_count;
                         if (response.correct) {
+                            enableNextButton();
                             $skipBtn.addClass("hidden");
                             $scaffolds.addClass("hidden");
                             changeFeedbackMessage("Correct!");
                         }
                         else if (isSubmissionAllowed) {
                             $scaffolds.removeClass("hidden");
+                        }
+                        if (!isSubmissionAllowed) {
+                            enableNextButton();
                         }
                         if (submissionCount > 1 && !response.correct) {
                             $skipBtn.addClass("hidden");

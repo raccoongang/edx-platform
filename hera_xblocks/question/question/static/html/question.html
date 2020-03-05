@@ -223,7 +223,7 @@
     <div class="footer-controls-buttons-holder">
         <div class="footer-controls-btns">
             <button class="btn btn-prev button-previous-${block_id}">Previous</button>
-            <button class="btn btn-primary button-next-${block_id}">Next</button>
+            <button class="btn btn-primary button-next-${block_id}" ${'disabled' if is_submission_allowed else ''}>Next</button>
         </div>
     </div>
 </div>
