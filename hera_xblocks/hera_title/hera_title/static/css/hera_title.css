@@ -11,6 +11,7 @@
     --color-break: rgb(103, 65, 114);
     --color-teach: rgb(236, 139, 34);
     --height: 650px;
+    --question-width: 338px;
 }
 
 /* Global content holders */
@@ -111,8 +112,9 @@
 .author-block__question {
     box-sizing: border-box;
     width: 30%;
+    max-width: var(--question-width);
     border: 1px solid var(--color2);
-    padding: 12px 12px 66px;
+    padding: 12px 16px 66px;
     position: relative;
     max-height: var(--height);
     min-height: var(--height);
