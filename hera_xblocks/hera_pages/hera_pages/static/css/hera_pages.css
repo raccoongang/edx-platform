@@ -21,15 +21,15 @@
 }
 
 .slider-button-wrapper {
-    background: transparent;
+    background: var(--color3);
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    width: auto;
+    width: 305px;
     padding: 0 0 12px;
     position: absolute;
     bottom: 1px;
-    right: 18px;
+    right: 22px;
 }
 
 .wrapper-page {
@@ -46,7 +46,6 @@
     padding: 0;
     line-height: 1;
     height: auto;
-    filter: drop-shadow(-1px 0px 1px var(--color1));
     transition: all .3s ease-in-out;
 }
 
