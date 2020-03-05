@@ -112,7 +112,7 @@
     box-sizing: border-box;
     width: 30%;
     border: 1px solid var(--color2);
-    padding: 12px 12px 66px;
+    padding: 12px 16px 66px;
     position: relative;
     max-height: var(--height);
     min-height: var(--height);
