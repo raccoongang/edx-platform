@@ -36,7 +36,7 @@ class LessonSummaryXBlock(StudioEditableXBlockMixin, XBlock):
             'coins_icon_url': scaffolds_settings.get_coin_img_url(),
             'user_coins': user_coins,
             'block_id': self.location.block_id,
-            'user_dashboard_url': reverse('hera:dashboard'),
+            'user_dashboard_url': reverse('hera:dashboard', kwargs={'course_id': str(self.location.course_key)}),
             'data': self.data
         }
 
