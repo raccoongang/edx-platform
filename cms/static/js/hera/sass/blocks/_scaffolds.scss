@@ -53,7 +53,7 @@
             background: $scaffolds_color2;
             padding: 15px;
             border-radius: 4px;
-            overflow-y: scroll;
+            overflow-y: auto;
 
             &-additional {
                 display: flex;
@@ -139,7 +139,7 @@
     }
 
     .author-block__image-holder {
-        overflow: scroll;
+        overflow-y: auto;
         background: #fff;
         position: relative;
 
