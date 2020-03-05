@@ -25,7 +25,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    width: 305px;
+    width: calc(var(--question-width) - 34px);
     padding: 0 0 12px;
     position: absolute;
     bottom: 1px;
