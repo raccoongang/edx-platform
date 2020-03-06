@@ -140,25 +140,27 @@ function HeraPagesXBlock(runtime, element, init_args) {
 
             $submitButton.bind('click', function (e) {
                 var $questionForm = $(".table-form", element);
-                var userAnswers = getUserAnswers($questionForm);
-                if (!tableRendered && !isFormValid($questionForm) && answerCounter >= 3 && feedbackMessageCounter < 2) {
-                    postUserAnswers(userAnswers);
-                    renderTablesWithCorrectAnswers();
-                    changeFeedbackMessage("Alright. Let's move on. Here is the completed table.");
-                    showFeedback();
-                    feedbackMessageCounter++;
-                    return null;
-                } else if (!tableRendered && !isFormValid($questionForm) && feedbackMessageCounter === 0) {
-                    showFeedback();
-                    feedbackMessageCounter++;
-                    changeFeedbackMessage(
-                        "It seems like you haven't fully interacted with the simulation." +
-                        " Give it another try. If you'd like to exit the simulation instead, press next."
-                    );
-                    return null;
-                } else if (!tableRendered) {
-                    postUserAnswers(userAnswers);
-                    hideFeedback();
+                if ($questionForm.length) {
+                    var userAnswers = getUserAnswers($questionForm);
+                    if (!tableRendered && !isFormValid($questionForm) && answerCounter >= 3 && feedbackMessageCounter < 2) {
+                        postUserAnswers(userAnswers);
+                        renderTablesWithCorrectAnswers();
+                        changeFeedbackMessage("Alright. Let's move on. Here is the completed table.");
+                        showFeedback();
+                        feedbackMessageCounter++;
+                        return null;
+                    } else if (!tableRendered && !isFormValid($questionForm) && feedbackMessageCounter === 0) {
+                        showFeedback();
+                        feedbackMessageCounter++;
+                        changeFeedbackMessage(
+                            "It seems like you haven't fully interacted with the simulation." +
+                            " Give it another try. If you'd like to exit the simulation instead, press next."
+                        );
+                        return null;
+                    } else if (!tableRendered) {
+                        postUserAnswers(userAnswers);
+                        hideFeedback();
+                    }
                 }
                 clickNext();
             });

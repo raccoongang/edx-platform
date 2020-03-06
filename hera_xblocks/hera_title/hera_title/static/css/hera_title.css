@@ -142,6 +142,7 @@
 .author-block__question.is-full-width {
     box-sizing: border-box;
     width: 100%;
+    max-width: initial;
     min-height: auto;
     max-height: initial;
 }
@@ -384,6 +385,11 @@ button.feedback-open:focus:not(:disabled) {
     box-shadow: none !important;
     outline: none;
     opacity: .75;
+}
+
+button.feedback-btn:active:not(:disabled),
+button.feedback-btn:focus:not(:disabled) {
+    background: var(--color1) !important;
 }
 
 .feedback-close {
