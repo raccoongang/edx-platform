@@ -93,7 +93,7 @@ function QuestionXBlock(runtime, element, init_args) {
                 $buttonFillTables.show();
             }
 
-            $('input', element).on("change blur keyup", function() {
+            $('input, select', element).on("change blur keyup", function() {
                 if (isSubmissionAllowed) {
                     $confidenceInfo.removeClass("hidden");
                     $confidenceInput.removeClass("hidden is-not-valid");

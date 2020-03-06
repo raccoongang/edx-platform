@@ -151,13 +151,13 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         return html
 
     def get_correct_answers(self):
-        answer = ''
+        answers = []
         for question in self.problem_types:
             if question['type'] in ["number", "text"]:
-                answer = question['answer']
+                answers.append(question['answer'])
             if question['type'] in ["select", "radio", "checkbox"]:
-                answer = ', '.join([option["title"] for option in question['options'] if option["correct"]])
-        return answer
+                [answers.append(option["title"]) for option in question['options'] if option["correct"]]
+        return ', '.join(answers)
 
     def has_many_types(self):
         return len(set(map(lambda x: x['type'], self.problem_types))) > 1
