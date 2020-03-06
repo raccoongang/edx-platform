@@ -10,8 +10,6 @@ function QuestionXBlock(runtime, element, init_args) {
     var skipped = false;
     var tablesRendered = false;
 
-    console.log(init_args)
-
     function getUserAnswers($form) {
         var userAnswers = [];
         var serializedForm = $form.serializeArray();
@@ -85,11 +83,7 @@ function QuestionXBlock(runtime, element, init_args) {
             var $buttonFillTables = $('#fill-tables-' + blockId, element);
             var isThereTableInputs = $('table', element).find('input').length > 0;
 
-            // if (!isSubmissionAllowed && !init_args.user_answer_correct) {
-            //     $buttonFillTables.show();
-            // }
-            console.log(response)
-            console.log(isSubmissionAllowed, response.has_many_types, isThereTableInputs)
+            // conditions have been separated to make it easier to read the code (but not sure it helped)
             if (!isSubmissionAllowed && ((response.has_many_types && isThereTableInputs) || response.has_many_types || (!response.has_many_types && !isThereTableInputs) )) {
                 changeFeedbackMessage(`The correct answer is "${response.correct_answers}". Let’s move on.`);
             }
@@ -97,10 +91,7 @@ function QuestionXBlock(runtime, element, init_args) {
                 $buttonFillTables.show();
             }
 
-            // if (isSubmissionAllowed && response.user_answer_correct)
-
             $('input', element).on("change blur keyup", function() {
-                console.log(isSubmissionAllowed)
                 if (isSubmissionAllowed) {
                     $confidenceInfo.removeClass("hidden");
                     $confidenceInput.removeClass("hidden is-not-valid");
@@ -151,7 +142,7 @@ function QuestionXBlock(runtime, element, init_args) {
                         }
                         if (submissionCount > 1 && !response.correct) {
                             $skipBtn.addClass("hidden");
-                            console.log(response.has_many_types, isThereTableInputs);
+                            // also separated conditions to eas reading a code
                             if (
                                 (response.has_many_types && isThereTableInputs) ||
                                 response.has_many_types ||
@@ -160,7 +151,9 @@ function QuestionXBlock(runtime, element, init_args) {
                                 changeFeedbackMessage(`The correct answer is "${response.correct_answers}". Let’s move on.`);
                             }
                             if (isThereTableInputs) {
-                                changeFeedbackMessage('');
+                                if (!response.has_many_types) {
+                                    changeFeedbackMessage('');
+                                }
                                 $buttonFillTables.show();
                             }
                         }
