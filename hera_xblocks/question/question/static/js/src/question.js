@@ -81,22 +81,26 @@ function QuestionXBlock(runtime, element, init_args) {
             var $questioonsImageWrapper = $('.questions-image-wrapper', element);
             var $questionWrapper = $('.questions-wrapper', element);
             var invalidChars = ["-", "+", "e", "E"];
-            var isSubmissionAllowed = init_args.is_submission_allowed;
+            var isSubmissionAllowed = response.is_submission_allowed;
             var $buttonFillTables = $('#fill-tables-' + blockId, element);
             var isThereTableInputs = $('table', element).find('input').length > 0;
 
             // if (!isSubmissionAllowed && !init_args.user_answer_correct) {
             //     $buttonFillTables.show();
             // }
-
-            if ((init_args.has_many_types && isThereTableInputs) || init_args.has_many_types || (!init_args.has_many_types && !isThereTableInputs) ) {
-                changeFeedbackMessage(`The correct answer is "${init_args.correct_answers}". Let’s move on.`);
+            console.log(response)
+            console.log(isSubmissionAllowed, response.has_many_types, isThereTableInputs)
+            if (!isSubmissionAllowed && ((response.has_many_types && isThereTableInputs) || response.has_many_types || (!response.has_many_types && !isThereTableInputs) )) {
+                changeFeedbackMessage(`The correct answer is "${response.correct_answers}". Let’s move on.`);
             }
-            if (isThereTableInputs) {
+            if (!isSubmissionAllowed && isThereTableInputs && !response.user_answer_correct) {
                 $buttonFillTables.show();
             }
 
+            // if (isSubmissionAllowed && response.user_answer_correct)
+
             $('input', element).on("change blur keyup", function() {
+                console.log(isSubmissionAllowed)
                 if (isSubmissionAllowed) {
                     $confidenceInfo.removeClass("hidden");
                     $confidenceInput.removeClass("hidden is-not-valid");
@@ -142,14 +146,21 @@ function QuestionXBlock(runtime, element, init_args) {
                             $scaffolds.removeClass("hidden");
                         }
                         if (!isSubmissionAllowed) {
+                            $('input', element).attr('disabled', true);
                             enableNextButton();
                         }
                         if (submissionCount > 1 && !response.correct) {
                             $skipBtn.addClass("hidden");
-                            if ((response.has_many_types && isThereTableInputs) || response.has_many_types || (!response.has_many_types && !isThereTableInputs) ) {
+                            console.log(response.has_many_types, isThereTableInputs);
+                            if (
+                                (response.has_many_types && isThereTableInputs) ||
+                                response.has_many_types ||
+                                (!response.has_many_types && !isThereTableInputs)
+                            ) {
                                 changeFeedbackMessage(`The correct answer is "${response.correct_answers}". Let’s move on.`);
                             }
                             if (isThereTableInputs) {
+                                changeFeedbackMessage('');
                                 $buttonFillTables.show();
                             }
                         }
@@ -233,8 +244,10 @@ function QuestionXBlock(runtime, element, init_args) {
                         isSubmissionAllowed = response.is_submission_allowed;
                         if ((response.has_many_types && isThereTableInputs) || response.has_many_types || (!response.has_many_types && !isThereTableInputs) ) {
                             changeFeedbackMessage(`The correct answer is "${response.correct_answers}". Let’s move on.`);
+                        } else {
+                            changeFeedbackMessage('');
                         }
-                        if (isThereTableInputs) {
+                        if (isThereTableInputs && !isSubmissionAllowed) {
                             $buttonFillTables.show();
                         }
                         $confidenceInput.addClass("hidden");

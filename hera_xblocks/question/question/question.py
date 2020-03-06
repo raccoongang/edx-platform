@@ -179,9 +179,11 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
 
     @XBlock.json_handler
     def render_html(self, data, sufix=''):
-        return {
+        context = self.get_context()
+        context.update({
             'content': self.get_content_html()
-        }
+        })
+        return context
 
     @XBlock.json_handler
     def get_filled_tables(self, data, sufix=''):

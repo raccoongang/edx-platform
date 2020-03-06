@@ -198,6 +198,11 @@
             <button type="button" class="feedback-open" ${'disabled' if submission_counter == 0 else ''}></button>
             <div class="feedback-content">
                 <span id="feedback-message-${block_id}">
+                    %if user_answer_correct:
+                        Correct!
+                    %elif not user_answer_correct and is_submission_allowed:
+                        Incorrect, please try again. You can ask for help first if you like.
+                    %endif
                 </span>
                 <div id="fill-tables-${block_id}" style="display: none;">
                     To see correct filled table(s) click button
