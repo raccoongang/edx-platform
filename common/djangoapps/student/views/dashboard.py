@@ -550,11 +550,7 @@ def student_dashboard(request):
     user = request.user
     # if it's not staff - redirect them to hera dashboard so far.
     if user and not user.is_staff:
-        course_id = get_user_active_course_id(user)
-        if course_id:
-            return redirect(reverse('hera:dashboard', kwargs={'course_id': course_id}))
-        else:
-            raise Http404
+        return redirect(reverse('hera:dashboard'))
     if not UserProfile.objects.filter(user=user).exists():
         return redirect(reverse('account_settings'))
 

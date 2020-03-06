@@ -46,6 +46,8 @@ class AllowedUrlsMiddleware(object):
             if not user.is_staff:
                 if not is_ajax and not is_path_allowed:
                     raise Http404
+                if '/media/' in request.path:
+                    return
                 # lets logged in users to activate their accounts
                 if '/activate/' in request.path:
                     return
