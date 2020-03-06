@@ -500,6 +500,7 @@ export default class Question extends React.Component{
                     <div className="author-block__question" id="problem-types-holder">
                         <div className="text-editor__holder">
                             <SingleWYSIWYGComponent
+                                class={`single-question-${this.activeQuestionIndex}`}
                                 shouldReset={shouldResetEditor}
                                 changeHandler={this.changeDescription}
                                 content={activeQuestion.description}

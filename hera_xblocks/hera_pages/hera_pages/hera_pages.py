@@ -34,19 +34,39 @@ class HeraPagesXBlock(StudioEditableXBlockMixin, XBlock):
     @property
     def slider_bar(self):
         """return html content for the slide bar in pages"""
-        return self.data.get("sliderBar")
+        return self.data.get("sliderBar", [])
 
     def resource_string(self, path):
         """Handy helper for getting resources from our kit."""
         data = pkg_resources.resource_string(__name__, path)
         return data.decode("utf8")
+
+    def get_context(self):
+        return {
+            "data": self.data,
+            "user_answers": self.user_answers,
+            'block_id': self.location.block_id
+        }
     
     def get_content_html(self):
         html = loader.render_mako_template(
             'static/html/hera_pages.html',
-            context={"data": self.data, "user_answers": self.user_answers, 'block_id': self.location.block_id}
+            context=self.get_context()
         )
         return html
+    
+    @XBlock.json_handler
+    def render_correct_filled_tables(self, data, suffix=''):
+        tables_html = []
+        for slider_item in self.slider_bar:
+            if slider_item.get('tableData'):
+                table_html = loader.render_mako_template(
+                    'static/html/correct_filled_table.html',
+                    context={'data': slider_item.get('tableData')}
+                )
+                tables_html.append(table_html)
+        return {'tables_html': tables_html}
+
 
     @XBlock.json_handler
     def render_html(self, data, sufix=''):
@@ -72,7 +92,7 @@ class HeraPagesXBlock(StudioEditableXBlockMixin, XBlock):
         frag.add_css(self.resource_string("static/css/hera_pages.css"))
         frag.add_javascript(self.resource_string("static/js/src/hera_pages.js"))
       
-        frag.initialize_js('HeraPagesXBlock', json_args={'block_id': self.location.block_id})
+        frag.initialize_js('HeraPagesXBlock', json_args=self.get_context())
         return frag
 
     @XBlock.json_handler

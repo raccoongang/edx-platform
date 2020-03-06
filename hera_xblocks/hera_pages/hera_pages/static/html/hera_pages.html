@@ -93,12 +93,17 @@
             </div>
         % endif
     </div>
-    <div class="author-holder author-block__buttons submit-button-holder">
-        <button type="button" class="author-block__btn submit">Submit</button>
-    </div>
     <div class="footer-controls-buttons-holder">
-        <div class="js-show-hide-warning-message" style="display: none;">It seems like you haven't fully interacted with the table. Give it another try. If you'd like to exit, press next again!</div>
         <div class="footer-controls-btns">
+            <div class="feedback-holder">
+                <button type="button" class="feedback-open" disabled></button>
+                <div class="feedback-content">
+                    <span id="feedback-content-${block_id}">It seems like you haven't fully interacted with the simulation. Give it another try. If you'd like to exit the simulation instead, press next.</span>
+                    <button type="button" class="feedback-close">
+                        ×
+                    </button>
+                </div>
+            </div>
             <button class="btn btn-prev button-previous-${block_id}">Previous</button>
             <button class="btn btn-primary button-next-${block_id}">Next</button>
         </div>

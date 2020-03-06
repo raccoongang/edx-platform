@@ -103,6 +103,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     def get_context(self):
         scaffolds = get_scaffolds_settings()
         return {
+            "user_answer_correct": self.user_answer_correct,
             "user_answer": self.user_answer,
             "is_submission_allowed": self.is_submission_allowed,
             "submission_counter": self.submission_counter,
@@ -136,7 +137,9 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
                     "paid": self.teach_me_paid,
                     "data": self.teach_me,
                 },
-            }
+            },
+            'correct_answers': self.get_correct_answers(),
+            'has_many_types': self.has_many_types(),
         }
 
     def get_content_html(self):
@@ -146,6 +149,18 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             context=context
         )
         return html
+
+    def get_correct_answers(self):
+        answer = ''
+        for question in self.problem_types:
+            if question['type'] in ["number", "text"]:
+                answer = question['answer']
+            if question['type'] in ["select", "radio", "checkbox"]:
+                answer = ', '.join([option["title"] for option in question['options'] if option["correct"]])
+        return answer
+
+    def has_many_types(self):
+        return len(set(map(lambda x: x['type'], self.problem_types))) > 1
 
     def student_view(self, context=None):
         """
@@ -164,8 +179,26 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
 
     @XBlock.json_handler
     def render_html(self, data, sufix=''):
-        return {
+        context = self.get_context()
+        context.update({
             'content': self.get_content_html()
+        })
+        return context
+
+    @XBlock.json_handler
+    def get_filled_tables(self, data, sufix=''):
+        tables_html = []
+        for problem in self.problem_types:
+            if problem['type'] == 'table':
+                table_html = loader.render_mako_template(
+                    'static/html/table.html',
+                    context={
+                        'problem_type': problem
+                    }
+                )
+                tables_html.append(table_html)
+        return {
+            'tables_html': tables_html
         }
 
     @XBlock.json_handler
@@ -253,10 +286,18 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         self.user_confidence = user_confidence
         return {
             'correct': self.user_answer_correct,
-            'is_submission_allowed': self.is_submission_allowed
+            'is_submission_allowed': self.is_submission_allowed,
+            'correct_answers': self.get_correct_answers(),
+            'submission_count': self.submission_counter,
+            'has_many_types': self.has_many_types(),
         }
 
     @XBlock.json_handler
     def skip(self, somedata, sufix=''):
         self.submission_counter += 1
-        return {'is_submission_allowed': self.is_submission_allowed}
+
+        return {
+            'is_submission_allowed': self.is_submission_allowed,
+            'correct_answers': self.get_correct_answers(),
+            'has_many_types': self.has_many_types(),
+        }
