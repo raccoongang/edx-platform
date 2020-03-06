@@ -25,7 +25,7 @@
                 </div>
             </div>
             <div class="block-mascot">
-                <div class="block-mascot__img default-icon__mascot">
+                <div class="block-mascot__img ${'default-icon__mascot' if not data.get('imgUrl') else '' }">
                     %if data.get('imgUrl'):
                         <img src="${data.get('imgUrl')}" alt="/">
                     %endif
