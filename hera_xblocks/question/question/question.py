@@ -139,6 +139,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
                 },
             },
             'correct_answers': self.get_correct_answers(),
+            'has_many_types': self.has_many_types(),
         }
 
     def get_content_html(self):
@@ -157,6 +158,9 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             if question['type'] in ["select", "radio", "checkbox"]:
                 answer = ', '.join([option["title"] for option in question['options'] if option["correct"]])
         return answer
+
+    def has_many_types(self):
+        return len(set(map(lambda x: x['type'], self.problem_types))) > 1
 
     def student_view(self, context=None):
         """
@@ -177,6 +181,22 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     def render_html(self, data, sufix=''):
         return {
             'content': self.get_content_html()
+        }
+
+    @XBlock.json_handler
+    def get_filled_tables(self, data, sufix=''):
+        tables_html = []
+        for problem in self.problem_types:
+            if problem['type'] == 'table':
+                table_html = loader.render_mako_template(
+                    'static/html/table.html',
+                    context={
+                        'problem_type': problem
+                    }
+                )
+                tables_html.append(table_html)
+        return {
+            'tables_html': tables_html
         }
 
     @XBlock.json_handler
@@ -266,7 +286,8 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             'correct': self.user_answer_correct,
             'is_submission_allowed': self.is_submission_allowed,
             'correct_answers': self.get_correct_answers(),
-            'submission_count': self.submission_counter
+            'submission_count': self.submission_counter,
+            'has_many_types': self.has_many_types(),
         }
 
     @XBlock.json_handler
@@ -275,5 +296,6 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
 
         return {
             'is_submission_allowed': self.is_submission_allowed,
-            'correct_answers': self.get_correct_answers()
+            'correct_answers': self.get_correct_answers(),
+            'has_many_types': self.has_many_types(),
         }

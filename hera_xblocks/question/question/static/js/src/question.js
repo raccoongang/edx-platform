@@ -3,10 +3,14 @@ function QuestionXBlock(runtime, element, init_args) {
     var skipHandlerUrl = runtime.handlerUrl(element, 'skip');
     var renderHtmlHandlerUrl = runtime.handlerUrl(element, 'render_html');
     var scaffoldPaymentHandlerUrl = runtime.handlerUrl(element, 'scaffold_payment');
+    var getFilledTablesHandlerUrl = runtime.handlerUrl(element, 'get_filled_tables');
 
     var scaffolds = init_args.scaffolds;
     var blockId = init_args.block_id;
     var skipped = false;
+    var tablesRendered = false;
+
+    console.log(init_args)
 
     function getUserAnswers($form) {
         var userAnswers = [];
@@ -34,7 +38,7 @@ function QuestionXBlock(runtime, element, init_args) {
     }
 
     function enableNextButton() {
-        $('.sequence-nav-button.button-next').attr('disabled', false);
+        $('.button-next-' + blockId, element).attr('disabled', false);
     }
 
     function scaffoldPayment(scaffoldName){
@@ -78,6 +82,19 @@ function QuestionXBlock(runtime, element, init_args) {
             var $questionWrapper = $('.questions-wrapper', element);
             var invalidChars = ["-", "+", "e", "E"];
             var isSubmissionAllowed = init_args.is_submission_allowed;
+            var $buttonFillTables = $('#fill-tables-' + blockId, element);
+            var isThereTableInputs = $('table', element).find('input').length > 0;
+
+            // if (!isSubmissionAllowed && !init_args.user_answer_correct) {
+            //     $buttonFillTables.show();
+            // }
+
+            if ((init_args.has_many_types && isThereTableInputs) || init_args.has_many_types || (!init_args.has_many_types && !isThereTableInputs) ) {
+                changeFeedbackMessage(`The correct answer is "${init_args.correct_answers}". Let’s move on.`);
+            }
+            if (isThereTableInputs) {
+                $buttonFillTables.show();
+            }
 
             $('input', element).on("change blur keyup", function() {
                 if (isSubmissionAllowed) {
@@ -85,6 +102,22 @@ function QuestionXBlock(runtime, element, init_args) {
                     $confidenceInput.removeClass("hidden is-not-valid");
                     $submit.removeAttr("disabled");
                     $confidenceInfo.text(init_args.confidence_text);
+                }
+            });
+
+            $buttonFillTables.click(function() {
+                if (!tablesRendered) {
+                    $.post(getFilledTablesHandlerUrl, JSON.stringify({})).done(function(response) {
+                        var tables = response.tables_html;
+                        $('.table-wrapper').each(function(index) {
+                            if (tables[index]) {
+                                $(this).html(tables[index]);
+                            }
+                        });
+                        tablesRendered = true;
+                    }).error(function(error) {
+                        console.log(error);
+                    });
                 }
             });
 
@@ -113,7 +146,12 @@ function QuestionXBlock(runtime, element, init_args) {
                         }
                         if (submissionCount > 1 && !response.correct) {
                             $skipBtn.addClass("hidden");
-                            changeFeedbackMessage(`The correct answer is "${response.correct_answers}". Let’s move on.`);
+                            if ((response.has_many_types && isThereTableInputs) || response.has_many_types || (!response.has_many_types && !isThereTableInputs) ) {
+                                changeFeedbackMessage(`The correct answer is "${response.correct_answers}". Let’s move on.`);
+                            }
+                            if (isThereTableInputs) {
+                                $buttonFillTables.show();
+                            }
                         }
                         showFeedback();
                         $confidenceInput.addClass("hidden");
@@ -193,10 +231,16 @@ function QuestionXBlock(runtime, element, init_args) {
                     ).done(function(response) {
                         skipped = true;
                         isSubmissionAllowed = response.is_submission_allowed;
-                        changeFeedbackMessage(`The correct answer is ${response.correct_answers}. Let’s move on.`);
+                        if ((response.has_many_types && isThereTableInputs) || response.has_many_types || (!response.has_many_types && !isThereTableInputs) ) {
+                            changeFeedbackMessage(`The correct answer is "${response.correct_answers}". Let’s move on.`);
+                        }
+                        if (isThereTableInputs) {
+                            $buttonFillTables.show();
+                        }
                         $confidenceInput.addClass("hidden");
                         $confidenceInfo.addClass("hidden");
                         $submit.attr('disabled', 'disabled');
+                        enableNextButton();
                         showFeedback();
                         }
                     ).error(function(error){

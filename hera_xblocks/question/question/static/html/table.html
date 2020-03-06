@@ -1,0 +1,30 @@
+<table>
+    <tbody>
+    % if problem_type['tableData'].get('columns'):
+        <tr>
+            % for column in problem_type['tableData']['columns']:
+                % if column.get('type') == 'head':
+                    <th>${column['value'].replace('!', '', 1)}</th>
+                % elif column['value'].startswith('?'):
+                    <td>${column['value'].replace('?', '', 1)}</td>
+                % else:
+                    <td>${column['value']}</td>
+                % endif
+            % endfor
+        </tr>
+    % endif
+        % for row in problem_type['tableData'].get('rows', []):
+            <tr>
+                % for idx, col in enumerate(problem_type['tableData'].get('columns')):
+                    % if row[str(idx)]['value'].startswith('?'):
+                        <td>${row[str(idx)]['value'].replace('?', '', 1)}</td>
+                    % elif row[str(idx)].get('type') == 'head':
+                        <th>${row[str(idx)]['value'].replace('!', '', 1)}</th>
+                    % else:
+                        <td>${row[str(idx)]['value']}</td>
+                    % endif
+                % endfor
+            </tr>
+        % endfor
+    </tbody>
+</table>
