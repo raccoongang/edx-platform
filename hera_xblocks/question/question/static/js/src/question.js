@@ -85,7 +85,9 @@ function QuestionXBlock(runtime, element, init_args) {
 
             // conditions have been separated to make it easier to read the code (but not sure it helped)
             if (!isSubmissionAllowed && ((response.has_many_types && isThereTableInputs) || response.has_many_types || (!response.has_many_types && !isThereTableInputs) )) {
-                changeFeedbackMessage(`The correct answer is "${response.correct_answers}". Let’s move on.`);
+                if (!response.user_answer_correct) {
+                    changeFeedbackMessage(`The correct answer is "${response.correct_answers}". Let’s move on.`);
+                }
             }
             if (!isSubmissionAllowed && isThereTableInputs && !response.user_answer_correct) {
                 $buttonFillTables.show();
