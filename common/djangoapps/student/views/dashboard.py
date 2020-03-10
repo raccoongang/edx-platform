@@ -42,7 +42,6 @@ from openedx.core.djangoapps.util.maintenance_banner import add_maintenance_bann
 from openedx.core.djangoapps.waffle_utils import WaffleFlag, WaffleFlagNamespace
 from openedx.core.djangolib.markup import HTML, Text
 from openedx.features.enterprise_support.api import get_dashboard_consent_notification
-from hera.utils import get_user_active_course_id
 from shoppingcart.api import order_history
 from shoppingcart.models import CourseRegistrationCode, DonationConfiguration
 from student.cookies import set_user_info_cookie

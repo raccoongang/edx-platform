@@ -28,7 +28,6 @@ class OnboardingPagesView(View):
         """
         user_onboarding, _ = UserOnboarding.objects.get_or_create(user=request.user)
         if request.user and user_onboarding.is_passed():
-            get_user_active_course_id(request.user)
             return HttpResponseRedirect(reverse(
                 'hera:dashboard',
                 kwargs={'course_id': get_user_active_course_id(request.user)}

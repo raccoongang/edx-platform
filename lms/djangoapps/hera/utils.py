@@ -12,17 +12,6 @@ CACHING_USER_ACTIVE_COURSE_KEY = 'hera:active_course:{user_id}'
 CACHING_TIMEOUT = 60 * 15
 
 
-def get_medal(points):
-    if 90 <= points <= 100:
-        return "platinum"
-    elif 80 <= points <= 89:
-        return "gold"
-    elif 70 <= points <= 79:
-        return "silver"
-    elif 60 <= points <= 69:
-        return "copper"
-
-
 def get_lesson_summary_xblock_context(user, course_key, current_unit):
     """
     Get lesson_summary xblock final grades.
@@ -107,11 +96,11 @@ def get_user_active_course_id(user):
     """
     Returns a cached active course if is.
     """
-    cached_course = cache.get(
+    cached_course_id = cache.get(
         CACHING_USER_ACTIVE_COURSE_KEY.format(user_id=user.id)
     )
-    if cached_course:
-        return cached_course
+    if cached_course_id:
+        return cached_course_id
     else:
         last = CourseEnrollment.enrollments_for_user(user=user).last()
         if last:
