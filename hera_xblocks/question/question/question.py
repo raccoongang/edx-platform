@@ -95,6 +95,10 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     def is_submission_allowed(self):
         return not self.user_answer_correct and self.submission_counter < MAX_ALLOWED_SUBMISSON
 
+    @property
+    def is_scaffolds_enabled(self):
+        return self.data.get('isScaffoldsEnabled', True)
+
     def resource_string(self, path):
         """Handy helper for getting resources from our kit."""
         data = pkg_resources.resource_string(__name__, path)
@@ -281,12 +285,17 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
 
         grade_value = 1 if self.user_answer_correct else 0
 
-        self.runtime.publish(self, 'grade', {'value': grade_value, 'max_value': 1})
+        if self.is_scaffolds_enabled:
+            self.runtime.publish(self, 'grade', {'value': grade_value, 'max_value': 1})
+        else:
+            self.submission_counter += 1
+
         self.user_answer = answers
         self.user_confidence = user_confidence
         return {
             'correct': self.user_answer_correct,
             'is_submission_allowed': self.is_submission_allowed,
+            'is_scaffolds_enabled': self.is_scaffolds_enabled,
             'correct_answers': self.get_correct_answers(),
             'submission_count': self.submission_counter,
             'has_many_types': self.has_many_types(),
