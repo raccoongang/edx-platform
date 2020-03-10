@@ -26,6 +26,8 @@ from openedx.core.djangolib.markup import HTML, Text
                         ${last_completed_subsection['medal'].capitalize()} Medal
                         for ${last_completed_subsection.get('display_name')}!
                         Keep going with the remaining lessons.
+                    % elif last_completed_subsection:
+                        Great work! You have completed ${last_completed_subsection.get('display_name')}!
                     % else:
                         Your grade for the last completed lesson will be displayed here.
                     % endif
