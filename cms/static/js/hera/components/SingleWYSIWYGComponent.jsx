@@ -9,6 +9,6 @@ export default class SingleWYSIWYGComponent extends WYSWYGComponent{
     }
 
     getClassName() {
-        return 'simple-hera-tinymce';
+        return this.props.class || 'simple-hera-tinymce';
     }
 }

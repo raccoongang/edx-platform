@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 import pkg_resources
 
 from django.contrib.auth.models import User
@@ -12,6 +14,7 @@ from xblockutils.resources import ResourceLoader
 from student.models import get_user_by_username_or_email
 
 loader = ResourceLoader(__name__)
+
 
 @XBlock.wants('user')
 class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
@@ -70,17 +73,20 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
         """
         # Initialise dict:
         results = {
-            "questions": {
-                question.get("questionText"): {
-                    answer: 0 for answer in question.get("possibleAnswers", [])
-                } for question in self.questions
-            },
+            "questions": OrderedDict(
+                (
+                    question.get("questionText"), OrderedDict(
+                        (answer, 0) for answer in question.get("possibleAnswers", [])
+                    )
+                ) for question in self.questions
+            ),
             "confidence": {
-                self.confidence.get("questionText"): {
-                    answer: 0 for answer in self.confidence.get("possibleAnswers", [])
-                }
+                self.confidence.get("questionText"): OrderedDict(
+                    (answer, 0) for answer in self.confidence.get("possibleAnswers", [])
+                )
             }
         }
+
         # Count percentage:
         for single_student_result in self.result_summary:
             for question, answer in single_student_result['answersData'].items():
@@ -181,9 +187,18 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
         Save current user result, start recalculating total students results
         and returns rendered student result html fragment.
         """
+        correct_ordered_data = {
+            "answersData": OrderedDict(
+                (
+                    question["questionText"], data["answersData"][question["questionText"]]
+                ) for question in self.questions
+            ),
+           "confidenceData": data["confidenceData"]
+        }
+
         self.user_count += 1
-        self.user_result = data
-        self.result_summary.append(data)
+        self.user_result = correct_ordered_data
+        self.result_summary.append(correct_ordered_data)
         context = self.get_context()
         return loader.render_mako_template(
             'static/html/student_completed.html',

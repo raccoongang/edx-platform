@@ -29,13 +29,13 @@ function EndSurveyXBlock(runtime, element, init_args) {
             for (let i in answers) {
                 let answerObj = answers[i];
                 answersData[answerObj.name] = answerObj.value;
-            };
+            }
             let confidenceData = {};
             confidenceData[confidence[0].name] = confidence[0].value;
-            data = {
+            var data = {
                 answersData: answersData,
                 confidenceData: confidenceData
-            }
+            };
             $.ajax({
                 type: "POST",
                 url: handlerUrl,
