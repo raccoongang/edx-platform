@@ -26,7 +26,7 @@ function sendReports(){
 		exercitii [`exercise_${i}`] = eval('exercise_' + i); 
 	}
 
-	console.log(exercitii); 
+	//console.log(exercitii); 
 
 
 	const questions = Object.keys(exercitii).reduce((acc, exerciseName) => {
@@ -38,6 +38,7 @@ function sendReports(){
 
 	const course = video_name;
 
+	// console.log("REVISION: update "); 
 
 	const url = '/api/video-lesson/';
 	const token = 'Bearer 5c5d90ac4f731bb7e21ca64311cdd58abfa79c43';
@@ -62,6 +63,7 @@ function sendReports(){
 	xhr.setRequestHeader("Content-Type", "application/json");
 	xhr.setRequestHeader("Authorization",token);
 	xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	//console.log(data);
 	xhr.send(data);
 }
 
@@ -75,10 +77,25 @@ function disablePlaybar(){
 		cp.playbar.mainMovie.jumpToFrame = function(a) {
 			var stack = new Error().stack || ''
 			var callerIsNotPlaybar =
-			stack.indexOf('HTMLCanvasElement.moveSlider') == -1
-			&& stack.indexOf('PlayBarSlider.moveSlider') == -1
+				stack.indexOf('HTMLCanvasElement.moveSlider') == -1
+				&& stack.indexOf('PlayBarSlider.moveSlider') == -1
 			if (callerIsNotPlaybar) cp.playbar.mainMovie._jumpToFrame.call(cp.playbar.mainMovie, a)
 		}
+	}
+
+	if (!document.getElementById("playBarCustomDisable")) {
+    
+		var divPlayBarCustom = document.createElement("div");
+
+	    divPlayBarCustom.id = "playBarCustomDisable";
+	    divPlayBarCustom.style.marginLeft = "150px";
+	    divPlayBarCustom.style.width = "759px";
+	    divPlayBarCustom.style.height = "46px";
+	    divPlayBarCustom.style.zIndex = '999';
+	    divPlayBarCustom.style.position = 'absolute';
+
+	    document.getElementById("playbarBkGrnd").appendChild(divPlayBarCustom);
+
 	}
 
 }
