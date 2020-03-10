@@ -4,11 +4,10 @@ Hera app admin panel.
 from django import forms
 from django.conf import settings
 from django.contrib import admin
-from django.forms import ModelForm
 from django.forms.widgets import TextInput
 from opaque_keys.edx.keys import CourseKey
 
-from hera.models import ActiveCourseSetting, Mascot, Onboarding, UserOnboarding, ScaffoldsSettings
+from hera.models import ActiveCourseSetting, Mascot, MedalsSettings, Onboarding, UserOnboarding, ScaffoldsSettings
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 
@@ -62,6 +61,7 @@ class OnboardingAdmin(admin.ModelAdmin):
         """
         return dict()
 
+
 class UserOnboardingAdmin(admin.ModelAdmin):
     """
     Reflection of the user onboarding model on the admin panel.
@@ -99,7 +99,7 @@ class MascotAdmin(admin.ModelAdmin):
         return not self.model.objects.exists()
 
 
-class ScaffoldsSettingsForm(ModelForm):
+class ScaffoldsSettingsForm(forms.ModelForm):
     class Meta:
         model = ScaffoldsSettings
         fields = '__all__'
@@ -120,8 +120,39 @@ class ScaffoldsSettingsAdmin(admin.ModelAdmin):
         return not self.model.objects.exists()
 
 
+class MedalFormAdmin(forms.ModelForm):
+
+    def clean(self):
+        cleaned_data = super(MedalFormAdmin, self).clean()
+        min = cleaned_data.get("min")
+        max = cleaned_data.get("max")
+        if min > max:
+            raise forms.ValidationError("min value should be less then max")
+
+    def clean_min(self):
+        min = self.cleaned_data['min']
+        if min >= 100:
+            raise forms.ValidationError("max value should be less then or equal to 99")
+        return min
+
+    def clean_max(self):
+        max = self.cleaned_data['max']
+        if max > 100:
+            raise forms.ValidationError("max value should be less then or equal to 100")
+        return max
+
+    class Meta:
+        model = MedalsSettings
+        fields = '__all__'
+
+
+class MedalAdmin(admin.ModelAdmin):
+    form = MedalFormAdmin
+
+
 admin.site.register(ScaffoldsSettings, ScaffoldsSettingsAdmin)
 admin.site.register(Onboarding, OnboardingAdmin)
 admin.site.register(UserOnboarding, UserOnboardingAdmin)
 admin.site.register(ActiveCourseSetting, ActiveCourseSettingAdmin)
 admin.site.register(Mascot, MascotAdmin)
+admin.site.register(MedalsSettings, MedalAdmin)

@@ -37,45 +37,19 @@ from openedx.core.djangolib.markup import HTML, Text
                 </div>
             </div>
             <div class="hera-grades">
-                <div class="hera-grades__item">
-                    <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_copp.svg" alt="/">
-                    <div class="hera-grades__points">
-                        60-69 points
-                    </div>
-                    <div class="hera-grades__title">
-                        Copper
-                    </div>
-                </div>
-    ​
-                <div class="hera-grades__item">
-                    <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_silv.svg" alt="/">
-                    <div class="hera-grades__points">
-                        70-79 points
-                    </div>
-                    <div class="hera-grades__title">
-                        Silver
-                    </div>
-                </div>
-    ​
-                <div class="hera-grades__item">
-                    <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_gold.svg" alt="/">
-                    <div class="hera-grades__points">
-                        80-89 points
-                    </div>
-                    <div class="hera-grades__title">
-                        Gold
-                    </div>
-                </div>
-    ​
-                <div class="hera-grades__item">
-                    <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_pt.svg" alt="/">
-                    <div class="hera-grades__points">
-                        90-100 points
-                    </div>
-                    <div class="hera-grades__title">
-                        Platinum
-                    </div>
-                </div>
+                % if dashboard_medals:
+                    % for medal in dashboard_medals:
+                        <div class="hera-grades__item">
+                            <img class="hera-grades__img" src="${medal.image.url}" alt="/">
+                            <div class="hera-grades__points">
+                                ${medal.min}-${medal.max} points
+                            </div>
+                            <div class="hera-grades__title">
+                                ${medal.title}
+                            </div>
+                        </div>
+                    % endfor
+                % endif
             </div>
         </div>
         <div class="hera-dashboard-progress-body">
@@ -99,17 +73,9 @@ from openedx.core.djangolib.markup import HTML, Text
                                     % endif
                                 </a>
                             </div>
-                            % if subsection.get('points') is not None:
+                            % if subsection.get('medal_dna_icon'):
                                 <div class="dna-connector">
-                                    % if 60 < subsection.get('points') <= 69:
-                                        <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/copper.svg" alt="/">
-                                    % elif 69 < subsection.get('points') <= 79:
-                                        <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/silver.svg" alt="/">
-                                    % elif 79 < subsection.get('points') <= 89:
-                                        <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/gold.svg" alt="/">
-                                    % elif subsection.get('points') > 89:
-                                        <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/platinum.svg" alt="/">
-                                    % endif
+                                    <img class="dna-connector__img" src="${subsection['medal_dna_icon']}" alt="/">
                                 </div>
                             % endif
                         </div>

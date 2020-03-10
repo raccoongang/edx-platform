@@ -6,21 +6,13 @@ from lms.djangoapps.hera.mongo import BLOCK_ID, USER, c_user_lesson_coins
 from xmodule.modulestore.django import modulestore
 
 
-def get_medal(points):
-    if 90 <= points <= 100:
-        return "platinum"
-    elif 80 <= points <= 89:
-        return "gold"
-    elif 70 <= points <= 79:
-        return "silver"
-    elif 60 <= points <= 69:
-        return "copper"
-
-
 def get_lesson_summary_xblock_context(user, course_key, current_unit):
     """
     Get lesson_summary xblock final grades.
     """
+    # current import used inside function for correct studio work, studio cannot see hera app templates and models
+    from hera.models import MedalsSettings
+
     course_grade = CourseGradeFactory().read(user, course_key=course_key)
     courseware_summary = course_grade.chapter_grades.values()
 
@@ -44,7 +36,12 @@ def get_lesson_summary_xblock_context(user, course_key, current_unit):
                         points = 0
                     break
 
-    return {'lesson_title': lesson_title, 'points': points, 'medal': get_medal(points)}
+    medal, _ = MedalsSettings.get_medal(points)
+    return {
+        'lesson_title': lesson_title,
+        'points': points,
+        'medal': medal
+    }
 
 
 def recalculate_coins(course_id, block_id, user_id, cost=0):
