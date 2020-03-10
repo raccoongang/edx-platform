@@ -534,3 +534,29 @@ button.btn-simulation:focus:not(:disabled) {
     border-radius: 0;
     transition: all .3s ease-in-out;
 }
+
+/* Confidence select option */
+.confidence-holder .select2-container {
+    vertical-align: initial;
+    margin-left: 8px;
+}
+
+.confidence-holder .select2-container--default .select2-selection--single {
+    display: flex;
+    align-items: center;
+    width: 122px;
+    border: 1px solid var(--color2);
+    height: 38px;
+    border-radius: 0;
+    transition: border-color .3s ease-in-out;
+}
+
+.confidence-holder .select2-container--default .select2-selection--single:active,
+.confidence-holder .select2-container--default .select2-selection--single:focus {
+    border-color: var(--color1);
+}
+
+
+.confidence-holder .select2-container--default .select2-selection--single .select2-selection__arrow {
+    top: 7px;
+}

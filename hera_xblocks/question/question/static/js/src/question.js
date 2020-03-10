@@ -289,6 +289,14 @@ function QuestionXBlock(runtime, element, init_args) {
             $('.button-previous-' + blockId, element).click(function() {
                 $('.sequence-nav-button.button-previous').get(0).click();
             });
+
+            // In your Javascript (external .js resource or <script> tag)
+            $(document).ready(function() {
+                $('.confidence-select').select2({
+                    placeholder: "Select confidence",
+                    minimumResultsForSearch: -1,
+                });
+            });
         });
     });
 }
