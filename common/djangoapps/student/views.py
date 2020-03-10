@@ -62,7 +62,7 @@ from certificates.models import (  # pylint: disable=import-error
 )
 from course_modes.models import CourseMode
 from courseware.access import has_access
-from courseware.courses import get_courses, sort_by_announcement, sort_by_start_date  # pylint: disable=import-error
+from courseware.courses import get_courses, sort_by_announcement, sort_by_start_date, get_course_with_access  # pylint: disable=import-error
 from django_comment_common.models import assign_role
 from edeos.utils import send_edeos_api_request, get_user_id
 from edxmako.shortcuts import render_to_response, render_to_string
@@ -629,6 +629,10 @@ def dashboard(request):
         The dashboard response.
 
     """
+    # This import is lms specific, so module-level importing causes an error:
+    # AttributeError: 'Settings' object has no attribute 'BULK_EMAIL_DEFAULT_RETRY_DELAY'
+    from courseware.views.views import is_course_passed
+
     user = request.user
     if not UserProfile.objects.filter(user=user).exists():
         return redirect(reverse('account_settings'))
@@ -877,6 +881,15 @@ def dashboard(request):
         'display_course_modes_on_dashboard': enable_verified_certificates and display_course_modes_on_dashboard,
         'display_sidebar_on_dashboard': display_sidebar_on_dashboard,
     }
+
+    # Get completed courses count by reaching minimal passing grade
+    courses_completed = 0
+    for enrollment in course_enrollments:
+        course_id = enrollment.course_id
+        course = get_course_with_access(request.user, 'load', course_id)
+        if is_course_passed(course, student=user):
+            courses_completed += 1
+    context['courses_completed'] = courses_completed
 
     ecommerce_service = EcommerceService()
     if ecommerce_service.is_enabled(request.user):
