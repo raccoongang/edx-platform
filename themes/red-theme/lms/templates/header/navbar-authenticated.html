@@ -63,6 +63,10 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
       <div class="mobile-nav-item hidden-mobile nav-item nav-tab">
         <a class="tab-nav-link" href="${reverse('manage_courses')}">${_("Manage Courses")}</a>
       </div>
+    % else:
+      <div class="mobile-nav-item hidden-mobile nav-item nav-tab">
+        <a class="tab-nav-link" href="${reverse('personal_due_dates')}">${_("Personal Due Dates")}</a>
+      </div>
     % endif
   </div>
   <div class="secondary">

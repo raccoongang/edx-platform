@@ -43,7 +43,7 @@ from .forms import (
     StudentImportRegisterForm,
     StudentProfileImportForm,
 )
-from .models import City, School, StudentCourseDueDate, StudentProfile, VideoLesson
+from .models import City, ParentProfile, School, StudentCourseDueDate, StudentProfile, VideoLesson
 from .serializers import (
     CitySerializer,
     SchoolSerilizer,
@@ -51,6 +51,7 @@ from .serializers import (
     SingleSchoolSerilizer,
     VideoLessonSerializer,
 )
+from .sms_client import SMSClient
 from .signals import VIDEO_LESSON_COMPLETED
 from .utils import get_payment_link, report_data_preparation
 
@@ -130,6 +131,7 @@ def manage_courses(request):
         )
         form = StudentEnrollForm(data=data, courses=courses, students=students)
         if form.is_valid():
+            sms_client = SMSClient()
             for student in form.cleaned_data['students']:
                 courses_list = []
                 for course in form.cleaned_data['courses']:
@@ -197,8 +199,16 @@ def manage_courses(request):
                         send_mail(subject, txt_message, from_address, [parent.user.email], html_message=html_message)
 
                 if form.cleaned_data['send_sms']:
-                    # sending sms logic to be here
-                    pass
+                    parent = student.parents.first()
+                    context.update({
+                        'student_name': student.user.profile.name or student.user.username,
+                        'courses_due_dates_url': urljoin(settings.LMS_ROOT_URL, reverse('personal_due_dates')),
+                    })
+                    sms_message = render_to_string(
+                        'sms/manage_course_notify.txt',
+                        context
+                    )
+                    sms_client.send_message(parent.phone, sms_message)
             messages.success(request, 'Successfully assigned.')
             return redirect(reverse('manage_courses'))
 
@@ -207,6 +217,64 @@ def manage_courses(request):
     })
 
     return render_to_response('manage_courses.html', context)
+
+
+def personal_due_dates(request):
+    """
+    Render student's personal due dates for courses with an active enrollment.
+    """
+
+    def format_due_date(student_profile, due_date):
+        """
+        Format due_date based on user preferences.
+        """
+        user_time_zone = student_profile.user.preferences.filter(key='time_zone').first()
+        if user_time_zone:
+            user_tz = pytz.timezone(user_time_zone.value)
+            course_tz_due_datetime = pytz.UTC.localize(
+                due_date.replace(tzinfo=None), is_dst=None).astimezone(user_tz)
+            return course_tz_due_datetime.strftime(
+                "%b %d, %Y, %H:%M %P {} (%Z, UTC%z)".format(
+                    user_time_zone.value.replace("_", " ")))
+        return '{} UTC'.format(due_date.astimezone(pytz.UTC).strftime('%b %d, %Y, %H:%M %P'))
+
+    user = request.user
+    if not user.is_authenticated():
+        return redirect(get_next_url_for_login_page(request))
+
+    context = {'show_dashboard_tabs': True}
+    try:
+        student = StudentProfile.objects.get(user=user)
+    except (StudentProfile.DoesNotExist, StudentProfile.MultipleObjectsReturned):
+        return redirect(reverse('dashboard'))
+
+    now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
+    course_ids = CourseOverview.objects.filter(
+        enrollment_end__gt=now,
+        enrollment_start__lt=now
+    ).values_list('id', flat=True)
+
+    student_due_dates = StudentCourseDueDate.objects.filter(
+        student=student,
+        course_id__in=course_ids
+    )
+
+    courses_due_dates_list = [
+        [urljoin(
+            settings.LMS_ROOT_URL,
+            reverse(
+                'openedx.course_experience.course_home',
+                kwargs={'course_id': student_due_date.course_id})),
+         CourseOverview.objects.get(id=student_due_date.course_id).display_name,
+         format_due_date(student, student_due_date.due_date)
+        ] for student_due_date in student_due_dates
+    ]
+
+    context.update({
+        'courses_due_dates': courses_due_dates_list,
+    })
+
+    return render_to_response('personal_due_dates.html', context)
 
 
 class CityViewSet(viewsets.ReadOnlyModelViewSet):

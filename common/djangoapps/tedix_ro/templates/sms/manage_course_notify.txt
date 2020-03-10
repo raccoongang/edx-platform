@@ -1,0 +1,6 @@
+Draga Parinte, elevul {{student_name}} a primit tema de casa.
+Data limita pentru aceasta tema de casa este: {{due_date}}.
+Puteti vedea tema de casa aici:
+{{courses_due_dates_url}}
+
+Echipa Tedix.
