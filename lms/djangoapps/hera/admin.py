@@ -153,6 +153,5 @@ class MedalAdmin(admin.ModelAdmin):
 admin.site.register(ScaffoldsSettings, ScaffoldsSettingsAdmin)
 admin.site.register(Onboarding, OnboardingAdmin)
 admin.site.register(UserOnboarding, UserOnboardingAdmin)
-admin.site.register(ActiveCourseSetting, ActiveCourseSettingAdmin)
 admin.site.register(Mascot, MascotAdmin)
 admin.site.register(MedalsSettings, MedalAdmin)

@@ -1,9 +1,15 @@
 from django.apps import apps
+from django.core.cache import cache
 from opaque_keys.edx.keys import CourseKey
 
 from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
 from lms.djangoapps.hera.mongo import BLOCK_ID, USER, c_user_lesson_coins
+from student.models import CourseEnrollment
 from xmodule.modulestore.django import modulestore
+
+
+CACHING_USER_ACTIVE_COURSE_KEY = 'hera:active_course:{user_id}'
+CACHING_TIMEOUT = 60 * 15
 
 
 def get_lesson_summary_xblock_context(user, course_key, current_unit):
@@ -85,3 +91,29 @@ def recalculate_coins(course_id, block_id, user_id, cost=0):
 def get_scaffolds_settings():
     ScaffoldsSettings = apps.get_model('hera', 'ScaffoldsSettings')
     return ScaffoldsSettings.get()
+
+def get_user_active_course_id(user):
+    """
+    Returns a cached active course if is.
+    """
+    cached_course_id = cache.get(
+        CACHING_USER_ACTIVE_COURSE_KEY.format(user_id=user.id)
+    )
+    if cached_course_id:
+        return cached_course_id
+    else:
+        last = CourseEnrollment.enrollments_for_user(user=user).last()
+        if last:
+            last_course_id = last.course_id
+            cache.set(
+                CACHING_USER_ACTIVE_COURSE_KEY.format(user_id=user.id),
+                last_course_id,
+                CACHING_TIMEOUT
+            )
+            return last_course_id
+
+
+def clear_active_course_cache(user_id):
+    cache.delete(
+        CACHING_USER_ACTIVE_COURSE_KEY.format(user_id=user_id)
+    )
