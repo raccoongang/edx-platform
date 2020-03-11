@@ -49,3 +49,7 @@ COMPLETED_SUBSECTIONS = 'COMPLETED_SUBSECTIONS'
 
 def c_selection_page():
     return _conn.connector['selection_page']
+
+
+def c_user_lesson_coins():
+    return _conn.connector['user_lesson_coins']

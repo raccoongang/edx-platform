@@ -3,6 +3,8 @@ from django.template.loader import render_to_string
 from opaque_keys.edx.keys import CourseKey
 from web_fragments.fragment import Fragment
 
+from hera.models import Mascot, MedalsSettings
+
 from courseware.courses import get_course_overview_with_access, get_current_child
 from courseware.model_data import FieldDataCache
 from courseware.module_render import get_module_for_descriptor
@@ -241,17 +243,6 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
     View for Dashboard Page
     """
     def render_to_fragment(self, request, course_id=None, page_context=None, **kwargs):
-
-        def get_medal(points):
-            if 90 <= points <= 100:
-                return "platinum"
-            elif 80 <= points <= 89:
-                return "gold"
-            elif 70 <= points <= 79:
-                return "silver"
-            else:
-                return "copper"
-
         course_key = CourseKey.from_string(course_id)
         course = modulestore().get_course(course_key)
 
@@ -298,7 +289,12 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
                             points = int(subsection.all_total.earned / subsection.all_total.possible * 100)
                         except ZeroDivisionError:
                             points = 0
-                        completed_subsections[subsection.location.block_id].update({'points': points, 'medal': get_medal(points)})
+                        medal, dna_icon = MedalsSettings.get_medal(points)
+                        completed_subsections[subsection.location.block_id].update({
+                            'points': points,
+                            'medal': medal,
+                            'medal_dna_icon': dna_icon
+                        })
 
         try:
             earned = round(earned/total*10, 1)
@@ -326,8 +322,6 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
             for selection_subsection in selected_subsections['children']:
                 if not selection_subsection['complete'] and len(ordered_subsections) < 8:
                     ordered_subsections.append(selection_subsection)
-        while len(ordered_subsections) < 8:
-            ordered_subsections.append(None)
 
         try:
             last_completed_subsection_id = completed_subsection_ids[-1]
@@ -338,12 +332,15 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
         units = last_visited_subsection.get('children', [{}])
         start_over_url = units[0].get('lms_web_url', '')
         context = {
+            'is_lesson_complete': len(selected_subsections['children']) == 0,
             'last_completed_subsection': last_completed_subsection,
             'ordered_subsections': ordered_subsections,
             'popup': popup,
             'continue_url': last_visited_subsection.get('lms_web_url', ''),
             'start_over_url': start_over_url,
-            'csrf': csrf(request)['csrf_token']
+            'csrf': csrf(request)['csrf_token'],
+            'dashboard_mascots': Mascot.user_dashboard_mascot_img_urls(),
+            'dashboard_medals': MedalsSettings.user_dashboard_medals_data()
         }
 
         html = render_to_string('hera/dashboard-outline-fragment.html', context)

@@ -1,51 +1,60 @@
 <div class="author-block__wrapper questions-summary">
-    <h2 class="author-title">${title}</h2>
-    <h2 class="author-title">Questions:</h2>
-    <div class="author-block__content is-column">
-        <div class="author-block__question is-full-width">
-            %for question in results_percentage.get('questions', {}):
-                <div class="survey-question-title">${question}</div>
-                <%
-                    possible_answers = results_percentage['questions'][question]
-                %>
-                <div class="survey-holder survey-results">
-                    %for possible_answer in possible_answers:
-                        <div class="survey-results-item">
-                            <div class="survey-results-item__title">
-                                ${possible_answer}
-                            </div>
-                            <div class="survey-results-item__percents">
-                                ${possible_answers.get(possible_answer)}
-                            </div>
+    <div class="author-block__content">
+        <div class="lms-holder">
+            <div class="block-bubble">
+                <div class="bubble-title is-center">
+                    ${title}
+                </div>
+                <div class="bubble-text">
+                    %for question in results_percentage.get('questions', {}):
+                        <div class="survey-question-title">${question}</div>
+                        <%
+                            possible_answers = results_percentage['questions'][question]
+                        %>
+                        <div class="survey-holder survey-results staff-results">
+                            %for possible_answer in possible_answers:
+                                <div class="survey-results-item">
+                                    <div class="survey-results-item__title">
+                                        ${possible_answer}
+                                    </div>
+                                    <div class="survey-results-item__percents">
+                                        ${possible_answers.get(possible_answer)}
+                                    </div>
+                                </div>
+                            %endfor
                         </div>
                     %endfor
                 </div>
-            %endfor
-        </div>
-    </div>
-</div>
-
-<div class="author-block__wrapper confidence-summary">
-    <h2 class="author-title">Confidence:</h2>
-    <div class="author-block__content is-column">
-        <div class="author-block__question is-full-width">
-            %for confidence in results_percentage.get('confidence', {}):
-                <div class="survey-question-title">${confidence}</div>
-                <%
-                possible_answers = results_percentage['confidence'][confidence]
-                %>
-                <div class="survey-holder survey-results">
-                    %for possible_answer in possible_answers:
-                    <div class="survey-results-item">
-                        <div class="survey-results-item__title">
-                            ${possible_answer}
+                <div class="bubble-title is-center">
+                    Confidence:
+                </div>
+                <div class="bubble-text">
+                    %for confidence in results_percentage.get('confidence', {}):
+                        <div class="survey-question-title">${confidence}</div>
+                        <%
+                            possible_answers = results_percentage['confidence'][confidence]
+                        %>
+                        <div class="survey-holder survey-results">
+                            %for possible_answer in possible_answers:
+                                <div class="survey-results-item">
+                                    <div class="survey-results-item__title">
+                                        ${possible_answer}
+                                    </div>
+                                    <div class="survey-results-item__percents">
+                                        ${possible_answers[possible_answer]}
+                                    </div>
+                                </div>
+                            %endfor
                         </div>
-                        <div class="survey-results-item__percents">
-                            ${possible_answers[possible_answer]}
-                        </div>
-                    </div>
                     %endfor
-            %endfor
+                </div>
+            </div>
+            <div class="block-mascot">
+                <div class="block-mascot__img ${'default-icon__mascot' if not mascot_url else '' }">
+                    %if mascot_url:
+                        <img src="${mascot_url}" alt="/">
+                    %endif
+                </div>
             </div>
         </div>
     </div>

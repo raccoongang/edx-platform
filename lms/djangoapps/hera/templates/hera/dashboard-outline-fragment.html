@@ -19,13 +19,15 @@ from openedx.core.djangolib.markup import HTML, Text
             <div class="hera-message">
                 <div class="hera-message__text">
                     <p>
-                    % if not None in ordered_subsections:
+                    % if is_lesson_complete:
                         You did it!<br>All lessons are complete.
-                    % elif last_completed_subsection:
+                    % elif last_completed_subsection.get('medal'):
                         Great work! You earned a
-                        ${last_completed_subsection.get('medal').capitalize()} Medal
+                        ${last_completed_subsection['medal'].capitalize()} Medal
                         for ${last_completed_subsection.get('display_name')}!
                         Keep going with the remaining lessons.
+                    % elif last_completed_subsection:
+                        Great work! You have completed ${last_completed_subsection.get('display_name')}!
                     % else:
                         Your grade for the last completed lesson will be displayed here.
                     % endif
@@ -33,106 +35,73 @@ from openedx.core.djangolib.markup import HTML, Text
 
                 </div>
                 <div class="hera-mascot">
-                    <img class="hera-mascot__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/mascots/mascot_general.png" alt="/">
+                    <img class="hera-mascot__img" src="${dashboard_mascots.get('user_dashboard') or '/static/{}/images/mascots/mascot_pose-welcome.svg'.format(settings.DEFAULT_SITE_THEME)}" alt="/">
                 </div>
             </div>
             <div class="hera-grades">
-                <div class="hera-grades__item">
-                    <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_copp.jpg" alt="/">
-                    <div class="hera-grades__points">
-                        60-69 points
-                    </div>
-                    <div class="hera-grades__title">
-                        Copper
-                    </div>
-                </div>
-    ​
-                <div class="hera-grades__item">
-                    <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_silv.jpg" alt="/">
-                    <div class="hera-grades__points">
-                        70-79 points
-                    </div>
-                    <div class="hera-grades__title">
-                        Silver
-                    </div>
-                </div>
-    ​
-                <div class="hera-grades__item">
-                    <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_gld.jpg" alt="/">
-                    <div class="hera-grades__points">
-                        80-89 points
-                    </div>
-                    <div class="hera-grades__title">
-                        Gold
-                    </div>
-                </div>
-    ​
-                <div class="hera-grades__item">
-                    <img class="hera-grades__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/grades/grades_pt.jpg" alt="/">
-                    <div class="hera-grades__points">
-                        90-100 points
-                    </div>
-                    <div class="hera-grades__title">
-                        Platinum
-                    </div>
-                </div>
+                % if dashboard_medals:
+                    % for medal in dashboard_medals:
+                        <div class="hera-grades__item">
+                            <img class="hera-grades__img" src="${medal.image.url}" alt="/">
+                            <div class="hera-grades__points">
+                                ${medal.min}-${medal.max} points
+                            </div>
+                            <div class="hera-grades__title">
+                                ${medal.title}
+                            </div>
+                        </div>
+                    % endfor
+                % endif
             </div>
         </div>
-
         <div class="hera-dashboard-progress-body">
-            <div class="hera-dna-bg">
-                <img class="hera-dna-bg__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/DNA_bg.svg" alt="/">
-            </div>
             % for subsection in ordered_subsections:
-                % if not subsection:
-                    <div class="hera-dashboard-progress-body__item is-locked">
-                        <div class="hera-dashboard-progress-header__item">
-                            <div class="hera-lesson__title">
-                                Lesson ${loop.index + 1}
-                            </div>
-                        </div>
-                        <div class="dna-locked">
-                            <div class="dna-icon">
-                                <img class="dna-icon__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/lock_icon.svg" alt="/">
-                            </div>
-                        </div>
-                    </div>
-                % elif subsection.get('points') is not None:
-                    <div class="hera-dashboard-progress-body__item ${loop.cycle('', 'is-reverse')}">
+                    <div class="hera-dashboard-progress-body__item is-unlocked">
                         <div class="hera-dashboard-progress-header__item">
                             <div class="hera-lesson__title">
                                 ${subsection.get('display_name')}
                             </div>
                             <div class="hera-lesson__status">
-                                Complete
-                            </div>
-                        </div>
-                        <a href="${ subsection.get('lms_web_url', '') }" class="dna-connector">
-                            <img class="dna-connector__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/${subsection.get('medal')}_${loop.cycle('top', 'bottom')}.svg" alt="/">
-                        </a>
-                        <div class="dna-text is-bottom">
-                            <span class="dna-text__title">
-                                ${subsection['points']}
-                            </span>
-                            <span class="dna-text__points">
-                                points
-                            </span>
-                        </div>
-                    </div>
-                % else:
-                    <div class="hera-dashboard-progress-body__item is-unlocked">
-                        <div class="hera-dashboard-progress-header__item">
-                            <div class="hera-lesson__title">
-                                ${subsection['display_name']}
+                                % if subsection.get('points') is not None:
+                                    Complete
+                                % endif
                             </div>
                         </div>
                         <div class="dna-unlocked">
-                            <div class="dna-icon"><a href="${ subsection.get('lms_web_url', '') }"></a></div>
+                            <div class="dna-icon">
+                                <a href="${ subsection.get('lms_web_url', '') }">
+                                    % if subsection.get('points') is not None:
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                    % endif
+                                </a>
+                            </div>
+                            % if subsection.get('medal_dna_icon'):
+                                <div class="dna-connector">
+                                    <img class="dna-connector__img" src="${subsection['medal_dna_icon']}" alt="/">
+                                </div>
+                            % endif
                         </div>
                     </div>
-                % endif
+            % endfor
+            % for i in range(8 - len(ordered_subsections)):
+                <div class="hera-dashboard-progress-body__item is-locked">
+                    <div class="hera-dashboard-progress-header__item">
+                        <div class="hera-lesson__title">
+                            Lesson ${i + len(ordered_subsections) + 1}
+                        </div>
+                    </div>
+                    <div class="dna-locked">
+                        <div class="dna-icon">
+                            <img class="dna-icon__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/dna/lock_icon.svg" alt="/">
+                        </div>
+                    </div>
+                </div>
             % endfor
         </div>
+        <div class="hera-dna-bg">
+            <img class="hera-dna-bg__img" src="/static/${settings.DEFAULT_SITE_THEME}/images/DNA_bg.svg" alt="/">
+        </div>
+    </div>
 
     <div id="modal-continue" data-show-popup="${popup}" style="display:none">
         <div class="onboarding-holder">
@@ -155,7 +124,7 @@ from openedx.core.djangolib.markup import HTML, Text
                     </div>
                 </div>
                 <div class="mascot">
-                    <img class="mascot-image" src="/static/${settings.DEFAULT_SITE_THEME}/images/mascots/mascot_pose-welcome.svg" alt="HERA-mascot" />
+                    <img class="mascot-image" src="${dashboard_mascots.get('user_dashboard_modal') or '/static/{}/images/mascots/mascot_pose-welcome.svg'.format(settings.DEFAULT_SITE_THEME)}" alt="HERA-mascot" />
                 </div>
             </div>
         </div>

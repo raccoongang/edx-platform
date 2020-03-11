@@ -1,0 +1,10 @@
+<div>
+    <div id="main-content-${block_id}"></div>
+    <div class="footer-controls-buttons-holder">
+        <div class="js-show-hide-warning-message" style="display: none;">It seems like you haven't fully interacted with the table. Give it another try. If you'd like to exit, press next again!</div>
+        <div class="footer-controls-btns">
+            <button class="btn btn-prev button-previous-${block_id}">Previous</button>
+            <button class="btn btn-primary button-next-${block_id}" ${user and not user.is_staff and 'disabled'}>Next</button>
+        </div>
+    </div>
+</div>

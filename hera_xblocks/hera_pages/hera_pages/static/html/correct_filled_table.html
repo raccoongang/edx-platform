@@ -1,0 +1,32 @@
+<div class="table-wrapper">
+    <table>
+        <tbody>
+            % if data.get('columns'):
+                <tr>
+                    % for column in data['columns']:
+                        % if column.get('type') == 'head':
+                            <th>${column['value'].replace('!', '', 1)}</th>
+                        % else:
+                            <td>${column['value'].replace('?', '', 1)}</td>
+                        % endif
+                    % endfor
+                </tr>
+            % endif
+            % if data.get('rows'):
+                % for row in data['rows']:
+                    <tr>
+                        % for idx, col in enumerate(data.get('columns')):
+                            % if row[str(idx)]['value'].startswith('?'):
+                                <td>${row[str(idx)]['value'].replace('?', '', 1)}</td>
+                            % elif row[str(idx)].get('type') == 'head':
+                                <th>${row[str(idx)]['value'].replace('!', '', 1)}</th>
+                            % else:
+                                <td>${row[str(idx)]['value']}</td>
+                            % endif
+                        % endfor
+                    </tr>
+                % endfor
+            % endif
+        </tbody>
+    </table>
+</div>

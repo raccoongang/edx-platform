@@ -10,7 +10,8 @@ from django.utils.decorators import method_decorator
 
 from edxmako.shortcuts import render_to_response
 from hera.fragments import DashboardPageOutlineFragmentView, SelectionPageOutlineFragmentView
-from hera.models import ActiveCourseSetting, UserOnboarding
+from hera.models import ActiveCourseSetting, Mascot, UserOnboarding
+from hera.utils import get_user_active_course_id
 from lms.djangoapps.courseware.views.views import CourseTabView
 from openedx.features.course_experience.views.course_home import CourseHomeFragmentView, CourseHomeView
 
@@ -27,11 +28,15 @@ class OnboardingPagesView(View):
         """
         user_onboarding, _ = UserOnboarding.objects.get_or_create(user=request.user)
         if request.user and user_onboarding.is_passed():
-            return HttpResponseRedirect(reverse('hera:dashboard'))
+            return HttpResponseRedirect(reverse(
+                'hera:dashboard',
+                kwargs={'course_id': get_user_active_course_id(request.user)}
+            ))
         context = {
             'pages': user_onboarding.get_pages(),
             'current_page': user_onboarding.get_current_page(),
             'is_passed': user_onboarding.is_passed(),
+            'onboarding_mascot': Mascot.onboarding_img_url()
         }
         return render_to_response("hera/onboarding.html", context)
 
@@ -73,12 +78,11 @@ class DashboardPageView(CourseTabView):
     """
     The dashboard page
     """
-    def get(self, request, **kwargs):
-        active_course_id = ActiveCourseSetting.get()
-        if active_course_id:
-            return super(DashboardPageView, self).get(request, unicode(active_course_id), 'courseware', **kwargs)
-        else:
+    def get(self, request, course_id=None, **kwargs):
+        active_course_id = course_id or get_user_active_course_id(request.user)
+        if not active_course_id:
             raise Http404
+        return super(DashboardPageView, self).get(request, unicode(active_course_id), 'courseware', **kwargs)
 
     def render_to_fragment(self, request, course=None, **kwargs):
         home_fragment_view = DashboardPageFragmentView()
