@@ -29,7 +29,7 @@
                                     <tbody>
                                         % if item['tableData'].get('columns'):
                                             <tr>
-                                                % for column in item['tableData']['columns']:
+                                                % for _ind, column in enumerate(item['tableData']['columns']):
                                                     % if column.get('type') == 'head':
                                                         <th>${column['value'].replace('!', '', 1)}</th>
                                                     % elif column['value'].startswith('?'):
@@ -40,7 +40,7 @@
                                                                 except IndexError:
                                                                     column_answer = ''
                                                             %>
-                                                            <input placeholder="Enter data here" type="text" name="${index}" value="${column_answer}" required/>
+                                                            <input placeholder="Enter data here" type="text" name="${index}-${_ind}" value="${column_answer}" required/>
                                                         </td>
                                                         <% user_answer_input_index += 1 %>
                                                     % else:
@@ -61,7 +61,7 @@
                                                                     except IndexError:
                                                                         row_answer = ''
                                                                 %>
-                                                                <input placeholder="Enter data here" type="text" name="${index}" value="${row_answer}" required/>
+                                                                <input placeholder="Enter data here" type="text" name="${index}-${idx}" value="${row_answer}" required/>
                                                             </td>
                                                             <% user_answer_input_index += 1 %>
                                                         % elif row[str(idx)].get('type') == 'head':
