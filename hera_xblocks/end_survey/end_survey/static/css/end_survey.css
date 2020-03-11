@@ -1,14 +1,4 @@
 /* CSS for EndSurveyXBlock */
-.servey-questions .author-block__wrapper,
-.author-block__wrapper.questions-summary,
-.author-block__wrapper.questions-result {
-  padding: 20px 0;
-}
-
-.staff-results .survey-question-title {
-  font-size: 18px;
-}
-
 .author-title {
   color: #0a0a0a !important;
   font-size: 22px !important;
@@ -21,41 +11,18 @@
   margin: 0 0 8px;
 }
 
-.survey-question-title.confidence-title {
-  text-align: center;
-}
-
 .survey-holder {
   display: flex;
-  flex-wrap: wrap;
-  margin: 0 0 20px;
-}
-
-.survey-holder:last-child {
-  margin: 0;
-}
-
-.survey-holder.is-center {
-  align-items: center;
-  justify-content: center;
 }
 
 .survey-holder .questions-list__item {
-  margin-right: 20px;
+  margin-right: 12px;
 }
 
 .survey-results {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   margin: 0 0 18px;
-}
-
-.survey-results .survey-results-item {
-  margin-right: 60px;
-}
-
-.survey-results .survey-results-item:last-child {
-  margin-right: 0;
 }
 
 .survey-results-item {
@@ -63,17 +30,13 @@
 }
 
 .survey-results-item__title {
-  font-size: 16px;
+  font-weight: 600;
+  font-size: 12px;
 }
 
 .survey-results-item__percents {
-  font-size: 14px;
+  font-size: 12px;
   text-align: right;
-}
-
-.survey-holder input[type="radio"][disabled] + .questions-list__text {
-  cursor: initial;
-  opacity: .5;
 }
 
 .box select {

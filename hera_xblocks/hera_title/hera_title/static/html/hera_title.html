@@ -1,22 +1,17 @@
 <div class="author-block__wrapper">
-    %if heading:
-        <h1 class="title-block-heading">${heading}</h1>
-    %endif
+    {% if heading %}
+        <h1 class="title-block-heading">{{heading}}</h1>
+    {% endif %}
     <div class="author-block__content is-column">
         <div class="author-block__image is-full-width">
-            %if img_url:
-                <img class="image-full" src="${img_url}">
-            %endif
+            {% if img_url %}
+                <img class="image-full" src="{{img_url}}">
+            {% endif %}
         </div>
         <div class="author-block__question is-full-width is-no-border">
-            %if content:
-                <div class="title-block-content">${content}</div>
-            %endif
-        </div>
-    </div>
-    <div class="footer-controls-buttons-holder">
-        <div class="footer-controls-btns">
-            <button class="btn btn-primary button-next-${block_id}">Next</button>
+            {% if content %}
+                <div class="title-block-content">{{content|safe}}</div>
+            {% endif %}
         </div>
     </div>
 </div>

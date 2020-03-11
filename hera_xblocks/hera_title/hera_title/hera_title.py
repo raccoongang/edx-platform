@@ -41,8 +41,7 @@ class HeraTitleXBlock(StudioEditableXBlockMixin, XBlock):
         return {
             'heading': self.heading,
             'img_url': self.img_url,
-            'content': self.content,
-            'block_id': self.location.block_id
+            'content': self.content
         }
 
     # TO-DO: change this view to display your data your own way.
@@ -52,11 +51,11 @@ class HeraTitleXBlock(StudioEditableXBlockMixin, XBlock):
         when viewing courses.
         """
         context = self.get_context()
-        html = loader.render_mako_template("static/html/hera_title.html", context=context)
+        html = loader.render_django_template("static/html/hera_title.html", context=context)
         frag = Fragment(html.format(self=self))
         frag.add_css(self.resource_string("static/css/hera_title.css"))
         frag.add_javascript(self.resource_string("static/js/src/hera_title.js"))
-        frag.initialize_js('HeraTitleXBlock', json_args=self.get_context())
+        frag.initialize_js('HeraTitleXBlock')
         return frag
 
     @XBlock.json_handler

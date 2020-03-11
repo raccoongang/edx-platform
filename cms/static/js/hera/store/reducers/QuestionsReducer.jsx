@@ -56,7 +56,6 @@ const questionTemplate = {
         content: ""
     },
     problemTypes: [defaultProblemType],
-    isScaffoldsEnabled: true,
     blockType: 'question'
 };
 

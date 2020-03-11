@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 import pkg_resources
 
 from django.contrib.auth.models import User
@@ -14,7 +12,6 @@ from xblockutils.resources import ResourceLoader
 from student.models import get_user_by_username_or_email
 
 loader = ResourceLoader(__name__)
-
 
 @XBlock.wants('user')
 class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
@@ -41,7 +38,7 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
 
     @property
     def title(self):
-        return self.data.get("heading")
+        return self.data.get("title")
 
     @property
     def mascot_url(self):
@@ -73,20 +70,17 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
         """
         # Initialise dict:
         results = {
-            "questions": OrderedDict(
-                (
-                    question.get("questionText"), OrderedDict(
-                        (answer, 0) for answer in question.get("possibleAnswers", [])
-                    )
-                ) for question in self.questions
-            ),
+            "questions": {
+                question.get("questionText"): {
+                    answer: 0 for answer in question.get("possibleAnswers", [])
+                } for question in self.questions
+            },
             "confidence": {
-                self.confidence.get("questionText"): OrderedDict(
-                    (answer, 0) for answer in self.confidence.get("possibleAnswers", [])
-                )
+                self.confidence.get("questionText"): {
+                    answer: 0 for answer in self.confidence.get("possibleAnswers", [])
+                }
             }
         }
-
         # Count percentage:
         for single_student_result in self.result_summary:
             for question, answer in single_student_result['answersData'].items():
@@ -96,25 +90,24 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
 
         return results
 
-    def get_user(self):
-        user_service = self.runtime.service(self, 'user')
-        xb_user = user_service.get_current_user()
-        email = xb_user.emails[0] if xb_user.emails else None
-        if email:
-            try:
-                user = get_user_by_username_or_email(username_or_email=email)
-            except User.DoesNotExist:
-                pass
-            return user
-
     def html_for_role(self):
         """
         This is a function which return different html templates, depends whether user is staff or not.
              - end_survey_staff is template with statistics from all the students.
              - end_survey_user is template with survey questions or results for the current student.
         """
-        user = self.get_user()
-        if user and user.is_staff:
+
+        user_service = self.runtime.service(self, 'user')
+        xb_user = user_service.get_current_user()
+        email = xb_user.emails[0] if xb_user.emails else None
+
+        try:
+            if email:
+                user = get_user_by_username_or_email(username_or_email=email)
+        except User.DoesNotExist:
+            return None
+
+        if user.is_staff:
             context = self.get_context_staff()
             template = 'static/html/end_survey_staff.html'
         else:
@@ -146,8 +139,7 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
 
     def get_common_context(self):
         return {
-            'block_id': self.location.block_id,
-            'user': self.get_user()
+            'block_id': self.location.block_id
         }
 
     def get_context(self):
@@ -166,7 +158,6 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
         """Staff context."""
         context = self.get_common_context()
         context.update({
-            "mascot_url": self.mascot_url,
             "title": self.title,
             "results_percentage": self.result_summary_count(),
         })
@@ -187,42 +178,25 @@ class EndSurveyXBlock(StudioEditableXBlockMixin, XBlock):
         Save current user result, start recalculating total students results
         and returns rendered student result html fragment.
         """
-        correct_ordered_data = {
-            "answersData": OrderedDict(
-                (
-                    question["questionText"], data["answersData"][question["questionText"]]
-                ) for question in self.questions
-            ),
-           "confidenceData": data["confidenceData"]
-        }
-
         self.user_count += 1
-        self.user_result = correct_ordered_data
-        self.result_summary.append(correct_ordered_data)
+        self.user_result = data
+        self.result_summary.append(data)
         context = self.get_context()
         return loader.render_mako_template(
-            'static/html/student_completed.html',
-            context=context
-        )
-
-    @XBlock.json_handler
-    def render_html(self, data, sufix=''):
-        return {
-            'content': self.html_for_role()
-        }
+                    'static/html/student_completed.html',
+                    context=context
+                )
 
     def student_view(self, context=None):
         """
         The primary view of the EndSurveyXBlock, shown to students
         when viewing courses.
         """
-        context = self.get_common_context()
-        main = loader.render_mako_template(
-            'static/html/main.html', context
-        )
-        frag = Fragment(main)
+        html = self.html_for_role()
+        frag = Fragment(html)
         frag.add_css(self.resource_string("static/css/end_survey.css"))
         frag.add_javascript(self.resource_string("static/js/src/end_survey.js"))
 
         frag.initialize_js('EndSurveyXBlock', json_args={'block_id': self.location.block_id})
+
         return frag

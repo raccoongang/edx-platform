@@ -26,7 +26,6 @@ from django.core.exceptions import (
 )
 from django.core.mail.message import EmailMessage
 from django.urls import reverse
-from django.core.cache import cache
 from django.core.validators import validate_email
 from django.db import IntegrityError, transaction
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound
@@ -94,7 +93,6 @@ from shoppingcart.models import (
     Invoice,
     RegistrationCodeRedemption
 )
-from hera.utils import clear_active_course_cache
 from student import auth
 from student.models import (
     ALLOWEDTOENROLL_TO_ENROLLED,
@@ -106,7 +104,6 @@ from student.models import (
     UNENROLLED_TO_ENROLLED,
     UNENROLLED_TO_UNENROLLED,
     CourseEnrollment,
-    CourseEnrollmentAllowed,
     EntranceExamConfiguration,
     ManualEnrollmentAudit,
     Registration,
@@ -676,7 +673,6 @@ def students_update_enrollment(request, course_id):
         user = None
         email = None
         language = None
-        skip_enrollment_audit = False
         try:
             user = get_student_from_identifier(identifier)
         except User.DoesNotExist:
@@ -691,49 +687,32 @@ def students_update_enrollment(request, course_id):
             # simply that it is plausibly valid)
             validate_email(email)  # Raises ValidationError if invalid
             if action == 'enroll':
-                if user:
-                    course_enrollments = CourseEnrollment.enrollments_for_user(user).exclude(
-                        course__id=course_id
-                    ).values_list('course_id', flat=True)
-                else:
-                    course_enrollments = CourseEnrollmentAllowed.objects.filter(email=email, auto_enroll=True).exclude(
-                        course_id=course_id
-                    ).values_list('course_id', flat=True)
-                if not course_enrollments:
-                    before, after, enrollment_obj = enroll_email(
-                        course_id, email, auto_enroll, email_students, email_params, language=language
-                    )
-                    before_enrollment = before.to_dict()['enrollment']
-                    before_user_registered = before.to_dict()['user']
-                    before_allowed = before.to_dict()['allowed']
-                    after_enrollment = after.to_dict()['enrollment']
-                    after_allowed = after.to_dict()['allowed']
+                before, after, enrollment_obj = enroll_email(
+                    course_id, email, auto_enroll, email_students, email_params, language=language
+                )
+                before_enrollment = before.to_dict()['enrollment']
+                before_user_registered = before.to_dict()['user']
+                before_allowed = before.to_dict()['allowed']
+                after_enrollment = after.to_dict()['enrollment']
+                after_allowed = after.to_dict()['allowed']
 
-                    if before_user_registered:
-                        if after_enrollment:
-                            if before_enrollment:
-                                state_transition = ENROLLED_TO_ENROLLED
+                if before_user_registered:
+                    if after_enrollment:
+                        if before_enrollment:
+                            state_transition = ENROLLED_TO_ENROLLED
+                        else:
+                            if before_allowed:
+                                state_transition = ALLOWEDTOENROLL_TO_ENROLLED
                             else:
-                                if before_allowed:
-                                    state_transition = ALLOWEDTOENROLL_TO_ENROLLED
-                                else:
-                                    state_transition = UNENROLLED_TO_ENROLLED
-                    else:
-                        if after_allowed:
-                            state_transition = UNENROLLED_TO_ALLOWEDTOENROLL
+                                state_transition = UNENROLLED_TO_ENROLLED
                 else:
-                    skip_enrollment_audit = True
-                    identifier = ' The student {} have been already enrolled on the course: {}'.format(
-                        identifier,
-                        '\n'.join(map(str, course_enrollments))
-                    )
+                    if after_allowed:
+                        state_transition = UNENROLLED_TO_ALLOWEDTOENROLL
 
             elif action == 'unenroll':
                 before, after = unenroll_email(
                     course_id, email, email_students, email_params, language=language
                 )
-                if user:
-                    clear_active_course_cache(user.id)
                 before_enrollment = before.to_dict()['enrollment']
                 before_allowed = before.to_dict()['allowed']
                 enrollment_obj = CourseEnrollment.get_enrollment(user, course_id) if user else None
@@ -770,20 +749,14 @@ def students_update_enrollment(request, course_id):
             })
 
         else:
-            if skip_enrollment_audit:
-                results.append({
-                    'identifier': identifier,
-                    'error': True,
-                })
-            else:
-                ManualEnrollmentAudit.create_manual_enrollment_audit(
-                    request.user, email, state_transition, reason, enrollment_obj, role
-                )
-                results.append({
-                    'identifier': identifier,
-                    'before': before.to_dict(),
-                    'after': after.to_dict(),
-                })
+            ManualEnrollmentAudit.create_manual_enrollment_audit(
+                request.user, email, state_transition, reason, enrollment_obj, role
+            )
+            results.append({
+                'identifier': identifier,
+                'before': before.to_dict(),
+                'after': after.to_dict(),
+            })
 
     response_payload = {
         'action': action,

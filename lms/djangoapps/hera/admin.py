@@ -4,10 +4,9 @@ Hera app admin panel.
 from django import forms
 from django.conf import settings
 from django.contrib import admin
-from django.forms.widgets import TextInput
 from opaque_keys.edx.keys import CourseKey
 
-from hera.models import ActiveCourseSetting, Mascot, MedalsSettings, Onboarding, UserOnboarding, ScaffoldsSettings
+from hera.models import ActiveCourseSetting, Onboarding, UserOnboarding
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 
@@ -61,7 +60,6 @@ class OnboardingAdmin(admin.ModelAdmin):
         """
         return dict()
 
-
 class UserOnboardingAdmin(admin.ModelAdmin):
     """
     Reflection of the user onboarding model on the admin panel.
@@ -90,68 +88,6 @@ class ActiveCourseSettingAdmin(admin.ModelAdmin):
         return True
 
 
-class MascotAdmin(admin.ModelAdmin):
-
-    def has_add_permission(self, request):
-        """
-        Allow to add Mascot only if no objects exist.
-        """
-        return not self.model.objects.exists()
-
-
-class ScaffoldsSettingsForm(forms.ModelForm):
-    class Meta:
-        model = ScaffoldsSettings
-        fields = '__all__'
-        widgets = {
-            'rephrase_color': TextInput(attrs={'type': 'color'}),
-            'break_it_down_color': TextInput(attrs={'type': 'color'}),
-            'teach_me_color': TextInput(attrs={'type': 'color'}),
-        }
-
-
-class ScaffoldsSettingsAdmin(admin.ModelAdmin):
-    form = ScaffoldsSettingsForm
-
-    def has_add_permission(self, request):
-        """
-        Allow to add ScaffoldsSettings only if no objects exist.
-        """
-        return not self.model.objects.exists()
-
-
-class MedalFormAdmin(forms.ModelForm):
-
-    def clean(self):
-        cleaned_data = super(MedalFormAdmin, self).clean()
-        min = cleaned_data.get("min")
-        max = cleaned_data.get("max")
-        if min > max:
-            raise forms.ValidationError("min value should be less then max")
-
-    def clean_min(self):
-        min = self.cleaned_data['min']
-        if min >= 100:
-            raise forms.ValidationError("max value should be less then or equal to 99")
-        return min
-
-    def clean_max(self):
-        max = self.cleaned_data['max']
-        if max > 100:
-            raise forms.ValidationError("max value should be less then or equal to 100")
-        return max
-
-    class Meta:
-        model = MedalsSettings
-        fields = '__all__'
-
-
-class MedalAdmin(admin.ModelAdmin):
-    form = MedalFormAdmin
-
-
-admin.site.register(ScaffoldsSettings, ScaffoldsSettingsAdmin)
 admin.site.register(Onboarding, OnboardingAdmin)
 admin.site.register(UserOnboarding, UserOnboardingAdmin)
-admin.site.register(Mascot, MascotAdmin)
-admin.site.register(MedalsSettings, MedalAdmin)
+admin.site.register(ActiveCourseSetting, ActiveCourseSettingAdmin)

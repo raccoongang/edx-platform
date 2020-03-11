@@ -21,7 +21,6 @@ export default class Question extends React.Component{
         this.getButtonAddOption = this.getButtonAddOption.bind(this);
         this.changeTableData = this.changeTableData.bind(this);
         this.changeProblemTypeTitle = this.changeProblemTypeTitle.bind(this);
-        this.disableScaffolds = this.disableScaffolds.bind(this);
 
         this.state = {
             showSimulation: false,
@@ -459,14 +458,6 @@ export default class Question extends React.Component{
         }
     };
 
-    disableScaffolds(e) {
-        const activeQuestion = {...this.props.questions[this.props.activeQuestionIndex]};
-        this.props.questionChanged(this.props.activeQuestionIndex, {
-            ...activeQuestion,
-            isScaffoldsEnabled: !activeQuestion.isScaffoldsEnabled
-        });
-    }
-
     render() {
         const activeQuestion = this.props.questions[this.props.activeQuestionIndex];
         if (!activeQuestion) {
@@ -509,7 +500,6 @@ export default class Question extends React.Component{
                     <div className="author-block__question" id="problem-types-holder">
                         <div className="text-editor__holder">
                             <SingleWYSIWYGComponent
-                                class={`single-question-${this.activeQuestionIndex}`}
                                 shouldReset={shouldResetEditor}
                                 changeHandler={this.changeDescription}
                                 content={activeQuestion.description}
@@ -694,27 +684,12 @@ export default class Question extends React.Component{
                             />
                         </div>
                     </div>
-                    <div className="scaffolds-holder">
-                        <div className="scaffolds-switch">
-                            <span className="scaffolds-switch_text">Enable/Disable Scaffolds</span>
-                            <label className="scaffolds-switch_label">
-                                <input
-                                    type="checkbox"
-                                    onChange={this.disableScaffolds}
-                                    checked={activeQuestion.isScaffoldsEnabled}
-                                />
-                                <span className="scaffolds-switch_slider is-round"/>
-                            </label>
-                        </div>
-                        { activeQuestion.isScaffoldsEnabled && (
-                            <Skaffolds
-                                questionChanged={this.props.questionChanged}
-                                activeQuestion={activeQuestion}
-                                activeQuestionIndex={this.props.activeQuestionIndex}
-                                scaffoldEditingStateChange={this.scaffoldEditingStateChange}
-                            />
-                        )}
-                    </div>
+                    <Skaffolds
+                        questionChanged={this.props.questionChanged}
+                        activeQuestion={activeQuestion}
+                        activeQuestionIndex={this.props.activeQuestionIndex}
+                        scaffoldEditingStateChange={this.scaffoldEditingStateChange}
+                        />
                 </div>
 
                 <div className="author-block__buttons">

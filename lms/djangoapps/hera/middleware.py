@@ -1,6 +1,8 @@
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 
+from student.models import CourseEnrollment, CourseEnrollmentAllowed
+
 from .models import ActiveCourseSetting, UserOnboarding
 
 
@@ -20,7 +22,6 @@ class AllowedUrlsMiddleware(object):
             'dashboard',
             'activate',
             'register_success',
-            'media',
         ]
         course_urls = [
             'courseware',
@@ -46,8 +47,6 @@ class AllowedUrlsMiddleware(object):
             if not user.is_staff:
                 if not is_ajax and not is_path_allowed:
                     raise Http404
-                if '/media/' in request.path:
-                    return
                 # lets logged in users to activate their accounts
                 if '/activate/' in request.path:
                     return
@@ -59,6 +58,12 @@ class AllowedUrlsMiddleware(object):
                             return HttpResponseRedirect(reverse('hera:register_success'))
                         else:
                             return
+                active_course_id = ActiveCourseSetting.get()
+                if active_course_id:
+                    if not CourseEnrollment.is_enrolled(user, active_course_id):
+                        raise Http404
+                else:
+                    raise Http404
                 if not request.path == reverse('hera:onboarding'):
                     if not UserOnboarding.onboarding_is_passed(request.user.id):
                         return HttpResponseRedirect(reverse('hera:onboarding'))

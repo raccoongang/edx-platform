@@ -1,9 +1,5 @@
-<%
-    def disable_input():
-        return 'disabled' if not is_submission_allowed else ''
-%>
 <div class="author-block__wrapper">
-    <div class="author-block__content">
+    <div class="author-block__content ">
         <div class="author-block__image questions-image-wrapper">
             <span class="close-image-icon hidden js-close-scaffold-btn">&times;</span>
             <div class="image-holder">
@@ -23,14 +19,9 @@
                             <p class="question-title">${problem_type['title']}</p>
                         % endif
                         % if problem_type['type'] == "text" or problem_type['type'] == "number":
-                            <input
-                                class="questions-list__field"
-                                type="${problem_type['type']}"
-                                name="${index}"
-                                value="${user_answer[index][0] if user_answer else ''}"
-                                ${disable_input()}/>
+                            <input class="questions-list__field" type="${problem_type['type']}" name="${index}" value="${user_answer[index][0] if user_answer else ''}"/>
                         % elif problem_type['type'] == "select":
-                            <select class="questions-list__select" name="${index}" ${disable_input()}>
+                            <select class="questions-list__select" name="${index}">
                                 <option class="questions-list__select-item" value=""> ------- </option>
                                 % for option in problem_type['options']:
                                     % if option.get('title'):
@@ -51,11 +42,7 @@
                                                 <th>${column['value'].replace('!', '', 1)}</th>
                                             % elif column['value'].startswith('?'):
                                                 <td>
-                                                    <input
-                                                        type="text"
-                                                        name="${index}"
-                                                        value="${user_answer[index][user_answer_input_index] if user_answer else ''}"
-                                                        ${disable_input()}/>
+                                                    <input type="text" name="${index}" value="${user_answer[index][user_answer_input_index] if user_answer else ''}"/>
                                                 </td>
                                                 <% user_answer_input_index += 1 %>
                                             % else:
@@ -71,12 +58,7 @@
                                         % for idx, col in enumerate(problem_type['tableData'].get('columns')):
                                             % if row[str(idx)]['value'].startswith('?'):
                                                 <td>
-                                                    <input
-                                                        placeholder="Enter data here"
-                                                        type="text"
-                                                        name="${index}"
-                                                        value="${user_answer[index][user_answer_input_index] if user_answer else ''}"
-                                                        ${disable_input()}/>
+                                                    <input placeholder="Enter data here" type="text" name="${index}" value="${user_answer[index][user_answer_input_index] if user_answer else ''}"/>
                                                 </td>
                                                 <% user_answer_input_index += 1 %>
                                             % elif row[str(idx)].get('type') == 'head':
@@ -106,7 +88,6 @@
                                                         name="${index}"
                                                         value="${option['title']}"
                                                         ${checked_flag}
-                                                        ${disable_input()}
                                                 />
                                                 <span class="questions-list__text">
                                                         ${option['title']}
@@ -122,47 +103,39 @@
             <div class="scaffold-info hidden">
                 <button type="button" class="author-block__btn try_again">Try Again</button>
             </div>
-            <div id="${'{}-{}'.format(rephrase_name, block_id)}" class="rephrase-content" hidden>
-                ${scaffolds[rephrase_name]['data'].get('content')}
+            <div id="${'rephrase-content-{}'.format(location_id)}" class="rephrase-content" hidden>
+                ${rephrase.get('content')}
             </div>
-            <div id="${'{}-{}'.format(break_it_down_name, block_id)}" class="break-it-down-content" hidden>
-                ${scaffolds[break_it_down_name]['data'].get('content')}
+            <div id="${'break-down-{}'.format(location_id)}" class="break-down-content" hidden>
+                ${break_down.get('content')}
             </div>
-            <div id="${'{}-{}'.format(teach_me_name, block_id)}" class="teach-me-content" hidden>
-                ${scaffolds[teach_me_name]['data'].get('content')}
+            <div id="${'teach-me-{}'.format(location_id)}" class="teach-me-content" hidden>
+                ${teach_me.get('content')}
             </div>
         </div>
-        <div class="scaffolds ${'' if is_submission_allowed and submission_counter > 0 else 'hidden'}">
+        <div class="scaffolds hidden">
             <%
-            break_it_down_img_urls = ' '.join(scaffolds[break_it_down_name]['data'].get('imgUrls', []))
-            teach_me_img_urls = ' '.join(scaffolds[teach_me_name]['data'].get('imgUrls', []))
+            break_down_img_urls = ' '.join(break_down.get('imgUrls', []))
+            teach_me_img_urls = ' '.join(teach_me.get('imgUrls', []))
             %>
             <button
                     type="button"
                     class="scaffold scaffold__btn is-rephrase js-scaffold-button"
-                    data-scaffold-name="${rephrase_name}"
+                    data-scaffold-name="rephrase-content"
                     data-scaffold-class-name="is-rephrase">
-                    <span class="scaffold__price ${rephrase_name}">
-                        %if scaffolds[rephrase_name]['paid']:
-                            &#10004
-                        %else:
-                            -${scaffolds[rephrase_name]['cost']}
-                        %endif
+                    <span class="scaffold__price">
+                        -10
                     </span>
                 Rephrase
             </button>
             <button
                     type="button"
                     class="scaffold scaffold__btn is-break js-scaffold-button"
-                    data-img-urls="${break_it_down_img_urls}"
-                    data-scaffold-name="${break_it_down_name}"
+                    data-img-urls="${break_down_img_urls}"
+                    data-scaffold-name="break-down"
                     data-scaffold-class-name="is-break">
-                    <span class="scaffold__price ${break_it_down_name}">
-                        %if scaffolds[break_it_down_name]['paid']:
-                            &#10004
-                        %else:
-                            -${scaffolds[break_it_down_name]['cost']}
-                        %endif
+                    <span class="scaffold__price">
+                        -20
                     </span>
                 Break It Down
             </button>
@@ -170,14 +143,10 @@
                     type="button"
                     class="scaffold scaffold__btn is-teach js-scaffold-button"
                     data-img-urls="${teach_me_img_urls}"
-                    data-scaffold-name="${teach_me_name}"
+                    data-scaffold-name="teach-me"
                     data-scaffold-class-name="is-teach">
-                    <span class="scaffold__price ${teach_me_name}">
-                        %if scaffolds[teach_me_name]['paid']:
-                            &#10004
-                        %else:
-                            -${scaffolds[teach_me_name]['cost']}
-                        %endif
+                    <span class="scaffold__price">
+                        -30
                     </span>
                 Teach Me
             </button>
@@ -194,27 +163,6 @@
             <input type="number" class="confidence-input hidden" min="0" max="100"/>
             <span class="confidence-text error">Please tell us how confident you are about your answer.</span>
         </div>
-        <div class="feedback-holder">
-            <button type="button" class="feedback-open" ${'disabled' if submission_counter == 0 else ''}></button>
-            <div class="feedback-content">
-                <span id="feedback-message-${block_id}">
-                    %if user_answer_correct:
-                        Correct!
-                    %elif not user_answer_correct and is_submission_allowed:
-                        Incorrect, please try again. You can ask for help first if you like.
-                    %endif
-                </span>
-                <div id="fill-tables-${block_id}" style="display: none;">
-                    <span class="feedback-hint">
-                        To see the correct filled table(s) click button
-                    </span>
-                    <button class="feedback-btn" type="button">Answers</button>
-                </div>
-                <button type="button" class="feedback-close">
-                    ×
-                </button>
-            </div>
-        </div>
         <button type="button" class="author-block__btn skip hidden">Skip</button>
         <button type="button" class="author-block__btn submit" disabled>Submit</button>
     </div>
@@ -222,12 +170,6 @@
         <div class="simulation-popup">
             <div class="simulation-close-btn">&times;</div>
             <iframe src="${iframe_url}" class="simulation-iframe"></iframe>
-        </div>
-    </div>
-    <div class="footer-controls-buttons-holder">
-        <div class="footer-controls-btns">
-            <button class="btn btn-prev button-previous-${block_id}">Previous</button>
-            <button class="btn btn-primary button-next-${block_id}" ${'disabled' if is_submission_allowed else ''}>Next</button>
         </div>
     </div>
 </div>

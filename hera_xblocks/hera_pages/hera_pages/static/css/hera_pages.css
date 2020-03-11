@@ -21,15 +21,15 @@
 }
 
 .slider-button-wrapper {
-    background: var(--color3);
+    background: #fff;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    width: calc(var(--question-width) - 34px);
+    width: 318px;
     padding: 0 0 12px;
     position: absolute;
     bottom: 1px;
-    right: 17px;
+    right: 12px;
 }
 
 .wrapper-page {
@@ -37,7 +37,7 @@
 }
 
 .slider-button {
-    margin: 0 8px;
+    margin: 0 12px;
     color: #ccc;
     background: none;
     border: none;

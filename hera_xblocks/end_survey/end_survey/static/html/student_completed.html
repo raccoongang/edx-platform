@@ -1,72 +1,59 @@
 <div class="student-completed">
     <div class="author-block__wrapper questions-result">
-        <div class="author-block__content">
-            <div class="lms-holder">
-                <div class="block-bubble is-flex-bubble">
-                    <div class="bubble-title is-center">
-                        ${title}
-                    </div>
-                    <div class="bubble-title is-center">
-                        Questions:
-                    </div>
-                    <div class="bubble-text">
-                        % for question in questions:
-                            <div class="survey-question-title">${question['questionText']}</div>
-                            <div class="survey-holder">
-                                % for possible_answer in question['possibleAnswers']:
-                                    <div class="questions-list__item">
-                                        <label class="questions-list__label">
-                                            <%
-                                                result = user_result.get('answersData', {}).get(question['questionText'])
-                                                if result == possible_answer:
-                                                    checked = 'checked'
-                                                else:
-                                                    checked = 'disabled'
-                                            %>
-                                            <input class="questions-list__input" type="radio" ${checked}>
-                                            <span class="questions-list__text">
-                                                ${possible_answer}
-                                            </span>
-                                        </label>
-                                    </div>
-                                % endfor
+        <h2 class="author-title">Questions:</h2>
+        <div class="author-block__content is-column">
+            <div class="author-block__question is-full-width">
+                % for question in questions:
+                    <div class="survey-question-title">${question['questionText']}</div>
+                    <div class="survey-holder">
+                        % for possible_answer in question['possibleAnswers']:
+                            <div class="questions-list__item">
+                                <label class="questions-list__label">
+                                    <%
+                                        result = user_result.get('answersData', {}).get(question['questionText'])
+                                        if result == possible_answer:
+                                            checked = 'checked'
+                                        else:
+                                            checked = 'disabled'
+                                    %>
+                                    <input class="questions-list__input" type="radio" ${checked}>
+                                    <span class="questions-list__text">
+                                        ${possible_answer}
+                                    </span>
+                                </label>
                             </div>
                         % endfor
                     </div>
-                    <div class="bubble-title is-center">
-                        Confidence:
-                    </div>
-                    <div class="bubble-text">
-                        <div class="survey-holder">
-                            <div class="survey-question-title">${confidence['questionText']}</div>
-                            % for possible_answer in confidence['possibleAnswers']:
-                                <div class="questions-list__item">
-                                    <label class="questions-list__label">
-                                        <%
-                                            result = user_result.get('confidenceData', {}).get(confidence['questionText'])
-                                            if result == possible_answer:
-                                                checked = 'checked'
-                                            else:
-                                                checked = 'disabled'
-                                        %>
-                                        <input class="questions-list__input" type="radio" ${checked}>
-                                        <span class="questions-list__text">
-                                            ${possible_answer}
-                                        </span>
-                                    </label>
-                                </div>
-                            % endfor
+                % endfor
+            </div>
+        </div>
+    </div>
+    <div class="author-block__wrapper confidence-result">
+        <h2 class="author-title">Confidence:</h2>
+        <div class="author-block__content is-column">
+            <div class="author-block__question is-full-width">
+                <div class="survey-question-title">${confidence['questionText']}</div>
+                <div class="survey-holder">
+                    % for possible_answer in confidence['possibleAnswers']:
+                        <div class="questions-list__item">
+                            <label class="questions-list__label">
+                                <%
+                                    result = user_result.get('confidenceData', {}).get(confidence['questionText'])
+                                    if result == possible_answer:
+                                        checked = 'checked'
+                                    else:
+                                        checked = 'disabled'
+                                %>
+                                <input class="questions-list__input" type="radio" ${checked}>
+                                <span class="questions-list__text">
+                                    ${possible_answer}
+                                </span>
+                            </label>
                         </div>
-                    </div>
-                </div>
-                <div class="block-mascot">
-                    <div class="block-mascot__img ${'default-icon__mascot' if not mascot_url else '' }">
-                        %if mascot_url:
-                            <img src="${mascot_url}" alt="/">
-                        %endif
-                    </div>
+                    % endfor
                 </div>
             </div>
         </div>
     </div>
 </div>
+
