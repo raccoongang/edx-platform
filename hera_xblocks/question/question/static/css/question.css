@@ -551,6 +551,12 @@ button.btn-simulation:focus:not(:disabled) {
     transition: border-color .3s ease-in-out;
 }
 
+@-moz-document url-prefix() {
+    .confidence-holder .select2-container--default .select2-selection--single {
+        width: 130px;
+    }
+}
+
 .confidence-holder .select2-container--default .select2-selection--single:active,
 .confidence-holder .select2-container--default .select2-selection--single:focus {
     border-color: var(--color1);

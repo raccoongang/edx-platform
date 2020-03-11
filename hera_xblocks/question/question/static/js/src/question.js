@@ -293,7 +293,7 @@ function QuestionXBlock(runtime, element, init_args) {
             // In your Javascript (external .js resource or <script> tag)
             $(document).ready(function() {
                 $('.confidence-select').select2({
-                    placeholder: "Select confidence",
+                    placeholder: "Select",
                     minimumResultsForSearch: -1,
                 });
             });
