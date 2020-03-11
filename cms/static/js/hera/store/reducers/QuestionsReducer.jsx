@@ -107,6 +107,10 @@ const QuestionsReducer = function(state=initialState, action) {
             // question -> problemTypes - now it's list of problemTypes
             // questionType -> type
             const transitionedQuestions = action.data.map((question, ind) => {
+                var question = {...question};
+                if (question.isScaffoldsEnabled === undefined) {
+                    question.isScaffoldsEnabled = true;
+                }
                 if (question && question.question) {
                     let problemType = {
                         ...question.question,
