@@ -321,7 +321,7 @@ input[type=number].confidence-input {
     display: none;
     margin: 0;
     position: absolute;
-    left: -88px;
+    right: -123px;
     top: -100px;
     width: 222px;
     border-radius: 8px;
@@ -348,8 +348,11 @@ input[type=number].confidence-input {
     opacity: .85;
 }
 
-.confidence-input.is-not-valid + .confidence-text.error {
-    display: inline-block;
+.is-not-valid {
+    border-style: solid;
+    border-width: 1px;
+    border-color: red;
+    padding: 1px;
 }
 
 .simulation-overlay {
