@@ -27,6 +27,7 @@ from lms.djangoapps.courseware.exceptions import CourseAccessRedirect
 from lms.djangoapps.experiments.utils import get_experiment_user_metadata_context
 from lms.djangoapps.gating.api import get_entrance_exam_score_ratio, get_entrance_exam_usage_key
 from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
+from lms.djangoapps.hera.mongo import BLOCK_ID, USER, c_user_lesson_coins
 from openedx.core.djangoapps.crawlers.models import CrawlersConfig
 from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY
 from openedx.core.djangoapps.monitoring_utils import set_custom_metrics_for_course_key
@@ -42,6 +43,7 @@ from student.views import is_course_blocked
 from util.views import ensure_valid_course_key
 from xmodule.modulestore.django import modulestore
 from xmodule.x_module import STUDENT_VIEW
+from hera.models import ScaffoldsSettings
 from .views import CourseTabView
 from ..access import has_access
 from ..access_utils import check_course_open_for_learner
@@ -99,6 +101,31 @@ class CoursewareIndex(View):
 
         if not (request.user.is_authenticated or self.enable_anonymous_courseware_access):
             return redirect_to_login(request.get_full_path())
+
+        user_lesson_coins = c_user_lesson_coins().find_one(
+            {
+                BLOCK_ID: section,
+                USER: request.user.id,
+            }
+        )
+
+        if not user_lesson_coins:
+            starting_coins = ScaffoldsSettings.get().starting_coins
+            c_user_lesson_coins().update(
+                {
+                    BLOCK_ID: section,
+                    USER: request.user.id
+                },
+                {
+                    '$set': {
+                        'coins': starting_coins,
+                    }
+                },
+                upsert=True
+            )
+            self.user_coins = starting_coins
+        else:
+            self.user_coins = user_lesson_coins.get('coins')
 
         self.original_chapter_url_name = chapter
         self.original_section_url_name = section
@@ -362,8 +389,11 @@ class CoursewareIndex(View):
         """
         course_url_name = default_course_url_name(self.course.id)
         course_url = reverse(course_url_name, kwargs={'course_id': unicode(self.course.id)})
-
+        scaffolds_settings = ScaffoldsSettings.get()
         courseware_context = {
+            'show_coins': True,
+            'user_coins': self.user_coins,
+            'coins_img_url': scaffolds_settings.get_coin_img_url(),
             'csrf': csrf(self.request)['csrf_token'],
             'course': self.course,
             'course_url': course_url,

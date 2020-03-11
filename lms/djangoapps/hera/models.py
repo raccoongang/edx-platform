@@ -266,6 +266,8 @@ class UserOnboarding(models.Model):
 class ActiveCourseSetting(models.Model):
     course = models.ForeignKey("course_overviews.CourseOverview", on_delete=models.CASCADE)
 
+    class Meta:
+        app_label = 'hera'
 
     def __unicode__(self):
         return unicode(self.course.id)
@@ -295,9 +297,11 @@ class ActiveCourseSetting(models.Model):
 
 
 class Mascot(models.Model):
-    user_dashboard = models.ImageField(upload_to='hera', null=True, blank=True)
-    user_dashboard_modal = models.ImageField(upload_to='hera', null=True, blank=True)
-    onboarding = models.ImageField(upload_to='hera', null=True, blank=True)
+    MASCOT_IMAGE_PATH = 'hera/mascots'
+
+    user_dashboard = models.ImageField(upload_to=MASCOT_IMAGE_PATH, null=True, blank=True)
+    user_dashboard_modal = models.ImageField(upload_to=MASCOT_IMAGE_PATH, null=True, blank=True)
+    onboarding = models.ImageField(upload_to=MASCOT_IMAGE_PATH, null=True, blank=True)
 
     @classmethod
     def _instance(cls):
@@ -310,7 +314,7 @@ class Mascot(models.Model):
             return instance.onboarding.url if instance.onboarding else None
 
     @classmethod
-    def user_dashboard_img_urls(cls):
+    def user_dashboard_mascot_img_urls(cls):
         instance = cls._instance()
         if instance:
             user_dashboard = instance.user_dashboard.url if instance.user_dashboard else None
@@ -320,6 +324,31 @@ class Mascot(models.Model):
                 'user_dashboard_modal': user_dashboard_modal
             }
         return {}
+
+    class Meta:
+        app_label = 'hera'
+
+
+class ScaffoldsSettings(models.Model):
+    coin_icon = models.ImageField(upload_to='hera', null=True, blank=True)
+    rephrase_cost = models.IntegerField(default=10)
+    rephrase_color = models.CharField(max_length=7, default="#257bba")
+    break_it_down_cost = models.IntegerField(default=20)
+    break_it_down_color = models.CharField(max_length=7, default="#674172")
+    teach_me_cost = models.IntegerField(default=30)
+    teach_me_color = models.CharField(max_length=7, default="#ec8b22")
+    starting_coins = models.IntegerField(default=300)
+
+    class Meta:
+        app_label = "hera"
+        verbose_name_plural = "Scaffolds settings"
+
+    @classmethod
+    def get(cls):
+        return cls.objects.first() or cls()
+
+    def get_coin_img_url(self):
+        return self.coin_icon.url if self.coin_icon else None
 
 
 @receiver(post_delete, sender=ActiveCourseSetting)
@@ -342,3 +371,35 @@ def reset_user_onboarding(sender, instance, *args, **kwargs):
     cache.delete(
         CACHING_USER_ONBOARDING_TEMPLATE.format(user_id=instance.user_id, model_name=sender.__name__)
     )
+
+
+class MedalsSettings(models.Model):
+    MEDAL_IMAGE_PATH = 'hera/medals'
+
+    title = models.CharField(max_length=100)
+    image = models.ImageField(upload_to=MEDAL_IMAGE_PATH)
+    dna_icon = models.ImageField(upload_to=MEDAL_IMAGE_PATH, verbose_name="DNA icon")
+    min = models.PositiveSmallIntegerField()
+    max = models.PositiveSmallIntegerField()
+
+    class Meta:
+        app_label = "hera"
+        ordering = ['min']
+        verbose_name_plural = "Medals settings"
+
+    def __str__(self):
+        return self.title
+
+    @classmethod
+    def user_dashboard_medals_data(cls):
+        return cls.objects.all()
+
+    @classmethod
+    def get_medal(cls, points):
+        instance = cls.objects.filter(min__lte=points, max__gte=points).first()
+        medal_title = ''
+        medal_dna_icon = ''
+        if instance:
+            medal_title = instance.title
+            medal_dna_icon = instance.dna_icon.url
+        return medal_title, medal_dna_icon

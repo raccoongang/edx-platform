@@ -10,7 +10,7 @@ from django.utils.decorators import method_decorator
 
 from edxmako.shortcuts import render_to_response
 from hera.fragments import DashboardPageOutlineFragmentView, SelectionPageOutlineFragmentView
-from hera.models import ActiveCourseSetting, UserOnboarding
+from hera.models import ActiveCourseSetting, Mascot, UserOnboarding
 from lms.djangoapps.courseware.views.views import CourseTabView
 from openedx.features.course_experience.views.course_home import CourseHomeFragmentView, CourseHomeView
 
@@ -32,6 +32,7 @@ class OnboardingPagesView(View):
             'pages': user_onboarding.get_pages(),
             'current_page': user_onboarding.get_current_page(),
             'is_passed': user_onboarding.is_passed(),
+            'onboarding_mascot': Mascot.onboarding_img_url()
         }
         return render_to_response("hera/onboarding.html", context)
 

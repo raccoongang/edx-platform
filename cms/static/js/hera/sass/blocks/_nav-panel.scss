@@ -144,7 +144,7 @@
 
             &:checked ~ .nav-panel-accrd__content {
                 max-height: 380px;
-                overflow-y: scroll;
+                overflow-y: auto;
             }
 
             &:checked {
