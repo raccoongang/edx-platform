@@ -91,7 +91,7 @@ function QuestionXBlock(runtime, element, init_args) {
                     changeFeedbackMessage(`The correct answer is "${response.correct_answers}". Let’s move on.`);
                 }
             }
-            if (!isSubmissionAllowed && isThereTableInputs && !response.user_answer_correct) {
+            if (response.is_scaffolds_enabled && !isSubmissionAllowed && isThereTableInputs && !response.user_answer_correct) {
                 $buttonFillTables.show();
             }
 
