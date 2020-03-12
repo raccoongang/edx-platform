@@ -91,6 +91,8 @@ function QuestionXBlock(runtime, element, init_args) {
                 } else if (!response.user_answer_correct) {
                     changeFeedbackMessage(`The correct answer is "${response.correct_answers}". Let’s move on.`);
                 }
+            } else if (response.user_answer && !response.is_scaffolds_enabled) { // !response.has_many_types && isThereTableInputs
+                changeFeedbackMessage("You have submitted your answer.");
             }
             if (response.is_scaffolds_enabled && !isSubmissionAllowed && isThereTableInputs && !response.user_answer_correct) {
                 $buttonFillTables.show();

@@ -30,7 +30,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
 
     display_name = String(default="Question")
     data = JSONField(default={})
-    user_confidence = String(scope=Scope.user_state, default='')
+    user_confidence = JSONField(scope=Scope.user_state)
     user_answer = JSONField(scope=Scope.user_state, default='')
     user_answer_correct = Boolean(scope=Scope.user_state, default=False)
     submission_counter = Integer(scope=Scope.user_state, default=0)
