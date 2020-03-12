@@ -99,6 +99,9 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     def is_scaffolds_enabled(self):
         return self.data.get('isScaffoldsEnabled', True)
 
+    def is_any_scaffold_paid(self):
+        return self.rephrase_paid or self.break_it_down_paid or self.teach_me_paid
+
     def resource_string(self, path):
         """Handy helper for getting resources from our kit."""
         data = pkg_resources.resource_string(__name__, path)
@@ -145,6 +148,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             },
             'correct_answers': self.get_correct_answers(),
             'has_many_types': self.has_many_types(),
+            'is_any_scaffold_paid': self.is_any_scaffold_paid()
         }
 
     def get_content_html(self):
@@ -295,7 +299,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             'is_submission_allowed': self.is_submission_allowed,
             'is_scaffolds_enabled': self.is_scaffolds_enabled,
             'correct_answers': self.get_correct_answers(),
-            'submission_count': self.submission_counter,
+            'submission_counter': self.submission_counter,
             'has_many_types': self.has_many_types(),
         }
 

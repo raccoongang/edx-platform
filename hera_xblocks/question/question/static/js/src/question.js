@@ -98,6 +98,10 @@ function QuestionXBlock(runtime, element, init_args) {
                 $buttonFillTables.show();
             }
 
+            if (response.submission_counter == 1 && isSubmissionAllowed && response.is_any_scaffold_paid) {
+                $skipBtn.removeClass('hidden');
+            }
+
             function hideConfidence() {
                 $confidenceInput.val(null).trigger('change');
                 $confidenceHolder.addClass('hidden');
@@ -141,7 +145,7 @@ function QuestionXBlock(runtime, element, init_args) {
                         JSON.stringify({"answers": userAnswers, "confidence": confidence})
                     ).done(function (response) {
                         isSubmissionAllowed = response.is_submission_allowed;
-                        var submissionCount = response.submission_count;
+                        var submissionCount = response.submission_counter;
                         var isScaffoldsEnabled = response.is_scaffolds_enabled;
                         if (response.correct) {
                             enableNextButton();

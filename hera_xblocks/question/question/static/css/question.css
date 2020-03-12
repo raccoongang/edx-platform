@@ -330,6 +330,7 @@ input[type=number].confidence-input {
     color: var(--color2);
     font-size: 14px;
     text-align: center;
+    z-index: 5;
 }
 
 .confidence-text.error:before {
