@@ -107,6 +107,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     def get_context(self):
         scaffolds = get_scaffolds_settings()
         return {
+            "is_scaffolds_enabled": self.is_scaffolds_enabled,
             "user_answer_correct": self.user_answer_correct,
             "user_answer": self.user_answer,
             "is_submission_allowed": self.is_submission_allowed,
@@ -288,6 +289,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         if self.is_scaffolds_enabled:
             self.runtime.publish(self, 'grade', {'value': grade_value, 'max_value': 1})
         else:
+            self.runtime.publish(self, 'completion', {'completion': 1})
             self.submission_counter += 1
 
         self.user_answer = answers
