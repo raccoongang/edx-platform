@@ -212,7 +212,7 @@ class StudentModuleHistory(BaseStudentModuleHistory):
     student_module = models.ForeignKey(StudentModule, db_index=True)
 
     def __unicode__(self):
-        return unicode(repr(self))
+        return u'StudentModuleHistory - {}'.format(repr(self.student_module))
 
     def save_history(sender, instance, **kwargs):  # pylint: disable=no-self-argument, unused-argument
         """
