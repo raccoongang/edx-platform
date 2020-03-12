@@ -30,7 +30,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
 
     display_name = String(default="Question")
     data = JSONField(default={})
-    user_confidence = Integer(scope=Scope.user_state)
+    user_confidence = String(scope=Scope.user_state, default='')
     user_answer = JSONField(scope=Scope.user_state, default='')
     user_answer_correct = Boolean(scope=Scope.user_state, default=False)
     submission_counter = Integer(scope=Scope.user_state, default=0)
@@ -243,10 +243,6 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     def submit(self, data, suffix=''):
         answers = data.get("answers")
         self.submission_counter += 1
-        try:
-            user_confidence = int(data.get("confidence"))
-        except ValueError:
-            user_confidence = None
 
         user_answers = []
 
@@ -293,7 +289,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             self.submission_counter += 1
 
         self.user_answer = answers
-        self.user_confidence = user_confidence
+        self.user_confidence = data.get("confidence")
         return {
             'correct': self.user_answer_correct,
             'is_submission_allowed': self.is_submission_allowed,

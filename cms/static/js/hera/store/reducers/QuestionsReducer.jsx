@@ -40,7 +40,7 @@ const questionTemplate = {
     description: "",
     imgUrls: [],
     iframeUrl: "",
-    confidenceText: "How confident are you about your answer on a scale of 0-100?",
+    confidenceText: "How confident are you about your answer?",
     correctAnswerText: "The correct answer text",
     incorrectAnswerText: "An incorrect answer text",
     rephrase: {
@@ -111,10 +111,12 @@ const QuestionsReducer = function(state=initialState, action) {
                 if (question.isScaffoldsEnabled === undefined) {
                     question.isScaffoldsEnabled = true;
                 }
+                // will be overriding this value until we start editing it
+                question.confidenceText = questionTemplate.confidenceText;
                 if (question && question.question) {
                     let problemType = {
                         ...question.question,
-                        type: question.question.questionType
+                        type: question.question.questionType,
                     };
                     delete problemType['questionType'];
                     let newQuestion = {...question, problemTypes: [problemType]};

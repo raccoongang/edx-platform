@@ -65,8 +65,9 @@ function QuestionXBlock(runtime, element, init_args) {
         $('#main-question-content', element).html($.parseHTML(response.content));
 
         $(function ($) {
-            var $confidenceInfo = $(".confidence-text.info", element);
-            var $confidenceInput = $(".confidence-input", element);
+            var $confidenceInput = $(".confidence-select", element);
+            var $confidenceHolder = $('.confidence-holder', element);
+            var $confidenceError = $('.confidence-text.error', element);
             var $scaffolds = $(".scaffolds", element);
             var $blockScaffold = $(".scaffold-info", element);
             var $closeBtn = $(".js-close-scaffold-btn", element);
@@ -95,12 +96,20 @@ function QuestionXBlock(runtime, element, init_args) {
                 $buttonFillTables.show();
             }
 
+            function hideConfidence() {
+                $confidenceInput.val(null).trigger('change');
+                $confidenceHolder.addClass('hidden');
+            }
+
+            function showConfidence() {
+                $confidenceHolder.removeClass("hidden");
+                $confidenceError.hide();
+            }
+
             $('input, select', element).on("change blur keyup", function() {
                 if (isSubmissionAllowed) {
-                    $confidenceInfo.removeClass("hidden");
-                    $confidenceInput.removeClass("hidden is-not-valid");
+                    showConfidence();
                     $submit.removeAttr("disabled");
-                    $confidenceInfo.text(init_args.confidence_text);
                 }
             });
 
@@ -165,12 +174,11 @@ function QuestionXBlock(runtime, element, init_args) {
                             changeFeedbackMessage('You have submitted your answer.');
                         }
                         showFeedback();
-                        $confidenceInput.addClass("hidden");
-                        $confidenceInfo.addClass("hidden");
+                        hideConfidence();
                         $(e.currentTarget).attr('disabled', 'disabled');
                     });
                 } else {
-                    $confidenceInput.addClass("is-not-valid");
+                    $confidenceError.show();
                 }
             });
 
@@ -250,8 +258,7 @@ function QuestionXBlock(runtime, element, init_args) {
                         if (isThereTableInputs && !isSubmissionAllowed) {
                             $buttonFillTables.show();
                         }
-                        $confidenceInput.addClass("hidden");
-                        $confidenceInfo.addClass("hidden");
+                        hideConfidence();
                         $submit.attr('disabled', 'disabled');
                         enableNextButton();
                         showFeedback();
@@ -288,6 +295,14 @@ function QuestionXBlock(runtime, element, init_args) {
             });
             $('.button-previous-' + blockId, element).click(function() {
                 $('.sequence-nav-button.button-previous').get(0).click();
+            });
+
+            // In your Javascript (external .js resource or <script> tag)
+            $(document).ready(function() {
+                $confidenceInput.select2({
+                    placeholder: "Select",
+                    minimumResultsForSearch: -1,
+                });
             });
         });
     });
