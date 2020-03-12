@@ -28,9 +28,13 @@ class OnboardingPagesView(View):
         """
         user_onboarding, _ = UserOnboarding.objects.get_or_create(user=request.user)
         if request.user and user_onboarding.is_passed():
+            course_id = get_user_active_course_id(request.user)
+            kwargs={}
+            if course_id:
+                kwargs={'course_id': get_user_active_course_id(request.user)}
             return HttpResponseRedirect(reverse(
                 'hera:dashboard',
-                kwargs={'course_id': get_user_active_course_id(request.user)}
+                kwargs=kwargs
             ))
         context = {
             'pages': user_onboarding.get_pages(),
