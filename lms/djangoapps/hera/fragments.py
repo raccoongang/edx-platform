@@ -251,7 +251,7 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
 
         course_block_tree = get_course_outline_block_tree(request, course_id)
         if not course_block_tree:
-            return None
+            return
 
         field_data_cache = FieldDataCache.cache_for_descriptor_descendents(
             course.id, request.user, course, depth=2
@@ -261,6 +261,10 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
         )
         chapter_module = get_current_child(course_module)
         section_module = get_current_child(chapter_module)
+
+        if not section_module:
+            return
+
         active_block_id = section_module.scope_ids.usage_id.block_id
         last_visited_subsection = ''
 
@@ -268,7 +272,7 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
         earned = 0
         total = 0
 
-        for section in course_block_tree.get('children'):
+        for section in course_block_tree.get('children', []):
             for subsection in section.get('children', []):
                 if active_block_id == subsection['block_id'] and not last_visited_subsection:
                     last_visited_subsection = subsection

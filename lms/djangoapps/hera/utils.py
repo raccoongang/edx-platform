@@ -4,6 +4,7 @@ from opaque_keys.edx.keys import CourseKey
 
 from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
 from lms.djangoapps.hera.mongo import BLOCK_ID, USER, c_user_lesson_coins
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from student.models import CourseEnrollment
 from xmodule.modulestore.django import modulestore
 
@@ -92,6 +93,26 @@ def get_scaffolds_settings():
     ScaffoldsSettings = apps.get_model('hera', 'ScaffoldsSettings')
     return ScaffoldsSettings.get()
 
+
+def get_users_last_enroll(user):
+    """
+    Get the last user enrollment on the Course with existing CourseOverview.
+    CourseEnrollments aren't removed when deleting CoourseOverview
+    and `enrollments_for_user` returns enrollments even for not existing CourseOverviews.
+
+    """
+    user_enrollments = []
+    enrollments = CourseEnrollment.enrollments_for_user(user=user)
+    for enrollment in enrollments:
+        try:
+            enrollment.course
+            user_enrollments.append(enrollment)
+        except CourseOverview.DoesNotExist:
+            pass
+    if user_enrollments:
+        return user_enrollments[-1]
+
+
 def get_user_active_course_id(user):
     """
     Returns a cached active course if is.
@@ -102,7 +123,7 @@ def get_user_active_course_id(user):
     if cached_course_id:
         return cached_course_id
     else:
-        last = CourseEnrollment.enrollments_for_user(user=user).last()
+        last = get_users_last_enroll(user)
         if last:
             last_course_id = last.course_id
             cache.set(
