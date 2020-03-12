@@ -3,6 +3,46 @@ metadata:
     display_name: overview_teacher
 
 data: |
+  <section class="partners-about course-page-section">
+    <h2 class="h2">Партнеры курса</h2>
+    <ul class="partners-about-list">
+      <li class="partners-about-list__item">
+        <a href="" class="partners-about-list__link" target="_blank">
+          <img src="http://placeimg.com/640/360/any" alt="">
+        </a>
+      </li>
+      <li class="partners-about-list__item">
+        <a href="" class="partners-about-list__link" target="_blank">
+          <img src="http://placeimg.com/1200/600/any" alt="">
+        </a>
+      </li>
+      <li class="partners-about-list__item">
+        <a href="" class="partners-about-list__link" target="_blank">
+          <img src="http://placeimg.com/140/60/any" alt="">
+        </a>
+      </li>
+      <li class="partners-about-list__item">
+        <a href="" class="partners-about-list__link" target="_blank">
+          <img src="http://placeimg.com/800/400/any" alt="">
+        </a>
+      </li>
+      <li class="partners-about-list__item">
+        <a href="" class="partners-about-list__link" target="_blank">
+          <img src="http://placeimg.com/768/380/any" alt="">
+        </a>
+      </li>
+      <li class="partners-about-list__item">
+        <a href="" class="partners-about-list__link" target="_blank">
+          <img src="http://placeimg.com/2000/1260/any" alt="">
+        </a>
+      </li>
+      <li class="partners-about-list__item">
+        <a href="" class="partners-about-list__link" target="_blank">
+          <img src="http://placeimg.com/150/150/any" alt="">
+        </a>
+      </li>
+    </ul>
+  </section>
   <section class="course-staff">
     <section class="course-teacher course-page-section">
     <h2 class="h2">Преподаватель курса</h2>
