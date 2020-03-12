@@ -1961,6 +1961,10 @@
     "View all errors": "Alle Fehler ansehen", 
     "View child items": "Untergeordnete Elemente anzeigen", 
     "View discussion": "Diskussion betrachten", 
+    "Viewing %s course": [
+      "Zeige %s Kurs", 
+      "Zeige %s Kurse"
+    ], 
     "Visibility": "Sichtbarkeit", 
     "Visible to": "Sichtbar f\u00fcr", 
     "Visible to Staff Only": "Nur f\u00fcr Mitarbeiter sichtbar", 
