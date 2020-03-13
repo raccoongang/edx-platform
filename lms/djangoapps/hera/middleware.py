@@ -1,6 +1,8 @@
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 
+from student.models import CourseEnrollmentAllowed
+
 from .models import UserOnboarding
 from .utils import get_user_active_course_id
 
