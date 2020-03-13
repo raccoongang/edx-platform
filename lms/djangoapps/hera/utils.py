@@ -106,9 +106,10 @@ def get_users_last_enroll(user):
     for enrollment in enrollments:
         try:
             enrollment.course
-            user_enrollments.append(enrollment)
         except CourseOverview.DoesNotExist:
             pass
+        else:
+            user_enrollments.append(enrollment)
     if user_enrollments:
         return user_enrollments[-1]
 

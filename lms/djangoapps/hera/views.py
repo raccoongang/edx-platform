@@ -78,6 +78,7 @@ class DashboardPageFragmentView(CourseHomeFragmentView):
     outline_fragment_view = DashboardPageOutlineFragmentView
 
 
+@method_decorator(login_required, name='dispatch')
 class DashboardPageView(CourseTabView):
     """
     The dashboard page

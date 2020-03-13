@@ -91,9 +91,15 @@ function QuestionXBlock(runtime, element, init_args) {
                 } else if (!response.user_answer_correct) {
                     changeFeedbackMessage(`The correct answer is "${response.correct_answers}". Let’s move on.`);
                 }
+            } else if (response.user_answer && !response.is_scaffolds_enabled) { // !response.has_many_types && isThereTableInputs
+                changeFeedbackMessage("You have submitted your answer.");
             }
             if (response.is_scaffolds_enabled && !isSubmissionAllowed && isThereTableInputs && !response.user_answer_correct) {
                 $buttonFillTables.show();
+            }
+
+            if (response.submission_counter == 1 && isSubmissionAllowed && response.is_any_scaffold_paid) {
+                $skipBtn.removeClass('hidden');
             }
 
             function hideConfidence() {
@@ -139,7 +145,7 @@ function QuestionXBlock(runtime, element, init_args) {
                         JSON.stringify({"answers": userAnswers, "confidence": confidence})
                     ).done(function (response) {
                         isSubmissionAllowed = response.is_submission_allowed;
-                        var submissionCount = response.submission_count;
+                        var submissionCount = response.submission_counter;
                         var isScaffoldsEnabled = response.is_scaffolds_enabled;
                         if (response.correct) {
                             enableNextButton();
