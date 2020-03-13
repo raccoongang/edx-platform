@@ -551,7 +551,7 @@ def account_settings_context(request):
                 'options': all_languages(),
             }, 'time_zone': {
                 'options': TIME_ZONE_CHOICES,
-            }, 
+            },
             'mobytize_id': user.profile.mobytize_id,
             'mobytize_token': user.profile.mobytize_token,
         },

@@ -211,7 +211,18 @@ def index(request, extra_context=None, user=AnonymousUser()):
 
     context['programs_list'] = get_programs_with_type(include_hidden=False)
 
+    if third_party_auth.is_enabled() and not request.user.is_authenticated():
+        context['tpa_hint'] = get_auth0_provider_id()
+
     return render_to_response('index.html', context)
+
+
+def get_auth0_provider_id():
+    """Get Auth0 provider id if enabled."""
+    for enabled in third_party_auth.provider.Registry.displayed_for_login():
+        if enabled.is_auth0():
+            return enabled.provider_id
+    log.info("Auth0 is not configured/enabled.")
 
 
 def process_survey_link(survey_link, user):
