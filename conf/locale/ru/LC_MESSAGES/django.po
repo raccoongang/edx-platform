@@ -111,7 +111,7 @@ msgstr ""
 #: openedx/core/lib/xblock_builtin/xblock_discussion/xblock_discussion.py
 #: lms/djangoapps/discussion/templates/discussion/discussion_profile_page.html
 msgid "Discussion"
-msgstr "Обсуждение"
+msgstr "Обсуждения"
 
 #: cms/djangoapps/contentstore/views/component.py
 #: lms/djangoapps/class_dashboard/dashboard_data.py
@@ -243,8 +243,8 @@ msgstr "Вы зачислены на курс профессиональной �
 msgid "Professional Ed"
 msgstr "Профессиональная подготовка"
 
-#: common/djangoapps/course_modes/models.py common/lib/xmodule/xmodule/tabs.py
-#: lms/djangoapps/courseware/tabs.py lms/djangoapps/courseware/views/views.py
+#: common/djangoapps/course_modes/models.py
+#: lms/djangoapps/courseware/views/views.py
 #: lms/djangoapps/shoppingcart/reports.py
 #: openedx/features/course_experience/__init__.py
 #: cms/templates/widgets/header.html lms/templates/help_modal.html
@@ -256,6 +256,30 @@ msgstr[0] "курс"
 msgstr[1] "курса"
 msgstr[2] "курсов"
 msgstr[3] "курсов"
+
+#: lms/djangoapps/courseware/tabs.py common/lib/xmodule/xmodule/tabs.py
+msgid "Lectures"
+msgstr "Лекции"
+
+#: themes/edx-theme/lms/templates/courseware/info.html
+msgid "Copy Referral Link"
+msgstr "Реферальная ссылка"
+
+#: themes/edx-theme/lms/templates/courseware/info.html
+msgid "Hour per week"
+msgid_plural "Hours per week"
+msgstr[0] "час в неделю"
+msgstr[1] "часа в неделю"
+msgstr[2] "часов в неделю"
+msgstr[3] "часов в неделю"
+
+#: themes/edx-theme/lms/templates/courseware/info.html
+msgid "Week"
+msgid_plural "Weeks"
+msgstr[0] "неделя"
+msgstr[1] "недели"
+msgstr[2] "недель"
+msgstr[3] "недель"
 
 #: common/djangoapps/course_modes/models.py
 #: common/lib/xmodule/xmodule/annotatable_module.py
@@ -4611,7 +4635,7 @@ msgstr "Внешнее обсуждение"
 
 #: common/lib/xmodule/xmodule/tabs.py lms/djangoapps/courseware/tabs.py
 msgid "Home"
-msgstr "Программа"
+msgstr "Обзор"
 
 #: themes/edx-theme/lms/templates/navigation/navbar-not-authenticated.html
 msgid "Main page"
@@ -6046,7 +6070,7 @@ msgstr "Программа обучения"
 #: lms/djangoapps/courseware/tabs.py
 #: lms/templates/peer_grading/peer_grading.html
 msgid "Progress"
-msgstr "Ваш результат"
+msgstr "Успеваемость"
 
 #. #-#-#-#-#  django-partial.po (0.1a)  #-#-#-#-#
 #. Translators: 'Textbooks' refers to the tab in the course that leads to the
@@ -23376,6 +23400,14 @@ msgstr "Еженедельная нагрузка в часах"
 #: cms/templates/settings.html
 msgid "Time spent on all course work"
 msgstr "Вся нагрузка курса"
+
+#: cms/templates/settings.html
+msgid "Hours of Classes"
+msgstr "Время занятий"
+
+#: cms/templates/settings.html
+msgid "When the classes are held"
+msgstr "Когда проводятся занятия"
 
 #: cms/templates/settings.html
 msgid "Prerequisite Course"

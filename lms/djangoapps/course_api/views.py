@@ -30,6 +30,8 @@ class CourseDetailView(DeveloperErrorViewMixin, RetrieveAPIView):
 
         * effort: A textual description of the weekly hours of effort expected
             in the course.
+        * class_time: A textual description of the hours of classes expected
+            in the course.
         * end: Date the course ends, in ISO 8601 notation
         * enrollment_end: Date enrollment ends, in ISO 8601 notation
         * enrollment_start: Date enrollment begins, in ISO 8601 notation

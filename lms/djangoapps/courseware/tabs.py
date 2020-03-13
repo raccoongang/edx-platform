@@ -29,7 +29,7 @@ class CoursewareTab(EnrolledTab):
     The main courseware view.
     """
     type = 'courseware'
-    title = ugettext_noop('Course')
+    title = ugettext_noop('Lectures')
     priority = 10
     view_name = 'courseware'
     is_movable = False
@@ -310,6 +310,12 @@ def get_course_tab_list(request, course):
     course_tab_list = []
     must_complete_ee = not user_can_skip_entrance_exam(user, course)
     for tab in xmodule_tab_list:
+        # Skillonomy customisation:
+        # Originaly title was 'Course', now it is 'Lectures' and it setups while
+        # new course became created. For consistence across all courses we need to
+        # rename old ones:
+        if tab.name == 'Course':
+            tab.name = 'Lectures'
         if must_complete_ee:
             # Hide all of the tabs except for 'Courseware'
             # Rename 'Courseware' tab to 'Entrance Exam'
