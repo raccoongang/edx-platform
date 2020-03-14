@@ -70,6 +70,7 @@ class TestPaverServerTasks(PaverTestCase):
         """
         Test the "devstack" task.
         """
+        options['disable-static-collector'] = True
         self.verify_server_task("lms", options)
 
     @ddt.data(
@@ -85,6 +86,7 @@ class TestPaverServerTasks(PaverTestCase):
         """
         Test the "devstack" task.
         """
+        options['disable-static-collector'] = True
         self.verify_server_task("studio", options)
 
     @ddt.data(
@@ -140,6 +142,7 @@ class TestPaverServerTasks(PaverTestCase):
         """
         Test the "run_all_servers" task.
         """
+        options['disable-static-collector'] = True
         self.verify_run_all_servers_task(options)
 
     @ddt.data(
@@ -230,6 +233,7 @@ class TestPaverServerTasks(PaverTestCase):
                 args.append("--fast")
             if no_contracts:
                 args.append("--no-contracts")
+            args.append("--disable-static-collector")
             call_task("pavelib.servers.devstack", args=args)
         else:
             call_task("pavelib.servers.{task_name}".format(task_name=task_name), options=options)
@@ -286,18 +290,8 @@ class TestPaverServerTasks(PaverTestCase):
         expected_collect_static = not is_fast and expected_settings != Env.DEVSTACK_SETTINGS
         expected_messages = []
         if not is_fast:
-            expected_messages.append(u"xmodule_assets common/static/xmodule")
-            expected_messages.append(u"install npm_assets")
-            expected_messages.extend(
-                [c.format(settings=expected_asset_settings) for c in EXPECTED_PRINT_SETTINGS_COMMAND]
-            )
-            expected_messages.append(EXPECTED_WEBPACK_COMMAND.format(
-                node_env="production" if expected_asset_settings != Env.DEVSTACK_SETTINGS else "development",
-                static_root_lms=None,
-                static_root_cms=None,
-                webpack_config_path=None
-            ))
-            expected_messages.extend(self.expected_sass_commands(asset_settings=expected_asset_settings))
+            expected_messages.extend(self.expected_update_assets_commands(system='lms', asset_settings=expected_asset_settings))
+            expected_messages.extend(self.expected_update_assets_commands(system='cms', asset_settings=expected_asset_settings))
         if expected_collect_static:
             expected_messages.append(EXPECTED_COLLECT_STATIC_COMMAND.format(
                 system="lms", asset_settings=expected_asset_settings, log_string=log_string
@@ -332,3 +326,19 @@ class TestPaverServerTasks(PaverTestCase):
         if system != 'lms':
             expected_sass_commands.extend(EXPECTED_CMS_SASS_COMMAND)
         return [command.format(asset_settings=asset_settings) for command in expected_sass_commands]
+
+    def expected_update_assets_commands(self, system=None, asset_settings=u"test_static_optimized"):
+        expected_messages = []
+        expected_messages.append(u"xmodule_assets common/static/xmodule")
+        expected_messages.append(u"install npm_assets")
+        expected_messages.extend(
+            [c.format(settings=asset_settings) for c in EXPECTED_PRINT_SETTINGS_COMMAND]
+        )
+        expected_messages.append(EXPECTED_WEBPACK_COMMAND.format(
+            node_env="production" if asset_settings != Env.DEVSTACK_SETTINGS else "development",
+            static_root_lms=None,
+            static_root_cms=None,
+            webpack_config_path=None
+        ))
+        expected_messages.extend(self.expected_sass_commands(system=system, asset_settings=asset_settings))
+        return expected_messages

@@ -25,7 +25,7 @@ ASSET_SETTINGS_HELP = (
 
 
 def run_server(
-        system, fast=False, settings=None, asset_settings=None, port=None, contracts=False
+        system, fast=False, settings=None, asset_settings=None, port=None, contracts=False, disable_static_collector=False
 ):
     """Start the server for LMS or Studio.
 
@@ -51,6 +51,8 @@ def run_server(
         # to save time.
         if settings == DEFAULT_SETTINGS:
             args.append('--skip-collect')
+        if disable_static_collector:
+            args.append('--disable-static-collector')
         call_task('pavelib.assets.update_assets', args=args)
 
     if port is None:
@@ -71,6 +73,7 @@ def run_server(
     ("asset-settings=", "a", ASSET_SETTINGS_HELP),
     ("port=", "p", "Port"),
     ("fast", "f", "Skip updating assets"),
+    ("disable-static-collector", "d", "Disable static collector")
 ])
 def lms(options):
     """
@@ -80,12 +83,14 @@ def lms(options):
     asset_settings = getattr(options, 'asset-settings', settings)
     port = getattr(options, 'port', None)
     fast = getattr(options, 'fast', False)
+    disable_static_collector = getattr(options, 'disable-static-collector', False)
     run_server(
         'lms',
         fast=fast,
         settings=settings,
         asset_settings=asset_settings,
         port=port,
+        disable_static_collector=disable_static_collector
     )
 
 
@@ -96,6 +101,7 @@ def lms(options):
     ("asset-settings=", "a", ASSET_SETTINGS_HELP),
     ("port=", "p", "Port"),
     ("fast", "f", "Skip updating assets"),
+    ("disable-static-collector", "d", "Disable static collector")
 ])
 def studio(options):
     """
@@ -105,12 +111,14 @@ def studio(options):
     asset_settings = getattr(options, 'asset-settings', settings)
     port = getattr(options, 'port', None)
     fast = getattr(options, 'fast', False)
+    disable_static_collector = getattr(options, 'disable-static-collector', False)
     run_server(
         'studio',
         fast=fast,
         settings=settings,
         asset_settings=asset_settings,
         port=port,
+        disable_static_collector=disable_static_collector
     )
 
 
@@ -133,6 +141,7 @@ def devstack(args):
         default=False,
         help="Disable contracts. By default, they're enabled in devstack."
     )
+    parser.add_argument('--disable-static-collector', action='store_true', default=False, help="Disable static collector")
     args = parser.parse_args(args)
     settings = args.settings
     asset_settings = args.asset_settings if args.asset_settings else settings
@@ -146,6 +155,7 @@ def devstack(args):
         settings=settings,
         asset_settings=asset_settings,
         contracts=not args.no_contracts,
+        disable_static_collector=args.disable_static_collector
     )
 
 
@@ -181,6 +191,7 @@ def celery(options):
     ("settings_cms=", None, "deprecated in favor of settings-cms"),
     ("settings_lms=", None, "deprecated in favor of settings-lms"),
     ("worker_settings=", None, "deprecated in favor of worker-settings"),
+    ("disable-static-collector", "d", "Disable static collector")
 ])
 def run_all_servers(options):
     """
@@ -191,6 +202,7 @@ def run_all_servers(options):
     worker_settings = getattr(options, 'worker_settings', 'devstack_with_worker')
     fast = getattr(options, 'fast', False)
     optimized = getattr(options, 'optimized', False)
+    disable_static_collector = getattr(options, 'disable-static-collector', False)
 
     if optimized:
         settings = OPTIMIZED_SETTINGS
@@ -208,6 +220,8 @@ def run_all_servers(options):
             '--settings={}'.format(asset_settings),
             '--skip-collect'
         ]
+        if disable_static_collector:
+            args.append('--disable-static-collector')
         call_task('pavelib.assets.update_assets', args=args)
 
         # Now collect static for each system separately with the appropriate settings.

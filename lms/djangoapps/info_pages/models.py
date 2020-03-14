@@ -22,7 +22,7 @@ def get_pages():
 class InfoPage(TranslatableModel):
     PAGES = get_pages()
 
-    page = models.CharField(max_length=50, choices=PAGES, unique=True)
+    page = models.CharField(max_length=50, unique=True)
     translations = TranslatedFields(
         title = models.CharField(max_length=255),
         text = models.TextField()
@@ -36,6 +36,10 @@ class InfoPage(TranslatableModel):
         ),
         on_delete=models.CASCADE,
     )
+
+    def __init__(self, *args, **kwargs):
+        super(InfoPage, self).__init__(*args, **kwargs)
+        self._meta.get_field('page').choices = self.PAGES
 
     def __unicode__(self):
         return self.page
