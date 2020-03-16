@@ -23,13 +23,12 @@ from openedx.core.djangolib.markup import HTML, Text
                         You did it!<br>All lessons are complete.
                     % elif last_completed_subsection.get('medal'):
                         Great work! You earned a
-                        ${last_completed_subsection['medal'].capitalize()} Medal
+                        ${last_completed_subsection['medal'].capitalize()} medal
                         for ${last_completed_subsection.get('display_name')}!
-                        Keep going with the remaining lessons.
                     % elif last_completed_subsection:
                         Great work! You have completed ${last_completed_subsection.get('display_name')}!
                     % else:
-                        Your grade for the last completed lesson will be displayed here.
+                        Welcome to HERA Science!
                     % endif
                     </p>
 
