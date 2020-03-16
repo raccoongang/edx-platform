@@ -456,13 +456,13 @@ class CourseTabList(List):
     @classmethod
     def upgrade_tabs(cls, tabs):
         """
-        Reverse and Rename Courseware to Lectures and Course Info to Home Tabs.
+        Reverse and Rename Courseware to Content and Course Info to Home Tabs.
         """
         if tabs and len(tabs) > 1:
             if tabs[0].get('type') == 'courseware' and tabs[1].get('type') == 'course_info':
                 tabs[0], tabs[1] = tabs[1], tabs[0]
                 tabs[0]['name'] = _('Home')
-                tabs[1]['name'] = _('Lectures')
+                tabs[1]['name'] = _('Content')
 
         return tabs
 

@@ -257,10 +257,6 @@ msgstr[1] "курса"
 msgstr[2] "курсов"
 msgstr[3] "курсов"
 
-#: lms/djangoapps/courseware/tabs.py common/lib/xmodule/xmodule/tabs.py
-msgid "Lectures"
-msgstr "Лекции"
-
 #: themes/edx-theme/lms/templates/courseware/info.html
 msgid "Copy Referral Link"
 msgstr "Реферальная ссылка"
@@ -11596,6 +11592,7 @@ msgstr "Страница не найдена"
 #: cms/templates/textbooks.html cms/templates/videos_index.html
 #: cms/templates/widgets/header.html lms/templates/static_htmlbook.html
 #: lms/templates/static_pdfbook.html lms/templates/staticbook.html
+#: lms/djangoapps/courseware/tabs.py common/lib/xmodule/xmodule/tabs.py
 msgid "Content"
 msgstr "Содержание"
 
