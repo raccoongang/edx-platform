@@ -938,10 +938,15 @@ def update_assets(args):
         '--wait', type=float, default=0.0,
         help="How long to pause between filesystem scans"
     )
+    parser.add_argument(
+        '--disable-static-collector', action='store_true', dest='disable_static_collector', default=False,
+        help="Disable static collector"
+    )
     args = parser.parse_args(args)
 
+    # This variable is only needed to disable static_collector
     is_devstack = True
-    if args.settings in ('aws', 'static_collector'):
+    if not args.disable_static_collector and args.settings in ('aws', 'static_collector'):
         args.settings = 'static_collector'
         is_devstack = False
 
