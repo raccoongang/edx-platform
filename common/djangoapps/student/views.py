@@ -63,6 +63,7 @@ from certificates.models import (  # pylint: disable=import-error
 from course_modes.models import CourseMode
 from courseware.access import has_access
 from courseware.courses import get_courses, sort_by_announcement, sort_by_start_date, get_course_with_access  # pylint: disable=import-error
+from dashboard.models import PlatformNewsSubscriptionEmail
 from django_comment_common.models import assign_role
 from edeos.utils import send_edeos_api_request, get_user_id
 from edxmako.shortcuts import render_to_response, render_to_string
@@ -2846,6 +2847,46 @@ def change_email_settings(request):
         )
 
     return JsonResponse({"success": True})
+
+
+@require_POST
+@ensure_csrf_cookie
+def subscribe_platform_updates(request):
+    """
+    Handle request for subscription to platform updates.
+    """
+    email = request.POST.get("email")
+
+    if not email:
+        return JsonResponse(_("Enter your email"))
+    if len(email) > 64:
+        return JsonResponse(_("Email max length is 64 characters"))
+    try:
+        validate_email(email)
+        PlatformNewsSubscriptionEmail.objects.create(subscription_email=email)
+    except ValidationError as e:
+        log.info(
+            u"Failed to add %s to list of subscriptions for platform updates. ValidationError: %s",
+            email,
+            e,
+        )
+        msg = _("Invalid email address")
+    except IntegrityError as e:
+        log.info(
+            u"Failed to add %s to list of subscriptions for platform updates. IntegrityError: %s",
+            email,
+            e,
+        )
+        msg = _("Email already subscribed")
+    else:
+        log.info(
+            u"%s was added to list of subscriptions for platform updates",
+            email,
+        )
+        msg = _("Email has been added successfully")
+
+    return JsonResponse(msg)
+
 
 
 class LogoutView(TemplateView):

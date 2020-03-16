@@ -35,7 +35,7 @@ import dashboard.git_import as git_import
 import track.views
 from courseware.courses import get_course_by_id
 from dashboard.git_import import GitImportError
-from dashboard.models import CourseImportLog
+from dashboard.models import CourseImportLog, PlatformNewsSubscriptionEmail
 from edxmako.shortcuts import render_to_response
 from openedx.core.djangoapps.external_auth.models import ExternalAuthMap
 from openedx.core.djangoapps.external_auth.views import generate_password
@@ -310,6 +310,14 @@ class Users(SysadminDashboardView):
                     (UserProfile.objects.all().iterator()))
             return self.return_csv('users_{0}.csv'.format(
                 request.META['SERVER_NAME']), header, data)
+
+        elif action == 'download_subscription_emails':
+            emails = PlatformNewsSubscriptionEmail.objects.all().values_list('subscription_email')
+            if emails:
+                return self.return_csv('plarform_updates_subscriptions', ('email',), emails)
+            else:
+                self.msg += 'There are no emails yet'
+
         elif action == 'repair_eamap':
             self.msg = u'<h4>{0}</h4><pre>{1}</pre>{2}'.format(
                 _('Repair Results'),
