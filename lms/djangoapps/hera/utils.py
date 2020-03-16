@@ -139,3 +139,7 @@ def clear_active_course_cache(user_id):
     cache.delete(
         CACHING_USER_ACTIVE_COURSE_KEY.format(user_id=user_id)
     )
+
+def clear_active_course_cache_for_users(user_ids):
+    user_active_course_keys = [CACHING_USER_ACTIVE_COURSE_KEY.format(user_id=user_id) for user_id in user_ids]
+    cache.delete_many(user_active_course_keys)
