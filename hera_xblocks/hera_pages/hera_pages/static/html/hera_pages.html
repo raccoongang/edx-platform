@@ -15,6 +15,7 @@
         </div>
         <div class="author-block__question">
             <div class="slidebar-wrapper-${block_id}">
+                <% loop_counter = 1 %>
                 % for index, item in enumerate(data.get('sliderBar', [])):
                     <div class="single-item js-content-counter">
                         <div>
@@ -30,6 +31,7 @@
                                         % if item['tableData'].get('columns'):
                                             <tr>
                                                 % for _ind, column in enumerate(item['tableData']['columns']):
+                                                    <% loop_counter += 1 %>
                                                     % if column.get('type') == 'head':
                                                         <th>${column['value'].replace('!', '', 1)}</th>
                                                     % elif column['value'].startswith('?'):
@@ -40,7 +42,7 @@
                                                                 except IndexError:
                                                                     column_answer = ''
                                                             %>
-                                                            <input placeholder="Enter data here" type="text" name="${index}-${_ind}" value="${column_answer}" required/>
+                                                            <input placeholder="Enter data here" type="text" name="${index}-${_ind}-${loop_counter}" value="${column_answer}" required/>
                                                         </td>
                                                         <% user_answer_input_index += 1 %>
                                                     % else:
@@ -51,9 +53,11 @@
                                         % endif
                                         % if item['tableData'].get('rows'):
                                             % for row in item['tableData']['rows']:
+                                                <% loop_counter += 1 %>
                                                 <tr>
                                                     % for idx, col in enumerate(item['tableData'].get('columns')):
                                                         % if row[str(idx)]['value'].startswith('?'):
+                                                            <% loop_counter += 1 %>
                                                             <td>
                                                                 <%
                                                                     try:
@@ -61,7 +65,7 @@
                                                                     except IndexError:
                                                                         row_answer = ''
                                                                 %>
-                                                                <input placeholder="Enter data here" type="text" name="${index}-${idx}" value="${row_answer}" required/>
+                                                                <input placeholder="Enter data here" type="text" name="${index}-${idx}-${loop_counter}" value="${row_answer}" required/>
                                                             </td>
                                                             <% user_answer_input_index += 1 %>
                                                         % elif row[str(idx)].get('type') == 'head':
