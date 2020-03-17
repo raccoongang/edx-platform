@@ -541,8 +541,9 @@ button.btn-simulation:focus:not(:disabled) {
 
 /* Confidence select option */
 .confidence-holder .select2-container {
+    width: initial !important;
     vertical-align: initial;
-    margin-left: 8px;
+    margin-left: 12px;
 }
 
 .confidence-holder .select2-container--default .select2-selection--single {
