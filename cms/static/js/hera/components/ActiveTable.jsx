@@ -257,24 +257,6 @@ export default class ActiveTable extends React.PureComponent{
                                 )
                             })
                         }
-                        {/* <tr className="is-add-row">
-                        {
-                            columns && (
-                                <td>
-                                    <div className="table-buttons is-row">
-                                        <button type="button" className="table-buttons__btn is-add" onClick={() => {this.addRow()}}>+ add row</button>
-                                    </div>
-                                </td>
-                            )
-                        }
-                        {
-                            columns.map((col, idx) => {
-                                return (
-                                    <td key={idx} />
-                                )
-                            })
-                        }
-                    </tr> */}
                         </tbody>
                     </table>
                 </div>

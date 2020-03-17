@@ -208,6 +208,8 @@ export default class PagesBaseComponent extends React.Component {
             speed: 500,
             slidesToShow: 1,
             slidesToScroll: 1,
+            draggable: false,
+            variableWidth: true,
         };
 
         const data = this.props[this.componentType];
@@ -267,8 +269,10 @@ export default class PagesBaseComponent extends React.Component {
                                         {
                                             bar.tableData && (
                                                 <div className="table-holder">
-                                                    <button type="button" className="table-holder__btn" onClick={() => this.removeTable(index)}>- remove table</button>
                                                     <ActiveTable tableData={bar.tableData} saveHandler={(data) => this.changeTableData(data, index)}/>
+                                                    <button type="button" title="Remove table" className="table-holder__btn" onClick={() => this.removeTable(index)}>
+                                                        <i className="fa fa-trash" aria-hidden="true" />
+                                                    </button>
                                                 </div>
                                             )
                                         }

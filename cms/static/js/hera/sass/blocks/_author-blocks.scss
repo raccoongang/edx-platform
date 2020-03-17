@@ -142,6 +142,10 @@
         }
 
         &__slider {
+            &-item {
+                width: 658px !important;
+            }
+
             .slick-arrow {
                 position: absolute;
                 top: 50%;
@@ -240,7 +244,7 @@
         box-sizing: border-box;
         width: $block-question__width;
         border: 1px solid $author_color2;
-        padding: 12px;
+        padding: 12px 12px;
         position: static;
         max-height: $block-question__height;
         overflow-y: auto;
@@ -263,12 +267,16 @@
 
         &__slider {
             &-item {
+                box-sizing: border-box;
+                width: 316px !important;
                 position: relative;
                 padding-bottom: 28px;
+                margin-right: 10px;
 
                 .mce-tinymce {
-                    width: 99% !important;
+                    width: 94% !important;
                     min-height: auto;
+                    margin: 0 auto;
                 }
 
                 iframe {
@@ -389,6 +397,8 @@
 
         &.is-add-table {
             position: static;
+            margin-top: 4px;
+            margin-left: 10px;
         }
 
         i {

@@ -541,6 +541,7 @@ button.btn-simulation:focus:not(:disabled) {
 
 /* Confidence select option */
 .confidence-holder .select2-container {
+    width: initial !important;
     vertical-align: initial;
     margin-left: 8px;
 }
@@ -577,6 +578,10 @@ button.btn-simulation:focus:not(:disabled) {
     }
 
     .confidence-holder {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: flex-end;
         margin: 0 0 12px;
     }
 

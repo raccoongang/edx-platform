@@ -448,10 +448,7 @@ button.feedback-btn:focus:not(:disabled) {
     }
 
     .feedback-content {
-        min-width: 265px;
-        left: 0;
-        right: auto;
-        margin-left: -84px;
+        min-width: 210px;
     }
 
     .feedback-content:after {
