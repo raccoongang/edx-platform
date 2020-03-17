@@ -495,6 +495,7 @@ button.btn-simulation:focus:not(:disabled) {
 
 .table-wrapper table td,
 .table-wrapper table th {
+    line-height: 1.1;
     padding: 6px 8px;
     position: relative;
     min-width: 110px;
@@ -527,7 +528,7 @@ button.btn-simulation:focus:not(:disabled) {
 .table-wrapper input[type="password"],
 .table-wrapper textarea.text {
     display: block;
-    border: none;
+    border: 1px solid transparent;
     box-shadow: none;
     padding: 0;
     background: none;

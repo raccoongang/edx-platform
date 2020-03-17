@@ -52,7 +52,7 @@ function QuestionXBlock(runtime, element, init_args) {
                 scaffolds[scaffoldName].paid = response.scaffold_paid;
                 if (response.scaffold_paid){
                     $('.user-coins').html(response.coins);
-                    $('.scaffold__price.'+scaffoldName).html('&#10004');
+                    $('.scaffold__price.'+scaffoldName).html('<i class="fa fa-check" aria-hidden="true"></i>');
                 }
             }).error(function(error){
                 console.log(error);
