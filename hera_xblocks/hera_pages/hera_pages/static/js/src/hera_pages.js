@@ -41,9 +41,28 @@ function HeraPagesXBlock(runtime, element, init_args) {
             }
 
             function isFormValid($form) {
-                var $inputs = $form.find('input');
-                $inputs.validate();
-                return $inputs.valid();
+                var validValues = [];
+                var trueCounter = 0;
+                var inputFormCounter = 0;
+
+                $form.each(function() {
+                    var form = $(this);
+                    if (form.find('input').length) {
+                        inputFormCounter++;
+                        form.validate();
+                        validValues.push(form.valid());
+                    }
+
+                });
+                validValues.forEach(function(el, ind) {
+                    if (el) {
+                        trueCounter++;
+                    }
+                });
+                if (trueCounter === inputFormCounter) {
+                    return true;
+                }
+                return false;
             }
 
             function getUserAnswers($form) {
@@ -58,7 +77,8 @@ function HeraPagesXBlock(runtime, element, init_args) {
                     if (value.length) {
                         answerCounter++;
                     }
-                    userAnswers[serializedForm[i].name].push(value);
+                    var index = serializedForm[i].name.split('-')[0];
+                    userAnswers[index].push(value);
                 }
                 return userAnswers;
             }
@@ -70,6 +90,7 @@ function HeraPagesXBlock(runtime, element, init_args) {
                 ).done(function(response) {
                     var tablesData = response.tables_html;
                     var $questionForm = $(".table-form", element);
+                    findSlideWithTable();
                     $questionForm.each(function(index) {
                         if (tablesData[index]){
                             $(this).html(tablesData[index]);
@@ -96,6 +117,22 @@ function HeraPagesXBlock(runtime, element, init_args) {
 
             function changeFeedbackMessage(message) {
                 $('#feedback-content-' + blockId).text(message);
+            }
+
+            /**
+             * Find a table with input fields and make it active in slider to show correct
+             * filled table.
+             */
+            function findSlideWithTable() {
+                $(".table-form", element).each(function() {
+                    if ($(this).find('input').length > 0) {
+                        // find the index of the slick-item element
+                        var theActiveSlideIndex = $('.single-item', element).index($(this).parent('.single-item'));
+                        // go to that active slider
+                        $slidesTogether.slick('slickGoTo', theActiveSlideIndex);
+                        return false;
+                    }
+                });
             }
 
             // click on the prev arrow
@@ -140,26 +177,32 @@ function HeraPagesXBlock(runtime, element, init_args) {
 
             $submitButton.bind('click', function (e) {
                 var $questionForm = $(".table-form", element);
-                if ($questionForm.length) {
+                if ($questionForm.length && !tableRendered) {
                     var userAnswers = getUserAnswers($questionForm);
-                    if (!tableRendered && !isFormValid($questionForm) && answerCounter >= 3 && feedbackMessageCounter < 2) {
-                        postUserAnswers(userAnswers);
-                        renderTablesWithCorrectAnswers();
-                        changeFeedbackMessage("Alright. Let's move on. Here is the completed table.");
-                        showFeedback();
-                        feedbackMessageCounter++;
-                        return null;
-                    } else if (!tableRendered && !isFormValid($questionForm) && feedbackMessageCounter === 0) {
-                        showFeedback();
-                        feedbackMessageCounter++;
-                        changeFeedbackMessage(
-                            "It seems like you haven't fully interacted with the simulation." +
-                            " Give it another try. If you'd like to exit the simulation instead, press next."
-                        );
-                        return null;
-                    } else if (!tableRendered) {
-                        postUserAnswers(userAnswers);
-                        hideFeedback();
+                    feedbackMessageCounter++;
+                    if (feedbackMessageCounter === 1) { // it seems like you havent interacted
+
+                        if (!isFormValid($questionForm)) {
+                            changeFeedbackMessage(
+                                "It seems like you haven't fully interacted with the simulation." +
+                                " Give it another try. If you'd like to exit the simulation instead, press next."
+                            );
+                            showFeedback();
+                        } else {
+                            postUserAnswers(userAnswers);
+                            renderTablesWithCorrectAnswers();
+                            changeFeedbackMessage("Alright. Let's move on. Here is the completed table.");
+                            showFeedback();
+                        }
+                        return;
+                    } else if (feedbackMessageCounter === 2) {  // alright let's move on
+
+                            postUserAnswers(userAnswers);
+                            renderTablesWithCorrectAnswers();
+                            changeFeedbackMessage("Alright. Let's move on. Here is the completed table.");
+                            showFeedback();
+
+                        return;
                     }
                 }
                 clickNext();

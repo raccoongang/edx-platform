@@ -189,10 +189,16 @@
         % endif
     </div>
     <div class="author-holder author-block__buttons">
-        <span class="confidence-text info hidden"></span>
-        <div class="confidence-holder">
-            <input type="number" class="confidence-input hidden" min="0" max="100"/>
+        <div class="confidence-holder hidden">
+            <span class="confidence-text info">${confidence_text}</span>
             <span class="confidence-text error">Please tell us how confident you are about your answer.</span>
+            <select class="confidence-select" name="confidence" required>
+                <option value="">------</option>
+                <option value="extremely">Extremely</option>
+                <option value="moderately">Moderately</option>
+                <option value="slightly">Slightly</option>
+                <option value="not_at_all">Not at all</option>
+            </select>
         </div>
         <div class="btns-flex-holder">
             <div class="feedback-holder">

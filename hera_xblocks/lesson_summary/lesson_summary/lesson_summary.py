@@ -32,13 +32,18 @@ class LessonSummaryXBlock(StudioEditableXBlockMixin, XBlock):
     def get_context(self):
         scaffolds_settings = get_scaffolds_settings()
         user_coins = recalculate_coins(str(self.location.course_key), self.location.block_id, self.scope_ids.user_id)
-        return {
+        user = self.runtime.get_real_user(self.runtime.anonymous_student_id)
+        context = {
             'coins_icon_url': scaffolds_settings.get_coin_img_url(),
             'user_coins': user_coins,
             'block_id': self.location.block_id,
-            'user_dashboard_url': reverse('hera:dashboard'),
             'data': self.data
         }
+        if user.is_staff:
+            context['user_dashboard_url'] = reverse('hera:dashboard', kwargs={'course_id': self.location.course_key})
+        else:
+            context['user_dashboard_url'] = reverse('hera:dashboard')
+        return context
 
     # TO-DO: change this view to display your data your own way.
     def student_view(self, context=None):

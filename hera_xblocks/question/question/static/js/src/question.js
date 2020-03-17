@@ -65,8 +65,9 @@ function QuestionXBlock(runtime, element, init_args) {
         $('#main-question-content', element).html($.parseHTML(response.content));
 
         $(function ($) {
-            var $confidenceInfo = $(".confidence-text.info", element);
-            var $confidenceInput = $(".confidence-input", element);
+            var $confidenceInput = $(".confidence-select", element);
+            var $confidenceHolder = $('.confidence-holder', element);
+            var $confidenceError = $('.confidence-text.error', element);
             var $scaffolds = $(".scaffolds", element);
             var $blockScaffold = $(".scaffold-info", element);
             var $closeBtn = $(".js-close-scaffold-btn", element);
@@ -85,20 +86,36 @@ function QuestionXBlock(runtime, element, init_args) {
 
             // conditions have been separated to make it easier to read the code (but not sure it helped)
             if (!isSubmissionAllowed && ((response.has_many_types && isThereTableInputs) || response.has_many_types || (!response.has_many_types && !isThereTableInputs) )) {
-                if (!response.user_answer_correct) {
+                if (response.user_answer && !response.is_scaffolds_enabled) {
+                    changeFeedbackMessage("You have submitted your answer.");
+                } else if (!response.user_answer_correct) {
                     changeFeedbackMessage(`The correct answer is "${response.correct_answers}". Let’s move on.`);
                 }
+            } else if (response.user_answer && !response.is_scaffolds_enabled) { // !response.has_many_types && isThereTableInputs
+                changeFeedbackMessage("You have submitted your answer.");
             }
-            if (!isSubmissionAllowed && isThereTableInputs && !response.user_answer_correct) {
+            if (response.is_scaffolds_enabled && !isSubmissionAllowed && isThereTableInputs && !response.user_answer_correct) {
                 $buttonFillTables.show();
+            }
+
+            if (response.submission_counter == 1 && isSubmissionAllowed && response.is_any_scaffold_paid) {
+                $skipBtn.removeClass('hidden');
+            }
+
+            function hideConfidence() {
+                $confidenceInput.val(null).trigger('change');
+                $confidenceHolder.addClass('hidden');
+            }
+
+            function showConfidence() {
+                $confidenceHolder.removeClass("hidden");
+                $confidenceError.hide();
             }
 
             $('input, select', element).on("change blur keyup", function() {
                 if (isSubmissionAllowed) {
-                    $confidenceInfo.removeClass("hidden");
-                    $confidenceInput.removeClass("hidden is-not-valid");
+                    showConfidence();
                     $submit.removeAttr("disabled");
-                    $confidenceInfo.text(init_args.confidence_text);
                 }
             });
 
@@ -128,7 +145,8 @@ function QuestionXBlock(runtime, element, init_args) {
                         JSON.stringify({"answers": userAnswers, "confidence": confidence})
                     ).done(function (response) {
                         isSubmissionAllowed = response.is_submission_allowed;
-                        var submissionCount = response.submission_count;
+                        var submissionCount = response.submission_counter;
+                        var isScaffoldsEnabled = response.is_scaffolds_enabled;
                         if (response.correct) {
                             enableNextButton();
                             $skipBtn.addClass("hidden");
@@ -142,7 +160,7 @@ function QuestionXBlock(runtime, element, init_args) {
                             $('input', element).attr('disabled', true);
                             enableNextButton();
                         }
-                        if (submissionCount > 1 && !response.correct) {
+                        if (submissionCount > 1 && !response.correct && isScaffoldsEnabled) {
                             $skipBtn.addClass("hidden");
                             // also separated conditions to eas reading a code
                             if (
@@ -158,14 +176,15 @@ function QuestionXBlock(runtime, element, init_args) {
                                 }
                                 $buttonFillTables.show();
                             }
+                        } else if (!isScaffoldsEnabled) {
+                            changeFeedbackMessage('You have submitted your answer.');
                         }
                         showFeedback();
-                        $confidenceInput.addClass("hidden");
-                        $confidenceInfo.addClass("hidden");
+                        hideConfidence();
                         $(e.currentTarget).attr('disabled', 'disabled');
                     });
                 } else {
-                    $confidenceInput.addClass("is-not-valid");
+                    $confidenceError.show();
                 }
             });
 
@@ -245,8 +264,7 @@ function QuestionXBlock(runtime, element, init_args) {
                         if (isThereTableInputs && !isSubmissionAllowed) {
                             $buttonFillTables.show();
                         }
-                        $confidenceInput.addClass("hidden");
-                        $confidenceInfo.addClass("hidden");
+                        hideConfidence();
                         $submit.attr('disabled', 'disabled');
                         enableNextButton();
                         showFeedback();
@@ -283,6 +301,14 @@ function QuestionXBlock(runtime, element, init_args) {
             });
             $('.button-previous-' + blockId, element).click(function() {
                 $('.sequence-nav-button.button-previous').get(0).click();
+            });
+
+            // In your Javascript (external .js resource or <script> tag)
+            $(document).ready(function() {
+                $confidenceInput.select2({
+                    placeholder: "Select",
+                    minimumResultsForSearch: -1,
+                });
             });
         });
     });

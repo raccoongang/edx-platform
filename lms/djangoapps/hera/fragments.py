@@ -3,8 +3,7 @@ from django.template.loader import render_to_string
 from opaque_keys.edx.keys import CourseKey
 from web_fragments.fragment import Fragment
 
-from hera.models import Mascot
-from hera.utils import get_medal
+from hera.models import Mascot, MedalsSettings
 
 from courseware.courses import get_course_overview_with_access, get_current_child
 from courseware.model_data import FieldDataCache
@@ -252,7 +251,7 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
 
         course_block_tree = get_course_outline_block_tree(request, course_id)
         if not course_block_tree:
-            return None
+            return
 
         field_data_cache = FieldDataCache.cache_for_descriptor_descendents(
             course.id, request.user, course, depth=2
@@ -262,6 +261,10 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
         )
         chapter_module = get_current_child(course_module)
         section_module = get_current_child(chapter_module)
+
+        if not section_module:
+            return
+
         active_block_id = section_module.scope_ids.usage_id.block_id
         last_visited_subsection = ''
 
@@ -269,7 +272,7 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
         earned = 0
         total = 0
 
-        for section in course_block_tree.get('children'):
+        for section in course_block_tree.get('children', []):
             for subsection in section.get('children', []):
                 if active_block_id == subsection['block_id'] and not last_visited_subsection:
                     last_visited_subsection = subsection
@@ -290,7 +293,12 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
                             points = int(subsection.all_total.earned / subsection.all_total.possible * 100)
                         except ZeroDivisionError:
                             points = 0
-                        completed_subsections[subsection.location.block_id].update({'points': points, 'medal': get_medal(points)})
+                        medal, dna_icon = MedalsSettings.get_medal(points)
+                        completed_subsections[subsection.location.block_id].update({
+                            'points': points,
+                            'medal': medal,
+                            'medal_dna_icon': dna_icon
+                        })
 
         try:
             earned = round(earned/total*10, 1)
@@ -335,7 +343,8 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
             'continue_url': last_visited_subsection.get('lms_web_url', ''),
             'start_over_url': start_over_url,
             'csrf': csrf(request)['csrf_token'],
-            'dashboard_mascots': Mascot.user_dashboard_img_urls(),
+            'dashboard_mascots': Mascot.user_dashboard_mascot_img_urls(),
+            'dashboard_medals': MedalsSettings.user_dashboard_medals_data()
         }
 
         html = render_to_string('hera/dashboard-outline-fragment.html', context)

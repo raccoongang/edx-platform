@@ -321,7 +321,7 @@ input[type=number].confidence-input {
     display: none;
     margin: 0;
     position: absolute;
-    left: -88px;
+    right: -123px;
     top: -100px;
     width: 222px;
     border-radius: 8px;
@@ -330,6 +330,7 @@ input[type=number].confidence-input {
     color: var(--color2);
     font-size: 14px;
     text-align: center;
+    z-index: 5;
 }
 
 .confidence-text.error:before {
@@ -348,8 +349,11 @@ input[type=number].confidence-input {
     opacity: .85;
 }
 
-.confidence-input.is-not-valid + .confidence-text.error {
-    display: inline-block;
+.is-not-valid {
+    border-style: solid;
+    border-width: 1px;
+    border-color: red;
+    padding: 1px;
 }
 
 .simulation-overlay {
@@ -533,6 +537,37 @@ button.btn-simulation:focus:not(:disabled) {
     line-height: 1;
     border-radius: 0;
     transition: all .3s ease-in-out;
+}
+
+/* Confidence select option */
+.confidence-holder .select2-container {
+    vertical-align: initial;
+    margin-left: 8px;
+}
+
+.confidence-holder .select2-container--default .select2-selection--single {
+    display: flex;
+    align-items: center;
+    width: 122px;
+    border: 1px solid var(--color2);
+    height: 38px;
+    border-radius: 0;
+    transition: border-color .3s ease-in-out;
+}
+
+@-moz-document url-prefix() {
+    .confidence-holder .select2-container--default .select2-selection--single {
+        width: 130px;
+    }
+}
+
+.confidence-holder .select2-container--default .select2-selection--single:active,
+.confidence-holder .select2-container--default .select2-selection--single:focus {
+    border-color: var(--color1);
+}
+
+.confidence-holder .select2-container--default .select2-selection--single .select2-selection__arrow {
+    top: 7px;
 }
 
 @media screen and (max-width: 759px) {

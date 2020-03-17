@@ -359,7 +359,7 @@ button.feedback-open:focus:not(:disabled) {
 
 .feedback-hint {
     display: block;
-    font-size: 12px;
+    font-size: 16px;
     margin: 0 0 8px;
 }
 
