@@ -58,6 +58,7 @@ textarea {
 	  <a href="${reverse('sysadmin')}" class="${modeflag.get('users')}">${_('Users')}</a>
       <a href="${reverse('sysadmin_courses')}" class="${modeflag.get('courses')}">${_('Courses')}</a>
       <a href="${reverse('sysadmin_staffing')}" class="${modeflag.get('staffing')}">${_('Staffing and Enrollment')}</a>
+      <a href="${reverse('sysadmin_grades')}" class="${modeflag.get('grades')}">${_('Grade Reports')}</a>
       ## Translators: refers to http://git-scm.com/docs/git-log
       <a href="${reverse('gitlogs')}">${_('Git Logs')}</a>
     </h2>
@@ -164,6 +165,21 @@ textarea {
 </form>
 <hr style="width:40%" />
 %endif
+
+
+%if modeflag.get('grades'):
+
+    <p>${_("Download courses grade reports")}</p>
+    <hr />
+
+    <h3>${_('Courses problem grade report')}</h3><br/>
+    <form name="action" method="POST">
+      <input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }" />
+      <button type="submit" name="action" value="get_problem_grade_report_csv">${_('Download overall grade report')}</button>
+    </form>
+
+%endif
+
 
 %if msg:
     <p>${msg}</p>

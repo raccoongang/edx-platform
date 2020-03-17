@@ -3,6 +3,8 @@ This module creates a sysadmin dashboard for managing and viewing
 courses.
 """
 import csv
+from datetime import datetime
+
 import json
 import logging
 import os
@@ -31,6 +33,7 @@ import mongoengine
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.locator import CourseLocator
 from path import Path as path
+from pytz import UTC
 
 from courseware.courses import get_course_by_id
 import dashboard.git_import as git_import
@@ -45,6 +48,7 @@ from xmodule.modulestore.django import modulestore
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from search.search_engine_base import SearchEngine
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from utils import prepare_course_grades_data
 
 log = logging.getLogger(__name__)
 
@@ -574,6 +578,70 @@ class Staffing(SysadminDashboardView):
                       _('email'), _('full_name'), ]
             return self.return_csv('staff_{0}.csv'.format(
                 request.META['SERVER_NAME']), header, data)
+
+        return self.get(request)
+
+
+class Grades(SysadminDashboardView):
+    """
+    The status view provides grades reports.
+    """
+
+    def get(self, request):
+        """
+        Display courses grades statistics.
+        """
+        if not request.user.is_staff:
+            raise Http404
+
+        context = {
+            'msg': self.msg,
+            'djangopid': os.getpid(),
+            'modeflag': {'grades': 'active-section'},
+            'edx_platform_version': getattr(settings, 'EDX_PLATFORM_VERSION_STRING', ''),
+        }
+        return render_to_response(self.template_name, context)
+
+    def post(self, request):
+        """
+        Handle all actions from grades view.
+
+        NOTE: to improve, prepare reports with a background task, slice students/courses/blocks.
+        """
+        action = request.POST.get('action', '')
+
+        track.views.server_track(request, action, {},
+                                 page='sysadmin_grades')
+
+        if action == 'get_problem_grade_report_csv':
+
+            data = []
+            for course in self.get_courses():
+                datum = prepare_course_grades_data(course)
+                data.extend(datum)
+
+            header = [
+                _('Course ID'),
+                _('Student ID'),
+                _('Email'),
+                _('Username'),
+                _('Course Grade'),
+                _('Module'),
+                _('Module Score'),
+                _('Module Assessment (Avg)'),
+                _('Enrollment Track'),
+                _('Verification Status'),
+                _('Certificate Eligible'),
+                _('Certificate Delivered'),
+                _('Certificate Type'),
+            ]
+
+            formatted_date = datetime.now(UTC).strftime('%m-%d-%Y')
+            return self.return_csv(
+                'Grade_Report_All_courses_{}.csv'.format(formatted_date),
+                header,
+                data
+            )
 
         return self.get(request)
 
