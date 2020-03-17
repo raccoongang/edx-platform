@@ -30,7 +30,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
 
     display_name = String(default="Question")
     data = JSONField(default={})
-    user_confidence = Integer(scope=Scope.user_state)
+    user_confidence = JSONField(scope=Scope.user_state)
     user_answer = JSONField(scope=Scope.user_state, default='')
     user_answer_correct = Boolean(scope=Scope.user_state, default=False)
     submission_counter = Integer(scope=Scope.user_state, default=0)
@@ -95,6 +95,13 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     def is_submission_allowed(self):
         return not self.user_answer_correct and self.submission_counter < MAX_ALLOWED_SUBMISSON
 
+    @property
+    def is_scaffolds_enabled(self):
+        return self.data.get('isScaffoldsEnabled', True)
+
+    def is_any_scaffold_paid(self):
+        return self.rephrase_paid or self.break_it_down_paid or self.teach_me_paid
+
     def resource_string(self, path):
         """Handy helper for getting resources from our kit."""
         data = pkg_resources.resource_string(__name__, path)
@@ -103,6 +110,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     def get_context(self):
         scaffolds = get_scaffolds_settings()
         return {
+            "is_scaffolds_enabled": self.is_scaffolds_enabled,
             "user_answer_correct": self.user_answer_correct,
             "user_answer": self.user_answer,
             "is_submission_allowed": self.is_submission_allowed,
@@ -140,6 +148,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             },
             'correct_answers': self.get_correct_answers(),
             'has_many_types': self.has_many_types(),
+            'is_any_scaffold_paid': self.is_any_scaffold_paid()
         }
 
     def get_content_html(self):
@@ -238,10 +247,6 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
     def submit(self, data, suffix=''):
         answers = data.get("answers")
         self.submission_counter += 1
-        try:
-            user_confidence = int(data.get("confidence"))
-        except ValueError:
-            user_confidence = None
 
         user_answers = []
 
@@ -281,14 +286,20 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
 
         grade_value = 1 if self.user_answer_correct else 0
 
-        self.runtime.publish(self, 'grade', {'value': grade_value, 'max_value': 1})
+        if self.is_scaffolds_enabled:
+            self.runtime.publish(self, 'grade', {'value': grade_value, 'max_value': 1})
+        else:
+            self.runtime.publish(self, 'completion', {'completion': 1})
+            self.submission_counter += 1
+
         self.user_answer = answers
-        self.user_confidence = user_confidence
+        self.user_confidence = data.get("confidence")
         return {
             'correct': self.user_answer_correct,
             'is_submission_allowed': self.is_submission_allowed,
+            'is_scaffolds_enabled': self.is_scaffolds_enabled,
             'correct_answers': self.get_correct_answers(),
-            'submission_count': self.submission_counter,
+            'submission_counter': self.submission_counter,
             'has_many_types': self.has_many_types(),
         }
 

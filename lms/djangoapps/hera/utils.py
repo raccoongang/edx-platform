@@ -1,9 +1,16 @@
 from django.apps import apps
+from django.core.cache import cache
 from opaque_keys.edx.keys import CourseKey
 
 from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
 from lms.djangoapps.hera.mongo import BLOCK_ID, USER, c_user_lesson_coins
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from student.models import CourseEnrollment
 from xmodule.modulestore.django import modulestore
+
+
+CACHING_USER_ACTIVE_COURSE_KEY = 'hera:active_course:{user_id}'
+CACHING_TIMEOUT = 60 * 15
 
 
 def get_lesson_summary_xblock_context(user, course_key, current_unit):
@@ -85,3 +92,54 @@ def recalculate_coins(course_id, block_id, user_id, cost=0):
 def get_scaffolds_settings():
     ScaffoldsSettings = apps.get_model('hera', 'ScaffoldsSettings')
     return ScaffoldsSettings.get()
+
+
+def get_users_last_enroll(user):
+    """
+    Get the last user enrollment on the Course with existing CourseOverview.
+    CourseEnrollments aren't removed when deleting CoourseOverview
+    and `enrollments_for_user` returns enrollments even for not existing CourseOverviews.
+
+    """
+    user_enrollments = []
+    enrollments = CourseEnrollment.enrollments_for_user(user=user)
+    for enrollment in enrollments:
+        try:
+            enrollment.course
+        except CourseOverview.DoesNotExist:
+            pass
+        else:
+            user_enrollments.append(enrollment)
+    if user_enrollments:
+        return user_enrollments[-1]
+
+
+def get_user_active_course_id(user):
+    """
+    Returns a cached active course if is.
+    """
+    cached_course_id = cache.get(
+        CACHING_USER_ACTIVE_COURSE_KEY.format(user_id=user.id)
+    )
+    if cached_course_id:
+        return cached_course_id
+    else:
+        last = get_users_last_enroll(user)
+        if last:
+            last_course_id = last.course_id
+            cache.set(
+                CACHING_USER_ACTIVE_COURSE_KEY.format(user_id=user.id),
+                last_course_id,
+                CACHING_TIMEOUT
+            )
+            return last_course_id
+
+
+def clear_active_course_cache(user_id):
+    cache.delete(
+        CACHING_USER_ACTIVE_COURSE_KEY.format(user_id=user_id)
+    )
+
+def clear_active_course_cache_for_users(user_ids):
+    user_active_course_keys = [CACHING_USER_ACTIVE_COURSE_KEY.format(user_id=user_id) for user_id in user_ids]
+    cache.delete_many(user_active_course_keys)
