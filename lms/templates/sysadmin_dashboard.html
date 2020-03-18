@@ -169,10 +169,9 @@ textarea {
 
 %if modeflag.get('grades'):
 
-    <p>${_("Download courses grade reports")}</p>
+    <p>${_("Click to generate a CSV grade report for all courses in the platform.")}</p>
     <hr />
 
-    <h3>${_('Courses problem grade report')}</h3><br/>
     <form name="action" method="POST">
       <input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }" />
       <button type="submit" name="action" value="get_problem_grade_report_csv">${_('Download overall grade report')}</button>
