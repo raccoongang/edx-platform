@@ -1,8 +1,15 @@
+"""
+Custom Sysadmin utilities.
+"""
+import logging
+
 from certificates.models import CertificateWhitelist, certificate_info_for_user
 from lms.djangoapps.grades.new.course_grade import CourseGradeFactory
 from lms.djangoapps.instructor_task.tasks_helper import _graded_assignments
 from lms.djangoapps.verify_student.models import SoftwareSecurePhotoVerification
 from student.models import CourseEnrollment
+
+log = logging.getLogger(__name__)
 
 
 def prepare_course_grades_data(course):
@@ -23,6 +30,7 @@ def prepare_course_grades_data(course):
     for student, course_grade, err_msg in CourseGradeFactory().iter(course, enrolled_students):
 
         if not course_grade:
+            log.info("Couldn't fetch a grade for a sysadmin grades report: {}".format(err_msg))
             # We don't collect errors, unlike standard grade reports
             continue
 
