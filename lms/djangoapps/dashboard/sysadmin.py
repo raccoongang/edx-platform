@@ -4,7 +4,7 @@ courses.
 """
 import csv
 from datetime import datetime
-
+import itertools
 import json
 import logging
 import os
@@ -615,10 +615,8 @@ class Grades(SysadminDashboardView):
 
         if action == 'get_problem_grade_report_csv':
 
-            data = []
-            for course in self.get_courses():
-                datum = prepare_course_grades_data(course)
-                data.extend(datum)
+            data = map(lambda x: [x for x in prepare_course_grades_data(x)], self.get_courses())
+            flattened_data = list(itertools.chain.from_iterable(data))
 
             header = [
                 _('Course ID'),
@@ -640,7 +638,7 @@ class Grades(SysadminDashboardView):
             return self.return_csv(
                 'Grade_Report_All_courses_{}.csv'.format(formatted_date),
                 header,
-                data
+                flattened_data,
             )
 
         return self.get(request)

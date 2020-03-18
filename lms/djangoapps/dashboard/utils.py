@@ -10,9 +10,10 @@ def prepare_course_grades_data(course):
     Prepare grades report for a particular course.
 
     Mimicked Grade Report, see `upload_grades_csv`.
-    """
-    course_grades_data = []
 
+    Returns:
+        course grades for all enrollees and modules (generator)
+    """
     certificate_whitelist = CertificateWhitelist.objects.filter(course_id=course.id,
                                                                 whitelist=True)
     whitelisted_user_ids = [entry.user_id for entry in certificate_whitelist]
@@ -71,6 +72,4 @@ def prepare_course_grades_data(course):
                     verification_status,
                 ]
                 datum.extend(certificate_info)
-                course_grades_data.append(datum)
-
-    return course_grades_data
+                yield datum
