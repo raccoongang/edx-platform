@@ -575,7 +575,10 @@ TEMPLATES = [
 
                 # Online contextual help
                 'help_tokens.context_processor',
-                'openedx.core.djangoapps.site_configuration.context_processors.configuration_context'
+                'openedx.core.djangoapps.site_configuration.context_processors.configuration_context',
+
+                # TPA configs
+                'openedx.core.djangoapps.external_auth.context_processors.tpa_hint_context',
             ],
             # Change 'debug' in your environment settings files - not here.
             'debug': False
