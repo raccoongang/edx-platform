@@ -625,7 +625,7 @@ class Grades(SysadminDashboardView):
                 _('Username'),
                 _('Course Grade'),
                 _('Assignment Type'),
-                _('Score'),
+                _('Assignment Type Score'),
                 _('Assignment Type (Avg)'),
                 _('Enrollment Track'),
                 _('Verification Status'),
