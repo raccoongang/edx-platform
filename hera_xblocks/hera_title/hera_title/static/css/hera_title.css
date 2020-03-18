@@ -458,4 +458,14 @@ button.feedback-btn:focus:not(:disabled) {
     .feedback-holder {
         margin-right: 0;
     }
+
+    .footer-controls-btns {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .footer-controls-btns button {
+        width: 100%;
+        margin: 0 0 12px !important;
+    }
 }

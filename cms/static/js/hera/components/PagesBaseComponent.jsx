@@ -270,9 +270,7 @@ export default class PagesBaseComponent extends React.Component {
                                             bar.tableData && (
                                                 <div className="table-holder">
                                                     <ActiveTable tableData={bar.tableData} saveHandler={(data) => this.changeTableData(data, index)}/>
-                                                    <button type="button" title="Remove table" className="table-holder__btn" onClick={() => this.removeTable(index)}>
-                                                        <i className="fa fa-trash" aria-hidden="true" />
-                                                    </button>
+                                                    <button type="button" className="table-holder__btn" onClick={() => this.removeTable(index)}>- remove table</button>
                                                 </div>
                                             )
                                         }

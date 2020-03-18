@@ -601,6 +601,12 @@ button.btn-simulation:focus:not(:disabled) {
 
     .scaffolds {
         width: 245px;
-        right: 15px;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .scaffold__btn {
+        font-size: 11px;
     }
 }
