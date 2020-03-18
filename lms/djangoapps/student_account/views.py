@@ -77,6 +77,8 @@ def login_and_registration_form(request, initial_mode="login"):
     if '?' in redirect_to:
         try:
             next_args = urlparse.parse_qs(urlparse.urlparse(redirect_to).query)
+            if 'next' in next_args.keys():
+                next_args = urlparse.parse_qs(urlparse.urlparse(next_args['next'][0]).query)
             provider_id = next_args['tpa_hint'][0]
             tpa_hint_provider = third_party_auth.provider.Registry.get(provider_id=provider_id)
             if tpa_hint_provider:
@@ -551,7 +553,7 @@ def account_settings_context(request):
                 'options': all_languages(),
             }, 'time_zone': {
                 'options': TIME_ZONE_CHOICES,
-            }, 
+            },
             'mobytize_id': user.profile.mobytize_id,
             'mobytize_token': user.profile.mobytize_token,
         },
