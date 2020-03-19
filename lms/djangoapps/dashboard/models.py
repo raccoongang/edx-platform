@@ -2,6 +2,7 @@
 
 import mongoengine
 
+from django.db import models
 from xmodule.modulestore.mongoengine_fields import CourseKeyField
 
 
@@ -16,3 +17,8 @@ class CourseImportLog(mongoengine.Document):
     created = mongoengine.DateTimeField()
     meta = {'indexes': ['course_id', 'created'],
             'allow_inheritance': False}
+
+
+class PlatformNewsSubscriptionEmail(models.Model):
+    """Model to store emails for platform updates subscriptions"""
+    subscription_email = models.EmailField(max_length=64, unique=True)
