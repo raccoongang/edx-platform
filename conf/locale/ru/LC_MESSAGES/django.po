@@ -249,8 +249,13 @@ msgstr "Профессиональная подготовка"
 #: openedx/features/course_experience/__init__.py
 #: cms/templates/widgets/header.html lms/templates/help_modal.html
 #: lms/templates/courseware/courseware.html
+#: themes/edx-theme/lms/templates/dashboard.html
 msgid "Course"
-msgstr "Курс"
+msgid_plural "Courses"
+msgstr[0] "курс"
+msgstr[1] "курса"
+msgstr[2] "курсов"
+msgstr[3] "курсов"
 
 #: common/djangoapps/course_modes/models.py
 #: common/lib/xmodule/xmodule/annotatable_module.py
@@ -15014,7 +15019,7 @@ msgstr "Вы записаны на этот курс"
 #: lms/templates/dashboard/_dashboard_course_listing.html
 #: lms/templates/shoppingcart/registration_code_receipt.html
 msgid "View Course"
-msgstr "Просмотр курса"
+msgstr "Перейти к курсу"
 
 #: lms/templates/course.html
 #: lms/templates/dashboard/_dashboard_course_listing.html
