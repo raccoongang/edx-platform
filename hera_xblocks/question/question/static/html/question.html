@@ -200,9 +200,10 @@
                 <option value="not_at_all">Not at all</option>
             </select>
         </div>
-        <div class="feedback-holder">
-            <button type="button" class="feedback-open" ${'disabled' if submission_counter == 0 else ''}></button>
-            <div class="feedback-content">
+        <div class="btns-flex-holder">
+            <div class="feedback-holder">
+                <button type="button" class="feedback-open" ${'disabled' if submission_counter == 0 else ''}></button>
+                <div class="feedback-content">
                 <span id="feedback-message-${block_id}">
                     %if user_answer_correct:
                         Correct!
@@ -210,19 +211,20 @@
                         Incorrect, please try again. You can ask for help first if you like.
                     %endif
                 </span>
-                <div id="fill-tables-${block_id}" style="display: none;">
+                    <div id="fill-tables-${block_id}" style="display: none;">
                     <span class="feedback-hint">
                         To see the correct filled table(s) click button
                     </span>
-                    <button class="feedback-btn" type="button">Answers</button>
+                        <button class="feedback-btn" type="button">Answers</button>
+                    </div>
+                    <button type="button" class="feedback-close">
+                        ×
+                    </button>
                 </div>
-                <button type="button" class="feedback-close">
-                    ×
-                </button>
             </div>
+            <button type="button" class="author-block__btn skip hidden">Skip</button>
+            <button type="button" class="author-block__btn submit" disabled>Submit</button>
         </div>
-        <button type="button" class="author-block__btn skip hidden">Skip</button>
-        <button type="button" class="author-block__btn submit" disabled>Submit</button>
     </div>
     <div class="simulation-overlay">
         <div class="simulation-popup">

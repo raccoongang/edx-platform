@@ -2,7 +2,7 @@
     box-sizing: border-box;
     position: relative;
     width: 1362px;
-    max-height: 765px;
+    max-height: 796px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -11,7 +11,7 @@
     background: $author_color4;
     border: 1px solid $author_color2;
     border-radius: $author_radius;
-    overflow-y: scroll;
+    overflow-y: auto;
 
     .close-popup {
         position: sticky;
@@ -127,7 +127,7 @@
         margin-right: 12px;
         width: $block-image__width;
         height: $block-question__height;
-        overflow: scroll;
+        overflow: auto;
 
         &.is-small {
             box-sizing: border-box;
@@ -142,6 +142,10 @@
         }
 
         &__slider {
+            &-item {
+                width: 658px !important;
+            }
+
             .slick-arrow {
                 position: absolute;
                 top: 50%;
@@ -240,10 +244,10 @@
         box-sizing: border-box;
         width: $block-question__width;
         border: 1px solid $author_color2;
-        padding: 12px;
+        padding: 12px 12px;
         position: static;
         max-height: $block-question__height;
-        overflow: scroll;
+        overflow-y: auto;
 
         &.is-large {
             width: 765px;
@@ -263,12 +267,16 @@
 
         &__slider {
             &-item {
+                box-sizing: border-box;
+                width: 316px !important;
                 position: relative;
                 padding-bottom: 28px;
+                margin-right: 10px;
 
                 .mce-tinymce {
-                    width: 99% !important;
+                    width: 94% !important;
                     min-height: auto;
+                    margin: 0 auto;
                 }
 
                 iframe {
@@ -389,6 +397,8 @@
 
         &.is-add-table {
             position: static;
+            margin-top: 4px;
+            margin-left: 10px;
         }
 
         i {

@@ -99,7 +99,7 @@
         align-items: center;
         justify-content: space-around;
         position: absolute;
-        right: 12px;
+        right: 8px;
         top: 50%;
         transform: translateY(-50%);
     }
@@ -143,18 +143,19 @@
         display: flex;
         align-items: center;
         justify-content: left;
+        flex-wrap: wrap;
     }
 
     .questions__wrapper input[type="text"].questions__list__text-hint {
         min-width: auto;
-        width: 120px;
+        width: 118px;
         font-size: 10px;
         padding: 4px;
     }
 
     .questions__list__item {
-        margin: 0;
-        padding-right: 28px;
+        margin: 0 0 12px;
+        padding-right: 26px;
         position: relative;
     }
 }

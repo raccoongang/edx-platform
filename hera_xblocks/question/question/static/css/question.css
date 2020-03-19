@@ -567,7 +567,46 @@ button.btn-simulation:focus:not(:disabled) {
     border-color: var(--color1);
 }
 
-
 .confidence-holder .select2-container--default .select2-selection--single .select2-selection__arrow {
     top: 7px;
+}
+
+@media screen and (max-width: 759px) {
+    .confidence-text {
+        flex: 1;
+        margin: 0 0 12px;
+    }
+
+    .confidence-holder {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: flex-end;
+        margin: 0 0 12px;
+    }
+
+    .confidence-input {
+        width: 100px;
+    }
+
+    .author-block__buttons {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .author-block__btn {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .scaffolds {
+        width: 245px;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .scaffold__btn {
+        font-size: 11px;
+    }
 }
