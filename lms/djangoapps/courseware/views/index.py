@@ -32,6 +32,7 @@ from openedx.core.djangoapps.monitoring_utils import set_custom_metrics_for_cour
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preference
 from openedx.core.djangoapps.waffle_utils import WaffleSwitchNamespace
 from openedx.features.course_experience import COURSE_OUTLINE_PAGE_FLAG, default_course_url_name
+from openedx.features.course_experience.utils import get_course_outline_block_tree
 from openedx.features.course_experience.views.course_sock import CourseSockFragmentView
 from openedx.features.enterprise_support.api import data_sharing_consent_required
 from shoppingcart.models import CourseRegistrationCode
@@ -419,6 +420,7 @@ class CoursewareIndex(View):
                             self.url,
                         )
                         raise
+        courseware_context['blocks'] = get_course_outline_block_tree(request, unicode(self.course.id))
         return courseware_context
 
     def _add_entrance_exam_to_context(self, courseware_context):

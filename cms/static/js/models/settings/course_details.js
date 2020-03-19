@@ -20,6 +20,7 @@ define(['backbone', 'underscore', 'gettext', 'js/models/validation_helpers', 'js
                 overview_teacher: '',
                 intro_video: null,
                 effort: null,	// an int or null,
+                class_time: '',
                 license: null,
                 course_image_name: '', // the filename
                 course_image_asset_path: '', // the full URL (/c4x/org/course/num/asset/filename)

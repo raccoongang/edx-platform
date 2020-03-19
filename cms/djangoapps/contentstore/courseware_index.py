@@ -549,6 +549,7 @@ class CourseAboutSearchIndexer(object):
         AboutInfo("start", AboutInfo.PROPERTY, AboutInfo.FROM_COURSE_PROPERTY),
         AboutInfo("end", AboutInfo.PROPERTY, AboutInfo.FROM_COURSE_PROPERTY),
         AboutInfo("effort", AboutInfo.PROPERTY, AboutInfo.FROM_ABOUT_INFO),
+        AboutInfo("class_time", AboutInfo.PROPERTY, AboutInfo.FROM_ABOUT_INFO),
         AboutInfo("display_name", AboutInfo.ANALYSE, AboutInfo.FROM_COURSE_PROPERTY),
         AboutInfo("overview", AboutInfo.ANALYSE, AboutInfo.FROM_ABOUT_INFO),
         AboutInfo("overview_teacher", AboutInfo.ANALYSE, AboutInfo.FROM_ABOUT_INFO),
