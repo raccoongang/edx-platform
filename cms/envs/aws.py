@@ -593,6 +593,8 @@ if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
     sentry_sdk.init(AUTH_TOKENS.get('RG_SENTRY_DSN'), integrations=[DjangoIntegration()])
+
+ORA2_FILEUPLOAD_BACKEND = ENV_TOKENS.get('ORA2_FILEUPLOAD_BACKEND', 'django')
 #RACCOONGANG
 
 ####################### Plugin Settings ##########################

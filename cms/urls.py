@@ -1,3 +1,5 @@
+import os
+
 from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
@@ -15,6 +17,7 @@ from openedx.core.djangoapps.password_policy import compliance as password_polic
 from openedx.core.djangoapps.password_policy.forms import PasswordPolicyAwareAdminAuthForm
 
 from ratelimitbackend import admin
+from openassessment.fileupload.backends.base import Settings as ora_settings
 
 django_autodiscover()
 admin.site.site_header = _('Studio Administration')
@@ -227,6 +230,14 @@ if settings.FEATURES.get('CERTIFICATES_HTML_VIEW'):
         url(r'^certificates/{}$'.format(settings.COURSE_KEY_PATTERN),
             certificates_list_handler, name='certificates_list_handler')
     ]
+
+urlpatterns += [
+    url(r'^openassessment/fileupload/', include('openassessment.fileupload.urls')),
+]
+urlpatterns += static(
+    os.path.join(settings.MEDIA_URL, ora_settings.DEFAULT_FILE_UPLOAD_STORAGE_PREFIX),
+    document_root=os.path.join(settings.MEDIA_ROOT, ora_settings.DEFAULT_FILE_UPLOAD_STORAGE_PREFIX)
+)
 
 # Maintenance Dashboard
 urlpatterns.append(url(r'^maintenance/', include('maintenance.urls', namespace='maintenance')))
