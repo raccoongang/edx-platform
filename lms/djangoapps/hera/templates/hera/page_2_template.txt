@@ -1,8 +1,8 @@
 <div>
 <div>
 <h1 style="font-variant-numeric: normal; font-variant-east-asian: normal; font-weight: normal; font-stretch: normal; line-height: 1.4em; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #313131; margin: 0px 0px 30px; text-align: center;">HERA will help you learn Science.</h1>
-<div class="onboarding-rules-list" style="font-weight: 400; display: flex; align-items: center; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #222222; font-size: 16px;">
-<div>
+<div style="font-weight: 400; display: flex; align-items: center; font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #222222; font-size: 16px;">
+<div style="width: 642px;">
 <p style="color: inherit; margin: 0px 0px 24px; line-height: 1.5;">You will experiment with a simulation and observe the results, and then answer 10 questions. If you answer incorrectly, you can ask for help. You will need to use "lightning bolts" to buy help. You will start the lesson with 300 lightning bolts.</p>
 <p style="color: inherit; margin: 0px 0px 24px; line-height: 1.5;">Each question will offer three types of help: Rephrase, Break it down, Teach me.</p>
 <p style="color: inherit; margin: 0px 0px 24px; line-height: 1.5;">If you answer incorrectly, you can try a new answer up to two more times.</p>
