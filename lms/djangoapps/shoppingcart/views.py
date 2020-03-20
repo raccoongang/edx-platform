@@ -1109,6 +1109,38 @@ def paypal_create(request):
     shoppingcart_items = verify_for_closed_enrollment(cart.user, cart)[-1]
 
     if shoppingcart_items:
+        transaction_items = list()
+
+        for item, course in shoppingcart_items:
+            if item.unit_cost > 0:
+                transaction_items.append({
+                    'quantity': item.qty,
+                    # PayPal requires that item names be at most 127 characters long.
+                    'name': course.display_name[:127],
+                    'price': unicode(item.unit_cost),
+                    'currency': item.currency.upper(),
+                })
+
+        # If we have a 100% order discount
+        if not transaction_items:
+            payer_info = dict()
+            billing_address = dict()
+
+            cart.start_purchase()
+            cart.purchase(
+                first=payer_info.get('first_name', ''),
+                last=payer_info.get('last_name', ''),
+                street1=billing_address.get('line1', ''),
+                street2=billing_address.get('line2', ''),
+                city=billing_address.get('city', ''),
+                state=billing_address.get('state', ''),
+                country=billing_address.get('country_code', ''),
+                postalcode=billing_address.get('postal_code', ''),
+            )
+
+            order_receipt_url = reverse('shoppingcart.views.show_receipt', kwargs={'ordernum': cart.id})
+            return HttpResponseRedirect(order_receipt_url)
+
         data = {
             'intent': 'sale',
             'redirect_urls': {
@@ -1124,16 +1156,7 @@ def paypal_create(request):
                     'currency': cart.currency.upper(),
                 },
                 'item_list': {
-                    'items': [
-                        {
-                            'quantity': item.qty,
-                            # PayPal requires that item names be at most 127 characters long.
-                            'name': course.display_name[:127],
-                            'price': unicode(item.unit_cost),
-                            'currency': item.currency.upper(),
-                        }
-                        for item, course in shoppingcart_items
-                    ],
+                    'items': transaction_items,
                 },
                 'invoice_number': cart.id,
             }],
