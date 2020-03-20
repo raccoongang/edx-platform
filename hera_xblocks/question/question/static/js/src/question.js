@@ -151,7 +151,7 @@ function QuestionXBlock(runtime, element, init_args) {
                             enableNextButton();
                             $skipBtn.addClass("hidden");
                             $scaffolds.addClass("hidden");
-                            changeFeedbackMessage("Correct!");
+                            changeFeedbackMessage("Correct.");
                         }
                         else if (isSubmissionAllowed) {
                             $scaffolds.removeClass("hidden");
