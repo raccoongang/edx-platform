@@ -99,19 +99,7 @@ from openedx.core.lib.courses import course_image_url
               <div class="col-2">
                 % if enable_bulk_purchase:
                 <div class="numbers-row" aria-live="polite">
-                  <label for="field_${item.id}">${_('Students:')}</label>
-                  <div class="counter">
-                      <input maxlength="3" class="spin-counter" title="${_('Input quantity and press enter.')}" max="999" type="text" name="students" value="${item.qty}" id="field_${item.id}" data-unit-cost="${item.unit_cost}" data-qty="${item.qty}" data-item-id="${item.id}" aria-describedby="students-${item.id}">
-                  </div>
-                  <button class="inc button" data-operation="inc">
-                    <span class="icon fa fa-caret-up" aria-hidden="true"><span>+</span></span>
-                    <span class="sr">${_('Increase')}</span>
-                  </button>
-                  <button class="dec button" data-operation="dec">
-                    <span class="icon fa fa-caret-down" aria-hidden="true"></span>
-                    <span class="sr">${_('Decrease')}</span>
-                  </button>
-                      <!--<a name="updateBtn" class="updateBtn hidden" id="updateBtn-${item.id}" href="#">update</a>-->
+                  <label for="field_${item.id}">${_('Students:')}&nbsp;<strong>${item.qty}</strong></label>
                   <span class="error-text hidden" id="students-${item.id}"></span>
                 </div>
                 % endif
