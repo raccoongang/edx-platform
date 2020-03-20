@@ -356,6 +356,13 @@ def course_info(request, course_id):
             # ENDTODO
         }
 
+        # Course duration in weeks
+        if course.end:
+            duration = (course.end - course.start).days // 7
+        else:
+            duration = None
+        context['course_duration'] = duration
+
         from django.contrib.sites.models import Site
         from edeos.utils import send_edeos_api_request
 

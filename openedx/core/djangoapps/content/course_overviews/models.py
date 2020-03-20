@@ -107,6 +107,7 @@ class CourseOverview(TimeStampedModel):
     short_description = TextField(null=True, max_length=150)
     course_video_url = TextField(null=True)
     effort = TextField(null=True)
+    class_time = TextField(null=True)
     self_paced = BooleanField(default=False)
     marketing_url = TextField(null=True)
     eligible_for_financial_aid = BooleanField(default=True)
@@ -208,6 +209,7 @@ class CourseOverview(TimeStampedModel):
         course_overview.catalog_visibility = course.catalog_visibility
         course_overview.short_description = CourseDetails.fetch_about_attribute(course.id, 'short_description')
         course_overview.effort = CourseDetails.fetch_about_attribute(course.id, 'effort')
+        course_overview.class_time = CourseDetails.fetch_about_attribute(course.id, 'class_time')
         course_overview.course_video_url = CourseDetails.fetch_video_url(course.id)
         course_overview.self_paced = course.self_paced
 

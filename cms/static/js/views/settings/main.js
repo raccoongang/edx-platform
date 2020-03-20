@@ -108,6 +108,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    else this.$el.find('.remove-course-introduction-video').hide();
 
                    this.$el.find('#' + this.fieldToSelectorMap['effort']).val(this.model.get('effort'));
+                   this.$el.find('#' + this.fieldToSelectorMap['class_time']).val(this.model.get('class_time'));
 
                    var courseImageURL = this.model.get('course_image_asset_path');
                    this.$el.find('#course-image-url').val(courseImageURL);
@@ -171,6 +172,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    'short_description': 'course-short-description',
                    'intro_video': 'course-introduction-video',
                    'effort': 'course-effort',
+                   'class_time': 'course-class-time',
                    'course_image_asset_path': 'course-image-url',
                    'banner_image_asset_path': 'banner-image-url',
                    'video_thumbnail_image_asset_path': 'video-thumbnail-image-url',
@@ -303,6 +305,7 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        break;
                    case 'course-language':
                    case 'course-effort':
+                   case 'course-class-time':
                    case 'course-title':
                    case 'course-subtitle':
                    case 'course-duration':

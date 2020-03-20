@@ -167,6 +167,7 @@ def get_course_about_section(request, course, section_key):
     - textbook
     - faq
     - effort
+    - class_time
     - more_info
     - ocw_links
     """
@@ -190,6 +191,7 @@ def get_course_about_section(request, course, section_key):
         'overview',
         'overview_teacher',
         'effort',
+        'class_time',
         'end_date',
         'prerequisites',
         'ocw_links'

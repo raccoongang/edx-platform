@@ -343,7 +343,7 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
                     )}</span>
                 </li>
                 <li class="field text" id="field-course-overview-teacher">
-                  <label for="course-overview-teacher">${_("Course Teachers")}</label>
+                  <label for="course-overview-teacher">${_("Course Partners and Teachers")}</label>
                   <textarea class="tinymce text-editor" id="course-overview-teacher"></textarea>
                   <label class="sr" for="course-overview-cm-textarea">
                     ${_('HTML Code Editor')}
@@ -525,6 +525,11 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
                   <label for="course-effort">${_("Hours of Effort per Week")}</label>
                   <input type="text" class="short time" id="course-effort" placeholder="HH:MM" />
                   <span class="tip tip-inline">${_("Time spent on all course work")}</span>
+                </li>
+                <li class="field text" id="field-course-class-time">
+                  <label for="course-class-time">${_("Hours of Classes")}</label>
+                  <input type="text" class="long" id="course-class-time" placeholder="Mon and Wen, 19:00-20:00" />
+                  <span class="tip tip-inline">${_("When the classes are held")}</span>
                 </li>
                 % endif
                 % if is_prerequisite_courses_enabled:

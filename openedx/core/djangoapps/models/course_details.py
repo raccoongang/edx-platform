@@ -29,6 +29,7 @@ ABOUT_ATTRIBUTES = [
     'overview',
     'overview_teacher',
     'effort',
+    'class_time',
     'entrance_exam_enabled',
     'entrance_exam_id',
     'entrance_exam_minimum_score_pct',
@@ -60,6 +61,7 @@ class CourseDetails(object):
         self.overview_teacher = ""  # html to render as the overview_teacher
         self.intro_video = None  # a video pointer
         self.effort = None  # hours/week
+        self.class_time = ""
         self.license = "all-rights-reserved"  # default course license is all rights reserved
         self.course_image_name = ""
         self.course_image_asset_path = ""  # URL of the course image
