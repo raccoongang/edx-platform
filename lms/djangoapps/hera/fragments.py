@@ -3,8 +3,6 @@ from django.template.loader import render_to_string
 from opaque_keys.edx.keys import CourseKey
 from web_fragments.fragment import Fragment
 
-from hera.models import Mascot, MedalsSettings
-
 from courseware.courses import get_course_overview_with_access, get_current_child
 from courseware.model_data import FieldDataCache
 from courseware.module_render import get_module_for_descriptor
@@ -13,6 +11,9 @@ from lms.djangoapps.hera.mongo import BLOCK_ID, COURSE_KEY, LEVEL, NEXT_ID, USER
 from openedx.features.course_experience.utils import get_course_outline_block_tree
 from openedx.features.course_experience.views.course_outline import CourseOutlineFragmentView
 from xmodule.modulestore.django import modulestore
+
+from .models import Mascot, MedalsSettings
+from .utils import levels_match, check_levels_accordance
 
 
 def unit_grade_level(earned, course_block_tree, last_visited_subsection, request, course_id=None):
@@ -103,9 +104,13 @@ def unit_grade_level(earned, course_block_tree, last_visited_subsection, request
         # get next level only if user finished the previous one.
         next_level = next_level if is_complete else lesson_pair[LEVEL]
         first_sub, next_sub = get_pair(lesson_pair.get('block_id'), lesson_pair.get('next_id'), course_block_tree)
+
+        # check levels accordance in lesson pair
+        levels_correspond = check_levels_accordance([first_sub, next_sub], lesson_pair[LEVEL])
+        
         # levels the same and at least one hasn't completed - return current pair
-        if first_sub and next_sub:
-            if lesson_pair[LEVEL] == next_level and (not first_sub.get('complete', True) or not next_sub.get('complete', True)):
+        if levels_correspond and first_sub and next_sub:
+            if levels_match(lesson_pair[LEVEL], next_level) and (not first_sub.get('complete', True) or not next_sub.get('complete', True)):
                 if stored_completed_subsection_ids_changed:
                     c_selection_page().update({
                         COURSE_KEY: course_id,
@@ -122,7 +127,7 @@ def unit_grade_level(earned, course_block_tree, last_visited_subsection, request
 
     for section in course_block_tree.get('children'):
         for subsection in section.get('children', []):
-            if next_level == subsection['unit_level'] and not subsection['complete']:
+            if levels_match(subsection['unit_level'], next_level) and not subsection['complete']:
                 # if such sub is already in existing lesson_pair - shouldn't update db
                 if lesson_pair:
                     if subsection['block_id'] not in [lesson_pair.get('block_id'), lesson_pair.get('next_id')]:
@@ -305,7 +310,7 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
             for section in course_block_tree.get('children', []):
                 for subsection in section.get('children', []):
                     # get the first incomplete subsection with a middle level
-                    if subsection['block_id'] not in completed_subsections and subsection['unit_level'] == needed_level:
+                    if subsection['block_id'] not in completed_subsections and levels_match(subsection['unit_level'], needed_level):
                         last_visited_subsection = subsection
                         break
 
