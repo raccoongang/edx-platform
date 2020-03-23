@@ -67,6 +67,11 @@
                     tabName = tab.name;
                     view.renderSection(view.options.tabSections[tabName], tabName, tab.label);
                 });
+                this.disableSocials();
+
+                view.$('.profile-image-field').append(view.options.profileImageFieldView.render().el);
+                view.$('.password-reset-field').append(view.options.passwordFieldView.render().el);
+
                 return this;
             },
 
@@ -100,6 +105,16 @@
 
             setActiveTab: function() {
                 this.switchTab();
+            },
+
+            disableSocials: function() {
+                var view = this;
+                var socials = ['facebook', 'vk', 'skype', 'telegram']
+                socials.forEach(function(social) {
+                    if (view.$('#field-input-social_links_' + social).val() === '') {
+                        view.$('#field-icon-social_links_' + social + ' .svg-icon').addClass('disabled');
+                    }
+                });
             },
 
             renderSection: function(tabSections, tabName, tabLabel) {

@@ -30,7 +30,7 @@ from openedx.core.djangoapps.lang_pref.api import all_languages, released_langua
 from openedx.core.djangoapps.programs.models import ProgramsApiConfig
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.theming.helpers import is_request_in_themed_site
-from openedx.core.djangoapps.user_api.accounts.api import request_password_change
+from openedx.core.djangoapps.user_api.accounts.api import get_account_settings, request_password_change
 from openedx.core.djangoapps.user_api.errors import UserNotFound
 from openedx.core.lib.edx_api_utils import get_edx_api_data
 from openedx.core.lib.time_zone_utils import TIME_ZONE_CHOICES
@@ -530,6 +530,8 @@ def account_settings_context(request):
         # Return empty order list as account settings page expect a list and
         # it will be broken if exception raised
         user_orders = []
+    account_settings_data = get_account_settings(request, [user.username])[0]
+
     context = {
         'auth': {},
         'duplicate_provider': None,
@@ -551,7 +553,7 @@ def account_settings_context(request):
                 'options': all_languages(),
             }, 'time_zone': {
                 'options': TIME_ZONE_CHOICES,
-            }, 
+            },
             'mobytize_id': user.profile.mobytize_id,
             'mobytize_token': user.profile.mobytize_token,
         },
@@ -564,8 +566,12 @@ def account_settings_context(request):
         'user_preferences_api_url': reverse('preferences_api', kwargs={'username': user.username}),
         'disable_courseware_js': True,
         'show_program_listing': ProgramsApiConfig.is_enabled(),
-        'order_history': user_orders
-
+        'order_history': user_orders,
+        'account_settings_data': account_settings_data,
+        'profile_image_upload_url': reverse('profile_image_upload', kwargs={'username': user.username}),
+        'profile_image_remove_url': reverse('profile_image_remove', kwargs={'username': user.username}),
+        'profile_image_max_bytes': settings.PROFILE_IMAGE_MAX_BYTES,
+        'profile_image_min_bytes': settings.PROFILE_IMAGE_MIN_BYTES,
     }
 
     if third_party_auth.is_enabled():
