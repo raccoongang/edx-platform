@@ -484,8 +484,15 @@ def user_pre_delete_callback(sender, **kwargs):
     """
     This fixes a delete user error with the role of the course creator.
     First delete CourseCreator, then User instance.
+    "Try/except" is used to correctly import CourseCreator when deleting
+    from LMS or CMS. Unable to add to INSTALLED_APPS in lms due to errors
     """
-    from cms.djangoapps.course_creators.models import CourseCreator
+    try:
+        # import for studio
+        from course_creators.models import CourseCreator
+    except ImportError:
+        # import for lms
+        from cms.djangoapps.course_creators.models import CourseCreator
     user = kwargs['instance']
     CourseCreator.objects.filter(user=user).delete()
 
