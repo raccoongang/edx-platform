@@ -735,7 +735,12 @@ urlpatterns += (
         name='generate_user_cert',
     ),
 )
-
+# Course news tab
+if settings.NEWS_ENABLED:
+    urlpatterns += url(
+        r'^courses/{}/course_news$'.format(settings.COURSE_ID_PATTERN),
+        include('course_news.urls')
+    ),
 # discussion forums live within courseware, so courseware must be enabled first
 if settings.FEATURES.get('ENABLE_DISCUSSION_SERVICE'):
     urlpatterns += (
