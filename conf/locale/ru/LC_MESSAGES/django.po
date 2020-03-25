@@ -12070,7 +12070,7 @@ msgstr "Сохранить настройки"
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
 #: themes/edx.org/lms/templates/dashboard.html
 msgid "Unenroll"
-msgstr "Отменить регистрацию"
+msgstr "Отменить запись"
 
 #: lms/templates/edit_unit_link.html
 msgid "View Unit in Studio"
@@ -14593,7 +14593,7 @@ msgstr ""
 #: lms/templates/instructor/instructor_dashboard_2/membership.html
 msgid "Checking this box has no effect if 'Unenroll' is selected."
 msgstr ""
-"Если выбран пункт «Отменить регистрацию», включение этой опции не имеет "
+"Если выбран пункт «Отменить запись», включение этой опции не имеет "
 "значения."
 
 #: lms/templates/ccx/enrollment.html
