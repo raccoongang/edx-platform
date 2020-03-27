@@ -16,7 +16,7 @@
         </div>
         <div class="author-block__question questions-wrapper">
             <div class="question__content">${description}</div>
-            <form class="question-form">
+            <form class="question-form" novalidate>
                 % for index, problem_type in enumerate(problem_types):
                     <div class="questions-list-item-holder">
                         % if problem_type.get('title'):
@@ -201,7 +201,7 @@
             </select>
         </div>
         <div class="btns-flex-holder">
-            <div class="feedback-holder">
+            <div class="feedback-holder ${'tooltip-is-open' if not is_submission_allowed else ''}">
                 <button type="button" class="feedback-open" ${'disabled' if submission_counter == 0 else ''}></button>
                 <div class="feedback-content">
                 <span id="feedback-message-${block_id}">

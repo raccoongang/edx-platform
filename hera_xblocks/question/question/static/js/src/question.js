@@ -84,6 +84,10 @@ function QuestionXBlock(runtime, element, init_args) {
             var $buttonFillTables = $('#fill-tables-' + blockId, element);
             var isThereTableInputs = $('table', element).find('input').length > 0;
 
+            $questionForm.submit(function(e) {
+                return;
+            });
+
             // conditions have been separated to make it easier to read the code (but not sure it helped)
             if (!isSubmissionAllowed && ((response.has_many_types && isThereTableInputs) || response.has_many_types || (!response.has_many_types && !isThereTableInputs) )) {
                 if (response.user_answer && !response.is_scaffolds_enabled) {
@@ -112,10 +116,57 @@ function QuestionXBlock(runtime, element, init_args) {
                 $confidenceError.hide();
             }
 
-            $('input, select', element).on("change blur keyup", function() {
+            function disableSubmit() {
+                $submit.attr("disabled", true);
+            }
+
+            function enableSubmit() {
+                $submit.removeAttr("disabled");
+            }
+
+            $('.questions-wrapper', element).find('input, select').on("change keyup keypress", function(e) {
+                if (e.key === 'Enter' || e.keyCode === undefined || e.keyCode === 13 || e.which === 13) { // enter pressed
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                }
+                // we need to check whether all inputs are empty to disable a submit button.
+                // var formFilled = true;
+                // $('.questions-wrapper', element).find('.questions-list-item-holder').each(function(ind, el) {
+                //     $(el).find('input[type=text], input[type=number]').each(function (idx, _el) {
+                //         // console.log('text', _el)
+                //         if (_el.value.length === 0) {
+                //             formFilled = false;
+                //         }
+                //     });
+                //     var radioCheckboxLength = $(el).find('input[type=radio], input[type=checkbox]').length;
+                //     $(el).find('input[type=radio], input[type=checkbox]').each(function (idx, _el) {
+                //         // console.log('checkbox', _el, _el.checked)
+                //         var checked = false;
+                //         if (_el.checked) {
+                //             checked = true;
+                //         }
+                //         if (idx === radioCheckboxLength-1) {
+                //             console.log('index ====', checked)
+                //             if (!checked) {
+                //                 formFilled = false;
+                //             }
+                //         }
+                //     });
+                //     // console.log(el.type, el)
+                //     // if (el.value.length === 0) {
+                //     //     console.log('got here', el.value)
+                //     //     formFilled = false;
+                //     // }
+                // });
                 if (isSubmissionAllowed) {
-                    showConfidence();
-                    $submit.removeAttr("disabled");
+                    if (true) { // formFilled
+                        showConfidence();
+                        enableSubmit();
+                    } else {
+                        hideConfidence();
+                        disableSubmit();
+                    }
                 }
             });
 
