@@ -112,6 +112,13 @@ function QuestionXBlock(runtime, element, init_args) {
                 $confidenceError.hide();
             }
 
+            function hideScaffoldImg() {
+                $questioonsImageWrapper.removeClass('is-teach is-break is-rephrase');
+                $scaffoldHelpImage.addClass("hidden");
+                $questionSlider.removeClass("hidden");
+                $closeBtn.addClass("hidden");
+            }
+
             $('input, select', element).on("change blur keyup", function() {
                 if (isSubmissionAllowed) {
                     showConfidence();
@@ -240,14 +247,10 @@ function QuestionXBlock(runtime, element, init_args) {
                 $questionContent.html(init_args.description);
                 $questionWrapper.removeClass('is-teach is-break is-rephrase');
                 $scaffolds.removeClass('hidden');
+                hideScaffoldImg();
             });
 
-            $closeBtn.bind('click', function (event) {
-                $questioonsImageWrapper.removeClass('is-teach is-break is-rephrase');
-                $scaffoldHelpImage.addClass("hidden");
-                $questionSlider.removeClass("hidden");
-                $closeBtn.addClass("hidden");
-            });
+            $closeBtn.bind('click', hideScaffoldImg);
 
             $skipBtn.bind('click', function (event) {
                 if (!skipped) {
