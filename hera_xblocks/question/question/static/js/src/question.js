@@ -84,7 +84,9 @@ function QuestionXBlock(runtime, element, init_args) {
             var $buttonFillTables = $('#fill-tables-' + blockId, element);
             var isThereTableInputs = $('table', element).find('input').length > 0;
 
+            // just in case
             $questionForm.submit(function(e) {
+                e.preventDefault();
                 return;
             });
 
@@ -124,43 +126,36 @@ function QuestionXBlock(runtime, element, init_args) {
                 $submit.removeAttr("disabled");
             }
 
-            $('.questions-wrapper', element).find('input, select').on("change keyup keypress", function(e) {
-                if (e.key === 'Enter' || e.keyCode === undefined || e.keyCode === 13 || e.which === 13) { // enter pressed
+            $('.questions-wrapper', element).find('input, select').on("change blur keyup keypress", function(e) {
+                if (e.key === 'Enter' || e.keyCode === 13 || e.which === 13) { // enter pressed
                     e.preventDefault();
                     e.stopPropagation();
                     return;
                 }
                 // we need to check whether all inputs are empty to disable a submit button.
-                // var formFilled = true;
-                // $('.questions-wrapper', element).find('.questions-list-item-holder').each(function(ind, el) {
-                //     $(el).find('input[type=text], input[type=number]').each(function (idx, _el) {
-                //         // console.log('text', _el)
-                //         if (_el.value.length === 0) {
-                //             formFilled = false;
-                //         }
-                //     });
-                //     var radioCheckboxLength = $(el).find('input[type=radio], input[type=checkbox]').length;
-                //     $(el).find('input[type=radio], input[type=checkbox]').each(function (idx, _el) {
-                //         // console.log('checkbox', _el, _el.checked)
-                //         var checked = false;
-                //         if (_el.checked) {
-                //             checked = true;
-                //         }
-                //         if (idx === radioCheckboxLength-1) {
-                //             console.log('index ====', checked)
-                //             if (!checked) {
-                //                 formFilled = false;
-                //             }
-                //         }
-                //     });
-                //     // console.log(el.type, el)
-                //     // if (el.value.length === 0) {
-                //     //     console.log('got here', el.value)
-                //     //     formFilled = false;
-                //     // }
-                // });
+                var formFilled = true;
+                $('.questions-wrapper', element).find('.questions-list-item-holder').each(function(ind, el) {
+
+                    $(el).find('input[type=text], input[type=number], select').each(function (idx, _el) {
+                        if (_el.value.length === 0) {
+                            formFilled = false;
+                        }
+                    });
+                    var radioCheckboxLength = $(el).find('input[type=radio], input[type=checkbox]').length;
+                    var checked = false;
+                    $(el).find('input[type=radio], input[type=checkbox]').each(function (idx, __el) {
+                        if (__el.checked) {
+                            checked = true;
+                        }
+                        if (idx === radioCheckboxLength-1) {
+                            if (!checked) {
+                                formFilled = false;
+                            }
+                        }
+                    });
+                });
                 if (isSubmissionAllowed) {
-                    if (true) { // formFilled
+                    if (formFilled) {
                         showConfidence();
                         enableSubmit();
                     } else {
