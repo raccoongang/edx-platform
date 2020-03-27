@@ -485,7 +485,13 @@ def user_pre_delete_callback(sender, **kwargs):
     This fixes a delete user error with the role of the course creator.
     First delete CourseCreator, then User instance.
     """
-    from cms.djangoapps.course_creators.models import CourseCreator
+    # try/except for correct import by lms or studio
+    try:
+        # import for studio
+        from course_creators.models import CourseCreator
+    except ImportError:
+        # import for lms
+        from cms.djangoapps.course_creators.models import CourseCreator
     user = kwargs['instance']
     CourseCreator.objects.filter(user=user).delete()
 
