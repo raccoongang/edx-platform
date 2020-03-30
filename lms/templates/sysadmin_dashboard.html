@@ -169,12 +169,20 @@ textarea {
 
 %if modeflag.get('grades'):
 
-    <p>${_("Click to generate a CSV grade report for all courses in the platform.")}</p>
+    <p>${_("Click the 'Generate overall grade report' button to start the report generating process. You will be able to download the report once it gets generated.")}</p>
     <hr />
 
     <form name="action" method="POST">
       <input type="hidden" name="csrfmiddlewaretoken" value="${ csrf_token }" />
-      <button type="submit" name="action" value="get_problem_grade_report_csv">${_('Download overall grade report')}</button>
+
+      %if not courses_grades_report_in_progress:
+          <button type="submit" name="action" value="export_problem_grade_report_csv">${_('Generate overall grade report')}</button>
+      %endif
+
+      %if courses_grades_report_ready_to_download:
+          <button type="submit" name="action" value="download_problem_grade_report_csv">${_('Download overall grade report')}</button>
+      %endif
+
     </form>
 
 %endif

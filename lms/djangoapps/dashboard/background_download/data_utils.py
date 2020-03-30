@@ -1,5 +1,5 @@
 """
-Custom Sysadmin utilities.
+Data preparation for file storage.
 """
 import logging
 
@@ -8,11 +8,12 @@ from lms.djangoapps.grades.new.course_grade import CourseGradeFactory
 from lms.djangoapps.instructor_task.tasks_helper import _graded_assignments
 from lms.djangoapps.verify_student.models import SoftwareSecurePhotoVerification
 from student.models import CourseEnrollment
+from xmodule.modulestore.django import modulestore
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('edx.celery.task')
 
 
-def prepare_course_grades_data(course):
+def fetch_course_grades(course):
     """
     Prepare grades report for a particular course.
 
@@ -81,3 +82,11 @@ def prepare_course_grades_data(course):
                 ]
                 datum.extend(certificate_info)
                 yield datum
+
+
+def get_courses():
+    """
+    Return all courses from modulestore.
+    """
+    return modulestore().get_courses()
+
