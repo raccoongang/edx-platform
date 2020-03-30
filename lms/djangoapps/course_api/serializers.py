@@ -95,6 +95,25 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
         ])
         return self.context['request'].build_absolute_uri(base_url)
 
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing `Course` instance, given the
+        validated data.
+        """
+        instance.enrollment_start = validated_data.get(
+            'enrollment_start',
+            instance.enrollment_start
+        )
+        instance.enrollment_end = validated_data.get(
+            'enrollment_end',
+            instance.enrollment_end
+        )
+        instance.end = validated_data.get('end', instance.end)
+        instance.start = validated_data.get('start', instance.start)
+        instance.save()
+
+        return instance
+
 
 class CourseDetailSerializer(CourseSerializer):  # pylint: disable=abstract-method
     """
