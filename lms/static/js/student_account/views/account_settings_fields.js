@@ -176,15 +176,19 @@
                     });
                 },
                 toggleDisableButton: function(disabled) {
+                    var wrapper = this.$el;
                     var button = this.$('#u-field-link-' + this.options.valueAttribute);
                     if (button) {
                         button.prop('disabled', disabled);
+                        wrapper.addClass('is-visible');
                     }
                 },
                 setMessageTimeout: function() {
                     var view = this;
+                    var wrapper = this.$el;
                     setTimeout(function() {
                         view.showHelpMessage();
+                        wrapper.removeClass('is-visible');
                     }, 6000);
                 },
                 successMessage: function() {

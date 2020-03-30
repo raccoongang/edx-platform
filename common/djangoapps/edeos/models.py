@@ -10,19 +10,28 @@ class UserSocialLink(models.Model):
     """
     # LINKEDIN = 'linkedin'
     FACEBOOK = 'facebook'
+    SKYPE = 'skype'
+    VK = 'vk'
+    TELEGRAM = 'telegram'
 
     PLATFORM_CHOICES = (
         # (LINKEDIN, ugettext_noop('LinkedIn')),
         (FACEBOOK, ugettext_noop('Facebook')),
+        (SKYPE, ugettext_noop('Skype')),
+        (VK, ugettext_noop('VK')),
+        (TELEGRAM, ugettext_noop('Telegram')),
     )
 
     VALID_URLS = {
-        FACEBOOK: 'Facebook.com/'
+        FACEBOOK: 'facebook.com/',
+        SKYPE: '',
+        VK: '',
+        TELEGRAM: ''
     }
 
     user_profile = models.ForeignKey(UserProfile, db_index=True, related_name='social_links', on_delete=models.CASCADE)
     platform = models.CharField(max_length=50, choices=PLATFORM_CHOICES)
-    social_link = models.CharField(max_length=100)
+    social_link = models.CharField(max_length=64, blank=True)
     is_verified = models.BooleanField(default=False)
 
     class Meta(object):
