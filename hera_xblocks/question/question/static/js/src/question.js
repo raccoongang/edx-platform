@@ -81,6 +81,8 @@ function QuestionXBlock(runtime, element, init_args) {
             var $questionWrapper = $('.questions-wrapper', element);
             var invalidChars = ["-", "+", "e", "E"];
             var isSubmissionAllowed = response.is_submission_allowed;
+            var submissionCount = response.submission_counter;
+            var isAnyScaffoldPaid = response.is_any_scaffold_paid;
             var $buttonFillTables = $('#fill-tables-' + blockId, element);
             var isThereTableInputs = $('table', element).find('input').length > 0;
 
@@ -104,7 +106,7 @@ function QuestionXBlock(runtime, element, init_args) {
                 $buttonFillTables.show();
             }
 
-            if (response.submission_counter == 1 && isSubmissionAllowed && response.is_any_scaffold_paid) {
+            if (response.submission_counter == 1 && isSubmissionAllowed && isAnyScaffoldPaid) {
                 $skipBtn.removeClass('hidden');
             }
 
@@ -156,8 +158,10 @@ function QuestionXBlock(runtime, element, init_args) {
                 });
                 if (isSubmissionAllowed) {
                     if (formFilled) {
-                        showConfidence();
-                        enableSubmit();
+                        if ((submissionCount > 0 && isAnyScaffoldPaid) || submissionCount === 0) {
+                            showConfidence();
+                            enableSubmit();
+                        }
                     } else {
                         hideConfidence();
                         disableSubmit();
@@ -191,7 +195,8 @@ function QuestionXBlock(runtime, element, init_args) {
                         JSON.stringify({"answers": userAnswers, "confidence": confidence})
                     ).done(function (response) {
                         isSubmissionAllowed = response.is_submission_allowed;
-                        var submissionCount = response.submission_counter;
+                        submissionCount = response.submission_counter;
+                        isAnyScaffoldPaid = response.is_any_scaffold_paid;
                         var isScaffoldsEnabled = response.is_scaffolds_enabled;
                         if (response.correct) {
                             enableNextButton();
@@ -251,6 +256,7 @@ function QuestionXBlock(runtime, element, init_args) {
                 var isScaffoldPaid = scaffoldPayment(scaffoldData.scaffoldName);
                 if (isScaffoldPaid){
                     $questionWrapper.removeClass('is-teach is-break is-rephrase');
+                    isAnyScaffoldPaid = true;
 
                     if (scaffoldData.imgUrls && scaffoldData.imgUrls.length) {
                         scaffoldData.imgUrls.split(' ').forEach((el, ind) => {
