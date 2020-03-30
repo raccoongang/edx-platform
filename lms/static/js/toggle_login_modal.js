@@ -61,6 +61,7 @@
 
                     $('#lean_overlay').css({'display': 'block', opacity: 0});
                     $('#lean_overlay').fadeTo(200, o.overlay);
+                    $('body').addClass('modal-is-open');
 
                     $('iframe', modal_id).attr('src', $('iframe', modal_id).data('src'));
                     if ($(modal_id).hasClass('email-modal')) {
@@ -106,6 +107,7 @@
                 if (modal_id == '#modal_clone') {
                     $(modal_id).remove();
                 }
+                $('body').removeClass('modal-is-open');
                 e.preventDefault();
             }
         }
@@ -113,7 +115,7 @@
 
     $(document).ready(function($) {
         $('a[rel*=leanModal]').each(function() {
-            $(this).leanModal({top: 120, overlay: 1, closeButton: '.close-modal', position: 'absolute'});
+            $(this).leanModal({top: 120, overlay: 1, closeButton: '.close-modal', position: 'fixed'});
             embed = $($(this).attr('href')).find('iframe');
             if (embed.length > 0 && embed.attr('src')) {
                 var sep = (embed.attr('src').indexOf('?') > 0) ? '&' : '?';
