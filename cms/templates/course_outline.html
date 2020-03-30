@@ -263,7 +263,7 @@ from openedx.core.djangolib.markup import HTML, Text
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css" />
 <!-- END Slick slider -->
 
-<div class="test-react-div">
+<div class="hera-react-div">
     ${static.renderReact(
       component="HeraApp",
       id="hera-popup",
@@ -271,5 +271,20 @@ from openedx.core.djangolib.markup import HTML, Text
         'items': [1,2,3,4,5]
       }
     )}
-  </div>
+</div>
+<script>
+    $(document).on('click', '.copy-parent-locator-button', function(e) {
+        e.preventDefault();
+        var el = $(e.currentTarget).find('input').get(0);
+        $(e.currentTarget).attr('data-tooltip', 'Copied');
+        window.globalTooltipManager.openTooltip($(e.currentTarget))
+        el.style.display = 'block';
+        el.select();
+        document.execCommand('copy');
+        el.style.display = 'none';
+        $(e.currentTarget).on('mouseleave', function(e) {
+            $(e.currentTarget).attr('data-tooltip', 'Copy to clipboard');
+        });
+    });
+</script>
 </%block>

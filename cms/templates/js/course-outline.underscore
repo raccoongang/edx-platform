@@ -149,9 +149,12 @@ if (is_proctored_exam) {
                         </a>
                     </li>
                 <% } %>
-                <% if (xblockInfo.isDuplicable() && xblockType !== 'unit') { %>
+                <% if ((xblockInfo.isDuplicable() && xblockType !== 'unit') || xblockInfo.isVertical()) { %>
                     <li class="action-item action-duplicate">
-                        <a href="#" data-tooltip="<%- gettext('Duplicate') %>" class="duplicate-button action-button">
+                        <a href="#" data-tooltip="<%- xblockInfo.isVertical() ? 'Copy to clipboard' : gettext('Duplicate') %>" class="<%= xblockInfo.isVertical() ? 'copy-parent-locator-button' : 'duplicate-button' %> action-button">
+                            <% if (xblockInfo.isVertical()) { %>
+                                <input type="text" style="display: none;" value="<%- xblockInfo.get('id')%>">
+                            <% } %>
                             <span class="icon fa fa-copy" aria-hidden="true"></span>
                             <span class="sr action-button-text"><%- gettext('Duplicate') %></span>
                         </a>

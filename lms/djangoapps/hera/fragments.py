@@ -157,14 +157,11 @@ def unit_grade_level(earned, course_block_tree, last_visited_subsection, request
             NEXT_ID: 1
         }
 
-    if stored_completed_subsection_ids_changed or completed_subsection_ids:
-        to_set.update({COMPLETED_SUBSECTIONS: completed_subsection_ids})
-    elif to_set:
-        to_set.update({COMPLETED_SUBSECTIONS: block_tree_completed_subsection_ids})
-
     if to_set:
-        if stored_completed_subsection_ids_changed or completed_subsection_ids:
+        if stored_completed_subsection_ids_changed:
             to_set.update({COMPLETED_SUBSECTIONS: completed_subsection_ids})
+        elif block_tree_completed_subsection_ids:
+            to_set.update({COMPLETED_SUBSECTIONS: block_tree_completed_subsection_ids})
         to_update['$set'] = to_set
     if to_unset:
         to_update['$unset'] = to_unset
@@ -355,9 +352,9 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
                     ordered_subsections.append(last_visited_subsection)
                     break
         if not popup:
-            for selection_subsection in selected_subsections['children']:
-                if not selection_subsection['complete'] and len(ordered_subsections) < 8:
-                    ordered_subsections.append(selection_subsection)
+            for subsection in selected_subsections['children']:
+                if not subsection['complete'] and len(ordered_subsections) < 8:
+                    ordered_subsections.append(subsection)
 
         try:
             last_completed_subsection_id = completed_subsection_ids[-1]
@@ -368,7 +365,7 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
         units = last_visited_subsection.get('children', [{}])
         start_over_url = units[0].get('lms_web_url', '')
         context = {
-            'is_lesson_complete': len(selected_subsections['children']) == 0,
+            'is_lessons_complete': len(completed_subsection_ids) == 8 or len(selected_subsections['children']) == 0,
             'last_completed_subsection': last_completed_subsection,
             'ordered_subsections': ordered_subsections,
             'popup': popup,

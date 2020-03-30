@@ -240,7 +240,8 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             setattr(self, scaffold_paid_mapping[scaffold_name], True)
         return {
             'coins': coins,
-            'scaffold_paid': getattr(self, scaffold_paid_mapping[scaffold_name])
+            'scaffold_paid': getattr(self, scaffold_paid_mapping[scaffold_name]),
+            'is_any_scaffold_paid': self.is_any_scaffold_paid(),
         }
 
     @XBlock.json_handler
@@ -274,12 +275,23 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
                 user_answers.append(answer)
 
             elif question['type'] == "table":
-                correct_answers = []
+                all_correct_answers = []
                 for row in question['tableData'].get('rows', []):
-                    correct_answers += [
-                        val['value'].replace('?', '', 1) for key, val in row.items() if val['value'].startswith('?')
+                    _answers = [
+                        (key, val['value'].replace('?', '', 1)) for key, val in row.items() if val['value'].startswith('?')
                     ]
-                answer = set(answers[index]) == set(correct_answers)
+                    all_correct_answers += sorted(_answers, key=lambda x: x[0]) # sorting by key, key it's an index of an element
+                correct_answers = map(lambda x: x[1], all_correct_answers)
+
+                answer = True
+                for _id, _answer in enumerate(correct_answers):
+                    try:
+                        if _answer != answers[index][_id]:
+                            answer = False
+                    except IndexError:
+                        answer = False
+                    if not answer:
+                        break
                 user_answers.append(answer)
 
         self.user_answer_correct = all(user_answers)
@@ -301,6 +313,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             'correct_answers': self.get_correct_answers(),
             'submission_counter': self.submission_counter,
             'has_many_types': self.has_many_types(),
+            'is_any_scaffold_paid': self.is_any_scaffold_paid(),
         }
 
     @XBlock.json_handler
