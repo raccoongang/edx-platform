@@ -128,6 +128,13 @@ function QuestionXBlock(runtime, element, init_args) {
                 $submit.removeAttr("disabled");
             }
 
+            function hideScaffoldImg() {
+                $questioonsImageWrapper.removeClass('is-teach is-break is-rephrase');
+                $scaffoldHelpImage.addClass("hidden");
+                $questionSlider.removeClass("hidden");
+                $closeBtn.addClass("hidden");
+            }
+
             $('.questions-wrapper', element).find('input, select').on("change blur keyup keypress", function(e) {
                 if (e.key === 'Enter' || e.keyCode === 13 || e.which === 13) { // enter pressed
                     e.preventDefault();
@@ -156,6 +163,7 @@ function QuestionXBlock(runtime, element, init_args) {
                         }
                     });
                 });
+
                 if (isSubmissionAllowed) {
                     if (formFilled) {
                         if ((submissionCount > 0 && isAnyScaffoldPaid) || submissionCount === 0) {
@@ -292,14 +300,10 @@ function QuestionXBlock(runtime, element, init_args) {
                 $questionContent.html(init_args.description);
                 $questionWrapper.removeClass('is-teach is-break is-rephrase');
                 $scaffolds.removeClass('hidden');
+                hideScaffoldImg();
             });
 
-            $closeBtn.bind('click', function (event) {
-                $questioonsImageWrapper.removeClass('is-teach is-break is-rephrase');
-                $scaffoldHelpImage.addClass("hidden");
-                $questionSlider.removeClass("hidden");
-                $closeBtn.addClass("hidden");
-            });
+            $closeBtn.bind('click', hideScaffoldImg);
 
             $skipBtn.bind('click', function (event) {
                 if (!skipped) {
