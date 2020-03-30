@@ -2435,6 +2435,13 @@ GRADES_DOWNLOAD = {
     'ROOT_PATH': '/tmp/edx-s3/grades',
 }
 
+GITHUB_REPO_ROOT = ENV_ROOT / "data"
+# NOTE: consider using `MEDIA_ROOT` instead (`GITHUB_REPO_ROOT` contains cloned repos of courses
+#  imported via /sysadmin/courses, and third-party modifications might break
+#  the "Load new course from GitHub" functionality).
+COURSES_GRADES_REPORTS_DIR = GITHUB_REPO_ROOT / "sysadmin_courses_grades"
+
+
 FINANCIAL_REPORTS = {
     'STORAGE_TYPE': 'localfs',
     'BUCKET': 'edx-financial-reports',
