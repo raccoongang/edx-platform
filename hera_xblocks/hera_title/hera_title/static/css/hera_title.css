@@ -395,6 +395,7 @@ button.feedback-btn:focus:not(:disabled) {
 }
 
 .feedback-close {
+    width: auto !important;
     position: absolute;
     right: 8px;
     top: 2px;
