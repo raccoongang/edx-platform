@@ -166,10 +166,8 @@ function QuestionXBlock(runtime, element, init_args) {
 
                 if (isSubmissionAllowed) {
                     if (formFilled) {
-                        if ((submissionCount > 0 && isAnyScaffoldPaid) || submissionCount === 0) {
-                            showConfidence();
-                            enableSubmit();
-                        }
+                        showConfidence();
+                        enableSubmit();
                     } else {
                         hideConfidence();
                         disableSubmit();
