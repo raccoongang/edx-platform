@@ -673,7 +673,7 @@ class Grades(SysadminDashboardView):
                 self.msg = ""
                 return response
             else:
-                return HttpResponseRedirect(reverse("sysadmin_poll_survey"))
+                return HttpResponseRedirect(reverse("sysadmin_grades"))
 
 
 class GitLogs(TemplateView):
