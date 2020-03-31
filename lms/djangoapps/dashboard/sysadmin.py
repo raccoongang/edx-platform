@@ -17,9 +17,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db import transaction
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.utils.html import escape
 from django.utils import timezone
@@ -36,6 +37,13 @@ from path import Path as path
 from pytz import UTC
 
 from courseware.courses import get_course_by_id
+from dashboard.background_download.io_utils import (
+    cleanup_directory_user_files,
+    fetch_csv_data,
+    get_latest_user_file,
+)
+from dashboard.background_download.tasks_utils import get_grades_report_file_user_id
+from dashboard.tasks import export_courses_grades_csv_data
 import dashboard.git_import as git_import
 from dashboard.git_import import GitImportError
 from student.roles import CourseStaffRole, CourseInstructorRole
@@ -48,7 +56,6 @@ from xmodule.modulestore.django import modulestore
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from search.search_engine_base import SearchEngine
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-from utils import prepare_course_grades_data
 
 log = logging.getLogger(__name__)
 
@@ -594,54 +601,79 @@ class Grades(SysadminDashboardView):
         if not request.user.is_staff:
             raise Http404
 
+        csv_filepath = get_latest_user_file(
+            dir_path=settings.COURSES_GRADES_REPORTS_DIR,
+            user_id=request.user.id,
+            filename_user_id_getter=get_grades_report_file_user_id,
+        )
+        tmp_filepath = get_latest_user_file(
+            dir_path=settings.COURSES_GRADES_REPORTS_DIR,
+            user_id=request.user.id,
+            extension="tmp",
+            filename_user_id_getter=get_grades_report_file_user_id,
+        )
+
+        if not csv_filepath and tmp_filepath:
+            self.msg = _(
+                "The report generation process has been started and might take a while. "
+                "The download button will be displayed once the report is ready. "
+                "Please reload a page after some time."
+            )
+
         context = {
             'msg': self.msg,
             'djangopid': os.getpid(),
             'modeflag': {'grades': 'active-section'},
             'edx_platform_version': getattr(settings, 'EDX_PLATFORM_VERSION_STRING', ''),
+            'courses_grades_report_ready_to_download': True if csv_filepath else False,
+            'courses_grades_report_in_progress': True if tmp_filepath else False,
         }
         return render_to_response(self.template_name, context)
 
     def post(self, request):
         """
         Handle all actions from grades view.
-
-        NOTE: to improve, prepare reports with a background task, slice students/courses/blocks.
         """
         action = request.POST.get('action', '')
 
         track.views.server_track(request, action, {},
                                  page='sysadmin_grades')
 
-        if action == 'get_problem_grade_report_csv':
-
-            data = map(lambda x: [x for x in prepare_course_grades_data(x)], self.get_courses())
-            flattened_data = list(itertools.chain.from_iterable(data))
-
-            header = [
-                _('Course ID'),
-                _('Student ID'),
-                _('Email'),
-                _('Username'),
-                _('Course Grade'),
-                _('Assignment'),
-                _('Assignment Score'),
-                _('Assignment Type (Avg)'),
-                _('Enrollment Track'),
-                _('Verification Status'),
-                _('Certificate Eligible'),
-                _('Certificate Delivered'),
-                _('Certificate Type'),
-            ]
-
-            formatted_date = datetime.now(UTC).strftime('%m-%d-%Y')
-            return self.return_csv(
-                'Grade_Report_All_courses_{}.csv'.format(formatted_date),
-                header,
-                flattened_data,
+        if action == 'export_problem_grade_report_csv':
+            tmp_filepath = get_latest_user_file(
+                dir_path=settings.COURSES_GRADES_REPORTS_DIR,
+                user_id=request.user.id,
+                extension="tmp",
+                filename_user_id_getter=get_grades_report_file_user_id,
             )
+            if tmp_filepath:
+                return HttpResponseRedirect(reverse("sysadmin_grades"))
+            else:
+                export_courses_grades_csv_data.apply_async(kwargs=dict(
+                    user_id=request.user.id,
+                ))
+                return HttpResponseRedirect(reverse("sysadmin_grades"))
 
-        return self.get(request)
+        elif action == 'download_problem_grade_report_csv':
+            filepath = get_latest_user_file(
+                dir_path=settings.COURSES_GRADES_REPORTS_DIR,
+                user_id=request.user.id,
+                filename_user_id_getter=get_grades_report_file_user_id,
+            )
+            if filepath:
+                response = HttpResponse(fetch_csv_data(filepath), content_type='text/csv')
+                response['Content-Disposition'] = 'attachment; filename={0}'\
+                    .format(os.path.basename(filepath))
+                # A user should be able to download the report only once
+                cleanup_directory_user_files(
+                    dir_path=settings.COURSES_GRADES_REPORTS_DIR,
+                    user_id=request.user.id,
+                    filename_user_id_getter=get_grades_report_file_user_id,
+                )
+                self.msg = ""
+                return response
+            else:
+                return HttpResponseRedirect(reverse("sysadmin_grades"))
 
 
 class GitLogs(TemplateView):
