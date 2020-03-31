@@ -29,7 +29,7 @@
             profile_image_upload_url,
             profile_image_remove_url,
             profile_image_max_bytes,
-            profile_image_min_bytes,
+            profile_image_min_bytes
         ) {
             var accountSettingsElement, userAccountModel, userPreferencesModel, aboutSectionsData,
                 accountsSectionData, ordersSectionData, accountSettingsView, showAccountSettingsPage,
