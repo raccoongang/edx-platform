@@ -12,84 +12,88 @@ from openedx.features.course_experience import course_home_page_title
 
 <%block name="content">
 <div class="course-updates container" id="course-container">
-    <header class="page-header has-secondary">
-        ## Breadcrumb navigation
-        <div class="page-header-main">
-            <nav aria-label="${_('Course Updates')}" class="sr-is-focusable" tabindex="-1">
-                <div class="has-breadcrumbs">
-                    <div class="breadcrumbs">
-                        <span class="nav-item">
-                            <a href="${course_url}">${course_home_page_title(course)}</a>
-                        </span>
-                        <span class="icon fa fa-angle-right" aria-hidden="true"></span>
-                        <span class="nav-item">${_('Course Updates')}</span>
-                    </div>
+    <div class="page-content course-wrapper">
+        <div class="info-wrapper">
+            <div class="week_holder">
+                <div class="week-structure-container">
+                    <h3 class="h3 week_holder__title">Программа курса</h3>
+                    % if blocks.get('children'):
+                        % for section in blocks.get('children'):
+                            <section class="week-structure">
+                                <div class="week-structure__name">
+                                    <span class="week-structure__ico"></span>
+                                    <strong>${ section['display_name'] }</strong>
+                                </div>
+                                <div class="week-structure__box">
+                                    <ul class="week-structure__list">
+                                    % for subsection in section.get('children', []):
+                                        <%
+                                        is_checked = ''
+                                        if subsection['last_accessed']:
+                                            is_checked = 'is-checked'
+                                        %>
+                                        <li class="week-structure__list-item">
+                                            <div class="week-structure__helper ${is_checked}"></div>
+                                            <a
+                                            class="outline-item focusable"
+                                            href="${ subsection['lms_web_url'] }"
+                                            id="${ subsection['id'] }"
+                                        >
+                                        ${ subsection['display_name'] }</a>
+                                        </li>
+                                    % endfor
+                                    </ul>
+                                </div>
+                            </section>
+                        % endfor
+                    % endif
                 </div>
-            </nav>
-        </div>
-    </header>
-    <div class="page-content">
-        <div class="week_holder">
-            <div class="week-structure-container">
-                <h3 class="h3 week_holder__title">Программа курса</h3>
-                % if blocks.get('children'):
-                    % for section in blocks.get('children'):
-                        <section class="week-structure">
-                            <div class="week-structure__name">
-                                <span class="week-structure__ico"></span>
-                                <strong>${ section['display_name'] }</strong>
-                            </div>
-                            <div class="week-structure__box">
-                                <ul class="week-structure__list">
-                                % for subsection in section.get('children', []):
-                                    <%
-                                    is_checked = ''
-                                    if subsection['last_accessed']:
-                                        is_checked = 'is-checked'
-                                    %>
-                                    <li class="week-structure__list-item">
-                                        <div class="week-structure__helper ${is_checked}"></div>
-                                        <a
-                                        class="outline-item focusable"
-                                        href="${ subsection['lms_web_url'] }"
-                                        id="${ subsection['id'] }"
-                                    >
-                                    ${ subsection['display_name'] }</a>
-                                    </li>
-                                % endfor
-                                </ul>
-                            </div>
-                        </section>
-                    % endfor
-                % endif
             </div>
         </div>
 
         % if plain_html_updates:
             ${HTML(plain_html_updates)}
         % else:
-            <div class="all-updates">
-                % if updates:
-                    % for index, update in enumerate(updates):
-                        <article class="updates-article">
-                            % if not update.get("is_error"):
-                                <div class="date">${update.get("date")}</div>
-                            % endif
-                            <div class="article-content-title">
-                                ${HTML(update.get("content_title"))}
-                            </div>
-                            <div class="article-content">
-                                ${HTML(update.get("content"))}
-                            </div>
-                        </article>
-                    % endfor
-                % else:
-                    <div class="well depth-0 message-area">
-                        ${_("This course does not have any updates.")}
-                    </div>
-                % endif
+            <div class="course-content">
+                <ul class="course-news">
+                    % if updates:
+                        % for index, update in enumerate(updates):
+                            <li class="course-news__item">
+                                <div class="course-news__title">
+                                    ${HTML(update.get("content_title"))}
+                                </div>
+                                % if not update.get("is_error"):
+                                    <div class="course-news__date">${update.get("date")}</div>
+                                % endif
+                                <div class="course-news__text">${HTML(update.get("content"))}</div>
+                                <div class="course-news__actions">
+                                    <button>
+                                        Подробнее
+                                        <svg class="svg-icon" viewBox="0 0 24 24">
+                                            <use xlink:href="#arrow-down"></use>
+                                        </svg>
+                                    </button>
+                                    <button>
+                                        ${_("Less")}
+                                        <svg class="svg-icon" viewBox="0 0 24 24">
+                                            <use xlink:href="#arrow-down"></use>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </li>
+                        % endfor
+                    % else:
+                        <div class="well depth-0 message-area">
+                            ${_("This course does not have any updates.")}
+                        </div>
+                    % endif
+                </ul>
             </div>
         % endif
     </div>
 </div>
 </%block>
+
+<script>
+    document.body.classList.add('view-in-course', 'news-page');
+</script>

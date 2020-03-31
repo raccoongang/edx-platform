@@ -227,9 +227,11 @@ define(['codemirror',
                     $(this.dateEntry(event)).val('MM/DD/YY');
                 }
                 this.$codeMirrorTitle = CourseInfoHelper.editWithCodeMirror(
-                targetModel, 'content_title', self.options.base_asset_url, $textAreaTitle.get(0));
+                    targetModel, 'content_title', self.options.base_asset_url, $textAreaTitle.get(0)
+                );
                 this.$codeMirror = CourseInfoHelper.editWithCodeMirror(
-                targetModel, 'content', self.options.base_asset_url, $textArea.get(0));
+                    targetModel, 'content', self.options.base_asset_url, $textArea.get(0)
+                );
 
             // Variable stored for unit test.
                 this.$modalCover = ModalUtils.showModalCover(false,
