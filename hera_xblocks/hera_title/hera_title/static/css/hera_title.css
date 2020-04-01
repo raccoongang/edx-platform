@@ -125,7 +125,7 @@
 @-moz-document url-prefix() {
     .author-block__question:after {
         content: '';
-        height: 50px;
+        height: 76px;
         display: block;
     }
 }
