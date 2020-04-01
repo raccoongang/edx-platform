@@ -58,11 +58,10 @@ class AllowedUrlsMiddleware(object):
                 if 'logout' in request.path:
                     return # let students logout
                 if not user.is_active:
-                    if CourseEnrollmentAllowed.for_user(user).filter(auto_enroll=True):
-                        if not request.path == reverse('hera:register_success'):
-                            return HttpResponseRedirect(reverse('hera:register_success'))
-                        else:
-                            return
+                    if not request.path == reverse('hera:register_success'):
+                        return HttpResponseRedirect(reverse('hera:register_success'))
+                    else:
+                        return
                 if not request.path == reverse('hera:onboarding'):
                     if not UserOnboarding.onboarding_is_passed(request.user.id):
                         return HttpResponseRedirect(reverse('hera:onboarding'))
