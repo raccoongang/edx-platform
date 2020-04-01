@@ -618,6 +618,7 @@ COURSE_TITLE = "Circuits and Electronics"
 
 ENABLE_MULTICOURSE = False  # set to False to disable multicourse display (see lib.util.views.edXhome)
 
+NEWS_ENABLED = False
 WIKI_ENABLED = False
 
 ###
@@ -2089,6 +2090,9 @@ INSTALLED_APPS = (
     'django_comment_common',
     'discussion_api',
     'lms.djangoapps.discussion',
+
+    # Course news tab
+    'course_news',
 
     # Notes
     'notes',

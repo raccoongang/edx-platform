@@ -7,6 +7,11 @@
 			<input id="update-date-<%= updateModel.cid %>" type="text" class="date" value="<%= updateModel.get('date') %>">
 		</div>
 		<div class="row">
+			<label for="new-update-content-title" class="inline-label"><%= gettext('Title') %>:</label>
+			<textarea class="new-update-content-title"><%= updateModel.get('content_title') %></textarea>
+		</div>
+		<div class="row">
+			<label for="new-update-content" class="inline-label"><%= gettext('Content') %>:</label>
 			<textarea class="new-update-content text-editor"><%= updateModel.get('content') %></textarea>
 		</div>
         <%if (push_notification_enabled) { %>
@@ -30,6 +35,7 @@
 			<span class="calendar-icon"></span><span class="date-display"><%=
 				updateModel.get('date') %></span>
 		</h2>
+		<h3><%= updateModel.get('content_title') %></h3>
 		<div class="update-contents"><%= updateModel.get('content') %></div>
 	</div>
 </li>

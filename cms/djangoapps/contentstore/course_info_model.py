@@ -65,6 +65,7 @@ def update_course_updates(location, update, passed_id=None, user=None):
         if 0 < passed_index <= len(course_update_items):
             course_update_dict = course_update_items[passed_index - 1]
             course_update_dict["date"] = update["date"]
+            course_update_dict["content_title"] = update["content_title"]
             course_update_dict["content"] = update["content"]
             course_update_items[passed_index - 1] = course_update_dict
         else:
@@ -73,6 +74,7 @@ def update_course_updates(location, update, passed_id=None, user=None):
         course_update_dict = {
             "id": len(course_update_items) + 1,
             "date": update["date"],
+            "content_title": update["content_title"],
             "content": update["content"],
             "status": CourseInfoModule.STATUS_VISIBLE
         }
@@ -94,6 +96,7 @@ def _make_update_dict(update):
     return {
         "id": update["id"],
         "date": update["date"],
+        "content_title": update.get("content_title", ''),
         "content": update["content"],
     }
 

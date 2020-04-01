@@ -240,6 +240,8 @@ for feature, value in ENV_FEATURES.items():
 for app in ENV_TOKENS.get('ADDL_INSTALLED_APPS', []):
     INSTALLED_APPS += (app,)
 
+NEWS_ENABLED = ENV_TOKENS.get('NEWS_ENABLED', NEWS_ENABLED)
+
 WIKI_ENABLED = ENV_TOKENS.get('WIKI_ENABLED', WIKI_ENABLED)
 
 LOGGING = get_logger_config(LOG_DIR,
