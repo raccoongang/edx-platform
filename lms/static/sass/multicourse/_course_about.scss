@@ -2,7 +2,7 @@
   .container {
     padding-bottom: 120px;
 
-    @include media-breakpoint-down(md) {
+    @include media-breakpoint-down(lg) {
       min-width: auto;
       padding: $baseline;
     }
