@@ -6,9 +6,13 @@
         'js/student_account/models/user_preferences_model',
         'js/student_account/views/account_settings_fields',
         'js/student_account/views/account_settings_view',
-        'edx-ui-toolkit/js/utils/string-utils'
+        'edx-ui-toolkit/js/utils/string-utils',
+        'js/student_profile/views/learner_profile_fields',
+
+        'js/views/message_banner'
     ], function(gettext, $, _, Backbone, Logger, UserAccountModel, UserPreferencesModel,
-                 AccountSettingsFieldViews, AccountSettingsView, StringUtils) {
+                 AccountSettingsFieldViews, AccountSettingsView, StringUtils,
+                 LearnerProfileFieldsView,  MessageBannerView) {
         return function(
             fieldsData,
             ordersHistoryData,
@@ -20,7 +24,12 @@
             platformName,
             contactEmail,
             allowEmailChange,
-            socialPlatforms
+            socialPlatforms,
+            accountSettingsData,
+            profile_image_upload_url,
+            profile_image_remove_url,
+            profile_image_max_bytes,
+            profile_image_min_bytes
         ) {
             var accountSettingsElement, userAccountModel, userPreferencesModel, aboutSectionsData,
                 accountsSectionData, ordersSectionData, accountSettingsView, showAccountSettingsPage,
@@ -28,8 +37,12 @@
                 emailFieldView, platformData, socialFields, mobytizeFields;
 
             accountSettingsElement = $('.wrapper-account-settings');
-
-            userAccountModel = new UserAccountModel();
+            userAccountModel = new UserAccountModel(
+                _.extend(
+                    accountSettingsData
+                ),
+                {parse: true}
+            );
             userAccountModel.url = userAccountsApiUrl;
 
             userPreferencesModel = new UserPreferencesModel();
@@ -90,22 +103,6 @@
                             })
                         },
                         emailFieldView,
-                        {
-                            view: new AccountSettingsFieldViews.PasswordFieldView({
-                                model: userAccountModel,
-                                title: gettext('Password'),
-                                screenReaderTitle: gettext('Reset Your Password'),
-                                valueAttribute: 'password',
-                                emailAttribute: 'email',
-                                passwordResetSupportUrl: passwordResetSupportUrl,
-                                linkTitle: gettext('Reset Your Password'),
-                                linkHref: fieldsData.password.url,
-                                helpMessage: StringUtils.interpolate(
-                                    gettext('When you select "Reset Your Password", a message will be sent to the email address for your {platform_name} account. Click the link in the message to reset your password.'),  // eslint-disable-line max-len
-                                    {platform_name: platformName}
-                                )
-                            })
-                        },
                         {
                             view: new AccountSettingsFieldViews.LanguagePreferenceFieldView({
                                 model: userPreferencesModel,
@@ -203,7 +200,7 @@
                     {
                         view: new AccountSettingsFieldViews.SocialLinkTextFieldView({
                             model: userAccountModel,
-                            title: gettext(platformData[1] + ' Link'),
+                            title: gettext(platformData[1]),
                             valueAttribute: 'social_links',
                             helpMessage: gettext(
                                 'Enter your ') + platformData[1] + gettext(' username or the URL to your ') +
@@ -324,12 +321,43 @@
                 ];
                 tabSections['ordersTabSections'] = ordersSectionData;
             }
+
+            var messageView = new MessageBannerView({
+                el: $('.message-banner')
+            });
+            var profileImageFieldView = new LearnerProfileFieldsView.ProfileImageFieldView({
+                model: userAccountModel,
+                valueAttribute: 'profile_image',
+                editable: true,
+                messageView: messageView,
+                imageMaxBytes: profile_image_max_bytes,
+                imageMinBytes: profile_image_min_bytes,
+                imageUploadUrl: profile_image_upload_url,
+                imageRemoveUrl: profile_image_remove_url
+            });
+            var passwordFieldView = new AccountSettingsFieldViews.PasswordFieldView({
+                model: userAccountModel,
+                title: gettext('Reset Your Password'),
+                screenReaderTitle: gettext('Reset Your Password'),
+                valueAttribute: 'password',
+                emailAttribute: 'email',
+                passwordResetSupportUrl: passwordResetSupportUrl,
+                linkTitle: gettext('Reset Your Password'),
+                linkHref: fieldsData.password.url,
+                helpMessage: StringUtils.interpolate(
+                    gettext('When you select "Reset Your Password", a message will be sent to the email address for your {platform_name} account. Click the link in the message to reset your password.'),  // eslint-disable-line max-len
+                    {platform_name: platformName}
+                )
+            })
+
             accountSettingsView = new AccountSettingsView({
                 model: userAccountModel,
                 accountUserId: accountUserId,
                 el: accountSettingsElement,
                 tabSections: tabSections,
-                userPreferencesModel: userPreferencesModel
+                userPreferencesModel: userPreferencesModel,
+                profileImageFieldView: profileImageFieldView,
+                passwordFieldView: passwordFieldView
             });
 
             accountSettingsView.render();

@@ -39,7 +39,14 @@ from edeos.models import UserSocialLink
         platformName = '${ static.get_platform_name() | n, js_escaped_string }',
         contactEmail = '${ static.get_contact_email_address() | n, js_escaped_string }',
         allowEmailChange = ${ bool(settings.FEATURES['ALLOW_EMAIL_ADDRESS_CHANGE']) | n, dump_js_escaped_json },
-        socialPlatforms = ${ social_platforms | n, dump_js_escaped_json };
+        socialPlatforms = ${ social_platforms | n, dump_js_escaped_json },
+        profile_image_max_bytes = ${ settings.PROFILE_IMAGE_MAX_BYTES },
+        profile_image_min_bytes = ${ settings.PROFILE_IMAGE_MIN_BYTES },
+        accountSettingsData = ${ account_settings_data | n, dump_js_escaped_json },
+        profile_image_upload_url = ${ profile_image_upload_url | n, dump_js_escaped_json },
+        profile_image_remove_url = ${ profile_image_remove_url | n, dump_js_escaped_json },
+        profile_image_max_bytes = ${ profile_image_max_bytes | n, dump_js_escaped_json },
+        profile_image_min_bytes = ${ profile_image_min_bytes | n, dump_js_escaped_json };
 
     AccountSettingsFactory(
         fieldsData,
@@ -52,7 +59,12 @@ from edeos.models import UserSocialLink
         platformName,
         contactEmail,
         allowEmailChange,
-        socialPlatforms
+        socialPlatforms,
+        accountSettingsData,
+        profile_image_upload_url,
+        profile_image_remove_url,
+        profile_image_max_bytes,
+        profile_image_min_bytes
     );
 </%static:require_module>
 </%block>

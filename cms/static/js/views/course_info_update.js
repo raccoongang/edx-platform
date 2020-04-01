@@ -140,6 +140,12 @@ define(['codemirror',
                 var updateEle = this.$el.find('#course-update-list');
                 $(updateEle).prepend($newForm);
 
+                var $textAreaTitle = $newForm.find('.new-update-content-title').first();
+                this.$codeMirrorTitle = CodeMirror.fromTextArea($textAreaTitle.get(0), {
+                    mode: 'text/html',
+                    lineNumbers: true,
+                    lineWrapping: true
+                });
                 var $textArea = $newForm.find('.new-update-content').first();
                 this.$codeMirror = CodeMirror.fromTextArea($textArea.get(0), {
                     mode: 'text/html',
@@ -164,6 +170,7 @@ define(['codemirror',
                 targetModel.set({
                 // translate short-form date (for input) into long form date (for display)
                     date: $.datepicker.formatDate('MM d, yy', new Date(this.dateEntry(event).val())),
+                    content_title: this.$codeMirrorTitle.getValue(),
                     content: this.$codeMirror.getValue(),
                     push_notification_selected: this.push_notification_selected(event)
                 });
@@ -209,6 +216,7 @@ define(['codemirror',
                 this.$currentPost.addClass('editing');
 
                 $(this.editor(event)).show();
+                var $textAreaTitle = this.$currentPost.find('.new-update-content-title').first();
                 var $textArea = this.$currentPost.find('.new-update-content').first();
                 var targetModel = this.eventModel(event);
             // translate long-form date (for viewing) into short-form date (for input)
@@ -218,8 +226,12 @@ define(['codemirror',
                 else {
                     $(this.dateEntry(event)).val('MM/DD/YY');
                 }
+                this.$codeMirrorTitle = CourseInfoHelper.editWithCodeMirror(
+                    targetModel, 'content_title', self.options.base_asset_url, $textAreaTitle.get(0)
+                );
                 this.$codeMirror = CourseInfoHelper.editWithCodeMirror(
-                targetModel, 'content', self.options.base_asset_url, $textArea.get(0));
+                    targetModel, 'content', self.options.base_asset_url, $textArea.get(0)
+                );
 
             // Variable stored for unit test.
                 this.$modalCover = ModalUtils.showModalCover(false,

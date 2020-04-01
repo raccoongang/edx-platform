@@ -1033,6 +1033,7 @@ def _progress(request, course_key, student_id):
         'upgrade_price': get_cosmetic_verified_display_price(course),
         # ENDTODO
     }
+    context['blocks'] = get_course_outline_block_tree(request, str(course_key))
 
     with outer_atomic():
         response = render_to_response('courseware/progress.html', context)

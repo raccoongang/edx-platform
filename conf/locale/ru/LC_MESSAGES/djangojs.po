@@ -4724,7 +4724,7 @@ msgstr "Дополнительная информация"
 
 #: lms/static/js/student_account/views/account_settings_factory.js
 msgid "Social Media Links"
-msgstr "Ссылка на профиль фейсбук"
+msgstr "Добавить соц.сети"
 
 #: lms/static/js/student_account/views/account_settings_factory.js
 msgid "Enter your "
@@ -7893,6 +7893,10 @@ msgstr "Изменить пароль"
 #: lms/templates/student_account/account_settings.underscore
 msgid "Account Settings"
 msgstr "Настройки учётной записи"
+
+#: lms/templates/student_account/account_settings.underscore
+msgid "Connected Social Media Links"
+msgstr "Подключенные профили в соц.сетях"
 
 #: lms/templates/student_account/account_settings_section.underscore
 msgid "An error occurred. Please reload the page."

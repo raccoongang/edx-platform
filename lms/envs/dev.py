@@ -31,7 +31,8 @@ LMS_ROOT_URL = "http://localhost:8000"
 
 FEEDBACK_SUBMISSION_EMAIL = "dummy@example.com"
 
-WIKI_ENABLED = True
+NEWS_ENABLED = True
+WIKI_ENABLED = False
 
 DJFS = {
     'type': 'osfs',

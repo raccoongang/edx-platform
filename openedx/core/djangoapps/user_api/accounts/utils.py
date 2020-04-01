@@ -40,7 +40,7 @@ def format_social_link(platform_name, new_social_link):
     3) Given anything unparseable, returns None
     """
     # Blank social links should return '' or None as was passed in.
-    if not new_social_link:
+    if not new_social_link or UserSocialLink.VALID_URLS[platform_name] == '':
         return new_social_link
 
     url_stub = UserSocialLink.VALID_URLS[platform_name]

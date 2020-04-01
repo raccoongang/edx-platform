@@ -390,7 +390,7 @@ class CourseTabList(List):
         course.tabs.extend([
             CourseTab.load('textbooks'),
             discussion_tab,
-            CourseTab.load('wiki'),
+            CourseTab.load('news'),
             CourseTab.load('progress'),
         ])
 
@@ -463,7 +463,8 @@ class CourseTabList(List):
                 tabs[0], tabs[1] = tabs[1], tabs[0]
                 tabs[0]['name'] = _('Home')
                 tabs[1]['name'] = _('Content')
-
+            if tabs[-1].get('type') == 'news' and tabs[-2].get('type') == 'progress':
+                tabs[-1], tabs[-2] = tabs[-2], tabs[-1]
         return tabs
 
     @classmethod
