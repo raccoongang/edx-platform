@@ -1,4 +1,5 @@
 from django.apps import apps
+from django.conf import settings
 from django.core.cache import cache
 from opaque_keys.edx.keys import CourseKey
 
@@ -92,6 +93,31 @@ def recalculate_coins(course_id, block_id, user_id, cost=0):
 def get_scaffolds_settings():
     ScaffoldsSettings = apps.get_model('hera', 'ScaffoldsSettings')
     return ScaffoldsSettings.get()
+
+
+def levels_match(current, _next):
+    """
+    Checks whether levels match depending on ENABLE_STUDENT_ADAPTIVE_MODE flag.
+    If the flag is disabled - let's think they are always match.
+    """
+    if settings.FEATURES.get('ENABLE_STUDENT_ADAPTIVE_MODE', False):
+        return current == _next
+    return True
+
+
+def check_levels_accordance(subsections, lesson_pair_level):
+    """
+    Check whether subsections level corresponds to the lesson pair's level.
+    This is actually the case when 
+    a lesson_pair has been created in disabled Student Adaptive Mode (ENABLE_STUDENT_ADAPTIVE_MODE = False)
+    with diffrent levels of difficulty and then that mode has been enabled.
+    """
+    levels_correspond = True
+    if settings.FEATURES.get('ENABLE_STUDENT_ADAPTIVE_MODE', False):
+        for sub in subsections:
+            if sub:
+                levels_correspond = sub['unit_level'] == lesson_pair_level
+    return levels_correspond
 
 
 def get_users_last_enroll(user):

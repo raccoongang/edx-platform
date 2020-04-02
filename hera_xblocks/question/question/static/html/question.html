@@ -16,7 +16,7 @@
         </div>
         <div class="author-block__question questions-wrapper">
             <div class="question__content">${description}</div>
-            <form class="question-form">
+            <form class="question-form" novalidate>
                 % for index, problem_type in enumerate(problem_types):
                     <div class="questions-list-item-holder">
                         % if problem_type.get('title'):
@@ -144,7 +144,7 @@
                     data-scaffold-class-name="is-rephrase">
                     <span class="scaffold__price ${rephrase_name}">
                         %if scaffolds[rephrase_name]['paid']:
-                            &#10004
+                            <i class="fa fa-check" aria-hidden="true"></i>
                         %else:
                             -${scaffolds[rephrase_name]['cost']}
                         %endif
@@ -159,7 +159,7 @@
                     data-scaffold-class-name="is-break">
                     <span class="scaffold__price ${break_it_down_name}">
                         %if scaffolds[break_it_down_name]['paid']:
-                            &#10004
+                            <i class="fa fa-check" aria-hidden="true"></i>
                         %else:
                             -${scaffolds[break_it_down_name]['cost']}
                         %endif
@@ -174,7 +174,7 @@
                     data-scaffold-class-name="is-teach">
                     <span class="scaffold__price ${teach_me_name}">
                         %if scaffolds[teach_me_name]['paid']:
-                            &#10004
+                            <i class="fa fa-check" aria-hidden="true"></i>
                         %else:
                             -${scaffolds[teach_me_name]['cost']}
                         %endif
@@ -200,29 +200,31 @@
                 <option value="not_at_all">Not at all</option>
             </select>
         </div>
-        <div class="feedback-holder">
-            <button type="button" class="feedback-open" ${'disabled' if submission_counter == 0 else ''}></button>
-            <div class="feedback-content">
+        <div class="btns-flex-holder">
+            <div class="feedback-holder ${'tooltip-is-open' if not is_submission_allowed else ''}">
+                <button type="button" class="feedback-open" ${'disabled' if submission_counter == 0 else ''}></button>
+                <div class="feedback-content">
                 <span id="feedback-message-${block_id}">
                     %if user_answer_correct:
-                        Correct!
+                        Correct.
                     %elif not user_answer_correct and is_submission_allowed:
                         Incorrect, please try again. You can ask for help first if you like.
                     %endif
                 </span>
-                <div id="fill-tables-${block_id}" style="display: none;">
+                    <div id="fill-tables-${block_id}" style="display: none;">
                     <span class="feedback-hint">
                         To see the correct filled table(s) click button
                     </span>
-                    <button class="feedback-btn" type="button">Answers</button>
+                        <button class="feedback-btn" type="button">Answers</button>
+                    </div>
+                    <button type="button" class="feedback-close">
+                        ×
+                    </button>
                 </div>
-                <button type="button" class="feedback-close">
-                    ×
-                </button>
             </div>
+            <button type="button" class="author-block__btn skip hidden">Skip</button>
+            <button type="button" class="author-block__btn submit" disabled>Submit</button>
         </div>
-        <button type="button" class="author-block__btn skip hidden">Skip</button>
-        <button type="button" class="author-block__btn submit" disabled>Submit</button>
     </div>
     <div class="simulation-overlay">
         <div class="simulation-popup">

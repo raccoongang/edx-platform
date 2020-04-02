@@ -3,7 +3,7 @@ View which retrieve hera onboarding pages and handle user onboarding states.
 """
 
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden, JsonResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponseForbidden, JsonResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import View
 from django.utils.decorators import method_decorator
@@ -86,7 +86,7 @@ class DashboardPageView(CourseTabView):
     def get(self, request, course_id=None, **kwargs):
         active_course_id = course_id or get_user_active_course_id(request.user)
         if not active_course_id:
-            raise Http404
+            return render_to_response("hera/not-found/not-found-ask.html")
         return super(DashboardPageView, self).get(request, unicode(active_course_id), 'courseware', **kwargs)
 
     def render_to_fragment(self, request, course=None, **kwargs):

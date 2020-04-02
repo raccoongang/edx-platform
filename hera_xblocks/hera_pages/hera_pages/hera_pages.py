@@ -3,7 +3,7 @@
 import pkg_resources
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
-from xblock.fields import JSONField, Scope, String
+from xblock.fields import JSONField, Scope, String, Boolean
 from xblockutils.studio_editable import StudioEditableXBlockMixin
 from xblockutils.resources import ResourceLoader
 
@@ -20,6 +20,7 @@ class HeraPagesXBlock(StudioEditableXBlockMixin, XBlock):
     display_name = String(default="Hera Pages")
     data = JSONField()
     user_answers = JSONField(scope=Scope.user_state, default='')
+    viewed = Boolean(scope=Scope.user_state, default=False)
 
     @property
     def img_url(self):
@@ -45,7 +46,8 @@ class HeraPagesXBlock(StudioEditableXBlockMixin, XBlock):
         return {
             "data": self.data,
             "user_answers": self.user_answers,
-            'block_id': self.location.block_id
+            "block_id": self.location.block_id,
+            "viewed": self.viewed
         }
     
     def get_content_html(self):
@@ -67,6 +69,10 @@ class HeraPagesXBlock(StudioEditableXBlockMixin, XBlock):
                 tables_html.append(table_html)
         return {'tables_html': tables_html}
 
+    @XBlock.json_handler
+    def all_slides_viewed(self, data, sufix=''):
+        self.viewed = True
+        return True
 
     @XBlock.json_handler
     def render_html(self, data, sufix=''):

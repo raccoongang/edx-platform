@@ -5,6 +5,15 @@
   padding: 20px 0;
 }
 
+.servey-questions .author-block__wrapper {
+  padding: 20px 0 0;
+}
+
+.survey-content + .footer-controls-buttons-holder {
+  margin-top: 0;
+  margin-bottom: 32px;
+}
+
 .staff-results .survey-question-title {
   font-size: 18px;
 }
@@ -140,4 +149,20 @@
 
 .wrapper-page{
   position: relative;
+}
+
+@media screen and (max-width: 759px) {
+  .survey-results {
+    flex-direction: column;
+  }
+
+  .survey-results-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .survey-results-item__percents {
+    margin-left: 12px;
+  }
 }

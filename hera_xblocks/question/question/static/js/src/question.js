@@ -52,7 +52,7 @@ function QuestionXBlock(runtime, element, init_args) {
                 scaffolds[scaffoldName].paid = response.scaffold_paid;
                 if (response.scaffold_paid){
                     $('.user-coins').html(response.coins);
-                    $('.scaffold__price.'+scaffoldName).html('&#10004');
+                    $('.scaffold__price.'+scaffoldName).html('<i class="fa fa-check" aria-hidden="true"></i>');
                 }
             }).error(function(error){
                 console.log(error);
@@ -81,8 +81,16 @@ function QuestionXBlock(runtime, element, init_args) {
             var $questionWrapper = $('.questions-wrapper', element);
             var invalidChars = ["-", "+", "e", "E"];
             var isSubmissionAllowed = response.is_submission_allowed;
+            var submissionCount = response.submission_counter;
+            var isAnyScaffoldPaid = response.is_any_scaffold_paid;
             var $buttonFillTables = $('#fill-tables-' + blockId, element);
             var isThereTableInputs = $('table', element).find('input').length > 0;
+
+            // just in case
+            $questionForm.submit(function(e) {
+                e.preventDefault();
+                return;
+            });
 
             // conditions have been separated to make it easier to read the code (but not sure it helped)
             if (!isSubmissionAllowed && ((response.has_many_types && isThereTableInputs) || response.has_many_types || (!response.has_many_types && !isThereTableInputs) )) {
@@ -98,7 +106,7 @@ function QuestionXBlock(runtime, element, init_args) {
                 $buttonFillTables.show();
             }
 
-            if (response.submission_counter == 1 && isSubmissionAllowed && response.is_any_scaffold_paid) {
+            if (response.submission_counter == 1 && isSubmissionAllowed && isAnyScaffoldPaid) {
                 $skipBtn.removeClass('hidden');
             }
 
@@ -112,10 +120,58 @@ function QuestionXBlock(runtime, element, init_args) {
                 $confidenceError.hide();
             }
 
-            $('input, select', element).on("change blur keyup", function() {
+            function disableSubmit() {
+                $submit.attr("disabled", true);
+            }
+
+            function enableSubmit() {
+                $submit.removeAttr("disabled");
+            }
+
+            function hideScaffoldImg() {
+                $questioonsImageWrapper.removeClass('is-teach is-break is-rephrase');
+                $scaffoldHelpImage.addClass("hidden");
+                $questionSlider.removeClass("hidden");
+                $closeBtn.addClass("hidden");
+            }
+
+            $('.questions-wrapper', element).find('input, select').on("change blur keyup keypress", function(e) {
+                if (e.key === 'Enter' || e.keyCode === 13 || e.which === 13) { // enter pressed
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                }
+                // we need to check whether all inputs are empty to disable a submit button.
+                var formFilled = true;
+                $('.questions-wrapper', element).find('.questions-list-item-holder').each(function(ind, el) {
+
+                    $(el).find('input[type=text], input[type=number], select').each(function (idx, _el) {
+                        if (_el.value.length === 0) {
+                            formFilled = false;
+                        }
+                    });
+                    var radioCheckboxLength = $(el).find('input[type=radio], input[type=checkbox]').length;
+                    var checked = false;
+                    $(el).find('input[type=radio], input[type=checkbox]').each(function (idx, __el) {
+                        if (__el.checked) {
+                            checked = true;
+                        }
+                        if (idx === radioCheckboxLength-1) {
+                            if (!checked) {
+                                formFilled = false;
+                            }
+                        }
+                    });
+                });
+
                 if (isSubmissionAllowed) {
-                    showConfidence();
-                    $submit.removeAttr("disabled");
+                    if (formFilled) {
+                        showConfidence();
+                        enableSubmit();
+                    } else {
+                        hideConfidence();
+                        disableSubmit();
+                    }
                 }
             });
 
@@ -145,13 +201,14 @@ function QuestionXBlock(runtime, element, init_args) {
                         JSON.stringify({"answers": userAnswers, "confidence": confidence})
                     ).done(function (response) {
                         isSubmissionAllowed = response.is_submission_allowed;
-                        var submissionCount = response.submission_counter;
+                        submissionCount = response.submission_counter;
+                        isAnyScaffoldPaid = response.is_any_scaffold_paid;
                         var isScaffoldsEnabled = response.is_scaffolds_enabled;
                         if (response.correct) {
                             enableNextButton();
                             $skipBtn.addClass("hidden");
                             $scaffolds.addClass("hidden");
-                            changeFeedbackMessage("Correct!");
+                            changeFeedbackMessage("Correct.");
                         }
                         else if (isSubmissionAllowed) {
                             $scaffolds.removeClass("hidden");
@@ -205,6 +262,7 @@ function QuestionXBlock(runtime, element, init_args) {
                 var isScaffoldPaid = scaffoldPayment(scaffoldData.scaffoldName);
                 if (isScaffoldPaid){
                     $questionWrapper.removeClass('is-teach is-break is-rephrase');
+                    isAnyScaffoldPaid = true;
 
                     if (scaffoldData.imgUrls && scaffoldData.imgUrls.length) {
                         scaffoldData.imgUrls.split(' ').forEach((el, ind) => {
@@ -240,14 +298,10 @@ function QuestionXBlock(runtime, element, init_args) {
                 $questionContent.html(init_args.description);
                 $questionWrapper.removeClass('is-teach is-break is-rephrase');
                 $scaffolds.removeClass('hidden');
+                hideScaffoldImg();
             });
 
-            $closeBtn.bind('click', function (event) {
-                $questioonsImageWrapper.removeClass('is-teach is-break is-rephrase');
-                $scaffoldHelpImage.addClass("hidden");
-                $questionSlider.removeClass("hidden");
-                $closeBtn.addClass("hidden");
-            });
+            $closeBtn.bind('click', hideScaffoldImg);
 
             $skipBtn.bind('click', function (event) {
                 if (!skipped) {

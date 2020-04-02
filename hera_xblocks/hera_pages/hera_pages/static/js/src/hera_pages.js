@@ -3,6 +3,7 @@ function HeraPagesXBlock(runtime, element, init_args) {
     var submithHandlerUrl = runtime.handlerUrl(element, 'submit');
     var renderHTMLHandlerUrl = runtime.handlerUrl(element, 'render_html');
     var readyTableHMTLHandlerUrl = runtime.handlerUrl(element, 'render_correct_filled_tables');
+    var allSlidesViewedHandlerUrl = runtime.handlerUrl(element, 'all_slides_viewed');
     var blockId = init_args.block_id;
 
     $.post(renderHTMLHandlerUrl, "{}").done(function(response) {
@@ -24,6 +25,25 @@ function HeraPagesXBlock(runtime, element, init_args) {
             var $slidesTogether =  $(slickSelectors, element);
             var answerCounter = 0;
             var tableRendered = false;
+
+
+            function userViewedAllSlides(){
+                $.post(
+                    allSlidesViewedHandlerUrl,
+                    JSON.stringify({})
+                ).done(
+                    function(response) {
+                        $('.button-next-' + blockId, element).removeAttr("disabled");
+                    }
+                ).error(function(error){
+                    console.log(error);
+                });
+            }
+
+            if (contentSlideCount < 2 && imageSlideCount < 2){
+                userViewedAllSlides();
+            }
+
             function getCurrentSlideId() {
                 // if there is no $imageSlider - slick('slickCurrentSlide') returns jquery element but we need a number
                 var currentImgSlideId = imageSlideCount ? $imageSlider.slick('slickCurrentSlide') : imageSlideCount;
@@ -154,6 +174,7 @@ function HeraPagesXBlock(runtime, element, init_args) {
                     $buttonPrevSlide.addClass('hidden');
                 } else if(slideId + 1 === theBiggestCount){
                     $buttonNextSlide.addClass('hidden');
+                    userViewedAllSlides();
                 }
             });
 

@@ -3,8 +3,6 @@ from django.template.loader import render_to_string
 from opaque_keys.edx.keys import CourseKey
 from web_fragments.fragment import Fragment
 
-from hera.models import Mascot, MedalsSettings
-
 from courseware.courses import get_course_overview_with_access, get_current_child
 from courseware.model_data import FieldDataCache
 from courseware.module_render import get_module_for_descriptor
@@ -13,6 +11,9 @@ from lms.djangoapps.hera.mongo import BLOCK_ID, COURSE_KEY, LEVEL, NEXT_ID, USER
 from openedx.features.course_experience.utils import get_course_outline_block_tree
 from openedx.features.course_experience.views.course_outline import CourseOutlineFragmentView
 from xmodule.modulestore.django import modulestore
+
+from .models import Mascot, MedalsSettings
+from .utils import levels_match, check_levels_accordance
 
 
 def unit_grade_level(earned, course_block_tree, last_visited_subsection, request, course_id=None):
@@ -76,53 +77,63 @@ def unit_grade_level(earned, course_block_tree, last_visited_subsection, request
     is_complete = last_visited_subsection['complete']
     next_level = get_next_level(earned, subsection_level)
     completed_subsection_ids = []
+    should_update_db = False
+    stored_completed_subsection_ids_changed = False
+    block_tree_completed_subsection_ids = []
+
+    # gather all complete lessons in list
+    for section in course_block_tree.get('children'):
+        for subsection in section.get('children', []):
+            if subsection['complete']:
+                block_tree_completed_subsection_ids.append(subsection['block_id'])
+
     if lesson_pair:
         completed_subsection_ids = lesson_pair.get(COMPLETED_SUBSECTIONS, [])
 
         # add last visited lesson to student's path if it's complete
-        if is_complete and not last_visited_subsection['block_id'] in completed_subsection_ids:
+        if is_complete and last_visited_subsection['block_id'] not in completed_subsection_ids:
+            stored_completed_subsection_ids_changed = True
             completed_subsection_ids.append(last_visited_subsection['block_id'])
-
-        block_tree_completed_subsection_ids = []
-        # gather all complete lessons in list
-        for section in course_block_tree.get('children'):
-            for subsection in section.get('children', []):
-                if subsection['complete']:
-                    block_tree_completed_subsection_ids.append(subsection['block_id'])
 
         # remove deleted lessons from the COMPLETED_SUBSECTIONS of the student's path
         for completed_subsection_id in completed_subsection_ids[:]:
-            if not completed_subsection_id in block_tree_completed_subsection_ids:
+            if completed_subsection_id not in block_tree_completed_subsection_ids:
+                stored_completed_subsection_ids_changed = True
                 completed_subsection_ids.remove(completed_subsection_id)
 
         # get next level only if user finished the previous one.
         next_level = next_level if is_complete else lesson_pair[LEVEL]
         first_sub, next_sub = get_pair(lesson_pair.get('block_id'), lesson_pair.get('next_id'), course_block_tree)
+
+        # check levels accordance in lesson pair
+        levels_correspond = check_levels_accordance([first_sub, next_sub], lesson_pair[LEVEL])
+        
         # levels the same and at least one hasn't completed - return current pair
-        if first_sub and next_sub:
-            if lesson_pair[LEVEL] == next_level and (not first_sub.get('complete', True) or not next_sub.get('complete', True)):
-                children = []
-                if first_sub:
-                    children.append(first_sub)
-                if next_sub:
-                    children.append(next_sub)
-                c_selection_page().update({
-                    COURSE_KEY: course_id,
-                    USER: request.user.id},
-                    {
-                        '$set': {
-                            COMPLETED_SUBSECTIONS: completed_subsection_ids,
-                        }
-                    },
-                    upsert=True
-                )
-                return {'children': children }, completed_subsection_ids
+        if levels_correspond and first_sub and next_sub:
+            if levels_match(lesson_pair[LEVEL], next_level) and (not first_sub.get('complete', True) or not next_sub.get('complete', True)):
+                if stored_completed_subsection_ids_changed:
+                    c_selection_page().update({
+                        COURSE_KEY: course_id,
+                        USER: request.user.id},
+                        {
+                            '$set': {
+                                COMPLETED_SUBSECTIONS: completed_subsection_ids,
+                            }
+                        },
+                    )
+                return {'children': [first_sub, next_sub] }, completed_subsection_ids
     else: # means that student is here for the first time
         next_level = get_next_level(earned)
 
     for section in course_block_tree.get('children'):
         for subsection in section.get('children', []):
-            if next_level == subsection['unit_level'] and not subsection['complete']:
+            if levels_match(subsection['unit_level'], next_level) and not subsection['complete']:
+                # if such sub is already in existing lesson_pair - shouldn't update db
+                if lesson_pair:
+                    if subsection['block_id'] not in [lesson_pair.get('block_id'), lesson_pair.get('next_id')]:
+                        should_update_db = True
+                else:
+                    should_update_db = True
                 subsection_vertical['children'].append(subsection)
                 if len(subsection_vertical['children']) >= 2:
                     break
@@ -133,10 +144,10 @@ def unit_grade_level(earned, course_block_tree, last_visited_subsection, request
 
     if subsection_vertical['children'] and len(subsection_vertical['children']) > 1:
         to_set = {
-                BLOCK_ID: subsection_vertical['children'][0]['block_id'],
-                NEXT_ID: subsection_vertical['children'][1]['block_id'],
-                LEVEL: next_level
-            }
+            BLOCK_ID: subsection_vertical['children'][0]['block_id'],
+            NEXT_ID: subsection_vertical['children'][1]['block_id'],
+            LEVEL: next_level
+        }
     elif subsection_vertical['children']:
         to_set = {
                 BLOCK_ID: subsection_vertical['children'][0]['block_id'],
@@ -146,20 +157,23 @@ def unit_grade_level(earned, course_block_tree, last_visited_subsection, request
             NEXT_ID: 1
         }
 
-    to_set.update({COMPLETED_SUBSECTIONS: completed_subsection_ids})
     if to_set:
+        if stored_completed_subsection_ids_changed:
+            to_set.update({COMPLETED_SUBSECTIONS: completed_subsection_ids})
+        elif block_tree_completed_subsection_ids:
+            to_set.update({COMPLETED_SUBSECTIONS: block_tree_completed_subsection_ids})
         to_update['$set'] = to_set
     if to_unset:
         to_update['$unset'] = to_unset
 
-    if to_update:
+    if to_update and should_update_db:
         c_selection_page().update({
             COURSE_KEY: course_id,
             USER: request.user.id},
             to_update
         , upsert=True)
 
-    return subsection_vertical, completed_subsection_ids
+    return subsection_vertical, completed_subsection_ids or block_tree_completed_subsection_ids
 
 
 class SelectionPageOutlineFragmentView(CourseOutlineFragmentView):
@@ -281,6 +295,21 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
                         'display_name': subsection.get('display_name'),
                         'lms_web_url': subsection.get('lms_web_url', '')
                     }
+        # in case the last_visited_subsection haven't found, for example deleted
+        if not last_visited_subsection:
+            selection_page_data = c_selection_page().find_one({
+                COURSE_KEY: course_id,
+                USER: request.user.id,
+            })
+            needed_level = 'middle' # default
+            if selection_page_data and selection_page_data.get(LEVEL):
+                needed_level = selection_page_data.get(LEVEL)
+            for section in course_block_tree.get('children', []):
+                for subsection in section.get('children', []):
+                    # get the first incomplete subsection with a middle level
+                    if subsection['block_id'] not in completed_subsections and levels_match(subsection['unit_level'], needed_level):
+                        last_visited_subsection = subsection
+                        break
 
         for chapter in courseware_summary:
             if not chapter['display_name'] == "hidden":
@@ -323,9 +352,9 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
                     ordered_subsections.append(last_visited_subsection)
                     break
         if not popup:
-            for selection_subsection in selected_subsections['children']:
-                if not selection_subsection['complete'] and len(ordered_subsections) < 8:
-                    ordered_subsections.append(selection_subsection)
+            for subsection in selected_subsections['children']:
+                if not subsection['complete'] and len(ordered_subsections) < 8:
+                    ordered_subsections.append(subsection)
 
         try:
             last_completed_subsection_id = completed_subsection_ids[-1]
@@ -336,7 +365,7 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
         units = last_visited_subsection.get('children', [{}])
         start_over_url = units[0].get('lms_web_url', '')
         context = {
-            'is_lesson_complete': len(selected_subsections['children']) == 0,
+            'is_lessons_complete': len(completed_subsection_ids) == 8 or len(selected_subsections['children']) == 0,
             'last_completed_subsection': last_completed_subsection,
             'ordered_subsections': ordered_subsections,
             'popup': popup,

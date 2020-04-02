@@ -495,6 +495,7 @@ button.btn-simulation:focus:not(:disabled) {
 
 .table-wrapper table td,
 .table-wrapper table th {
+    line-height: 1.1;
     padding: 6px 8px;
     position: relative;
     min-width: 110px;
@@ -527,7 +528,7 @@ button.btn-simulation:focus:not(:disabled) {
 .table-wrapper input[type="password"],
 .table-wrapper textarea.text {
     display: block;
-    border: none;
+    border: 1px solid transparent;
     box-shadow: none;
     padding: 0;
     background: none;
@@ -567,7 +568,46 @@ button.btn-simulation:focus:not(:disabled) {
     border-color: var(--color1);
 }
 
-
 .confidence-holder .select2-container--default .select2-selection--single .select2-selection__arrow {
     top: 7px;
+}
+
+@media screen and (max-width: 759px) {
+    .confidence-text {
+        flex: 1;
+        margin: 0 0 12px;
+    }
+
+    .confidence-holder {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: flex-end;
+        margin: 0 0 12px;
+    }
+
+    .confidence-input {
+        width: 100px;
+    }
+
+    .author-block__buttons {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .author-block__btn {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .scaffolds {
+        width: 245px;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .scaffold__btn {
+        font-size: 11px;
+    }
 }

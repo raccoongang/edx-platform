@@ -12,19 +12,25 @@
     }
 
     &-holder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         position: relative;
-        padding: 12px 0 18px;
+        padding: 12px 2px 18px;
+
+        > div {
+            width: 100%;
+        }
 
         &__btn {
-            position: absolute;
-            right: 0;
-            bottom: 0;
             border: none;
             box-shadow: none;
             outline: none;
             background: none;
             cursor: pointer;
             padding: 0;
+            margin: 6px 0;
             color: $table_color4;
             font-size: 14px;
             font-weight: normal;
@@ -87,7 +93,7 @@
             box-shadow: none;
             padding: 4px 42px 4px 8px;
             background: none;
-            width: 162px;
+            width: 152px;
             height: auto;
             font-size: 12px;
             line-height: 1;

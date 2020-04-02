@@ -170,6 +170,7 @@ export class TeacherTemplate extends React.Component{
         if (event.target.parentElement && event.target.parentElement.className.includes('hera-edit-subsection')) {
             const locator = event.target.parentElement.dataset.locator;
             if (locator.includes('sequential')) {
+                event.preventDefault();
                 this.props.questionsReset();
                 getData(locator).then(data => {
                     const subsectionChildren = data.child_info.children;
