@@ -259,13 +259,13 @@ button.author-block__btn:focus:not(:disabled) {
     color: var(--color5);
 }
 
-.simulation-close-btn {
+/* .simulation-close-btn {
     position: absolute;
     top: 0;
     right: -26px;
     cursor: pointer;
     color: #ccc;
-}
+} */
 
 .hidden {
     display: none !important;
@@ -356,7 +356,7 @@ input[type=number].confidence-input {
     padding: 1px;
 }
 
-.simulation-overlay {
+/* .simulation-overlay {
     position: fixed;
     z-index: 9999;
     height: 100%;
@@ -367,9 +367,9 @@ input[type=number].confidence-input {
     left: 0;
     background: var(--color-op);
     display: none;
-}
+} */
 
-.simulation-popup {
+/* .simulation-popup {
     max-width: 900px;
     width: 80%;
     max-height: 600px;
@@ -377,7 +377,7 @@ input[type=number].confidence-input {
     position: relative;
     background: var(--color3);
     margin: 20px auto;
-}
+} */
 
 .simulation-iframe {
     width: 100%;
@@ -610,4 +610,8 @@ button.btn-simulation:focus:not(:disabled) {
     .scaffold__btn {
         font-size: 11px;
     }
+}
+
+.iframe-holder {
+    height: 100%;
 }
