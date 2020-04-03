@@ -114,7 +114,7 @@
                     } else {
                         // Google Tag Manager: track registration success event
                         if (typeof(dataLayer) !== 'undefined') {
-                            dataLayer.push({'event': 'formsend'});
+                            dataLayer.push({'event': 'registrationCompleted'});
                         }
                     }
                 },
