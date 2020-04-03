@@ -85,6 +85,7 @@ function QuestionXBlock(runtime, element, init_args) {
             var isAnyScaffoldPaid = response.is_any_scaffold_paid;
             var $buttonFillTables = $('#fill-tables-' + blockId, element);
             var isThereTableInputs = $('table', element).find('input').length > 0;
+            var isSimulationHiddenState = true;
 
             // just in case
             $questionForm.submit(function(e) {
@@ -129,10 +130,52 @@ function QuestionXBlock(runtime, element, init_args) {
             }
 
             function hideScaffoldImg() {
+                if (!isSimulationHiddenState) {
+                    showSimulation();
+                } else {
+                    hideSimulation();
+                }
+                showSimulationButton();
                 $questioonsImageWrapper.removeClass('is-teach is-break is-rephrase');
                 $scaffoldHelpImage.addClass("hidden");
                 $questionSlider.removeClass("hidden");
                 $closeBtn.addClass("hidden");
+            }
+
+            function showSimulation() {
+                var $target = $('.show-simulation', element);
+                var iframeUrl = $target.data('iframeUrl');
+                var $iframeHolder = $('.js-iframe-holder', element);
+
+                $('.js-slider-image-holder', element).addClass('hidden');
+                $iframeHolder.removeClass('hidden');
+
+                if (!$iframeHolder.find('iframe').attr('src')) {
+                    $iframeHolder.find('iframe').attr('src', iframeUrl);
+                }
+
+                switchSimulationButtonText();
+
+            }
+
+            function hideSimulation() {
+                $('.js-slider-image-holder', element).removeClass('hidden');
+                $('.js-iframe-holder', element).addClass('hidden');
+
+                switchSimulationButtonText();
+            }
+
+            function switchSimulationButtonText() {
+                var text = $('.js-iframe-holder', element).hasClass('hidden') ? 'Show simulation' : 'Hide simulation';
+                $('.show-simulation', element).text(text);
+            }
+
+            function hideSimulationButton() {
+                $('.show-simulation', element).hide();
+            }
+
+            function showSimulationButton() {
+                $('.show-simulation', element).show();
             }
 
             $('.questions-wrapper', element).find('input, select').on("change blur keyup keypress", function(e) {
@@ -256,10 +299,11 @@ function QuestionXBlock(runtime, element, init_args) {
                 var contentID = '#' + scaffoldData.scaffoldName + '-' + blockId;
                 var scaffoldimages = '';
                 var needShowImageBlock = false;
-                $skipBtn.removeClass("hidden");
-
                 var scaffoldContent = $(contentID).html();
                 var isScaffoldPaid = scaffoldPayment(scaffoldData.scaffoldName);
+
+                $skipBtn.removeClass("hidden");
+
                 if (isScaffoldPaid){
                     $questionWrapper.removeClass('is-teach is-break is-rephrase');
                     isAnyScaffoldPaid = true;
@@ -280,6 +324,10 @@ function QuestionXBlock(runtime, element, init_args) {
                         $questionSlider.addClass("hidden");
                         $scaffoldHelpImage.removeClass("hidden");
                         $closeBtn.removeClass("hidden");
+                        hideSimulation();
+                        hideSimulationButton();
+                    } else if (!isSimulationHiddenState) {
+                        showSimulation();
                     }
                     // do we need to rerender the content block
                     if (scaffoldContent.trim().length > 0) {
@@ -299,6 +347,12 @@ function QuestionXBlock(runtime, element, init_args) {
                 $questionWrapper.removeClass('is-teach is-break is-rephrase');
                 $scaffolds.removeClass('hidden');
                 hideScaffoldImg();
+                showSimulationButton();
+                if (isSimulationHiddenState) {
+                    hideSimulation();
+                } else {
+                    showSimulation();
+                }
             });
 
             $closeBtn.bind('click', hideScaffoldImg);
@@ -335,13 +389,13 @@ function QuestionXBlock(runtime, element, init_args) {
                 $('.author-block__wrapper', element).get(0).style.setProperty('--color-teach', init_args.scaffolds[init_args.teach_me_name].color);
 
                 $('.show-simulation', element).click(function(e) {
-                    var iframeUrl = $(e.currentTarget).data('iframeUrl');
-                    $('.simulation-overlay', element).find('iframe').attr('src', iframeUrl);
-                    $('.simulation-overlay', element).fadeIn(300);
-                });
-
-                $('.simulation-close-btn', element).click(function() {
-                    $('.simulation-overlay', element).fadeOut(300);
+                    if ($('.js-iframe-holder', element).hasClass('hidden')) {
+                        showSimulation();
+                        isSimulationHiddenState = false;
+                    } else {
+                        hideSimulation();
+                        isSimulationHiddenState = true;
+                    }
                 });
             });
 

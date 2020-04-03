@@ -5,14 +5,20 @@
 <div class="author-block__wrapper">
     <div class="author-block__content">
         <div class="author-block__image questions-image-wrapper">
-            <span class="close-image-icon hidden js-close-scaffold-btn">&times;</span>
-            <div class="image-holder">
-                % for img_url in img_urls:
-                    <img class="question__image" src="${img_url}" alt="Question image">
-                % endfor
+            <div class='js-slider-image-holder'>
+                <span class="close-image-icon hidden js-close-scaffold-btn">&times;</span>
+                <div class="image-holder">
+                    % for img_url in img_urls:
+                        <img class="question__image" src="${img_url}" alt="Question image">
+                    % endfor
+                </div>
+                <div class="scaffold_help_image hidden">
+                </div>
             </div>
-            <div class="scaffold_help_image hidden">
+            <div class="iframe-holder js-iframe-holder hidden">
+                <iframe src="" class="simulation-iframe"></iframe>
             </div>
+
         </div>
         <div class="author-block__question questions-wrapper">
             <div class="question__content">${description}</div>
@@ -224,12 +230,6 @@
             </div>
             <button type="button" class="author-block__btn skip hidden">Skip</button>
             <button type="button" class="author-block__btn submit" disabled>Submit</button>
-        </div>
-    </div>
-    <div class="simulation-overlay">
-        <div class="simulation-popup">
-            <div class="simulation-close-btn">&times;</div>
-            <iframe src="${iframe_url}" class="simulation-iframe"></iframe>
         </div>
     </div>
     <div class="footer-controls-buttons-holder">
