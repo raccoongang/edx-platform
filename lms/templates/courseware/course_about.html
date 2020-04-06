@@ -91,7 +91,7 @@ from openedx.core.lib.courses import course_image_url
       } else if (xhr.status == 403) {
           <%
               edx_url = '{HTTP_X_FORWARDED_PROTO}://{HTTP_HOST}{PATH_INFO}'.format(**request.META)
-              redirect_url = '{}/login.aspx?returnUrl={}'.format(settings.FEATURES['PORTAL_URL'], edx_url)
+              redirect_url = '{}/Profile/Login?returnUrl={}'.format(settings.FEATURES['PORTAL_URL'], edx_url)
           %>
           location.href = "${redirect_url}";
       } else {
