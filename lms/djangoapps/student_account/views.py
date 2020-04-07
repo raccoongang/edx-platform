@@ -554,8 +554,6 @@ def account_settings_context(request):
             }, 'time_zone': {
                 'options': TIME_ZONE_CHOICES,
             },
-            'mobytize_id': user.profile.mobytize_id,
-            'mobytize_token': user.profile.mobytize_token,
         },
         'social_platforms': UserSocialLink.PLATFORM_CHOICES,
         'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),

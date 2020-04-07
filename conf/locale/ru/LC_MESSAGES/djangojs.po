@@ -4814,11 +4814,10 @@ msgstr ""
 #: lms/static/js/student_account/views/account_settings_fields.js
 msgid ""
 "We've sent a message to {email}. Click the link in the message to reset your"
-" password. Didn't receive the message? Contact {anchorStart}technical "
-"support{anchorEnd}."
+" password. Didn't receive the message? Contact {anchorStart}{anchorEnd}."
 msgstr ""
-"Мы отправили Вам сообщение на {email}. Нажмите на ссылку в сообщении, чтобы сбросить пароль. Не получили сообщение?"
-"Обратитесь в нашу службу технической поддержки: {anchorStart}academy@mama.mobytize.com{anchorEnd}."
+"Мы отправили Вам сообщение на {email}. Нажмите на ссылку в сообщении, чтобы сбросить пароль. Не получили сообщение? "
+"Обратитесь в нашу службу технической поддержки: {anchorStart}{anchorEnd}"
 
 #: lms/static/js/student_account/views/account_settings_fields.js
 msgid "Link your {accountName} account"

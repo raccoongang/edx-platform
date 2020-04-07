@@ -213,36 +213,8 @@
                 );
             }
 
-
-
             aboutSectionsData.push(socialFields);
-            // Add the mobytize_id and mobytizetoken fields
-            mobytizeFields = {
-                title: gettext('Mobytize data'),
-                fields: [   {
-                    view: new AccountSettingsFieldViews.TextFieldView({
-                        model: userAccountModel,
-                        title: gettext('mobytize_id'),
-                        valueAttribute: 'mobytize_id',
-                        helpMessage: gettext(
-                            'mobytize_id'  // eslint-disable-line max-len
-                        ),
-                        persistChanges: true
-                    })
-                },
-                {
-                    view: new AccountSettingsFieldViews.TextFieldView({
-                        model: userAccountModel,
-                        title: gettext('mobytize_token'),
-                        valueAttribute: 'mobytize_token',
-                        helpMessage: gettext(
-                            'mobytize_token'  // eslint-disable-line max-len
-                        ),
-                        persistChanges: true
-                    })
-                }]
-            };
-            aboutSectionsData.push(mobytizeFields);
+
             tabSections['aboutTabSections'] = aboutSectionsData;
 
             // set TimeZoneField to listen to CountryField
