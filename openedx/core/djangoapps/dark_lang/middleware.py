@@ -124,9 +124,11 @@ class DarkLangMiddleware(object):
         since we need to rely solely on the server lang configs as per SKILLONOMY-236.
         """
         auth_user = request.user.is_authenticated()
-        preview_lang = get_user_preference(
-            request.user, LANGUAGE_KEY
-        ) or settings.LANGUAGE_CODE if auth_user else settings.LANGUAGE_CODE
+
+        if auth_user:
+            preview_lang = get_user_preference(request.user, LANGUAGE_KEY) or settings.LANGUAGE_CODE
+        else:
+            preview_lang = settings.LANGUAGE_CODE
 
         # User doesn't have a dark lang preference, so just return
         if not preview_lang:
