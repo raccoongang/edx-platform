@@ -116,7 +116,7 @@ CertData = namedtuple("CertData", ["cert_status", "title", "msg", "download_url"
 
 def check_sso(request, course_id):
     edx_url = '{HTTP_X_FORWARDED_PROTO}://{HTTP_HOST}{PATH_INFO}'.format(**request.META)
-    redirect_url = '{}/login.aspx?returnUrl={}'.format(settings.FEATURES['PORTAL_URL'], edx_url)
+    redirect_url = '{}/Profile/Login?returnUrl={}'.format(settings.FEATURES['PORTAL_URL'], edx_url)
 
     p = request.GET.get('p')
     if p:
@@ -354,7 +354,7 @@ def course_info(request, course_id):
     Assumes the course_id is in a valid format.
     """
     edx_url = '{HTTP_X_FORWARDED_PROTO}://{HTTP_HOST}{PATH_INFO}'.format(**request.META)
-    redirect_url = '{}/login.aspx?returnUrl={}'.format(settings.FEATURES['PORTAL_URL'], edx_url)
+    redirect_url = '{}/Profile/Login?returnUrl={}'.format(settings.FEATURES['PORTAL_URL'], edx_url)
 
     course_key = CourseKey.from_string(course_id)
     with modulestore().bulk_operations(course_key):
