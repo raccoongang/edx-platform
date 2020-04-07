@@ -15,8 +15,8 @@ import locale
 import sys
 from django.utils import translation
 
-from openedx.core.djangoapps.dark_lang import DARK_LANGUAGE_KEY
 from openedx.core.djangoapps.dark_lang.models import DarkLangConfig
+from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preference
 
 # If django 1.7 or higher is used, the right-side can be updated with new-style codes.
@@ -118,13 +118,15 @@ class DarkLangMiddleware(object):
 
     def _activate_preview_language(self, request):
         """
-        Check the user's dark language setting in the session and apply it
+        Check the user's language setting in the session and apply it.
+
+        Neglect the dark language preview feature in the language settings check,
+        since we need to rely solely on the server lang configs as per SKILLONOMY-236.
         """
         auth_user = request.user.is_authenticated()
-        preview_lang = None
-        if auth_user:
-            # Get the request user's dark lang preference
-            preview_lang = get_user_preference(request.user, DARK_LANGUAGE_KEY)
+        preview_lang = get_user_preference(
+            request.user, LANGUAGE_KEY
+        ) or settings.LANGUAGE_CODE if auth_user else settings.LANGUAGE_CODE
 
         # User doesn't have a dark lang preference, so just return
         if not preview_lang:
@@ -145,7 +147,7 @@ class DarkLangMiddlewareSetLocaleAdditional(object):
         if not DarkLangConfig.current().enabled:
             return
 
-        reload(sys)  
+        reload(sys)
         sys.setdefaultencoding('utf8')
 
         language = translation.get_language_from_request(request)
