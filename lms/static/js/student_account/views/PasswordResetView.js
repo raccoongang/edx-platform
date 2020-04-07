@@ -25,6 +25,11 @@
                     this.element.show($(this.el));
                     this.element.show($(this.el).parent());
                     this.listenTo(this.model, 'sync', this.saveSuccess);
+                    this.removeTitle();
+                },
+
+                removeTitle: function() {
+                    document.querySelector('.register-bg__title').classList.add('is-hidden');
                 },
 
                 saveSuccess: function() {
