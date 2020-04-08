@@ -758,6 +758,7 @@ TRACKING_SEGMENTIO_SOURCE_MAP = {
 ######################## GOOGLE ANALYTICS ###########################
 GOOGLE_ANALYTICS_ACCOUNT = None
 GOOGLE_ANALYTICS_LINKEDIN = 'GOOGLE_ANALYTICS_LINKEDIN_DUMMY'
+GOOGLE_TAG_MANAGER_ID = None
 
 ######################## OPTIMIZELY ###########################
 OPTIMIZELY_PROJECT_ID = None
