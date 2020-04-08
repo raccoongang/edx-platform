@@ -326,8 +326,6 @@ function QuestionXBlock(runtime, element, init_args) {
                         $closeBtn.removeClass("hidden");
                         hideSimulation();
                         hideSimulationButton();
-                    } else if (!isSimulationHiddenState) {
-                        showSimulation();
                     }
                     // do we need to rerender the content block
                     if (scaffoldContent.trim().length > 0) {
