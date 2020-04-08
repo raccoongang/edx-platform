@@ -61,15 +61,19 @@ from openedx.core.djangolib.markup import HTML, Text
                                 ${subsection.get('display_name')}
                             </div>
                             <div class="hera-lesson__status">
-                                % if subsection.get('points') is not None:
+                                % if subsection['complete']:
                                     Complete
+                                % elif subsection.get('in_progress'):
+                                    <span class="in-progress">
+                                        In progress
+                                    </span>
                                 % endif
                             </div>
                         </div>
                         <div class="dna-unlocked">
                             <div class="dna-icon">
                                 <a href="${ subsection.get('lms_web_url', '') }">
-                                    % if subsection.get('points') is not None:
+                                    % if subsection['complete']:
                                         <i class="fa fa-check" aria-hidden="true"></i>
                                     % endif
                                 </a>
@@ -102,7 +106,7 @@ from openedx.core.djangolib.markup import HTML, Text
         </div>
     </div>
 
-    <div id="modal-continue" data-show-popup="${popup}" style="display:none">
+    <div id="modal-continue" data-show-popup="${show_popup}" style="display:none">
         <div class="onboarding-holder">
             <button class="modal-continue_close popup_close" title="Close" aria-label="Close"><span aria-hidden="true">×</span></button>
             <div class="onboarding-holder">
