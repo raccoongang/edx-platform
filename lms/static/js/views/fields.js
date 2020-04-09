@@ -391,7 +391,6 @@
                 }));
                 this.delegateEvents();
                 this.updateValueInField();
-                this.initSelect2();
 
                 if (this.editable === 'toggle') {
                     this.showCanEditMessage(this.mode === 'display');
@@ -399,10 +398,11 @@
                 return this;
             },
 
-            initSelect2: function() {
+            initSelect2: function(value) {
                 this.$el.find('select').select2({
                     width: '100%',
                     minimumResultsForSearch: 30,
+                    placeholder: value,
                     dropdownPosition: 'below'
                 });
             },
@@ -465,6 +465,7 @@
                 if (this.mode === 'display') {
                     this.updateDisplayModeClass();
                 }
+                this.initSelect2(value);
             },
 
             saveValue: function() {
