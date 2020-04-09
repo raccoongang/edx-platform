@@ -69,6 +69,10 @@
     position: relative;
 }
 
+.author-block__content.is-simulation-open {
+    overflow: hidden;
+}
+
 .author-block__content.is-column {
     flex-direction: column;
     align-items: flex-start;
