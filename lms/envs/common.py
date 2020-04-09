@@ -1107,6 +1107,7 @@ simplefilter('ignore')
 ################################# Middleware ###################################
 
 MIDDLEWARE_CLASSES = (
+    'session.middleware.EDXSameSiteMiddleware',
     'crum.CurrentRequestUserMiddleware',
 
     'request_cache.middleware.RequestCache',
