@@ -86,6 +86,9 @@
                 },
 
                 saveSuccess: function() {
+                    if (typeof(dataLayer) !== 'undefined') {
+                        dataLayer.push({'event': 'registrationCompleted'});
+                    }
                     this.trigger('auth-complete');
                 },
 
@@ -111,11 +114,6 @@
                     if (_.compact(this.errors).length) {
                     // The form did not get submitted due to validation errors.
                         $(this.el).show(); // Show in case the form was hidden for auto-submission
-                    } else {
-                        // Google Tag Manager: track registration success event
-                        if (typeof(dataLayer) !== 'undefined') {
-                            dataLayer.push({'event': 'registrationCompleted'});
-                        }
                     }
                 },
 
