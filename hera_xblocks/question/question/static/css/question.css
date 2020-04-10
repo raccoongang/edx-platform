@@ -427,6 +427,32 @@ select.questions-list__select:focus {
     position: absolute !important;
     left: 24px;
     bottom: 0;
+    transition: all .3s linear;
+}
+
+.show-simulation-holder .fa {
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: -1px;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.is-simulation-open .show-simulation-holder {
+    bottom: -24px;
+}
+
+.is-simulation-open .show-simulation-holder .fa {
+    display: block;
+}
+
+.is-simulation-open .show-simulation-holder:hover {
+    bottom: 0;
+}
+
+.is-simulation-open .show-simulation-holder:hover .fa {
+    color: #fff;
 }
 
 .btn-simulation {
@@ -604,6 +630,10 @@ button.btn-simulation:focus:not(:disabled):hover {
     .show-simulation-holder {
         bottom: auto;
         top: 0;
+    }
+
+    .show-simulation-holder .fa {
+        display: none !important;
     }
 
     .btn-simulation {

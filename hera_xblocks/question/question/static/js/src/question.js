@@ -394,6 +394,7 @@ function QuestionXBlock(runtime, element, init_args) {
                         hideSimulation();
                         isSimulationHiddenState = true;
                     }
+                    $('.author-block__content').toggleClass('is-simulation-open');
                 });
             });
 
