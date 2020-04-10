@@ -561,6 +561,13 @@ button.btn-simulation:focus:not(:disabled):hover {
         margin: 0 0 12px;
     }
 
+    .confidence-text.error {
+        top: -92px;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
     .confidence-holder {
         display: flex;
         flex-direction: column;
