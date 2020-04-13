@@ -3,25 +3,25 @@
 # Copyright (C) 2018 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2018.
-# 
+#
 # #-#-#-#-#  djangojs-studio.po (0.1a)  #-#-#-#-#
 # edX translation file.
 # Copyright (C) 2018 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2018.
-# 
+#
 # #-#-#-#-#  underscore.po (0.1a)  #-#-#-#-#
 # edX translation file
 # Copyright (C) 2018 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2018.
-# 
+#
 # #-#-#-#-#  underscore-studio.po (0.1a)  #-#-#-#-#
 # edX translation file
 # Copyright (C) 2018 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2018.
-# 
+#
 # Translators:
 # Sergey <sergey.sapogin@gmail.com>, 2018
 # Ned Batchelder <ned@edx.org>, 2018
@@ -78,7 +78,7 @@
 # Oleg Demakov <oleg.demakov@epfl.ch>, 2019
 # Alexander Eroshkin <gjrfytne@gmail.com>, 2019
 # Валентина Пицик <lushalusha007@gmail.com>, 2019
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
@@ -6277,6 +6277,19 @@ msgid "Email Address (Sign In)"
 msgstr "Адрес электронной почты (Вход)"
 
 #: lms/static/js/student_account/views/account_settings_factory.js
+msgid "{platform_name} Link"
+msgstr "Ссылка на {platform_name} аккаунт"
+
+#: lms/static/js/student_account/views/account_settings_factory.js
+msgid ""
+"Enter your {platform_name} username or the URL to your {platform_name} "
+"page. Delete the URL to remove the link."
+msgstr ""
+"Введите ваше имя пользователя {platform_name} или ссылку на ваш "
+"{platform_name} аккаунт. Удалите чтобы отменить привязку учетной записи."
+
+
+#: lms/static/js/student_account/views/account_settings_factory.js
 msgid ""
 "You receive messages from {platform_name} and course teams at this address."
 msgstr "На этот адрес вы будете получать уведомления от {platform_name}. "
@@ -10573,6 +10586,10 @@ msgstr "Пожалуйста, укажите форму обращения к п
 #: cms/templates/js/signatory-details.underscore
 msgid "Organization"
 msgstr "Организация"
+
+#: lms/templates/discovery/facet.underscore
+msgid "Course Type"
+msgstr "Тип курса"
 
 #: cms/templates/js/course-instructor-details.underscore
 msgid "Organization Name"
