@@ -209,11 +209,11 @@ def index(request, extra_context=None, user=AnonymousUser()):
     # Insert additional context for use in the template
     context.update(extra_context)
 
-    courses_data = {}
+    courses_data = OrderedDict()
     for category, data in configuration_helpers.get_value("CATEGORIES", settings.CATEGORIES).items():
         # TODO validate categories
         # data == {'description': '', 'data': ['key1', 'key2', ...]}
-        courses_data[category] = {'description': data.get('description', ''), 'courses': []}
+        courses_data.update({category: {'description': data.get('description', ''), 'courses': []}})
         for key in data.get('courses_key', ()):
             try:
                 course_key = CourseKey.from_string(key)
@@ -225,8 +225,7 @@ def index(request, extra_context=None, user=AnonymousUser()):
             except InvalidKeyError:
                 log.warning(u"SiteConfiguration contains invalid course key: %s", key)
 
-    context['courses_data'] = OrderedDict(sorted(courses_data.items(), key=lambda t: t[0]))
-
+    context['courses_data'] = courses_data
     # Getting all the programs from course-catalog service. The programs_list is being added to the context but it's
     # not being used currently in lms/templates/index.html. To use this list, you need to create a custom theme that
     # overrides index.html. The modifications to index.html to display the programs will be done after the support
