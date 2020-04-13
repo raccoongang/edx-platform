@@ -3,6 +3,7 @@
 <%!
 from django.utils.translation import ugettext as _
 from django.utils.translation import pgettext
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangolib.markup import HTML, Text
 %>
 <fieldset class="batch-enrollment membership-section">
@@ -95,7 +96,9 @@ from openedx.core.djangolib.markup import HTML, Text
     <legend id="heading-batch-beta-testers" class="hd hd-3">${_("Batch Beta Tester Addition")}</legend>
     <label>
         ${_("Enter email addresses and/or usernames separated by new lines or commas.")}<br/>
-        ${_("Note: Users must have an activated {platform_name} account before they can be enrolled as beta testers.").format(platform_name=settings.PLATFORM_NAME)}
+        ${_("Note: Users must have an activated {platform_name} account before they can be enrolled as beta testers.").format(
+          platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
+        )}
         <textarea rows="6" cols="50" name="student-ids-for-beta" placeholder="${_("Email Addresses/Usernames")}" spellcheck="false"></textarea>
     </label>
     <div class="enroll-option">

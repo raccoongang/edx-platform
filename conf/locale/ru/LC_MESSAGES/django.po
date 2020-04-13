@@ -3,31 +3,31 @@
 # Copyright (C) 2018 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2018.
-# 
+#
 # #-#-#-#-#  django-studio.po (0.1a)  #-#-#-#-#
 # edX translation file.
 # Copyright (C) 2018 EdX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2018.
-# 
+#
 # #-#-#-#-#  mako.po (0.1a)  #-#-#-#-#
 # edX translation file
 # Copyright (C) 2018 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2018.
-# 
+#
 # #-#-#-#-#  mako-studio.po (0.1a)  #-#-#-#-#
 # edX translation file
 # Copyright (C) 2018 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2018.
-# 
+#
 # #-#-#-#-#  wiki.po (0.1a)  #-#-#-#-#
 # edX translation file
 # Copyright (C) 2018 edX
 # This file is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 # EdX Team <info@edx.org>, 2018.
-# 
+#
 # Translators:
 # Gubin Pavel <pashkun73@gmail.com>, 2018
 # Dmitry Ganchev <dima.ganchev@gmail.com>, 2018
@@ -99,7 +99,7 @@
 # Andrey Kryachko, 2019
 # Валентина Пицик <lushalusha007@gmail.com>, 2019
 # Anastasiia Bondarenko <anastasiia.bondarenko@raccoongang.com>, 2019
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
@@ -5967,6 +5967,14 @@ msgstr "Выдан:"
 #: lms/djangoapps/certificates/views/webview.py
 msgid "Certificate ID Number"
 msgstr "Номер сертификата"
+
+#: lms/djangoapps/certificates/views/webview.py
+msgid "Certificate"
+msgstr "Сертификат"
+
+#: lms/djangoapps/certificates/views/webview.py
+msgid "This certificate is proudly presented to"
+msgstr "Этот сертификат выдан"
 
 #: lms/djangoapps/certificates/views/webview.py
 #: lms/templates/certificates/invalid.html
