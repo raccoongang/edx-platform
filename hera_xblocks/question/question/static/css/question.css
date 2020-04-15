@@ -184,6 +184,10 @@ button:focus:not(:disabled) {
     width: 40%
 }
 
+.iframe-holder {
+    height: 100%;
+}
+
 .author-block__buttons {
     position: relative;
     margin: 15px 0;
@@ -257,14 +261,6 @@ button.author-block__btn:focus:not(:disabled) {
     right: 10px;
     cursor: pointer;
     color: var(--color5);
-}
-
-.simulation-close-btn {
-    position: absolute;
-    top: 0;
-    right: -26px;
-    cursor: pointer;
-    color: #ccc;
 }
 
 .hidden {
@@ -356,29 +352,6 @@ input[type=number].confidence-input {
     padding: 1px;
 }
 
-.simulation-overlay {
-    position: fixed;
-    z-index: 9999;
-    height: 100%;
-    width: 100%;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background: var(--color-op);
-    display: none;
-}
-
-.simulation-popup {
-    max-width: 900px;
-    width: 80%;
-    max-height: 600px;
-    height: 80%;
-    position: relative;
-    background: var(--color3);
-    margin: 20px auto;
-}
-
 .simulation-iframe {
     width: 100%;
     height: 100%;
@@ -454,6 +427,32 @@ select.questions-list__select:focus {
     position: absolute !important;
     left: 24px;
     bottom: 0;
+    transition: all .3s linear;
+}
+
+.show-simulation-holder .fa {
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: -1px;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.is-simulation-open .show-simulation-holder {
+    bottom: -24px;
+}
+
+.is-simulation-open .show-simulation-holder .fa {
+    display: block;
+}
+
+.is-simulation-open .show-simulation-holder:hover {
+    bottom: 0;
+}
+
+.is-simulation-open .show-simulation-holder:hover .fa {
+    color: #fff;
 }
 
 .btn-simulation {
@@ -480,9 +479,19 @@ button.btn-simulation:hover:not(:disabled) {
 
 button.btn-simulation:active:not(:disabled),
 button.btn-simulation:focus:not(:disabled) {
+    color: #222;
+    background: #fff;
+    border: 1px solid var(--color2);
+    border-bottom: none;
+    box-shadow: none;
+    text-shadow: none;
+}
+
+button.btn-simulation:active:not(:disabled):hover,
+button.btn-simulation:focus:not(:disabled):hover {
     color: #fff;
     background: var(--color1);
-    border: 1px solid var(--color1);
+    border-color: var(--color1);
     box-shadow: none;
     text-shadow: none;
 }
@@ -578,6 +587,13 @@ button.btn-simulation:focus:not(:disabled) {
         margin: 0 0 12px;
     }
 
+    .confidence-text.error {
+        top: -92px;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
     .confidence-holder {
         display: flex;
         flex-direction: column;
@@ -609,5 +625,23 @@ button.btn-simulation:focus:not(:disabled) {
 
     .scaffold__btn {
         font-size: 11px;
+    }
+
+    .show-simulation-holder {
+        bottom: auto;
+        top: 0;
+    }
+
+    .show-simulation-holder .fa {
+        display: none !important;
+    }
+
+    .btn-simulation {
+        border: 1px solid var(--color2);
+        border-top: none;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
     }
 }

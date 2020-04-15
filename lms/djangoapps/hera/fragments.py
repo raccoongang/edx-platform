@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
 from opaque_keys.edx.keys import CourseKey
@@ -264,6 +265,7 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
         courseware_summary = course_grade.chapter_grades.values()
 
         course_block_tree = get_course_outline_block_tree(request, course_id)
+
         if not course_block_tree:
             return
 
@@ -283,34 +285,20 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
         last_visited_subsection = ''
 
         completed_subsections = {}
+        ordered_subsections = []
+        show_popup = False
         earned = 0
         total = 0
 
+        # find completed subsection
         for section in course_block_tree.get('children', []):
             for subsection in section.get('children', []):
                 if active_block_id == subsection['block_id'] and not last_visited_subsection:
                     last_visited_subsection = subsection
                 if subsection['complete']:
-                    completed_subsections[subsection['block_id']] = {
-                        'display_name': subsection.get('display_name'),
-                        'lms_web_url': subsection.get('lms_web_url', '')
-                    }
-        # in case the last_visited_subsection haven't found, for example deleted
-        if not last_visited_subsection:
-            selection_page_data = c_selection_page().find_one({
-                COURSE_KEY: course_id,
-                USER: request.user.id,
-            })
-            needed_level = 'middle' # default
-            if selection_page_data and selection_page_data.get(LEVEL):
-                needed_level = selection_page_data.get(LEVEL)
-            for section in course_block_tree.get('children', []):
-                for subsection in section.get('children', []):
-                    # get the first incomplete subsection with a middle level
-                    if subsection['block_id'] not in completed_subsections and levels_match(subsection['unit_level'], needed_level):
-                        last_visited_subsection = subsection
-                        break
+                    completed_subsections[subsection['block_id']] = subsection
 
+        # count points for completed subsection
         for chapter in courseware_summary:
             if not chapter['display_name'] == "hidden":
                 for subsection in chapter['sections']: # the sections in chapter are actually subsection
@@ -329,6 +317,26 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
                             'medal_dna_icon': dna_icon
                         })
 
+        # in case the last_visited_subsection haven't found, for example deleted
+        if not last_visited_subsection:
+            selection_page_data = c_selection_page().find_one({
+                COURSE_KEY: course_id,
+                USER: request.user.id,
+            })
+            needed_level = 'middle' # default
+            if selection_page_data and selection_page_data.get(LEVEL):
+                needed_level = selection_page_data.get(LEVEL)
+            for section in course_block_tree.get('children', []):
+                for subsection in section.get('children', []):
+                    # get the first incomplete subsection with a middle level
+                    if subsection['block_id'] not in completed_subsections and levels_match(subsection['unit_level'], needed_level):
+                        last_visited_subsection = subsection
+                        break
+
+        if not last_visited_subsection['complete']:
+            if any(unit['complete'] for unit in last_visited_subsection.get('children', [])):
+                show_popup = True
+
         try:
             earned = round(earned/total*10, 1)
         except ZeroDivisionError:
@@ -341,20 +349,25 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
             course_id
         )
 
-        ordered_subsections = []
-        popup = False
-        for subsection_id in completed_subsection_ids:
-            ordered_subsections.append(completed_subsections.get(subsection_id))
-        if not last_visited_subsection['complete'] and len(ordered_subsections) < 8:
-            for unit in last_visited_subsection.get('children', []):
-                if unit['complete']:
-                    popup = True
-                    ordered_subsections.append(last_visited_subsection)
-                    break
-        if not popup:
-            for subsection in selected_subsections['children']:
-                if not subsection['complete'] and len(ordered_subsections) < 8:
-                    ordered_subsections.append(subsection)
+        if settings.FEATURES.get('ENABLE_STUDENT_ADAPTIVE_MODE', False):
+            for subsection_id in completed_subsection_ids:
+                ordered_subsections.append(completed_subsections.get(subsection_id))
+            if show_popup:
+                ordered_subsections.append(last_visited_subsection)
+            else:
+                for subsection in selected_subsections['children']:
+                    if not subsection['complete'] and len(ordered_subsections) < 8:
+                        ordered_subsections.append(subsection)
+        else:
+            for section in course_block_tree.get('children', []):
+                for subsection in section.get('children', []):
+                    if len(ordered_subsections) < 8:
+                        if subsection['complete']:
+                            ordered_subsections.append(completed_subsections.get(subsection['block_id']))
+                        else:
+                            if any(unit['complete'] for unit in subsection.get('children', [])):
+                                subsection.update({"in_progress": True})
+                            ordered_subsections.append(subsection)
 
         try:
             last_completed_subsection_id = completed_subsection_ids[-1]
@@ -368,7 +381,7 @@ class DashboardPageOutlineFragmentView(CourseOutlineFragmentView):
             'is_lessons_complete': len(completed_subsection_ids) == 8 or len(selected_subsections['children']) == 0,
             'last_completed_subsection': last_completed_subsection,
             'ordered_subsections': ordered_subsections,
-            'popup': popup,
+            'show_popup': show_popup,
             'continue_url': last_visited_subsection.get('lms_web_url', ''),
             'start_over_url': start_over_url,
             'csrf': csrf(request)['csrf_token'],
