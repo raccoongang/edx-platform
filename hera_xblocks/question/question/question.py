@@ -266,7 +266,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
                 user_answers.append(answer)
 
             elif question['type'] == "text":
-                answer = answers[index][0].replace(' ', '') == question['answer'].replace(' ', '')
+                answer = answers[index][0].replace(' ', '').lower() == question['answer'].replace(' ', '').lower()
                 user_answers.append(answer)
 
             elif question['type'] in ["select", "radio", "checkbox"]:
@@ -286,7 +286,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
                 answer = True
                 for _id, _answer in enumerate(correct_answers):
                     try:
-                        if _answer != answers[index][_id]:
+                        if _answer.lower() != answers[index][_id].lower():
                             answer = False
                     except IndexError:
                         answer = False
