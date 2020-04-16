@@ -4878,7 +4878,7 @@ msgstr "Постраничное отображение достижений"
 
 #: lms/static/js/student_profile/views/learner_profile_factory.js
 msgid "{platform_name} learners can see my:"
-msgstr "Слушатели {platform_name} видят мой:"
+msgstr "Студенты {platform_name} видят мой:"
 
 #: lms/static/js/student_profile/views/learner_profile_factory.js
 msgid "Limited Profile"
