@@ -276,11 +276,15 @@
                     {
                         view: new AccountSettingsFieldViews.SocialLinkTextFieldView({
                             model: userAccountModel,
-                            title: gettext(platformData.display_name + ' Link'),
+                            title: StringUtils.interpolate(
+                                gettext('{platform_name} Link'),
+                                {platform_name:platformData.display_name}
+                            ),
                             valueAttribute: 'social_links',
-                            helpMessage: gettext(
-                                'Enter your ' + platformData.display_name + ' username or the URL to your ' +
-                                platformData.display_name + ' page. Delete the URL to remove the link.'
+                            helpMessage: StringUtils.interpolate(gettext(
+                                'Enter your {platform_name} username or the URL to your {platform_name} page. Delete the URL to remove the link.'
+                                ),
+                                {platform_name:platformData.display_name},
                             ),
                             platform: socialPlatform,
                             persistChanges: true,
