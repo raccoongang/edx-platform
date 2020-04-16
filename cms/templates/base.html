@@ -36,6 +36,7 @@ from openedx.core.release import RELEASE_LINE
         % endif
         ${settings.STUDIO_NAME}
     </title>
+    <link rel="icon" type="image/x-icon" href="${static.url('images/favicon.ico')}" />
 
     <%
       jsi18n_path = "js/i18n/{language}/djangojs.js".format(language=LANGUAGE_CODE)
