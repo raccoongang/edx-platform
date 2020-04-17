@@ -342,6 +342,10 @@ msgstr "Пользовательское соглашение"
 msgid "Our telegram"
 msgstr "Мы в телеграм"
 
+#: themes/edx-theme/lms/templates/courseware/info.html
+msgid "@Chat"
+msgstr "@чат курса"
+
 #: common/djangoapps/course_modes/models.py
 msgid ""
 "Professional education modes are not allowed to have expiration_datetime "
@@ -2697,6 +2701,14 @@ msgstr "Регистрационные данные LTI"
 #: common/lib/xmodule/xmodule/course_module.py
 msgid "Set the course price."
 msgstr "Установите стоимость курса."
+
+#: common/lib/xmodule/xmodule/course_module.py
+msgid "Course Telegram Chat Link"
+msgstr "Ссылка на telegram чат группы курса"
+
+#: common/lib/xmodule/xmodule/course_module.py
+msgid "Enter the course telegram chat link. It'll be displayed on course /info page."
+msgstr "Введите ссылку на telegram чат группы курса, которая будет отображаться на странице /info курса"
 
 #: common/lib/xmodule/xmodule/course_module.py
 msgid ""
