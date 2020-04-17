@@ -2,7 +2,7 @@
 import pkg_resources
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
-from xblock.fields import JSONField, Scope, Integer, String, Boolean
+from xblock.fields import JSONField, Scope, Integer, String, Boolean, List
 from xblockutils.resources import ResourceLoader
 from xblockutils.studio_editable import StudioEditableXBlockMixin
 
@@ -30,8 +30,8 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
 
     display_name = String(default="Question")
     data = JSONField(default={})
-    user_confidence = JSONField(scope=Scope.user_state)
-    user_answer = JSONField(scope=Scope.user_state, default='')
+    user_confidence = List(scope=Scope.user_state, default=[])
+    user_answer = List(scope=Scope.user_state, default=[])
     user_answer_correct = Boolean(scope=Scope.user_state, default=False)
     submission_counter = Integer(scope=Scope.user_state, default=0)
     rephrase_paid = Boolean(scope=Scope.user_state, default=False)
@@ -112,7 +112,7 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
         return {
             "is_scaffolds_enabled": self.is_scaffolds_enabled,
             "user_answer_correct": self.user_answer_correct,
-            "user_answer": self.user_answer,
+            "user_answer": self.user_answer[-1] if self.user_answer else [],
             "is_submission_allowed": self.is_submission_allowed,
             "submission_counter": self.submission_counter,
             "problem_types": self.problem_types,
@@ -304,8 +304,8 @@ class QuestionXBlock(StudioEditableXBlockMixin, XBlock):
             self.runtime.publish(self, 'completion', {'completion': 1})
             self.submission_counter += 1
 
-        self.user_answer = answers
-        self.user_confidence = data.get("confidence")
+        self.user_answer.append(answers)
+        self.user_confidence.append(data.get("confidence"))
         return {
             'correct': self.user_answer_correct,
             'is_submission_allowed': self.is_submission_allowed,
