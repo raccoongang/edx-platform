@@ -6,6 +6,7 @@ Much of this file was broken out from views.py, previous history can be found th
 
 import datetime
 import logging
+import re
 import uuid
 import warnings
 from urlparse import parse_qs, urlsplit, urlunsplit
@@ -147,10 +148,17 @@ def _get_user_by_email(request):
     if 'email' not in request.POST or 'password' not in request.POST:
         raise AuthFailedError(_('There was an error receiving your login information. Please email us.'))
 
+    # NOTE: `email` can actually be a username, to support login by username
     email = request.POST['email']
 
     try:
-        return User.objects.get(email=email)
+        # Simple "@" containment check might not be enough because of `ENABLE_UNICODE_USERNAME`
+        # feature (if enabled, username can contain @ character)
+        email_pattern = r"[^@]+@[^@]+\.[^@]+"
+        if re.match(email_pattern, email):
+            return User.objects.get(email=email)
+        else:
+            return User.objects.get(username=email)
     except User.DoesNotExist:
         if settings.FEATURES['SQUELCH_PII_IN_LOGS']:
             AUDIT_LOG.warning(u"Login failed - Unknown user email")

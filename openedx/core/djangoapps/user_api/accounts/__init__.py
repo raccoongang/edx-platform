@@ -11,6 +11,7 @@ NAME_MIN_LENGTH = 2
 NAME_MAX_LENGTH = 255
 
 # The minimum and maximum length for the username account field
+# Duplicated in `common/static/common/js/utils/edx.utils.validate.js` to support login by username.
 USERNAME_MIN_LENGTH = 2
 USERNAME_MAX_LENGTH = 30
 
