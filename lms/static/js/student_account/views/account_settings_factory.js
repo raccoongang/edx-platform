@@ -284,7 +284,7 @@
                             helpMessage: StringUtils.interpolate(gettext(
                                 'Enter your {platform_name} username or the URL to your {platform_name} page. Delete the URL to remove the link.'
                                 ),
-                                {platform_name:platformData.display_name},
+                                {platform_name:platformData.display_name}
                             ),
                             platform: socialPlatform,
                             persistChanges: true,
