@@ -602,6 +602,11 @@ urlpatterns += (
         r'^api/branding/v1/',
         include('branding.api_urls')
     ),
+    url(
+        r'^end_course/',
+        'courseware.views.views.end_course',
+        name='end_course',
+    ),
 )
 
 if settings.FEATURES["ENABLE_TEAMS"]:

@@ -34,11 +34,13 @@ from opaque_keys.edx.keys import CourseKey, UsageKey
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from rest_framework import status
 
+from lms.djangoapps.certificates.views.support import _validate_post_params, generate_certificate_for_user
 from lms.djangoapps.courseware.masquerade import MASQUERADE_SETTINGS_KEY, CourseMasquerade
 from lms.djangoapps.instructor.views.api import require_global_staff
 from lms.djangoapps.ccx.utils import prep_course_for_grading
 from lms.djangoapps.grades.new.course_grade import CourseGradeFactory
 from lms.djangoapps.instructor.enrollment import uses_shib
+from lms.djangoapps.instructor_task.api import generate_certificates_for_students
 from lms.djangoapps.verify_student.models import SoftwareSecurePhotoVerification
 from lms.djangoapps.ccx.custom_exception import CCXLocatorValidationException
 
@@ -1513,3 +1515,10 @@ def financial_assistance_form(request):
             }
         ],
     })
+
+
+def end_course(request):
+    response = generate_certificate_for_user(request)
+    if response.status_code == 200:
+        return redirect(reverse("dashboard"))
+    return response
