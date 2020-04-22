@@ -190,7 +190,6 @@
                                     liveValidationMsg =
                                         $('#' + $el.attr('id') + '-validation-error-msg').text() || false;
                                     isEmailValue =  _fn.validate.email.regex.test($el.val());
-                                    isUsernameValue = _fn.validate.username.ascii_regex.test($el.val());
 
                                 // If the field has a custom error msg attached, use it
                                     if (customMsg) {
