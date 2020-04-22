@@ -229,6 +229,12 @@ class CourseFields(object):
         default="Free",
         scope=Scope.settings
     )
+    telegram_chat_link = String(
+        display_name=_("Course Telegram Chat Link"),
+        help=_("Enter the course telegram chat link. It'll be displayed on course /info page."),
+        default="https://t.me/mama_edu",
+        scope=Scope.settings
+    )
     lti_passports = List(
         display_name=_("LTI Passports"),
         help=_('Enter the passports for course LTI tools in the following format: "id:client_key:client_secret".'),

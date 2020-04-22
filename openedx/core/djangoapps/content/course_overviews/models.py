@@ -72,6 +72,7 @@ class CourseOverview(TimeStampedModel):
     number_of_tests = IntegerField(default=0)
     number_of_videos = IntegerField(default=0)
     number_of_lections = IntegerField(default=0)
+    telegram_chat_link = TextField(default="https://t.me/mama_edu")
 
     # URLs
     course_image_url = TextField()
@@ -182,6 +183,7 @@ class CourseOverview(TimeStampedModel):
         course_overview.number_of_tests = course.number_of_tests
         course_overview.number_of_videos = course.number_of_videos
         course_overview.number_of_lections = course.number_of_lections
+        course_overview.telegram_chat_link = course.telegram_chat_link
 
         course_overview.course_image_url = course_image_url(course)
         course_overview.social_sharing_url = course.social_sharing_url
