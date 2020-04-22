@@ -8,6 +8,10 @@
     ],
         function($, _, _s, gettext) {
             var utils;
+            // NOTE: figure out a way to pass with $el attributes. For now,
+            //  duplicated in `openedx/core/djangoapps/user_api/accounts/__init__.py`.
+            var USERNAME_MIN_LENGTH = 2;
+            var USERNAME_MAX_LENGTH = 30;
 
         /* Mix non-conflicting functions from underscore.string
          * (all but include, contains, and reverse) into the
@@ -24,7 +28,8 @@
                         template: _.template('<li><%- content %></li>'),
 
                         msg: {
-                            email: gettext("The email address you've provided isn't formatted correctly."),
+                            // NOTE: Ignoring i18n (strings weren't updated in po files)
+                            email: gettext("The email address or username you've provided isn't formatted correctly."),
                             min: gettext('%(field)s must have at least %(count)d characters.'),
                             max: gettext('%(field)s can only contain up to %(count)d characters.'),
                             required: gettext('Please enter your %(field)s.')
@@ -70,14 +75,43 @@
                         },
 
                         str: {
+
                             minlength: function($el) {
-                                var min = $el.attr('minlength') || 0;
+                                var min;
+                                var isEmailValue =  _fn.validate.email.regex.test($el.val());
+                                var isUsernameValue = _fn.validate.username.ascii_regex.test($el.val());
+
+                                if ($el.attr('type') === 'email') {
+                                    if (isEmailValue) {
+                                        min = $el.attr('minlength');
+                                    } else if (isUsernameValue) {
+                                        min = USERNAME_MIN_LENGTH;
+                                    } else {
+                                        min = 0;
+                                    }
+                                } else {
+                                    min = 0;
+                                }
 
                                 return min <= $el.val().length;
                             },
 
                             maxlength: function($el) {
-                                var max = $el.attr('maxlength') || false;
+                                var max;
+                                var isEmailValue =  _fn.validate.email.regex.test($el.val());
+                                var isUsernameValue = _fn.validate.username.ascii_regex.test($el.val());
+
+                                if ($el.attr('type') === 'email') {
+                                    if (isEmailValue) {
+                                        max = $el.attr('maxlength');
+                                    } else if (isUsernameValue) {
+                                        max = USERNAME_MAX_LENGTH;
+                                    } else {
+                                        max = 0;
+                                    }
+                                } else {
+                                    max = 0;
+                                }
 
                                 return (!!max) ? max >= $el.val().length : true;
                             }
@@ -102,6 +136,14 @@
                             return isBlank;
                         },
 
+                        // To support login by username
+                        username: {
+                            // In general case, username can only contain letters (A-Z, a-z), numerals (0-9), underscores (_), and hyphens (-)
+                            ascii_regex: new RegExp('^([A-Za-z0-9-_]+)$'),
+                            // If the `ENABLE_UNICODE_USERNAME` feature enabled, username can only contain letters, numerals, and @/./+/-/_ characters
+                            // unicode_regex: new RegExp('^([A-Za-z0-9_@.+-]+)$'),
+                        },
+
                         email: {
                         // This is the same regex used to validate email addresses in Django 1.11
                             regex: new RegExp(
@@ -118,7 +160,11 @@
                             },
 
                             format: function(str) {
-                                return _fn.validate.email.regex.test(str);
+                                const isValidEmail = _fn.validate.email.regex.test(str);
+                                const isValidAsciiUsername = _fn.validate.username.ascii_regex.test(str);
+                                // Neglecting the `ENABLE_UNICODE_USERNAME` feature
+                                // const isValidUnicodeUsername = _fn.validate.username.unicode_regex.test(str);
+                                return isValidEmail || isValidAsciiUsername;
                             }
                         },
 
@@ -133,7 +179,9 @@
                                 context,
                                 content,
                                 customMsg,
-                                liveValidationMsg;
+                                liveValidationMsg,
+                                isEmailValue,
+                                isUsernameValue;
 
                             _.each(tests, function(value, key) {
                                 if (!value) {
@@ -141,6 +189,7 @@
                                     customMsg = $el.data('errormsg-' + key) || false;
                                     liveValidationMsg =
                                         $('#' + $el.attr('id') + '-validation-error-msg').text() || false;
+                                    isEmailValue =  _fn.validate.email.regex.test($el.val());
 
                                 // If the field has a custom error msg attached, use it
                                     if (customMsg) {
@@ -151,9 +200,9 @@
                                         context = {field: label};
 
                                         if (key === 'min') {
-                                            context.count = parseInt($el.attr('minlength'), 10);
+                                            context.count = isEmailValue ? parseInt($el.attr('minlength'), 10) : USERNAME_MIN_LENGTH;
                                         } else if (key === 'max') {
-                                            context.count = parseInt($el.attr('maxlength'), 10);
+                                            context.count = isEmailValue ? parseInt($el.attr('maxlength'), 10) : USERNAME_MAX_LENGTH;
                                         }
 
                                         content = _.sprintf(_fn.validate.msg[key], context);
