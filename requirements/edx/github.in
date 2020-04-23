@@ -104,5 +104,5 @@
 -e git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.1.6#egg=xblock-drag-and-drop-v2==2.1.6
 
 # Raccoongang Instructor analytics
--e git+https://github.com/raccoongang/rg_instructor_analytics@release-0.3.0#egg=rg_instructor_analytics
--e git+https://github.com/raccoongang/rg_instructor_analytics_log_collector@release-0.1.0#egg=rg_instructor_analytics_log_collector
+-e git+ssh://git@gitlab.raccoongang.com/Duck-Team/fastlane-lakeside/instructor-analytics@v2.3.0-lakeside-emails-fixed#egg=rg_instructor_analytics
+-e git+ssh://git@gitlab.raccoongang.com/Duck-Team/fastlane-lakeside/instructor-analytics-log-collector@v2.3.0-lakeside#egg=rg_instructor_analytics_log_collector
