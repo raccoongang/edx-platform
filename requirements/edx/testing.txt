@@ -41,7 +41,7 @@ git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.1.6#egg=xblock-d
 git+https://github.com/open-craft/xblock-poll@add89e14558c30f3c8dc7431e5cd6536fff6d941#egg=xblock-poll==1.5.1
 git+https://github.com/edx/xblock-utils.git@v1.1.1#egg=xblock-utils==1.1.1
 -e git+ssh://git@gitlab.raccoongang.com/Duck-Team/fastlane-lakeside/instructor-analytics@v2.3.0-lakeside-emails-fixed#egg=rg_instructor_analytics
--e git+ssh://git@gitlab.raccoongang.com/Duck-Team/fastlane-lakeside/instructor-analytics-log-collector@v2.3.0#egg=rg_instructor_analytics_log_collector
+-e git+ssh://git@gitlab.raccoongang.com/Duck-Team/fastlane-lakeside/instructor-analytics-log-collector@v2.3.0-lakeside#egg=rg_instructor_analytics_log_collector
 -e git+https://github.com/raccoongang/django-oauth2-provider@1.2.5-multiple-redirect_uris#egg=edx-django-oauth2-provider==1.2.5
 -e common/lib/xmodule
 amqp==1.4.9
