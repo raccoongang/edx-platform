@@ -22027,6 +22027,10 @@ msgstr "Нижний колонтитул страницы"
 msgid "edX Home Page"
 msgstr "Главная страница edX"
 
+#: edx-theme/lms/templates/footer.html
+msgid "Activity"
+msgstr "Мероприятия"
+
 #: themes/edx.org/lms/templates/footer.html
 msgid "© 2012–{year} edX Inc. "
 msgstr "© 2012–{year} edX Inc. "
