@@ -475,6 +475,9 @@ def account_settings(request):
         GET /account/settings
 
     """
+    user = request.user
+    if user.profile.is_anon:
+        return redirect(reverse('dashboard'))
     context = account_settings_context(request)
     return render_to_response('student_account/account_settings.html', context)
 
