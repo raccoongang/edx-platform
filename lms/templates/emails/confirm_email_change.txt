@@ -12,7 +12,9 @@ ${_("This is to confirm that you changed the e-mail associated with "
   )
 }
 
-% if settings.FEATURES['ENABLE_MKTG_SITE']:
+% if configuration_helpers.get_value('contacts_link_external'):
+    ${configuration_helpers.get_value('contacts_link_external')}
+% elif settings.FEATURES['ENABLE_MKTG_SITE']:
     ${marketing_link('CONTACT')}
 % else:
     % if is_secure:
