@@ -173,7 +173,8 @@ def perform_delegate_email_batches(entry_id, course_id, task_input, action_name)
     # Get arguments that will be passed to every subtask.
     targets = email_obj.targets.all()
     global_email_context = _get_course_email_context(course)
-
+    if task_input.get('platform_name', False):
+        global_email_context['platform_name'] = task_input['platform_name']
     recipient_qsets = [
         target.get_users(course_id, user_id)
         for target in targets
