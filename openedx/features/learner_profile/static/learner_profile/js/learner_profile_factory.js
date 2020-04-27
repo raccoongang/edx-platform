@@ -68,6 +68,7 @@
 
             accountPrivacyFieldView = new LearnerProfileFieldsView.AccountPrivacyFieldView({
                 model: accountPreferencesModel,
+                is_anon: options.is_anon,
                 required: true,
                 editable: 'always',
                 showMessages: false,
