@@ -1305,6 +1305,8 @@ MIDDLEWARE_CLASSES = [
 
     # This must be last
     'openedx.core.djangoapps.site_configuration.middleware.SessionCookieDomainOverrideMiddleware',
+
+    'tedix_ro.middlewares.UserIsActiveMiddleware',
 ]
 
 # Clickjacking protection can be enabled by setting this to 'DENY'
