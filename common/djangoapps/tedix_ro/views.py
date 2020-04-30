@@ -530,3 +530,6 @@ def city_import(request):
                     transaction.set_rollback(True)
         context.update({'import_form': import_form})
     return render(request, 'city_import.html', context)
+
+def email_verification(request):
+    return render_to_response('email_verification.html')
