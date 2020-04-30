@@ -41,6 +41,7 @@ from lms.djangoapps.instructor_task.tasks import (
     reset_problem_attempts,
     send_bulk_course_email
 )
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from util import milestones_helpers
 from xmodule.modulestore.django import modulestore
 
@@ -314,7 +315,14 @@ def submit_bulk_course_email(request, course_key, email_id):
 
     task_type = 'bulk_course_email'
     task_class = send_bulk_course_email
-    task_input = {'email_id': email_id, 'to_option': targets}
+    # Donwstream calls have no access to request cache, so they can't get values from the site configurations.
+    # Another solution: https://discuss.openedx.org/t/bulk-emails-and-site-configuration/1691
+    platform_name = configuration_helpers.get_value('PLATFORM_NAME')
+    task_input = {
+        'email_id': email_id,
+        'to_option': targets,
+        'platform_name': platform_name
+    }
     task_key_stub = str(email_id)
     # create the key value by using MD5 hash:
     task_key = hashlib.md5(task_key_stub).hexdigest()
