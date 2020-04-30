@@ -14,6 +14,7 @@
 <% online_help_token = self.online_help_token() if hasattr(self, 'online_help_token') else None %>
 <%!
 from branding import api as branding_api
+from django.template import Template, Context
 from django.urls import reverse
 from django.utils.http import urlquote_plus
 from django.utils.translation import ugettext as _
@@ -160,9 +161,13 @@ from pipeline_mako import render_require_js_path_overrides
     </script>
 % endif
 
+${Template("{% load gtm_tags %}{% gtm_head %}").render(Context(dict_=dict(request=request)))}
+
 </head>
 
 <body class="${static.dir_rtl()} <%block name='bodyclass'/> lang_${LANGUAGE_CODE}">
+
+${Template("{% load gtm_tags %}{% gtm_body %}").render(Context(dict_=dict(request=request)))}
 
 <%static:optional_include_mako file="body-initial.html" is_theming_enabled="True" />
 <div id="page-prompt"></div>

@@ -2322,6 +2322,9 @@ INSTALLED_APPS = [
 
     #Django import / export
     'import_export',
+
+    #GTM
+    'gtm',
 ]
 
 ######################### CSRF #########################################
