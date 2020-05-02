@@ -1,6 +1,7 @@
 """ Django admin pages for student app """
 from config_models.admin import ConfigurationModelAdmin
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.sites import NotRegistered
 from django.contrib.auth import get_user_model
@@ -9,6 +10,8 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField, UserChangeForm 
 from django.db import models
 from django.http.request import QueryDict
 from django.utils.translation import ugettext_lazy as _
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 
@@ -267,6 +270,40 @@ class UserAdmin(BaseUserAdmin):
         return django_readonly
 
 
+class UserResource(resources.ModelResource):
+    """ Resource for importing and exporting User objects. """
+
+    def before_save_instance(self, instance, using_transactions, dry_run):
+        """
+        Add generated email and set password for User instance.
+        """
+        if not instance.email:
+            instance.email = instance.username + '@ex.ex'
+        instance.set_password(instance.password)
+
+    def after_save_instance(self, instance, using_transactions, dry_run):
+        """
+        ACT specific creation of UserProfile with additional params.
+        """
+        UserProfile.objects.create(user=instance, is_anon=True)
+
+    class Meta:
+        model = User
+        add_fields = tuple(settings.USER_BULK_REGISTRATION_IMPORT_EXPORT_FIELDS) \
+         if hasattr(settings, 'USER_BULK_REGISTRATION_IMPORT_EXPORT_FIELDS')  else ()
+        fields = ('username', 'password') + add_fields
+        export_order = ('username', 'password') + add_fields
+        skip_unchanged = True
+        report_skipped = True
+        raise_errors = False
+        import_id_fields = ('username', 'password')
+
+
+class UserImportExportAdmin(ImportExportModelAdmin, UserAdmin):
+    """ Admin interface for the User model with import and export enabled. """
+    resource_class = UserResource
+
+
 @admin.register(UserAttribute)
 class UserAttributeAdmin(admin.ModelAdmin):
     """ Admin interface for the UserAttribute model. """
@@ -302,4 +339,7 @@ try:
 except NotRegistered:
     pass
 
-admin.site.register(User, UserAdmin)
+if settings.FEATURES.get('ENABLE_USER_CSV_REGISTRATION', False):
+    admin.site.register(User, UserImportExportAdmin)
+else:
+    admin.site.register(User, UserAdmin)

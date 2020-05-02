@@ -1110,4 +1110,8 @@ if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
 
 # Variable for overriding standard MKTG_URLS
 EXTERNAL_MKTG_URLS = ENV_TOKENS.get('EXTERNAL_MKTG_URLS', {})
+
+############################### CSV Users Registration ###############################
+USER_BULK_REGISTRATION_IMPORT_EXPORT_FIELDS = ENV_TOKENS.get('USER_BULK_REGISTRATION_IMPORT_EXPORT_FIELDS', ())
+
 #RACCOONGANG
