@@ -2368,3 +2368,37 @@ class LogoutViewConfiguration(ConfigurationModel):
     def __unicode__(self):
         """Unicode representation of the instance. """
         return u'Logout view configuration: {enabled}'.format(enabled=self.enabled)
+
+
+class UserGeneratedCertPercentData(models.Model):
+    """
+    Model for saving common course grade on moment
+    when student requests certificate.
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    course_grade = models.FloatField(null=True, blank=True)
+
+    def __unicode__(self):
+        """Unicode representation of this attribute. """
+        return u"{user}: {course_grade}".format(
+            user=self.user.username,
+            course_grade=self.course_grade,
+        )
+
+
+class UserGeneratedCertGradeData(models.Model):
+    """
+    Model for saving course grades for each ...
+    on moment when student requests certificate.
+    """
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    grade = models.CharField(max_length=255, null=True)
+    percent = models.FloatField(null=True, blank=True)
+
+    def __unicode__(self):
+        """Unicode representation of this attribute. """
+        return u"{user}: {grade} - {percent}".format(
+            user=self.user.username,
+            grade = self.grade,
+            percent=self.percent,
+        )

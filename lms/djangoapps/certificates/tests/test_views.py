@@ -24,6 +24,11 @@ from student.tests.factories import UserFactory
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory
 
+from student.models import (
+    UserGeneratedCertPercentData as generated_percent,
+    UserGeneratedCertGradeData as generated_grade,
+)
+
 FEATURES_WITH_CERTS_ENABLED = settings.FEATURES.copy()
 FEATURES_WITH_CERTS_ENABLED['CERTIFICATES_HTML_VIEW'] = True
 
@@ -214,6 +219,8 @@ class MicrositeCertificatesViewsTests(ModuleStoreTestCase):
             mode='honor',
             name=self.user.profile.name,
         )
+        generated_percent.objects.create(user=self.user, course_grade=0.95)
+        generated_grade.objects.create(user=self.user, grade="TestWork", percent=0.95)
 
     def _certificate_html_view_configuration(self, configuration_string, enabled=True):
         """

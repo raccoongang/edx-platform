@@ -27,7 +27,11 @@ from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from openedx.core.lib.courses import course_image_url
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
-from student.models import LinkedInAddToProfileConfiguration
+from student.models import (
+    LinkedInAddToProfileConfiguration,
+    UserGeneratedCertPercentData as generated_percent,
+    UserGeneratedCertGradeData as generated_grade,
+)
 from util import organizations_helpers as organization_api
 from util.views import handle_500
 from xmodule.modulestore.django import modulestore
@@ -554,13 +558,22 @@ def render_html_view(request, user_id, course_id):
         return render_to_response(invalid_template_path, context)
 
     context['certificate_data'] = active_configuration
-    course_grade = CourseGradeFactory().create(student, course)
+    # course_grade = CourseGradeFactory().create(student, course)
+    # context['grades'] = tuple(
+    #     (g['category'], Decimal(g['percent'] * 100).to_integral_value())
+    #     for g in course_grade.grade_value['section_breakdown']
+    #     if g.get('prominent')
+    # )
+
+    # context['percent'] = Decimal(course_grade.percent * 100).to_integral_value()
+
     context['grades'] = tuple(
-        (g['category'], Decimal(g['percent'] * 100).to_integral_value())
-        for g in course_grade.grade_value['section_breakdown']
-        if g.get('prominent')
+        (g.grade, Decimal(g.percent * 100).to_integral_value())
+        for g in generated_grade.objects.filter(user=user)
     )
-    context['percent'] = Decimal(course_grade.percent * 100).to_integral_value()
+
+    percent = generated_percent.objects.get(user_id=user.id)
+    context['percent'] = Decimal(percent.course_grade * 100).to_integral_value()
 
     # Append/Override the existing view context values with any mode-specific ConfigurationModel values
     context.update(configuration.get(user_certificate.mode, {}))

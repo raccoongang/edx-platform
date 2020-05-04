@@ -50,7 +50,11 @@ from lms.djangoapps.commerce.utils import EcommerceService  # pylint: disable=im
 from milestones.tests.utils import MilestonesTestCaseMixin
 from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.lib.gating import api as gating_api
-from student.models import CourseEnrollment
+from student.models import (
+    CourseEnrollment, 
+    UserGeneratedCertPercentData as generated_percent,
+    UserGeneratedCertGradeData as generated_grade,
+)
 from student.tests.factories import AdminFactory, UserFactory, CourseEnrollmentFactory
 from util.tests.test_date_utils import fake_ugettext, fake_pgettext
 from util.url import reload_django_url_config
@@ -2100,3 +2104,19 @@ class TestRenderXBlockSelfPaced(TestRenderXBlock):
 
     def course_options(self):
         return {'self_paced': True}
+
+
+class TestStudentGradesSave(TestCase):
+    
+    def test_student_grades_save_first_request(self):
+        course = CourseFactory.create()
+        student = UserFactory.create(
+            email='joe_user@edx.org',
+            username='joeuser',
+            password='foo'
+        )
+        _student_grades_save(student, course)
+        user_percent = generated_percent.objects.filter(user=student)
+        user_grades = generated_grade.objects.filter(user=user)
+        self.assertEqual(user_percent, True)
+        self.assertEqual(user_grades, True)

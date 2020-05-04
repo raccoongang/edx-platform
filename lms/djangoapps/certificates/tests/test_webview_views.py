@@ -46,6 +46,11 @@ from certificates.tests.factories import (
     GeneratedCertificateFactory,
 )
 
+from student.models import (
+    UserGeneratedCertPercentData as generated_percent,
+    UserGeneratedCertGradeData as generated_grade,
+)
+
 FEATURES_WITH_CERTS_ENABLED = settings.FEATURES.copy()
 FEATURES_WITH_CERTS_ENABLED['CERTIFICATES_HTML_VIEW'] = True
 FEATURES_WITH_BADGES_ENABLED = FEATURES_WITH_CERTS_ENABLED.copy()
@@ -110,6 +115,8 @@ class CommonCertificatesTestCase(ModuleStoreTestCase):
         CertificateHtmlViewConfigurationFactory.create()
         LinkedInAddToProfileConfigurationFactory.create()
         CourseCompleteImageConfigurationFactory.create()
+        generated_percent.objects.create(user=self.user, course_grade=0.95)
+        generated_grade.objects.create(user=self.user, grade="TestWork", percent=0.95)
 
     def _add_course_certificates(self, count=1, signatory_count=0, is_active=True):
         """

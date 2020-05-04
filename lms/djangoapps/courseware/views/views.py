@@ -85,7 +85,11 @@ from openedx.core.djangoapps.credit.api import (
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from shoppingcart.utils import is_shopping_cart_enabled
 from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
-from student.models import UserTestGroup, CourseEnrollment
+from student.models import (
+    UserTestGroup, CourseEnrollment,
+    UserGeneratedCertPercentData as generated_percent,
+    UserGeneratedCertGradeData as generated_grade,
+)
 from student.roles import GlobalStaff
 from util.cache import cache, cache_if_anonymous
 from util.date_utils import strftime_localized
@@ -99,6 +103,7 @@ from xmodule.tabs import CourseTabList
 from xmodule.x_module import STUDENT_VIEW
 from ..entrance_exams import user_must_complete_entrance_exam
 from ..module_render import get_module_for_descriptor, get_module, get_module_by_usage_id
+from decimal import Decimal
 
 log = logging.getLogger("edx.courseware")
 
@@ -1214,6 +1219,7 @@ def generate_user_cert(request, course_id):
         # mark the certificate with "error" status, so it can be re-run
         # with a management command.  From the user's perspective,
         # it will appear that the certificate task was submitted successfully.
+        _student_grades_save(student, course)
         certs_api.generate_user_certificates(student, course.id, course=course, generation_mode='self')
         _track_successful_certificate_generation(student.id, course.id)
         return HttpResponse()
@@ -1522,3 +1528,32 @@ def end_course(request):
     if response.status_code == 200:
         return redirect(reverse("dashboard"))
     return response
+
+def _student_grades_save(student, course):
+    """
+    Saves to db information about student grades
+    after certificate has been requested.
+    """
+    course_grade = CourseGradeFactory().create(student, course)
+
+    # If certificate has been requested for a first time, object 'percent'
+    # will be create. Otherwise object will be get and rewrite.
+    percent, created = generated_percent.objects.get_or_create(user=student)
+    percent.course_grade = course_grade.percent
+    percent.save()
+
+    # If certificate has been requested for a first time, objects 'grade'
+    # will be create. Otherwise objects will be remove and rewrite.
+    
+    grades = generated_grade.objects.filter(user=student)
+    if grades:
+        grades.delete()
+
+    # creating student related grades
+    for g in course_grade.grade_value['section_breakdown']:
+        if g.get('prominent'):
+            grade = generated_grade.objects.create(
+                user_id=student.id,
+                grade=g['category'],
+                percent=g['percent'],
+            )
