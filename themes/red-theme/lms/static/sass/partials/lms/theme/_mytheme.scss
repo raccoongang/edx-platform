@@ -327,12 +327,16 @@ display: block;
 
 	.head {
 		display: flex;
-		align-items: baseline;
+		align-items: center;
 		justify-content: space-between;
 		margin-bottom: 10px;
 
 		@media (max-width: 899px) {
 			justify-content: initial;
+		}
+
+		label {
+			cursor: initial;
 		}
 
 		input {
