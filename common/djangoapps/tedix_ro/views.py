@@ -43,7 +43,7 @@ from .forms import (
     StudentImportRegisterForm,
     StudentProfileImportForm,
 )
-from .models import City, ParentProfile, School, StudentCourseDueDate, StudentProfile, VideoLesson
+from .models import City, ParentProfile, School, StudentCourseDueDate, StudentProfile, VideoLesson, Classroom
 from .serializers import (
     CitySerializer,
     SchoolSerilizer,
@@ -117,9 +117,10 @@ def manage_courses(request):
     except InstructorProfile.DoesNotExist:
         students = StudentProfile.objects.none()
 
+    classrooms = Classroom.objects.all()
     now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
     courses = CourseOverview.objects.filter(enrollment_end__gt=now, enrollment_start__lt=now)
-    form = StudentEnrollForm(students=students, courses=courses)
+    form = StudentEnrollForm(students=students, courses=courses, classrooms=classrooms)
     if request.method == 'POST':
         data = dict(
             courses = map(CourseKey.from_string, request.POST.getlist('courses')),
@@ -129,7 +130,7 @@ def manage_courses(request):
             send_to_parents=request.POST.get('send_to_parents'),
             send_sms=request.POST.get('send_sms')
         )
-        form = StudentEnrollForm(data=data, courses=courses, students=students)
+        form = StudentEnrollForm(data=data, courses=courses, students=students, classrooms=classrooms)
         if form.is_valid():
             sms_client = SMSClient()
             for student in form.cleaned_data['students']:
