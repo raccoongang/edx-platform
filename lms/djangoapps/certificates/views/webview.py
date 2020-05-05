@@ -502,7 +502,6 @@ def render_html_view(request, user_id, course_id):
     except ValueError:
         raise Http404
 
-    student = User.objects.get(id=user_id)
     preview_mode = request.GET.get('preview', None)
     platform_name = configuration_helpers.get_value("platform_name", settings.PLATFORM_NAME)
     configuration = CertificateHtmlViewConfiguration.get_config()
@@ -510,15 +509,6 @@ def render_html_view(request, user_id, course_id):
     context = {}
     _update_context_with_basic_info(context, course_id, platform_name, configuration)
     invalid_template_path = 'certificates/invalid.html'
-
-    # Kick the user back to the "Invalid" screen if the feature is disabled
-    if not has_html_certificates_enabled(course_id):
-        log.info(
-            "Invalid cert: HTML certificates disabled for %s. User id: %d",
-            course_id,
-            user_id,
-        )
-        return render_to_response(invalid_template_path, context)
 
     # Load the course and user objects
     try:
@@ -533,6 +523,15 @@ def render_html_view(request, user_id, course_id):
             "%d. Specific error: %s"
         )
         log.info(error_str, course_id, user_id, str(exception))
+        return render_to_response(invalid_template_path, context)
+
+    # Kick the user back to the "Invalid" screen if the feature is disabled
+    if not has_html_certificates_enabled(course_id):
+        log.info(
+            "Invalid cert: HTML certificates disabled for %s. User id: %d",
+            course_id,
+            user_id,
+        )
         return render_to_response(invalid_template_path, context)
 
     # Load user's certificate
@@ -567,12 +566,14 @@ def render_html_view(request, user_id, course_id):
 
     # context['percent'] = Decimal(course_grade.percent * 100).to_integral_value()
 
+    student = User.objects.get(id=user_id)
+
     context['grades'] = tuple(
         (g.grade, Decimal(g.percent * 100).to_integral_value())
-        for g in generated_grade.objects.filter(user=user)
+        for g in generated_grade.objects.filter(user=student)
     )
 
-    percent = generated_percent.objects.get(user_id=user.id)
+    percent = generated_percent.objects.get(user_id=student.id)
     context['percent'] = Decimal(percent.course_grade * 100).to_integral_value()
 
     # Append/Override the existing view context values with any mode-specific ConfigurationModel values

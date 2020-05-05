@@ -1024,7 +1024,7 @@ class TestPythonGradedResponse(TestSubmittingProblems):
         # then get it right
         resp = self.submit_question_answer(name, {'2_1': self.correct_responses[name]})
 
-        respdata = json.loads(resp.content)
+        respdata = json.loads(resp.content.decode('utf-8'))
         self.assertEqual(respdata['success'], 'correct')
 
     def test_schematic_correct(self):

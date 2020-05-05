@@ -66,6 +66,7 @@ from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory, check_mongo_calls
 from openedx.core.djangoapps.credit.api import set_credit_requirements
 from openedx.core.djangoapps.credit.models import CreditCourse, CreditProvider
+from courseware.views.views import _student_grades_save
 
 
 @attr(shard=1)
@@ -2106,7 +2107,7 @@ class TestRenderXBlockSelfPaced(TestRenderXBlock):
         return {'self_paced': True}
 
 
-class TestStudentGradesSave(TestCase):
+class TestStudentGradesSave(ModuleStoreTestCase):
     
     def test_student_grades_save_first_request(self):
         course = CourseFactory.create()
@@ -2116,7 +2117,7 @@ class TestStudentGradesSave(TestCase):
             password='foo'
         )
         _student_grades_save(student, course)
-        user_percent = generated_percent.objects.filter(user=student)
-        user_grades = generated_grade.objects.filter(user=user)
-        self.assertEqual(user_percent, True)
-        self.assertEqual(user_grades, True)
+        common_grade = generated_percent.objects.get(user=student)
+        user_grades = generated_grade.objects.filter(user=student)
+        self.assertEqual(common_grade.course_grade, 0.0)
+        self.assertEqual((len(user_grades) > 0), True)
