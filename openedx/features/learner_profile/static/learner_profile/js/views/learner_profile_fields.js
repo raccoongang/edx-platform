@@ -38,7 +38,9 @@
                     gettext('Account Settings page.'),
                     HtmlUtils.HTML('</a>')
                 );
-                if (this.profileIsPrivate) {
+                if (this.options.is_anon) {
+                    this._super('');
+                } else if (this.profileIsPrivate) {
                     this._super(
                         HtmlUtils.interpolateHtml(
                             gettext('You must specify your birth year before you can share your full profile. To specify your birth year, go to the {account_settings_page_link}'),  // eslint-disable-line max-len
