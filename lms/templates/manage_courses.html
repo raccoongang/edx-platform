@@ -24,10 +24,26 @@ from openedx.core.djangolib.markup import HTML, Text
         <form method="post">
             <input type="hidden" name="csrfmiddlewaretoken" value="${ csrftoken }" />
             <div class="courses-field field">
+                <div class="head">
+                    <label>Filter Courses:</label>
+                    <input id="courseFilter" type="text">
+                </div>
                 <label for="${form['courses'].id_for_label}">${form['courses'].label}:</label>
                 ${form['courses'].as_widget()|h}
             </div>
+            <div class="courses-field field">
+                <div class="head">
+                    <label>Filter Classrooms:</label>
+                    <input id="classroomFilter" type="text">
+                </div>
+                <label for="${form['classrooms'].id_for_label}">${form['classrooms'].label}:</label>
+                ${form['classrooms'].as_widget()|h}
+            </div>
             <div class="students-field field">
+                <div class="head">
+                    <label>Filter Students:</label>
+                    <input id="studentFilter" type="text">
+                </div>
                 <label for="${form['students'].id_for_label}">${form['students'].label}:</label>
                 ${form['students'].as_widget()|h}
             </div>
@@ -96,6 +112,42 @@ from openedx.core.djangolib.markup import HTML, Text
         });
 
         $('.manage-courses-wrapper select, .manage-courses-wrapper input[type="checkbox"]').styler();
+
+        function filter(e){
+            var keyword = $(this).val().toLowerCase();
+            e.data.targetList.each(function(){
+                var listItem = $(this).text().toLowerCase();
+                if (keyword.trim() !== "" && listItem.substring(0, keyword.length) !== keyword){
+                    $(this).hide().removeClass("selected");
+                } else {
+                    $(this).show();
+                }
+            });
+        }
+
+        var $coursesList = $("#id_courses-styler li");
+        var $classroomList = $("#id_classrooms-styler li");
+        var $studentList = $("#id_students-styler li");
+
+        $(document).on('keyup', '#courseFilter', {targetList: $coursesList}, filter);
+        $(document).on('keyup', '#classroomFilter', {targetList: $classroomList}, filter);
+        $(document).on('keyup', '#studentFilter', {targetList: $studentList}, filter);
+
+        $(document).on('change', '#id_classrooms', function() {
+            var selectedClassroomValues = [];
+            $classroomList.filter('.selected').each(function(){
+                selectedClassroomValues.push($(this).text().toLowerCase());
+            });
+            $("#id_students option").each(function(){
+                var classroom = $(this).data('classroom').toString().toLowerCase();
+                var studentName = $(this).text();
+                if (selectedClassroomValues.length !== 0 && $.inArray(classroom, selectedClassroomValues) === -1) {
+                    $studentList.filter(":contains('" + studentName + "')").hide().removeClass("selected");
+                } else {
+                    $studentList.filter(":contains('" + studentName + "')").show();
+                }
+            });
+        });
     });
     </script>
 </main>

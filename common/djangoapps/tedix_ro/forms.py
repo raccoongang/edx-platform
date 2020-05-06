@@ -302,9 +302,18 @@ class StudentMultipleModelChoiceField(forms.ModelMultipleChoiceField):
         return u"{}".format(obj.user.profile.name) if obj.user.profile.name else obj.user.username
 
 
+class StudentSelect(forms.SelectMultiple):
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super(forms.SelectMultiple, self).create_option(name, value, label, selected, index, subindex, attrs)
+        instance = self.choices.queryset.get(pk=value)
+        option['attrs']['data-classroom'] = instance.classroom.name
+        return option
+
+
 class StudentEnrollForm(forms.Form):
-    courses = CourseMultipleModelChoiceField(queryset=CourseOverview.objects.none())
-    students = StudentMultipleModelChoiceField(queryset=StudentProfile.objects.none())
+    courses = CourseMultipleModelChoiceField(label='Available Courses List', queryset=CourseOverview.objects.none())
+    classrooms = forms.ModelMultipleChoiceField(label='Classroom List', required=False, queryset=Classroom.objects.none())
+    students = StudentMultipleModelChoiceField(label='Students List', queryset=StudentProfile.objects.none(), widget=StudentSelect())
     due_date = CustomDateTimeField(
         label='Due Date (UTC):',
         input_formats=['%d/%m/%Y %H:%M'],
@@ -320,12 +329,14 @@ class StudentEnrollForm(forms.Form):
     def __init__(self, *args, **kwargs):
         courses = kwargs.pop('courses')
         students = kwargs.pop('students')
+        classrooms = kwargs.pop('classrooms')
         super(StudentEnrollForm, self).__init__(*args, **kwargs)
         self.fields['courses'].queryset = courses
         self.fields['courses'].error_messages={
             'invalid_choice': u'The enrollment end date has passed. The following courses are no longer available for enrollment: "%(value)s".',
         }
         self.fields['students'].queryset = students
+        self.fields['classrooms'].queryset = classrooms
 
     def clean_due_date(self):
         due_date_utc = self.cleaned_data['due_date']
