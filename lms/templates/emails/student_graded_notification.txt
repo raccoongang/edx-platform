@@ -4,11 +4,10 @@ ${_("Congratulations on completing the Microsoft Azure course, ")}${course_name}
 
 ${_("Click here")} https://urldefense.proofpoint.com/v2/url?u=https-3A__pwc.csod.com_catalog_CustomPage.aspx-3Fid-3D20001448-26vantage.next-3D_item_a8876613-2Da62c-2D4fc1-2D9a99-2Db15c88fe29b0&d=DwMGaQ&c=asCACUKXffk7st5ltqEURQ&r=HO2uhQdwBJhHCkz87laz87HpQzIVVentckL7JOGNMl0&m=vf94U1o8YkGsUsr5DXq9sVKzNZif_rhil1cgW5UL5cM&s=PGXU1iFn5W2wrVgaQpua6vafq7nl6jEYdvTsEO7hUSA&e= ${_(" to request a certification voucher to take the exam and follow these steps:")}
 
-- ${_("Select your staff level from the curriculum list")}
-- ${_("Activate/launch the Azure/Dynamics 365/Microsoft 365 Voucher Request")}
-- ${_("Submit the form")}
+- ${_("Select Microsoft Azure Certification Curricula and follow the steps to request the exam voucher.")}
+- ${_("Linking your Microsoft Certification Profile to Partner Center is a requirement prior to submitting your voucher request.")}
 
-${_("You will receive your voucher code within 48 hours. Also, don't forget to update your TalentLink profile as \"in process.\" ")}
+${_("You will receive your voucher code within 48 hours.")}
 
 ${_("Thank you,")}
 ${_("The PwC Team")}
