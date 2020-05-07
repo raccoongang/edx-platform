@@ -7,17 +7,20 @@ from django.contrib.admin.sites import NotRegistered
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField, UserChangeForm as BaseUserChangeForm
+from django.contrib.auth.hashers import make_password
 from django.db import models
 from django.http.request import QueryDict
 from django.utils.translation import ugettext_lazy as _
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
+from import_export.formats import base_formats
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 
 from openedx.core.djangoapps.waffle_utils import WaffleSwitch
 from openedx.core.lib.courses import clean_course_id
 from student import STUDENT_WAFFLE_NAMESPACE
+from student.forms import validate_username
 from student.models import (
     CourseAccessRole,
     CourseEnrollment,
@@ -273,13 +276,30 @@ class UserAdmin(BaseUserAdmin):
 class UserResource(resources.ModelResource):
     """ Resource for importing and exporting User objects. """
 
+    def before_import_row(self,row, **kwargs):
+        """
+        Validate a username and make a password before importing.
+        """
+        validate_username(row['username'])
+        row['password'] = make_password(row['password'])
+
+
+    def skip_row(self, instance, original):
+        """
+        Do not import row and do not show password hash changes
+        if User with provided username already exist.
+        """
+        if instance.username == original.username:
+            instance.password = original.password
+            return True
+        return super(UserResource, self).skip_row(instance, original)
+
     def before_save_instance(self, instance, using_transactions, dry_run):
         """
         Add generated email and set password for User instance.
         """
         if not instance.email:
             instance.email = instance.username + '@ex.ex'
-        instance.set_password(instance.password)
 
     def after_save_instance(self, instance, using_transactions, dry_run):
         """
@@ -296,12 +316,14 @@ class UserResource(resources.ModelResource):
         skip_unchanged = True
         report_skipped = True
         raise_errors = False
-        import_id_fields = ('username', 'password')
+        dry_run = True
+        import_id_fields = ('username',)
 
 
 class UserImportExportAdmin(ImportExportModelAdmin, UserAdmin):
     """ Admin interface for the User model with import and export enabled. """
     resource_class = UserResource
+    formats = (base_formats.CSV,)
 
 
 @admin.register(UserAttribute)
