@@ -306,7 +306,7 @@ class StudentSelect(forms.SelectMultiple):
     def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
         option = super(forms.SelectMultiple, self).create_option(name, value, label, selected, index, subindex, attrs)
         instance = self.choices.queryset.get(pk=value)
-        option['attrs']['data-classroom'] = instance.classroom.name
+        option['attrs']['data-classroom'] = instance.classroom.name if instance.classroom else ""
         return option
 
 
