@@ -325,6 +325,31 @@ display: block;
 		line-height: 16px;
 	}
 
+	.head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 10px;
+
+		@media (max-width: 899px) {
+			justify-content: initial;
+		}
+
+		label {
+			cursor: initial;
+		}
+
+		input {
+			width: 35%;
+			font-style: normal;
+			padding: 5px 10px;
+
+			@media (max-width: 899px) {
+				margin-left: 12px;
+			}
+		}
+	}
+
 	label {
 		font: normal 700 16px/normal "Open Sans";
 		margin-bottom: 5px;
@@ -349,7 +374,7 @@ display: block;
 
 	.courses-field {
 		margin-right: 40px;
-		width: calc(100% - 315px);
+		width: calc(100% - 555px);
 
 		@media (max-width: 768px) {
 			margin-right: 0;
@@ -367,7 +392,7 @@ display: block;
 
 	.students-field,
 	.due_date-field {
-		width: 275px;
+		width: 240px;
 	}
 
 	.students-field {
@@ -408,9 +433,11 @@ display: block;
 	.courses-field,
 	.students-field,
 	.due_date-field {
-		@media (max-width: 768px) {
-			width: 475px;
+		@media (max-width: 899px) {
+			width: 100%;
 			max-width: 100%;
+			margin-left: 0;
+			margin-right: 0;
 		}
 	}
 
@@ -684,4 +711,13 @@ display: block;
         text-align: center;
         padding: 50px 20px;
     }
+.verification_page_logo{
+	margin-bottom: 20px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	height: 50px;
+}
+.verification_page_text{
+	text-align: center;
 }
