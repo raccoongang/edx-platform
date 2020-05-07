@@ -6,6 +6,7 @@ from django.utils.translation import ugettext as _
 from django.urls import reverse
 from django.conf import settings
 from six import text_type
+import urllib
 %>
 
 <header>
@@ -37,6 +38,11 @@ from six import text_type
         tweet_action = u"http://twitter.com/intent/tweet?text={tweet_text}".format(tweet_text=tweet_text)
 
         facebook_link = static.get_value('course_about_facebook_link', settings.PLATFORM_FACEBOOK_ACCOUNT)
+        ## To use FB sharing instead of visiting platform FB account:
+        if settings.FEATURES.get("ENABLE_FACEBOOK_SHARING", False):
+            facebook_link = "https://www.facebook.com/sharer/sharer.php?u={uri}".format(
+              uri = urllib.quote(request.build_absolute_uri(), safe='')
+            )
 
         email_subject = u"mailto:?subject={subject}&body={body}".format(
             subject=_("Take a course with {platform} online").format(platform=platform_name),
