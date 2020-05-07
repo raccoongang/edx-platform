@@ -4880,6 +4880,26 @@ msgstr "Постраничное отображение достижений"
 msgid "{platform_name} learners can see my:"
 msgstr "Студенты {platform_name} видят мой:"
 
+#: edx_sga/templates/staff_graded_assignment/edx_sga.js
+msgid "There was an error uploading your file."
+msgstr "Во время загрузки файла произолша ошибка."
+
+#: edx_sga/templates/staff_graded_assignment/edx_sga.js
+msgid "The file you are trying to upload is too large."
+msgstr "Загружаемый файл слишком большой."
+
+#: edx_sga/templates/staff_graded_assignment/edx_sga.js
+msgid "Uploading... {percent} %"
+msgstr "Загрузка... {percent} %"
+
+#: edx_sga/templates/staff_graded_assignment/edx_sga.js
+msgid "Uploading..."
+msgstr "Загрузка..."
+
+#: edx_sga/templates/staff_graded_assignment/edx_sga.js
+msgid "Upload {filename}"
+msgstr "Загрузить {filename}"
+
 #: lms/static/js/student_profile/views/learner_profile_factory.js
 msgid "Limited Profile"
 msgstr "Ограниченный профиль"
