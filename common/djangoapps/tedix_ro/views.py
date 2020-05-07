@@ -23,11 +23,13 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from opaque_keys.edx.keys import CourseKey
 
+from enrollment.serializers import CourseEnrollmentSerializer
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 import pytz
 from student.helpers import do_create_account, get_next_url_for_login_page
 from student.models import CourseEnrollment
+from student.views.dashboard import get_course_enrollments, get_org_black_and_whitelist_for_site
 from xmodule.modulestore.django import modulestore
 
 from .admin import INSTRUCTOR_EXPORT_FIELD_NAMES, STUDENT_PARENT_EXPORT_FIELD_NAMES
@@ -43,7 +45,15 @@ from .forms import (
     StudentImportRegisterForm,
     StudentProfileImportForm,
 )
-from .models import City, ParentProfile, School, StudentCourseDueDate, StudentProfile, VideoLesson
+from .models import (
+    City,
+    ParentProfile,
+    School,
+    StudentCourseDueDate,
+    StudentProfile,
+    VideoLesson,
+    StudentReportSending,
+    )
 from .serializers import (
     CitySerializer,
     SchoolSerilizer,
@@ -53,7 +63,111 @@ from .serializers import (
 )
 from .sms_client import SMSClient
 from .signals import VIDEO_LESSON_COMPLETED
-from .utils import get_payment_link, report_data_preparation
+from .utils import (
+    get_payment_link, 
+    report_data_preparation,
+    my_report_data_preporation,
+)
+
+
+def report(request):
+    """
+    Provides a list of assigned homework, depending on the role.
+    """
+    def user_timezone(user, due_date):
+        user_time_zone = user.preferences.filter(key='time_zone').first()
+        if user_time_zone:
+            user_tz = pytz.timezone(user_time_zone.value)
+            user_localize_tz = pytz.UTC.localize(due_date.replace(tzinfo=None), is_dst=None).astimezone(user_tz)
+            return user_localize_tz.strftime(
+                    "%d. %m. %Y {}".format(user_time_zone.value.replace("_", " "))
+                )
+        return '{}'.format(due_date.astimezone(pytz.UTC).strftime('%d. %m. %Y'))
+
+    user = request.user
+    InstructorProfile = apps.get_model('tedix_ro', 'InstructorProfile')
+
+    if not user.is_authenticated():
+        return redirect(get_next_url_for_login_page(request))
+
+    # Get the org whitelist or the org blacklist for the current site
+    site_org_whitelist, site_org_blacklist = get_org_black_and_whitelist_for_site()
+    if user.is_staff:
+        courses = CourseOverview.objects.all()
+    else:
+        course_enrollments = list(get_course_enrollments(user, site_org_whitelist, site_org_blacklist))
+        course_overview_id_list = [_.course_id for _ in course_enrollments]
+        courses = CourseOverview.objects.filter(id__in=course_overview_id_list)
+
+    data = []
+
+    for course_overview in courses:
+        course_name = course_overview.display_name
+        course_key = course_overview.id
+        course_report_link = reverse('extended_report', kwargs={'course_key': unicode(course_key)} )
+        course_asign_date = ""
+        course_due_date = ""
+        students_class = ""
+        students_list = []
+
+        if user.is_superuser:
+            students_list = CourseEnrollment.objects.filter(
+                course=course_overview, 
+                user__studentprofile__isnull=False
+            ).values_list("user_id", flat=True)
+
+            students_class = StudentProfile.objects.filter(
+                user__in=set(students_list)
+            ).values_list("classroom__name", flat=True)
+
+        elif hasattr(user, 'instructorprofile'):
+            teacher_students = user.instructorprofile.students.all().values_list("user_id", flat=True)
+            students_list = CourseEnrollment.objects.filter(
+                course=course_overview, 
+                user__in=teacher_students
+            ).values_list("user_id", flat=True)
+
+            students_class = user.instructorprofile.students.filter(
+                user__in=students_list
+            ).values_list("classroom__name", flat=True)
+
+        student_class = ', '.join(map(str, set(students_class)))
+
+        if hasattr(user, 'studentprofile'): 
+            student_report_exists = StudentReportSending.objects.filter(
+                course_id=course_key,
+                user=user
+            ).first()
+            if not student_report_exists:
+                continue
+            course_asign_date = CourseEnrollment.objects.filter(course=course_overview, user=user).first()
+            if course_asign_date:
+                course_asign_date = user_timezone(user, course_asign_date.created)
+            student_class = user.studentprofile.classroom
+            course_due_date = StudentCourseDueDate.objects.filter(
+                student=user.studentprofile, 
+                course_id=course_overview.id,
+            ).first()
+
+            if course_due_date:
+                course_due_date =  user_timezone(user, course_due_date.due_date)
+
+        if students_list or course_asign_date:
+            data.append(
+                {
+                'course_name': course_name,
+                'report_link': course_report_link,
+                'assign_date': course_asign_date,
+                'due_date': course_due_date,
+                'classrom': student_class
+            })
+
+    context = {
+        'data': data,
+        'is_student': hasattr(user, 'studentprofile')
+    }
+
+    return render_to_response('report.html', context)
 
 
 def extended_report(request, course_key):

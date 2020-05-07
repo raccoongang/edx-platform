@@ -1,0 +1,96 @@
+<%inherit file="/main.html" />
+<%namespace name="static" file="/static_content.html"/>
+<%!
+from django.utils.translation import ugettext as _
+%>
+<style>
+table, th, td {
+    border: 1px solid black;
+}
+th, td {
+    padding: 10px;
+}
+table input[type="submit"] {
+    font-size: 14px;
+    padding: 4px 6px;
+}
+.table-date {
+    width:100px;
+    text-align: center;
+}
+.table-class {
+    text-align: center;
+}
+.table-view {
+    text-align: center;
+}
+table {
+    width: 100%;
+    margin: 50px 0px;
+}
+.table-alert {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+</style>
+<main id="main" aria-label="Content" tabindex="-1">
+    <div>
+        <div class="profile-wrapper">
+            <section class="course-info" id="course-info-progress">
+                <table>
+                    %if not data:
+                        <p class='table-alert'>No reports are available.</p>
+                    %elif is_student: 
+                            <thead>
+                                <tr>
+                                    <th class='table-date'>${_("Due Date")} <span style="color: red;"></span></th>
+                                    <th class='table-class'>${_("Class")} <span style="color: red;"></span></th>
+                                    <th class='table-date'>${_("Assign Date")} <span style="color: red;"></span></th>
+                                    <th>${_("Course Name")} <span style="color: red;"></span></th>
+                                    <th class='table-view'>${_("View")} <span style="color: red;"></span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                %for datum in data:
+                                    <tr>
+                                        <td class='table-date'>${datum['due_date']}</td>
+                                        <td class='table-class'>${datum['classrom']}</td>
+                                        <td class='table-date'>${datum['assign_date']}</td>
+                                        <td>${datum['course_name']}</td>
+                                        <td class='table-view'>
+                                            <form action="${datum['report_link']}">
+                                                <input type="submit" value="Open report" />
+                                            </form>
+                                        </td>
+                                    </tr>
+                                %endfor
+                            </tbody>
+                    %else:
+                        <thead>
+                            <tr>
+                                <th class='table-class'>${_("Class")} <span style="color: red;"></span></th>
+                                <th>${_("Course Name")} <span style="color: red;"></span></th>
+                                <th class='table-view'>${_("View")} <span style="color: red;"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            %for datum in data:
+                            <tr>
+                                <td class='table-class'>${datum['classrom']}</td>
+                                <td>${datum['course_name']}</td>
+                                <td class='table-view'>
+                                    <form action="${datum['report_link']}">
+                                        <input type="submit" value="Open report" />
+                                    </form>
+                                </td>
+                            </tr>
+                            %endfor
+                            
+                        </tbody>
+                     %endif    
+                    </table>
+            </section>
+        </div>
+    </div>
+</main>

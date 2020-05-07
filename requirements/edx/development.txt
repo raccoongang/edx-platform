@@ -350,3 +350,5 @@ xmltodict==0.11.0
 zendesk==1.1.1
 zope.interface==4.5.0
 django-import-export==1.0.1
+tablib==0.9.11
+openpyxl==2.5.14
