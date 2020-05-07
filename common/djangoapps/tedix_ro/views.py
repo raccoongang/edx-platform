@@ -66,13 +66,12 @@ from .signals import VIDEO_LESSON_COMPLETED
 from .utils import (
     get_payment_link, 
     report_data_preparation,
-    my_report_data_preporation,
 )
 
 
-def report(request):
+def my_reports(request):
     """
-    Provides a list of assigned homework, depending on the role.
+    Provides a list of available homework assignments, for the student/parent/teacher/superuser.
     """
     def user_timezone(user, due_date):
         user_time_zone = user.preferences.filter(key='time_zone').first()
@@ -85,7 +84,6 @@ def report(request):
         return '{}'.format(due_date.astimezone(pytz.UTC).strftime('%d. %m. %Y'))
 
     user = request.user
-    InstructorProfile = apps.get_model('tedix_ro', 'InstructorProfile')
 
     if not user.is_authenticated():
         return redirect(get_next_url_for_login_page(request))
@@ -95,7 +93,7 @@ def report(request):
     if user.is_staff:
         courses = CourseOverview.objects.all()
     else:
-        course_enrollments = list(get_course_enrollments(user, site_org_whitelist, site_org_blacklist))
+        course_enrollments = CourseEnrollment.enrollments_for_user(user=user)
         course_overview_id_list = [_.course_id for _ in course_enrollments]
         courses = CourseOverview.objects.filter(id__in=course_overview_id_list)
 
@@ -140,8 +138,8 @@ def report(request):
             ).first()
             if not student_report_exists:
                 continue
-            course_asign_date = CourseEnrollment.objects.filter(course=course_overview, user=user).first()
-            if course_asign_date:
+            student_course_enrollment = CourseEnrollment.objects.filter(course=course_overview, user=user).first()
+            if student_course_enrollment:
                 course_asign_date = user_timezone(user, course_asign_date.created)
             student_class = user.studentprofile.classroom
             course_due_date = StudentCourseDueDate.objects.filter(

@@ -651,3 +651,37 @@ display: block;
 	position:relative !important;
 	padding-left:0px !important;
 }
+
+.table-my-reports{
+    border: 1px solid black;
+    width: 100%;
+    margin: 50px 0px;
+    
+    th, td{
+        border: 1px solid black;
+        padding: 10px;
+    }
+    
+    input[type="submit"] {
+        font-size: 14px;
+        padding: 4px 6px;
+    }
+    
+    .table-date {
+        width:100px;
+        text-align: center;
+    }
+    
+    .table-class {
+        text-align: center;
+    }
+    
+    .table-view {
+        text-align: center;
+    }
+    
+    .table-alert {
+        text-align: center;
+        padding: 50px 20px;
+    }
+}
