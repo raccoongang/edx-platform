@@ -1,20 +1,27 @@
 """ Django admin pages for student app """
 from config_models.admin import ConfigurationModelAdmin
 from django import forms
+from django.core.exceptions import ValidationError
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.sites import NotRegistered
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField, UserChangeForm as BaseUserChangeForm
+from django.contrib.auth.hashers import make_password
 from django.db import models
 from django.http.request import QueryDict
 from django.utils.translation import ugettext_lazy as _
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
+from import_export.formats import base_formats
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 
 from openedx.core.djangoapps.waffle_utils import WaffleSwitch
 from openedx.core.lib.courses import clean_course_id
 from student import STUDENT_WAFFLE_NAMESPACE
+from student.forms import validate_username
 from student.models import (
     CourseAccessRole,
     CourseEnrollment,
@@ -29,6 +36,7 @@ from student.models import (
     UserTestGroup
 )
 from student.roles import REGISTERED_ACCESS_ROLES
+from util.password_policy_validators import validate_password
 from xmodule.modulestore.django import modulestore
 
 User = get_user_model()  # pylint:disable=invalid-name
@@ -267,6 +275,73 @@ class UserAdmin(BaseUserAdmin):
         return django_readonly
 
 
+class UserResource(resources.ModelResource):
+    """ Resource for importing and exporting User objects. """
+
+    def before_import_row(self, row, **kwargs):
+        """
+        Validate a username and a password before importing.
+        If no errors were encountered, make password.
+        """
+        errors = {}
+        username = row['username']
+        password = row['password']
+
+        try:
+            validate_username(username)
+        except ValidationError as username_error:
+            errors['username'] = username_error
+        try:
+            validate_password(password, username=username)
+        except ValidationError as password_error:
+            errors['password'] = password_error
+        if errors:
+            raise ValidationError(errors)
+
+        row['password'] = make_password(password)
+
+    def skip_row(self, instance, original):
+        """
+        Skip row and do not show password hash changes
+        if User with a provided username already exist.
+        """
+        if instance.username == original.username:
+            instance.password = original.password
+            return True
+        return super(UserResource, self).skip_row(instance, original)
+
+    def before_save_instance(self, instance, using_transactions, dry_run):
+        """
+        Add generated email and set password for User instance.
+        """
+        if not instance.email:
+            instance.email = instance.username + '@ex.ex'
+
+    def after_save_instance(self, instance, using_transactions, dry_run):
+        """
+        ACT specific creation of UserProfile with additional params.
+        """
+        UserProfile.objects.create(user=instance, is_anon=True)
+
+    class Meta:
+        model = User
+        add_fields = tuple(settings.USER_BULK_REGISTRATION_IMPORT_EXPORT_FIELDS) \
+         if hasattr(settings, 'USER_BULK_REGISTRATION_IMPORT_EXPORT_FIELDS')  else ()
+        fields = ('username', 'password') + add_fields
+        export_order = ('username', 'password') + add_fields
+        skip_unchanged = True
+        report_skipped = True
+        raise_errors = False
+        dry_run = True
+        import_id_fields = ('username',)
+
+
+class UserImportExportAdmin(ImportExportModelAdmin, UserAdmin):
+    """ Admin interface for the User model with import and export enabled. """
+    resource_class = UserResource
+    formats = (base_formats.CSV,)
+
+
 @admin.register(UserAttribute)
 class UserAttributeAdmin(admin.ModelAdmin):
     """ Admin interface for the UserAttribute model. """
@@ -302,4 +377,7 @@ try:
 except NotRegistered:
     pass
 
-admin.site.register(User, UserAdmin)
+if settings.FEATURES.get('ENABLE_USER_CSV_REGISTRATION', False):
+    admin.site.register(User, UserImportExportAdmin)
+else:
+    admin.site.register(User, UserAdmin)

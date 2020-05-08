@@ -354,3 +354,5 @@ zendesk==1.1.1
 zope.interface==4.5.0
 django-tinymce==2.8.0
 django-hvad==1.8.0
+django-import-export==1.2.0
+tablib==0.10.0

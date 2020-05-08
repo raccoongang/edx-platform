@@ -261,5 +261,7 @@ xblock==1.2.1
 zendesk==1.1.1
 django-tinymce==2.8.0
 django-hvad==1.8.0
+django-import-export==1.2.0
+tablib==0.10.0
 
 # openedx-caliper-tracking==0.11.1 # Yudelson

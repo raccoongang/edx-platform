@@ -414,7 +414,7 @@ class UserProfile(models.Model):
     city = models.TextField(blank=True, null=True)
     country = CountryField(blank=True, null=True)
     goals = models.TextField(blank=True, null=True)
-    is_anon = models.BooleanField(default=0, verbose_name='Is Anonymous')
+    is_anon = models.BooleanField(default=False, verbose_name='Is Anonymous')
     allow_certificate = models.BooleanField(default=1)
     bio = models.CharField(blank=True, null=True, max_length=3000, db_index=False)
     profile_image_uploaded_at = models.DateTimeField(null=True, blank=True)
