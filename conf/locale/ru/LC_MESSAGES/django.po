@@ -346,6 +346,175 @@ msgstr "Мы в телеграм"
 msgid "@Chat"
 msgstr "@чат курса"
 
+#: edx_sga/sga.py edx_sga/templates/staff_graded_assignment/show.html
+msgid "Staff Graded Assignment"
+msgstr ""
+
+#: edx_sga/sga.py
+msgid "This name appears in the horizontal navigation at the top of the page."
+msgstr ""
+
+#: edx_sga/sga.py
+msgid ""
+"Defines the number of points each problem is worth. If the value is not set,"
+" the problem is worth the sum of the option point values."
+msgstr ""
+
+#: edx_sga/sga.py
+msgid "Maximum score"
+msgstr ""
+
+#: edx_sga/sga.py
+msgid "Maximum grade score given to assignment by staff."
+msgstr ""
+
+#: edx_sga/sga.py
+msgid "Score assigned by non-instructor staff"
+msgstr ""
+
+#: edx_sga/sga.py
+msgid "Score will need to be approved by instructor before being published."
+msgstr ""
+
+#: edx_sga/sga.py edx_sga/templates/staff_graded_assignment/show.html
+msgid "Instructor comment"
+msgstr "Комментарий преподавателя:"
+
+#: edx_sga/sga.py
+msgid "Feedback given to student by instructor."
+msgstr ""
+
+#: edx_sga/sga.py
+msgid "Annotated SHA1"
+msgstr ""
+
+#: edx_sga/sga.py
+msgid ""
+"sha1 of the annotated file uploaded by the instructor for this assignment."
+msgstr ""
+
+#: edx_sga/sga.py
+msgid "Annotated file name"
+msgstr ""
+
+#: edx_sga/sga.py
+msgid "The name of the annotated file uploaded for this assignment."
+msgstr ""
+
+#: edx_sga/sga.py
+msgid "Mime type of annotated file"
+msgstr ""
+
+#: edx_sga/sga.py
+msgid "The mimetype of the annotated file uploaded for this assignment."
+msgstr ""
+
+#: edx_sga/sga.py
+msgid "Timestamp"
+msgstr ""
+
+#: edx_sga/sga.py
+msgid "When the annotated file was uploaded"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "File uploaded"
+msgstr "Файл успешно загружен"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+#, python-format
+msgid "Your score is"
+msgstr "Ваша оценка:"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Annotated file from instructor"
+msgstr "Аннотированный файл от инструктора"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "This assignment has not yet been graded."
+msgstr "Файл успешно загружен и отправлен на проверку. Ожидайте оценку от преподавателя."
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Upload a different file"
+msgstr "Выберите и загрузите другой файл"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Select a file"
+msgstr "Выберите файл"
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Filename"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Instructor's comments"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Annotated"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Awaiting instructor approval"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Approve grade"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Enter grade"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Upload annotated file"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Grade Submissions"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Loading..."
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "is_released"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "location"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "category"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Enter Grade"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+#, python-format
+msgid "Grade for %(student_name)s"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Grade:"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Comment:"
+msgstr ""
+
+#: edx_sga/templates/staff_graded_assignment/show.html
+msgid "Remove grade"
+msgstr ""
+
+#: themes/edx-theme/lms/templates/courseware/info.html
+msgid "Upload your assignment"
+msgstr "Загрузите свое задание"
+
 #: common/djangoapps/course_modes/models.py
 msgid ""
 "Professional education modes are not allowed to have expiration_datetime "
