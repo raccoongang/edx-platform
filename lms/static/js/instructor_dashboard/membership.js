@@ -583,7 +583,6 @@ such that the value can be defined later than this assignment (file load order).
                     return results;
                 }()));
             }
-            return renderList();
         };
         return betaTesterBulkAddition;
     }());
@@ -851,7 +850,6 @@ such that the value can be defined later than this assignment (file load order).
                     return results;
                 }()));
             }
-            return renderList();
         };
 
         return batchEnrollment;

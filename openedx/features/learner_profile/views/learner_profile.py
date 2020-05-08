@@ -127,6 +127,7 @@ def learner_profile_context(request, profile_username, user_is_staff):
             'account_settings_page_url': reverse('account_settings'),
             'has_preferences_access': (logged_in_user.username == profile_username or user_is_staff),
             'own_profile': own_profile,
+            'is_anon': logged_in_user.profile.is_anon,
             'country_options': list(countries),
             'find_courses_url': marketing_link('COURSES'),
             'language_options': settings.ALL_LANGUAGES,
