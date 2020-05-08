@@ -1,7 +1,7 @@
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 
-from student.models import CourseEnrollmentAllowed
+from courseware.access import has_access
 
 from .models import UserOnboarding
 from .utils import get_user_active_course_id
@@ -48,6 +48,10 @@ class AllowedUrlsMiddleware(object):
             is_path_allowed = self.is_allowed(request.path, user)
             is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == 'XMLHttpRequest'
             if not user.is_staff:
+                if '/courses/' in request.path:
+                    course_key = get_user_active_course_id(user)
+                    if has_access(user, 'staff', course_key):
+                        return
                 if not is_ajax and not is_path_allowed:
                     raise Http404
                 if '/media/' in request.path:
