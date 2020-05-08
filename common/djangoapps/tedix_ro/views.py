@@ -23,13 +23,11 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from opaque_keys.edx.keys import CourseKey
 
-from enrollment.serializers import CourseEnrollmentSerializer
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 import pytz
 from student.helpers import do_create_account, get_next_url_for_login_page
 from student.models import CourseEnrollment
-from student.views.dashboard import get_course_enrollments, get_org_black_and_whitelist_for_site
 from xmodule.modulestore.django import modulestore
 
 from .admin import INSTRUCTOR_EXPORT_FIELD_NAMES, STUDENT_PARENT_EXPORT_FIELD_NAMES
@@ -55,7 +53,6 @@ from .models import (
     StudentReportSending,
     Classroom,
     )
-from .models import City, ParentProfile, School, StudentCourseDueDate, StudentProfile, VideoLesson
 from .serializers import (
     CitySerializer,
     SchoolSerilizer,
