@@ -73,6 +73,14 @@ def my_reports(request):
     Provides a list of available homework assignments, for the student/parent/teacher/superuser.
     """
     def user_timezone(user, due_date):
+        """
+        Function returns updated course due date depends on user timezone if he has it.
+        Arguments:
+            user: instance of model User.
+            due_date: datetime field when Course Enrollment model was created.
+        Returns: 
+            str: course due date for student in string format.
+        """
         user_time_zone = user.preferences.filter(key='time_zone').first()
         if user_time_zone:
             user_tz = pytz.timezone(user_time_zone.value)
