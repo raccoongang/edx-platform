@@ -90,8 +90,6 @@ def my_reports(request):
     if not user.is_authenticated():
         return redirect(get_next_url_for_login_page(request))
 
-    # Get the org whitelist or the org blacklist for the current site
-    site_org_whitelist, site_org_blacklist = get_org_black_and_whitelist_for_site()
     if user.is_staff:
         courses = CourseOverview.objects.all()
     else:
@@ -142,7 +140,7 @@ def my_reports(request):
                 continue
             student_course_enrollment = CourseEnrollment.objects.filter(course=course_overview, user=user).first()
             if student_course_enrollment:
-                course_asign_date = user_timezone(user, course_asign_date.created)
+                course_asign_date = user_timezone(user, student_course_enrollment.created)
             student_class = user.studentprofile.classroom
             course_due_date = StudentCourseDueDate.objects.filter(
                 student=user.studentprofile, 
@@ -153,8 +151,7 @@ def my_reports(request):
                 course_due_date =  user_timezone(user, course_due_date.due_date)
 
         if students_list or course_asign_date:
-            data.append(
-                {
+            data.append({
                 'course_name': course_name,
                 'report_link': course_report_link,
                 'assign_date': course_asign_date,
@@ -167,7 +164,7 @@ def my_reports(request):
         'is_student': hasattr(user, 'studentprofile')
     }
 
-    return render_to_response('report.html', context)
+    return render_to_response('my_reports.html', context)
 
 
 def extended_report(request, course_key):
