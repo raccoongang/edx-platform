@@ -1,6 +1,7 @@
 """ Django admin pages for student app """
 from config_models.admin import ConfigurationModelAdmin
 from django import forms
+from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.sites import NotRegistered
@@ -35,6 +36,7 @@ from student.models import (
     UserTestGroup
 )
 from student.roles import REGISTERED_ACCESS_ROLES
+from util.password_policy_validators import validate_password
 from xmodule.modulestore.django import modulestore
 
 User = get_user_model()  # pylint:disable=invalid-name
@@ -276,18 +278,32 @@ class UserAdmin(BaseUserAdmin):
 class UserResource(resources.ModelResource):
     """ Resource for importing and exporting User objects. """
 
-    def before_import_row(self,row, **kwargs):
+    def before_import_row(self, row, **kwargs):
         """
-        Validate a username and make a password before importing.
+        Validate a username and a password before importing.
+        If no errors were encountered, make password.
         """
-        validate_username(row['username'])
-        row['password'] = make_password(row['password'])
+        errors = {}
+        username = row['username']
+        password = row['password']
 
+        try:
+            validate_username(username)
+        except ValidationError as username_error:
+            errors['username'] = username_error
+        try:
+            validate_password(password, username=username)
+        except ValidationError as password_error:
+            errors['password'] = password_error
+        if errors:
+            raise ValidationError(errors)
+
+        row['password'] = make_password(password)
 
     def skip_row(self, instance, original):
         """
-        Do not import row and do not show password hash changes
-        if User with provided username already exist.
+        Skip row and do not show password hash changes
+        if User with a provided username already exist.
         """
         if instance.username == original.username:
             instance.password = original.password
