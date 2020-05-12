@@ -113,41 +113,50 @@ from openedx.core.djangolib.markup import HTML, Text
 
         $('.manage-courses-wrapper select, .manage-courses-wrapper input[type="checkbox"]').styler();
 
-        function filter(e){
-            var keyword = $(this).val().toLowerCase();
-            e.data.targetList.each(function(){
-                var listItem = $(this).text().toLowerCase();
-                if (keyword.trim() !== "" && listItem.substring(0, keyword.length) !== keyword){
-                    $(this).hide().removeClass("selected");
-                } else {
-                    $(this).show();
-                }
-            });
-        }
-
         var $coursesList = $("#id_courses-styler li");
         var $classroomList = $("#id_classrooms-styler li");
         var $studentList = $("#id_students-styler li");
 
         $(document).on('keyup', '#courseFilter', {targetList: $coursesList}, filter);
         $(document).on('keyup', '#classroomFilter', {targetList: $classroomList}, filter);
-        $(document).on('keyup', '#studentFilter', {targetList: $studentList}, filter);
+        $(document).on('keyup', '#studentFilter', studentFilter);
+        $(document).on('change', '#id_classrooms', studentFilter);
 
-        $(document).on('change', '#id_classrooms', function() {
+        function filter(e){
+            var keyword = $(this).val().toLowerCase().trim();
+            var optionItemSelector = '#' + e.data.targetList.parents('.jq-select-multiple').prop('id').replace('-styler', ' option');
+            e.data.targetList.each(function(){
+                var itemName = $(this).text();
+                var listItem = itemName.toLowerCase();
+                if (keyword !== "" && listItem.substring(0, keyword.length) !== keyword){
+                    $(this).hide().removeClass("selected");
+                    $(optionItemSelector).filter(":contains('" + itemName + "')").prop('selected', false);
+                } else {
+                    $(this).show();
+                }
+            });
+            studentFilter();
+        }
+
+        function studentFilter() {
             var selectedClassroomValues = [];
+            var keyword = $("#studentFilter").val().toLowerCase().trim();
             $classroomList.filter('.selected').each(function(){
                 selectedClassroomValues.push($(this).text().toLowerCase());
             });
             $("#id_students option").each(function(){
                 var classroom = $(this).data('classroom').toString().toLowerCase();
                 var studentName = $(this).text();
-                if (selectedClassroomValues.length !== 0 && $.inArray(classroom, selectedClassroomValues) === -1) {
+                var classroomSelected = !($.inArray(classroom, selectedClassroomValues) === -1);
+                var keywordNotMatchesStudentName = keyword && studentName.substring(0, keyword.length).toLowerCase() !== keyword;
+                if (selectedClassroomValues.length !== 0 && !classroomSelected || keywordNotMatchesStudentName) {
                     $studentList.filter(":contains('" + studentName + "')").hide().removeClass("selected");
+                    $(this).prop('selected', false);
                 } else {
                     $studentList.filter(":contains('" + studentName + "')").show();
                 }
             });
-        });
+        }
     });
     </script>
 </main>
