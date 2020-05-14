@@ -1,0 +1,23 @@
+<%page expression_filter="h"/>
+<%! from django.utils.translation import ugettext as _ %>
+<%inherit file="../main.html" />
+
+<%block name="pagetitle">${_("About")}</%block>
+
+<main id="main" aria-label="Content" tabindex="-1">
+    <section class="container about">
+        <h1>
+            <%block name="pageheader">${page_header or _("About")}</%block>
+        </h1>
+        <p>
+			<p>TEDIX educatie interactiva!</p>
+<p>Impreuna cu profesorii, incercam sa oferim elevilor un suport dinamic, <br />prin care acestia sa poata intelege cat mai bine notiunile de care au nevoie.</p>
+<p>Multumim!<br />Dl. Profesor Valer Pop.<br />D-na Profesoara Dana Morar.<br />D-na Profesoara Laura Ungurean.</p>
+<p>De asemena, le multumim tuturor profesorilor de matematica implicati activ in dezvoltarea platformei!</p>
+        </p>
+		
+		<div>
+		<img src="/static/red-theme/images/about.jpeg")}" style="width:100%;">
+		</div>
+    </section>
+</main>
