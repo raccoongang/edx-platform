@@ -1,0 +1,22 @@
+<%page expression_filter="h"/>
+
+<%namespace name='static' file='static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+
+from branding import api as branding_api
+%>
+
+<%inherit file="main.html"/>
+
+<%block name="body">
+	<div class="container">
+    <img class="verification_page_logo" src="${branding_api.get_logo_url(is_secure)}" alt="${_("{platform_name} Home Page").format(platform_name=static.get_platform_name())}"/>
+    <h2 class="verification_page_text">
+        Bine ati venit pe TEDIX!<br>
+        Pentru a putea accesa platforma, va rugam<br>
+        sa va verificati e-mailul si sa dati click pe linkul<br>
+        de activare primit.
+    </h2>
+	</div>
+</%block>

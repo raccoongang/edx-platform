@@ -41,7 +41,8 @@ from social_django import utils as social_utils
 import openedx.core.djangoapps.external_auth.views
 import third_party_auth
 from django_comment_common.models import assign_role
-from edxmako.shortcuts import render_to_response, render_to_string
+from edxmako.shortcuts import render_to_response
+from django.template.loader import render_to_string
 from eventtracking import tracker
 from openedx.core.djangoapps.external_auth.login_and_register import login as external_auth_login
 from openedx.core.djangoapps.external_auth.models import ExternalAuthMap
