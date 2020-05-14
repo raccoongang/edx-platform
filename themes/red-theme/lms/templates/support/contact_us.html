@@ -6,7 +6,9 @@ from django.utils.translation import ugettext as _
 
 from openedx.core.djangolib.js_utils import js_escaped_string, dump_js_escaped_json
 %>
-
+<%block name="head_extra">
+    <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</%block>
 <%inherit file="../main.html"/>
 <%namespace file='../main.html' import="login_query"/>
 <%namespace name='static' file='../static_content.html'/>
@@ -17,21 +19,22 @@ from openedx.core.djangolib.js_utils import js_escaped_string, dump_js_escaped_j
     </title>
 </%block>
 
-<%block name="head_extra">
-    <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-</%block>
-
 <%block name="body">
 
     <div id="root" class="container">
     </div>
-	<div class="container">
-	<H2>ABC DATA SRL</h2>
-	<p>VAT: RO 16995041</p>
-	<p>Nr.Reg.Com: J12/4360/2004 </p>
-	<p>Adresa: Cluj-Napoca, str. Calea Manastur 70/30</p>
-	<p>Banca: Banca Transilvania Cluj</p>
-	<p>Cont RON: RO29 BTRL 0130 1202 9773 6400</p>
+	<div class="container custom-block">
+	<a href="mailto:suport@tedix.ro" style="font-size:20px;font-weight: 400;"><img src="/static/red-theme/images/mail.png")}" style="width:40px!important;margin: 5px 10px 5px 0px;">Mail Tedix suport</a>
+	</br>
+	<a href="https://wa.me/40770681287" style="font-size:20px;font-weight: 400;"><img src="/static/red-theme/images/whatsapp.png")}" style="width:40px!important;margin: 5px 10px 5px 0px;">Contacteaza-ne pe WhatsApp</a>
+	</br>
+	<a href="https://www.facebook.com/tedix.ro" style="font-size:20px;font-weight: 400;"><img src="/static/red-theme/images/facebook.png")}" style="width:40px!important;margin: 5px 10px 5px 0px;">Facebook.com/tedix.ro</a>
+	<H2 style="font-size: 24px;font-weight: 700;">ABC DATA SRL</h2>
+	<p>VAT: RO 16995041</br>
+	   Nr.Reg.Com: J12/4360/2004 </br>
+	   Adresa: Cluj-Napoca, str. Calea Manastur 70/30</br>
+	   Banca: Banca Transilvania Cluj</br>
+	   Cont RON: RO29 BTRL 0130 1202 9773 6400</p>
 	
 	<p>Punct de lucru: Cluj-Napoca, Piata Stefan cel Mare, Nr. 4, Cam. S19</p>
 	</div>
