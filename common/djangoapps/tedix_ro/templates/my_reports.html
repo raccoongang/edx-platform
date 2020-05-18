@@ -4,40 +4,36 @@
 from django.utils.translation import ugettext as _
 %>
 <main id="main" aria-label="Content" tabindex="-1">
-    <div>
-        <div class="profile-wrapper">
-            <section class="course-info" id="course-info-progress">
-                <table class="table-my-reports">
-                    %if not data:
-                        <p class='table-alert'>No reports are available.</p>
-                    %else:
-                        <thead>
+    <div class="profile-wrapper">
+        <section class="course-info" id="course-info-progress">
+            <table class="table-my-reports">
+                %if not data:
+                    <p class='table-alert'>No reports are available.</p>
+                %else:
+                    <thead>
+                        <tr>
+                            <th class='table-date'>${_("Due Date")}</th>
+                            <th class='table-class'>${_("Class")}</th>
+                            <th class='table-course_name'>${_("Course Name")}</th>
+                            <th class='table-date'>${_("Score") if is_student else _("Average score")}</th>
+                            <th class='table-view'>${_("View")}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        %for datum in data:
                             <tr>
-                                <th class='table-date'>${_("Due Date")}</th>
-                                <th class='table-class'>${_("Class")}</th>
-                                <th>${_("Course Name")}</th>
-                                <th class='table-date'>${_("Average score")}</th>
-                                <th class='table-view'>${_("View")}</th>
+                                <td class='table-date ${datum["due_date"]["date_group"]}' data-due-date='${datum["due_date"]["date_data"]}'>${datum['due_date']["displayed_date"]}</td>
+                                <td class='table-class'>${datum['classrom']}</td>
+                                <td class='table-course_name'>${datum['course_name']}</td>
+                                <td class='table-average_score'>${datum['average_score']}</td>
+                                <td class='table-view'>
+                                    <a href="${datum['report_link']}">Open report </a>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            %for datum in data:
-                                <tr>
-                                    <td class='table-date'>${datum['due_date']}</td>
-                                    <td class='table-class'>${datum['classrom']}</td>
-                                    <td>${datum['course_name']}</td>
-                                    <td class='table-average_score'>${datum['average_score']}</td>
-                                    <td class='table-view'>
-                                            <a href="${datum['report_link']}">Open report </a>
-                                    </td>
-                                </tr>
-                            %endfor
-                        </tbody>
-
-                        </tbody>
-                     %endif    
-                    </table>
-            </section>
-        </div>
+                        %endfor
+                    </tbody>
+                %endif
+            </table>
+        </section>
     </div>
 </main>
