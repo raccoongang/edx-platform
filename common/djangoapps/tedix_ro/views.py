@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db import transaction
+from django.db.models import Avg
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.template.context_processors import csrf
@@ -72,23 +73,58 @@ def my_reports(request):
     """
     Provides a list of available homework assignments, for the student/parent/teacher/superuser.
     """
-    def user_timezone(user, due_date):
+    def user_due_date_data(user, due_date_datetime):
         """
-        Function returns updated course due date depends on user timezone if he has it.
+        Function returns updated course due date data depends on user timezone if he has it.
         Arguments:
             user: instance of model User.
             due_date: datetime field when Course Enrollment model was created.
         Returns: 
-            str: course due date for student in string format.
+            dict: {
+                "date_group": today/tomorrow/future/past,
+                "date_data": 2020-06-01,
+                "displayed_date" Today/Tomorrow/Future: 1 Jun/ Past: 1 Jun,
+            }
         """
+        due_date_data = {}
+        date_group = ""
+        utc_now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
+
         user_time_zone = user.preferences.filter(key='time_zone').first()
         if user_time_zone:
             user_tz = pytz.timezone(user_time_zone.value)
-            user_localize_tz = pytz.UTC.localize(due_date.replace(tzinfo=None), is_dst=None).astimezone(user_tz)
-            return user_localize_tz.strftime(
-                    "%d. %m. %Y {}".format(user_time_zone.value.replace("_", " "))
-                )
-        return '{}'.format(due_date.astimezone(pytz.UTC).strftime('%d. %m. %Y'))
+            date = pytz.UTC.localize(due_date_datetime.replace(tzinfo=None), is_dst=None).astimezone(user_tz)
+        else:
+            date = due_date_datetime.astimezone(pytz.UTC)
+
+        due_date = due_date_datetime.date()
+        today = utc_now.date()
+        if today == due_date:
+            date_group = "Today"
+            due_date_data.update({
+                "displayed_date": date_group
+            })
+        elif (today - due_date).days == -1:
+            date_group = "Tomorrow"
+            due_date_data.update({
+                "displayed_date": date_group
+            })
+        elif (today - due_date).days < -1:
+            date_group = "Future"
+            due_date_data.update({
+                "displayed_date": "{}: {}".format(date_group, date.strftime("%d %B"))
+            })
+        elif (today - due_date).days > 0:
+            date_group = "Past"
+            due_date_data.update({
+                "displayed_date": "{}: {}".format(date_group, date.strftime('%d %B'))
+            })
+
+        due_date_data.update({
+            "date_group": date_group.lower(),
+            "date_data": date.strftime('%Y-%m-%d')
+        })
+        return due_date_data
 
     user = request.user
 
@@ -108,9 +144,8 @@ def my_reports(request):
         course_name = course_overview.display_name
         course_key = course_overview.id
         course_report_link = reverse('extended_report', kwargs={'course_key': unicode(course_key)} )
-        course_asign_date = ""
-        course_due_date = ""
-        students_class = ""
+        course_due_date = None
+        students_classes = None
         students_list = []
 
         if user.is_superuser:
@@ -118,10 +153,9 @@ def my_reports(request):
                 course=course_overview, 
                 user__studentprofile__isnull=False
             ).values_list("user_id", flat=True)
-
-            students_class = StudentProfile.objects.filter(
-                user__in=set(students_list)
-            ).values_list("classroom__name", flat=True)
+            students_classes = StudentProfile.objects.filter(
+                user__in=students_list
+            ).values_list("classroom__name", flat=True).distinct()
 
         elif hasattr(user, 'instructorprofile'):
             teacher_students = user.instructorprofile.students.all().values_list("user_id", flat=True)
@@ -130,40 +164,59 @@ def my_reports(request):
                 user__in=teacher_students
             ).values_list("user_id", flat=True)
 
-            students_class = user.instructorprofile.students.filter(
+            students_classes = user.instructorprofile.students.filter(
                 user__in=students_list
-            ).values_list("classroom__name", flat=True)
+            ).values_list("classroom__name", flat=True).distinct()
 
-        student_class = ', '.join(map(str, set(students_class)))
+        if students_classes:
+            for students_class in students_classes:
+                course_due_dates = StudentCourseDueDate.objects.filter(
+                    student__classroom__name=students_class,
+                    course_id=course_key,
+                ).values_list("due_date", flat=True).distinct()
+                for course_due_date in course_due_dates:
+                    students_in_class = StudentCourseDueDate.objects.filter(
+                        due_date=course_due_date,
+                        student__classroom__name=students_class,
+                    ).values_list("student__user_id", flat=True)
+                    average_score = StudentReportSending.objects.filter(
+                        course_id=course_key,
+                        user_id__in=set(students_in_class),
+                    ).aggregate(Avg('grade')).get("grade__avg")
+
+                    course_due_date_data = user_due_date_data(user, course_due_date)
+
+                    data.append({
+                        'course_name': course_name,
+                        'report_link': course_report_link,
+                        'due_date': course_due_date_data,
+                        'classrom': students_class,
+                        'average_score': "{}%".format(average_score * 100) if average_score is not None else "n/a",
+                    })
 
         if hasattr(user, 'studentprofile'): 
-            student_report_exists = StudentReportSending.objects.filter(
+            student_report = StudentReportSending.objects.filter(
                 course_id=course_key,
                 user=user
             ).first()
-            if not student_report_exists:
+            if not student_report:
                 continue
-            student_course_enrollment = CourseEnrollment.objects.filter(course=course_overview, user=user).first()
-            if student_course_enrollment:
-                course_asign_date = user_timezone(user, student_course_enrollment.created)
             student_class = user.studentprofile.classroom
             course_due_date = StudentCourseDueDate.objects.filter(
                 student=user.studentprofile, 
-                course_id=course_overview.id,
+                course_id=course_key,
             ).first()
 
             if course_due_date:
-                course_due_date =  user_timezone(user, course_due_date.due_date)
+                course_due_date_data = user_due_date_data(user, course_due_date.due_date)
 
-        if students_list or course_asign_date:
             data.append({
                 'course_name': course_name,
                 'report_link': course_report_link,
-                'assign_date': course_asign_date,
-                'due_date': course_due_date,
-                'classrom': student_class
+                'due_date': course_due_date_data,
+                'classrom': student_class,
+                'average_score': "{}%".format(student_report.grade * 100) if student_report else "n/a",
             })
-
     context = {
         'data': data,
         'is_student': hasattr(user, 'studentprofile')
