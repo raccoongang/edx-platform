@@ -40,9 +40,11 @@ from courseware.access import has_access
 from edxmako.shortcuts import render_to_response
 from edxmako.template import Template
 from eventtracking import tracker
+from lms.djangoapps.grades.new.course_grade_factory import CourseGradeFactory
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.lib.courses import course_image_url
 from student.models import LinkedInAddToProfileConfiguration
+from util.date_utils import strftime_localized
 from util import organizations_helpers as organization_api
 from util.views import handle_500
 from xmodule.modulestore.django import modulestore
@@ -99,11 +101,7 @@ def _update_certificate_context(context, user_certificate, platform_name):
     )
 
     # Translators:  The format of the date includes the full name of the month
-    context['certificate_date_issued'] = _('{month} {day}, {year}').format(
-        month=user_certificate.modified_date.strftime("%B"),
-        day=user_certificate.modified_date.day,
-        year=user_certificate.modified_date.year
-    )
+    context['certificate_date_issued'] = strftime_localized(user_certificate.modified_date, "%d %B %Y")
 
     # Translators:  This text represents the verification of the certificate
     context['document_meta_description'] = _('This is a valid {platform_name} certificate for {user_name}, '
@@ -232,6 +230,9 @@ def _update_course_context(request, context, course, platform_name):
     context['accomplishment_copy_course_name'] = accomplishment_copy_course_name
     course_number = course.display_coursenumber if course.display_coursenumber else course.number
     context['course_number'] = course_number
+    context['course_end_date'] = ''
+    if course.end:
+        context['course_end_date'] = strftime_localized(course.end, "%d %B %Y")
     if context['organization_long_name']:
         # Translators:  This text represents the description of course
         context['accomplishment_copy_course_description'] = _('a course of study offered by {partner_short_name}, '
@@ -474,6 +475,19 @@ def _update_organization_context(context, course):
     context['organization_logo'] = organization_logo
 
 
+def _update_grading_context(context, course, user):
+    """
+    Updates context with grading info.
+    """
+    course_grade = CourseGradeFactory().create(user, course)
+    points_earned, points_total = course_grade.score_for_module(course.location)
+    context.update({
+        'grade_percentage': int(course_grade.summary['percent'] * 100),
+        'points_earned': points_earned,
+        'points_total': points_total,
+    })
+
+
 def render_cert_by_uuid(request, certificate_uuid):
     """
     This public view generates an HTML representation of the specified certificate
@@ -592,6 +606,9 @@ def render_html_view(request, user_id, course_id):
 
     # Track certificate view events
     _track_certificate_events(request, context, course, user, user_certificate)
+
+    # Add grading info
+    _update_grading_context(context, course, user)
 
     # FINALLY, render appropriate certificate
     return _render_certificate_template(request, context, course, user_certificate)
