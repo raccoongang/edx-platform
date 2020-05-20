@@ -3,30 +3,73 @@
 <%!
 from django.utils.translation import ugettext as _
 %>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+<script>
+    $(document).ready( function () {
+        var table = $(".table-my-reports").DataTable({
+            "searching": false,
+            "order": [[0, "asc"], [1, "asc"], [2, "asc"]],
+            "columnDefs": [
+                { "targets": 0, "orderable": true, "visible": false},
+                { "orderData": [ 0, 1 ], "targets": 1, "orderable": true},
+                { "targets": 2, "orderable": true },
+                { "targets": "_all", "orderable": false }
+            ]
+        });
+
+        var $tableClass = $("th.table-class");
+        var $tableDate = $("th.table-date");
+
+        $tableDate.on("click", function(event){
+            var $column = $(event.currentTarget);
+            if ($column.hasClass("sorting_asc")){
+                $column.addClass("asc");
+                $tableClass.addClass("asc");
+            } else {
+                $column.removeClass("asc");
+                $tableClass.removeClass("asc");
+            };
+        });
+
+        $tableClass.on("click", function(event){
+            var $column = $(event.currentTarget);
+            var columnOrder = $column.hasClass("asc") ? "desc" : "asc";
+            if ($tableDate.hasClass("asc")){
+                table.order([0, "asc"], [1, "asc"], [2, columnOrder]).draw();
+            } else {
+                table.order([0, "desc"], [1, "desc"], [2, columnOrder]).draw();
+            }
+            $column.toggleClass("asc");
+        });
+    });
+</script>
 <main id="main" aria-label="Content" tabindex="-1">
     <div class="profile-wrapper">
         <section class="course-info" id="course-info-progress">
             <table class="table-my-reports">
                 %if not data:
-                    <p class='table-alert'>No reports are available.</p>
+                    <p class="table-alert">No reports are available.</p>
                 %else:
                     <thead>
                         <tr>
-                            <th class='table-date'>${_("Due Date")}</th>
-                            <th class='table-class'>${_("Class")}</th>
-                            <th class='table-course_name'>${_("Course Name")}</th>
-                            <th class='table-date'>${_("Score") if is_student else _("Average score")}</th>
-                            <th class='table-view'>${_("View")}</th>
+                            <th class="table-date-group asc">${_("Date Group")}</th>
+                            <th class="table-date asc">${_("Due Date")}</th>
+                            <th class="table-class">${_("Class")}</th>
+                            <th class="table-course_name">${_("Course Name")}</th>
+                            <th class="table-date">${_("Score") if is_student else _("Average score")}</th>
+                            <th class="table-view">${_("View")}</th>
                         </tr>
                     </thead>
                     <tbody>
                         %for datum in data:
                             <tr>
-                                <td class='table-date ${datum["due_date"]["date_group"]}' data-due-date='${datum["due_date"]["date_data"]}'>${datum['due_date']["displayed_date"]}</td>
-                                <td class='table-class'>${datum['classrom']}</td>
-                                <td class='table-course_name'>${datum['course_name']}</td>
-                                <td class='table-average_score'>${datum['average_score']}</td>
-                                <td class='table-view'>
+                                <td class="table-date-group">${datum['due_date']['due_date_order']}</td>
+                                <td class="table-date ${datum['due_date']['date_group']}" data-sort="${datum['due_date']['date_data']}">${datum['due_date']['displayed_date']}</td>
+                                <td class="table-class">${datum['classrom']}</td>
+                                <td class="table-course_name">${datum['course_name']}</td>
+                                <td class="table-average_score">${datum['average_score']}</td>
+                                <td class="table-view">
                                     <a href="${datum['report_link']}">Open report </a>
                                 </td>
                             </tr>
