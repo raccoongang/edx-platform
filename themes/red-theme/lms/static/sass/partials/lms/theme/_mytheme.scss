@@ -297,7 +297,7 @@ line-height: 1;
 }
 
 .manage-courses-wrapper {
-	max-width: 790px;
+	max-width: 1199px;
 	margin: 0 auto 30px;
 	padding: 0 20px;
 
@@ -352,12 +352,17 @@ line-height: 1;
 
 		label {
 			cursor: initial;
+			margin: 0 12px 5px 0;
 		}
 
 		input {
-			width: 35%;
+			flex: 1;
 			font-style: normal;
 			padding: 5px 10px;
+
+			@-moz-document url-prefix() {
+				min-width: 0;
+			}
 
 			@media (max-width: 899px) {
 				margin-left: 12px;
@@ -389,7 +394,19 @@ line-height: 1;
 
 	.courses-field {
 		margin-right: 40px;
-		width: calc(100% - 555px);
+		width: 25%;
+
+		&.courses-list {
+			width: 45%;
+
+			@media (max-width: 1199px) {
+				width: 40%;
+			}
+
+			@media (max-width: 999px) {
+				width: 100%;
+			}
+		}
 
 		@media (max-width: 768px) {
 			margin-right: 0;
@@ -448,7 +465,7 @@ line-height: 1;
 	.courses-field,
 	.students-field,
 	.due_date-field {
-		@media (max-width: 899px) {
+		@media (max-width: 999px) {
 			width: 100%;
 			max-width: 100%;
 			margin-left: 0;
@@ -546,7 +563,7 @@ line-height: 1;
 		margin-top: 5px;
 		width: 100%;
 		display: flex;
-		justify-content: space-between;
+		justify-content: space-evenly;
 		align-items: center;
 
 		@media (max-width: 768px) {
@@ -635,7 +652,8 @@ line-height: 1;
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
-			white-space: nowrap;
+			word-break: break-word;
+			white-space: initial;
 			padding: 5px 20px;
 			line-height: 14px;
 
