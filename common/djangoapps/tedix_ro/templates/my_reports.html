@@ -42,10 +42,49 @@ from django.utils.translation import ugettext as _
             }
             $column.toggleClass("asc");
         });
+
+
+        var $modal = $(".my_report_popup");
+        var $closePopup = $(".close_popup");
+
+        $(".open_report").on("click", function(event){
+            event.preventDefault();
+            var $openReport = $(event.currentTarget);
+            $.ajax({
+                method: "GET",
+                url: $openReport.attr("href"),
+                data: {"classroom": $openReport.data('classroom'), "due_date": $openReport.data("due_date")},
+                success: function(data){
+                    $(".report").html(data.html);
+                    $modal.show()
+                }
+            });
+        })
+
+        $(".close_popup").on("click", function() {
+            $modal.hide()
+        })
     });
 </script>
+
+<%
+username = user.profile.name or user.username
+roll = _('Superuser') if user.is_superuser else _('Student') if hasattr(user, 'studentprofile') else _('Teacher')
+%>
+
 <main id="main" aria-label="Content" tabindex="-1">
-    <div class="profile-wrapper">
+    <div class="my_report_popup">
+        <div class="modal-content">
+            <div class="report"></div>
+            <div class="close-holder">
+                <button class="close_popup">Close</button>
+            </div>
+        </div>
+    </div>
+    <div class="my-report-wrapper">
+        <h2 class="hd hd-2">
+            ${_("Students Progress for {roll} '{username}'").format(roll=roll, username=username)}
+        </h2>
         <section class="course-info" id="course-info-progress">
             <table class="table-my-reports">
                 %if not data:
@@ -57,7 +96,7 @@ from django.utils.translation import ugettext as _
                             <th class="table-date asc">${_("Due Date")}</th>
                             <th class="table-class">${_("Class")}</th>
                             <th class="table-course_name">${_("Course Name")}</th>
-                            <th class="table-date">${_("Score") if is_student else _("Average score")}</th>
+                            <th class="table-date">${_("Score") if hasattr(user, 'studentprofile') else _("Average score")}</th>
                             <th class="table-view">${_("View")}</th>
                         </tr>
                     </thead>
@@ -66,11 +105,14 @@ from django.utils.translation import ugettext as _
                             <tr>
                                 <td class="table-date-group">${datum['due_date']['due_date_order']}</td>
                                 <td class="table-date ${datum['due_date']['date_group']}" data-sort="${datum['due_date']['date_data']}">${datum['due_date']['displayed_date']}</td>
-                                <td class="table-class">${datum['classrom']}</td>
+                                <td class="table-class">${datum['classroom']}</td>
                                 <td class="table-course_name">${datum['course_name']}</td>
                                 <td class="table-average_score">${datum['average_score']}</td>
                                 <td class="table-view">
-                                    <a href="${datum['report_link']}">Open report </a>
+                                    <a class="open_report"
+                                        data-due_date="${datum['due_date']['date_data']}"
+                                        data-classroom="${datum['classroom']}"
+                                        href="${datum['report_link']}">Open report</a>
                                 </td>
                             </tr>
                         %endfor

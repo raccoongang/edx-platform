@@ -31,7 +31,7 @@ def report_data_preparation(user, course):
     Return "report_data" - data for extended report
     """
     Question = apps.get_model('tedix_ro', 'Question')
-    count_answer_first_attempt = 0
+    StudentReportSending = apps.get_model('tedix_ro', 'StudentReportSending')
     questions_data = []
     header = []
     video_questions = Question.objects.filter(video_lesson__course=course.id)
@@ -47,8 +47,6 @@ def report_data_preparation(user, course):
                             correct_map = json.loads(student_module.state).get('correct_map', {})
                             correctness = correct_map.values()[0].get('correctness') if correct_map else False
                             done = True if correctness == 'correct' else False
-                            if attempts == 1 and done:
-                                count_answer_first_attempt += 1
                         else:
                             attempts = 0
                             done = False
@@ -63,19 +61,18 @@ def report_data_preparation(user, course):
             questions = questions.exclude(video_lesson__video_id=video_question.video_lesson.video_id)
             questions_data.append((video_question.question_id, video_question.attempt_count, True))
             header.append(video_question.question_id)
-            if video_question.attempt_count == 1:
-                count_answer_first_attempt += 1
 
     for question in questions:
         questions_data.append((question.get('question_id'), 0, False))
         header.append(question.get('question_id'))
 
+    student_report = StudentReportSending.objects.filter(course_id=course.id, user_id=user.id).first()
+
     report_data = {
         'full_name': user.profile.name or user.username,
         'completion': not bool([item for item in questions_data if item[1] == 0]) and lesson_course_grade(user, course.id).passed,
         'questions': questions_data,
-        'count_answer_first_attempt': count_answer_first_attempt,
-        'percent': (count_answer_first_attempt * 100 / len(questions_data)) if questions_data else 100
+        'percent': "{}%".format(student_report.grade * 100) if student_report else "n/a"
     }
     return header, report_data
 
