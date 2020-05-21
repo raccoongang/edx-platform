@@ -1,12 +1,9 @@
-<%page args="report_data, header, course_name"/>
+<%page args="report_data, header"/>
 <%!
 from django.utils.translation import ugettext as _
 %>
 
-<section class="chapters">
-    <h1>${_("Activity report for lesson:")} <span style="font-size: 30px; color: #24ad97;">${ course_name }<span></h1>
-    <br>
-    <div style="overflow-x: scroll; overflow-y: hidden;">
+<div class="extended-report" style="overflow-x: scroll;">
     <table style="border-collapse: collapse; border: 1px solid;">
         <tr>
             <th style="border: 1px solid; padding: 10px 8px;">${_("Student name")}</th>
@@ -16,7 +13,7 @@ from django.utils.translation import ugettext as _
                     <br>${ question_name }</p>
                 </th>
             %endfor
-            <th style="border: 1px solid; padding: 10px 8px;">${_("Number of question completed from first attempt")}</th>
+            <th style="border: 1px solid; padding: 10px 8px;">${_("Score")}</th>
             <th style="border: 1px solid; padding: 10px 8px;">${_("Lesson completed")}</th>
         </tr>
         %for user_data in report_data:
@@ -33,10 +30,9 @@ from django.utils.translation import ugettext as _
                         %endif
                     </td>
                 %endfor
-                <td style="white-space: nowrap; border: 1px solid; padding: 9px 8px;">${ user_data['percent'] }%</td>
+                <td style="white-space: nowrap; border: 1px solid; padding: 9px 8px;">${ user_data['percent'] }</td>
                 <td style="white-space: nowrap; border: 1px solid; padding: 9px 8px;"><span style="color: ${'green' if user_data['completion'] == 1 else 'red'};">${'Yes' if user_data['completion'] == 1 else 'No'}</span></td>
             </tr>
         %endfor
-        </table>
-
-</section>
+    </table>
+</div>

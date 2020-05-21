@@ -29,7 +29,10 @@ roll = _('Superuser') if user.is_superuser else _('Teacher')
                     <h2 class="hd hd-2 progress-certificates-title">
                         ${_("Students Progress for {roll} '{username}'").format(roll=roll, username=username)}
                     </h2>
-                    <%include file="includes/teacher_extended_report.html" />
+                    <section class="chapters">
+                        <h1>${_("Activity report for lesson:")} <span style="font-size: 30px; color: #24ad97;">${ course_name }<span></h1>
+                        <%include file="includes/teacher_extended_report.html" />
+                    </section>
                 %else:
                     <%include file="includes/student_extended_report.html" />
                 %endif
