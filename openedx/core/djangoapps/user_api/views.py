@@ -1,5 +1,7 @@
 """HTTP end-points for the User API. """
 import copy
+import json
+import logging
 import re
 
 from django.conf import settings
@@ -45,6 +47,9 @@ from .helpers import FormDescription, require_post_params, shim_student_view
 from .models import UserPreference, UserProfile
 from .preferences.api import get_country_time_zones, update_email_opt_in
 from .serializers import CountryTimeZoneSerializer, UserPreferenceSerializer, UserSerializer
+
+
+log = logging.getLogger(__name__)
 
 
 class LoginSessionView(APIView):
@@ -328,11 +333,16 @@ class RegistrationView(APIView):
             HttpResponse: 403 operation not allowed
         """
         data = request.POST.copy()
-
+        try:
+            is_active = json.loads(data.get('active'))
+        except (ValueError, TypeError):
+            is_active = False
         email = data.get('email')
-        data['username'] = re.sub('[\W]', '', email)[:30]
-        username = data.get('username')
 
+        username = data.get('username')
+        if email and not username:
+            username = re.sub(r'[\W]', '', email)[:30]
+            data['username'] = username
         # Handle duplicate email/username
         conflicts = check_account_exists(email=email, username=username)
         if conflicts:
@@ -379,6 +389,10 @@ class RegistrationView(APIView):
             return JsonResponse(errors, status=400)
         except PermissionDenied:
             return HttpResponseForbidden(_("Account creation not allowed."))
+        if is_active is True:
+            user.is_active = True
+            user.save()
+            log.info(u'User %s (%s) account is successfully activated.', user.username, user.email)
 
         if "referral_id" in request.COOKIES:
             referral_id = request.COOKIES.get("referral_id")
