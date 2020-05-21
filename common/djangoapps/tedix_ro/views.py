@@ -87,7 +87,7 @@ def my_reports(request):
             }
         """
         due_date_data = {}
-        date_group = ""
+        date_group = ''
         utc_now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
 
         user_time_zone = user.preferences.filter(key='time_zone').first()
@@ -100,29 +100,33 @@ def my_reports(request):
         due_date = due_date_datetime.date()
         today = utc_now.date()
         if today == due_date:
-            date_group = "Today"
+            date_group = 'Today'
             due_date_data.update({
-                "displayed_date": date_group
+                'displayed_date': date_group,
+                'due_date_order': 1
             })
         elif (today - due_date).days == -1:
-            date_group = "Tomorrow"
+            date_group = 'Tomorrow'
             due_date_data.update({
-                "displayed_date": date_group
+                'displayed_date': date_group,
+                'due_date_order': 2
             })
         elif (today - due_date).days < -1:
-            date_group = "Future"
+            date_group = 'Future'
             due_date_data.update({
-                "displayed_date": "{}: {}".format(date_group, date.strftime("%d %B"))
+                'displayed_date': '{}: {}'.format(date_group, date.strftime('%d %B')),
+                'due_date_order': 3
             })
         elif (today - due_date).days > 0:
-            date_group = "Past"
+            date_group = 'Past'
             due_date_data.update({
-                "displayed_date": "{}: {}".format(date_group, date.strftime('%d %B'))
+                'displayed_date': '{}: {}'.format(date_group, date.strftime('%d %B')),
+                'due_date_order': 4
             })
 
         due_date_data.update({
-            "date_group": date_group.lower(),
-            "date_data": date.strftime('%Y-%m-%d')
+            'date_group': date_group.lower(),
+            'date_data': date.strftime('%Y-%m-%d')
         })
         return due_date_data
 
@@ -139,6 +143,7 @@ def my_reports(request):
         courses = CourseOverview.objects.filter(id__in=course_overview_id_list)
 
     data = []
+    utc_now_date = datetime.datetime.utcnow().date()
 
     for course_overview in courses:
         course_name = course_overview.display_name
@@ -152,37 +157,43 @@ def my_reports(request):
             students_list = CourseEnrollment.objects.filter(
                 course=course_overview, 
                 user__studentprofile__isnull=False
-            ).values_list("user_id", flat=True)
+            ).values_list('user_id', flat=True)
             students_classes = StudentProfile.objects.filter(
                 user__in=students_list
-            ).values_list("classroom__name", flat=True).distinct()
+            ).values_list('classroom__name', flat=True).distinct()
 
         elif hasattr(user, 'instructorprofile'):
-            teacher_students = user.instructorprofile.students.all().values_list("user_id", flat=True)
+            teacher_students = user.instructorprofile.students.all().values_list('user_id', flat=True)
             students_list = CourseEnrollment.objects.filter(
                 course=course_overview, 
                 user__in=teacher_students
-            ).values_list("user_id", flat=True)
+            ).values_list('user_id', flat=True)
 
             students_classes = user.instructorprofile.students.filter(
                 user__in=students_list
-            ).values_list("classroom__name", flat=True).distinct()
+            ).values_list('classroom__name', flat=True).distinct()
 
         if students_classes:
             for students_class in students_classes:
+                course_due_dates_past = StudentCourseDueDate.objects.filter(
+                    student__classroom__name=students_class,
+                    course_id=course_key,
+                    due_date__lt=utc_now_date,
+                ).values_list('due_date', flat=True).distinct().order_by('-due_date')[:200]
                 course_due_dates = StudentCourseDueDate.objects.filter(
                     student__classroom__name=students_class,
                     course_id=course_key,
-                ).values_list("due_date", flat=True).distinct()
+                    due_date__gte=utc_now_date,
+                ).values_list('due_date', flat=True).distinct().union(course_due_dates_past)
                 for course_due_date in course_due_dates:
                     students_in_class = StudentCourseDueDate.objects.filter(
                         due_date=course_due_date,
                         student__classroom__name=students_class,
-                    ).values_list("student__user_id", flat=True)
+                    ).values_list('student__user_id', flat=True)
                     average_score = StudentReportSending.objects.filter(
                         course_id=course_key,
                         user_id__in=set(students_in_class),
-                    ).aggregate(Avg('grade')).get("grade__avg")
+                    ).aggregate(Avg('grade')).get('grade__avg')
 
                     course_due_date_data = user_due_date_data(user, course_due_date)
 
@@ -191,7 +202,7 @@ def my_reports(request):
                         'report_link': course_report_link,
                         'due_date': course_due_date_data,
                         'classrom': students_class,
-                        'average_score': "{}%".format(average_score * 100) if average_score is not None else "n/a",
+                        'average_score': '{}%'.format(average_score * 100) if average_score is not None else 'n/a',
                     })
 
         if hasattr(user, 'studentprofile'): 
@@ -215,7 +226,7 @@ def my_reports(request):
                 'report_link': course_report_link,
                 'due_date': course_due_date_data,
                 'classrom': student_class,
-                'average_score': "{}%".format(student_report.grade * 100) if student_report else "n/a",
+                'average_score': '{}%'.format(student_report.grade * 100) if student_report else 'n/a',
             })
     context = {
         'data': data,
