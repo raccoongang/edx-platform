@@ -50,7 +50,7 @@ def report_data_preparation(user, course):
                         else:
                             attempts = 0
                             done = False
-                        header.append(problem.display_name)
+                        header.append((problem.display_name, 'problem'))
                         questions_data.append((problem.display_name, attempts, done))
 
     questions = video_questions.values('question_id', 'video_lesson__video_id').distinct()
@@ -60,11 +60,11 @@ def report_data_preparation(user, course):
         for video_question in user_video_questions:
             questions = questions.exclude(video_lesson__video_id=video_question.video_lesson.video_id)
             questions_data.append((video_question.question_id, video_question.attempt_count, True))
-            header.append(video_question.question_id)
+            header.append((video_question.question_id, 'video_lesson'))
 
     for question in questions:
         questions_data.append((question.get('question_id'), 0, False))
-        header.append(question.get('question_id'))
+        header.append((question.get('question_id'), 'video_lesson'))
 
     student_report = StudentReportSending.objects.filter(course_id=course.id, user_id=user.id).first()
 

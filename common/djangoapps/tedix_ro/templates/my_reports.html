@@ -104,7 +104,7 @@ roll = _('Superuser') if user.is_superuser else _('Student') if hasattr(user, 's
                         %for datum in data:
                             <tr>
                                 <td class="table-date-group">${datum['due_date']['due_date_order']}</td>
-                                <td class="table-date ${datum['due_date']['date_group']}" data-sort="${datum['due_date']['date_data']}">${datum['due_date']['displayed_date']}</td>
+                                <td class="table-date ${datum['due_date']['date_group']} ${'complete' if datum.get('complete') else ''}" data-sort="${datum['due_date']['date_data']}">${datum['due_date']['displayed_date']}</td>
                                 <td class="table-class">${datum['classroom']}</td>
                                 <td class="table-course_name">${datum['course_name']}</td>
                                 <td class="table-average_score">${datum['average_score']}</td>

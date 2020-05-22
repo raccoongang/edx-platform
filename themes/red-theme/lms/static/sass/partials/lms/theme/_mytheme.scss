@@ -684,6 +684,8 @@ display: block;
 
 	label {
 		font: 16px/normal "Open Sans" !important;
+		display: block;
+    	margin-bottom: 12px;
 	}
 
 	.table-my-reports {
@@ -700,6 +702,9 @@ display: block;
 		.today {
 			background-color: $red !important;
 			color: white !important;
+			&.complete{
+				background-color: $green !important;
+			}
 		}
 	
 		.tomorrow {
@@ -747,7 +752,6 @@ display: block;
     padding: 20px;
     border: 1px solid #888;
 	width: 80%;
-	max-height: 70%;
 
 	.extended-report{
 		max-height: 500px;
