@@ -47,6 +47,7 @@ class EnrollmentTestMixin(object):
             self,
             course_id=None,
             username=None,
+            email=None,
             expected_status=status.HTTP_200_OK,
             email_opt_in=None,
             as_server=False,
@@ -54,7 +55,7 @@ class EnrollmentTestMixin(object):
             is_active=None,
             enrollment_attributes=None,
             min_mongo_calls=0,
-            max_mongo_calls=0,
+            max_mongo_calls=1,  # see student.models.py::1235
             enterprise_course_consent=None,
     ):
         """
@@ -75,6 +76,9 @@ class EnrollmentTestMixin(object):
             'user': username,
             'enrollment_attributes': enrollment_attributes
         }
+
+        if email is not None:
+            data['email'] = email
 
         if is_active is not None:
             data['is_active'] = is_active
@@ -209,6 +213,32 @@ class EnrollmentTest(EnrollmentTestMixin, ModuleStoreTestCase, APITestCase, Ente
         course_mode, is_active = CourseEnrollment.enrollment_mode_for_user(self.user, self.course.id)
         self.assertTrue(is_active)
         self.assertEqual(course_mode, enrollment_mode)
+
+    def test_enroll_by_email(self):
+        """
+        Test enroll through API by email.
+        """
+        CourseModeFactory.create(
+            course_id=self.course.id,
+            mode_slug=CourseMode.VERIFIED,
+            mode_display_name=CourseMode.VERIFIED,
+        )
+        # email must have higher priority than username
+        resp = self.assert_enrollment_status(
+            username=self.user.username,
+            email=self.other_user.email,
+            as_server=True,
+            mode=CourseMode.VERIFIED,
+        )
+
+        data = json.loads(resp.content)
+        self.assertEqual(self.course.display_name_with_default, data['course_details']['course_name'])
+
+        # Verify that the enrollment was created correctly
+        self.assertTrue(CourseEnrollment.is_enrolled(self.other_user, self.course.id))
+        course_mode, is_active = CourseEnrollment.enrollment_mode_for_user(self.other_user, self.course.id)
+        self.assertTrue(is_active)
+        self.assertEqual(course_mode, CourseMode.VERIFIED)
 
     def test_check_enrollment(self):
         CourseModeFactory.create(
@@ -361,7 +391,7 @@ class EnrollmentTest(EnrollmentTestMixin, ModuleStoreTestCase, APITestCase, Ente
             )
             self.assert_enrollment_status(
                 course_id=unicode(course.id),
-                max_mongo_calls=0,
+                max_mongo_calls=1,
             )
         # Verify the user himself can see both of his enrollments.
         self._assert_enrollments_visible_in_list([self.course, other_course])
