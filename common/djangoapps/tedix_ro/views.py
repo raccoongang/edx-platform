@@ -65,8 +65,9 @@ from .serializers import (
 from .sms_client import SMSClient
 from .signals import VIDEO_LESSON_COMPLETED
 from .utils import (
-    get_payment_link, 
+    get_payment_link,
     report_data_preparation,
+    lesson_course_grade,
 )
 
 
@@ -225,6 +226,7 @@ def my_reports(request):
                 course_due_date_data = user_due_date_data(user, course_due_date.due_date)
 
             data.append({
+                'complete': lesson_course_grade(user, course_key).passed,
                 'course_name': course_name,
                 'report_link': course_report_link,
                 'due_date': course_due_date_data,
