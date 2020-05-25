@@ -7,7 +7,7 @@ from django.utils.translation import ugettext as _
 
 <%
 username = user.profile.name or user.username
-roll = _('Superuser') if user.is_superuser else _('Teacher')
+role = _('Superuser') if user.is_superuser else _('Teacher')
 %>
 
 <%block name="bodyclass">view-in-course view-progress</%block>
@@ -27,7 +27,7 @@ roll = _('Superuser') if user.is_superuser else _('Teacher')
             %if report_data:
                 %if user.is_superuser or user.is_staff and hasattr(user, 'instructorprofile'):
                     <h2 class="hd hd-2 progress-certificates-title">
-                        ${_("Students Progress for {roll} '{username}'").format(roll=roll, username=username)}
+                        ${_("Students Progress for {role} '{username}'").format(role=role, username=username)}
                     </h2>
                     <section class="chapters">
                         <h1>${_("Activity report for lesson:")} <span style="font-size: 30px; color: #24ad97;">${ course_name }<span></h1>

@@ -5,7 +5,6 @@ from django.utils.translation import ugettext as _
 
 <%
 username = user.profile.name or user.username
-roll = _('Superuser') if user.is_superuser else _('Teacher')
 %>
 
 %if report_data:

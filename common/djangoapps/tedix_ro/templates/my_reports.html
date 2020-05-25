@@ -59,23 +59,33 @@ from django.utils.translation import ugettext as _
             $.ajax({
                 method: "GET",
                 url: $openReport.attr("href"),
-                data: {"classroom": $openReport.data('classroom'), "due_date": $openReport.data("due_date")},
+                data: {"classroom": $openReport.data("classroom"), "due_date": $openReport.data("due_date")},
                 success: function(data){
                     $(".report").html(data.html);
                     $modal.show();
+                    $(".teacher-extended-report").DataTable({
+                        "searching": false,
+                        "paging": false,
+                        "autoWidth": false,
+                        "order": [[0, "asc"]],
+                        "columnDefs": [
+                            { "targets": 0, "orderable": true},
+                            { "targets": "_all", "orderable": false }
+                        ]
+                    });
                 }
             });
-        })
+        });
 
         $(".close_popup").on("click", function() {
             $modal.hide();
-        })
+        });
     });
 </script>
 
 <%
 username = user.profile.name or user.username
-roll = _('Superuser') if user.is_superuser else _('Student') if hasattr(user, 'studentprofile') else _('Teacher')
+role = _('Superuser') if user.is_superuser else _('Student') if hasattr(user, 'studentprofile') else _('Teacher')
 %>
 
 <main id="main" aria-label="Content" tabindex="-1">
@@ -93,7 +103,7 @@ roll = _('Superuser') if user.is_superuser else _('Student') if hasattr(user, 's
                 <p class="table-alert">No reports are available.</p>
             %else:
                 <h2 class="hd hd-2 report-title">
-                    ${_("Students Progress for {roll} '{username}'").format(roll=roll, username=username)}
+                    ${_("Students Progress for {role} '{username}'").format(role=role, username=username)}
                 </h2>
 
                 <table class="table-my-reports">
