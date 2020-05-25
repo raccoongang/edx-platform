@@ -67,7 +67,6 @@ from .signals import VIDEO_LESSON_COMPLETED
 from .utils import (
     get_payment_link,
     report_data_preparation,
-    lesson_course_grade,
     get_all_questions_count,
     get_count_answers_first_attempt,
 )
@@ -186,13 +185,19 @@ def my_reports(request):
                 course_id=course_key,
                 due_date__lt=utc_now_date,
             ).values_list('due_date', flat=True).distinct().order_by('-due_date')[:200]
+
             course_due_dates = StudentCourseDueDate.objects.filter(
                 student__user__in=students_list,
                 student__classroom__name=students_class,
                 course_id=course_key,
                 due_date__gte=utc_now_date,
             ).values_list('due_date', flat=True).distinct().union(course_due_dates_past)
-            course_due_dates_data = {course_due_date.date(): user_due_date_data(user, course_due_date) for course_due_date in course_due_dates}
+
+            course_due_dates_data = {
+                course_due_date.date(): user_due_date_data(user, course_due_date)
+                for course_due_date in course_due_dates
+            }
+
             for course_due_date, course_due_date_data in course_due_dates_data.items():
                 students_in_class = StudentCourseDueDate.objects.filter(
                     due_date__contains=course_due_date,
@@ -247,7 +252,6 @@ def my_reports(request):
 
     context = {
         'data': data,
-        'user': user,
     }
 
     return render_to_response('my_reports.html', context)
@@ -280,9 +284,9 @@ def extended_report(request, course_key):
         if due_date:
             query_params['studentprofile__course_due_dates__due_date__contains'] = due_date
         for student in User.objects.filter(
-            courseenrollment__course_id=course.id,
-            **query_params
-        ).select_related('profile').distinct():
+                courseenrollment__course_id=course.id,
+                **query_params
+            ).select_related('profile').distinct():
             header, user_data = report_data_preparation(student, modulestore_course)
             report_data.append(user_data)
     elif user.is_staff and hasattr(user, 'instructorprofile'):
@@ -291,9 +295,9 @@ def extended_report(request, course_key):
         if due_date:
             query_params['course_due_dates__due_date__contains'] = due_date
         for student_profile in user.instructorprofile.students.filter(
-            user__courseenrollment__course_id=course.id,
-            **query_params
-        ).select_related('user__profile').distinct():
+                user__courseenrollment__course_id=course.id,
+                **query_params
+            ).select_related('user__profile').distinct():
             header, user_data = report_data_preparation(student_profile.user, modulestore_course)
             report_data.append(user_data)
     else:
