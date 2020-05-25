@@ -65,7 +65,6 @@ from courseware.access import has_access
 from courseware.courses import get_courses, sort_by_announcement, sort_by_start_date, get_course_with_access  # pylint: disable=import-error
 from dashboard.models import PlatformNewsSubscriptionEmail
 from django_comment_common.models import assign_role
-from edeos.utils import send_edeos_api_request, get_user_id
 from edxmako.shortcuts import render_to_response, render_to_string
 from eventtracking import tracker
 from lms.djangoapps.commerce.utils import EcommerceService  # pylint: disable=import-error
@@ -897,22 +896,6 @@ def dashboard(request):
         context.update({
             'use_ecommerce_payment_flow': True,
             'ecommerce_payment_page': ecommerce_service.payment_page_url(),
-        })
-
-    if getattr(request.user, "email", False):
-        edeos_post_data = {
-            "payload": {
-                "student_id": get_user_id(request.user),
-                'client_id': getattr(settings, 'EDEOS_API_KEY'),
-            },
-            "api_endpoint": "transactions",
-            "key": getattr(settings, 'EDEOS_API_KEY'),
-            "secret": getattr(settings, 'EDEOS_API_SECRET'),
-            "base_url": getattr(settings, 'EDEOS_API_URL')
-        }
-        response = send_edeos_api_request(**edeos_post_data)
-        context.update({
-            "edeos_data": response
         })
     response = render_to_response('dashboard.html', context)
     set_user_info_cookie(response, request)

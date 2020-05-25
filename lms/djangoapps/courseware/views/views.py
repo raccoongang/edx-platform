@@ -63,7 +63,6 @@ from courseware.models import BaseStudentModuleHistory, StudentModule
 from courseware.url_helpers import get_redirect_url
 from courseware.user_state_client import DjangoXBlockUserStateClient
 
-from edeos.utils import get_user_id
 from edxmako.shortcuts import marketing_link, render_to_response, render_to_string
 from enrollment.api import add_enrollment
 from eventtracking import tracker
@@ -362,27 +361,6 @@ def course_info(request, course_id):
         else:
             duration = None
         context['course_duration'] = duration
-
-        from django.contrib.sites.models import Site
-        from edeos.utils import send_edeos_api_request
-
-        if getattr(request.user, "email", False):
-            edeos_post_data = {
-                "payload": {
-                    "student_id": get_user_id(request.user),
-                    'client_id': getattr(settings, 'EDEOS_API_KEY'),
-                    "course_id": course.id.to_deprecated_string()
-                },
-                "api_endpoint": "transactions",
-                "key": getattr(settings, 'EDEOS_API_KEY'),
-                "secret": getattr(settings, 'EDEOS_API_SECRET'),
-                "base_url": getattr(settings, 'EDEOS_API_URL')
-            }
-            response = send_edeos_api_request(**edeos_post_data)
-            context.update({
-                "edeos_data": response
-            })
-
         # Get the URL of the user's last position in order to display the 'where you were last' message
         context['resume_course_url'] = None
         if SelfPacedConfiguration.current().enable_course_home_improvements:
