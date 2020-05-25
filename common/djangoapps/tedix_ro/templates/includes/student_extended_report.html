@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
             <p>${_("Student name")}: <span style="color: red;">${ user_data['full_name'] }</span><p>
             <p>${_("Activity report for lesson")}: <br><span style="font-size: 30px; color: #24ad97;">${ course_name }</span><p>
             <p>${_("Lesson completed")}: <span style="color: ${'green' if user_data['completion'] == 1 else 'red'};">${'Yes' if user_data['completion'] == 1 else 'No'}</span>
-            <br>${_("Score")}:<span style="color: green"> ${ user_data['percent'] }</span><p>
+            <br>${_("Number of question completed from first attempt")}:<span style="color: green"> ${ user_data['percent'] }</span><p>
         </h4>
         <h2 class="hd hd-2" style="padding-bottom: 20px">Questions answered report break-down:</h2>
 

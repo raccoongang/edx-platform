@@ -4,7 +4,7 @@ from django.utils.translation import ugettext as _
 %>
 
 <div class="extended-report" style="overflow-x: scroll;">
-    <table style="border-collapse: collapse; border: 1px solid;">
+    <table class="teacher-extended-report" style="border-collapse: collapse; border: 1px solid;">
         <tr>
             <th style="border: 1px solid; padding: 10px 8px;">${_("Student name")}</th>
             %for question_name, question_type in header:

@@ -682,10 +682,21 @@ display: block;
 .my-report-wrapper {
 	margin: 50px 0px;
 
+	h1, h2, h3, h4{
+		&.report-title{
+			font-weight: bold;
+			color: black;
+			margin-bottom: 12px;
+		}
+	}
+
 	label {
-		font: 16px/normal "Open Sans" !important;
 		display: block;
     	margin-bottom: 12px;
+	}
+
+	.table-alert{
+		text-align: center;
 	}
 
 	.table-my-reports {
