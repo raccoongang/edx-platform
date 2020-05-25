@@ -68,6 +68,8 @@ from .utils import (
     get_payment_link,
     report_data_preparation,
     lesson_course_grade,
+    get_all_questions_count,
+    get_count_answers_first_attempt,
 )
 
 
@@ -152,8 +154,10 @@ def my_reports(request):
         course_key = course_overview.id
         course_report_link = reverse('extended_report', kwargs={'course_key': unicode(course_key)} )
         course_due_date = None
-        students_classes = None
+        students_classes = []
         students_list = []
+        modulestore_course = modulestore().get_course(course_key)
+        all_questions_count = get_all_questions_count(modulestore_course)
 
         if user.is_superuser:
             students_list = CourseEnrollment.objects.filter(
@@ -175,64 +179,72 @@ def my_reports(request):
                 user__in=students_list
             ).values_list('classroom__name', flat=True).distinct()
 
-        if students_classes:
-            for students_class in students_classes:
-                course_due_dates_past = StudentCourseDueDate.objects.filter(
-                    student__user__in=students_list,
+        for students_class in students_classes:
+            course_due_dates_past = StudentCourseDueDate.objects.filter(
+                student__user__in=students_list,
+                student__classroom__name=students_class,
+                course_id=course_key,
+                due_date__lt=utc_now_date,
+            ).values_list('due_date', flat=True).distinct().order_by('-due_date')[:200]
+            course_due_dates = StudentCourseDueDate.objects.filter(
+                student__user__in=students_list,
+                student__classroom__name=students_class,
+                course_id=course_key,
+                due_date__gte=utc_now_date,
+            ).values_list('due_date', flat=True).distinct().union(course_due_dates_past)
+            course_due_dates_data = {course_due_date.date(): user_due_date_data(user, course_due_date) for course_due_date in course_due_dates}
+            for course_due_date, course_due_date_data in course_due_dates_data.items():
+                students_in_class = StudentCourseDueDate.objects.filter(
+                    due_date__contains=course_due_date,
                     student__classroom__name=students_class,
-                    course_id=course_key,
-                    due_date__lt=utc_now_date,
-                ).values_list('due_date', flat=True).distinct().order_by('-due_date')[:200]
-                course_due_dates = StudentCourseDueDate.objects.filter(
-                    student__user__in=students_list,
-                    student__classroom__name=students_class,
-                    course_id=course_key,
-                    due_date__gte=utc_now_date,
-                ).values_list('due_date', flat=True).distinct().union(course_due_dates_past)
-                for course_due_date in course_due_dates:
-                    students_in_class = StudentCourseDueDate.objects.filter(
-                        due_date=course_due_date,
-                        student__classroom__name=students_class,
-                    ).values_list('student__user_id', flat=True)
-                    average_score = StudentReportSending.objects.filter(
-                        course_id=course_key,
-                        user_id__in=set(students_in_class),
-                    ).aggregate(Avg('grade')).get('grade__avg')
+                ).values_list('student__user_id', flat=True)
 
-                    course_due_date_data = user_due_date_data(user, course_due_date)
+                students_in_class_count = students_in_class.count()
+                count_answers_first_attempt = 0
+                for student in students_in_class:
+                    count_answers_first_attempt += get_count_answers_first_attempt(student, course_key)[0]
 
-                    data.append({
-                        'course_name': course_name,
-                        'report_link': course_report_link,
-                        'due_date': course_due_date_data,
-                        'classroom': students_class,
-                        'average_score': '{}%'.format(average_score * 100) if average_score is not None else 'n/a',
-                    })
+                average_score = 'n/a'
+                if count_answers_first_attempt:
+                    average_score = '{}%'.format(
+                        (float(count_answers_first_attempt)/students_in_class_count) / all_questions_count * 100
+                    )
+
+                data.append({
+                    'course_name': course_name,
+                    'report_link': course_report_link,
+                    'due_date': course_due_date_data,
+                    'classroom': students_class,
+                    'average_score': average_score,
+                })
 
         if hasattr(user, 'studentprofile'): 
-            student_report = StudentReportSending.objects.filter(
-                course_id=course_key,
-                user=user
-            ).first()
-            if not student_report:
-                continue
             student_class = user.studentprofile.classroom
             course_due_date = StudentCourseDueDate.objects.filter(
                 student=user.studentprofile, 
                 course_id=course_key,
             ).first()
 
+            count_answers_first_attempt, answered_questions_count = get_count_answers_first_attempt(user, course_key)
+            average_score = 'n/a'
+            if count_answers_first_attempt:
+                average_score = '{}%'.format(
+                    count_answers_first_attempt * 100 / all_questions_count
+                )
+
+
             if course_due_date:
                 course_due_date_data = user_due_date_data(user, course_due_date.due_date)
 
-            data.append({
-                'complete': lesson_course_grade(user, course_key).passed,
-                'course_name': course_name,
-                'report_link': course_report_link,
-                'due_date': course_due_date_data,
-                'classroom': student_class,
-                'average_score': '{}%'.format(student_report.grade * 100) if student_report else 'n/a',
-            })
+                data.append({
+                    'complete': bool(answered_questions_count == all_questions_count),
+                    'course_name': course_name,
+                    'report_link': course_report_link,
+                    'due_date': course_due_date_data,
+                    'classroom': student_class,
+                    'average_score': average_score,
+                })
+
     context = {
         'data': data,
         'user': user,
@@ -246,8 +258,8 @@ def extended_report(request, course_key):
     """
     Provides an extended report, depending on the role
     """
-    classroom = request.GET.get("classroom")
-    due_date_str = request.GET.get("due_date")
+    classroom = request.GET.get('classroom')
+    due_date_str = request.GET.get('due_date')
     due_date = None
     if due_date_str:
         due_date = datetime.datetime.strptime(due_date_str, '%Y-%m-%d').date()
@@ -270,7 +282,7 @@ def extended_report(request, course_key):
         for student in User.objects.filter(
             courseenrollment__course_id=course.id,
             **query_params
-        ).select_related('profile'):
+        ).select_related('profile').distinct():
             header, user_data = report_data_preparation(student, modulestore_course)
             report_data.append(user_data)
     elif user.is_staff and hasattr(user, 'instructorprofile'):
@@ -281,7 +293,7 @@ def extended_report(request, course_key):
         for student_profile in user.instructorprofile.students.filter(
             user__courseenrollment__course_id=course.id,
             **query_params
-        ).select_related('user__profile'):
+        ).select_related('user__profile').distinct():
             header, user_data = report_data_preparation(student_profile.user, modulestore_course)
             report_data.append(user_data)
     else:
@@ -301,20 +313,20 @@ def extended_report(request, course_key):
         today = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC).date()
 
         if today == due_date:
-            date_group = "Today"
+            date_group = 'Today'
         elif (today - due_date).days == -1:
-            date_group = "Tomorrow"
+            date_group = 'Tomorrow'
         elif (today - due_date).days < -1:
-            date_group = "Future"
+            date_group = 'Future'
         elif (today - due_date).days > 0:
-            date_group = "Past"
+            date_group = 'Past'
 
         context.update({
-            "classroom": classroom,
-            "due_date": "{}: {}".format(date_group, due_date.strftime("%d %B")),
+            'classroom': classroom,
+            'due_date': '{}, {}'.format(date_group, due_date.strftime('%d %B %Y')),
         })
         html = mako_render_to_string('extended_report_popup.html', context)
-        return Response({"html": html})
+        return Response({'html': html})
     else:
         return render_to_response('extended_report.html', context)
 

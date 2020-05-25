@@ -31,10 +31,10 @@ def report_data_preparation(user, course):
     Return "report_data" - data for extended report
     """
     Question = apps.get_model('tedix_ro', 'Question')
-    StudentReportSending = apps.get_model('tedix_ro', 'StudentReportSending')
     questions_data = []
     header = []
     video_questions = Question.objects.filter(video_lesson__course=course.id)
+    count_answer_first_attempt = 0
 
     for section in course.get_children():
         for subsection in section.get_children():
@@ -47,6 +47,8 @@ def report_data_preparation(user, course):
                             correct_map = json.loads(student_module.state).get('correct_map', {})
                             correctness = correct_map.values()[0].get('correctness') if correct_map else False
                             done = True if correctness == 'correct' else False
+                            if attempts == 1 and done:
+                                count_answer_first_attempt += 1
                         else:
                             attempts = 0
                             done = False
@@ -61,20 +63,64 @@ def report_data_preparation(user, course):
             questions = questions.exclude(video_lesson__video_id=video_question.video_lesson.video_id)
             questions_data.append((video_question.question_id, video_question.attempt_count, True))
             header.append((video_question.question_id, 'video_lesson'))
+            if video_question.attempt_count == 1:
+                count_answer_first_attempt += 1
 
     for question in questions:
         questions_data.append((question.get('question_id'), 0, False))
         header.append((question.get('question_id'), 'video_lesson'))
 
-    student_report = StudentReportSending.objects.filter(course_id=course.id, user_id=user.id).first()
-
     report_data = {
         'full_name': user.profile.name or user.username,
         'completion': not bool([item for item in questions_data if item[1] == 0]) and lesson_course_grade(user, course.id).passed,
         'questions': questions_data,
-        'percent': "{}%".format(student_report.grade * 100) if student_report else "n/a"
+        'count_answer_first_attempt': count_answer_first_attempt,
+        'percent': (count_answer_first_attempt * 100 / len(questions_data)) if questions_data else 100,
     }
     return header, report_data
+
+
+def get_all_questions_count(course):
+    """
+    Returns the number of problem and questions from the video lessons by the course in modulestore
+    """
+    Question = apps.get_model('tedix_ro', 'Question')
+    questions_count = 0
+
+    for section in course.get_children():
+        for subsection in section.get_children():
+            for unit in subsection.get_children():
+                for problem in unit.get_children():
+                    if problem.location.block_type == 'problem':
+                        questions_count += 1
+
+    questions_count += Question.objects.filter(video_lesson__course=course.id).values('question_id').distinct().count()
+
+    return questions_count
+
+
+def get_count_answers_first_attempt(user, course_key):
+    """
+    Returns the number of answered questions on the first attempt and the number
+    of answered questions for the student on the course
+    """
+    Question = apps.get_model('tedix_ro', 'Question')
+    questions = Question.objects.filter(video_lesson__course=course_key, video_lesson__user=user)
+    questions_count = questions.exclude(attempt_count=0).count()
+    count_answers_first_attempt = questions.filter(attempt_count=1).count()
+    student_modules = StudentModule.objects.filter(student=user, course_id=course_key, module_type='problem')
+
+    for student_module in student_modules:
+        attempts = json.loads(student_module.state).get('attempts', 0)
+        correct_map = json.loads(student_module.state).get('correct_map', {})
+        correctness = correct_map.values()[0].get('correctness') if correct_map else False
+        done = True if correctness == 'correct' else False
+        if attempts == 1 and done:
+            count_answers_first_attempt += 1
+        if done:
+            questions_count += 1
+
+    return count_answers_first_attempt, questions_count
 
 
 def light_report_data_preparation(user, course):
