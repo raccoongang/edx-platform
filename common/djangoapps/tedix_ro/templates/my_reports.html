@@ -1,0 +1,141 @@
+<%inherit file="/main.html" />
+<%namespace name="static" file="/static_content.html"/>
+<%!
+from django.utils.translation import ugettext as _
+%>
+
+<%block name="headextra">
+<%static:css group='style-course-vendor'/>
+<%static:css group='style-course'/>
+</%block>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+<script>
+    $(document).ready( function () {
+        var table = $(".table-my-reports").DataTable({
+            "searching": false,
+            "order": [[0, "asc"], [1, "asc"], [2, "asc"]],
+            "columnDefs": [
+                { "targets": 0, "orderable": true, "visible": false},
+                { "orderData": [ 0, 1 ], "targets": 1, "orderable": true},
+                { "targets": 2, "orderable": true },
+                { "targets": "_all", "orderable": false }
+            ]
+        });
+
+        var $tableClass = $("th.table-class");
+        var $tableDate = $("th.table-date");
+
+        $tableDate.on("click", function(event){
+            var $column = $(event.currentTarget);
+            if ($column.hasClass("sorting_asc")){
+                $column.addClass("asc");
+                $tableClass.addClass("asc");
+            } else {
+                $column.removeClass("asc");
+                $tableClass.removeClass("asc");
+            };
+        });
+
+        $tableClass.on("click", function(event){
+            var $column = $(event.currentTarget);
+            var columnOrder = $column.hasClass("asc") ? "desc" : "asc";
+            if ($tableDate.hasClass("asc")){
+                table.order([0, "asc"], [1, "asc"], [2, columnOrder]).draw();
+            } else {
+                table.order([0, "desc"], [1, "desc"], [2, columnOrder]).draw();
+            }
+            $column.toggleClass("asc");
+        });
+
+
+        var $modal = $(".my_report_popup");
+        var $closePopup = $(".close_popup");
+
+        $(".open_report").on("click", function(event){
+            event.preventDefault();
+            var $openReport = $(event.currentTarget);
+            $.ajax({
+                method: "GET",
+                url: $openReport.attr("href"),
+                data: {"classroom": $openReport.data("classroom"), "due_date": $openReport.data("due_date")},
+                success: function(data){
+                    $(".report").html(data.html);
+                    $modal.show();
+                    $(".teacher-extended-report").DataTable({
+                        "searching": false,
+                        "paging": false,
+                        "autoWidth": false,
+                        "order": [[0, "asc"]],
+                        "columnDefs": [
+                            { "targets": 0, "orderable": true},
+                            { "targets": "_all", "orderable": false }
+                        ]
+                    });
+                }
+            });
+        });
+
+        $(".close_popup").on("click", function() {
+            $modal.hide();
+        });
+    });
+</script>
+
+<%
+username = user.profile.name or user.username
+role = _('Superuser') if user.is_superuser else _('Student') if hasattr(user, 'studentprofile') else _('Teacher')
+%>
+
+<main id="main" aria-label="Content" tabindex="-1">
+    <div class="my-report-wrapper">
+        <div class="my_report_popup">
+            <div class="modal-content">
+                <div class="report"></div>
+                <div class="close-holder">
+                    <button class="close_popup">Close</button>
+                </div>
+            </div>
+        </div>
+        <section>
+            %if not data:
+                <p class="table-alert">No reports are available.</p>
+            %else:
+                <h2 class="hd hd-2 report-title">
+                    ${_("Students Progress for {role} '{username}'").format(role=role, username=username)}
+                </h2>
+
+                <table class="table-my-reports">
+                    <thead>
+                        <tr>
+                            <th class="table-date-group asc">${_("Date Group")}</th>
+                            <th class="table-date asc">${_("Due Date")}</th>
+                            <th class="table-class">${_("Class")}</th>
+                            <th class="table-course_name">${_("Course Name")}</th>
+                            <th class="table-date">${_("Score") if hasattr(user, 'studentprofile') else _("Average score")}</th>
+                            <th class="table-view">${_("View")}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        %for datum in data:
+                            <tr>
+                                <td class="table-date-group">${datum['due_date']['due_date_order']}</td>
+                                <td class="table-date ${datum['due_date']['date_group']} ${'complete' if datum.get('complete') else ''}" data-sort="${datum['due_date']['date_data']}">${datum['due_date']['displayed_date']}</td>
+                                <td class="table-class">${datum['classroom']}</td>
+                                <td class="table-course_name">${datum['course_name']}</td>
+                                <td class="table-average_score">${datum['average_score']}</td>
+                                <td class="table-view">
+                                    <a class="open_report"
+                                        data-due_date="${datum['due_date']['date_data']}"
+                                        data-classroom="${datum['classroom']}"
+                                        href="${datum['report_link']}">Open report</a>
+                                </td>
+                            </tr>
+                        %endfor
+                    </tbody>
+                </table>
+            %endif
+        </section>
+    </div>
+</main>

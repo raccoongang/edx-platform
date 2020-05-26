@@ -12,6 +12,7 @@ from .views import (
     personal_due_dates,
     extended_report,
     email_verification,
+    my_reports,
 )
 
 router = DefaultRouter()
@@ -20,6 +21,7 @@ router.register(r'cities', CityViewSet)
 router.register(r'schools', SchoolViewSet)
 
 urlpatterns = [
+    url(r'^my_reports/$', my_reports, name='my_reports'),
     url(r'^extended_report/(?P<course_key>[^/]*)/$', extended_report, name='extended_report'),
     url(r'^manage_courses$', manage_courses, name='manage_courses'),
     url(r'^personal_due_dates$', personal_due_dates, name='personal_due_dates'),

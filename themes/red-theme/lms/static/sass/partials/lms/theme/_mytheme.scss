@@ -733,3 +733,116 @@ line-height: 1;
 .verification_page_text{
 	text-align: center;
 }
+
+.my-report-wrapper {
+    margin: 50px 0px;
+
+    h1, h2, h3, h4{
+        &.report-title{
+            font-weight: bold;
+            color: black;
+            margin-bottom: 12px;
+        }
+    }
+
+    label {
+        display: block;
+        margin-bottom: 12px;
+    }
+
+    .table-alert{
+        text-align: center;
+    }
+
+    .table-my-reports {
+        border: 1px solid black;
+        width: 100%;
+        margin: 20px 0px !important;
+        border-collapse: collapse !important;
+
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+
+        .today {
+            background-color: $red !important;
+            color: white !important;
+            &.complete{
+                background-color: $green !important;
+            }
+        }
+
+        .tomorrow {
+            background-color: #ffce00 !important;
+        }
+
+        .table-view {
+            text-align: center;
+        }
+    }
+}
+
+.table-my-reports-alert {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.my_report_popup {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+
+    .extended-report{
+        max-height: 500px;
+        overflow: auto;
+    }
+
+    h3 {
+        margin-bottom: 12px;
+    }
+
+    .close-holder {
+        text-align: right;
+    }
+
+    .close_popup {
+        font-size: 16px;
+        line-height: 16px;
+        color: #fff;
+        padding: 10px 45px;
+        background: #00bbb4;
+        text-shadow: none;
+        box-shadow: none !important;
+        border: 1px solid #00bbb4;
+        letter-spacing: 0;
+        width: auto;
+        margin-top: 12px;
+
+        &:hover,
+        &:focus {
+            background-image: none !important;
+            background-color: #fff !important;
+            color: #00bbb4 !important;
+        }
+    }
+
+    .teacher-extended-report{
+        width: auto;
+    }
+}

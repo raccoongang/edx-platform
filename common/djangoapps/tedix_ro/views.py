@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db import transaction
+from django.db.models import Avg
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.template.context_processors import csrf
@@ -17,9 +18,10 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 
 from courseware.courses import get_course_with_access
-from edxmako.shortcuts import render_to_response
+from edxmako.shortcuts import render_to_response, render_to_string as mako_render_to_string
 from rest_framework import permissions, status, viewsets
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from opaque_keys.edx.keys import CourseKey
 
@@ -43,7 +45,16 @@ from .forms import (
     StudentImportRegisterForm,
     StudentProfileImportForm,
 )
-from .models import City, ParentProfile, School, StudentCourseDueDate, StudentProfile, VideoLesson, Classroom
+from .models import (
+    City,
+    ParentProfile,
+    School,
+    StudentCourseDueDate,
+    StudentProfile,
+    VideoLesson,
+    Classroom,
+    StudentReportSending,
+    )
 from .serializers import (
     CitySerializer,
     SchoolSerilizer,
@@ -53,13 +64,210 @@ from .serializers import (
 )
 from .sms_client import SMSClient
 from .signals import VIDEO_LESSON_COMPLETED
-from .utils import get_payment_link, report_data_preparation
+from .utils import (
+    get_payment_link,
+    report_data_preparation,
+    get_all_questions_count,
+    get_count_answers_first_attempt,
+)
 
 
+def my_reports(request):
+    """
+    Provides a list of available homework assignments, for the student/parent/teacher/superuser.
+    """
+    def user_due_date_data(user, due_date_datetime):
+        """
+        Function returns updated course due date data depends on user timezone if he has it.
+        Arguments:
+            user: instance of model User.
+            due_date: datetime field when Course Enrollment model was created.
+        Returns: 
+            dict: {
+                "date_group": today/tomorrow/future/past,
+                "date_data": 2020-06-01,
+                "displayed_date" Today/Tomorrow/Future: 1 Jun/ Past: 1 Jun,
+            }
+        """
+        due_date_data = {}
+        date_group = ''
+        utc_now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
+
+        user_time_zone = user.preferences.filter(key='time_zone').first()
+        if user_time_zone:
+            user_tz = pytz.timezone(user_time_zone.value)
+            date = pytz.UTC.localize(due_date_datetime.replace(tzinfo=None), is_dst=None).astimezone(user_tz)
+        else:
+            date = due_date_datetime.astimezone(pytz.UTC)
+
+        due_date = due_date_datetime.date()
+        today = utc_now.date()
+        if today == due_date:
+            date_group = 'Today'
+            due_date_data.update({
+                'displayed_date': date_group,
+                'due_date_order': 1
+            })
+        elif (today - due_date).days == -1:
+            date_group = 'Tomorrow'
+            due_date_data.update({
+                'displayed_date': date_group,
+                'due_date_order': 2
+            })
+        elif (today - due_date).days < -1:
+            date_group = 'Future'
+            due_date_data.update({
+                'displayed_date': '{}: {}'.format(date_group, date.strftime('%d %B')),
+                'due_date_order': 3
+            })
+        elif (today - due_date).days > 0:
+            date_group = 'Past'
+            due_date_data.update({
+                'displayed_date': '{}: {}'.format(date_group, date.strftime('%d %B')),
+                'due_date_order': 4
+            })
+
+        due_date_data.update({
+            'date_group': date_group.lower(),
+            'date_data': date.strftime('%Y-%m-%d')
+        })
+        return due_date_data
+
+    user = request.user
+
+    if not user.is_authenticated():
+        return redirect(get_next_url_for_login_page(request))
+
+    if user.is_staff:
+        courses = CourseOverview.objects.all()
+    else:
+        course_enrollments = CourseEnrollment.enrollments_for_user(user=user)
+        course_overview_id_list = [_.course_id for _ in course_enrollments]
+        courses = CourseOverview.objects.filter(id__in=course_overview_id_list)
+
+    data = []
+    utc_now_date = datetime.datetime.utcnow().date()
+
+    for course_overview in courses:
+        course_name = course_overview.display_name
+        course_key = course_overview.id
+        course_report_link = reverse('extended_report', kwargs={'course_key': unicode(course_key)} )
+        course_due_date = None
+        students_classes = []
+        students_list = []
+        modulestore_course = modulestore().get_course(course_key)
+        all_questions_count = get_all_questions_count(modulestore_course)
+
+        if user.is_superuser:
+            students_list = CourseEnrollment.objects.filter(
+                course=course_overview, 
+                user__studentprofile__isnull=False
+            ).values_list('user_id', flat=True)
+            students_classes = StudentProfile.objects.filter(
+                user__in=students_list
+            ).values_list('classroom__name', flat=True).distinct()
+
+        elif hasattr(user, 'instructorprofile'):
+            teacher_students = user.instructorprofile.students.all().values_list('user_id', flat=True)
+            students_list = CourseEnrollment.objects.filter(
+                course=course_overview, 
+                user__in=teacher_students
+            ).values_list('user_id', flat=True)
+
+            students_classes = user.instructorprofile.students.filter(
+                user__in=students_list
+            ).values_list('classroom__name', flat=True).distinct()
+
+        for students_class in students_classes:
+            course_due_dates_past = StudentCourseDueDate.objects.filter(
+                student__user__in=students_list,
+                student__classroom__name=students_class,
+                course_id=course_key,
+                due_date__lt=utc_now_date,
+            ).values_list('due_date', flat=True).distinct().order_by('-due_date')[:200]
+
+            course_due_dates = StudentCourseDueDate.objects.filter(
+                student__user__in=students_list,
+                student__classroom__name=students_class,
+                course_id=course_key,
+                due_date__gte=utc_now_date,
+            ).values_list('due_date', flat=True).distinct().union(course_due_dates_past)
+
+            course_due_dates_data = {
+                course_due_date.date(): user_due_date_data(user, course_due_date)
+                for course_due_date in course_due_dates
+            }
+
+            for course_due_date, course_due_date_data in course_due_dates_data.items():
+                students_in_class = StudentCourseDueDate.objects.filter(
+                    due_date__contains=course_due_date,
+                    student__classroom__name=students_class,
+                ).values_list('student__user_id', flat=True)
+
+                students_in_class_count = students_in_class.count()
+                count_answers_first_attempt = 0
+                for student in students_in_class:
+                    count_answers_first_attempt += get_count_answers_first_attempt(student, course_key)[0]
+
+                average_score = 'n/a'
+                if count_answers_first_attempt:
+                    average_score = '{}%'.format(
+                        (float(count_answers_first_attempt)/students_in_class_count) / all_questions_count * 100
+                    )
+
+                data.append({
+                    'course_name': course_name,
+                    'report_link': course_report_link,
+                    'due_date': course_due_date_data,
+                    'classroom': students_class,
+                    'average_score': average_score,
+                })
+
+        if hasattr(user, 'studentprofile'): 
+            student_class = user.studentprofile.classroom
+            course_due_date = StudentCourseDueDate.objects.filter(
+                student=user.studentprofile, 
+                course_id=course_key,
+            ).first()
+
+            count_answers_first_attempt, answered_questions_count = get_count_answers_first_attempt(user, course_key)
+            average_score = 'n/a'
+            if count_answers_first_attempt:
+                average_score = '{}%'.format(
+                    count_answers_first_attempt * 100 / all_questions_count
+                )
+
+
+            if course_due_date:
+                course_due_date_data = user_due_date_data(user, course_due_date.due_date)
+
+                data.append({
+                    'complete': bool(answered_questions_count == all_questions_count),
+                    'course_name': course_name,
+                    'report_link': course_report_link,
+                    'due_date': course_due_date_data,
+                    'classroom': student_class,
+                    'average_score': average_score,
+                })
+
+    context = {
+        'data': data,
+    }
+
+    return render_to_response('my_reports.html', context)
+
+
+@api_view(['GET'])
 def extended_report(request, course_key):
     """
     Provides an extended report, depending on the role
     """
+    classroom = request.GET.get('classroom')
+    due_date_str = request.GET.get('due_date')
+    due_date = None
+    if due_date_str:
+        due_date = datetime.datetime.strptime(due_date_str, '%Y-%m-%d').date()
+
     user = request.user
     if not user.is_authenticated():
         return redirect(get_next_url_for_login_page(request))
@@ -68,15 +276,28 @@ def extended_report(request, course_key):
     course = get_course_with_access(user, 'load', course_key, check_if_enrolled=True)
     header = []
     report_data = []
+    query_params = {}
     modulestore_course = modulestore().get_course(course_key)
     if user.is_superuser:
-        for student in User.objects.filter(courseenrollment__course_id=course.id, is_staff=False).select_related('profile'):
+        if classroom:
+            query_params['studentprofile__classroom__name'] = classroom
+        if due_date:
+            query_params['studentprofile__course_due_dates__due_date__contains'] = due_date
+        for student in User.objects.filter(
+                courseenrollment__course_id=course.id,
+                **query_params
+            ).select_related('profile').distinct():
             header, user_data = report_data_preparation(student, modulestore_course)
             report_data.append(user_data)
     elif user.is_staff and hasattr(user, 'instructorprofile'):
+        if classroom:
+            query_params['classroom__name'] = classroom
+        if due_date:
+            query_params['course_due_dates__due_date__contains'] = due_date
         for student_profile in user.instructorprofile.students.filter(
-            user__courseenrollment__course_id=course.id
-        ).select_related('user__profile'):
+                user__courseenrollment__course_id=course.id,
+                **query_params
+            ).select_related('user__profile').distinct():
             header, user_data = report_data_preparation(student_profile.user, modulestore_course)
             report_data.append(user_data)
     else:
@@ -92,8 +313,26 @@ def extended_report(request, course_key):
         'report_data': report_data,
         'user': user,
     }
-    return render_to_response('extended_report.html', context)
+    if request.is_ajax():
+        today = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC).date()
 
+        if today == due_date:
+            date_group = 'Today'
+        elif (today - due_date).days == -1:
+            date_group = 'Tomorrow'
+        elif (today - due_date).days < -1:
+            date_group = 'Future'
+        elif (today - due_date).days > 0:
+            date_group = 'Past'
+
+        context.update({
+            'classroom': classroom,
+            'due_date': '{}, {}'.format(date_group, due_date.strftime('%d %B %Y')),
+        })
+        html = mako_render_to_string('extended_report_popup.html', context)
+        return Response({'html': html})
+    else:
+        return render_to_response('extended_report.html', context)
 
 
 def manage_courses(request):
