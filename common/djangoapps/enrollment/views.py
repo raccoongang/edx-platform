@@ -6,6 +6,7 @@ consist primarily of authentication, request validation, and serialization.
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 from django.utils.decorators import method_decorator
 from edx_rest_framework_extensions.authentication import JwtAuthentication
 from opaque_keys import InvalidKeyError
@@ -15,12 +16,15 @@ from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
 from rest_framework.views import APIView
 
+from courseware.courses import get_course_by_id
 from course_modes.models import CourseMode
 from enrollment import api
 from enrollment.errors import CourseEnrollmentError, CourseEnrollmentExistsError, CourseModeNotFoundError
+from lms.djangoapps.instructor.enrollment import send_mail_to_student, get_email_params
 from openedx.core.djangoapps.cors_csrf.authentication import SessionAuthenticationCrossDomainCsrf
 from openedx.core.djangoapps.cors_csrf.decorators import ensure_csrf_cookie_cross_domain
 from openedx.core.djangoapps.embargo import api as embargo_api
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.user_api.preferences.api import update_email_opt_in
 from openedx.core.lib.api.authentication import (
     OAuth2AuthenticationAllowInactiveUser,
@@ -565,7 +569,7 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
             return Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data={
-                    'message': u'The user {} does not exist.'.format(email if email else username)
+                    'message': u'The user {} does not exist.'.format(email or username)
                 }
             )
 
@@ -653,6 +657,23 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
                     is_active=is_active,
                     enrollment_attributes=enrollment_attributes
                 )
+                try:
+                    course = get_course_by_id(course_id)
+                    email_params = get_email_params(course, True)
+                    email_params.update({
+                        'email_address': email,
+                        'platform_name': configuration_helpers.get_value('platform_name', settings.PLATFORM_NAME),
+                        'message': 'enrolled_enroll',
+                        'full_name': user.profile.name,
+                    })
+                    send_mail_to_student(email, email_params)
+                except Exception as e:
+                    log.exception(
+                        "Exception '{exception}' raised while sending email to {user_email}.".format(
+                            exception=type(e).__name__,
+                            user_email=email
+                        )
+                    )
 
             email_opt_in = request.data.get('email_opt_in', None)
             if email_opt_in is not None:
