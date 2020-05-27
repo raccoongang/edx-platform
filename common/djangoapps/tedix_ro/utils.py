@@ -75,7 +75,7 @@ def report_data_preparation(user, course):
         'completion': not bool([item for item in questions_data if item[1] == 0]) and lesson_course_grade(user, course.id).passed,
         'questions': questions_data,
         'count_answer_first_attempt': count_answer_first_attempt,
-        'percent': (count_answer_first_attempt * 100 / len(questions_data)) if questions_data else 100,
+        'percent': '{:.1f}%'.format(float(count_answer_first_attempt) / len(questions_data) * 100) if questions_data else 100,
     }
     return header, report_data
 
