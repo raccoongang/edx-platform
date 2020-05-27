@@ -775,6 +775,10 @@ line-height: 1;
 
         .tomorrow {
             background-color: #ffce00 !important;
+            &.complete{
+                color: white !important;
+                background-color: $green !important;
+            }
         }
 
         .table-view {
