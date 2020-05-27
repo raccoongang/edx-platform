@@ -19,6 +19,7 @@ from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 
 from openedx.core.djangoapps.waffle_utils import WaffleSwitch
+from openedx.core.djangoapps.user_api import accounts as accounts_settings
 from openedx.core.lib.courses import clean_course_id
 from student import STUDENT_WAFFLE_NAMESPACE
 from student.forms import validate_username
@@ -288,6 +289,9 @@ class UserResource(resources.ModelResource):
         password = row['password']
 
         try:
+            if len(username) not in range(accounts_settings.USERNAME_MIN_LENGTH,
+                accounts_settings.USERNAME_MAX_LENGTH +  1):
+                 raise ValidationError(accounts_settings.USERNAME_BAD_LENGTH_MSG)
             validate_username(username)
         except ValidationError as username_error:
             errors['username'] = username_error
