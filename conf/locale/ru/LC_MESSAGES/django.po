@@ -14935,6 +14935,10 @@ msgid "Print or share your certificate:"
 msgstr "Напечатайте сертификат или поделитесь им:"
 
 #: lms/templates/certificates/_accomplishment-banner.html
+msgid "Congratulations! This page contains student achievements of the Major Affiliate Marketing Academy."
+msgstr "Поздравляем! Эта страница содержит достижения слушателя Мajor Affiliate Marketing Academy."
+
+#: lms/templates/certificates/_accomplishment-banner.html
 msgid "Click the link to see my certificate."
 msgstr "Чтобы просмотреть сертификат, нажмите на ссылку."
 
@@ -14966,6 +14970,34 @@ msgstr "Распечатать сертификат"
 #: lms/templates/certificates/_accomplishment-header.html
 msgid "{platform_name} Home"
 msgstr "Главная страница {platform_name}"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "successfully completed and received a passing grade in:"
+msgstr "прошел(ла) и успешно сдал(а) тесты и задания по курсу"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid ""
+"a course offered by Major Affiliate Marketing Academy (MAMA) aimed at gaining basic "
+"knowledge for the account manager career in the field of affiliate marketing."
+msgstr ""
+"в онлайн-академии Major Affiliate Marketing Academy, направленный на обретение базовых "
+"знаний профессии аккаунт менеджера в сфере аффилейт маркетинга"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "This is to certify that"
+msgstr "Данный сертификат подтверждает, что"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "COURSE GRADE PERFORMANCE:"
+msgstr "ИТОГОВЫЙ РЕЗУЛЬТАТ:"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "with {points_earned} points (max {points_total} points)"
+msgstr "{points_earned} баллов (max {points_total} баллов)"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "\"{accomplishment_copy_course_name}\""
+msgstr "&laquo;{accomplishment_copy_course_name}&raquo;"
 
 #: lms/templates/certificates/_accomplishment-rendering.html
 msgid "Noted by"
