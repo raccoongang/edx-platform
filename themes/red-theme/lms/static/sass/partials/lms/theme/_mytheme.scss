@@ -756,7 +756,7 @@ line-height: 1;
 
     .table-my-reports {
         border: 1px solid black;
-        width: 100%;
+        width: 100% !important;
         margin: 20px 0px !important;
         border-collapse: collapse !important;
 
@@ -784,6 +784,41 @@ line-height: 1;
         .table-view {
             text-align: center;
         }
+
+		th {
+			&.isDueDate {
+				width: 15% !important;
+				padding-right: 32px !important;
+			}
+
+			&.isClass {
+				width: 10% !important;
+				padding-right: 32px !important;
+			}
+
+			&.isCourseName {
+				width: 65% !important;
+			}
+
+			&.isScore {
+				width: 10% !important;
+			}
+
+			&.isView {
+				width: 10% !important;
+			}
+
+			@media screen and (max-width: 1199px) {
+				&.isDueDate,
+				&.isClass,
+				&.isCourseName,
+				&.isCourseName,
+				&.isScore,
+				&.isView {
+					width: auto !important;
+				}
+			}
+		}
     }
 }
 
@@ -812,7 +847,7 @@ line-height: 1;
     border: 1px solid #888;
     width: 80%;
 
-    .extended-report{
+    .extended-report {
         max-height: 500px;
         overflow: auto;
     }
@@ -846,7 +881,12 @@ line-height: 1;
         }
     }
 
-    .teacher-extended-report{
+    .teacher-extended-report {
         width: auto;
+		margin: initial;
     }
+
+	.dataTables_info {
+		padding: 10px 0 20px;
+	}
 }

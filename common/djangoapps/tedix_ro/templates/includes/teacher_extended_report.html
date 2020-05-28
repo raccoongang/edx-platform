@@ -7,7 +7,7 @@ from django.utils.translation import ugettext as _
     <table class="teacher-extended-report" style="border-collapse: collapse; border: 1px solid;">
         <thead>
             <tr>
-                <th style="border: 1px solid; padding: 10px 8px;">${_("Student name")}</th>
+                <th style="border: 1px solid; padding: 10px 32px 10px 8px;">${_("Student name")}</th>
                 %for question_name, question_type in header:
                     <th style="border: 1px solid; padding: 10px 8px; border-color: black; ${'color: white; background: #0075b4;' if question_type == 'video_lesson' else 'background: #ffce00;' if question_type == 'problem' else '' }">
                         <p>${_("Question")} ${loop.index + 1}:

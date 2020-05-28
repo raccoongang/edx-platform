@@ -110,11 +110,11 @@ role = _('Superuser') if user.is_superuser else _('Student') if hasattr(user, 's
                     <thead>
                         <tr>
                             <th class="table-date-group asc">${_("Date Group")}</th>
-                            <th class="table-date asc">${_("Due Date")}</th>
-                            <th class="table-class">${_("Class")}</th>
-                            <th class="table-course_name">${_("Course Name")}</th>
-                            <th class="table-date">${_("Score") if hasattr(user, 'studentprofile') else _("Average score")}</th>
-                            <th class="table-view">${_("Display")}</th>
+                            <th class="table-date isDueDate asc">${_("Due Date")}</th>
+                            <th class="table-class isClass">${_("Class")}</th>
+                            <th class="table-course_name isCourseName">${_("Course Name")}</th>
+                            <th class="table-score isScore">${_("Score") if hasattr(user, 'studentprofile') else _("Average score")}</th>
+                            <th class="table-view isView">${_("Display")}</th>
                         </tr>
                     </thead>
                     <tbody>
