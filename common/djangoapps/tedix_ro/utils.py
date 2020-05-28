@@ -70,12 +70,13 @@ def report_data_preparation(user, course):
         questions_data.append((question.get('question_id'), 0, False))
         header.append((question.get('question_id'), 'video_lesson'))
 
+    percent = float(count_answer_first_attempt) / len(questions_data) * 100 if questions_data else 100
     report_data = {
         'full_name': user.profile.name or user.username,
         'completion': not bool([item for item in questions_data if item[1] == 0]) and lesson_course_grade(user, course.id).passed,
         'questions': questions_data,
         'count_answer_first_attempt': count_answer_first_attempt,
-        'percent': '{:.1f}%'.format(float(count_answer_first_attempt) / len(questions_data) * 100) if questions_data else 100,
+        'percent': '{:.1f}%'.format(percent) if percent else 'n/a',
     }
     return header, report_data
 
