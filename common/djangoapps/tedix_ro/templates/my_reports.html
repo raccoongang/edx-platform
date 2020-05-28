@@ -53,7 +53,7 @@ from django.utils.translation import ugettext as _
         var $modal = $(".my_report_popup");
         var $closePopup = $(".close_popup");
 
-        $(".open_report").on("click", function(event){
+        $(document).on("click", ".open_report", function(event){
             event.preventDefault();
             var $openReport = $(event.currentTarget);
             $.ajax({
