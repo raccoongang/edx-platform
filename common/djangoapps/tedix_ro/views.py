@@ -211,7 +211,7 @@ def my_reports(request):
 
                 average_score = 'n/a'
                 if count_answers_first_attempt:
-                    average_score = '{}%'.format(
+                    average_score = '{:.1f}%'.format(
                         (float(count_answers_first_attempt)/students_in_class_count) / all_questions_count * 100
                     )
 
@@ -233,8 +233,8 @@ def my_reports(request):
             count_answers_first_attempt, answered_questions_count = get_count_answers_first_attempt(user, course_key)
             average_score = 'n/a'
             if count_answers_first_attempt:
-                average_score = '{}%'.format(
-                    count_answers_first_attempt * 100 / all_questions_count
+                average_score = '{:.1f}%'.format(
+                    float(count_answers_first_attempt) / all_questions_count * 100
                 )
 
 
