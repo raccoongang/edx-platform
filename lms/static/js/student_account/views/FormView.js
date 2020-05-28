@@ -228,10 +228,12 @@
                         data = this.setExtraData(data);
                         this.model.set(data);
                         this.model.save({
-                            success: function () {
+                            success: function() {
                                 var _hsq = window._hsq = window._hsq || [];
+
+                                data.firstname = data.name;
                                 _hsq.push(["identify", data]);
-                                _hsq.push(['trackPageView'])
+                                _hsq.push(['trackPageView']);
                             }
                         });
                         this.clearFormErrors();
