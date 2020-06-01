@@ -202,7 +202,7 @@ def my_reports(request):
                 students_in_class = StudentCourseDueDate.objects.filter(
                     due_date__contains=course_due_date,
                     student__classroom__name=students_class,
-                ).values_list('student__user_id', flat=True)
+                ).values_list('student__user_id', flat=True).distinct()
 
                 students_in_class_count = students_in_class.count()
                 count_answers_first_attempt = 0
