@@ -111,6 +111,14 @@ from openedx.core.djangolib.markup import HTML, Text
             format: 'd/m/Y H:i',
         });
 
+        var options = $("#id_students option");
+        options.detach().sort(function(option1, option2) {
+            var option1Text = $(option1).text();
+            var option2Text = $(option2).text();
+            return (option1Text > option2Text) ? 1 : ((option1Text < option2Text) ? -1 : 0);
+        });
+        options.appendTo("#id_students");
+
         $('.manage-courses-wrapper select, .manage-courses-wrapper input[type="checkbox"]').styler();
 
         var $coursesList = $("#id_courses-styler li");
@@ -147,7 +155,6 @@ from openedx.core.djangolib.markup import HTML, Text
             template += '.*';
             var reg = new RegExp(template);
 
-            console.log(listItem.match(reg))
             return (listItem.match(reg));
         }
 
