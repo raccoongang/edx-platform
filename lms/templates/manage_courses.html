@@ -122,13 +122,42 @@ from openedx.core.djangolib.markup import HTML, Text
         $(document).on('keyup', '#studentFilter', studentFilter);
         $(document).on('change', '#id_classrooms', studentFilter);
 
+        function keywordMatchesListItem(keyword, listItem) {
+
+            let characters = {
+                a: '([aăâ]{1})',
+                ă: '([aăâ]{1})',
+                â: '([aăâ]{1})',
+                i: '([iî]{1})',
+                î: '([iî]{1})',
+                s: '([sşș]{1})',
+                ş: '([sşș]{1})',
+                ș: '([sşș]{1})',
+                ţ: '([tţț]{1})',
+                t: '([tţț]{1})',
+                ț: '([tţț]{1})',
+            };
+
+            let template = '';
+
+            for(let i=0; i < keyword.length; i++) {
+                template += characters[keyword[i]] || keyword[i];
+            }
+
+            template += '.*';
+            var reg = new RegExp(template);
+
+            console.log(listItem.match(reg))
+            return (listItem.match(reg));
+        }
+
         function filter(e){
             var keyword = $(this).val().toLowerCase().trim();
             var optionItemSelector = '#' + e.data.targetList.parents('.jq-select-multiple').prop('id').replace('-styler', ' option');
             e.data.targetList.each(function(){
                 var itemName = $(this).text();
                 var listItem = itemName.toLowerCase();
-                if (keyword !== "" && listItem.substring(0, keyword.length) !== keyword){
+                if (keyword !== "" && !keywordMatchesListItem(keyword, listItem)){
                     $(this).hide().removeClass("selected");
                     $(optionItemSelector).filter(":contains('" + itemName + "')").prop('selected', false);
                 } else {
@@ -148,7 +177,7 @@ from openedx.core.djangolib.markup import HTML, Text
                 var classroom = $(this).data('classroom').toString().toLowerCase();
                 var studentName = $(this).text();
                 var classroomSelected = !($.inArray(classroom, selectedClassroomValues) === -1);
-                var keywordNotMatchesStudentName = keyword && studentName.substring(0, keyword.length).toLowerCase() !== keyword;
+                var keywordNotMatchesStudentName = keyword && !keywordMatchesListItem(keyword, studentName.toLowerCase().trim());
                 if (selectedClassroomValues.length !== 0 && !classroomSelected || keywordNotMatchesStudentName) {
                     $studentList.filter(":contains('" + studentName + "')").hide().removeClass("selected");
                     $(this).prop('selected', false);
