@@ -31,7 +31,7 @@ from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models, IntegrityError
 from django.db.models import Count
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save, post_save, pre_delete
 from django.dispatch import receiver, Signal
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -477,6 +477,24 @@ def user_post_save_callback(sender, **kwargs):
         excluded_fields=['last_login', 'first_name', 'last_name'],
         hidden_fields=['password']
     )
+
+
+@receiver(pre_delete, sender=User)
+def user_pre_delete_callback(sender, **kwargs):
+    """
+    This fixes a delete user error with the role of the course creator.
+    First delete CourseCreator, then User instance.
+    "Try/except" is used to correctly import CourseCreator when deleting
+    from LMS or CMS. Unable to add to INSTALLED_APPS in lms due to errors
+    """
+    try:
+        # import for studio
+        from course_creators.models import CourseCreator
+    except ImportError:
+        # import for lms
+        from cms.djangoapps.course_creators.models import CourseCreator
+    user = kwargs['instance']
+    CourseCreator.objects.filter(user=user).delete()
 
 
 class UserSignupSource(models.Model):
