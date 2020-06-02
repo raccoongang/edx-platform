@@ -513,6 +513,7 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
         # Get the User, Course ID, and Mode from the request.
 
         username = request.data.get('user', request.user.username)
+        email = request.data.get('email')
         course_id = request.data.get('course_details', {}).get('course_id')
 
         if not course_id:
@@ -555,12 +556,16 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
 
         try:
             # Lookup the user, instead of using request.user, since request.user may not match the username POSTed.
-            user = User.objects.get(username=username)
+            if not email:
+                user = User.objects.get(username=username)
+            else:
+                user = User.objects.get(email=email)
+                username = user.username
         except ObjectDoesNotExist:
             return Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data={
-                    'message': u'The user {} does not exist.'.format(username)
+                    'message': u'The user {} does not exist.'.format(email if email else username)
                 }
             )
 
