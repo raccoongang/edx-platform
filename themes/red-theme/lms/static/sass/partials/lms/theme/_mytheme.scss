@@ -297,7 +297,7 @@ line-height: 1;
 }
 
 .manage-courses-wrapper {
-	max-width: 790px;
+	max-width: 1199px;
 	margin: 0 auto 30px;
 	padding: 0 20px;
 
@@ -352,12 +352,17 @@ line-height: 1;
 
 		label {
 			cursor: initial;
+			margin: 0 12px 5px 0;
 		}
 
 		input {
-			width: 35%;
+			flex: 1;
 			font-style: normal;
 			padding: 5px 10px;
+
+			@-moz-document url-prefix() {
+				min-width: 0;
+			}
 
 			@media (max-width: 899px) {
 				margin-left: 12px;
@@ -389,7 +394,19 @@ line-height: 1;
 
 	.courses-field {
 		margin-right: 40px;
-		width: calc(100% - 555px);
+		width: 25%;
+
+		&.courses-list {
+			width: 45%;
+
+			@media (max-width: 1199px) {
+				width: 40%;
+			}
+
+			@media (max-width: 999px) {
+				width: 100%;
+			}
+		}
 
 		@media (max-width: 768px) {
 			margin-right: 0;
@@ -448,7 +465,7 @@ line-height: 1;
 	.courses-field,
 	.students-field,
 	.due_date-field {
-		@media (max-width: 899px) {
+		@media (max-width: 999px) {
 			width: 100%;
 			max-width: 100%;
 			margin-left: 0;
@@ -546,7 +563,7 @@ line-height: 1;
 		margin-top: 5px;
 		width: 100%;
 		display: flex;
-		justify-content: space-between;
+		justify-content: space-evenly;
 		align-items: center;
 
 		@media (max-width: 768px) {
@@ -635,7 +652,8 @@ line-height: 1;
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
-			white-space: nowrap;
+			word-break: break-word;
+			white-space: initial;
 			padding: 5px 20px;
 			line-height: 14px;
 
@@ -714,4 +732,161 @@ line-height: 1;
 }
 .verification_page_text{
 	text-align: center;
+}
+
+.my-report-wrapper {
+    margin: 50px 0px;
+
+    h1, h2, h3, h4{
+        &.report-title{
+            font-weight: bold;
+            color: black;
+            margin-bottom: 12px;
+        }
+    }
+
+    label {
+        display: block;
+        margin-bottom: 12px;
+    }
+
+    .table-alert{
+        text-align: center;
+    }
+
+    .table-my-reports {
+        border: 1px solid black;
+        width: 100% !important;
+        margin: 20px 0px !important;
+        border-collapse: collapse !important;
+
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+
+        .today {
+            background-color: $red !important;
+            color: white !important;
+            &.complete{
+                background-color: $green !important;
+            }
+        }
+
+        .tomorrow {
+            background-color: #ffce00 !important;
+            &.complete{
+                color: white !important;
+                background-color: $green !important;
+            }
+        }
+
+        .table-view {
+            text-align: center;
+        }
+
+		th {
+			&.isDueDate {
+				width: 15% !important;
+				padding-right: 32px !important;
+			}
+
+			&.isClass {
+				width: 10% !important;
+				padding-right: 32px !important;
+			}
+
+			&.isCourseName {
+				width: 65% !important;
+			}
+
+			&.isScore {
+				width: 10% !important;
+			}
+
+			&.isView {
+				width: 10% !important;
+			}
+
+			@media screen and (max-width: 1199px) {
+				&.isDueDate,
+				&.isClass,
+				&.isCourseName,
+				&.isCourseName,
+				&.isScore,
+				&.isView {
+					width: auto !important;
+				}
+			}
+		}
+    }
+}
+
+.table-my-reports-alert {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.my_report_popup {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+
+    .extended-report {
+        max-height: 500px;
+        overflow: auto;
+    }
+
+    h3 {
+        margin-bottom: 12px;
+    }
+
+    .close-holder {
+        text-align: right;
+    }
+
+    .close_popup {
+        font-size: 16px;
+        line-height: 16px;
+        color: #fff;
+        padding: 10px 45px;
+        background: #00bbb4;
+        text-shadow: none;
+        box-shadow: none !important;
+        border: 1px solid #00bbb4;
+        letter-spacing: 0;
+        width: auto;
+        margin-top: 12px;
+
+        &:hover,
+        &:focus {
+            background-image: none !important;
+            background-color: #fff !important;
+            color: #00bbb4 !important;
+        }
+    }
+
+    .teacher-extended-report {
+        width: auto;
+		margin: initial;
+    }
+
+	.dataTables_info {
+		padding: 10px 0 20px;
+	}
 }

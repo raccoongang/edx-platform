@@ -16,10 +16,10 @@ teacher_report = user.is_superuser or user.is_staff and hasattr(user, 'instructo
 %>
 %if teacher_report:
     <%
-    roll = _('Superuser') if user.is_superuser else _('Teacher')
+    role = _('Superuser') if user.is_superuser else _('Teacher')
     %>
     <h2 class="hd hd-2">
-        ${_("Students Progress for {roll} '{username}'").format(roll=roll, username=user.username)}
+        ${_("Students Progress for {role} '{username}'").format(role=role, username=user.username)}
     </h2>
 %endif
 %for lesson_report in lesson_reports:

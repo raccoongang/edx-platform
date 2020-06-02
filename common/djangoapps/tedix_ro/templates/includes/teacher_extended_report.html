@@ -1,42 +1,44 @@
-<%page args="report_data, header, course_name"/>
+<%page args="report_data, header"/>
 <%!
 from django.utils.translation import ugettext as _
 %>
 
-<section class="chapters">
-    <h1>${_("Activity report for lesson:")} <span style="font-size: 30px; color: #24ad97;">${ course_name }<span></h1>
-    <br>
-    <div style="overflow-x: scroll; overflow-y: hidden;">
-    <table style="border-collapse: collapse; border: 1px solid;">
-        <tr>
-            <th style="border: 1px solid; padding: 10px 8px;">${_("Student name")}</th>
-            %for question_name in header:
-                <th style="border: 1px solid; padding: 10px 8px;">
-                    <p>${_("Question")} ${loop.index + 1}:
-                    <br>${ question_name }</p>
-                </th>
-            %endfor
-            <th style="border: 1px solid; padding: 10px 8px;">${_("Number of question completed from first attempt")}</th>
-            <th style="border: 1px solid; padding: 10px 8px;">${_("Lesson completed")}</th>
-        </tr>
-        %for user_data in report_data:
+<div class="extended-report" style="overflow-x: scroll;">
+    <table class="teacher-extended-report" style="border-collapse: collapse; border: 1px solid;">
+        <thead>
             <tr>
-                <th style="border: 1px solid; white-space: nowrap; padding: 10px 8px;">
-                    ${ user_data['full_name'] }<br>
-                </th>
-                %for question_name, question_count_answer, done in user_data['questions']:
-                    <td style="white-space: nowrap; border: 1px solid; padding: 9px 8px;">
-                        %if question_count_answer == 1 and done:
-                            <span style="color: green;">${ ('First attempt') }</span>
-                        %else:
-                            <span style="color: red;">${ question_count_answer } ${ _("attempt") if question_count_answer == 1 else _("attempts")}</span>
-                        %endif
-                    </td>
+                <th style="border: 1px solid; padding: 10px 32px 10px 8px;">${_("Student name")}</th>
+                %for question_name, question_type in header:
+                    <th style="border: 1px solid; padding: 10px 8px; border-color: black; ${'color: white; background: #0075b4;' if question_type == 'video_lesson' else 'background: #ffce00;' if question_type == 'problem' else '' }">
+                        <p>${_("Question")} ${loop.index + 1}:
+                        <br>${ question_name }</p>
+                    </th>
                 %endfor
-                <td style="white-space: nowrap; border: 1px solid; padding: 9px 8px;">${ user_data['percent'] }%</td>
-                <td style="white-space: nowrap; border: 1px solid; padding: 9px 8px;"><span style="color: ${'green' if user_data['completion'] == 1 else 'red'};">${'Yes' if user_data['completion'] == 1 else 'No'}</span></td>
+                <th style="border: 1px solid; padding: 10px 8px;">${_("Score")}</th>
+                <th style="border: 1px solid; padding: 10px 8px;">${_("Lesson completed")}</th>
             </tr>
-        %endfor
-        </table>
-
-</section>
+        </thead>
+        <tbody>
+            %for user_data in report_data:
+                <tr>
+                    <th style="border: 1px solid; white-space: nowrap; padding: 10px 8px; color: white; border-color: black; ${'background: #24ad97;' if user_data['completion'] == 1 else 'background: #d9534f;'}">
+                        ${ user_data['full_name'] }
+                    </th>
+                    %for question_name, question_count_answer, done in user_data['questions']:
+                        <td style="white-space: nowrap; border: 1px solid; padding: 9px 8px;">
+                            %if question_count_answer == 1 and done:
+                                <span style="color: #24ad97;">${ ('First attempt') }</span>
+                            %else:
+                                <span style="color: #d9534f;">${ question_count_answer } ${ _("attempt") if question_count_answer == 1 else _("attempts")}</span>
+                            %endif
+                        </td>
+                    %endfor
+                    <td style="white-space: nowrap; border: 1px solid; padding: 9px 8px;">${ user_data['percent'] }</td>
+                    <td style="white-space: nowrap; border: 1px solid; padding: 9px 8px;color: white; border-color: black; ${'background: #24ad97;' if user_data['completion'] == 1 else 'background: #d9534f;'}">
+                        ${'Yes' if user_data['completion'] == 1 else 'No'}
+                    </td>
+                </tr>
+            %endfor
+        </tbody>
+    </table>
+</div>
