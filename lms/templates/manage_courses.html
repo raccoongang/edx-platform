@@ -115,7 +115,7 @@ from openedx.core.djangolib.markup import HTML, Text
         options.detach().sort(function(option1, option2) {
             var option1Text = $(option1).text();
             var option2Text = $(option2).text();
-            return (option1Text > option2Text) ? 1 : ((option1Text < option2Text) ? -1 : 0);
+            return option1Text.localeCompare(option2Text);
         });
         options.appendTo("#id_students");
 
@@ -124,38 +124,35 @@ from openedx.core.djangolib.markup import HTML, Text
         var $coursesList = $("#id_courses-styler li");
         var $classroomList = $("#id_classrooms-styler li");
         var $studentList = $("#id_students-styler li");
+        var characters = {
+            a: '([aăâ]{1})',
+            ă: '([aăâ]{1})',
+            â: '([aăâ]{1})',
+            i: '([iî]{1})',
+            î: '([iî]{1})',
+            s: '([sşș]{1})',
+            ş: '([sşș]{1})',
+            ș: '([sşș]{1})',
+            ţ: '([tţț]{1})',
+            t: '([tţț]{1})',
+            ț: '([tţț]{1})',
+        };
 
         $(document).on('keyup', '#courseFilter', {targetList: $coursesList}, filter);
         $(document).on('keyup', '#classroomFilter', {targetList: $classroomList}, filter);
         $(document).on('keyup', '#studentFilter', studentFilter);
         $(document).on('change', '#id_classrooms', studentFilter);
 
-        function keywordMatchesListItem(keyword, listItem) {
 
-            let characters = {
-                a: '([aăâ]{1})',
-                ă: '([aăâ]{1})',
-                â: '([aăâ]{1})',
-                i: '([iî]{1})',
-                î: '([iî]{1})',
-                s: '([sşș]{1})',
-                ş: '([sşș]{1})',
-                ș: '([sşș]{1})',
-                ţ: '([tţț]{1})',
-                t: '([tţț]{1})',
-                ț: '([tţț]{1})',
-            };
-
-            let template = '';
-
-            for(let i=0; i < keyword.length; i++) {
+        function keywordMatches(keyword, text) {
+            var template = '';
+            for(var i=0; i < keyword.length; i++) {
                 template += characters[keyword[i]] || keyword[i];
             }
-
             template += '.*';
-            var reg = new RegExp(template);
 
-            return (listItem.match(reg));
+            var reg = new RegExp(template);
+            return (text.match(reg));
         }
 
         function filter(e){
@@ -164,7 +161,7 @@ from openedx.core.djangolib.markup import HTML, Text
             e.data.targetList.each(function(){
                 var itemName = $(this).text();
                 var listItem = itemName.toLowerCase();
-                if (keyword !== "" && !keywordMatchesListItem(keyword, listItem)){
+                if (keyword !== "" && !keywordMatches(keyword, listItem)){
                     $(this).hide().removeClass("selected");
                     $(optionItemSelector).filter(":contains('" + itemName + "')").prop('selected', false);
                 } else {
@@ -184,7 +181,7 @@ from openedx.core.djangolib.markup import HTML, Text
                 var classroom = $(this).data('classroom').toString().toLowerCase();
                 var studentName = $(this).text();
                 var classroomSelected = !($.inArray(classroom, selectedClassroomValues) === -1);
-                var keywordNotMatchesStudentName = keyword && !keywordMatchesListItem(keyword, studentName.toLowerCase().trim());
+                var keywordNotMatchesStudentName = keyword && !keywordMatches(keyword, studentName.toLowerCase().trim());
                 if (selectedClassroomValues.length !== 0 && !classroomSelected || keywordNotMatchesStudentName) {
                     $studentList.filter(":contains('" + studentName + "')").hide().removeClass("selected");
                     $(this).prop('selected', false);
