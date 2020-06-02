@@ -55,7 +55,7 @@ class EnrollmentTestMixin(object):
             is_active=None,
             enrollment_attributes=None,
             min_mongo_calls=0,
-            max_mongo_calls=1,  # see student.models.py::1235
+            max_mongo_calls=1,
             enterprise_course_consent=None,
     ):
         """
