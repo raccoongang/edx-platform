@@ -725,7 +725,14 @@ def check_prerequisite(request, course_id):
 
         reset_library_content(descriptor, request.user)
 
+        exists_start_info_task = InfoTaskRecalculateSubsectionGrade.objects.filter(
+            course_id=course_key,
+            user_id=request.user.id,
+            status=InfoTaskRecalculateSubsectionGrade.START_TASK
+        ).exists()
+
         return JsonResponse({
+            'exists_start_info_task': exists_start_info_task,
             'next': False,
             'msg': msg,
             'url': url
@@ -750,7 +757,10 @@ def reset_library_content(sequential, user, for_all=False):
     for vertical in sequential.get_children():
         for children in vertical.get_children():
             if children.location.block_type in types:
-                reset_student_attempts(children.location.course_key, user, children.location, user, delete_module=True)
+                try:
+                    reset_student_attempts(children.location.course_key, user, children.location, user, delete_module=True)
+                except StudentModule.DoesNotExist:
+                    pass
 
 
 def has_library_content(sequential):
