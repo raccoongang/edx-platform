@@ -884,6 +884,21 @@ line-height: 1;
     .teacher-extended-report {
         width: auto;
 		margin: initial;
+
+		th {
+			min-width: 145px;
+			max-width: 145px;
+		}
+
+		th[aria-label="Score"] {
+			min-width: initial;
+			max-width: initial;
+		}
+
+		th[aria-label="Lesson completed"] {
+			min-width: initial;
+			max-width: initial;
+		}
     }
 
 	.dataTables_info {
