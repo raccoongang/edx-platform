@@ -14980,8 +14980,8 @@ msgid ""
 "a course offered by Major Affiliate Marketing Academy (MAMA) aimed at gaining basic "
 "knowledge for the account manager career in the field of affiliate marketing."
 msgstr ""
-"в онлайн-академии Major Affiliate Marketing Academy, направленный на обретение базовых "
-"знаний профессии аккаунт менеджера в сфере аффилейт маркетинга"
+"в онлайн-академии Major Affiliate Marketing Academy. Курс направлен на обретение "
+"базовых знаний профессии аккаунт менеджера в сфере аффилейт маркетинга"
 
 #: lms/templates/certificates/_accomplishment-rendering.html
 msgid "This is to certify that"
