@@ -8,6 +8,7 @@ from django.contrib import admin
 from django.contrib.admin.widgets import AdminSplitDateTime
 from django.contrib.auth.models import User
 from django.http.response import HttpResponseRedirect
+from django.utils.translation import ugettext_lazy as _
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin, ImportMixin
 from import_export.fields import Field
@@ -260,7 +261,7 @@ class StudentCourseDueDateForm(forms.ModelForm):
         model = StudentCourseDueDate
         fields = '__all__'
         help_texts = {
-            'due_date': 'Time in UTC',
+            'due_date': _('Time in UTC'),
         }
     def __init__(self, *args, **kwargs):
         super(StudentCourseDueDateForm, self).__init__(*args, **kwargs)
@@ -281,11 +282,11 @@ class StudentCourseDueDateForm(forms.ModelForm):
                 course = CourseOverview.objects.get(id=course_id)
                 utcnow = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
                 if not (course.start < due_date_utc < course.end and utcnow < due_date_utc):
-                    self.add_error('due_date', 'This due date is not valid for the course: {}'.format(course_id))
+                    self.add_error('due_date', _('This due date is not valid for the course: {}'.format(course_id)))
             except CourseOverview.DoesNotExist:
-                raise forms.ValidationError("Course does not exist")
+                raise forms.ValidationError(_("Course does not exist"))
             except InvalidKeyError:
-                self.add_error('course_id', 'Invalid CourseKey')
+                self.add_error('course_id', _('Invalid CourseKey'))
 
         return self.cleaned_data
 
@@ -300,4 +301,4 @@ class StudentCourseDueDateAdmin(admin.ModelAdmin):
     def format_date(self, obj):
         return obj.due_date.strftime('%d %b %Y %H:%M')
         
-    format_date.short_description = 'Due Date (UTC)'
+    format_date.short_description = _('Due Date (UTC)')
