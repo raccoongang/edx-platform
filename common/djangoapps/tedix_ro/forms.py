@@ -12,6 +12,7 @@ from django.db import transaction
 from django.forms import ModelForm
 from django.utils import six, timezone
 from django.utils.encoding import force_text
+from django.utils.translation import ugettext_lazy as _
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
@@ -33,8 +34,8 @@ from tedix_ro.models import (
 
 
 ROLE_CHOICES = (
-    ('student', 'Student'),
-    ('instructor', 'Instructor'),
+    ('student', _('Student')),
+    ('instructor', _('Instructor')),
 )
 
 
@@ -76,20 +77,20 @@ class RegisterForm(ModelForm):
     """
     Abstract register form
     """
-    role = forms.ChoiceField(label='Role', choices=ROLE_CHOICES)
-    phone = forms.CharField(label='Phone Number', error_messages={
-        'required': 'Please enter your phone number.'
+    role = forms.ChoiceField(label=_('Role'), choices=ROLE_CHOICES)
+    phone = forms.CharField(label=_('Phone Number'), error_messages={
+        'required': _('Please enter your phone number.')
     })
     school_city = forms.ModelChoiceField(
-        label='City', queryset=City.objects.all(),
+        label=_('City'), queryset=City.objects.all(),
         error_messages={
-            'required': 'Please select your city.'
+            'required': _('Please select your city.')
         }
     )
     school = forms.ModelChoiceField(
-        label='School', queryset=School.objects.all(),
+        label=_('School'), queryset=School.objects.all(),
         error_messages={
-            'required': 'Please select your school.'
+            'required': _('Please select your school.')
         }
     )
 
@@ -100,33 +101,33 @@ class StudentRegisterForm(RegisterForm):
     """
     admin_import_action = False
     classroom = forms.ModelChoiceField(
-        label='Classroom', queryset=Classroom.objects.all(),
+        label=_('Classroom'), queryset=Classroom.objects.all(),
         error_messages={
-            'required': 'Please select your classroom.'
+            'required': _('Please select your classroom.')
         }
     )
     parent_phone = forms.CharField(
-        label='Parent Phone Number',
+        label=_('Parent Phone Number'),
         validators=[phone_validator],
         error_messages={
-            'required': 'Please enter your parent phone number.',
+            'required': _('Please enter your parent phone number.'),
             'min_length': 9,
             'max_length': 15,
         }
     )
-    parent_email = forms.EmailField(label='Parent Email', error_messages={
-        'required': 'Please enter your parent email.'
+    parent_email = forms.EmailField(label=_('Parent Email'), error_messages={
+        'required': _('Please enter your parent email.')
     })
     instructor = forms.ModelChoiceField(
         required=False,
-        label='Teacher',
+        label=_('Teacher'),
         queryset=InstructorProfile.objects.filter(user__is_staff=True, user__is_active=True),
         error_messages={
-            'required': 'Please select your teacher.'
+            'required': _('Please select your teacher.')
         }
     )
-    phone = forms.CharField(label='Phone Number', error_messages={
-        'required': 'Please enter your phone number.',
+    phone = forms.CharField(label=_('Phone Number'), error_messages={
+        'required': _('Please enter your phone number.'),
         'min_length': 10,
         'max_length': 15,
     })
@@ -139,7 +140,7 @@ class StudentRegisterForm(RegisterForm):
         # the length of the phone number in the future
         phone = self.cleaned_data['phone']
         if len(phone) < 10 or len(phone) > 15:
-            raise forms.ValidationError('The phone number length must be from 10 to 15 digits.')
+            raise forms.ValidationError(_('The phone number length must be from 10 to 15 digits.'))
         return phone
 
 
@@ -149,10 +150,10 @@ class StudentRegisterForm(RegisterForm):
         """
         parent_email = self.cleaned_data['parent_email']
         if parent_email == self.data['email']:
-            raise forms.ValidationError('Student and parent emails must be different.')
+            raise forms.ValidationError(_('Student and parent emails must be different.'))
         user = User.objects.filter(email=parent_email).first()
         if user and (getattr(user, 'studentprofile', None) or not getattr(user, 'parentprofile', None)) or user and not user.is_active:
-            raise forms.ValidationError('Parent email you entered belongs to an existing profile.')
+            raise forms.ValidationError(_('Parent email you entered belongs to an existing profile.'))
         return parent_email
     
     def clean_parent_phone(self):
@@ -162,12 +163,12 @@ class StudentRegisterForm(RegisterForm):
         # TODO: there is a validator field, remove the additional validation of
         # the length of the phone number in the future
         if len(parent_phone) < 10 or len(parent_phone) > 15:
-            raise forms.ValidationError('The parent phone number length must be from 10 to 15 digits.')
+            raise forms.ValidationError(_('The parent phone number length must be from 10 to 15 digits.'))
         if user and getattr(user, 'parentprofile', None) and parent_phone != user.parentprofile.phone:
-            raise forms.ValidationError('Parent phone number you entered is wrong.')
+            raise forms.ValidationError(_('Parent phone number you entered is wrong.'))
         student_phone = self.cleaned_data.get('phone')
         if parent_phone == student_phone:
-            raise forms.ValidationError('Student and parent phone numbers must be different.')
+            raise forms.ValidationError(_('Student and parent phone numbers must be different.'))
         return parent_phone
 
     def save(self, commit=True):
@@ -311,20 +312,20 @@ class StudentSelect(forms.SelectMultiple):
 
 
 class StudentEnrollForm(forms.Form):
-    courses = CourseMultipleModelChoiceField(label='Available Courses List', queryset=CourseOverview.objects.none())
-    classrooms = forms.ModelMultipleChoiceField(label='Classroom List', required=False, queryset=Classroom.objects.none())
-    students = StudentMultipleModelChoiceField(label='Students List', queryset=StudentProfile.objects.none(), widget=StudentSelect())
+    courses = CourseMultipleModelChoiceField(label=_('Available Courses List'), queryset=CourseOverview.objects.none())
+    classrooms = forms.ModelMultipleChoiceField(label=_('Classroom List'), required=False, queryset=Classroom.objects.none())
+    students = StudentMultipleModelChoiceField(label=_('Students List'), queryset=StudentProfile.objects.none(), widget=StudentSelect())
     due_date = CustomDateTimeField(
-        label='Due Date (UTC):',
+        label=_('Due Date (UTC):'),
         input_formats=['%d/%m/%Y %H:%M'],
         widget=forms.DateTimeInput(attrs={
             'type': 'datetime',
             'autocomplete': 'off'
         })
     )
-    send_to_students = forms.BooleanField(required=False, label='Notify Student(s) via e-mail')
-    send_to_parents = forms.BooleanField(required=False, label='Notify Parent(s) via e-mail')
-    send_sms = forms.BooleanField(required=False, label='Notify Parent(s) via SMS')
+    send_to_students = forms.BooleanField(required=False, label=_('Notify Student(s) via e-mail'))
+    send_to_parents = forms.BooleanField(required=False, label=_('Notify Parent(s) via e-mail'))
+    send_sms = forms.BooleanField(required=False, label=_('Notify Parent(s) via SMS'))
 
     def __init__(self, *args, **kwargs):
         courses = kwargs.pop('courses')
@@ -333,7 +334,7 @@ class StudentEnrollForm(forms.Form):
         super(StudentEnrollForm, self).__init__(*args, **kwargs)
         self.fields['courses'].queryset = courses
         self.fields['courses'].error_messages={
-            'invalid_choice': u'The enrollment end date has passed. The following courses are no longer available for enrollment: "%(value)s".',
+            'invalid_choice': _(u'The enrollment end date has passed. The following courses are no longer available for enrollment: "%(value)s".'),
         }
         self.fields['students'].queryset = students
         self.fields['classrooms'].queryset = classrooms
@@ -351,7 +352,7 @@ class StudentEnrollForm(forms.Form):
                 elif due_date_utc < course.start or due_date_utc < utcnow:
                     error_course_list.append(course.display_name)
             if error_course_list:
-                self.add_error('due_date', u'This due date is not valid for the following courses: "{}".'.format('", "'.join(error_course_list)))
+                self.add_error('due_date', _(u'This due date is not valid for the following courses: "{}".'.format('", "'.join(error_course_list))))
         return due_date_utc
 
 
@@ -368,7 +369,7 @@ class ProfileImportForm(forms.Form):
         file_to_import = cleaned_data['file_to_import']
         file_format = cleaned_data['file_format']
         if not file_to_import.name.endswith('.{}'.format(file_format)):
-            self.add_error('file_format', 'The file you are going to import has another extension.')
+            self.add_error('file_format', _('The file you are going to import has another extension.'))
         return cleaned_data
 
 
@@ -378,11 +379,11 @@ class CityImportForm(forms.Form):
     def clean_file_to_import(self):
         file_to_import = self.cleaned_data['file_to_import']
         if not file_to_import.name.endswith('.json'):
-            raise ValidationError('The file extension is not supported. Please use a file with .json extension.')
+            raise ValidationError(_('The file extension is not supported. Please use a file with .json extension.'))
         try:
             file_data = json.loads(file_to_import.read())
         except Exception as e:
-            raise ValidationError('Oops! Something went wrong. Please check that the file structure is correct.')
+            raise ValidationError(_('Oops! Something went wrong. Please check that the file structure is correct.'))
         file_to_import.seek(0)
         return file_to_import
 
@@ -414,7 +415,7 @@ class AccountImportValidationForm(AccountCreationForm):
         username = cleaned_data.get('username')
         email = cleaned_data.get('email')
         if not User.objects.filter(email=email, username=username).exists() and User.objects.filter(username=username).exists():
-            self.add_error('username', u'Public Username "{}" already exists.'.format(username))
+            self.add_error('username', _(u'Public Username "{}" already exists.'.format(username)))
 
 
 class InstructorImportValidationForm(InstructorRegisterForm):
@@ -422,16 +423,16 @@ class InstructorImportValidationForm(InstructorRegisterForm):
     def __init__(self, *args, **kwargs):
         super(InstructorImportValidationForm, self).__init__(*args, **kwargs)
         self.fields['school_city'].to_field_name = 'name'
-        self.fields['school_city'].error_messages.update({'invalid_choice': "Such city doesn't exists in DB",})
+        self.fields['school_city'].error_messages.update({'invalid_choice': _("Such city doesn't exists in DB"),})
         self.fields['school'].to_field_name = 'name'
-        self.fields['school'].error_messages.update({'invalid_choice': "Such school doesn't exists in DB"})
+        self.fields['school'].error_messages.update({'invalid_choice': _("Such school doesn't exists in DB")})
 
     def clean(self):
         cleaned_data = super(InstructorImportValidationForm, self).clean()
         school = cleaned_data.get('school')
         school_city = cleaned_data.get('school_city')
         if school_city and school and school.city != school_city:
-            self.add_error('school', u'School {} is not in the city {}.'.format(school.name, school_city.name))
+            self.add_error('school', _(u'School {} is not in the city {}.'.format(school.name, school_city.name)))
 
     def exists(self, data):
         return InstructorProfile.objects.filter(user__email=data['email']).exists()
@@ -455,12 +456,12 @@ class StudentImportRegisterForm(StudentRegisterForm):
     def __init__(self, *args, **kwargs):
         super(StudentImportRegisterForm, self).__init__(*args, **kwargs)
         self.fields['school_city'].to_field_name = 'name'
-        self.fields['school_city'].error_messages.update({'invalid_choice': "Such city doesn't exists in DB",})
+        self.fields['school_city'].error_messages.update({'invalid_choice': _("Such city doesn't exists in DB"),})
         self.fields['school'].to_field_name = 'name'
-        self.fields['school'].error_messages.update({'invalid_choice': "Such school doesn't exists in DB"})
+        self.fields['school'].error_messages.update({'invalid_choice': _("Such school doesn't exists in DB")})
         self.fields['classroom'].to_field_name = 'name'
         self.fields['instructor'].to_field_name = 'user__email'
-        self.fields['instructor'].error_messages.update({'invalid_choice': "Such instructor doesn't exists in DB"})
+        self.fields['instructor'].error_messages.update({'invalid_choice': _("Such instructor doesn't exists in DB")})
 
     def exists(self, data):
         return StudentProfile.objects.filter(user__email=data['email']).exists()
@@ -483,9 +484,9 @@ class StudentImportRegisterForm(StudentRegisterForm):
         school_city = cleaned_data.get('school_city')
         instructor = cleaned_data.get('instructor')
         if school_city and school and school.city != school_city:
-            self.add_error('school', u'School {} is not in the city {}.'.format(school.name, school_city.name))
+            self.add_error('school', _(u'School {} is not in the city {}.'.format(school.name, school_city.name)))
         if instructor and instructor.school != school:
-            self.add_error('instructor', "Specified instructor belongs to another school")
+            self.add_error('instructor', _("Specified instructor belongs to another school"))
         return cleaned_data
 
 
@@ -499,7 +500,7 @@ class SchoolImportValidationForm(ModelForm):
         super(SchoolImportValidationForm, self).__init__(*args, **kwargs)
         self.fields['city'].to_field_name = 'name'
         self.fields['school_type'].error_messages.update({
-            'required': "The value is invalid. Valid school types are 'Privata' and 'Publica'.",
+            'required': _("The value is invalid. Valid school types are 'Privata' and 'Publica'."),
         })
 
 

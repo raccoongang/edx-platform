@@ -31,6 +31,6 @@ ${_("Number of question completed from first attempt")}: ${ user_data['percent']
     %endfor
 %endfor
 
-Report Link:
+${_('Report Link:')}
 ${ lesson_report['report_url'] }
 %endfor

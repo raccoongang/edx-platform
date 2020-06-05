@@ -9,10 +9,10 @@ username = user.profile.name or user.username
 
 %if report_data:
     %if user.is_superuser or user.is_staff and hasattr(user, 'instructorprofile'):
-        <h3 class="report-title">Report for lesson assigend to Class '${classroom}' with due date: ${due_date}</h3>
+        <h3 class="report-title">${_("Report for lesson assigend to Class '{classroom}' with due date: {due_date}").format(classroom=classroom, due_date=due_date)}</h3>
         <%include file="includes/teacher_extended_report.html" />
     %else:
-        <h3 class="report-title">Report for lesson assigend to '${username}' with due date: ${due_date}</h3>
+        <h3 class="report-title">${_("Report for lesson assigend to '{username}' with due date: {due_date}").format(username=username, due_date=due_date)}</h3>
         <%include file="includes/student_extended_report.html" />
     %endif
 %endif

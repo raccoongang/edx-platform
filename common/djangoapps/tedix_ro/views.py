@@ -15,6 +15,7 @@ from django.shortcuts import redirect, render
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
+from django.utils.translation import ugettext_lazy as _
 from django.views import View
 
 from courseware.courses import get_course_with_access
@@ -103,25 +104,25 @@ def my_reports(request):
         due_date = due_date_datetime.date()
         today = utc_now.date()
         if today == due_date:
-            date_group = 'Today'
+            date_group = _('Today')
             due_date_data.update({
                 'displayed_date': date_group,
                 'due_date_order': 1
             })
         elif (today - due_date).days == -1:
-            date_group = 'Tomorrow'
+            date_group = _('Tomorrow')
             due_date_data.update({
                 'displayed_date': date_group,
                 'due_date_order': 2
             })
         elif (today - due_date).days < -1:
-            date_group = 'Future'
+            date_group = _('Future')
             due_date_data.update({
                 'displayed_date': '{}: {}'.format(date_group, date.strftime('%d %B')),
                 'due_date_order': 3
             })
         elif (today - due_date).days > 0:
-            date_group = 'Past'
+            date_group = _('Past')
             due_date_data.update({
                 'displayed_date': '{}: {}'.format(date_group, date.strftime('%d %B')),
                 'due_date_order': 4
@@ -578,7 +579,7 @@ class ProfileImportView(View):
             'text_changelist_url': self.text_changelist_url,
             'changelist_url': self.changelist_url,
             'import_form': self.import_form,
-            'site_header': 'LMS Administration',
+            'site_header': _('LMS Administration'),
             'row_headers': self.headers
         }
         return render(request, self.template_name, context)
@@ -627,14 +628,14 @@ class ProfileImportView(View):
             'text_changelist_url': self.text_changelist_url,
             'changelist_url': self.changelist_url,
             'import_form': import_form,
-            'site_header': 'LMS Administration',
+            'site_header': _('LMS Administration'),
             'row_headers': self.headers
         })
         return render(request, self.template_name, context)
 
     def send_email(self, user, data, send_payment_link=False):
         to_address = user.email
-        status = 'Elev' if self.role == 'student' else 'Profesor'
+        status = _('Elev') if self.role == 'student' else _('Profesor')
         email_context = {
             'status': status,
             'lms_url': configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
@@ -644,9 +645,9 @@ class ProfileImportView(View):
             'email': to_address,
             'password': data['password']
         }
-        subject = 'Bine ati venit pe platforma {}'.format(
+        subject = _('Bine ati venit pe platforma {}'.format(
             configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
-        )
+        ))
         from_address = configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
         message = render_to_string('emails/import_profile.txt', email_context)
         send_mail(subject, message, from_address, [to_address])

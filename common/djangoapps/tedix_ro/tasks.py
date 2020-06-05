@@ -48,10 +48,10 @@ def send_teacher_extended_reports():
                     )
                 })
         if lesson_reports:
-            subject = u'{platform_name}: Report for {username}'.format(
+            subject = _(u'{platform_name}: Report for {username}'.format(
                 platform_name=settings.PLATFORM_NAME,
                 username=instructor.user.profile.name or instructor.user.username
-            )
+            ))
             context = {
                 'lms_url': configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
                 'user': instructor.user,
@@ -133,11 +133,11 @@ def send_student_extended_reports(user_id, course_id):
                     reverse('extended_report', kwargs={'course_key': course.id})
                 )
             }]
-        subject = u'{platform_name}: Report for {username} on "{course_name}"'.format(
+        subject = _(u'{platform_name}: Report for {username} on "{course_name}"'.format(
             platform_name=settings.PLATFORM_NAME,
             username=user.profile.name or user.username,
             course_name=course.display_name
-        )
+        ))
         context = {
             'lms_url': configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
             'user': user,

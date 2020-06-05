@@ -65,7 +65,7 @@
             {% if errors %}
                 <tr>
                     <td></td>
-                    <td>Errors:</td>
+                    <td>{% trans "Errors:" %}</td>
                     {% for field_name in row_headers %}
                         <td>{{ errors|get_errors_value:field_name }}</td>
                     {% endfor %}

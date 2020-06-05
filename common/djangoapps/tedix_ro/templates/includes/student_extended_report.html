@@ -8,17 +8,17 @@ from django.utils.translation import ugettext as _
         <h4 class="hd hd-4">
             <p>${_("Student name")}: <span style="color: red;">${ user_data['full_name'] }</span><p>
             <p>${_("Activity report for lesson")}: <br><span style="font-size: 30px; color: #24ad97;">${ course_name }</span><p>
-            <p>${_("Lesson completed")}: <span style="color: ${'green' if user_data['completion'] == 1 else 'red'};">${'Yes' if user_data['completion'] == 1 else 'No'}</span>
+            <p>${_("Lesson completed")}: <span style="color: ${'green' if user_data['completion'] == 1 else 'red'};">${_('Yes') if user_data['completion'] == 1 else _('No')}</span>
             <br>${_("Score")}:<span style="color: green"> ${ user_data['percent'] }</span><p>
         </h4>
-        <h2 class="hd hd-2" style="padding-bottom: 20px">Questions answered report break-down:</h2>
+        <h2 class="hd hd-2" style="padding-bottom: 20px">${_('Questions answered report break-down:')}</h2>
 
         %for question_name, question_count_answer, done in user_data['questions']:
             <h4 class="hd hd-6" style="padding-bottom: 20px">
                 ${_("Question")} ${loop.index + 1}: <span style="color: #24ad97;">${ question_name }</span><br>
-                    Number of attempts:
+                    ${_('Number of attempts:')}
                 %if question_count_answer == 1 and done:
-                    <span style="color: green;">${ ('First attempt') }</span>
+                    <span style="color: green;">${ _('First attempt') }</span>
                 %else:
                     <span style="color: red;">${ question_count_answer } ${ _("attempt") if question_count_answer == 1 else _("attempts")}</span>
                 %endif
