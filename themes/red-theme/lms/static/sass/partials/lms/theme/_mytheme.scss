@@ -296,6 +296,16 @@ line-height: 1;
 	text-shadow: 0 1px rgba(255,255,255,0.4);
 }
 
+.courses-field-wrapper {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+
+    @media (max-width: 999px) {
+        display: block;
+    }
+}
+
 .manage-courses-wrapper {
 	max-width: 1199px;
 	margin: 0 auto 30px;
@@ -378,7 +388,6 @@ line-height: 1;
 
 	.field {
 		margin-top: 0;
-		float: left;
 		margin-bottom: 15px;
 		box-sizing: border-box;
 
@@ -393,7 +402,6 @@ line-height: 1;
 	}
 
 	.courses-field {
-		margin-right: 40px;
 		width: 25%;
 
 		&.courses-list {
@@ -424,7 +432,7 @@ line-height: 1;
 
 	.students-field,
 	.due_date-field {
-		width: 240px;
+		width: 270px;
 	}
 
 	.students-field {
@@ -936,4 +944,8 @@ line-height: 1;
 	font-size: 12px;
 	line-height: 1.5;
 	opacity: .55;
+}
+
+.main-title {
+    margin: 25px 0 30px;
 }
