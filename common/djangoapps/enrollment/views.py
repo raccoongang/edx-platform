@@ -36,7 +36,7 @@ from openedx.core.lib.exceptions import CourseNotFoundError
 from openedx.core.lib.log_utils import audit_log
 from openedx.features.enterprise_support.api import EnterpriseApiClient, EnterpriseApiException, enterprise_enabled
 from student.auth import user_has_role
-from student.models import User
+from student.models import User, CourseEnrollmentAllowed
 from student.roles import CourseStaffRole, GlobalStaff
 from util.disable_rate_limit import can_disable_rate_limit
 
@@ -655,6 +655,9 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
                     enrollment_attributes=enrollment_attributes
                 )
             else:
+                if email:
+                    course = get_course_by_id(course_id)
+                    _ = CourseEnrollmentAllowed.objects.get_or_create(course_id=course_id, email=email)
                 # Will reactivate inactive enrollments.
                 response = api.add_enrollment(
                     username,
@@ -665,7 +668,6 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
                 )
                 if email:
                     try:
-                        course = get_course_by_id(course_id)
                         email_params = get_email_params(course, True)
                         email_params.update({
                             'email_address': email,
