@@ -48,6 +48,7 @@
     "\n        The time allotted for this exam has expired. Your exam has been submitted and any work you completed will be graded.\n      ": "\nEl tiempo permitido para este examen ha vencido. Su examen ha sido enviado y el progreso que complet\u00f3 ser\u00e1 calificado.", 
     "\n        You have submitted your timed exam.\n      ": "\nHa enviado su examen cronometrado.", 
     "\n        You will be asked to verify your identity as part of the proctoring exam set up.\n        Make sure you are on a computer with a webcam, and that you have valid photo identification\n        such as a driver's license or passport, before you continue.\n      ": "\nLe ser\u00e1 pedido verificar su identidad como parte de la preparaci\u00f3n para el examen supervisado.\nConfirme que est\u00e9 usando una computadora con una c\u00e1mara web, y que tenga una identificaci\u00f3n fotogr\u00e1fica v\u00e1lida\ncomo una licencia para conducir o un pasaporte, antes de seguir.", 
+    "\n        You will be guided through steps to set up online proctoring software and to perform various checks.\n      ": "\n        G\u00f6zetmen yaz\u0131l\u0131m\u0131n\u0131n ayarlanmas\u0131n\u0131n her bir adam\u0131nda size rehberlik edilecek ve \u00e7e\u015fitli denetimler yap\u0131lacak.\n      ", 
     "\n      &#8226; After you quit the proctoring session, the recorded data is uploaded for review. </br>\n      &#8226; Proctoring results are usually available within 5 business days after you submit your exam.\n    ": "\n&#8226; Despu\u00e9s de salir de la sesi\u00f3n supervisada, los datos grabados son subidos para revisi\u00f3n. </br>\n&#8226; Los resultados de la sesi\u00f3n supervisada normalmente est\u00e1n disponibles dentro de 5 d\u00edas h\u00e1biles despu\u00e9s de el env\u00edo de su examen.", 
     "\n      A technical error has occurred with your proctored exam. To resolve this problem, contact\n      <a href=\"mailto:%(tech_support_email)s\">technical support</a>. All exam data, including answers\n      for completed problems, has been lost. When the problem is resolved you will need to restart\n      the exam and complete all problems again.\n    ": "\nSe\u00a0ha producido un error t\u00e9cnico en su examen supervisado. Para resolver el problema, comun\u00edquese con <a href=\"mailto:%(tech_support_email)s\">ayuda t\u00e9cnica</a>. Todos los datos del examen, incluso respuestas\npara problemas completados, han sido perdidos. Cuando el problema est\u00e9 resuelto, tendr\u00e1 que reiniciar\nel examen y completar todos los problemas de nuevo.", 
     "\n      After the due date for this exam has passed, you will be able to review your answers on this page.\n    ": "\nDespu\u00e9s de que la fecha l\u00edmite de este examen haya pasado, podr\u00e1 revisar sus respuestas en esta p\u00e1gina.", 
@@ -116,16 +117,16 @@
     "%(comments_count)s %(span_sr_open)scomments (%(unread_comments_count)s unread comments)%(span_close)s": "%(comments_count)s %(span_sr_open)s comentarios (%(unread_comments_count)s comentarios no le\u00eddos)%(span_close)s", 
     "%(download_link_start)sDownload this image (right-click or option-click, save as)%(link_end)s and then %(upload_link_start)supload%(link_end)s it to your backpack.</li>": "%(download_link_start)sDescarga esta imagen (haz clic derecho o pulsa opci\u00f3n, guardar como)%(link_end)s y despu\u00e9s %(upload_link_start)ssubirla%(link_end)s a tu mochila.</li>", 
     "%(earned)s/%(possible)s point (graded)": [
-      "%(earned)s/%(possible)s punto (calificado)", 
-      "%(earned)s/%(possible)s puntos (calificados)"
+      "%(possible)s \u00fczerinden %(earned)s puan (notland\u0131r\u0131lan)", 
+      "%(possible)s \u00fczerinden %(earned)s puan (notland\u0131r\u0131lan)"
     ], 
     "%(earned)s/%(possible)s point (ungraded)": [
-      "%(earned)s/%(possible)s punto (no calificado)", 
-      "%(earned)s/%(possible)s puntos (no calificados)"
+      "%(possible)s \u00fczerinden %(earned)s puan (notland\u0131r\u0131lmayan)", 
+      "%(possible)s \u00fczerinden %(earned)s puan (notland\u0131r\u0131lmayan)"
     ], 
     "%(errorCount)s error found in form.": [
-      "%(errorCount)s error en el formulario.", 
-      "%(errorCount)s errores en el formulario."
+      "Formda %(errorCount)shata bulundu.", 
+      "Formda %(errorCount)s hata bulundu."
     ], 
     "%(field)s can only contain up to %(count)d characters.": "%(field)s solo puede contener hasta %(count)d caracteres.", 
     "%(field)s must have at least %(count)d characters.": "%(field)s debe tener al menos %(count)d caracteres.", 
@@ -135,70 +136,70 @@
     ], 
     "%(new_item_message)s": "%(new_item_message)s", 
     "%(num_points)s point possible (graded)": [
-      "%(num_points)s punto posible (calificado)", 
-      "%(num_points)s puntos posibles (calificados)"
+      "%(num_points)s al\u0131nabilir puan (notland\u0131r\u0131lan)", 
+      "%(num_points)s al\u0131nabilir puan (notland\u0131r\u0131lan)"
     ], 
     "%(num_points)s point possible (graded, results hidden)": [
-      "%(num_points)s punto posible (calificables, resultados escondidos)", 
-      "%(num_points)s puntos posibles (calificables, resultados ocultos)"
+      "%(num_points)s al\u0131nabilir puan (notland\u0131r\u0131lan, sonu\u00e7lar gizli)", 
+      "%(num_points)s al\u0131nabilir puan (notland\u0131r\u0131lan, sonu\u00e7lar gizli)"
     ], 
     "%(num_points)s point possible (ungraded)": [
-      "%(num_points)s punto posible (no calificado)", 
-      "%(num_points)s puntos posibles (no calificados)"
+      "%(num_points)s al\u0131nabilir puan (notland\u0131r\u0131lmayan)", 
+      "%(num_points)s al\u0131nabilir puan (notland\u0131r\u0131lmayan)"
     ], 
     "%(num_points)s point possible (ungraded, results hidden)": [
-      "%(num_points)s punto posible (calificable, resultados ocultos)", 
-      "%(num_points)s puntos posibles (no calificables, resultados ocultos)"
+      "%(num_points)s al\u0131nabilir puan (notland\u0131r\u0131lmayan, sonu\u00e7lar gizli)", 
+      "%(num_points)s al\u0131nabilir puan (notland\u0131r\u0131lmayan, sonu\u00e7lar gizli)"
     ], 
     "%(num_questions)s question": [
-      "%(num_questions)s pregunta", 
-      "%(num_questions)s preguntas"
+      "%(num_questions)s soru", 
+      "%(num_questions)s soru"
     ], 
     "%(num_students)s student": [
-      "%(num_students)s estudiante", 
-      "%(num_students)s estudiantes"
+      "%(num_students)s \u00f6\u011frenci", 
+      "%(num_students)s \u00f6\u011frenci"
     ], 
     "%(num_students)s student opened Subsection": [
-      "%(num_students)s estudiante abri\u00f3 la subsecci\u00f3n", 
-      "%(num_students)s estudiantes abrieron la subsecci\u00f3n"
+      "%(num_students)s  \u00f6\u011frenci alt b\u00f6l\u00fcm a\u00e7t\u0131", 
+      "%(num_students)s \u00f6\u011frenci alt b\u00f6l\u00fcm a\u00e7t\u0131"
     ], 
     "%(programName)s Home Page.": "P\u00e1gina de inicio de %(programName)s.", 
     "%(sel)s of %(cnt)s selected": [
-      "%(sel)s de %(cnt)s seleccionado", 
-      "%(sel)s de  %(cnt)s seleccionados"
+      "%(sel)s / %(cnt)s se\u00e7ildi", 
+      "%(sel)s / %(cnt)s se\u00e7ildi"
     ], 
     "%(team_count)s Team": [
-      "%(team_count)s Equipo", 
-      "%(team_count)s Equipos"
+      "%(team_count)s Tak\u0131m", 
+      "%(team_count)s Tak\u0131m"
     ], 
     "%(type)s Component Template Menu": "Plantilla de men\u00fa de componentes %(type)s", 
     "%(value)s hour": [
-      "%(value)s hora", 
-      "%(value)s horas"
+      "%(value)s saat", 
+      "%(value)s saat"
     ], 
     "%(value)s minute": [
-      "%(value)s minuto", 
-      "%(value)s minutos"
+      "%(value)s dakika", 
+      "%(value)s dakika"
     ], 
     "%(value)s second": [
-      "%(value)s segundo", 
-      "%(value)s segundos"
+      "%(value)s saniye", 
+      "%(value)s saniye"
     ], 
     "%d day": [
-      "%d d\u00eda", 
-      "%d d\u00edas"
+      "%d g\u00fcn", 
+      "%d g\u00fcn"
     ], 
     "%d minute": [
-      "%d minuto", 
-      "%d minutos"
+      "%d dakika", 
+      "%d dakika"
     ], 
     "%d month": [
-      "%d mes", 
-      "%d meses"
+      "%d ay", 
+      "%d ay"
     ], 
     "%d year": [
-      "%d a\u00f1o", 
-      "%d a\u00f1os"
+      "%d y\u0131l", 
+      "%d y\u0131l"
     ], 
     "%s ago": "hace %s", 
     "%s from now": "%s a partir de ahora", 
@@ -206,6 +207,7 @@
     "(Caption will be displayed when you start playing the video.)": "(Los subt\u00edtulos ser\u00e1n mostrados al iniciar la reproducci\u00f3n del video.)", 
     "(Community TA)": "(Profesor asistente de la comunidad)", 
     "(Optional)": "(Opcional)", 
+    "(Read-only)": "(Salt-okunur)", 
     "(Required Field)": "(Campo requerido)", 
     "(Self-paced) Ended {end}": "(A ritmo propio) Terminado {end}", 
     "(Self-paced) Ends {end}": "(A ritmo propio)Termina{end}", 
@@ -213,8 +215,8 @@
     "(Self-paced) Starts {start}": "(A su propio ritmo) Empieza {start}", 
     "(Staff)": "(Equipo)", 
     "(contains %(student_count)s student)": [
-      "(contiene %(student_count)s estudiante)", 
-      "(contiene %(student_count)s estudiantes)"
+      "(%(student_count)s \u00f6\u011frenci i\u00e7eriyor)", 
+      "(%(student_count)s \u00f6\u011frenci i\u00e7eriyor)"
     ], 
     "(optional)": "(opcional)", 
     "(required)": "(requerido)", 
@@ -316,6 +318,7 @@
     "All Unreviewed": "Todos los no revisados", 
     "All Unreviewed Failures": "Todos los fracasos no revisados", 
     "All accounts were created successfully.": "Todas las cuentas fueron creadas exitosamente.", 
+    "All chapters must have a name and asset": "T\u00fcm b\u00f6l\u00fcmlerin bir ad\u0131 ve varl\u0131\u011f\u0131 olmal\u0131", 
     "All flags have been removed. To undo, uncheck the box.": "Todas las marcas han sido eliminadas.  Para deshacer, desmarca la casilla.", 
     "All groups must have a name.": "Todos los grupos deben tener nombre.", 
     "All groups must have a unique name.": "Todos los equipos deben tener un nombre \u00fanico.", 
@@ -449,6 +452,7 @@
     "Cancel enrollment code": "Cancelar c\u00f3digo de inscripci\u00f3n", 
     "Cancel team creating.": "Cancelar la creaci\u00f3n del equipo.", 
     "Cancel team updating.": "Cancelar la actualizaci\u00f3n", 
+    "Cancel upload": "Y\u00fcklemeyi iptal et", 
     "Cannot Start Proctored Exam": "No se puede Iniciar el Examen Supervisado", 
     "Cannot delete when in use by a unit": "No puede borrar cuando esta en uso por una unidad", 
     "Cannot delete when in use by an experiment": "No se puede borrar mientras est\u00e9 en uso por un experimento", 
@@ -484,15 +488,17 @@
     "Chapter Asset": "Recursos del cap\u00edtulo", 
     "Chapter Name": "Nombre del cap\u00edtulo", 
     "Chapter information": "Informaci\u00f3n del cap\u00edtulo", 
+    "Chapter name and asset_path are both required": "B\u00f6l\u00fcm ad\u0131 ve asset_path gerekli", 
+    "Chapter name is required": "B\u00f6l\u00fcm ad\u0131 gerekiyor", 
     "Chapter {order}": "Cap\u00edtulo {order}", 
     "Check Your Email": "Revise tu correo electr\u00f3nico", 
     "Check the box to remove %(count)s flag.": [
-      "Marque la casilla para eliminar %(count)s marca.", 
-      "Marca la casilla para eliminar %(count)s marcas."
+      "%(count)s bayra\u011f\u0131 kald\u0131rmak i\u00e7in kutucu\u011fu i\u015faretleyin.", 
+      "%(count)s bayra\u011f\u0131 kald\u0131rmak i\u00e7in kutucu\u011fu i\u015faretleyin."
     ], 
     "Check the box to remove %(totalFlags)s flag.": [
-      "Marque la casilla para eliminar %(totalFlags)s marca.", 
-      "Marca la casilla para eliminar %(totalFlags)s marcas."
+      "%(totalFlags)s bayra\u011f\u0131 kald\u0131rmak i\u00e7in kutucu\u011fu i\u015faretleyin.", 
+      "%(totalFlags)s bayra\u011f\u0131 kald\u0131rmak i\u00e7in kutucu\u011fu i\u015faretleyin."
     ], 
     "Check the box to remove all flags.": "Marca la casilla para eliminar todas las marcas.", 
     "Check the highlighted fields below and try again.": "Revisa los campos resaltados abajo e intenta nuevamente.", 
@@ -514,6 +520,7 @@
     "Choose a time": "Elija una hora", 
     "Choose all": "Selecciona todos", 
     "Choose mode": "Elegir modo", 
+    "Choose new file": "Yeni dosya se\u00e7in", 
     "Choose one": "Elegir uno", 
     "Choose your institution from the list below:": "Elija su instituci\u00f3n:", 
     "Chosen %s": "%s elegidos", 
@@ -564,6 +571,7 @@
     "Components": "Componentes", 
     "Configure": "Configurar", 
     "Confirm": "Confirmar", 
+    "Confirm Password": "Parolay\u0131 Do\u011frula", 
     "Confirm Timed Transcript": "Confirmar la transcripci\u00f3n", 
     "Congratulations!": "\u00a1Felicitaciones!", 
     "Congratulations! You are now verified on %(platformName)s!": "Felicitaciones! Ya se encuentra verificado en %(platformName)s!", 
@@ -571,8 +579,8 @@
     "Contact Us": "Contacta con nosotros", 
     "Contains staff only content": "Contiene solo contenido del equipo del curso", 
     "Contains {count} group": [
-      "Contiene {count} grupo", 
-      "Contiene {count} grupos"
+      "{count} grup i\u00e7erir", 
+      "{count} grup i\u00e7erir"
     ], 
     "Content Group ID": "ID de Contenido de Grupo", 
     "Content Group Name": "Content Group Name", 
@@ -605,8 +613,8 @@
     "Country of residence": "Pa\u00eds de residencia", 
     "Country or Region of Residence": "Pa\u00eds o regi\u00f3n de residencia", 
     "Course": [
-      "Curso", 
-      "Cursos"
+      "Ders", 
+      "Dersler"
     ], 
     "Course Credit Requirements": "Requerimientos de cr\u00e9ditos para el curso", 
     "Course End": "Finalizaci\u00f3n del curso", 
@@ -618,7 +626,9 @@
     "Course Name": "Nombre del curso", 
     "Course Number": "C\u00f3digo del curso", 
     "Course Number Override": "Reemplazo para el n\u00famero de curso", 
+    "Course Number:": "Ders Numaras\u0131:", 
     "Course Outline": "Estructura del curso", 
+    "Course Run:": "Ders Yay\u0131n\u0131:", 
     "Course Start": "Inicio del Curso", 
     "Course Title": "T\u00edtulo del curso", 
     "Course Title Override": "Reemplazo para el t\u00edtulo del curso", 
@@ -638,6 +648,7 @@
     "Create an Account": "Crear una cuenta", 
     "Create an Account.": "Crear una cuenta.", 
     "Create an account using": "Crear una cuenta usando", 
+    "Create an {platform} account": "Bir {platform} hesab\u0131 olu\u015fturun", 
     "Create team.": "Crear el equipo.", 
     "Created": "Creado", 
     "Creating missing groups": "Agregar los grupos faltantes", 
@@ -685,8 +696,10 @@
     "Delete this team?": "\u00bfBorrar este equipo?", 
     "Delete this {xblock_type} (and prerequisite)?": "\u00bfEliminar este {xblock_type} (y prerrequisitos)?", 
     "Delete this {xblock_type}?": "\u00bfEliminar este {xblock_type}?", 
+    "Delete \u201c<%= name %>\u201d?": "Sil \u201c<%= name %>\u201d?", 
     "Deleted Content Group": "Contenido de grupo eliminado", 
     "Deleted Group": "Grupo eliminado", 
+    "Deleting": "Siliniyor", 
     "Deleting a team is permanent and cannot be undone. All members are removed from the team, and team discussions can no longer be accessed.": "El borrar un equipo es una acci\u00f3n permanente y no puede ser reversada. Todos los miembros ser\u00e1n removidos del equipo y las discusiones no podr\u00e1n volver a ser accesadas.", 
     "Deleting a textbook cannot be undone and once deleted any reference to it in your courseware's navigation will also be removed.": "El borrado de un Libro de texto no se puede deshacer y una vez borrado, cualquier referencia al mismo en la navegaci\u00f3n del curso ser\u00e1 eliminada.", 
     "Deleting this %(item_display_name)s is permanent and cannot be undone.": "Eliminar %(item_display_name)s is permanente y no puede deshacerse", 
@@ -797,6 +810,7 @@
     "Enter a student's username or email address.": "Ingresa un nombre de usuario o email de estudiante.", 
     "Enter a subject for your support request.": "Introduzca el tema de tu mensaje al equipo de soporte.", 
     "Enter a username or email.": "Ingresa el nombre de usuario o el correo electr\u00f3nico.", 
+    "Enter and confirm your new password.": "L\u00fctfen yeni parolan\u0131z\u0131 girin ve onaylay\u0131n.", 
     "Enter email addresses and/or usernames, separated by new lines or commas, for the learners you want to add. *": "Ingrese los correos electr\u00f3nicos y/o nombres de usuarios, separados por comas o en l\u00edneas nuevas, uno debajo del otro, de los estudiantes que quiera agregar.*", 
     "Enter information to describe your team. You cannot change these details after you create the team.": "Ingrese la descripci\u00f3n de su equipo. No podr\u00e1 cambiar esta informaci\u00f3n despu\u00e9s de crear el equipo.", 
     "Enter some details for your support request.": "Describe los detalles de tu solicitud de ayuda.", 
@@ -832,6 +846,7 @@
     "Error getting student progress url for '<%- student_id %>'. Make sure that the student identifier is spelled correctly.": "Error al obtener la url de progreso del estudiante '<%- student_id %>'. Aseg\u00farate de que el identificador del estudiante est\u00e9 escrito correctamente.", 
     "Error getting task history for problem '<%- problem_id %>' and student '<%- student_id %>'. Make sure that the problem and student identifiers are complete and correct.": "Error al obtener el historial de tareas para el problema '<%- problem_id %>' y el estudiante '<%- student_id %>'.  Verifica que el problema y el estudiante est\u00e9n identificados correctamente.", 
     "Error getting the number of ungraded responses": "Error al obtener el n\u00famero de respuestas no calificadas.", 
+    "Error importing course": "Dersi i\u00e7e aktar\u0131rken hata ", 
     "Error listing task history for this student and problem.": "Error listando el historial de tareas para este estudiante y problema.", 
     "Error posting your message.": "Error al publicar su mensaje.", 
     "Error removing user": "Error al remover el usuario.", 
@@ -878,6 +893,7 @@
     "Feedback available for selection.": "Comentarios disponibles para esta selecci\u00f3n.", 
     "File": "Archivo", 
     "File Name": "Nombre de archivo", 
+    "File format not supported. Please upload a file with a {ext} extension.": "Dosya tipi desteklenmiyor. L\u00fctfen {ext} uzant\u0131l\u0131 bir dosya y\u00fckleyin.", 
     "File size must be 10MB or less.": "Tama\u00f1o del archivo debe ser de 10MB como m\u00e1ximo.", 
     "File type is not allowed.": "Tipo de archivo no permitido.", 
     "File types can not be empty.": "Tipo de archivo no puede ser vac\u00edo.", 
@@ -1003,6 +1019,7 @@
     "If the subsection does not have a due date, learners always see their scores when they submit answers to assessments.": "Si la subsecci\u00f3n no tiene fecha de caducidad, los estudiantes siempre pueden ver sus puntajes cuando env\u00edan las respuestas a la evaluaci\u00f3n.", 
     "If the unit was previously published and released to learners, any changes you made to the unit when it was hidden will now be visible to learners.": "Si la unidad fue publicada anteriormente y liberada a los estudiantes, cualquier cambio que haya realizado cuando estaba oculta ser\u00e1 ahora visible para los estudiantes.", 
     "If the unit was previously published and released to students, any changes you made to the unit when it was hidden will now be visible to students. Do you want to proceed?": "Si la unidad fue publicada anteriormente y liberada a los estudiantes, cualquier cambio que realice cuando estaba oculta ser\u00e1 ahora visible para los estudiantes. \u00bfdesea proceder?", 
+    "If you are unable to access your account contact us via email using {email}.": "Hesab\u0131n\u0131za ula\u015fam\u0131yorsan\u0131z bizimle {email} e-posta adresi \u00fczerinden ileti\u015fime ge\u00e7ebilirsiniz.", 
     "If you do not yet have an account, use the button below to register.": "Si todav\u00eda no tienes una cuenta, puedes utilizar el bot\u00f3n abajo para registrarte ", 
     "If you don't verify your identity now, you can still explore your course from your dashboard. You will receive periodic reminders from %(platformName)s to verify your identity.": "Si no verifica su identidad ahora, de todas formas podr\u00e1 explorar el curso desde su Panel de Control. Recibir\u00e1 recordatorios peri\u00f3dicos de %(platformName)s para realizar la verificaci\u00f3n de identidad.", 
     "If you don't verify your identity now, you can still explore your course from your dashboard. You will receive periodic reminders from {platformName} to verify your identity.": "Si no verifica su identidad ahora, de todas formas podr\u00e1 explorar el curso desde su Panel de Control. Recibir\u00e1 recordatorios peri\u00f3dicos de {platformName} para realizar la verificaci\u00f3n de identidad.", 
@@ -1013,6 +1030,7 @@
     "If you leave, you can no longer post in this team's discussions. Your place will be available to another learner.": "Si abandonas este equipo, no podr\u00e1s escribir en las discusiones de este equipo. Tu lugar estar\u00e1 disponible para otro estudiante.", 
     "If you make significant changes, make sure you notify members of the team before making these changes.": "Si haces cambios significativos,  aseg\u00farate de avisarle a los miembros del equipos antes de realizar estos cambios.", 
     "If you make this %(xblockType)s visible to learners, learners will be able to see its content after the release date has passed and you have published the unit. Only units that are explicitly hidden from learners will remain hidden after you clear this option for the %(xblockType)s.": "Si hace este %(xblockType)s visible a los estudiantes, podr\u00e1n ver su contenido a partir de la fecha de liberaci\u00f3n siempre que haya publicado la unidad. S\u00f3lo las unidades que est\u00e1n ocultos expl\u00edcitamente permanecer\u00e1n ocultas despu\u00e9s de quitar esta opci\u00f3n para %(xblockType)s.", 
+    "If you proceed, you will be unable to use this account to take courses on the edX app, edx.org, or any other site hosted by edX. This includes access to edx.org from your employer\u2019s or university\u2019s system and access to private sites offered by MIT Open Learning, Wharton Executive Education, and Harvard Medical School.": "\u0130lerlemeyi se\u00e7meniz durumunda, bu hesapla edX uygulamas\u0131, edx.org ya da edX taraf\u0131ndan bar\u0131nd\u0131r\u0131lan siteden ders alamazs\u0131n\u0131z. Buna; i\u015fvereninizin veya \u00fcniversitenin sisteminden edx.org'a eri\u015fim ve MIT Open Learning, Wharton Executive Education ve Harvard Medical School taraf\u0131ndan sunulan \u00f6zel sitelere eri\u015fim d\u00e2hildir.", 
     "If you remove this transcript, the transcript will not be available for any components that use this video.": "Si elimina esta transcripci\u00f3n, la transcripci\u00f3n no estar\u00e1 disponible para ning\u00fan componente que use este v\u00eddeo.", 
     "If you remove this transcript, the transcript will not be available for this component.": "Si elimina esta transcripci\u00f3n, la transcripci\u00f3n no estar\u00e1 disponible para este componente.", 
     "If you select an option other than \"%(hide_label)s\", published units in this subsection become available to learners unless they are explicitly hidden.": "Si selecciona esta opci\u00f3n distinta a \"%(hide_label)s\", \nlas unidades publicadas en este subsecci\u00f3n pasar\u00e1n a estar disponible para los estudiantes a menos que est\u00e1n expl\u00edcitamente ocultas.", 
@@ -1137,8 +1155,8 @@
     "Load more": "Cargar m\u00e1s", 
     "Load next {numResponses} responses": "Cargar las siguientes {numResponses} respuestas", 
     "Load next {num_items} result": [
-      "Cargar el siguiente {num_items} resultado", 
-      "Cargar los siguientes {num_items} resultados"
+      "Sonraki {num_items} adet sonucu y\u00fckle", 
+      "Sonraki {num_items} adet sonucu y\u00fckle"
     ], 
     "Loading": "Cargando", 
     "Loading content": "Cargando contenido", 
@@ -1180,6 +1198,7 @@
     "Message:": "Mensaje:", 
     "Middle": "Educaci\u00f3n media", 
     "Midnight": "Medianoche", 
+    "Minimum Completion:": "Minimum Tamamlama:", 
     "Minimum Score:": "Nota m\u00ednima", 
     "Module state successfully deleted.": "Estado del m\u00f3dulo borrado exit\u00f3samente.", 
     "More": "M\u00e1s", 
@@ -1253,12 +1272,12 @@
     "Note: Do not hide graded assignments after they have been released.": "Nota: No oculte las tareas calificadas despu\u00e9s de que han sido liberadas.", 
     "Note: Learners can be in only one cohort. Adding learners to this group overrides any previous group assignment.": "Nota: Los estudiantes pueden estar \u00fanicamente en uno solo cohorte. Agregando estudiantes a este grupo sobreescribe cualquier asignaci\u00f3n previa a este grupo.", 
     "Note: You are %s hour ahead of server time.": [
-      "Nota: Usted esta a %s horas por delante de la hora del servidor.", 
-      "Nota: Usted va %s horas por delante de la hora del servidor."
+      "Not: Sunucu saatinin %s saat ilerisindesiniz.", 
+      "Not: Sunucu saatinin %s saat ilerisindesiniz."
     ], 
     "Note: You are %s hour behind server time.": [
-      "Nota: Usted esta a %s hora de retraso de tiempo de servidor.", 
-      "Nota: Usted va %s horas por detr\u00e1s de la hora del servidor."
+      "Not: Sunucu saatinin %s saat gerisindesiniz.", 
+      "Not: Sunucu saatinin %s saat gerisindesiniz."
     ], 
     "Noted in:": "Anotado en:", 
     "Notes": "Notas", 
@@ -1281,6 +1300,7 @@
     "Once in position, use the camera button {icon} to capture your photo": "Una vez en posici\u00f3n, usa el siguiente \u00edcono {icon} para capturar tu foto", 
     "Once your account is deleted, you cannot use it to take courses on the edX app, edx.org, or any other site hosted by edX. This includes access to edx.org from your employer\u2019s or university\u2019s system and access to private sites offered by MIT Open Learning, Wharton Executive Education, and Harvard Medical School.": "Una vez tu cuenta haya sido eliminada, no la podr\u00e1s usar para tomar cursos en la app de edX, edx.org o en cualquier otro sitio administrado por edX. Esto incluye el acceso a edx.org desde el sistema de tu empleador o de tu universidad y el acceso a p\u00e1ginas privadas ofrecidas por MIT Open Learning, Wharton Online y Harvard Medical School.", 
     "One or more rescheduling tasks failed.": "Una o m\u00e1s tareas de re-programaci\u00f3n fall\u00f3.", 
+    "Only <%= fileTypes %> files can be uploaded. Please select a file ending in <%= fileExtensions %> to upload.": "Sadece <%= fileTypes %> dosya uzant\u0131lar\u0131n\u0131 y\u00fckleyebilirsiniz. L\u00fctfen sonunda <%= fileExtensions %> uzant\u0131s\u0131 olan bir dosya y\u00fckleyin.", 
     "Only properly formatted .csv files will be accepted.": "Solo archivos .csv correctamente formateados pueden ser utilizados.", 
     "Only the parent course staff of a CCX can create content groups.": "S\u00f3lo el personal del curso principal de un CCX puede crear grupos de contenido.", 
     "Open": "Abrir", 
@@ -1302,6 +1322,7 @@
     "Organization ": "Organizaci\u00f3n", 
     "Organization Name": "Nombre de la organizaci\u00f3n", 
     "Organization of the signatory": "Organizaci\u00f3n del signatario", 
+    "Organization:": "Kurum:", 
     "Other": "Otro", 
     "Overall Score": "Puntaje general", 
     "Page break": "Salto de p\u00e1gina", 
@@ -1313,6 +1334,7 @@
     "Password Status": "Estado de la Contrase\u00f1a", 
     "Password assistance": "Ayuda con la contrase\u00f1a", 
     "Password is incorrect": "Contrase\u00f1a incorrecta", 
+    "Passwords do not match.": "Parolalar e\u015fle\u015fmiyor.", 
     "Paste": "Pegar", 
     "Paste as text": "Pegar como texto", 
     "Paste is now in plain text mode. Contents will now be pasted as plain text until you toggle this option off.": "La funci\u00f3n pegar est\u00e1 en modo de texto. Los contenidos se pegar\u00e1n como texto plano hasta que se desactive esta opci\u00f3n.", 
@@ -1338,6 +1360,7 @@
     "Play video": "Reproducir video", 
     "Please Note": "Por favor tener en cuenta", 
     "Please add a photo of the instructor (Note: only JPEG or PNG format supported)": "Por favor proporcione una foto del instructor. (Nota: s\u00f3lo se admite formato JPEG o PNG)", 
+    "Please add at least one chapter": "L\u00fctfen en az bir b\u00f6l\u00fcm ekleyin", 
     "Please add the institute where the instructor is associated": "Ingrese la instituci\u00f3n con la que el instructor est\u00e1 asociado", 
     "Please add the instructor's biography": "Por favor ingrese la biograf\u00eda del instructor", 
     "Please add the instructor's name": "Ingrese el nombre del instructor", 
@@ -1368,6 +1391,7 @@
     "Please provide a description of the link destination.": "Por favor, provee una descripci\u00f3n de la destinaci\u00f3n del v\u00ednculo.", 
     "Please provide a valid URL.": "Por favor, provee un URL v\u00e1lido.", 
     "Please re-enter your password.": "Por favor, introduce tu contrase\u00f1a nuevamente.", 
+    "Please select a PDF file to upload.": "L\u00fctfen y\u00fcklemek i\u00e7in PDF dosyas\u0131 se\u00e7iniz.", 
     "Please select a file in .srt format.": "Por favor seleccione un archivo en formato .srt", 
     "Please specify a reason.": "Por favor especifica una raz\u00f3n.", 
     "Please verify that you have uploaded a valid image (PNG and JPEG).": "Por favor verifica que hayas cargado una imagen v\u00e1lida (PNG y JPEG)", 
@@ -1436,6 +1460,7 @@
     "Questions raise issues that need answers. Discussions share ideas and start conversations. (Required)": "Utilice pregunta para plantear t\u00f3picos que necesitan respuestas. Utilice Discusi\u00f3n para compartir sus ideas y comenzar conversaciones. (Requerido)", 
     "Queued": "En cola", 
     "REMAINING COURSES": "CURSOS RESTANTES", 
+    "Re-run Course": "Dersi Yeniden \u00c7al\u0131\u015ft\u0131r", 
     "Read More": "Leer mas", 
     "Read more": "Leer m\u00e1s", 
     "Ready To Start": "Listo para comenzar", 
@@ -1467,6 +1492,7 @@
     "Remove Transcript": "Eliminar Transcripci\u00f3n.", 
     "Remove all": "Eliminar todos", 
     "Remove chapter %(chapterDisplayName)s": "Borrar Cap\u00edtulo %(chapterDisplayName)s", 
+    "Remove file": "Dosya kald\u0131r", 
     "Remove from Invalidation Table": "Remover de la tabla de invalidaciones", 
     "Remove from List": "Remover de la lista", 
     "Remove link": "Remover el v\u00ednculo", 
@@ -1492,6 +1518,7 @@
     "Required": "Requerido", 
     "Required field.": "Campo requerido.", 
     "Rescore problem '<%- problem_id %>' for all students?": "\u00bfRe puntuar el problema '<%- problem_id %>' para todos los estudiantes?", 
+    "Reset My Password": "Parolam\u0131 S\u0131f\u0131rla", 
     "Reset Password": "Restablecer Contrase\u00f1a", 
     "Reset Your Password": "Restablecer tu contrase\u00f1a", 
     "Reset attempts for all students on problem '<%- problem_id %>'?": "\u00bfReiniciar los env\u00edos para todos los estudiantes en el problema '<%- problem_id %>'?", 
@@ -1535,6 +1562,7 @@
     "Search Results": "Resultados de b\u00fasqueda", 
     "Search all posts": "Buscar en todo", 
     "Search teams": "Buscar equipos", 
+    "Search the {platform} Help Center": "{platform} Yard\u0131m Merkezi'nde Ara", 
     "Second Review Required": "Segunda revisi\u00f3n requerida", 
     "Section": "Secci\u00f3n", 
     "Section Highlights": "Destacados de la secci\u00f3n", 
@@ -1548,6 +1576,7 @@
     "Select a cohort to manage": "Seleccione la cohorte a gestionar", 
     "Select a course or select \"Not specific to a course\" for your support request.": "Seleccione un curso o seleccione \"No espec\u00edfico para un curso\" para su solicitud de soporte.", 
     "Select a group type": "Seleccione un tipo de grupo", 
+    "Select a prerequisite subsection and enter a minimum score percentage and minimum completion percentage to limit access to this subsection. Allowed values are 0-100": "\u00d6nko\u015ful altb\u00f6l\u00fcm\u00fcn\u00fc se\u00e7in ve bu altb\u00f6l\u00fcme eri\u015fimi s\u0131n\u0131rlamak i\u00e7in gerekli minimum skor y\u00fczdesini girin ve minimum tamamlama y\u00fczdesini ekleyin. \u0130zin verilen de\u011ferler 0-100 aras\u0131d\u0131r", 
     "Select a session:": "Selecciona una edici\u00f3n:", 
     "Select a time allotment for the exam. If it is over 24 hours, type in the amount of time. You can grant individual learners extra time to complete the exam through the Instructor Dashboard.": "Seleccione un tiempo disponible para el examen. Si es mayor a 24 horas, escriba la cantidad de tiempo. Puede otorgar a estudiantes individuales un tiempo extra para completar el examen a trav\u00e9s del panel de control de instructor.", 
     "Select all": "Selecionar todo", 
@@ -1585,8 +1614,8 @@
     "Show All": "Mostrar todo", 
     "Show Annotations": "Mostrar anotaciones", 
     "Show Comment (%(num_comments)s)": [
-      "Mostrar comentario (%(num_comments)s)", 
-      "Mostrar comentarios (%(num_comments)s)"
+      "(%(num_comments)s) Yorumu G\u00f6ster", 
+      "(%(num_comments)s) Yorumu G\u00f6ster"
     ], 
     "Show Deprecated Settings": "Mostrar configuraciones descartadas", 
     "Show Discussion": "Mostrar Discusi\u00f3n", 
@@ -1602,8 +1631,8 @@
     "Show transcripts ({transcriptCount})": "Mostrar transcripciones ({transcriptCount})", 
     "Showing all responses": "Mostrando todas las respuestas", 
     "Showing first response": [
-      "Mostrando la primera respuesta", 
-      "Mostrando las primeras {numResponses} respuestas"
+      "\u0130lk cevap g\u00f6steriliyor", 
+      "\u0130lk {numResponses} cevap g\u00f6steriliyor"
     ], 
     "Showing results for \"{searchString}\"": "Mostrando resultados para \"{searchString}\"", 
     "Showing {currentItemRange} out of {totalItemsCount}, filtered by {assetType}, sorted by {sortName} ascending": "Mostrando {currentItemRange} de {totalItemsCount}, filtrado por {assetType}, ordenado por {sortName} asc", 
@@ -1677,6 +1706,7 @@
     "Student email or username": "Correo electr\u00f3nico o nombre de usuario del estudiante", 
     "Student username/email field is required and can not be empty. Kindly fill in username/email and then press \"Add to Exception List\" button.": "El campo de nombre de usuario /correo de estudiante es requerido y no puede estar vac\u00edo. Por favor completa este campo y luego presiona el bot\u00f3n de \"A\u00f1adir a la lista de excepciones\".", 
     "Student username/email field is required and can not be empty. Kindly fill in username/email and then press \"Invalidate Certificate\" button.": "El campo de nombre de usuario /correo de estudiante es requerido y no puede estar vac\u00edo. Por favor completa este campo y luego presiona el bot\u00f3n de \"Invalidar certificado\".", 
+    "Studio's having trouble saving your work": "Studio yapt\u0131\u011f\u0131n\u0131z i\u015fi kaydetme konusunda zorluk ya\u015f\u0131yor", 
     "Studio:": "Studio:", 
     "Style": "Estilo", 
     "Subject": "Asunto", 
@@ -1753,8 +1783,10 @@
     "Text to display": "Texto para desplegar", 
     "Textbook Name": "Nombre", 
     "Textbook information": "Informaci\u00f3n del libro de texto", 
+    "Textbook name is required": "Ders kitab\u0131 ad\u0131 gerekli", 
     "Thank you %(full_name)s! We have received your payment for %(course_name)s.": "Gracias %(full_name)s! Hemos recibido su pago para el curso %(course_name)s.", 
     "Thank you for setting your course goal to {goal}!": "\u00a1 Gracias por establecer su objetivo para este curso en {goal}!", 
+    "Thank you for submitting a request! We will contact you within 24 hours.": "Bize talebinizi iletti\u011finiz i\u00e7in te\u015fekk\u00fcr ederiz! Size 24 saat i\u00e7inde geri d\u00f6nece\u011fiz.", 
     "Thank you for submitting your financial assistance application for {course_name}! You can expect a response in 2-4 business days.": "Gracias por enviar tu aplicaci\u00f3n de financiamiento para {course_name}!. Espera una respuesta de 2-4 dias h\u00e1biles.", 
     "Thank you for submitting your photos. We will review them shortly. You can now sign up for any %(platformName)s course that offers verified certificates. Verification is good for one year. After one year, you must submit photos for verification again.": "Gracias por enviar sus fotos. Las revisaremos pronto. Ahora puede registrarse para cualquier curso de %(platformName)s que ofrezca Certficados Verificados. La verificaci\u00f3n es v\u00e1lida por un a\u00f1o. Despu\u00e9s de este periodo, deber\u00e1 volver a enviar fotograf\u00edas para una nueva verificaci\u00f3n.", 
     "Thank you! We have received your payment for {courseName}.": "\u00a1Gracias! Hemos recibido tu pago para {courseName}.", 
@@ -1792,8 +1824,10 @@
     "The grading process is still running. Refresh the page to see updates.": "El proceso de calificaci\u00f3n todav\u00eda est\u00e1 corriendo. Recarga la p\u00e1gina para ver las actualizaciones.", 
     "The language that team members primarily use to communicate with each other.": "El idioma que usan los miembros del equipo para comunicarse.", 
     "The language used throughout this site. This site is currently available in a limited number of languages. Changing the value of this field will cause the page to refresh.": "El idioma utilizado en este sitio. Actualmente este sitio est\u00e1 disponible en un n\u00famero limitado de idiomas. Cambiar el valor de este campo causar\u00e1 que la p\u00e1gina se actualice.", 
+    "The minimum completion percentage must be a whole number between 0 and 100.": "Minimum tamamlama y\u00fczdesi 0 ile 100 aras\u0131nda bir tamsay\u0131 olmal\u0131.", 
     "The minimum grade for course credit is not set.": "La calificaci\u00f3n m\u00ednima para obtener cr\u00e9ditos por el curso no est\u00e1 definida.", 
     "The minimum score percentage must be a whole number between 0 and 100.": "La nota m\u00ednima para aprobar debe ser un n\u00famero entero entre 0 y 100.", 
+    "The more you tell us, the more quickly and helpfully we can respond!": "Bize ne kadar \u00e7ok ayr\u0131nt\u0131 verirseniz, size o kadar h\u0131zl\u0131 ve faydal\u0131 bir \u015fekilde cevap verebiliriz!", 
     "The name of this signatory as it should appear on certificates.": "El nombre de este signatario como debe aparecer en los certificados.", 
     "The name that identifies you on {platform_name}. You cannot change your username.": "El nombre que lo identifica en {platform_name}. No puede cambiar el nombre de usuario.", 
     "The name that is used for ID verification and that appears on your certificates.": "El nombre que es usado para la verificaci\u00f3n de identidad y aparece en sus certificados.", 
@@ -1830,14 +1864,21 @@
     "There must be one cohort to which students can automatically be assigned.": "Tiene que haber una cohorte a la que los estudiantes pueden ser asignados autom\u00e1ticamente.", 
     "There was a problem creating the report. Select \"Create Executive Summary\" to try again.": "Hubo un problema creando el reporte. Selecciona \"Crear resumen ejecutivo\" para intentarlo nuevamente.", 
     "There was an error changing the user's role": "Ocurri\u00f3 un error al cambiar el papel del usuario.", 
+    "There was an error during the upload process.": "Y\u00fckleme i\u015flemi s\u0131ras\u0131nda bir hata olu\u015ftu.", 
+    "There was an error in setting your goal, please reload the page and try again.": "Hedefinizi belirlemede bir hata olu\u015ftu, l\u00fctfen sayfay\u0131 yeniden y\u00fckleyin ve tekrar deneyin.", 
     "There was an error obtaining email content history for this course.": "Ocurri\u00f3 un error obteniendo el historial de correos electr\u00f3nicos para este curso.", 
     "There was an error obtaining email task history for this course.": "Ocurri\u00f3 un error obteniendo el historial de tareas de correo para este curso.", 
     "There was an error retrieving preview results for this catalog. Please check that your query is correct and try again.": "Ocurri\u00f3 un error recuperando los resultados de vista previa para este cat\u00e1logo. Por favor aseg\u00farate de que tu consulta es correcta e intente nuevamente.", 
     "There was an error updating your goal.": "Hubo un error actualizando su objetivo.", 
     "There was an error when trying to add learners:": [
-      "Hubo un error al intentar agregar estudiantes:", 
-      "{numErrors} estudiantes no pudieron ser agregados a este cohorte:"
+      "\u00d6\u011frenciler bu toplulu\u011fa eklenirken bir hata olu\u015ftu:", 
+      "{numErrors} \u00f6\u011frenci bu toplulu\u011fa eklenemedi:"
     ], 
+    "There was an error while importing the new course to our database.": "Yeni dersi veritaban\u0131m\u0131za ta\u015f\u0131rken bir hata olu\u015ftu.", 
+    "There was an error while importing the new library to our database.": "Yeni k\u00fct\u00fcphaneyi veritaban\u0131m\u0131za aktar\u0131rken bir hata olu\u015ftu.", 
+    "There was an error while unpacking the file.": "Dosyay\u0131 a\u00e7arken hata olu\u015ftu.", 
+    "There was an error while verifying the file you submitted.": "Girdi\u011finiz dosyay\u0131 do\u011frularken hata olu\u015ftu.", 
+    "There was an error with the upload": "Y\u00fcklemede bir sorun olu\u015ftu", 
     "There was an error, try searching again.": "Hubo un error, intenta buscar de nuevo.", 
     "There was an error. Please reload the page and try again.": "Hubo un error inesperado. Por favor recargue la p\u00e1gina e intente de nuevo.", 
     "There were errors reindexing course.": "Hubo errores al reindexar el curso.", 
@@ -1886,6 +1927,9 @@
     "This is the name of the group": "Este es el nombre del grupo", 
     "This learner is currently sharing a limited profile.": "Este usuario est\u00e1 compartiendo un perfil limitado.", 
     "This learner will be removed from the team, allowing another learner to take the available spot.": "Este estudiante ser\u00e1 removido del equipo, permitiendo que otro usuario tome el lugar disponible.", 
+    "This link will open in a modal window": "Bu ba\u011flant\u0131 yeni bir kip penceresinde a\u00e7\u0131lacak", 
+    "This link will open in a new browser window/tab": "Bu ba\u011flant\u0131 taray\u0131c\u0131da yeni bir pencere veya sekmede a\u00e7\u0131lacak", 
+    "This may be happening because of an error with our server or your internet connection. Try refreshing the page or making sure you are online.": "Bu durum sunucudaki bir hatadan veya \u0130nternet ba\u011flant\u0131n\u0131zdan kaynaklanm\u0131\u015f olabilir. Sayfay\u0131 yeniden y\u00fcklemeyi deneyin veya \u00e7evrimi\u00e7i oldu\u011funuza emin olun.", 
     "This page contains information about orders that you have placed with {platform_name}.": "Esta p\u00e1gina contiene informaci\u00f3n de las \u00f3rdenes de compra que has realizado en {platform_name}.", 
     "This post could not be closed. Refresh the page and try again.": "No se pudo cerrar esta publicaci\u00f3n. Recarga la p\u00e1gina e intenta nuevamente.", 
     "This post could not be flagged for abuse. Refresh the page and try again.": "No se pudo marcar esta publicaci\u00f3n como abusiva. Recarga la p\u00e1gina e intenta nuevamente.", 
@@ -2037,6 +2081,7 @@
     "Upload Videos": "Cargar Videos", 
     "Upload a CSV file": "Cargar un archivo CSV", 
     "Upload a comma separated values (.csv) file that contains the usernames or email addresses of learners who have been given exceptions. Include the username or email address in the first comma separated field. You can include an optional note describing the reason for the exception in the second comma separated field.": "Cargue un archivo separado por comas (.csv) que contenga los nombres de usuario o correos electr\u00f3nicos de los estudiantes a los que se le han otorgado excepciones. Incluya el nombre de usuario o correo electr\u00f3nico en el primer campo. Puede incluir adem\u00e1s en un segundo campo, una nota opcional describiendo la raz\u00f3n para otorgar la excepci\u00f3n.", 
+    "Upload a new PDF to \u201c<%= name %>\u201d": " \u015eu konuma \u201c<%= name %>\u201d yeni bir PDF dosyas\u0131 y\u00fckle", 
     "Upload an image": "Subir una imagen", 
     "Upload an image or capture one with your web or phone camera.": "Subir una imagen o captura con tu camara web o del tel\u00e9fono", 
     "Upload completed": "Carga terminada", 
@@ -2071,8 +2116,8 @@
     "Use your webcam to take a photo of your face. We will match this photo with the photo on your ID.": "Use su c\u00e1mara web para tomar una fotograf\u00eda de su cara. Usaremos esta foto para verificarla contra la fotograf\u00eda de su documento de identificaci\u00f3n.", 
     "Used": "Utilizado", 
     "Used in {count} location": [
-      "Usado en {count} ubicaci\u00f3n", 
-      "Usado en {count} ubicaciones"
+      "{count} yerde kullan\u0131l\u0131yor", 
+      "{count} yerde kullan\u0131l\u0131yor"
     ], 
     "User": "Usuario", 
     "User Email": "Correo electr\u00f3nico del usuario", 
@@ -2102,6 +2147,7 @@
     "Video Capture Error": "Error en la captura de v\u00eddeo", 
     "Video ID": "ID del video", 
     "Video Source Language": "Idioma de la fuente del video", 
+    "Video Status": "Video Durumu", 
     "Video duration is {humanizeDuration}": "La duraci\u00f3n del v\u00eddeo es {humanizeDuration}", 
     "Video ended": "Fin del video", 
     "Video image upload completed": "Carga del v\u00eddeo completado", 
@@ -2123,8 +2169,8 @@
     "View discussion": "Ver discusi\u00f3n", 
     "View my exam": "Ver mi examen", 
     "Viewing %s course": [
-      "Mostrando %s curso", 
-      "Mostrando %s cursos"
+      "%s ders g\u00f6r\u00fcnt\u00fcleniyor", 
+      "%s ders g\u00f6r\u00fcnt\u00fcleniyor"
     ], 
     "Visibility": "Visibilidad", 
     "Visible to": "Visible para", 
@@ -2146,6 +2192,7 @@
     "We just need a little more information before you start learning with %(platformName)s.": "Necesitamos un poco mas de informaci\u00f3n antes de que comiences a aprender con %(platformName)s.", 
     "We use the highest levels of security available to encrypt your photo and send it to our authorization service for review. Your photo and information are not saved or visible anywhere on %(platformName)s after the verification process is complete.": "Usamos los m\u00e1s altos niveles de seguridad disponibles para encriptar su foto y enviarla a nuestro servicio de autorizaci\u00f3n para revisi\u00f3n. Su foto y su informaci\u00f3n no son guardadas ni quedan visibles en ninguna parte de %(platformName)s desp\u00faes de que el proceso de verificaci\u00f3n haya sido completado.", 
     "We're sorry to see you go! Your account will be deleted shortly.": "\u00a1Sentimos que te vayas! Tu cuenta ser\u00e1 eliminada en breve.", 
+    "We're sorry, there was an error": "\u00d6z\u00fcr dileriz, bir hata olu\u015ftu", 
     "We've encountered an error. Refresh your browser and then try again.": "Hemos detectado un error. Por favor recarga la p\u00e1gina en el navegador e intenta nuevamente.", 
     "We've sent a confirmation message to {new_email_address}. Click the link in the message to update your email address.": "Hemos enviado un mensaje de confirmaci\u00f3n a {new_email_address}. Haz clic en el v\u00ednculo del mensaje para actualizar tu correo electr\u00f3nico.", 
     "We've sent a message to {email}. Click the link in the message to reset your password. Didn't receive the message? Contact {anchorStart}technical support{anchorEnd}.": "Hemos mandado un mensaje a {email}. Haz clic en el enlace en el mensaje para restablecer tu contrase\u00f1a. \u00bfNo recibiste el mensaje? Cont\u00e1ctate con {anchorStart}apoyo t\u00e9cnico{anchorEnd}.", 
@@ -2155,6 +2202,7 @@
     "Weight of Total Grade": "Peso en la calificaci\u00f3n total", 
     "We\u2019re sorry to see you go!": "\u00a1Sentimos que te vayas!", 
     "What You Need for Verification": "Lo que necesita para la verificaci\u00f3n", 
+    "What can we help you with, {username}?": "Sana nas\u0131l yard\u0131mc\u0131 olabiliriz,  {username}?", 
     "What does %(platformName)s do with this photo?": "\u00bfQu\u00e9 hace %(platformName)s con esta imagen?", 
     "What does this mean?": "\u00bfQu\u00e9 significa esto?", 
     "What's Your Next Accomplishment?": "\u00bfQu\u00e9 ser\u00e1 tu pr\u00f3ximo logro?", 
@@ -2168,7 +2216,9 @@
     "Will Be Visible To:": "Ser\u00e1 visible para:", 
     "Words: {0}": "Palabras: {0}", 
     "Would you like to sign in using your %(providerName)s credentials?": "\u00bfDesea iniciar sesi\u00f3n usando %(providerName)s?", 
+    "Wrong length!": "Yanl\u0131\u015f uzunluk!", 
     "Year of Birth": "A\u00f1o de nacimiento", 
+    "Yes, Delete": "Evet, Sil", 
     "Yes, allow edits to the active Certificate": "Si, permitir modificaciones al certificado activo.", 
     "Yes, delete this {xblock_type}": "Si, eliminar este {xblock_type}", 
     "Yes, replace the edX transcript with the YouTube transcript": "Si, reemplazar la transcripci\u00f3n de edX con la de YouTube", 
@@ -2225,6 +2275,7 @@
     "You have successfully updated your goal.": "Ha actualizado exitosamente su objetivo.", 
     "You have unsaved changes are you sure you want to navigate away?": "Tienes cambios sin guardar, \u00bfest\u00e1s seguro que deseas avanzar en el navegador?", 
     "You have unsaved changes on individual editable fields. If you run an action, your unsaved changes will be lost.": "Tiene cambios sin guardar en campos editables individuales. Si ejecuta una acci\u00f3n, los cambios no guardados se perder\u00e1n.", 
+    "You have unsaved changes. Do you really want to leave this page?": "Kaydedilmemi\u015f de\u011fi\u015fiklikleriniz var. Bu sayfay\u0131 ger\u00e7ekten terk etmek mi istiyorsunuz?", 
     "You haven't added any assets to this course yet.": "No ha a\u00f1adido a\u00fan ning\u00fan recurso a este curso.", 
     "You haven't added any content to this course yet.": "Todav\u00eda no ha a\u00f1adido ning\u00fan contenido a este curso.", 
     "You haven't added any textbooks to this course yet.": "No ha a\u00f1adido a\u00fan ning\u00fan libro de texto a este curso.", 
@@ -2235,6 +2286,7 @@
     "You must select a session by {expiration_date} to access the course.": "Debes seleccionar una edici\u00f3n antes de {expiration_date} para acceder al curso.", 
     "You must select a session to access the course.": "Debe seleccionar una sesi\u00f3n para acceder al curso.", 
     "You must sign out and sign back in before your language changes take effect.": "Debes cerrar sesi\u00f3n y volver a iniciar para que se aplique el cambio de idioma", 
+    "You must specify a name": "\u0130sim belirtmelisiniz", 
     "You must specify a name for the cohort": "Debes especificar un nombre para el cohorte", 
     "You must specify your birth year before you can share your full profile. To specify your birth year, go to the {account_settings_page_link}": "Debes especificar un a\u00f1o de nacimiento antes de poder compartir tu perfil completo. Para definir un a\u00f1o de nacimiento, visita {account_settings_page_link}", 
     "You need a computer that has a webcam. When you receive a browser prompt, make sure that you allow access to the camera.": "Necesita un equipo que tenga una webcam. Cuando reciba un mensaje desde su navegador web, aseg\u00farese de permitir el acceso a su webcam.", 
@@ -2274,6 +2326,8 @@
     "Your file could not be uploaded": "Su archivo no pudo ser cargado", 
     "Your file has been deleted.": "Su archivo ha sido borrado.", 
     "Your file {filename} is too large (max size: {maxSize}MB).": "Tu archivo {filename} es demasiado grande (tama\u00f1o m\u00e1ximo: {maxSize}MB).", 
+    "Your import has failed.": "\u0130\u00e7e aktarma i\u015fleminiz ba\u015far\u0131s\u0131z oldu.", 
+    "Your import is in progress; navigating away will abort it.": "\u0130\u00e7eri aktarma i\u015fleminiz s\u00fcr\u00fcyor; ba\u015fka bir sayfaya ilerleme bunu yar\u0131da kesecek.", 
     "Your library could not be exported to XML. There is not enough information to identify the failed component. Inspect your library to identify any problematic components and try again.": "Tu librer\u00eda no puede ser exportada a XML. No ha la suficiente informaci\u00f3n para identificar el componente que fall\u00f3. Revisar tu librer\u00eda para identificar alg\u00fan problema en componentes e intentar de nuevo.", 
     "Your message cannot be blank.": "Tu mensaje no puede estar vac\u00edo.", 
     "Your message must have a subject.": "Tu mensaje debe tener un asunto.", 
@@ -2300,8 +2354,8 @@
     "[no tags]": "[sin etiquetas]", 
     "a day": "un d\u00eda", 
     "about %d hour": [
-      "cerca de %d hora", 
-      "cerca de %d horas"
+      "yakla\u015f\u0131k %d saat", 
+      "yakla\u015f\u0131k %d saat"
     ], 
     "about a minute": "cerca de un minuto", 
     "about a month": "cerca de un mes", 
@@ -2312,6 +2366,7 @@
     "anonymous": "an\u00f3nimo", 
     "answer": "pregunta", 
     "answered question": "pregunta respondida", 
+    "asset_path is required": "asset_path gerekli", 
     "bytes": "bytes", 
     "certificate": "certificado", 
     "close": "cerrar", 
@@ -2321,6 +2376,7 @@
     "could not determine the course_id": "No se pudo determinar la ID del curso", 
     "course id": "Id de Curso", 
     "courses with active proctored exams": "cursos con ex\u00e1menes supervisados activos", 
+    "delete": "sil", 
     "delete chapter": "borrar cap\u00edtulo", 
     "delete group": "borrar grupo", 
     "details about the failure": "detalles sobre la falla", 
@@ -2390,8 +2446,8 @@
     "text_word_{uniqueId}": "text_word_{uniqueId}", 
     "text_word_{uniqueId} title_word_{uniqueId}": "text_word_{uniqueId} title_word_{uniqueId}", 
     "there is currently {numVotes} vote": [
-      "actualmente hay {numVotes} voto", 
-      "actualmente hay {numVotes} votos"
+      "\u015fu an {numVotes} oy mevcut", 
+      "\u015fu an {numVotes} oy mevcut"
     ], 
     "timed": "cronometrado", 
     "title_word_{uniqueId}": "title_word_{uniqueId}", 
@@ -2424,32 +2480,32 @@
     "{maxWidth}x{maxHeight} pixels": "{maxWidth}x{maxHeight} pixeles", 
     "{minutes} {unit}": "{minutes} {unit}", 
     "{numMoved} learner was moved from {prevCohort}": [
-      "{numMoved} estudiante fue movido de {prevCohort}", 
-      "{numMoved} estudiantes fueron movidos de {prevCohort}"
+      "{numMoved} \u00f6\u011frenci {prevCohort} toplulu\u011fundan \u00e7\u0131kar\u0131ld\u0131", 
+      "{numMoved} \u00f6\u011frenci {prevCohort} toplulu\u011fundan \u00e7\u0131kar\u0131ld\u0131"
     ], 
     "{numPreassigned} learner was pre-assigned for this cohort. This learner will automatically be added to the cohort when they enroll in the course.": [
       "{numPreassigned} estudiante fue asignado previamente a este cohorte. Este estudiante ser\u00e1 agregado autom\u00e1ticamente a este cohorte cuando se inscriban en el curso.", 
       "{numPreassigned} estudiantes fueron asignados previamente a este cohorte. Estos estudiantes ser\u00e1n agregados autom\u00e1ticamente a este cohorte cuando se inscriban en el curso."
     ], 
     "{numPresent} learner was already in the cohort": [
-      "{numPresent} estudiante ya estaba en el cohorte.", 
-      "{numPresent} estudiantes ya estaban en el cohorte."
+      "{numPresent} \u00f6\u011frenci zaten topluluktayd\u0131", 
+      "{numPresent} \u00f6\u011frenci zaten topluluktayd\u0131"
     ], 
     "{numResponses} other response": [
-      "{numResponses} otra respuesta", 
-      "{numResponses} otras respuestas"
+      "{numResponses} di\u011fer cevap", 
+      "{numResponses} di\u011fer cevap"
     ], 
     "{numResponses} response": [
-      "{numResponses} respuesta", 
-      "{numResponses} respuestas"
+      "{numResponses} cevap", 
+      "{numResponses} cevap"
     ], 
     "{numUsersAdded} learner has been added to this cohort. ": [
-      "{numUsersAdded} estudiante ha sido agregado a este cohorte.", 
-      "{numUsersAdded} estudiantes han sido agregados a este cohorte."
+      "Bu toplulu\u011fa {numUsersAdded} \u00f6\u011frenci eklendi.", 
+      "Bu toplulu\u011fa {numUsersAdded} \u00f6\u011frenci eklendi."
     ], 
     "{numVotes} Vote": [
-      "{numVotes} Voto", 
-      "{numVotes} Votos"
+      "{numVotes} Oy", 
+      "{numVotes} Oy"
     ], 
     "{num_of_hours} hour": "{num_of_hours} hora", 
     "{num_of_hours} hours": "{num_of_hours} horas", 
@@ -2466,8 +2522,8 @@
     "{start_strong}{total}{end_strong} words submitted in total.": "{start_strong}{total}{end_strong} palabras enviadas en total.", 
     "{totalItems} total": "{totalItems} total", 
     "{total_results} result": [
-      "{total_results} resultado", 
-      "{total_results} resultados"
+      "{total_results} sonu\u00e7", 
+      "{total_results} sonu\u00e7"
     ], 
     "{transcriptClientTitle}_{transcriptLanguageCode}.{fileExtension}": "{transcriptClientTitle}_{transcriptLanguageCode}.{fileExtension}", 
     "{type} Progress": "{type} Progreso", 
