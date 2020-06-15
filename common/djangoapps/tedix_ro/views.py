@@ -1,6 +1,5 @@
 import datetime
 import json
-import time
 from csv import DictReader
 from urlparse import urljoin
 
@@ -103,28 +102,34 @@ def my_reports(request):
 
         due_date = due_date_datetime.date()
         today = utc_now.date()
-        date_data = time.mktime(date.timetuple())
         if today == due_date:
-            displayed_date = date_group = 'Today'
-            due_date_order = 1
+            date_group = 'Today'
+            due_date_data.update({
+                'displayed_date': date_group,
+                'due_date_order': 1
+            })
         elif (today - due_date).days == -1:
-            displayed_date = date_group = 'Tomorrow'
-            due_date_order = 2
+            date_group = 'Tomorrow'
+            due_date_data.update({
+                'displayed_date': date_group,
+                'due_date_order': 2
+            })
         elif (today - due_date).days < -1:
             date_group = 'Future'
-            due_date_order = 3
-            displayed_date = '{}: {}'.format(date_group, date.strftime('%d %B'))
+            due_date_data.update({
+                'displayed_date': '{}: {}'.format(date_group, date.strftime('%d %B')),
+                'due_date_order': 3
+            })
         elif (today - due_date).days > 0:
             date_group = 'Past'
-            due_date_order = 4
-            displayed_date = '{}: {}'.format(date_group, date.strftime('%d %B'))
-            date_data *= -1
+            due_date_data.update({
+                'displayed_date': '{}: {}'.format(date_group, date.strftime('%d %B')),
+                'due_date_order': 4
+            })
 
         due_date_data.update({
             'date_group': date_group.lower(),
-            'date_data': date_data,
-            'due_date_order': due_date_order,
-            'displayed_date' : displayed_date
+            'date_data': date.strftime('%Y-%m-%d')
         })
         return due_date_data
 
