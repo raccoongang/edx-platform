@@ -21,7 +21,7 @@ from django.utils.translation import ugettext as _
         <tbody>
             %for user_data in report_data:
                 <tr>
-                    <th style="border: 1px solid; padding: 10px 8px; color: white; border-color: black; ${'background: #24ad97;' if user_data['completion'] == 1 else 'background: #d9534f;'}">
+                    <th style="border: 1px solid; white-space: nowrap; padding: 10px 8px; color: white; border-color: black; ${'background: #24ad97;' if user_data['completion'] == 1 else 'background: #d9534f;'}">
                         ${ user_data['full_name'] }
                     </th>
                     %for question_name, question_count_answer, done in user_data['questions']:
