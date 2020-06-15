@@ -349,3 +349,5 @@ xblock==1.2.1
 xmltodict==0.11.0
 zendesk==1.1.1
 zope.interface==4.5.0
+-e git+ssh://git@gitlab.raccoongang.com/rg-developers/instructor-analytics@v2.3.0#egg=rg_instructor_analytics
+-e git+ssh://git@gitlab.raccoongang.com/rg-developers/instructor-analytics-log-collector@v2.3.0#egg=rg_instructor_analytics_log_collector
