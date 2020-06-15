@@ -296,6 +296,16 @@ line-height: 1;
 	text-shadow: 0 1px rgba(255,255,255,0.4);
 }
 
+.courses-field-wrapper {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+
+    @media (max-width: 999px) {
+        display: block;
+    }
+}
+
 .manage-courses-wrapper {
 	max-width: 1199px;
 	margin: 0 auto 30px;
@@ -378,7 +388,6 @@ line-height: 1;
 
 	.field {
 		margin-top: 0;
-		float: left;
 		margin-bottom: 15px;
 		box-sizing: border-box;
 
@@ -393,7 +402,6 @@ line-height: 1;
 	}
 
 	.courses-field {
-		margin-right: 40px;
 		width: 25%;
 
 		&.courses-list {
@@ -424,7 +432,7 @@ line-height: 1;
 
 	.students-field,
 	.due_date-field {
-		width: 240px;
+		width: 270px;
 	}
 
 	.students-field {
@@ -515,7 +523,7 @@ line-height: 1;
 		min-height: 70px;
 		padding: 15px 35px;
 		border-radius: 5px;
-		border: 1px solid #379c2a;
+		border: 1px solid $green;
 		width: 100%;
 		margin: 20px 0;
 		list-style: none;
@@ -523,7 +531,7 @@ line-height: 1;
 		align-items: center;
 		font-size: 16px;
 		font-weight: 700;
-		color: #379c2a;
+		color: $green;
 		position: relative;
 		box-sizing: border-box;
 
@@ -754,30 +762,54 @@ line-height: 1;
         text-align: center;
     }
 
+    table.dataTable.table-my-reports thead .sorting_asc {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyVpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDYuMC1jMDAyIDc5LjE2NDM2MCwgMjAyMC8wMi8xMy0wMTowNzoyMiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIDIxLjEgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6M0YwM0ExNkY5REI3MTFFQTg4MjhFNThDNzU1RkNCNTkiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6M0YwM0ExNzA5REI3MTFFQTg4MjhFNThDNzU1RkNCNTkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDozRjAzQTE2RDlEQjcxMUVBODgyOEU1OEM3NTVGQ0I1OSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDozRjAzQTE2RTlEQjcxMUVBODgyOEU1OEM3NTVGQ0I1OSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PtoMeEAAAACCSURBVHjaYvz//z8DtQATAxUBVsMYGRmRMRcQTwBiNmRxrADkTXSMBkqB+BcQZxPUR8AwLSB+DNILxLeBWJlcw0B+mQs1CIYnQsVJNswRiN+hGfYJiG1INYwXiPehGQTDO4CYnRTDEoH4JxB/x4JB4pHY9DEOrUQ7atioYVQ2DCDAAIkr1okfEtz5AAAAAElFTkSuQmCC);
+    }
+
+    table.dataTable.table-my-reports thead .sorting_desc {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyVpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDYuMC1jMDAyIDc5LjE2NDM2MCwgMjAyMC8wMi8xMy0wMTowNzoyMiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIDIxLjEgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6M0YwM0ExNzM5REI3MTFFQTg4MjhFNThDNzU1RkNCNTkiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6M0YwM0ExNzQ5REI3MTFFQTg4MjhFNThDNzU1RkNCNTkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDozRjAzQTE3MTlEQjcxMUVBODgyOEU1OEM3NTVGQ0I1OSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDozRjAzQTE3MjlEQjcxMUVBODgyOEU1OEM3NTVGQ0I1OSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PsbH0a0AAACHSURBVHjaYvz//z8DtQATAxXBqGGjhg2YYYyMjJFA/BOIv2PBIPFErKaBshM6BgJ2IN4BksaC9wExL1Z9OAwDARsg/oRm0DsgdsTpCDyGMQLxRDTD5kLFSTYMBJSB+DbUoMdArIU3eAgYBgLZQPwLiEsJhjURhrEB8QQg5iJkGOOgLRwBAgwAIvrWiZqtqtcAAAAASUVORK5CYII=);
+    }
+
     .table-my-reports {
         border: 1px solid black;
         width: 100% !important;
         margin: 20px 0px !important;
         border-collapse: collapse !important;
 
+        thead {
+            tr {
+                background: #a9a9a9;
+            }
+        }
+
         th, td {
             border: 1px solid black;
             padding: 10px;
         }
 
-        .today {
-            background-color: $red !important;
-            color: white !important;
-            &.complete{
-                background-color: $green !important;
+        td {
+            &.future {
+                background: #cac8c8;
             }
-        }
 
-        .tomorrow {
-            background-color: #ffce00 !important;
-            &.complete{
+            &.past {
+                background: #ececec;
+            }
+
+            &.today {
+                background-color: $red !important;
                 color: white !important;
-                background-color: $green !important;
+                &.complete{
+                    background-color: $green !important;
+                }
+            }
+
+            &.tomorrow {
+                background-color: #ffce00 !important;
+                &.complete{
+                    color: white !important;
+                    background-color: $green !important;
+                }
             }
         }
 
@@ -785,40 +817,40 @@ line-height: 1;
             text-align: center;
         }
 
-		th {
-			&.isDueDate {
-				width: 15% !important;
-				padding-right: 32px !important;
-			}
+        th {
+            &.isDueDate {
+                width: 15% !important;
+                padding-right: 32px !important;
+            }
 
-			&.isClass {
-				width: 10% !important;
-				padding-right: 32px !important;
-			}
+            &.isClass {
+                width: 10% !important;
+                padding-right: 32px !important;
+            }
 
-			&.isCourseName {
-				width: 65% !important;
-			}
+            &.isCourseName {
+                width: 65% !important;
+            }
 
-			&.isScore {
-				width: 10% !important;
-			}
+            &.isScore {
+                width: 10% !important;
+            }
 
-			&.isView {
-				width: 10% !important;
-			}
+            &.isView {
+                width: 10% !important;
+            }
 
-			@media screen and (max-width: 1199px) {
-				&.isDueDate,
-				&.isClass,
-				&.isCourseName,
-				&.isCourseName,
-				&.isScore,
-				&.isView {
-					width: auto !important;
-				}
-			}
-		}
+            @media screen and (max-width: 1199px) {
+                &.isDueDate,
+                &.isClass,
+                &.isCourseName,
+                &.isCourseName,
+                &.isScore,
+                &.isView {
+                    width: auto !important;
+                }
+            }
+        }
     }
 }
 
@@ -883,10 +915,37 @@ line-height: 1;
 
     .teacher-extended-report {
         width: auto;
-		margin: initial;
+        margin: initial;
+
+		th {
+			min-width: 145px;
+			max-width: 145px;
+		}
+
+		th[aria-label="Score"] {
+			min-width: initial;
+			max-width: initial;
+		}
+
+		th[aria-label="Lesson completed"] {
+			min-width: initial;
+			max-width: initial;
+		}
     }
 
-	.dataTables_info {
-		padding: 10px 0 20px;
-	}
+    .dataTables_info {
+        padding: 10px 0 20px;
+    }
+}
+
+.title-tooltip {
+	display: block;
+	padding-top: 8px;
+	font-size: 12px;
+	line-height: 1.5;
+	opacity: .55;
+}
+
+.main-title {
+    margin: 25px 0 30px;
 }
