@@ -266,7 +266,7 @@ def extended_report(request, course_key):
     due_date_str = request.GET.get('due_date')
     due_date = None
     if due_date_str:
-        due_date = datetime.datetime.strptime(due_date_str, '%Y-%m-%d').date()
+        due_date = datetime.datetime.fromtimestamp(float(due_date_str).__abs__()).date()
 
     user = request.user
     if not user.is_authenticated():
