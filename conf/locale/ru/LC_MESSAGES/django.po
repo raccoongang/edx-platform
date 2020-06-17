@@ -2880,6 +2880,14 @@ msgid "Enter the course telegram chat link. It'll be displayed on course /info p
 msgstr "Введите ссылку на telegram чат группы курса, которая будет отображаться на странице /info курса"
 
 #: common/lib/xmodule/xmodule/course_module.py
+msgid "Course Name For English Version Of Certificate"
+msgstr "Название курса в ENG версии сертификата:"
+
+#: common/lib/xmodule/xmodule/course_module.py
+msgid "Enter the course name that will be displayed in english version of certificate."
+msgstr "Введите имя курса, которое будет отображаться в английской версии сертификата."
+
+#: common/lib/xmodule/xmodule/course_module.py
 msgid ""
 "Enter the passports for course LTI tools in the following format: "
 "\"id:client_key:client_secret\"."
@@ -11770,6 +11778,11 @@ msgstr "Курс уже опубликован."
 #, python-brace-format
 msgid "Incorrect format for field '{name}'. {detailed_message}"
 msgstr "Неверный формат для поля '{name}'. {detailed_message}"
+
+#: cms/djangoapps/models/settings/course_metadata.py
+#, python-brace-format
+msgid "The '{name}' value is too long, max length is 255"
+msgstr "Слишком длинное значение поля '{name}'. Максимальная длина - 255 символов"
 
 #: cms/lib/xblock/tagging/tagging.py
 msgid "Dictionary with the available tags"

@@ -226,6 +226,7 @@ def _update_course_context(request, context, course, platform_name):
     """
     context['full_course_image_url'] = request.build_absolute_uri(course_image_url(course))
     course_title_from_cert = context['certificate_data'].get('course_title', '')
+    context['eng_cert_course_name'] = course.eng_cert_course_name
     accomplishment_copy_course_name = course_title_from_cert if course_title_from_cert else course.display_name
     context['accomplishment_copy_course_name'] = accomplishment_copy_course_name
     course_number = course.display_coursenumber if course.display_coursenumber else course.number
