@@ -1507,7 +1507,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
             "username": self.USERNAME,
             "password": self.PASSWORD,
             "honor_code": "true",
-        })
+        }, HTTP_REFERER='http://testserver/register')
         self.assertHttpOK(response)
         self.assertIn(settings.EDXMKTG_LOGGED_IN_COOKIE_NAME, self.client.cookies)
         self.assertIn(settings.EDXMKTG_USER_INFO_COOKIE_NAME, self.client.cookies)
@@ -1527,6 +1527,28 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
         response = self.client.get(reverse("dashboard"))
         self.assertHttpOK(response)
 
+    def test_register_from_elsewhere(self):
+        """
+        'POST' request must contain jwt-token or being made from the platform
+        '/register' page (exept registration using third party).
+        """
+        response = self.client.post(self.url, {
+            "email": self.EMAIL,
+            "name": self.NAME,
+            "username": self.USERNAME,
+            "password": self.PASSWORD,
+            "honor_code": "true",
+            "active": "true"
+        })
+        self.assertEqual(response.status_code, 401)
+        response_json = json.loads(response.content)
+        self.assertEqual(
+            response_json,
+            {
+                "detail": "Authentication credentials were not provided."
+            }
+        )
+
     def test_register_active(self):
         # Create a new registration and activate user
         response = self.client.post(self.url, {
@@ -1536,7 +1558,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
             "password": self.PASSWORD,
             "honor_code": "true",
             "active": "true"
-        })
+        }, HTTP_REFERER='http://testserver/register')
         self.assertHttpOK(response)
         self.assertIn(settings.EDXMKTG_LOGGED_IN_COOKIE_NAME, self.client.cookies)
         self.assertIn(settings.EDXMKTG_USER_INFO_COOKIE_NAME, self.client.cookies)
@@ -1577,7 +1599,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
             "goals": self.GOALS,
             "country": self.COUNTRY,
             "honor_code": "true",
-        })
+        }, HTTP_REFERER='http://testserver/register')
         self.assertHttpOK(response)
 
         # Verify the user's account
@@ -1610,7 +1632,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
             "honor_code": "true",
             "favorite_movie": "Inception",
             "favorite_editor": "cat",
-        })
+        }, HTTP_REFERER='http://testserver/register')
         self.assertHttpOK(response)
         self.assertIn(settings.EDXMKTG_LOGGED_IN_COOKIE_NAME, self.client.cookies)
         self.assertIn(settings.EDXMKTG_USER_INFO_COOKIE_NAME, self.client.cookies)
@@ -1641,7 +1663,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
             "username": self.USERNAME,
             "password": self.PASSWORD,
             "honor_code": "true",
-        })
+        }, HTTP_REFERER='http://testserver/register')
         self.assertHttpOK(response)
 
         # Verify that the activation email was sent
@@ -1678,7 +1700,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
         data.update(invalid_fields)
 
         # Attempt to create the account, expecting an error response
-        response = self.client.post(self.url, data)
+        response = self.client.post(self.url, data, HTTP_REFERER='http://testserver/register')
         self.assertHttpBadRequest(response)
 
     @override_settings(REGISTRATION_EXTRA_FIELDS={"country": "required"})
@@ -1695,7 +1717,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
         del data[missing_field]
 
         # Send a request missing a field
-        response = self.client.post(self.url, data)
+        response = self.client.post(self.url, data, HTTP_REFERER='http://testserver/register')
         self.assertHttpBadRequest(response)
 
     def test_register_duplicate_email(self):
@@ -1706,7 +1728,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
             "username": self.USERNAME,
             "password": self.PASSWORD,
             "honor_code": "true",
-        })
+        }, HTTP_REFERER='http://testserver/register')
         self.assertHttpOK(response)
 
         # Try to create a second user with the same email address
@@ -1716,7 +1738,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
             "username": "someone_else",
             "password": self.PASSWORD,
             "honor_code": "true",
-        })
+        }, HTTP_REFERER='http://testserver/register')
         self.assertEqual(response.status_code, 409)
         response_json = json.loads(response.content)
         self.assertEqual(
@@ -1741,7 +1763,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
             "username": self.USERNAME,
             "password": self.PASSWORD,
             "honor_code": "true",
-        })
+        }, HTTP_REFERER='http://testserver/register')
         self.assertHttpOK(response)
 
         # Try to create a second user with the same username
@@ -1751,7 +1773,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
             "username": self.USERNAME,
             "password": self.PASSWORD,
             "honor_code": "true",
-        })
+        }, HTTP_REFERER='http://testserver/register')
         self.assertEqual(response.status_code, 409)
         response_json = json.loads(response.content)
         self.assertEqual(
@@ -1776,7 +1798,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
             "username": self.USERNAME,
             "password": self.PASSWORD,
             "honor_code": "true",
-        })
+        }, HTTP_REFERER='http://testserver/register')
         self.assertHttpOK(response)
 
         # Try to create a second user with the same username
@@ -1786,7 +1808,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
             "username": self.USERNAME,
             "password": self.PASSWORD,
             "honor_code": "true",
-        })
+        }, HTTP_REFERER='http://testserver/register')
         self.assertEqual(response.status_code, 409)
         response_json = json.loads(response.content)
         self.assertEqual(
@@ -1818,7 +1840,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
             "name": self.NAME,
             "username": self.USERNAME,
             "password": self.PASSWORD,
-        })
+        }, HTTP_REFERER='http://testserver/register')
         self.assertHttpOK(response)
 
     def test_missing_fields(self):
@@ -1828,7 +1850,8 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
                 "email": self.EMAIL,
                 "name": self.NAME,
                 "honor_code": "true",
-            }
+            },
+            HTTP_REFERER='http://testserver/register'
         )
         self.assertEqual(response.status_code, 400)
         response_json = json.loads(response.content)
@@ -1863,7 +1886,11 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
 
         with mock.patch('openedx.core.djangoapps.site_configuration.helpers.get_value') as mock_get_value:
             mock_get_value.side_effect = _side_effect_for_get_value
-            response = self.client.post(self.url, {"email": self.EMAIL, "username": self.USERNAME})
+            response = self.client.post(
+                self.url,
+                {"email": self.EMAIL, "username": self.USERNAME},
+                HTTP_REFERER='http://testserver/register'
+            )
             self.assertEqual(response.status_code, 403)
 
     def _assert_fields_match(self, actual_field, expected_field):

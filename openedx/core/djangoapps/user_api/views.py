@@ -23,6 +23,7 @@ from rest_framework.views import APIView
 import third_party_auth
 from django_comment_common.models import Role
 from edxmako.shortcuts import marketing_link
+from edx_rest_framework_extensions.authentication import JwtAuthentication
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.lib.api.authentication import SessionAuthenticationAllowInactiveUser
 from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
@@ -45,6 +46,7 @@ from .accounts import (
 from .accounts.api import check_account_exists
 from .helpers import FormDescription, require_post_params, shim_student_view
 from .models import UserPreference, UserProfile
+from .permissions import CanRegisterAccount
 from .preferences.api import get_country_time_zones, update_email_opt_in
 from .serializers import CountryTimeZoneSerializer, UserPreferenceSerializer, UserSerializer
 
@@ -187,9 +189,8 @@ class RegistrationView(APIView):
         "terms_of_service",
     ]
 
-    # This end-point is available to anonymous users,
-    # so do not require authentication.
-    authentication_classes = []
+    authentication_classes = (JwtAuthentication,)
+    permission_classes = (CanRegisterAccount,)
 
     def _is_field_visible(self, field_name):
         """Check whether a field is visible based on Django settings. """
