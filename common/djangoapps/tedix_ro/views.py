@@ -143,7 +143,7 @@ def my_reports(request):
         courses = CourseOverview.objects.all()
     else:
         course_enrollments = CourseEnrollment.enrollments_for_user(user=user)
-        course_overview_id_list = [_.course_id for _ in course_enrollments]
+        course_overview_id_list = [course_enrollment.course_id for course_enrollment in course_enrollments]
         courses = CourseOverview.objects.filter(id__in=course_overview_id_list)
 
     data = []
