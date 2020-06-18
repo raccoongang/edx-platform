@@ -6,6 +6,8 @@ consist primarily of authentication, request validation, and serialization.
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.validators import ValidationError, validate_email
+from django.conf import settings
 from django.utils.decorators import method_decorator
 from edx_rest_framework_extensions.authentication import JwtAuthentication
 from opaque_keys import InvalidKeyError
@@ -15,12 +17,15 @@ from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
 from rest_framework.views import APIView
 
+from courseware.courses import get_course_by_id
 from course_modes.models import CourseMode
 from enrollment import api
 from enrollment.errors import CourseEnrollmentError, CourseEnrollmentExistsError, CourseModeNotFoundError
+from lms.djangoapps.instructor.enrollment import send_mail_to_student, get_email_params
 from openedx.core.djangoapps.cors_csrf.authentication import SessionAuthenticationCrossDomainCsrf
 from openedx.core.djangoapps.cors_csrf.decorators import ensure_csrf_cookie_cross_domain
 from openedx.core.djangoapps.embargo import api as embargo_api
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.user_api.preferences.api import update_email_opt_in
 from openedx.core.lib.api.authentication import (
     OAuth2AuthenticationAllowInactiveUser,
@@ -31,7 +36,7 @@ from openedx.core.lib.exceptions import CourseNotFoundError
 from openedx.core.lib.log_utils import audit_log
 from openedx.features.enterprise_support.api import EnterpriseApiClient, EnterpriseApiException, enterprise_enabled
 from student.auth import user_has_role
-from student.models import User
+from student.models import User, CourseEnrollmentAllowed
 from student.roles import CourseStaffRole, GlobalStaff
 from util.disable_rate_limit import can_disable_rate_limit
 
@@ -511,8 +516,16 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
         go through `add_enrollment()`, which allows creation of new and reactivation of old enrollments.
         """
         # Get the User, Course ID, and Mode from the request.
+        user = request.data.get('user', request.user.username)
+        try:
+            validate_email(user)
+        except ValidationError:
+            email = None
+            username = user
+        else:
+            email = user
+            username = request.user.username
 
-        username = request.data.get('user', request.user.username)
         course_id = request.data.get('course_details', {}).get('course_id')
 
         if not course_id:
@@ -536,8 +549,6 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
         has_api_key_permissions = self.has_api_key_permissions(request)
 
         # Check that the user specified is either the same user, or this is a server-to-server request.
-        if not username:
-            username = request.user.username
         if username != request.user.username and not has_api_key_permissions:
             # Return a 404 instead of a 403 (Unauthorized). If one user is looking up
             # other users, do not let them deduce the existence of an enrollment.
@@ -555,12 +566,16 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
 
         try:
             # Lookup the user, instead of using request.user, since request.user may not match the username POSTed.
-            user = User.objects.get(username=username)
+            if not email:
+                user = User.objects.get(username=username)
+            else:
+                user = User.objects.get(email=email)
+                username = user.username
         except ObjectDoesNotExist:
             return Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data={
-                    'message': u'The user {} does not exist.'.format(username)
+                    'message': u'The user {} does not exist.'.format(email or username)
                 }
             )
 
@@ -640,6 +655,9 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
                     enrollment_attributes=enrollment_attributes
                 )
             else:
+                if email:
+                    course = get_course_by_id(course_id)
+                    _ = CourseEnrollmentAllowed.objects.get_or_create(course_id=course_id, email=email)
                 # Will reactivate inactive enrollments.
                 response = api.add_enrollment(
                     username,
@@ -648,6 +666,23 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
                     is_active=is_active,
                     enrollment_attributes=enrollment_attributes
                 )
+                if email:
+                    try:
+                        email_params = get_email_params(course, True)
+                        email_params.update({
+                            'email_address': email,
+                            'platform_name': configuration_helpers.get_value('platform_name', settings.PLATFORM_NAME),
+                            'message': 'enrolled_enroll',
+                            'full_name': user.profile.name,
+                        })
+                        send_mail_to_student(email, email_params)
+                    except Exception as e:
+                        log.exception(
+                            "Exception '{exception}' raised while sending email to {user_email}.".format(
+                                exception=type(e).__name__,
+                                user_email=email
+                            )
+                        )
 
             email_opt_in = request.data.get('email_opt_in', None)
             if email_opt_in is not None:

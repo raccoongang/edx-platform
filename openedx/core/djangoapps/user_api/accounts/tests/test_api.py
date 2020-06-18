@@ -284,6 +284,7 @@ class AccountSettingsOnCreationTest(TestCase):
             'mailing_address': None,
             'year_of_birth': None,
             'country': None,
+            'social_links': [],
             'bio': None,
             'profile_image': {
                 'has_image': False,
@@ -294,6 +295,9 @@ class AccountSettingsOnCreationTest(TestCase):
             'language_proficiencies': [],
             'account_privacy': PRIVATE_VISIBILITY,
             'accomplishments_shared': False,
+            'profitonomy_public_key': None,
+            'mobytize_token': u'',
+            'mobytize_id': u'',
         })
 
 
