@@ -3671,7 +3671,7 @@ msgstr ""
 
 #: common/static/js/vendor/ova/catch/js/catch.js
 msgid "Instructor"
-msgstr ""
+msgstr "Profesor"
 
 #: common/static/js/vendor/ova/catch/js/catch.js
 msgid "Public"

@@ -973,7 +973,7 @@ msgstr "Data Limită (UTC)"
 #: common/djangoapps/tedix_ro/forms.py
 #: lms/djangoapps/instructor/views/instructor_dashboard.py
 msgid "Instructor"
-msgstr ""
+msgstr "Profesor"
 
 #: common/djangoapps/tedix_ro/forms.py
 msgid "Role"
@@ -1085,7 +1085,6 @@ msgid "Classroom List"
 msgstr "Listă Clase"
 
 #: common/djangoapps/tedix_ro/forms.py
-#, fuzzy
 msgid "Students List"
 msgstr "Elev"
 
@@ -12187,7 +12186,6 @@ msgstr "Link către raport:"
 
 #: common/djangoapps/tedix_ro/templates/includes/student_extended_report.html
 #: common/djangoapps/tedix_ro/templates/includes/teacher_extended_report.html
-#, fuzzy
 msgid "Student name"
 msgstr "Nume elev"
 
