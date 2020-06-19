@@ -21,7 +21,24 @@ from django.utils.translation import ugettext as _
                 { "orderData": [ 0, 1 ], "targets": 1, "orderable": true},
                 { "targets": 2, "orderable": true },
                 { "targets": "_all", "orderable": false }
-            ]
+            ],
+            "language": {
+                "sProcessing":   "Procesează...",
+                "sLengthMenu":   "Afișează _MENU_ înregistrări pe pagină",
+                "sZeroRecords":  "Nu am găsit nimic - ne pare rău",
+                "sInfo":         "Afișate de la _START_ la _END_ din _TOTAL_ înregistrări",
+                "sInfoEmpty":    "Afișate de la 0 la 0 din 0 înregistrări",
+                "sInfoFiltered": "(filtrate dintr-un total de _MAX_ înregistrări)",
+                "sInfoPostFix":  "",
+                "sSearch":       "Caută:",
+                "sUrl":          "",
+                "oPaginate": {
+                    "sFirst":    "Prima",
+                    "sPrevious": "Precedenta",
+                    "sNext":     "Următoarea",
+                    "sLast":     "Ultima"
+                }
+}
         });
 
         var $tableClass = $("th.table-class");
@@ -100,7 +117,7 @@ role = _('Superuser') if user.is_superuser else _('Student') if hasattr(user, 's
         </div>
         <section>
             %if not data:
-                <p class="table-alert">No reports are available.</p>
+                <p class="table-alert">${_("No reports are available.")}</p>
             %else:
                 <h2 class="hd hd-2 report-title">
                     ${_("Students Progress for {role} '{username}'").format(role=role, username=username)}
@@ -129,7 +146,7 @@ role = _('Superuser') if user.is_superuser else _('Student') if hasattr(user, 's
                                     <a class="open_report"
                                         data-due_date="${datum['due_date']['date_data']}"
                                         data-classroom="${datum['classroom']}"
-                                        href="${datum['report_link']}">Open report</a>
+                                        href="${datum['report_link']}">${_("Open report")}</a>
                                 </td>
                             </tr>
                         %endfor

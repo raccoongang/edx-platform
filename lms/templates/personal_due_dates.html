@@ -18,7 +18,7 @@ from openedx.core.djangolib.markup import HTML, Text
 <%block name="pagetitle">${_("Personal Due Dates")}</%block>
 
 <main id="main">
-    <h1>Personal Due Dates</h1>
+    <h1>${_("Personal Due Dates")}</h1>
 
     <div class="due-date-wrapper">
       % if len(courses_due_dates) > 0:
@@ -30,7 +30,7 @@ from openedx.core.djangolib.markup import HTML, Text
         % endfor
         </ul>
       % else:
-        <p>No due dates are available.</p>
+        <p>${_("No due dates are available.")}</p>
       % endif
     </div>
 

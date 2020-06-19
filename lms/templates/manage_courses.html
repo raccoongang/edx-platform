@@ -19,7 +19,7 @@ from openedx.core.djangolib.markup import HTML, Text
 
 <main id="main">
     <h1>
-        Manage Courses
+        ${_("Manage Courses")}
         <span class="title-tooltip">
             Keep the SHIFT key pressed and CLICK on the items to select multiple entries.
         </span>
@@ -30,7 +30,7 @@ from openedx.core.djangolib.markup import HTML, Text
             <input type="hidden" name="csrfmiddlewaretoken" value="${ csrftoken }" />
             <div class="courses-field field courses-list">
                 <div class="head">
-                    <label>Filter Courses:</label>
+                    <label>${_("Filter Courses:")}</label>
                     <input id="courseFilter" type="text">
                 </div>
                 <label for="${form['courses'].id_for_label}">${form['courses'].label}:</label>
@@ -38,7 +38,7 @@ from openedx.core.djangolib.markup import HTML, Text
             </div>
             <div class="courses-field field">
                 <div class="head">
-                    <label>Filter Classrooms:</label>
+                    <label>${_("Filter Classrooms:")}</label>
                     <input id="classroomFilter" type="text">
                 </div>
                 <label for="${form['classrooms'].id_for_label}">${form['classrooms'].label}:</label>
@@ -46,7 +46,7 @@ from openedx.core.djangolib.markup import HTML, Text
             </div>
             <div class="students-field field">
                 <div class="head">
-                    <label>Filter Students:</label>
+                    <label>${_("Filter Students:")}</label>
                     <input id="studentFilter" type="text">
                 </div>
                 <label for="${form['students'].id_for_label}">${form['students'].label}:</label>
@@ -104,7 +104,7 @@ from openedx.core.djangolib.markup import HTML, Text
                 </div>
             </div>
             <div class="submit-wrapper">
-                <input id='submit' type="submit" value="Assign Courses">
+                <input id='submit' type="submit" value=${_("Assign Courses")}>
             </div>
         </form>
     </div>
