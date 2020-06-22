@@ -235,6 +235,12 @@ class CourseFields(object):
         default="https://t.me/mama_edu",
         scope=Scope.settings
     )
+    eng_cert_course_name = String(
+        display_name=_("Course Name For English Version Of Certificate"),
+        help=_("Enter the course name that will be displayed in english version of certificate."),
+        default="",
+        scope=Scope.settings
+    )
     lti_passports = List(
         display_name=_("LTI Passports"),
         help=_('Enter the passports for course LTI tools in the following format: "id:client_key:client_secret".'),

@@ -199,6 +199,10 @@ class CourseMetadata(object):
         for key, model in filtered_dict.iteritems():
             try:
                 val = model['value']
+                if key == 'eng_cert_course_name' and len(val) > 255:
+                    raise ValueError(_("The '{name}' value is too long, max length is 255").format(
+                        name=model['display_name'])
+                    )
                 if hasattr(descriptor, key) and getattr(descriptor, key) != val:
                     key_values[key] = descriptor.fields[key].from_json(val)
             except (TypeError, ValueError) as err:
