@@ -197,6 +197,7 @@ def my_reports(request):
                 students_in_class = StudentCourseDueDate.objects.filter(
                     due_date__contains=course_due_date,
                     student__classroom__name=students_class,
+                    student__user__in=students_list,
                 ).values_list('student__user_id', flat=True).distinct()
 
                 students_in_class_count = students_in_class.count()
