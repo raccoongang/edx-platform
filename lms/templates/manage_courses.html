@@ -29,7 +29,7 @@ from openedx.core.djangolib.markup import HTML, Text
         <form method="post">
             <input type="hidden" name="csrfmiddlewaretoken" value="${ csrftoken }" />
             <div class="courses-field-wrapper">
-                <div class="courses-field field courses-list">
+                <div class="courses-field field courses-list js-courses-styler">
                     <div class="head">
                         <label>Filter Courses:</label>
                         <input id="courseFilter" type="text">
@@ -37,7 +37,7 @@ from openedx.core.djangolib.markup import HTML, Text
                     <label for="${form['courses'].id_for_label}">${form['courses'].label}:</label>
                     ${form['courses'].as_widget()|h}
                 </div>
-                <div class="courses-field field">
+                <div class="courses-field field js-classrooms-styler">
                     <div class="head">
                         <label>Filter Classrooms:</label>
                         <input id="classroomFilter" type="text">
@@ -46,7 +46,7 @@ from openedx.core.djangolib.markup import HTML, Text
                     ${form['classrooms'].as_widget()|h}
                 </div>
                 <div class="courses-field-holder">
-                    <div class="students-field field">
+                    <div class="students-field field js-students-styler">
                         <div class="head">
                             <label>Filter Students:</label>
                             <input id="studentFilter" type="text">
@@ -130,9 +130,9 @@ from openedx.core.djangolib.markup import HTML, Text
 
         $('.manage-courses-wrapper select, .manage-courses-wrapper input[type="checkbox"]').styler();
 
-        var $coursesList = $("#id_courses-styler li");
-        var $classroomList = $("#id_classrooms-styler li");
-        var $studentList = $("#id_students-styler li");
+        // var $coursesList = $("#id_courses-styler li");
+        // var $classroomList = $("#id_classrooms-styler li");
+        // var $studentList = $("#id_students-styler li");
         var characters = {
             a: '([aăâ]{1})',
             ă: '([aăâ]{1})',
@@ -147,13 +147,18 @@ from openedx.core.djangolib.markup import HTML, Text
             ț: '([tţț]{1})',
         };
 
-        $(document).on('keyup', '#courseFilter', {targetList: $coursesList}, filter);
-        $(document).on('keyup', '#classroomFilter', {targetList: $classroomList}, filter);
+        $(document).on('keyup', '#courseFilter', courseFilter);
+        $(document).on('keyup', '#classroomFilter', classroomFilter);
         $(document).on('keyup', '#studentFilter', studentFilter);
         $(document).on('change', '#id_classrooms', studentFilter);
 
 
+        var initCourses = $('#id_courses option').clone();
+        var initClassrooms = $('#id_classrooms option').clone();
+        var initStudents = $('#id_students option').clone();
+
         function keywordMatches(keyword, text) {
+
             var template = '';
             for(var i=0; i < keyword.length; i++) {
                 template += characters[keyword[i]] || keyword[i];
@@ -164,40 +169,72 @@ from openedx.core.djangolib.markup import HTML, Text
             return (text.match(reg));
         }
 
-        function filter(e){
+        function courseFilter(e){
             var keyword = $(this).val().toLowerCase().trim();
-            var optionItemSelector = '#' + e.data.targetList.parents('.jq-select-multiple').prop('id').replace('-styler', ' option');
-            e.data.targetList.each(function(){
-                var itemName = $(this).text();
-                var listItem = itemName.toLowerCase();
-                if (keyword !== "" && !keywordMatches(keyword, listItem)){
-                    $(this).hide().removeClass("selected");
-                    $(optionItemSelector).filter(":contains('" + itemName + "')").prop('selected', false);
+            var t = initCourses.map(function(i, el) {
+                if (keywordMatches(keyword, $(el).text().trim().toLowerCase())) {
+                    return el;
                 } else {
-                    $(this).show();
+                    $(el).prop('selected', false);
                 }
             });
-            studentFilter();
+            $('#id_courses').html(t);
+            $('.js-courses-styler select').trigger('refresh');
+        }
+
+        function classroomFilter(e){
+            var keyword = $(this).val().toLowerCase().trim();
+
+
+            var t = initClassrooms.map(function(i, el) {
+                if (keywordMatches(keyword, $(el).text().trim().toLowerCase())) {
+                    return el;
+                } else {
+                    $(el).prop('selected', false);
+                }
+            });
+            $('#id_classrooms').html(t);
+            $('.js-classrooms-styler select').trigger('refresh');
         }
 
         function studentFilter() {
             var selectedClassroomValues = [];
             var keyword = $("#studentFilter").val().toLowerCase().trim();
-            $classroomList.filter('.selected').each(function(){
-                selectedClassroomValues.push($(this).text().toLowerCase());
+            $("#id_classrooms-styler").find('li.selected').each(function(i, el){
+                selectedClassroomValues.push($(el).text());
             });
-            $("#id_students option").each(function(){
-                var classroom = $(this).data('classroom').toString().toLowerCase();
-                var studentName = $(this).text();
-                var classroomSelected = !($.inArray(classroom, selectedClassroomValues) === -1);
-                var keywordNotMatchesStudentName = keyword && !keywordMatches(keyword, studentName.toLowerCase().trim());
-                if (selectedClassroomValues.length !== 0 && !classroomSelected || keywordNotMatchesStudentName) {
-                    $studentList.filter(":contains('" + studentName + "')").hide().removeClass("selected");
-                    $(this).prop('selected', false);
+
+            var allStudents = initStudents.map(function(i, el) {
+                var $el = $(el);
+                if (selectedClassroomValues.length) {
+                    if (selectedClassroomValues.includes($el.data('classroom'))) {
+                        if (keyword !== "") {
+                            if (keywordMatches(keyword, $el.text().toLowerCase().trim())) {
+                                return el;
+                            } else {
+                                $el.prop('selected', false);
+                            }
+                        } else {
+                            return el;
+                        }
+                        
+                    } else {
+                        $el.prop('selected', false);
+                    }
                 } else {
-                    $studentList.filter(":contains('" + studentName + "')").show();
+                    if (keyword !== "") {
+                        if (keywordMatches(keyword, $el.text().toLowerCase().trim())) {
+                            return el;
+                        } else {
+                            $el.prop('selected', false);
+                        }
+                    } else {
+                        return el;
+                    }
                 }
             });
+            $('#id_students').html(allStudents);
+            $('.js-students-styler select').trigger('refresh');
         }
     });
     </script>
