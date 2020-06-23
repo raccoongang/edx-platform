@@ -26,7 +26,7 @@ from openedx.core.djangolib.markup import HTML, Text
     </h1>
 
     <div class="manage-courses-wrapper">
-        <form method="post">
+        <form method="post" action="${reverse('manage_courses_data')}">
             <div id="manage-courses-form">
                 <div class="loader-wrapper">
                     <div class="loader">Loading...</div>
@@ -42,6 +42,7 @@ from openedx.core.djangolib.markup import HTML, Text
     <script type="text/javascript" src="${static.url('js/jquery.formstyler.min.js')}"></script>
     <script>
         var url = "${reverse('manage_courses_data')}";
+        var loader = $("#manage-courses-form").html();
         function ajaxReady () {
             $("#id_due_date").datetimepicker({
                 format: 'd/m/Y H:i',
@@ -174,6 +175,22 @@ from openedx.core.djangolib.markup import HTML, Text
                     $('#manage-courses-form').html(data.html);
                     ajaxReady();
                 }
+            })
+            $('form').submit(function(e) {
+                e.preventDefault();
+                var formData = $('form').serializeArray();
+                $('#manage-courses-form').html(loader);
+                $('#submit').attr('disabled', true);
+                $.ajax({
+                    url: $(e.currentTarget).attr('action'),
+                    method: 'post',
+                    data: formData,
+                    success: function(data) {
+                        $('#submit').attr('disabled', false);
+                        $('#manage-courses-form').html(data.html);
+                        ajaxReady();
+                    }
+                })
             })
         });
     </script>

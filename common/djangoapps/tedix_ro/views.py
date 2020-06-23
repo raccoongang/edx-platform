@@ -365,6 +365,7 @@ def manage_courses(request):
     courses = CourseOverview.objects.filter(enrollment_end__gt=now, enrollment_start__lt=now)
     form = StudentEnrollForm(students=students, courses=courses, classrooms=classrooms)
     if request.method == 'POST':
+        print(request.POST)
         data = dict(
             courses = map(CourseKey.from_string, request.POST.getlist('courses')),
             students = request.POST.getlist('students'),
@@ -454,8 +455,14 @@ def manage_courses(request):
                     )
                     sms_client.send_message(parent.phone, sms_message)
             messages.success(request, 'Successfully assigned.')
+            if request.is_ajax():
+                html = mako_render_to_string('manage_courses.html', {
+                    "csrftoken": csrf(request)["csrf_token"],
+                    'show_dashboard_tabs': True,
+                    'form': StudentEnrollForm(courses=courses, students=students, classrooms=classrooms)
+                })
+                return HttpResponse(json.dumps({'html': html}), content_type="application/json")
             return redirect(reverse('manage_courses'))
-
     context.update({
         'form': form
     })
@@ -467,6 +474,12 @@ def manage_courses(request):
 
 
 def manage_courses_main(request):
+    user = request.user
+    if not user.is_authenticated():
+        return redirect(get_next_url_for_login_page(request))
+
+    if not (user.is_staff or user.is_superuser):
+        return redirect(reverse('dashboard'))
     return render_to_response('manage_courses_main.html')
 
 
