@@ -9,10 +9,12 @@ from .views import (
     VideoLessonViewSet,
     city_import,
     manage_courses,
+    manage_courses_main,
     personal_due_dates,
     extended_report,
     email_verification,
     my_reports,
+    my_reports_main,
 )
 
 router = DefaultRouter()
@@ -21,9 +23,11 @@ router.register(r'cities', CityViewSet)
 router.register(r'schools', SchoolViewSet)
 
 urlpatterns = [
-    url(r'^my_reports/$', my_reports, name='my_reports'),
+    url(r'^my_reports/$', my_reports_main, name='my_reports'),
+    url(r'^my_reports_data/$', my_reports, name='my_reports_data'),
     url(r'^extended_report/(?P<course_key>[^/]*)/$', extended_report, name='extended_report'),
-    url(r'^manage_courses$', manage_courses, name='manage_courses'),
+    url(r'^manage_courses$', manage_courses_main, name='manage_courses'),
+    url(r'^manage_courses_data$', manage_courses, name='manage_courses_data'),
     url(r'^personal_due_dates$', personal_due_dates, name='personal_due_dates'),
     url(r'^admin/tedix_ro/instructorprofile/import/$', InstructorProfileImportView.as_view(), name='teacher_import'),
     url(r'^admin/tedix_ro/studentprofile/import/$', StudentProfileImportView.as_view(), name='students_import'),

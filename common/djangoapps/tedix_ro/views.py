@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import Avg
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
@@ -250,7 +250,14 @@ def my_reports(request):
         'data': data,
     }
 
+    if request.is_ajax():
+        html = mako_render_to_string('my_reports.html', context)
+        return HttpResponse(json.dumps({'html': html}), content_type="application/json")
     return render_to_response('my_reports.html', context)
+
+
+def my_reports_main(request):
+    return render_to_response('my_reports_main.html')
 
 
 @api_view(['GET'])
@@ -446,13 +453,32 @@ def manage_courses(request):
                     )
                     sms_client.send_message(parent.phone, sms_message)
             messages.success(request, 'Successfully assigned.')
+            if request.is_ajax():
+                html = mako_render_to_string('manage_courses.html', {
+                    "csrftoken": csrf(request)["csrf_token"],
+                    'show_dashboard_tabs': True,
+                    'form': StudentEnrollForm(courses=courses, students=students, classrooms=classrooms)
+                })
+                return HttpResponse(json.dumps({'html': html}), content_type="application/json")
             return redirect(reverse('manage_courses'))
-
     context.update({
         'form': form
     })
+    if request.is_ajax():
+        html = mako_render_to_string('manage_courses.html', context)
+        return HttpResponse(json.dumps({'html': html}), content_type="application/json")
 
     return render_to_response('manage_courses.html', context)
+
+
+def manage_courses_main(request):
+    user = request.user
+    if not user.is_authenticated():
+        return redirect(get_next_url_for_login_page(request))
+
+    if not (user.is_staff or user.is_superuser):
+        return redirect(reverse('dashboard'))
+    return render_to_response('manage_courses_main.html')
 
 
 def personal_due_dates(request):
