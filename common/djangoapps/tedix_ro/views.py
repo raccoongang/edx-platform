@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import Avg
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
@@ -32,6 +32,7 @@ import pytz
 from student.helpers import do_create_account, get_next_url_for_login_page
 from student.models import CourseEnrollment
 from xmodule.modulestore.django import modulestore
+from util.json_request import JsonResponse
 
 from .admin import INSTRUCTOR_EXPORT_FIELD_NAMES, STUDENT_PARENT_EXPORT_FIELD_NAMES
 from .forms import (
@@ -250,7 +251,14 @@ def my_reports(request):
         'data': data,
     }
 
+    if request.is_ajax():
+        html = mako_render_to_string('my_reports.html', context)
+        return HttpResponse(json.dumps({'html': html}), content_type="application/json")
     return render_to_response('my_reports.html', context)
+
+
+def my_reports_main(request):
+    return render_to_response('my_reports_main.html')
 
 
 @api_view(['GET'])

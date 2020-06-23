@@ -1,95 +1,20 @@
-<%inherit file="/main.html" />
-<%namespace name="static" file="/static_content.html"/>
+
+
 <%!
 from django.utils.translation import ugettext as _
 %>
 
-<%block name="headextra">
-<%static:css group='style-course-vendor'/>
-<%static:css group='style-course'/>
-</%block>
-
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
-<script>
-    $(document).ready( function () {
-        var table = $(".table-my-reports").DataTable({
-            "searching": false,
-            "order": [[0, "asc"], [1, "asc"], [2, "asc"]],
-            "columnDefs": [
-                { "targets": 0, "orderable": true, "visible": false},
-                { "orderData": [ 0, 1 ], "targets": 1, "orderable": true},
-                { "targets": 2, "orderable": true },
-                { "targets": "_all", "orderable": false }
-            ]
-        });
-
-        var $tableClass = $("th.table-class");
-        var $tableDate = $("th.table-date");
-
-        $tableDate.on("click", function(event){
-            var $column = $(event.currentTarget);
-            if ($column.hasClass("sorting_asc")){
-                $column.addClass("asc");
-                $tableClass.addClass("asc");
-            } else {
-                $column.removeClass("asc");
-                $tableClass.removeClass("asc");
-            };
-        });
-
-        $tableClass.on("click", function(event){
-            var $column = $(event.currentTarget);
-            var columnOrder = $column.hasClass("asc") ? "desc" : "asc";
-            if ($tableDate.hasClass("asc")){
-                table.order([0, "asc"], [1, "asc"], [2, columnOrder]).draw();
-            } else {
-                table.order([0, "desc"], [1, "desc"], [2, columnOrder]).draw();
-            }
-            $column.toggleClass("asc");
-        });
 
 
-        var $modal = $(".my_report_popup");
-        var $closePopup = $(".close_popup");
 
-        $(document).on("click", ".open_report", function(event){
-            event.preventDefault();
-            var $openReport = $(event.currentTarget);
-            $.ajax({
-                method: "GET",
-                url: $openReport.attr("href"),
-                data: {"classroom": $openReport.data("classroom"), "due_date": $openReport.data("due_date")},
-                success: function(data){
-                    $(".report").html(data.html);
-                    $modal.show();
-                    $(".teacher-extended-report").DataTable({
-                        "searching": false,
-                        "paging": false,
-                        "autoWidth": false,
-                        "order": [[0, "asc"]],
-                        "columnDefs": [
-                            { "targets": 0, "orderable": true},
-                            { "targets": "_all", "orderable": false }
-                        ]
-                    });
-                }
-            });
-        });
 
-        $(".close_popup").on("click", function() {
-            $modal.hide();
-        });
-    });
-</script>
 
 <%
 username = user.profile.name or user.username
 role = _('Superuser') if user.is_superuser else _('Student') if hasattr(user, 'studentprofile') else _('Teacher')
 %>
 
-<main id="main" aria-label="Content" tabindex="-1">
-    <div class="my-report-wrapper">
+
         <div class="my_report_popup">
             <div class="modal-content">
                 <div class="report"></div>
@@ -137,5 +62,3 @@ role = _('Superuser') if user.is_superuser else _('Student') if hasattr(user, 's
                 </table>
             %endif
         </section>
-    </div>
-</main>
