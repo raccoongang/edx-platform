@@ -32,7 +32,6 @@ import pytz
 from student.helpers import do_create_account, get_next_url_for_login_page
 from student.models import CourseEnrollment
 from xmodule.modulestore.django import modulestore
-from util.json_request import JsonResponse
 
 from .admin import INSTRUCTOR_EXPORT_FIELD_NAMES, STUDENT_PARENT_EXPORT_FIELD_NAMES
 from .forms import (
@@ -365,7 +364,6 @@ def manage_courses(request):
     courses = CourseOverview.objects.filter(enrollment_end__gt=now, enrollment_start__lt=now)
     form = StudentEnrollForm(students=students, courses=courses, classrooms=classrooms)
     if request.method == 'POST':
-        print(request.POST)
         data = dict(
             courses = map(CourseKey.from_string, request.POST.getlist('courses')),
             students = request.POST.getlist('students'),
