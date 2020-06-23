@@ -171,14 +171,14 @@ from openedx.core.djangolib.markup import HTML, Text
 
         function courseFilter(e){
             var keyword = $(this).val().toLowerCase().trim();
-            var t = initCourses.map(function(i, el) {
+            var coursesToDisplay = initCourses.map(function(i, el) {
                 if (keywordMatches(keyword, $(el).text().trim().toLowerCase())) {
                     return el;
                 } else {
                     $(el).prop('selected', false);
                 }
             });
-            $('#id_courses').html(t);
+            $('#id_courses').html(coursesToDisplay);
             $('.js-courses-styler select').trigger('refresh');
         }
 
@@ -186,28 +186,30 @@ from openedx.core.djangolib.markup import HTML, Text
             var keyword = $(this).val().toLowerCase().trim();
 
 
-            var t = initClassrooms.map(function(i, el) {
+            var classroomsToDisplay = initClassrooms.map(function(i, el) {
                 if (keywordMatches(keyword, $(el).text().trim().toLowerCase())) {
                     return el;
                 } else {
                     $(el).prop('selected', false);
                 }
             });
-            $('#id_classrooms').html(t);
+            $('#id_classrooms').html(classroomsToDisplay);
             $('.js-classrooms-styler select').trigger('refresh');
         }
 
         function studentFilter() {
-            var selectedClassroomValues = [];
+            var chosenClassrooms = [];
             var keyword = $("#studentFilter").val().toLowerCase().trim();
             $("#id_classrooms-styler").find('li.selected').each(function(i, el){
-                selectedClassroomValues.push($(el).text());
+                chosenClassrooms.push($(el).text());
             });
 
-            var allStudents = initStudents.map(function(i, el) {
+            var studentsToDisplay = initStudents.map(function(i, el) {
                 var $el = $(el);
-                if (selectedClassroomValues.length) {
-                    if (selectedClassroomValues.includes($el.data('classroom'))) {
+                // todo: think about improving code readness.
+                // filtering when chosenClassrooms
+                if (chosenClassrooms.length) {
+                    if (chosenClassrooms.includes($el.data('classroom'))) {
                         if (keyword !== "") {
                             if (keywordMatches(keyword, $el.text().toLowerCase().trim())) {
                                 return el;
@@ -222,6 +224,7 @@ from openedx.core.djangolib.markup import HTML, Text
                         $el.prop('selected', false);
                     }
                 } else {
+                    // the same conditions but w/o chosenClassrooms
                     if (keyword !== "") {
                         if (keywordMatches(keyword, $el.text().toLowerCase().trim())) {
                             return el;
@@ -233,7 +236,7 @@ from openedx.core.djangolib.markup import HTML, Text
                     }
                 }
             });
-            $('#id_students').html(allStudents);
+            $('#id_students').html(studentsToDisplay);
             $('.js-students-styler select').trigger('refresh');
         }
     });
