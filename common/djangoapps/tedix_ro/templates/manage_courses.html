@@ -1,244 +1,86 @@
 <%page expression_filter="h"/>
-<%inherit file="main.html" />
-<%namespace name='static' file='static_content.html'/>
 <%!
 from django.utils.translation import ugettext as _
-from django.urls import reverse
-
 from openedx.core.djangolib.markup import HTML, Text
 %>
-<%block name="head_extra_js">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
 
-</%block>
-<%block name="head_extra_css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css"/>
-</%block>
-
-<%block name="pagetitle">${_("Manage Courses")}</%block>
-
-<main id="main">
-    <h1 class="main-title">
-        Manage Courses
-        <span class="title-tooltip">
-            Keep the CTRL (Command ⌘ for Mac) key pressed and CLICK on the items to select multiple entries.
-        </span>
-    </h1>
-
-    <div class="manage-courses-wrapper">
-        <form method="post">
-            <input type="hidden" name="csrfmiddlewaretoken" value="${ csrftoken }" />
-            <div class="courses-field-wrapper">
-                <div class="courses-field field courses-list js-courses-styler">
-                    <div class="head">
-                        <label>Filter Courses:</label>
-                        <input id="courseFilter" type="text">
-                    </div>
-                    <label for="${form['courses'].id_for_label}">${form['courses'].label}:</label>
-                    ${form['courses'].as_widget()|h}
-                </div>
-                <div class="courses-field field js-classrooms-styler">
-                    <div class="head">
-                        <label>Filter Classrooms:</label>
-                        <input id="classroomFilter" type="text">
-                    </div>
-                    <label for="${form['classrooms'].id_for_label}">${form['classrooms'].label}:</label>
-                    ${form['classrooms'].as_widget()|h}
-                </div>
-                <div class="courses-field-holder">
-                    <div class="students-field field js-students-styler">
-                        <div class="head">
-                            <label>Filter Students:</label>
-                            <input id="studentFilter" type="text">
-                        </div>
-                        <label for="${form['students'].id_for_label}">${form['students'].label}:</label>
-                        ${form['students'].as_widget()|h}
-                    </div>
-                    <div class="due_date-field field">
-                        <label for="${form['due_date'].id_for_label}">${form['due_date'].label}</label>
-                        ${form['due_date'].as_widget()|h}
-                    </div>
-                </div>
-            </div>
-
-            % if messages:
-            <ul class="messages messages-success">
-                % for message in messages:
-                % if message.tags:
-                <li class=${ message.tags }>
-                    % else:
-                <li>
-                    % endif
-                    ${ message }
-                </li>
-                % endfor
-            </ul>
-            % endif
-
-            % if form['courses'].errors:
-            <div class="messages messages-error">
-                ${form['courses'].errors.as_ul()|h}
-            </div>
-            % endif
-
-            % if form['students'].errors:
-            <div class="messages messages-error">
-                ${form['students'].errors.as_ul()|h}
-            </div>
-            % endif
-
-            % if form['due_date'].errors:
-            <div class="messages messages-error">
-                ${form['due_date'].errors.as_ul()|h}
-            </div>
-            % endif
-
-            <div class="fields-row">
-                <div class="send_to_students-field field">
-                    <label for="${form['send_to_students'].id_for_label}">${form['send_to_students'].label}</label>
-                    ${form['send_to_students'].as_widget()|h}
-                </div>
-                <div class="send_to_parents-field field">
-                    <label for="${form['send_to_parents'].id_for_label}">${form['send_to_parents'].label}</label>
-                    ${form['send_to_parents'].as_widget()|h}
-                </div>
-                <div class="send_sms-field field">
-                    <label for="${form['send_sms'].id_for_label}">${form['send_sms'].label}</label>
-                    ${form['send_sms'].as_widget()|h}
-                </div>
-            </div>
-            <div class="submit-wrapper">
-                <input id='submit' type="submit" value="Assign Courses">
-            </div>
-        </form>
+<input type="hidden" name="csrfmiddlewaretoken" value="${ csrftoken }" />
+<div class="courses-field-wrapper">
+    <div class="courses-field field courses-list js-courses-styler">
+        <div class="head">
+            <label>Filter Courses:</label>
+            <input id="courseFilter" type="text">
+        </div>
+        <label for="${form['courses'].id_for_label}">${form['courses'].label}:</label>
+        ${form['courses'].as_widget()|h}
     </div>
+    <div class="courses-field field js-classrooms-styler">
+        <div class="head">
+            <label>Filter Classrooms:</label>
+            <input id="classroomFilter" type="text">
+        </div>
+        <label for="${form['classrooms'].id_for_label}">${form['classrooms'].label}:</label>
+        ${form['classrooms'].as_widget()|h}
+    </div>
+    <div class="courses-field-holder">
+        <div class="students-field field js-students-styler">
+            <div class="head">
+                <label>Filter Students:</label>
+                <input id="studentFilter" type="text">
+            </div>
+            <label for="${form['students'].id_for_label}">${form['students'].label}:</label>
+            ${form['students'].as_widget()|h}
+        </div>
+        <div class="due_date-field field">
+            <label for="${form['due_date'].id_for_label}">${form['due_date'].label}</label>
+            ${form['due_date'].as_widget()|h}
+        </div>
+    </div>
+</div>
 
-    <script type="text/javascript" src="${static.url('js/jquery.formstyler.min.js')}"></script>
-    <script>
-    $(function () {
-        $("#id_due_date").datetimepicker({
-            format: 'd/m/Y H:i',
-        });
+% if messages:
+<ul class="messages messages-success">
+    % for message in messages:
+    % if message.tags:
+    <li class=${ message.tags }>
+        % else:
+    <li>
+        % endif
+        ${ message }
+    </li>
+    % endfor
+</ul>
+% endif
 
-        var options = $("#id_students option");
-        options.detach().sort(function(option1, option2) {
-            var option1Text = $(option1).text();
-            var option2Text = $(option2).text();
-            return option1Text.localeCompare(option2Text);
-        });
-        options.appendTo("#id_students");
+% if form['courses'].errors:
+<div class="messages messages-error">
+    ${form['courses'].errors.as_ul()|h}
+</div>
+% endif
 
-        $('.manage-courses-wrapper select, .manage-courses-wrapper input[type="checkbox"]').styler();
+% if form['students'].errors:
+<div class="messages messages-error">
+    ${form['students'].errors.as_ul()|h}
+</div>
+% endif
 
-        // var $coursesList = $("#id_courses-styler li");
-        // var $classroomList = $("#id_classrooms-styler li");
-        // var $studentList = $("#id_students-styler li");
-        var characters = {
-            a: '([aăâ]{1})',
-            ă: '([aăâ]{1})',
-            â: '([aăâ]{1})',
-            i: '([iî]{1})',
-            î: '([iî]{1})',
-            s: '([sşș]{1})',
-            ş: '([sşș]{1})',
-            ș: '([sşș]{1})',
-            ţ: '([tţț]{1})',
-            t: '([tţț]{1})',
-            ț: '([tţț]{1})',
-        };
+% if form['due_date'].errors:
+<div class="messages messages-error">
+    ${form['due_date'].errors.as_ul()|h}
+</div>
+% endif
 
-        $(document).on('keyup', '#courseFilter', courseFilter);
-        $(document).on('keyup', '#classroomFilter', classroomFilter);
-        $(document).on('keyup', '#studentFilter', studentFilter);
-        $(document).on('change', '#id_classrooms', studentFilter);
-
-
-        var initCourses = $('#id_courses option').clone();
-        var initClassrooms = $('#id_classrooms option').clone();
-        var initStudents = $('#id_students option').clone();
-
-        function keywordMatches(keyword, text) {
-
-            var template = '';
-            for(var i=0; i < keyword.length; i++) {
-                template += characters[keyword[i]] || keyword[i];
-            }
-            template += '.*';
-
-            var reg = new RegExp(template);
-            return (text.match(reg));
-        }
-
-        function courseFilter(e){
-            var keyword = $(this).val().toLowerCase().trim();
-            var coursesToDisplay = initCourses.map(function(i, el) {
-                if (keywordMatches(keyword, $(el).text().trim().toLowerCase())) {
-                    return el;
-                } else {
-                    $(el).prop('selected', false);
-                }
-            });
-            $('#id_courses').html(coursesToDisplay);
-            $('.js-courses-styler select').trigger('refresh');
-        }
-
-        function classroomFilter(e){
-            var keyword = $(this).val().toLowerCase().trim();
-
-
-            var classroomsToDisplay = initClassrooms.map(function(i, el) {
-                if (keywordMatches(keyword, $(el).text().trim().toLowerCase())) {
-                    return el;
-                } else {
-                    $(el).prop('selected', false);
-                }
-            });
-            $('#id_classrooms').html(classroomsToDisplay);
-            $('.js-classrooms-styler select').trigger('refresh');
-        }
-
-        function studentFilter() {
-            var chosenClassrooms = [];
-            var keyword = $("#studentFilter").val().toLowerCase().trim();
-            $("#id_classrooms-styler").find('li.selected').each(function(i, el){
-                chosenClassrooms.push($(el).text());
-            });
-
-            var studentsToDisplay = initStudents.map(function(i, el) {
-                var $el = $(el);
-                // todo: think about improving code readness.
-                // filtering when chosenClassrooms
-                if (chosenClassrooms.length) {
-                    if (chosenClassrooms.includes($el.data('classroom'))) {
-                        if (keyword !== "") {
-                            if (keywordMatches(keyword, $el.text().toLowerCase().trim())) {
-                                return el;
-                            } else {
-                                $el.prop('selected', false);
-                            }
-                        } else {
-                            return el;
-                        }
-                        
-                    } else {
-                        $el.prop('selected', false);
-                    }
-                } else {
-                    // the same conditions but w/o chosenClassrooms
-                    if (keyword !== "") {
-                        if (keywordMatches(keyword, $el.text().toLowerCase().trim())) {
-                            return el;
-                        } else {
-                            $el.prop('selected', false);
-                        }
-                    } else {
-                        return el;
-                    }
-                }
-            });
-            $('#id_students').html(studentsToDisplay);
-            $('.js-students-styler select').trigger('refresh');
-        }
-    });
-    </script>
-</main>
+<div class="fields-row">
+    <div class="send_to_students-field field">
+        <label for="${form['send_to_students'].id_for_label}">${form['send_to_students'].label}</label>
+        ${form['send_to_students'].as_widget()|h}
+    </div>
+    <div class="send_to_parents-field field">
+        <label for="${form['send_to_parents'].id_for_label}">${form['send_to_parents'].label}</label>
+        ${form['send_to_parents'].as_widget()|h}
+    </div>
+    <div class="send_sms-field field">
+        <label for="${form['send_sms'].id_for_label}">${form['send_sms'].label}</label>
+        ${form['send_sms'].as_widget()|h}
+    </div>
+</div>

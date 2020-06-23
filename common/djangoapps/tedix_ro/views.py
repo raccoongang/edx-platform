@@ -459,8 +459,15 @@ def manage_courses(request):
     context.update({
         'form': form
     })
+    if request.is_ajax():
+        html = mako_render_to_string('manage_courses.html', context)
+        return HttpResponse(json.dumps({'html': html}), content_type="application/json")
 
     return render_to_response('manage_courses.html', context)
+
+
+def manage_courses_main(request):
+    return render_to_response('manage_courses_main.html')
 
 
 def personal_due_dates(request):
