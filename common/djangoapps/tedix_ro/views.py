@@ -157,7 +157,7 @@ def my_reports(request):
             students_list = CourseEnrollment.objects.filter(
                 course=course_overview, 
                 user__studentprofile__isnull=False
-            ).values_list('user_id', flat=True)
+            ).values_list('user_id', flat=True).distinct()
             students_classes = StudentProfile.objects.filter(
                 user__in=students_list
             ).values_list('classroom__name', flat=True).distinct()
@@ -167,7 +167,7 @@ def my_reports(request):
             students_list = CourseEnrollment.objects.filter(
                 course=course_overview, 
                 user__in=teacher_students
-            ).values_list('user_id', flat=True)
+            ).values_list('user_id', flat=True).distinct()
 
             students_classes = user.instructorprofile.students.filter(
                 user__in=students_list
@@ -188,23 +188,18 @@ def my_reports(request):
                 due_date__gte=utc_now_date,
             ).values_list('due_date', flat=True).distinct().union(course_due_dates_past)
 
-            course_due_dates_data = {
-                course_due_date.date(): user_due_date_data(user, course_due_date)
-                for course_due_date in course_due_dates
-            }
-
-            for course_due_date, course_due_date_data in course_due_dates_data.items():
+            for course_due_date in course_due_dates:
                 students_in_class = StudentCourseDueDate.objects.filter(
-                    due_date__contains=course_due_date,
+                    due_date__contains=course_due_date.date(),
                     student__classroom__name=students_class,
                     student__user__in=students_list,
                 ).values_list('student__user_id', flat=True).distinct()
 
-                students_in_class_count = students_in_class.count()
+                students_in_class_count = 0
                 count_answers_first_attempt = 0
                 for student in students_in_class:
+                    students_in_class_count += 1
                     count_answers_first_attempt += get_count_answers_first_attempt(student, course_key)[0]
-
                 average_score = 'n/a'
                 if count_answers_first_attempt:
                     average_score = '{:.1f}%'.format(
@@ -214,7 +209,7 @@ def my_reports(request):
                 data.append({
                     'course_name': course_name,
                     'report_link': course_report_link,
-                    'due_date': course_due_date_data,
+                    'due_date': user_due_date_data(user, course_due_date),
                     'classroom': students_class,
                     'average_score': average_score,
                 })
@@ -257,6 +252,8 @@ def my_reports(request):
 
 
 def my_reports_main(request):
+    if not request.user.is_authenticated():
+        return redirect(get_next_url_for_login_page(request))
     return render_to_response('my_reports_main.html')
 
 
@@ -289,7 +286,7 @@ def extended_report(request, course_key):
         for student in User.objects.filter(
                 courseenrollment__course_id=course.id,
                 **query_params
-            ).select_related('profile').distinct():
+            ).exclude(id=user.id).select_related('profile').distinct():
             header, user_data = report_data_preparation(student, modulestore_course)
             report_data.append(user_data)
     elif user.is_staff and hasattr(user, 'instructorprofile'):
