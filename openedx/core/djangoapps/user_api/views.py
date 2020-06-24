@@ -856,10 +856,8 @@ class RegistrationView(APIView):
             # Translators: This is a legal document users must agree to
             # in order to register a new account.
             terms_label = _(u"Terms of Service and Honor Code")
-            terms_link = marketing_link("HONOR")
-            terms_text = _(u"{platform_name} Terms of Service and Honor Code").format(
-                platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME)
-            )
+            terms_link = "https://courses.mama-edu.com/honor"
+            terms_text = _(u"Terms of Use")
 
         # Translators: "Terms of Service" is a legal document users must agree to
         # in order to register a new account.
