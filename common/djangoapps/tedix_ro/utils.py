@@ -95,7 +95,7 @@ def get_all_questions_count(course):
                     if problem.location.block_type == 'problem':
                         questions_count += 1
 
-    questions_count += Question.objects.filter(video_lesson__course=course.id).values('question_id').distinct().count()
+    questions_count += Question.objects.filter(video_lesson__course=course.id).values('question_id', 'video_lesson__video_id').distinct().count()
 
     return questions_count
 
@@ -110,7 +110,6 @@ def get_count_answers_first_attempt(user, course_key):
     questions_count = questions.exclude(attempt_count=0).count()
     count_answers_first_attempt = questions.filter(attempt_count=1).count()
     student_modules = StudentModule.objects.filter(student=user, course_id=course_key, module_type='problem')
-
     for student_module in student_modules:
         attempts = json.loads(student_module.state).get('attempts', 0)
         correct_map = json.loads(student_module.state).get('correct_map', {})
