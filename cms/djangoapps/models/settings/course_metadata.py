@@ -2,6 +2,8 @@
 Django module for Course Metadata class -- manages advanced settings and related parameters
 """
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
 from django.utils.translation import ugettext as _
 from xblock.fields import Scope
 
@@ -186,6 +188,11 @@ class CourseMetadata(object):
             errors: list of error objects
             result: the updated course metadata or None if error
         """
+        len_check_list = [
+            'eng_cert_course_name',
+            'landing_url',
+        ]
+        url_validator = URLValidator()
         filtered_list = cls.filtered_list()
         if not filter_tabs:
             filtered_list.remove("tabs")
@@ -199,10 +206,17 @@ class CourseMetadata(object):
         for key, model in filtered_dict.iteritems():
             try:
                 val = model['value']
-                if key == 'eng_cert_course_name' and len(val) > 255:
+                if key in len_check_list and len(val) > 255:
                     raise ValueError(_("The '{name}' value is too long, max length is 255").format(
                         name=model['display_name'])
                     )
+                if key == 'landing_url' and val:
+                    try:
+                        url_validator(val)
+                    except ValidationError:
+                        raise ValueError(_("Invalid url address in field '{name}'").format(
+                            name=model['display_name']
+                        ))
                 if hasattr(descriptor, key) and getattr(descriptor, key) != val:
                     key_values[key] = descriptor.fields[key].from_json(val)
             except (TypeError, ValueError) as err:

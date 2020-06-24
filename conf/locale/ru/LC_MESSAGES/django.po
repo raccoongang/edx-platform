@@ -2888,6 +2888,18 @@ msgid "Enter the course name that will be displayed in english version of certif
 msgstr "Введите имя курса, которое будет отображаться в английской версии сертификата."
 
 #: common/lib/xmodule/xmodule/course_module.py
+msgid "Landing URL"
+msgstr "URL-адрес лендинга"
+
+#: common/lib/xmodule/xmodule/course_module.py
+msgid ""
+"Enter the landing page URL, which will be displayed instead of the /about page, "
+"by clicking on the \"Learn more\" button in the course card."
+msgstr ""
+"Введите URL-адрес лендинга, который будет выводиться вместо страницы /about, "
+"по клику на кнопку \"Подробнее\" в карточке курса."
+
+#: common/lib/xmodule/xmodule/course_module.py
 msgid ""
 "Enter the passports for course LTI tools in the following format: "
 "\"id:client_key:client_secret\"."
@@ -11783,6 +11795,11 @@ msgstr "Неверный формат для поля '{name}'. {detailed_messag
 #, python-brace-format
 msgid "The '{name}' value is too long, max length is 255"
 msgstr "Слишком длинное значение поля '{name}'. Максимальная длина - 255 символов"
+
+#: cms/djangoapps/models/settings/course_metadata.py
+#, python-brace-format
+msgid "Invalid url address in field '{name}'"
+msgstr "Не валидный URL-адрес в поле '{name}'"
 
 #: cms/lib/xblock/tagging/tagging.py
 msgid "Dictionary with the available tags"
