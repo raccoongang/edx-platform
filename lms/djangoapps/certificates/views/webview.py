@@ -164,7 +164,7 @@ def _update_context_with_basic_info(context, course_id, platform_name, configura
     context['document_title'] = _("Invalid Certificate")
 
     # Translators: The &amp; characters represent an ampersand character and can be ignored
-    context['company_tos_urltext'] = _("Terms of Service &amp; Honor Code")
+    context['company_tos_urltext'] = _("Platform Terms Of Use")
 
     # Translators: A 'Privacy Policy' is a legal document/statement describing a website's use of personal information
     context['company_privacy_urltext'] = _("Privacy Policy")
@@ -226,6 +226,7 @@ def _update_course_context(request, context, course, platform_name):
     """
     context['full_course_image_url'] = request.build_absolute_uri(course_image_url(course))
     course_title_from_cert = context['certificate_data'].get('course_title', '')
+    context['eng_cert_course_name'] = course.eng_cert_course_name
     accomplishment_copy_course_name = course_title_from_cert if course_title_from_cert else course.display_name
     context['accomplishment_copy_course_name'] = accomplishment_copy_course_name
     course_number = course.display_coursenumber if course.display_coursenumber else course.number

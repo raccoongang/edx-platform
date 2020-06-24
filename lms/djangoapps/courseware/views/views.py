@@ -726,6 +726,9 @@ def course_about(request, course_id):
         if configuration_helpers.get_value('ENABLE_MKTG_SITE', settings.FEATURES.get('ENABLE_MKTG_SITE', False)):
             return redirect(reverse(course_home_url_name(course.id), args=[unicode(course.id)]))
 
+        if course.landing_url:
+            return redirect(course.landing_url)
+
         registered = registered_for_course(course, request.user)
 
         staff_access = bool(has_access(request.user, 'staff', course))
