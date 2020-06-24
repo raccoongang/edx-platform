@@ -5818,8 +5818,8 @@ msgstr "Неверный сертификат"
 #. Translators: The &amp; characters represent an ampersand character and can
 #. be ignored
 #: lms/djangoapps/certificates/views/webview.py
-msgid "Terms of Service &amp; Honor Code"
-msgstr "Условия предоставления услуг и Кодекс чести"
+msgid "Platform Terms Of Use"
+msgstr "Условия использования платформы"
 
 #. Translators: This line appears as a byline to a header image and describes
 #. the purpose of the page
@@ -5890,7 +5890,7 @@ msgstr "О платформе {platform_name}"
 #: lms/djangoapps/certificates/views/webview.py
 #, python-brace-format
 msgid "Learn more about {platform_name}"
-msgstr "Узнать больше {platform_name}"
+msgstr "Узнай больше о {platform_name}"
 
 #: lms/djangoapps/certificates/views/webview.py
 #, python-brace-format
@@ -11025,8 +11025,16 @@ msgid "Terms of Service and Honor Code"
 msgstr "Условия предоставления услуг и Кодекс чести"
 
 #: openedx/core/djangoapps/user_api/views.py
-msgid "{platform_name} Terms of Service and Honor Code"
-msgstr "Условия предоставления услуг и кодекс чести {platform_name}"
+msgid "Privacy policy"
+msgstr "Политика конфиденциальности"
+
+#: openedx/core/djangoapps/user_api/views.py
+msgid "Terms of Use"
+msgstr "Условия использования"
+
+#: openedx/core/djangoapps/user_api/views.py
+msgid "Public offer"
+msgstr "Публичная оферта"
 
 #. Translators: "Terms of Service" is a legal document users must agree to
 #. in order to register a new account.
