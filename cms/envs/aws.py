@@ -591,8 +591,23 @@ RETIREMENT_STATES = ENV_TOKENS.get('RETIREMENT_STATES', RETIREMENT_STATES)
 MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB = FEATURES.get("MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB", 200)
 if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
     import sentry_sdk
+    import subprocess
     from sentry_sdk.integrations.django import DjangoIntegration
-    sentry_sdk.init(AUTH_TOKENS.get('RG_SENTRY_DSN'), integrations=[DjangoIntegration()])
+    from sentry_sdk.integrations.celery import CeleryIntegration
+
+    try:
+        platform_git_commit = subprocess.check_output(['git', 'describe', '--always']).strip()
+    except (subprocess.CalledProcessError, OSError):
+        platform_git_commit = ''
+    sentry_sdk.init(
+            AUTH_TOKENS.get('RG_SENTRY_DSN'),
+            integrations=[DjangoIntegration(),CeleryIntegration()],
+            environment=ENV_TOKENS.get('RG_SENTRY_ENVIRONMENT', ''),
+            release=platform_git_commit,
+            send_default_pii=True
+            )
+
+ORA2_FILEUPLOAD_BACKEND = ENV_TOKENS.get('ORA2_FILEUPLOAD_BACKEND', 'django')
 #RACCOONGANG
 
 ####################### Plugin Settings ##########################
