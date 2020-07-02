@@ -4,6 +4,7 @@ Student Views
 
 import datetime
 import json
+import requests
 import logging
 import uuid
 import warnings
@@ -165,6 +166,12 @@ def index(request, extra_context=None, user=AnonymousUser()):
         courses = sort_by_announcement(courses)
 
     context = {'courses': courses}
+
+    ms_catalog_url = "https://docs.microsoft.com/api/learn/catalog?ClientID=test"
+    ms_catalog_response = requests.get(url=ms_catalog_url)
+    data = ms_catalog_response.json()
+    context['modules_ms'] = data['modules'][:10]
+    context['pathways_ms'] = data['learningPaths'][:10]
 
     context['homepage_overlay_html'] = configuration_helpers.get_value('homepage_overlay_html')
 
