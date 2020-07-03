@@ -103,3 +103,4 @@ git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.15#egg=xblock-
 # edx search
 -e git+https://github.com/edx/edx-search.git@ae459ead41962c656ce794619f58cdae46eb7896#egg=edx-search
 
+-e git+https://github.com/raccoongang/edx_xblock_scorm.git#egg=edx_xblock_scorm
