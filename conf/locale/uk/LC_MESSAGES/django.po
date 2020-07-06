@@ -26911,7 +26911,7 @@ msgstr "Пошук..."
 #: wiki/templates/wiki/base.html wiki/templates/wiki/accounts/login.html
 #: wiki/templates/wiki/accounts/signup.html
 msgid "Sign up"
-msgstr "Зареєстроватися"
+msgstr "Зареєструватися"
 
 #: wiki/templates/wiki/deleted.html
 msgid "Article deleted"
@@ -27172,3 +27172,7 @@ msgid ""
 "A new revision was created: Merge between Revision #%(r1)d and Revision "
 "#%(r2)d"
 msgstr "Нова версія була створена: злиття версій #%(r1)d і #%(r2)d"
+
+#: themes/edx.org/lms/templates/header/navbar-authenticated.html
+msgid "Choose courses"
+msgstr "Обрати курси"
