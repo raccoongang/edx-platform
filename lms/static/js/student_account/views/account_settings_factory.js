@@ -34,7 +34,7 @@
                 showLoadingError, orderNumber, getUserField, userFields, timeZoneDropdownField, countryDropdownField,
                 emailFieldView, socialFields, accountDeletionFields, platformData,
                 aboutSectionMessageType, aboutSectionMessage, fullnameFieldView, countryFieldView,
-                fullNameFieldData, emailFieldData, countryFieldData, additionalFields, fieldItem;
+                fullNameFieldData, emailFieldData, countryFieldData, additionalFields, fieldItem, cityFieldView, cityFieldData;
 
             $accountSettingsElement = $('.wrapper-account-settings');
 
@@ -121,6 +121,23 @@
                 };
             }
 
+            cityFieldData = {
+                model: userAccountModel,
+                title: gettext('City'),
+                valueAttribute: 'city',
+                helpMessage: gettext('The city where you live.'),  // eslint-disable-line max-len,
+                persistChanges: true
+            };
+            if (syncLearnerProfileData && enterpriseReadonlyAccountFields.fields.indexOf('city') !== -1) {
+                cityFieldView = {
+                    view: new AccountSettingsFieldViews.ReadonlyFieldView(cityFieldData)
+                };
+            } else {
+                cityFieldView = {
+                    view: new AccountSettingsFieldViews.TextFieldView(cityFieldData)
+                };
+            }
+
             aboutSectionsData = [
                 {
                     title: gettext('Basic Account Information'),
@@ -172,6 +189,7 @@
                             })
                         },
                         countryFieldView,
+                        cityFieldView,
                         {
                             view: new AccountSettingsFieldViews.TimeZoneFieldView({
                                 model: userPreferencesModel,
