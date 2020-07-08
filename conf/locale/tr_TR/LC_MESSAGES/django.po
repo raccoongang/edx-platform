@@ -11540,7 +11540,7 @@ msgstr "Bize hedeflerinizden bahsedin."
 
 #: openedx/core/djangoapps/user_api/accounts/__init__.py
 msgid "Select the highest level of education you have completed."
-msgstr "Bitirdiğiniz en yüksek eğitim seviyesini seçin."
+msgstr "Bitirdiğiniz veya şu an devam etmekte olduğunuz en yüksek okul seviyesi seçin."
 
 #: openedx/core/djangoapps/user_api/accounts/__init__.py
 msgid "Enter your mailing address."
