@@ -107,6 +107,7 @@ class UserReadOnlySerializer(serializers.Serializer):
             "is_active": user.is_active,
             "bio": None,
             "country": None,
+            "city": None,
             "profile_image": None,
             "language_proficiencies": None,
             "name": None,
@@ -127,6 +128,7 @@ class UserReadOnlySerializer(serializers.Serializer):
                 {
                     "bio": AccountLegacyProfileSerializer.convert_empty_to_None(user_profile.bio),
                     "country": AccountLegacyProfileSerializer.convert_empty_to_None(user_profile.country.code),
+                    "city": user_profile.city,
                     "profile_image": AccountLegacyProfileSerializer.get_profile_image(
                         user_profile, user, self.context.get('request')
                     ),
@@ -197,7 +199,7 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
     class Meta(object):
         model = UserProfile
         fields = (
-            "name", "gender", "goals", "year_of_birth", "level_of_education", "country", "social_links",
+            "name", "gender", "goals", "year_of_birth", "level_of_education", "country", "city", "social_links",
             "mailing_address", "bio", "profile_image", "requires_parental_consent", "language_proficiencies"
         )
         # Currently no read-only field, but keep this so view code doesn't need to know.
