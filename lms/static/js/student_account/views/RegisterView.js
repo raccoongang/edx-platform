@@ -34,6 +34,8 @@
                     'email',
                     'confirm_email',
                     'country',
+                    'city',
+                    'level_of_education',
                     'honor_code',
                     'terms_of_service'
                 ],
