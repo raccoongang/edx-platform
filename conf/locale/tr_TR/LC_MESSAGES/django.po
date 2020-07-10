@@ -11664,7 +11664,7 @@ msgstr "İkamet ettiğiniz ülke veya bölge."
 #. in order to register a new account.
 #: openedx/core/djangoapps/user_api/api.py
 msgid "Terms of Service and Honor Code"
-msgstr "Kullanım Koşulları ve Gizlilik Politikası"
+msgstr "Kullanım Koşulları"
 
 #: openedx/core/djangoapps/user_api/api.py
 #, python-brace-format
@@ -11697,7 +11697,7 @@ msgstr ""
 "{platform_name} platformunda bir hesap oluşturarak, {platform_name}"
 "                   "
 "{terms_of_service_link_start}{terms_of_service}{terms_of_service_link_end} "
-"ve {privacy_policy_link_start}Privacy Policy{privacy_policy_link_end} kabul "
+"ve {privacy_policy_link_start}Gizlilik Politikası{privacy_policy_link_end} kabul "
 "ediyorsunuz."
 
 #. Translators: "Terms of service" is a legal document users must agree to
