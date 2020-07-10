@@ -452,6 +452,28 @@ def get_name_validation_error(name):
     return '' if name else accounts.REQUIRED_FIELD_NAME_MSG
 
 
+def get_city_validation_error(city):
+    """Get the built-in validation error message for when
+    the user's city is invalid in some way (we wonder how).
+
+    :param name: The proposed user's city.
+    :return: Validation error message.
+
+    """
+    return '' if city else accounts.REQUIRED_FIELD_CITY_MSG
+
+
+def get_level_of_education_validation_error(level_of_education):
+    """Get the built-in validation error message for when
+    the level_of_education is invalid in some way.
+
+    :param username: The proposed level_of_education.
+    :return: Validation error message.
+
+    """
+    return '' if level_of_education else accounts.REQUIRED_FIELD_LEVEL_OF_EDUCATION_MSG
+
+
 def get_username_validation_error(username):
     """Get the built-in validation error message for when
     the username is invalid in some way.

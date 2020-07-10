@@ -16,9 +16,9 @@ ${_("This is to confirm that you changed the e-mail associated with "
     ${marketing_link('CONTACT')}
 % else:
     % if is_secure:
-        https://${ site }${reverse('contact')}
+        https://www.kodluyoruz.org/contact
     % else:
-        http://${ site }${reverse('contact')}
+        https://www.kodluyoruz.org/contact
     % endif
 % endif
 

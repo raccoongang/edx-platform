@@ -6126,6 +6126,14 @@ msgid "Country or Region of Residence"
 msgstr "İkamet Edilen Ülke ya da Bölge"
 
 #: lms/static/js/student_account/views/account_settings_factory.js
+msgid "The city where you live."
+msgstr "Yaşadığınız şehir."
+
+#: lms/static/js/student_account/views/account_settings_factory.js
+msgid "City"
+msgstr "Şehir"
+
+#: lms/static/js/student_account/views/account_settings_factory.js
 msgid "The country or region where you live."
 msgstr "İkamet ettiğiniz ülke veya bölge."
 

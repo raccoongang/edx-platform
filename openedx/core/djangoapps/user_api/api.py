@@ -448,7 +448,6 @@ class RegistrationFormFactory(object):
         # Translators: This label appears above a dropdown menu on the registration
         # form used to select the user's highest completed level of education.
         education_level_label = _(u"Highest level of education completed")
-        error_msg = accounts.REQUIRED_FIELD_LEVEL_OF_EDUCATION_MSG
 
         # The labels are marked for translation in UserProfile model definition.
         options = [(name, _(label)) for name, label in UserProfile.LEVEL_OF_EDUCATION_CHOICES]  # pylint: disable=translation-of-non-string
@@ -458,10 +457,7 @@ class RegistrationFormFactory(object):
             field_type="select",
             options=options,
             include_default_option=True,
-            required=required,
-            error_messages={
-                "required": error_msg
-            }
+            required=required
         )
 
     def _add_gender_field(self, form_desc, required=True):
@@ -637,15 +633,11 @@ class RegistrationFormFactory(object):
         # Translators: This label appears above a field on the registration form
         # which allows the user to input the city in which they live.
         city_label = _(u"City")
-        error_msg = accounts.REQUIRED_FIELD_CITY_MSG
 
         form_desc.add_field(
             "city",
             label=city_label,
-            required=required,
-            error_messages={
-                "required": error_msg
-            }
+            required=required
         )
 
     def _add_state_field(self, form_desc, required=False):

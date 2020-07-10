@@ -644,15 +644,15 @@ msgstr "Diğer/Söylememeyi Tercih Eder"
 
 #: common/djangoapps/student/models.py
 msgid "Doctorate"
-msgstr "Doktora derecesi"
+msgstr "Doktora"
 
 #: common/djangoapps/student/models.py
 msgid "Master's or professional degree"
-msgstr "Yüksek lisans veya profesyonel derece"
+msgstr "Master"
 
 #: common/djangoapps/student/models.py
 msgid "Bachelor's degree"
-msgstr "Lisans derecesi"
+msgstr "Lisans"
 
 #: common/djangoapps/student/models.py
 msgid "Associate degree"
@@ -660,15 +660,15 @@ msgstr "Ön Lisans derecesi"
 
 #: common/djangoapps/student/models.py
 msgid "Secondary/high school"
-msgstr "Orta Okul/Lise"
+msgstr "Ortaokul"
 
 #: common/djangoapps/student/models.py
 msgid "Junior secondary/junior high/middle school"
-msgstr "Üçüncü sınıf ortaokul/üçüncü sınıf lise/orta okul"
+msgstr "Lise"
 
 #: common/djangoapps/student/models.py
 msgid "Elementary/primary school"
-msgstr "Temel/İlkokul"
+msgstr "İlkokul"
 
 #. Translators: 'None' refers to the student's level of education
 #: common/djangoapps/student/models.py
@@ -678,7 +678,7 @@ msgstr "Örgün olmayan eğitim"
 #. Translators: 'Other' refers to the student's level of education
 #: common/djangoapps/student/models.py
 msgid "Other education"
-msgstr "Diğer eğitim"
+msgstr "Diğer"
 
 #: common/djangoapps/student/models.py
 #, python-brace-format
@@ -11540,7 +11540,7 @@ msgstr "Bize hedeflerinizden bahsedin."
 
 #: openedx/core/djangoapps/user_api/accounts/__init__.py
 msgid "Select the highest level of education you have completed."
-msgstr "Bitirdiğiniz en yüksek eğitim seviyesini seçin."
+msgstr "Bitirdiğiniz veya şu an devam etmekte olduğunuz en yüksek okul seviyesi seçin."
 
 #: openedx/core/djangoapps/user_api/accounts/__init__.py
 msgid "Enter your mailing address."
@@ -11638,7 +11638,7 @@ msgstr ""
 #. form used to select the user's highest completed level of education.
 #: openedx/core/djangoapps/user_api/api.py
 msgid "Highest level of education completed"
-msgstr "Bitirdiğiniz En Yüksek Okul Seviyesi"
+msgstr "Bitirdiğiniz veya şu an devam etmekte olduğunuz en yüksek okul seviyesi"
 
 #. #-#-#-#-#  django-partial.po (0.1a)  #-#-#-#-#
 #. Translators: This label appears above a dropdown menu on the registration
@@ -11664,7 +11664,7 @@ msgstr "İkamet ettiğiniz ülke veya bölge."
 #. in order to register a new account.
 #: openedx/core/djangoapps/user_api/api.py
 msgid "Terms of Service and Honor Code"
-msgstr "Kullanım Koşulları ve Gizlilik Politikası"
+msgstr "Kullanım Koşulları"
 
 #: openedx/core/djangoapps/user_api/api.py
 #, python-brace-format
@@ -11697,7 +11697,7 @@ msgstr ""
 "{platform_name} platformunda bir hesap oluşturarak, {platform_name}"
 "                   "
 "{terms_of_service_link_start}{terms_of_service}{terms_of_service_link_end} "
-"ve {privacy_policy_link_start}Privacy Policy{privacy_policy_link_end} kabul "
+"ve {privacy_policy_link_start}Gizlilik Politikası{privacy_policy_link_end} kabul "
 "ediyorsunuz."
 
 #. Translators: "Terms of service" is a legal document users must agree to
@@ -14012,7 +14012,7 @@ msgstr "örnek: İstanbul"
 #: lms/templates/register-form.html
 #: themes/stanford-style/lms/templates/register-form.html
 msgid "Highest Level of Education Completed"
-msgstr "Bitirdiğiniz En Yüksek Okul Seviyesi"
+msgstr "Bitirdiğiniz veya şu an devam etmekte olduğunuz en yüksek okul seviyesi"
 
 #: lms/templates/register-form.html
 #: themes/stanford-style/lms/templates/register-form.html

@@ -12,6 +12,8 @@ from openedx.core.djangoapps.user_api.accounts.api import (
     get_email_existence_validation_error,
     get_confirm_email_validation_error,
     get_country_validation_error,
+    get_city_validation_error,
+    get_level_of_education_validation_error,
     get_name_validation_error,
     get_password_validation_error,
     get_username_validation_error,
@@ -157,13 +159,24 @@ class RegistrationValidationView(APIView):
         country = request.data.get('country')
         return get_country_validation_error(country)
 
+    def city_handler(self, request):
+        city = request.data.get('city')
+        return get_city_validation_error(city)
+
+
+    def level_of_education_handler(self, request):
+        level_of_education = request.data.get('level_of_education')
+        return get_level_of_education_validation_error(level_of_education)
+
     validation_handlers = {
         "name": name_handler,
         "username": username_handler,
         "email": email_handler,
         "confirm_email": confirm_email_handler,
         "password": password_handler,
-        "country": country_handler
+        "country": country_handler,
+        "city": city_handler,
+        "level_of_education": level_of_education_handler,
     }
 
     def post(self, request):
