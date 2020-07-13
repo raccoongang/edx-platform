@@ -308,6 +308,42 @@ msgstr "Ви зареєстровані як студент за програм�
 msgid "Honor Code"
 msgstr "Кодекс Честі"
 
+#: edx-theme/lms/templates/footer.html
+msgid ""
+"Unicore Edu is the online platform for mastering skills in game development for all ages."
+msgstr ""
+"Unicore Edu – онлайн платформа для опановування навичок у розробці ігор для будь-якого віку."
+
+#: edx-theme/lms/templates/footer.html
+msgid ""
+"We make high quality and affordable online education in game industry."
+msgstr ""
+"Ми робимо онлайн-освіту в геймдеві якісною та доступною."
+
+#: edx-theme/lms/templates/footer.html
+msgid ""
+"We are working on online courses and workshops almost 24/7."
+msgstr ""
+"Розробляємо онлайн-курси та освітні інтенсиви майже 24/7."
+
+#: edx-theme/lms/templates/index.html
+msgid ""
+"Showcase your talent"
+msgstr ""
+"Розкрийте свій талант"
+
+#: edx-theme/lms/templates/index.html
+msgid ""
+"Let's search"
+msgstr ""
+"Давайте пошукаємо"
+
+#: edx-theme/lms/templates/courses_list.html
+msgid ""
+"All courses"
+msgstr ""
+"До всіх курсів"
+
 #: common/djangoapps/course_modes/helpers.py
 msgid "You're enrolled as a professional education student"
 msgstr "Ви записані як студент з вищою освітою"
