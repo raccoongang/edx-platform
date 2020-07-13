@@ -415,7 +415,7 @@ class AccountImportValidationForm(AccountCreationForm):
         username = cleaned_data.get('username')
         email = cleaned_data.get('email')
         if not User.objects.filter(email=email, username=username).exists() and User.objects.filter(username=username).exists():
-            self.add_error('username', _(u'Public Username "{}" already exists.'.format(username)))
+            self.add_error('username', _(u'Public Username "{username}" already exists.').format(username=username))
 
 
 class InstructorImportValidationForm(InstructorRegisterForm):
@@ -432,7 +432,10 @@ class InstructorImportValidationForm(InstructorRegisterForm):
         school = cleaned_data.get('school')
         school_city = cleaned_data.get('school_city')
         if school_city and school and school.city != school_city:
-            self.add_error('school', _(u'School {} is not in the city {}.'.format(school.name, school_city.name)))
+            self.add_error('school', _(u'School {school_name} is not in the city {school_city_name}.').format(
+                school_name=school.name, 
+                school_city_name=school_city.name
+            ))
 
     def exists(self, data):
         return InstructorProfile.objects.filter(user__email=data['email']).exists()
@@ -484,7 +487,10 @@ class StudentImportRegisterForm(StudentRegisterForm):
         school_city = cleaned_data.get('school_city')
         instructor = cleaned_data.get('instructor')
         if school_city and school and school.city != school_city:
-            self.add_error('school', _(u'School {} is not in the city {}.'.format(school.name, school_city.name)))
+            self.add_error('school', _(u'School {school_name} is not in the city {school_city_name}.').format(
+                school_name=school.name,
+                school_city_name=school_city.name
+            ))
         if instructor and instructor.school != school:
             self.add_error('instructor', _("Specified instructor belongs to another school"))
         return cleaned_data

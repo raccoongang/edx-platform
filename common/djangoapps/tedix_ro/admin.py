@@ -282,7 +282,7 @@ class StudentCourseDueDateForm(forms.ModelForm):
                 course = CourseOverview.objects.get(id=course_id)
                 utcnow = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
                 if not (course.start < due_date_utc < course.end and utcnow < due_date_utc):
-                    self.add_error('due_date', _('This due date is not valid for the course: {}'.format(course_id)))
+                    self.add_error('due_date', _('This due date is not valid for the course: {}').format(course_id))
             except CourseOverview.DoesNotExist:
                 raise forms.ValidationError(_("Course does not exist"))
             except InvalidKeyError:

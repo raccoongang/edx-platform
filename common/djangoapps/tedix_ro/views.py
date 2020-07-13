@@ -671,9 +671,9 @@ class ProfileImportView(View):
             'email': to_address,
             'password': data['password']
         }
-        subject = _('Bine ati venit pe platforma {}'.format(
-            configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
-        ))
+        subject = _('Bine ati venit pe platforma {platform_name}').format(
+            platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
+        )
         from_address = configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
         message = render_to_string('emails/import_profile.txt', email_context)
         send_mail(subject, message, from_address, [to_address])
