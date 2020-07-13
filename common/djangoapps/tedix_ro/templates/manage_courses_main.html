@@ -19,9 +19,9 @@ from openedx.core.djangolib.markup import HTML, Text
 
 <main id="main">
     <h1 class="main-title">
-        Manage Courses
+        ${_("Manage Courses")}
         <span class="title-tooltip">
-            Keep the CTRL (Command ⌘ for Mac) key pressed and CLICK on the items to select multiple entries.
+            ${_(u"Keep the CTRL (Command ⌘ for Mac) key pressed and CLICK on the items to select multiple entries.")}
         </span>
     </h1>
 
@@ -34,7 +34,7 @@ from openedx.core.djangolib.markup import HTML, Text
                 </div>
             </div>
             <div class="submit-wrapper">
-                <input id='submit' type="submit" value="Assign Courses">
+                <input id='submit' type="submit" value="${_('Assign Courses')}">
             </div>
         </form>
     </div>
