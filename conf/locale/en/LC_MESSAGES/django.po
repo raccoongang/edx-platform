@@ -32,8 +32,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2020-06-17 13:21+0000\n"
-"PO-Revision-Date: 2020-06-17 13:21:06.254545\n"
+"POT-Creation-Date: 2020-07-13 11:50+0000\n"
+"PO-Revision-Date: 2020-07-13 11:51:01.025282\n"
 "Last-Translator: \n"
 "Language-Team: openedx-translation <openedx-translation@googlegroups.com>\n"
 "Language: en\n"
@@ -1092,7 +1092,8 @@ msgid ""
 msgstr ""
 
 #: common/djangoapps/tedix_ro/forms.py
-msgid "This due date is not valid for the following courses: \"{}\"."
+#, python-brace-format
+msgid "This due date is not valid for the following courses: \"{courses}\"."
 msgstr ""
 
 #: common/djangoapps/tedix_ro/forms.py
@@ -1110,7 +1111,8 @@ msgid ""
 msgstr ""
 
 #: common/djangoapps/tedix_ro/forms.py
-msgid "Public Username \"{}\" already exists."
+#, python-brace-format
+msgid "Public Username \"{username}\" already exists."
 msgstr ""
 
 #: common/djangoapps/tedix_ro/forms.py
@@ -1122,7 +1124,8 @@ msgid "Such school doesn't exists in DB"
 msgstr ""
 
 #: common/djangoapps/tedix_ro/forms.py
-msgid "School {} is not in the city {}."
+#, python-brace-format
+msgid "School {school_name} is not in the city {school_city_name}."
 msgstr ""
 
 #: common/djangoapps/tedix_ro/forms.py
@@ -1221,7 +1224,8 @@ msgid "Profesor"
 msgstr ""
 
 #: common/djangoapps/tedix_ro/views.py
-msgid "Bine ati venit pe platforma {}"
+#, python-brace-format
+msgid "Bine ati venit pe platforma {platform_name}"
 msgstr ""
 
 #: common/djangoapps/third_party_auth/admin.py
@@ -4032,8 +4036,6 @@ msgstr ""
 #: common/lib/xmodule/xmodule/modulestore/inheritance.py
 #: common/lib/xmodule/xmodule/seq_module.py
 #: common/djangoapps/tedix_ro/templates/my_reports.html
-#: common/djangoapps/tedix_ro/templates/includes/student_report.html
-#: common/djangoapps/tedix_ro/templates/includes/teacher_report.html
 #: lms/templates/ccx/schedule.html
 msgid "Due Date"
 msgstr ""
@@ -6317,8 +6319,6 @@ msgstr ""
 #: lms/djangoapps/dashboard/sysadmin.py cms/templates/course-create-rerun.html
 #: cms/templates/index.html
 #: common/djangoapps/tedix_ro/templates/my_reports.html
-#: common/djangoapps/tedix_ro/templates/includes/student_report.html
-#: common/djangoapps/tedix_ro/templates/includes/teacher_report.html
 #: lms/templates/shoppingcart/receipt.html
 msgid "Course Name"
 msgstr ""
@@ -11944,8 +11944,6 @@ msgstr ""
 #. #-#-#-#-#  mako.po (0.1a)  #-#-#-#-#
 #. Translators: this is a verb describing the action of viewing more details
 #: cms/templates/studio_xblock_wrapper.html
-#: common/djangoapps/tedix_ro/templates/includes/student_report.html
-#: common/djangoapps/tedix_ro/templates/includes/teacher_report.html
 #: lms/templates/wiki/includes/article_menu.html
 #: wiki/templates/wiki/includes/article_menu.html
 msgid "View"
@@ -12083,13 +12081,47 @@ msgstr ""
 msgid "Report for lesson assigend to '{username}' with due date: {due_date}"
 msgstr ""
 
+#: common/djangoapps/tedix_ro/templates/manage_courses.html
+msgid "Filter Courses:"
+msgstr ""
+
+#: common/djangoapps/tedix_ro/templates/manage_courses.html
+msgid "Filter Classrooms:"
+msgstr ""
+
+#: common/djangoapps/tedix_ro/templates/manage_courses.html
+msgid "Filter Students:"
+msgstr ""
+
+#: common/djangoapps/tedix_ro/templates/manage_courses_main.html
+#: themes/red-theme/lms/templates/header/navbar-authenticated.html
+msgid "Manage Courses"
+msgstr ""
+
+#: common/djangoapps/tedix_ro/templates/manage_courses_main.html
+msgid ""
+"Keep the CTRL (Command ⌘ for Mac) key pressed and CLICK on the items to "
+"select multiple entries."
+msgstr ""
+
+#: common/djangoapps/tedix_ro/templates/manage_courses_main.html
+#: common/djangoapps/tedix_ro/templates/my_reports_main.html
+msgid "Data is loading, please wait a while..."
+msgstr ""
+
+#: common/djangoapps/tedix_ro/templates/manage_courses_main.html
+msgid "Assign Courses"
+msgstr ""
+
+#: common/djangoapps/tedix_ro/templates/my_reports.html
+msgid "No reports are available."
+msgstr ""
+
 #: common/djangoapps/tedix_ro/templates/my_reports.html
 msgid "Date Group"
 msgstr ""
 
 #: common/djangoapps/tedix_ro/templates/my_reports.html
-#: common/djangoapps/tedix_ro/templates/includes/student_report.html
-#: common/djangoapps/tedix_ro/templates/includes/teacher_report.html
 msgid "Class"
 msgstr ""
 
@@ -12099,6 +12131,10 @@ msgstr ""
 
 #: common/djangoapps/tedix_ro/templates/my_reports.html
 msgid "Display"
+msgstr ""
+
+#: common/djangoapps/tedix_ro/templates/my_reports.html
+msgid "Open report"
 msgstr ""
 
 #: common/djangoapps/tedix_ro/templates/emails/extended_report_mail.html
@@ -12162,11 +12198,6 @@ msgstr ""
 #: common/djangoapps/tedix_ro/templates/includes/student_extended_report.html
 #: common/djangoapps/tedix_ro/templates/includes/teacher_extended_report.html
 msgid "attempts"
-msgstr ""
-
-#: common/djangoapps/tedix_ro/templates/includes/student_report.html
-#: common/djangoapps/tedix_ro/templates/includes/teacher_report.html
-msgid "Assign Date"
 msgstr ""
 
 #: common/lib/capa/capa/templates/codeinput.html
@@ -12827,11 +12858,6 @@ msgstr ""
 msgid "Press to Launch"
 msgstr ""
 
-#: lms/templates/manage_courses.html
-#: themes/red-theme/lms/templates/header/navbar-authenticated.html
-msgid "Manage Courses"
-msgstr ""
-
 #: lms/templates/manage_user_standing.html
 msgid "Manage student accounts"
 msgstr ""
@@ -12910,6 +12936,10 @@ msgstr ""
 #: lms/templates/personal_due_dates.html
 #: themes/red-theme/lms/templates/header/navbar-authenticated.html
 msgid "Personal Due Dates"
+msgstr ""
+
+#: lms/templates/personal_due_dates.html
+msgid "No due dates are available."
 msgstr ""
 
 #: lms/templates/preview_menu.html
