@@ -12145,13 +12145,13 @@ msgstr "Raportul de activitate pentru lecția:"
 #: common/djangoapps/tedix_ro/templates/extended_report_popup.html
 msgid ""
 "Report for lesson assigend to Class '{classroom}' with due date: {due_date}"
-msgstr ""
+msgstr "Raportul pentru lecția alocată Clasei '{classroom}' cu data limită: {due_date}"
 
 #: common/djangoapps/tedix_ro/templates/extended_report_popup.html
 msgid "Report for lesson assigend to '{username}' with due date: {due_date}"
 msgstr ""
 "Raportul de activitate pentru tema de casă a utilizatorului '{username}' cu "
-"data limită: {due_date} Date Group,Grup Dată"
+"data limită: {due_date}"
 
 #: common/djangoapps/tedix_ro/templates/manage_courses.html
 msgid "Filter Courses:"
@@ -12178,8 +12178,8 @@ msgstr "Țineți tasta SHIFT apăsată și faceți CLICK pe mai multe linii pent
 
 #: common/djangoapps/tedix_ro/templates/manage_courses_main.html
 #: common/djangoapps/tedix_ro/templates/my_reports_main.html
-msgid "Data is loading, please wait a while..."
-msgstr ""
+msgid "Data is loading, please wait..."
+msgstr "Datele se încarcă, va rugăm asteptați..."
 
 #: common/djangoapps/tedix_ro/templates/manage_courses_main.html
 msgid "Assign Courses"

@@ -457,7 +457,7 @@ def manage_courses(request):
                         context
                     )
                     sms_client.send_message(parent.phone, sms_message)
-            messages.success(request, 'Successfully assigned.')
+            messages.success(request, _('Successfully assigned.'))
             if request.is_ajax():
                 html = mako_render_to_string('manage_courses.html', {
                     "csrftoken": csrf(request)["csrf_token"],

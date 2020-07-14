@@ -12106,7 +12106,7 @@ msgstr ""
 
 #: common/djangoapps/tedix_ro/templates/manage_courses_main.html
 #: common/djangoapps/tedix_ro/templates/my_reports_main.html
-msgid "Data is loading, please wait a while..."
+msgid "Data is loading, please wait..."
 msgstr ""
 
 #: common/djangoapps/tedix_ro/templates/manage_courses_main.html
