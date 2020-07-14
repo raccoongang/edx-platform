@@ -54,7 +54,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2020-07-13 11:50+0000\n"
+"POT-Creation-Date: 2020-07-14 19:55+0000\n"
 "PO-Revision-Date: 2018-08-07 20:02+0000\n"
 "Last-Translator: Manuel Pacurar, 2020\n"
 "Language-Team: Romanian (https://www.transifex.com/open-edx/teams/6205/ro/)\n"
@@ -1114,9 +1114,11 @@ msgid ""
 msgstr ""
 
 #: common/djangoapps/tedix_ro/forms.py
+#, python-brace-format
 msgid "This due date is not valid for the following courses: \"{courses}\"."
 msgstr ""
-"Această dată limită nu este valabilă pentru următoarele cursuri: \"{courses}\"."
+"Această dată limită nu este valabilă pentru următoarele cursuri: "
+"\"{courses}\"."
 
 #: common/djangoapps/tedix_ro/forms.py
 msgid "The file you are going to import has another extension."
@@ -1133,6 +1135,7 @@ msgid ""
 msgstr ""
 
 #: common/djangoapps/tedix_ro/forms.py
+#, python-brace-format
 msgid "Public Username \"{username}\" already exists."
 msgstr "Numele de utilizator \"{username}\" există deja în sistem."
 
@@ -1145,6 +1148,7 @@ msgid "Such school doesn't exists in DB"
 msgstr "Nu există această școală în baza de date."
 
 #: common/djangoapps/tedix_ro/forms.py
+#, python-brace-format
 msgid "School {school_name} is not in the city {school_city_name}."
 msgstr "Școala {school_name} nu este în orașul {school_city_name}."
 
@@ -1233,6 +1237,10 @@ msgstr "Viitor"
 msgid "Past"
 msgstr "Trecut"
 
+#: common/djangoapps/tedix_ro/views.py
+msgid "Successfully assigned."
+msgstr "Temă alocată cu succes."
+
 #: common/djangoapps/tedix_ro/views.py lms/urls.py
 msgid "LMS Administration"
 msgstr "Administrare LMS"
@@ -1246,6 +1254,7 @@ msgid "Profesor"
 msgstr "Profesor"
 
 #: common/djangoapps/tedix_ro/views.py
+#, python-brace-format
 msgid "Bine ati venit pe platforma {platform_name}"
 msgstr "Bine ați venit pe platforma {platform_name}"
 
@@ -9413,7 +9422,7 @@ msgstr ""
 #: themes/edx.org/lms/templates/dashboard.html
 #: themes/edx.org/lms/templates/dashboard/_dashboard_entitlement_unenrollment_modal.html
 msgid "Close"
-msgstr ""
+msgstr "Închide"
 
 #: lms/templates/wiki/edit.html
 msgid "Wiki Preview"
@@ -12145,7 +12154,8 @@ msgstr "Raportul de activitate pentru lecția:"
 #: common/djangoapps/tedix_ro/templates/extended_report_popup.html
 msgid ""
 "Report for lesson assigend to Class '{classroom}' with due date: {due_date}"
-msgstr "Raportul pentru lecția alocată Clasei '{classroom}' cu data limită: {due_date}"
+msgstr ""
+"Raportul pentru lecția alocată Clasei '{classroom}' cu data limită: {due_date}"
 
 #: common/djangoapps/tedix_ro/templates/extended_report_popup.html
 msgid "Report for lesson assigend to '{username}' with due date: {due_date}"
@@ -12174,12 +12184,9 @@ msgstr "Alocare Teme"
 msgid ""
 "Keep the CTRL (Command ⌘ for Mac) key pressed and CLICK on the items to "
 "select multiple entries."
-msgstr "Țineți tasta SHIFT apăsată și faceți CLICK pe mai multe linii pentru selecție multiplă."
-
-#: common/djangoapps/tedix_ro/templates/manage_courses_main.html
-#: common/djangoapps/tedix_ro/templates/my_reports_main.html
-msgid "Data is loading, please wait..."
-msgstr "Datele se încarcă, va rugăm asteptați..."
+msgstr ""
+"Țineți tasta SHIFT apăsată și faceți CLICK pe mai multe linii pentru "
+"selecție multiplă."
 
 #: common/djangoapps/tedix_ro/templates/manage_courses_main.html
 msgid "Assign Courses"
@@ -12208,6 +12215,10 @@ msgstr "Afișare"
 #: common/djangoapps/tedix_ro/templates/my_reports.html
 msgid "Open report"
 msgstr "Deschide Raport"
+
+#: common/djangoapps/tedix_ro/templates/my_reports_main.html
+msgid "Data is loading, please wait..."
+msgstr "Datele se încarcă, va rugăm asteptați..."
 
 #: common/djangoapps/tedix_ro/templates/emails/extended_report_mail.html
 #: lms/templates/email_verification.html lms/templates/header/brand.html
