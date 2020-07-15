@@ -54,7 +54,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2020-07-14 19:55+0000\n"
+"POT-Creation-Date: 2020-07-14 21:22+0000\n"
 "PO-Revision-Date: 2018-08-07 20:02+0000\n"
 "Last-Translator: Manuel Pacurar, 2020\n"
 "Language-Team: Romanian (https://www.transifex.com/open-edx/teams/6205/ro/)\n"
@@ -9408,9 +9408,11 @@ msgstr ""
 #. Translators: this is a control to allow users to exit out of this modal
 #. interface (a menu or piece of UI that takes the full focus of the screen)
 #: lms/templates/wiki/edit.html lms/templates/wiki/history.html
-#: lms/templates/wiki/includes/cheatsheet.html lms/templates/dashboard.html
-#: lms/templates/forgot_password_modal.html lms/templates/help_modal.html
-#: lms/templates/signup_modal.html lms/templates/ccx/schedule.html
+#: lms/templates/wiki/includes/cheatsheet.html
+#: common/djangoapps/tedix_ro/templates/my_reports.html
+#: lms/templates/dashboard.html lms/templates/forgot_password_modal.html
+#: lms/templates/help_modal.html lms/templates/signup_modal.html
+#: lms/templates/ccx/schedule.html
 #: lms/templates/dashboard/_dashboard_entitlement_unenrollment_modal.html
 #: lms/templates/instructor/instructor_dashboard_2/add_coupon_modal.html
 #: lms/templates/instructor/instructor_dashboard_2/edit_coupon_modal.html
@@ -12155,7 +12157,8 @@ msgstr "Raportul de activitate pentru lecția:"
 msgid ""
 "Report for lesson assigend to Class '{classroom}' with due date: {due_date}"
 msgstr ""
-"Raportul pentru lecția alocată Clasei '{classroom}' cu data limită: {due_date}"
+"Raportul pentru lecția alocată Clasei '{classroom}' cu data limită: "
+"{due_date}"
 
 #: common/djangoapps/tedix_ro/templates/extended_report_popup.html
 msgid "Report for lesson assigend to '{username}' with due date: {due_date}"
@@ -12185,8 +12188,13 @@ msgid ""
 "Keep the CTRL (Command ⌘ for Mac) key pressed and CLICK on the items to "
 "select multiple entries."
 msgstr ""
-"Țineți tasta SHIFT apăsată și faceți CLICK pe mai multe linii pentru "
+"Țineți tasta CTRL (Command ⌘ pentru Mac) apăsată și faceți CLICK pe mai multe linii pentru "
 "selecție multiplă."
+
+#: common/djangoapps/tedix_ro/templates/manage_courses_main.html
+#: common/djangoapps/tedix_ro/templates/my_reports_main.html
+msgid "Data is loading, please wait..."
+msgstr "Datele se încarcă, va rugăm asteptați..."
 
 #: common/djangoapps/tedix_ro/templates/manage_courses_main.html
 msgid "Assign Courses"
@@ -12215,10 +12223,6 @@ msgstr "Afișare"
 #: common/djangoapps/tedix_ro/templates/my_reports.html
 msgid "Open report"
 msgstr "Deschide Raport"
-
-#: common/djangoapps/tedix_ro/templates/my_reports_main.html
-msgid "Data is loading, please wait..."
-msgstr "Datele se încarcă, va rugăm asteptați..."
 
 #: common/djangoapps/tedix_ro/templates/emails/extended_report_mail.html
 #: lms/templates/email_verification.html lms/templates/header/brand.html

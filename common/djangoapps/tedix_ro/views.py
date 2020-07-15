@@ -16,7 +16,7 @@ from django.shortcuts import redirect, render
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language, ugettext_lazy as _
 from django.views import View
 
 from courseware.courses import get_course_with_access
@@ -29,6 +29,7 @@ from opaque_keys.edx.keys import CourseKey
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.core.djangolib.translation_utils import translate_date
 import pytz
 from student.helpers import do_create_account, get_next_url_for_login_page
 from student.models import CourseEnrollment
@@ -105,33 +106,43 @@ def my_reports(request):
         due_date = due_date_datetime.date()
         today = utc_now.date()
         date_data = time.mktime(date.timetuple())
+        _today = _('Today')
+        _tomorrow = _('Tomorrow')
+        _future = _('Future')
+        _past = _('Past')
+        date_group_css_map = {
+            _today: 'today',
+            _tomorrow: 'tomorrow',
+            _future: 'future',
+            _past: 'past'
+        }
         if today == due_date:
-            date_group = _('Today')
+            date_group = _today
             due_date_data.update({
                 'displayed_date': date_group,
                 'due_date_order': 1
             })
         elif (today - due_date).days == -1:
-            date_group = _('Tomorrow')
+            date_group = _tomorrow
             due_date_data.update({
                 'displayed_date': date_group,
                 'due_date_order': 2
             })
         elif (today - due_date).days < -1:
-            date_group = _('Future')
+            date_group = _future
             due_date_data.update({
-                'displayed_date': '{}: {}'.format(date_group, date.strftime('%d %B')),
+                'displayed_date': '{}: {}'.format(date_group, translate_date(date, get_language())),
                 'due_date_order': 3
             })
         elif (today - due_date).days > 0:
-            date_group = _('Past')
+            date_group = _past
             due_date_data.update({
-                'displayed_date': '{}: {}'.format(date_group, date.strftime('%d %B')),
+                'displayed_date': '{}: {}'.format(date_group, translate_date(date, get_language())),
                 'due_date_order': 4
             })
 
         due_date_data.update({
-            'date_group': date_group.lower(),
+            'date_group': date_group_css_map[date_group],
             'date_data': date_data,
         })
         return due_date_data
@@ -325,17 +336,16 @@ def extended_report(request, course_key):
         today = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC).date()
 
         if today == due_date:
-            date_group = 'Today'
+            date_group = _('Today')
         elif (today - due_date).days == -1:
-            date_group = 'Tomorrow'
+            date_group = _('Tomorrow')
         elif (today - due_date).days < -1:
-            date_group = 'Future'
+            date_group = _('Future')
         elif (today - due_date).days > 0:
-            date_group = 'Past'
-
+            date_group = _('Past')
         context.update({
             'classroom': classroom,
-            'due_date': '{}, {}'.format(date_group, due_date.strftime('%d %B %Y')),
+            'due_date': '{}, {}'.format(date_group, translate_date(due_date, get_language())),
         })
         html = mako_render_to_string('extended_report_popup.html', context)
         return Response({'html': html})
