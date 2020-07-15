@@ -44,8 +44,22 @@ from openedx.core.djangolib.markup import HTML, Text
         var url = "${reverse('manage_courses_data')}";
         var loader = $("#manage-courses-form").html();
         function ajaxReady () {
+            $.datetimepicker.setLocale('ro');
             $("#id_due_date").datetimepicker({
                 format: 'd/m/Y H:i',
+                i18n:{
+                    ro:{
+                        months:[
+                            'Ianuarie','Februarie','Martie','Aprilie',
+                            'Mai','Iunie','Iulie','August',
+                            'Septembrie','Octombrie','Noiembrie','Dezember',
+                        ],
+                        dayOfWeek:[
+                            "Du", "Lu", "Ma", "Mi",
+                            "Jo", "Vi", "Sâ",
+                        ]
+                        }
+                }
             });
 
             var options = $("#id_students option");
