@@ -5642,6 +5642,10 @@ msgstr "Пожертвувати"
 msgid "About"
 msgstr "Про нас"
 
+#: edx-theme/lms/templates/footer.html
+msgid "About platform"
+msgstr "Про платформу"
+
 #: lms/djangoapps/branding/api.py
 #, python-brace-format
 msgid "{platform_name} for Business"
@@ -5696,6 +5700,10 @@ msgstr "Політика щодо доступності матеріалів"
 #: themes/stanford-style/lms/templates/static_templates/tos.html
 msgid "Terms of Service"
 msgstr "Умови надання послуг"
+
+#: edx-theme/lms/templates/footer.html
+msgid "Public Offer Agreement"
+msgstr "Договір публічної оферти"
 
 #: lms/djangoapps/branding/api.py
 msgid "Sitemap"
@@ -12148,6 +12156,10 @@ msgstr ""
 msgid "Register"
 msgstr "Зареєструватися"
 
+#: edx-theme/lms/templates/header/navbar-not-authenticated.html
+msgid "Registration"
+msgstr "Реєстрація"
+
 #: openedx/core/djangoapps/user_authn/views/login.py
 msgid "There was an error receiving your login information. Please email us."
 msgstr ""
@@ -12510,6 +12522,10 @@ msgstr ""
 #: themes/edx.org/lms/templates/header/navbar-not-authenticated.html
 msgid "Sign in"
 msgstr "Увійти"
+
+#: edx-theme/lms/templates/header/navbar-not-authenticated.html
+msgid "Login"
+msgstr "Вхід"
 
 #: openedx/features/course_experience/views/course_home_messages.py
 #, python-brace-format
@@ -13812,6 +13828,11 @@ msgstr "Ви ще не зареєструвались на жодному кур
 #: themes/edx.org/lms/templates/dashboard.html
 msgid "Explore courses"
 msgstr "Обрати курси"
+
+#: lms/templates/header/navbar-not-authenticated.html
+#: lms/templates/navigation/navbar-authenticated.html
+msgid "All Courses"
+msgstr "Всі курси"
 
 #: lms/templates/dashboard.html
 #: lms/templates/registration/account_activation_sidebar_notice.html
