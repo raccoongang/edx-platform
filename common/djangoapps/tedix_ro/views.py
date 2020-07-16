@@ -510,10 +510,14 @@ def personal_due_dates(request):
             user_tz = pytz.timezone(user_time_zone.value)
             course_tz_due_datetime = pytz.UTC.localize(
                 due_date.replace(tzinfo=None), is_dst=None).astimezone(user_tz)
-            return course_tz_due_datetime.strftime(
-                "%b %d, %Y, %H:%M %P {} (%Z, UTC%z)".format(
-                    user_time_zone.value.replace("_", " ")))
-        return '{} UTC'.format(due_date.astimezone(pytz.UTC).strftime('%b %d, %Y, %H:%M %P'))
+            return  '{}, {}'.format(
+                translate_date(course_tz_due_datetime, get_language()),
+                course_tz_due_datetime.strftime(
+                    "%H:%M %P {} (%Z, UTC%z)".format(
+                        user_time_zone.value.replace("_", " "))))
+        return '{}, {} UTC'.format(
+            translate_date(due_date.astimezone(pytz.UTC), get_language()),
+            due_date.astimezone(pytz.UTC).strftime('%H:%M %P'))
 
     user = request.user
     if not user.is_authenticated():

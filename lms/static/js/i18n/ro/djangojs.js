@@ -61,6 +61,7 @@
     "Remove": "Elimin\u0103", 
     "Remove all": "Elimin\u0103 toate", 
     "Show": "Arat\u0103", 
+    "The email address you've provided isn't formatted correctly.": "Adresa de e-mail furnizat\u0103 nu este formatat\u0103 corect.", 
     "This is the list of available %s. You may choose some by selecting them in the box below and then clicking the \"Choose\" arrow between the two boxes.": "Aceasta este o list\u0103 cu %s disponibile. Le pute\u021bi alege select\u00e2nd mai multe in chenarul de mai jos \u0219i ap\u0103s\u00e2nd pe s\u0103geata \"Alege\" dintre cele dou\u0103 chenare.", 
     "This is the list of chosen %s. You may remove some by selecting them in the box below and then clicking the \"Remove\" arrow between the two boxes.": "Aceasta este lista de %s alese. Pute\u021bi elimina din ele select\u00e2ndu-le in chenarul de mai jos \u0219i apasand pe s\u0103geata \"Elimin\u0103\" dintre cele dou\u0103 chenare.", 
     "Today": "Ast\u0103zi", 

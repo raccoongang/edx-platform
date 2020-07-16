@@ -10702,7 +10702,7 @@ msgstr ""
 
 #: openedx/core/djangoapps/user_api/accounts/__init__.py
 msgid "Enter your city."
-msgstr ""
+msgstr "Intră în orașul tău."
 
 #: openedx/core/djangoapps/user_api/accounts/__init__.py
 msgid "Tell us your goals."
@@ -10714,31 +10714,31 @@ msgstr ""
 
 #: openedx/core/djangoapps/user_api/accounts/__init__.py
 msgid "Select your teacher."
-msgstr ""
+msgstr "Selectați profesorul tău"
 
 #: openedx/core/djangoapps/user_api/accounts/__init__.py
 msgid "Enter parent email address."
-msgstr ""
+msgstr "Introduceți adresa de e-mail a părintelui."
 
 #: openedx/core/djangoapps/user_api/accounts/__init__.py
 msgid "Enter parent phone number."
-msgstr ""
+msgstr "Introduceți numărul de telefon al părintelui."
 
 #: openedx/core/djangoapps/user_api/accounts/__init__.py
 msgid "Enter your phone number."
-msgstr ""
+msgstr "Introduceți numărul de telefon."
 
 #: openedx/core/djangoapps/user_api/accounts/__init__.py
 msgid "Select a classroom."
-msgstr ""
+msgstr "Selectați o sală de clasă."
 
 #: openedx/core/djangoapps/user_api/accounts/__init__.py
 msgid "Select a city."
-msgstr ""
+msgstr "Selectați un oraș."
 
 #: openedx/core/djangoapps/user_api/accounts/__init__.py
 msgid "Select a school."
-msgstr ""
+msgstr "Selectați o școală."
 
 #: openedx/core/djangoapps/user_api/accounts/api.py
 #, python-brace-format

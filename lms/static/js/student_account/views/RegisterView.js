@@ -198,7 +198,8 @@
                     // selectjs initializing for the #register-school_city select
                     $("#register-school_city").select2({
                         matcher: this.matchStart,
-                        minimumInputLength: 1
+                        minimumInputLength: 1,
+                        language: "ro"
                     });
                     // handling selectjs events and triggering RegisterView events to stick the validation errors displaying
                     $('#register-school_city').on('select2:select select2:close', function (e) {

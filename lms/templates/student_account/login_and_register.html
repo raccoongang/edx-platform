@@ -13,6 +13,7 @@
 
 <%block name="js_extra">
     <script type="text/javascript" src="${static.url('js/vendor/select2/4.0.6-rc.0/select2.min.js')}"></script>
+    <script type="text/javascript" src="${static.url('js/vendor/select2/4.0.6-rc.0/i18n/ro.js')}"></script>
     <%static:require_module module_name="js/student_account/logistration_factory" class_name="LogistrationFactory">
         var options = ${data | n, dump_js_escaped_json};
         LogistrationFactory(options);
