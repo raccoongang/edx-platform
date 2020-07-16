@@ -16,6 +16,7 @@ from django.shortcuts import redirect, render
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
+from django.utils.translation import get_language, ugettext_lazy as _
 from django.views import View
 
 from courseware.courses import get_course_with_access
@@ -28,6 +29,7 @@ from opaque_keys.edx.keys import CourseKey
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.core.djangolib.translation_utils import translate_date
 import pytz
 from student.helpers import do_create_account, get_next_url_for_login_page
 from student.models import CourseEnrollment
@@ -93,8 +95,9 @@ def my_reports(request):
         due_date_data = {}
         date_group = ''
         utc_now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
-
         user_time_zone = user.preferences.filter(key='time_zone').first()
+        language = get_language()
+
         if user_time_zone:
             user_tz = pytz.timezone(user_time_zone.value)
             date = pytz.UTC.localize(due_date_datetime.replace(tzinfo=None), is_dst=None).astimezone(user_tz)
@@ -104,27 +107,44 @@ def my_reports(request):
         due_date = due_date_datetime.date()
         today = utc_now.date()
         date_data = time.mktime(date.timetuple())
+        _today = _('Today')
+        _tomorrow = _('Tomorrow')
+        _future = _('Future')
+        _past = _('Past')
+        date_group_css_map = {
+            _today: 'today',
+            _tomorrow: 'tomorrow',
+            _future: 'future',
+            _past: 'past'
+        }
         if today == due_date:
-            displayed_date = date_group = 'Today'
-            due_date_order = 1
+            date_group = _today
+            due_date_data.update({
+                'displayed_date': date_group,
+                'due_date_order': 1
+            })
         elif (today - due_date).days == -1:
-            displayed_date = date_group = 'Tomorrow'
-            due_date_order = 2
+            date_group = _tomorrow
+            due_date_data.update({
+                'displayed_date': date_group,
+                'due_date_order': 2
+            })
         elif (today - due_date).days < -1:
-            date_group = 'Future'
-            due_date_order = 3
-            displayed_date = '{}: {}'.format(date_group, date.strftime('%d %B'))
+            date_group = _future
+            due_date_data.update({
+                'displayed_date': '{}: {}'.format(date_group, translate_date(date, language)),
+                'due_date_order': 3
+            })
         elif (today - due_date).days > 0:
-            date_group = 'Past'
-            due_date_order = 4
-            displayed_date = '{}: {}'.format(date_group, date.strftime('%d %B'))
-            date_data *= -1
+            date_group = _past
+            due_date_data.update({
+                'displayed_date': '{}: {}'.format(date_group, translate_date(date, language)),
+                'due_date_order': 4
+            })
 
         due_date_data.update({
-            'date_group': date_group.lower(),
+            'date_group': date_group_css_map[date_group],
             'date_data': date_data,
-            'due_date_order': due_date_order,
-            'displayed_date' : displayed_date
         })
         return due_date_data
 
@@ -137,7 +157,7 @@ def my_reports(request):
         courses = CourseOverview.objects.all()
     else:
         course_enrollments = CourseEnrollment.enrollments_for_user(user=user)
-        course_overview_id_list = [_.course_id for _ in course_enrollments]
+        course_overview_id_list = [course_enrollment.course_id for course_enrollment in course_enrollments]
         courses = CourseOverview.objects.filter(id__in=course_overview_id_list)
 
     data = []
@@ -317,17 +337,16 @@ def extended_report(request, course_key):
         today = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC).date()
 
         if today == due_date:
-            date_group = 'Today'
+            date_group = _('Today')
         elif (today - due_date).days == -1:
-            date_group = 'Tomorrow'
+            date_group = _('Tomorrow')
         elif (today - due_date).days < -1:
-            date_group = 'Future'
+            date_group = _('Future')
         elif (today - due_date).days > 0:
-            date_group = 'Past'
-
+            date_group = _('Past')
         context.update({
             'classroom': classroom,
-            'due_date': '{}, {}'.format(date_group, due_date.strftime('%d %B %Y')),
+            'due_date': '{}, {}'.format(date_group, translate_date(due_date, get_language())),
         })
         html = mako_render_to_string('extended_report_popup.html', context)
         return Response({'html': html})
@@ -449,7 +468,7 @@ def manage_courses(request):
                         context
                     )
                     sms_client.send_message(parent.phone, sms_message)
-            messages.success(request, 'Successfully assigned.')
+            messages.success(request, _('Successfully assigned.'))
             if request.is_ajax():
                 html = mako_render_to_string('manage_courses.html', {
                     "csrftoken": csrf(request)["csrf_token"],
@@ -488,14 +507,19 @@ def personal_due_dates(request):
         Format due_date based on user preferences.
         """
         user_time_zone = student_profile.user.preferences.filter(key='time_zone').first()
+        language = get_language()
         if user_time_zone:
             user_tz = pytz.timezone(user_time_zone.value)
             course_tz_due_datetime = pytz.UTC.localize(
                 due_date.replace(tzinfo=None), is_dst=None).astimezone(user_tz)
-            return course_tz_due_datetime.strftime(
-                "%b %d, %Y, %H:%M %P {} (%Z, UTC%z)".format(
-                    user_time_zone.value.replace("_", " ")))
-        return '{} UTC'.format(due_date.astimezone(pytz.UTC).strftime('%b %d, %Y, %H:%M %P'))
+            return  '{}, {}'.format(
+                translate_date(course_tz_due_datetime, language),
+                course_tz_due_datetime.strftime(
+                    "%H:%M %P {} (%Z, UTC%z)".format(
+                        user_time_zone.value.replace("_", " "))))
+        return '{}, {} UTC'.format(
+            translate_date(due_date.astimezone(pytz.UTC), language),
+            due_date.astimezone(pytz.UTC).strftime('%H:%M %P'))
 
     user = request.user
     if not user.is_authenticated():
@@ -597,7 +621,7 @@ class ProfileImportView(View):
             'text_changelist_url': self.text_changelist_url,
             'changelist_url': self.changelist_url,
             'import_form': self.import_form,
-            'site_header': 'LMS Administration',
+            'site_header': _('LMS Administration'),
             'row_headers': self.headers
         }
         return render(request, self.template_name, context)
@@ -646,14 +670,14 @@ class ProfileImportView(View):
             'text_changelist_url': self.text_changelist_url,
             'changelist_url': self.changelist_url,
             'import_form': import_form,
-            'site_header': 'LMS Administration',
+            'site_header': _('LMS Administration'),
             'row_headers': self.headers
         })
         return render(request, self.template_name, context)
 
     def send_email(self, user, data, send_payment_link=False):
         to_address = user.email
-        status = 'Elev' if self.role == 'student' else 'Profesor'
+        status = _('Elev') if self.role == 'student' else _('Profesor')
         email_context = {
             'status': status,
             'lms_url': configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
@@ -663,8 +687,8 @@ class ProfileImportView(View):
             'email': to_address,
             'password': data['password']
         }
-        subject = 'Bine ati venit pe platforma {}'.format(
-            configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
+        subject = _('Bine ati venit pe platforma {platform_name}').format(
+            platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
         )
         from_address = configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
         message = render_to_string('emails/import_profile.txt', email_context)

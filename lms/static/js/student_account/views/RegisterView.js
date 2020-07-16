@@ -198,7 +198,8 @@
                     // selectjs initializing for the #register-school_city select
                     $("#register-school_city").select2({
                         matcher: this.matchStart,
-                        minimumInputLength: 1
+                        minimumInputLength: 1,
+                        language: "ro"
                     });
                     // handling selectjs events and triggering RegisterView events to stick the validation errors displaying
                     $('#register-school_city').on('select2:select select2:close', function (e) {
@@ -207,10 +208,10 @@
 
                     $('#register-school, #register-instructor').prop('disabled', 'disabled');
                     $('[for="register-school"]').append(
-                        '<span id="sity-optional-help" class="label-optional">Please select your city first.</span>'
+                        '<span id="sity-optional-help" class="label-optional">' + gettext('Please select your city first.') + '</span>'
                     );
                     $('[for="register-instructor"]').append(
-                        '<span id="instructor-optional-help" class="label-optional">Please select your school first.</span>'
+                        '<span id="instructor-optional-help" class="label-optional">' + gettext('Please select your school first.') + '</span>'
                     );
 
                     // Must be called after postRender, since postRender sets up $formFeedback.

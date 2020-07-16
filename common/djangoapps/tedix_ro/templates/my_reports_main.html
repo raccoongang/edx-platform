@@ -14,6 +14,23 @@ from django.utils.translation import ugettext as _
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
 <script>
     var myReportsUrl = "${reverse('my_reports_data')}";
+    var language = {
+        "sProcessing":   "Procesează...",
+        "sLengthMenu":   "Afișează _MENU_ înregistrări pe pagină",
+        "sZeroRecords":  "Nu am găsit nimic - ne pare rău",
+        "sInfo":         "Afișate de la _START_ la _END_ din _TOTAL_ înregistrări",
+        "sInfoEmpty":    "Afișate de la 0 la 0 din 0 înregistrări",
+        "sInfoFiltered": "(filtrate dintr-un total de _MAX_ înregistrări)",
+        "sInfoPostFix":  "",
+        "sSearch":       "Caută:",
+        "sUrl":          "",
+        "oPaginate": {
+            "sFirst":    "Prima",
+            "sPrevious": "Precedenta",
+            "sNext":     "Următoarea",
+            "sLast":     "Ultima"
+        }
+    };
     function readyFunc () {
         var table = $(".table-my-reports").DataTable({
             "searching": false,
@@ -23,7 +40,8 @@ from django.utils.translation import ugettext as _
                 { "orderData": [ 0, 1 ], "targets": 1, "orderable": true},
                 { "targets": 2, "orderable": true },
                 { "targets": "_all", "orderable": false }
-            ]
+            ],
+            "language": language
         });
 
         var $tableClass = $("th.table-class");
@@ -73,7 +91,8 @@ from django.utils.translation import ugettext as _
                         "columnDefs": [
                             { "targets": 0, "orderable": true},
                             { "targets": "_all", "orderable": false }
-                        ]
+                        ],
+                        "language": language
                     });
                 }
             });
@@ -103,7 +122,7 @@ from django.utils.translation import ugettext as _
     <div class="my-report-wrapper" id="report-table">
         <div class="loader-wrapper">
             <div class="loader">Loading...</div>
-            <span>${_("Data is loading, please wait a while...")}</span>
+            <span>${_("Data is loading, please wait...")}</span>
         </div>
     </div>
 </main>

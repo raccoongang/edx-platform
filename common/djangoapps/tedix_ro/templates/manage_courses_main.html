@@ -19,9 +19,9 @@ from openedx.core.djangolib.markup import HTML, Text
 
 <main id="main">
     <h1 class="main-title">
-        Manage Courses
+        ${_("Manage Courses")}
         <span class="title-tooltip">
-            Keep the CTRL (Command ⌘ for Mac) key pressed and CLICK on the items to select multiple entries.
+            ${_(u"Keep the CTRL (Command ⌘ for Mac) key pressed and CLICK on the items to select multiple entries.")}
         </span>
     </h1>
 
@@ -30,11 +30,11 @@ from openedx.core.djangolib.markup import HTML, Text
             <div id="manage-courses-form">
                 <div class="loader-wrapper">
                     <div class="loader">Loading...</div>
-                    <span>${_("Data is loading, please wait a while...")}</span>
+                    <span>${_("Data is loading, please wait...")}</span>
                 </div>
             </div>
             <div class="submit-wrapper">
-                <input id='submit' type="submit" value="Assign Courses">
+                <input id='submit' type="submit" value="${_('Assign Courses')}">
             </div>
         </form>
     </div>
@@ -44,8 +44,22 @@ from openedx.core.djangolib.markup import HTML, Text
         var url = "${reverse('manage_courses_data')}";
         var loader = $("#manage-courses-form").html();
         function ajaxReady () {
+            $.datetimepicker.setLocale('ro');
             $("#id_due_date").datetimepicker({
                 format: 'd/m/Y H:i',
+                i18n:{
+                    ro:{
+                        months:[
+                            'Ianuarie','Februarie','Martie','Aprilie',
+                            'Mai','Iunie','Iulie','August',
+                            'Septembrie','Octombrie','Noiembrie','Dezember',
+                        ],
+                        dayOfWeek:[
+                            "Du", "Lu", "Ma", "Mi",
+                            "Jo", "Vi", "Sâ",
+                        ]
+                        }
+                }
             });
 
             var options = $("#id_students option");

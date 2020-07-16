@@ -14,7 +14,7 @@ from student.models import AUDIT_LOG
 from student.views.management import compose_and_send_activation_email
 
 
-phone_validator = RegexValidator(regex=r'^\d{10,15}$', message='The phone number length must be from 10 to 15 digits.')
+phone_validator = RegexValidator(regex=r'^\d{10,15}$', message=_('The phone number length must be from 10 to 15 digits.'))
 
 
 class Classroom(models.Model):
@@ -122,7 +122,7 @@ class StudentCourseDueDate(models.Model):
         unique_together = ('student', 'course_id')
 
     def __unicode__(self):
-        return u'Student course due date'
+        return _(u'Student course due date')
 
 
 @receiver(user_logged_in)

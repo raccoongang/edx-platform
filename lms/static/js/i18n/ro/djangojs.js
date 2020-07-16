@@ -25,6 +25,9 @@
       "%(sel)s din %(cnt)s selectate", 
       "de %(sel)s din %(cnt)s selectate"
     ], 
+    "(Optional)": "(Facultativ)", 
+    "(optional)": "(facultativ)", 
+    "(required)": "(necesar)", 
     "6 a.m.": "6 a.m.", 
     "6 p.m.": "6 p.m.", 
     "Available %s": "%s disponibil", 
@@ -39,6 +42,7 @@
     "Click to remove all chosen %s at once.": "Click pentru a elimina toate %s alese.", 
     "Filter": "Filtru", 
     "Hide": "Ascunde", 
+    "Instructor": "Profesor", 
     "Midnight": "Miezul nop\u021bii", 
     "Noon": "Amiaz\u0103", 
     "Note: You are %s hour ahead of server time.": [
@@ -52,9 +56,12 @@
       "Not\u0103: Sunte\u021bi cu %s ore \u00een urma orei serverului."
     ], 
     "Now": "Acum", 
+    "Please select your city first.": "Selecta\u021bi ora\u0219ul mai \u00eent\u00e2i.", 
+    "Please select your school first.": "Selecta\u021bi mai \u00eent\u00e2i \u0219coala.", 
     "Remove": "Elimin\u0103", 
     "Remove all": "Elimin\u0103 toate", 
     "Show": "Arat\u0103", 
+    "The email address you've provided isn't formatted correctly.": "Adresa de e-mail furnizat\u0103 nu este formatat\u0103 corect.", 
     "This is the list of available %s. You may choose some by selecting them in the box below and then clicking the \"Choose\" arrow between the two boxes.": "Aceasta este o list\u0103 cu %s disponibile. Le pute\u021bi alege select\u00e2nd mai multe in chenarul de mai jos \u0219i ap\u0103s\u00e2nd pe s\u0103geata \"Alege\" dintre cele dou\u0103 chenare.", 
     "This is the list of chosen %s. You may remove some by selecting them in the box below and then clicking the \"Remove\" arrow between the two boxes.": "Aceasta este lista de %s alese. Pute\u021bi elimina din ele select\u00e2ndu-le in chenarul de mai jos \u0219i apasand pe s\u0103geata \"Elimin\u0103\" dintre cele dou\u0103 chenare.", 
     "Today": "Ast\u0103zi", 

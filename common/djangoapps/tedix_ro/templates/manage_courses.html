@@ -8,7 +8,7 @@ from openedx.core.djangolib.markup import HTML, Text
 <div class="courses-field-wrapper">
     <div class="courses-field field courses-list js-courses-styler">
         <div class="head">
-            <label>Filter Courses:</label>
+            <label>${_("Filter Courses:")}</label>
             <input id="courseFilter" type="text">
         </div>
         <label for="${form['courses'].id_for_label}">${form['courses'].label}:</label>
@@ -16,7 +16,7 @@ from openedx.core.djangolib.markup import HTML, Text
     </div>
     <div class="courses-field field js-classrooms-styler">
         <div class="head">
-            <label>Filter Classrooms:</label>
+            <label>${_("Filter Classrooms:")}</label>
             <input id="classroomFilter" type="text">
         </div>
         <label for="${form['classrooms'].id_for_label}">${form['classrooms'].label}:</label>
@@ -25,7 +25,7 @@ from openedx.core.djangolib.markup import HTML, Text
     <div class="courses-field-holder">
         <div class="students-field field js-students-styler">
             <div class="head">
-                <label>Filter Students:</label>
+                <label>${_("Filter Students:")}</label>
                 <input id="studentFilter" type="text">
             </div>
             <label for="${form['students'].id_for_label}">${form['students'].label}:</label>
