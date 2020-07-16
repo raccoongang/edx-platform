@@ -95,8 +95,9 @@ def my_reports(request):
         due_date_data = {}
         date_group = ''
         utc_now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
-
         user_time_zone = user.preferences.filter(key='time_zone').first()
+        language = get_language()
+
         if user_time_zone:
             user_tz = pytz.timezone(user_time_zone.value)
             date = pytz.UTC.localize(due_date_datetime.replace(tzinfo=None), is_dst=None).astimezone(user_tz)
@@ -131,13 +132,13 @@ def my_reports(request):
         elif (today - due_date).days < -1:
             date_group = _future
             due_date_data.update({
-                'displayed_date': '{}: {}'.format(date_group, translate_date(date, get_language())),
+                'displayed_date': '{}: {}'.format(date_group, translate_date(date, language)),
                 'due_date_order': 3
             })
         elif (today - due_date).days > 0:
             date_group = _past
             due_date_data.update({
-                'displayed_date': '{}: {}'.format(date_group, translate_date(date, get_language())),
+                'displayed_date': '{}: {}'.format(date_group, translate_date(date, language)),
                 'due_date_order': 4
             })
 
@@ -506,17 +507,18 @@ def personal_due_dates(request):
         Format due_date based on user preferences.
         """
         user_time_zone = student_profile.user.preferences.filter(key='time_zone').first()
+        language = get_language()
         if user_time_zone:
             user_tz = pytz.timezone(user_time_zone.value)
             course_tz_due_datetime = pytz.UTC.localize(
                 due_date.replace(tzinfo=None), is_dst=None).astimezone(user_tz)
             return  '{}, {}'.format(
-                translate_date(course_tz_due_datetime, get_language()),
+                translate_date(course_tz_due_datetime, language),
                 course_tz_due_datetime.strftime(
                     "%H:%M %P {} (%Z, UTC%z)".format(
                         user_time_zone.value.replace("_", " "))))
         return '{}, {} UTC'.format(
-            translate_date(due_date.astimezone(pytz.UTC), get_language()),
+            translate_date(due_date.astimezone(pytz.UTC), language),
             due_date.astimezone(pytz.UTC).strftime('%H:%M %P'))
 
     user = request.user
