@@ -36,6 +36,21 @@ def report_data_preparation(user, course):
     video_questions = Question.objects.filter(video_lesson__course=course.id)
     count_answer_first_attempt = 0
 
+    questions = video_questions.values('question_id', 'video_lesson__video_id').distinct()
+    user_video_questions = video_questions.filter(video_lesson__user=user)
+
+    if user_video_questions:
+        for video_question in user_video_questions:
+            questions = questions.exclude(video_lesson__video_id=video_question.video_lesson.video_id)
+            questions_data.append((video_question.question_id, video_question.attempt_count, True))
+            header.append((video_question.question_id, 'video_lesson'))
+            if video_question.attempt_count == 1:
+                count_answer_first_attempt += 1
+
+    for question in questions:
+        questions_data.append((question.get('question_id'), 0, False))
+        header.append((question.get('question_id'), 'video_lesson'))
+
     for section in course.get_children():
         for subsection in section.get_children():
             for unit in subsection.get_children():
@@ -55,20 +70,6 @@ def report_data_preparation(user, course):
                         header.append((problem.display_name, 'problem'))
                         questions_data.append((problem.display_name, attempts, done))
 
-    questions = video_questions.values('question_id', 'video_lesson__video_id').distinct()
-    user_video_questions = video_questions.filter(video_lesson__user=user)
-
-    if user_video_questions:
-        for video_question in user_video_questions:
-            questions = questions.exclude(video_lesson__video_id=video_question.video_lesson.video_id)
-            questions_data.append((video_question.question_id, video_question.attempt_count, True))
-            header.append((video_question.question_id, 'video_lesson'))
-            if video_question.attempt_count == 1:
-                count_answer_first_attempt += 1
-
-    for question in questions:
-        questions_data.append((question.get('question_id'), 0, False))
-        header.append((question.get('question_id'), 'video_lesson'))
 
     percent = float(count_answer_first_attempt) / len(questions_data) * 100 if questions_data else 100
     report_data = {
