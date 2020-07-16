@@ -25,6 +25,9 @@
       "%(sel)s din %(cnt)s selectate", 
       "de %(sel)s din %(cnt)s selectate"
     ], 
+    "(Optional)": "(Facultativ)", 
+    "(optional)": "(facultativ)", 
+    "(required)": "(necesar)", 
     "6 a.m.": "6 a.m.", 
     "6 p.m.": "6 p.m.", 
     "Available %s": "%s disponibil", 
@@ -39,6 +42,7 @@
     "Click to remove all chosen %s at once.": "Click pentru a elimina toate %s alese.", 
     "Filter": "Filtru", 
     "Hide": "Ascunde", 
+    "Instructor": "Profesor", 
     "Midnight": "Miezul nop\u021bii", 
     "Noon": "Amiaz\u0103", 
     "Note: You are %s hour ahead of server time.": [
@@ -52,6 +56,8 @@
       "Not\u0103: Sunte\u021bi cu %s ore \u00een urma orei serverului."
     ], 
     "Now": "Acum", 
+    "Please select your city first.": "Selecta\u021bi ora\u0219ul mai \u00eent\u00e2i.", 
+    "Please select your school first.": "Selecta\u021bi mai \u00eent\u00e2i \u0219coala.", 
     "Remove": "Elimin\u0103", 
     "Remove all": "Elimin\u0103 toate", 
     "Show": "Arat\u0103", 

@@ -32,8 +32,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1a\n"
 "Report-Msgid-Bugs-To: openedx-translation@googlegroups.com\n"
-"POT-Creation-Date: 2020-07-14 21:22+0000\n"
-"PO-Revision-Date: 2020-07-14 21:23:04.405338\n"
+"POT-Creation-Date: 2020-07-15 15:15+0000\n"
+"PO-Revision-Date: 2020-07-15 15:15:58.818427\n"
 "Last-Translator: \n"
 "Language-Team: openedx-translation <openedx-translation@googlegroups.com>\n"
 "Language: en\n"
@@ -19219,6 +19219,14 @@ msgstr ""
 
 #: lms/templates/student_account/login_and_register.html
 msgid "Sign in or Register"
+msgstr ""
+
+#: lms/templates/student_account/login_and_register.html
+msgid "Please select your city first..."
+msgstr ""
+
+#: lms/templates/student_account/login_and_register.html
+msgid "Please select your school first."
 msgstr ""
 
 #: lms/templates/support/certificates.html lms/templates/support/index.html

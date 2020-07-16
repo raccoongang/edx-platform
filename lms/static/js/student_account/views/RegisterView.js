@@ -207,10 +207,10 @@
 
                     $('#register-school, #register-instructor').prop('disabled', 'disabled');
                     $('[for="register-school"]').append(
-                        '<span id="sity-optional-help" class="label-optional">Please select your city first.</span>'
+                        '<span id="sity-optional-help" class="label-optional">' + gettext('Please select your city first.') + '</span>'
                     );
                     $('[for="register-instructor"]').append(
-                        '<span id="instructor-optional-help" class="label-optional">Please select your school first.</span>'
+                        '<span id="instructor-optional-help" class="label-optional">' + gettext('Please select your school first.') + '</span>'
                     );
 
                     // Must be called after postRender, since postRender sets up $formFeedback.
