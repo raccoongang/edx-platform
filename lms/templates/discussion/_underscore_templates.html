@@ -1,9 +1,16 @@
 <%page expression_filter="h"/>
 <%namespace name='static' file='../static_content.html'/>
-<%! from openedx.core.djangolib.js_utils import js_escaped_string %>
+<%!
+from openedx.core.djangolib.js_utils import js_escaped_string
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+%>
+
+<%
+platform_name = configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME)
+%>
 
 <script type="text/javascript">
-  window.PLATFORM_NAME = "${settings.PLATFORM_NAME | n, js_escaped_string}";
+  window.PLATFORM_NAME = "${platform_name | n, js_escaped_string}";
   % if settings.FEATURES.get('ENABLE_DISCUSSION_HOME_PANEL', False):
     window.ENABLE_DISCUSSION_HOME_PANEL = true;
   % else:

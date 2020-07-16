@@ -308,6 +308,42 @@ msgstr "Ви зареєстровані як студент за програм�
 msgid "Honor Code"
 msgstr "Кодекс Честі"
 
+#: edx-theme/lms/templates/footer.html
+msgid ""
+"Unicore Edu is the online platform for mastering skills in game development for all ages."
+msgstr ""
+"Unicore Edu – онлайн платформа для опановування навичок у розробці ігор для будь-якого віку."
+
+#: edx-theme/lms/templates/footer.html
+msgid ""
+"We make high quality and affordable online education in game industry."
+msgstr ""
+"Ми робимо онлайн-освіту в геймдеві якісною та доступною."
+
+#: edx-theme/lms/templates/footer.html
+msgid ""
+"We are working on online courses and workshops almost 24/7."
+msgstr ""
+"Розробляємо онлайн-курси та освітні інтенсиви майже 24/7."
+
+#: edx-theme/lms/templates/index.html
+msgid ""
+"Showcase your talent"
+msgstr ""
+"Розкрийте свій талант"
+
+#: edx-theme/lms/templates/index.html
+msgid ""
+"Let's search"
+msgstr ""
+"Давайте пошукаємо"
+
+#: edx-theme/lms/templates/courses_list.html
+msgid ""
+"All courses"
+msgstr ""
+"До всіх курсів"
+
 #: common/djangoapps/course_modes/helpers.py
 msgid "You're enrolled as a professional education student"
 msgstr "Ви записані як студент з вищою освітою"
@@ -5606,6 +5642,10 @@ msgstr "Пожертвувати"
 msgid "About"
 msgstr "Про нас"
 
+#: edx-theme/lms/templates/footer.html
+msgid "About platform"
+msgstr "Про платформу"
+
 #: lms/djangoapps/branding/api.py
 #, python-brace-format
 msgid "{platform_name} for Business"
@@ -5660,6 +5700,10 @@ msgstr "Політика щодо доступності матеріалів"
 #: themes/stanford-style/lms/templates/static_templates/tos.html
 msgid "Terms of Service"
 msgstr "Умови надання послуг"
+
+#: edx-theme/lms/templates/footer.html
+msgid "Public Offer Agreement"
+msgstr "Договір публічної оферти"
 
 #: lms/djangoapps/branding/api.py
 msgid "Sitemap"
@@ -12112,6 +12156,10 @@ msgstr ""
 msgid "Register"
 msgstr "Зареєструватися"
 
+#: edx-theme/lms/templates/header/navbar-not-authenticated.html
+msgid "Registration"
+msgstr "Реєстрація"
+
 #: openedx/core/djangoapps/user_authn/views/login.py
 msgid "There was an error receiving your login information. Please email us."
 msgstr ""
@@ -12474,6 +12522,10 @@ msgstr ""
 #: themes/edx.org/lms/templates/header/navbar-not-authenticated.html
 msgid "Sign in"
 msgstr "Увійти"
+
+#: edx-theme/lms/templates/header/navbar-not-authenticated.html
+msgid "Login"
+msgstr "Вхід"
 
 #: openedx/features/course_experience/views/course_home_messages.py
 #, python-brace-format
@@ -13776,6 +13828,11 @@ msgstr "Ви ще не зареєструвались на жодному кур
 #: themes/edx.org/lms/templates/dashboard.html
 msgid "Explore courses"
 msgstr "Обрати курси"
+
+#: lms/templates/header/navbar-not-authenticated.html
+#: lms/templates/navigation/navbar-authenticated.html
+msgid "All Courses"
+msgstr "Всі курси"
 
 #: lms/templates/dashboard.html
 #: lms/templates/registration/account_activation_sidebar_notice.html
@@ -26911,7 +26968,7 @@ msgstr "Пошук..."
 #: wiki/templates/wiki/base.html wiki/templates/wiki/accounts/login.html
 #: wiki/templates/wiki/accounts/signup.html
 msgid "Sign up"
-msgstr "Зареєстроватися"
+msgstr "Зареєструватися"
 
 #: wiki/templates/wiki/deleted.html
 msgid "Article deleted"
@@ -27172,3 +27229,7 @@ msgid ""
 "A new revision was created: Merge between Revision #%(r1)d and Revision "
 "#%(r2)d"
 msgstr "Нова версія була створена: злиття версій #%(r1)d і #%(r2)d"
+
+#: themes/edx.org/lms/templates/header/navbar-authenticated.html
+msgid "Choose courses"
+msgstr "Обрати курси"
