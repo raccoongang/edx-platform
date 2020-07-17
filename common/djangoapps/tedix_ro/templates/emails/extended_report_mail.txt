@@ -3,9 +3,7 @@ from django.utils.translation import ugettext as _
 
 from openedx.features.enterprise_support.utils import get_enterprise_learner_generic_name
 %>
-<%!
-from django.utils.translation import ugettext as _
-%>
+
 <%
 roll = _('Superuser') if user.is_superuser else _('Teacher')
 %>
@@ -18,8 +16,8 @@ ${_("Students Progress for {roll} '{username}'").format(roll=roll, username=user
 
 ${_("Student name")}: ${ user_data['full_name'] }
 ${_("Activity report for lesson")}: ${ lesson_report['course_name'] }
-${_("Lesson completed")}: ${'Yes' if user_data['completion'] == 1 else 'No'}
-${_("Number of question completed from first attempt")}: ${ user_data['percent'] }% (${user_data['count_answer_first_attempt']} out of ${len(user_data['questions'])})
+${_("Lesson completed")}: ${_("Yes") if user_data['completion'] == 1 else _("No")}
+${_("Number of question completed from first attempt")}: ${ user_data['percent'] }% (${user_data['count_answer_first_attempt']} ${_("out of")} ${len(user_data['questions'])})
 
     %for question_name, question_count_answer, done in user_data['questions']:
     ${_("Question")} ${loop.index + 1}: ${ question_name }
