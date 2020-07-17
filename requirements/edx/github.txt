@@ -87,8 +87,10 @@ git+https://github.com/edx/xblock-utils.git@v1.0.5#egg=xblock-utils==1.0.5
 -e git+https://github.com/edx-solutions/xblock-google-drive.git@138e6fa0bf3a2013e904a085b9fed77dab7f3f21#egg=xblock-google-drive
 git+https://github.com/edx/edx-user-state-client.git@1.0.1#egg=edx-user-state-client==1.0.1
 git+https://github.com/edx/xblock-lti-consumer.git@v1.1.5#egg=lti_consumer-xblock==1.1.5
-git+https://github.com/edx/edx-proctoring.git@0.18.1#egg=edx-proctoring==0.18.1
 git+https://github.com/raccoongang/edx-oauth-client.git@v.0.1.0#egg=edx_oauth_client==0.1.0
+
+# Ru translation for MAMAEdu
+git+https://github.com/raccoongang/edx-proctoring.git@0.18.1-mamaedu#egg=0.18.1-mamaedu
 
 # Auth0 customization in v1.6.0
 -e git+https://github.com/raccoongang/social-core.git@1.6.0-auth0#egg=social-auth-core==1.6.0
