@@ -49,7 +49,7 @@ def send_teacher_extended_reports():
                         reverse('extended_report', kwargs={'course_key': course.id})
                     )
                 })
-        user_language = instructor.user.preferences.model.get_value(user, LANGUAGE_KEY, default=settings.LANGUAGE_CODE)
+        user_language = instructor.user.preferences.model.get_value(instructor.user, LANGUAGE_KEY, default=settings.LANGUAGE_CODE)
         with override_language(user_language):
             if lesson_reports:
                 subject = _(u'{platform_name}: Report for {username}').format(
