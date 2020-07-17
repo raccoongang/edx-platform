@@ -4,15 +4,14 @@
 
 <%block name="message">
 <p>
-${_("Thank you for creating an account with {platform_name}!").format(
+${_("Danke, dass Sie sich bei {platform_name} registriert haben!").format(
     platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
 )}
 </p>
 <p>
-${_("There's just one more step before you can enroll in a course: "
-    "you need to activate your {platform_name} account. To activate "
-    "your account, click the following link. If that doesn't work, "
-    "copy and paste the link into your browser's address bar.").format(
+${_("Sie sind nur mehr einen Schritt von Ihrem Kurs entfernt: "
+    "klicken Sie auf folgenden Link um Ihr {platform_name} Profil zu aktivieren. "
+    "Profil zu aktivieren. Sollte der Link nicht funktionieren, kopieren Sie ihn bitte in die Adressleiste Ihres Browsers.").format(
         platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
     )}
 </p>
@@ -24,9 +23,7 @@ ${_("There's just one more step before you can enroll in a course: "
 % endif
 </p>
 <p>
-${_("If you didn't create an account, you don't need to do anything; you "
-      "won't receive any more email from us. If you need assistance, please "
-      "do not reply to this email message. Check the help section of the "
-      "{platform_name} website.").format(platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME))}
+${_("Sollten Sie kein Profil angelegt haben, betrachten Sie diese Nachricht als gegenstandslos; Sie werden keine weiteren E-Mails von uns bekommen. Sollten Sie Hilfe benötigen antworten Sie bitte NICHT auf diese E-Mail, sondern besuchen Sie unsere Webseite: http://www.trainit.academy").format(platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME))}
 </p>
 </%block>
+
