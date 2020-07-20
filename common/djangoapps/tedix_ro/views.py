@@ -16,7 +16,7 @@ from django.shortcuts import redirect, render
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import get_language, ugettext as _
 from django.views import View
 
 from courseware.courses import get_course_with_access
@@ -141,6 +141,7 @@ def my_reports(request):
                 'displayed_date': '{}: {}'.format(date_group, translate_date(date, language)),
                 'due_date_order': 4
             })
+            date_data *= -1
 
         due_date_data.update({
             'date_group': date_group_css_map[date_group],
