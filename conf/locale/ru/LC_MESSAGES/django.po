@@ -12949,6 +12949,10 @@ msgstr "Следующая подсказка"
 msgid "Review"
 msgstr "Просмотреть"
 
+#: lms/templates/problem_notifications.html
+msgid "Answers are displayed within the problem"
+msgstr "Ответ отображается внутри задания"
+
 #: lms/templates/provider_login.html
 msgid "Log In"
 msgstr "Войти"
