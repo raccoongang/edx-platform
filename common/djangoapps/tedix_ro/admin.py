@@ -8,7 +8,7 @@ from django.contrib import admin
 from django.contrib.admin.widgets import AdminSplitDateTime
 from django.contrib.auth.models import User
 from django.http.response import HttpResponseRedirect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin, ImportMixin
 from import_export.fields import Field

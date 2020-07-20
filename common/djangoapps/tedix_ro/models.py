@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import models
 from django.dispatch import receiver
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from opaque_keys.edx.django.models import CourseKeyField
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
