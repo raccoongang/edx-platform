@@ -18,6 +18,7 @@ from openedx.core.djangoapps.theming.helpers import get_current_request
 
 STANDARD_SAML_PROVIDER_KEY = 'standard_saml_provider'
 SAP_SUCCESSFACTORS_SAML_KEY = 'sap_success_factors'
+ONBOARDING_SAML_PROVIDER_KEY = 'onboarding_saml_provider'
 log = logging.getLogger(__name__)
 
 
@@ -458,6 +459,21 @@ class SapSuccessFactorsIdentityProvider(EdXSAMLIdentityProvider):
         return self.get_registration_fields(response)
 
 
+class OnboardingSAMLIdentityProvider(EdXSAMLIdentityProvider):
+
+    def get_user_details(self, attributes):
+        """
+        Compose fullname from the first_name and last_name if it's not provided.
+        """
+        details = super(EdXSAMLIdentityProvider, self).get_user_details(attributes)
+        username = details['email'].split("@")[0] or details['username']
+        details.update({
+            'fullname': details['fullname'] or '%s %s' % (details['first_name'], details['last_name']),
+            'username': username,
+        })
+        return details
+
+
 def get_saml_idp_choices():
     """
     Get a list of the available SAMLIdentityProvider subclasses that can be used to process
@@ -466,6 +482,7 @@ def get_saml_idp_choices():
     return (
         (STANDARD_SAML_PROVIDER_KEY, 'Standard SAML provider'),
         (SAP_SUCCESSFACTORS_SAML_KEY, 'SAP SuccessFactors provider'),
+        (ONBOARDING_SAML_PROVIDER_KEY, 'Onboarding SAML provider'),
     )
 
 
@@ -477,6 +494,7 @@ def get_saml_idp_class(idp_identifier_string):
     choices = {
         STANDARD_SAML_PROVIDER_KEY: EdXSAMLIdentityProvider,
         SAP_SUCCESSFACTORS_SAML_KEY: SapSuccessFactorsIdentityProvider,
+        ONBOARDING_SAML_PROVIDER_KEY: OnboardingSAMLIdentityProvider,
     }
     if idp_identifier_string not in choices:
         log.error(
