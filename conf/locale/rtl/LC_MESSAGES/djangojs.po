@@ -9387,7 +9387,7 @@ msgstr "قثسثف وغ حشسسصخقي"
 
 #: lms/templates/student_account/register.underscore
 #: test_root/staticfiles/templates/student_account/register.underscore
-msgid "Already have an {platformName} account?"
+msgid "Already have a {platformName} account?"
 msgstr "شمقثشيغ اشدث شر {platformName} شذذخعرف?"
 
 #: lms/templates/student_account/register.underscore
