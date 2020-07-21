@@ -338,7 +338,7 @@
     "Already a course team member": "Ya un miembro del equipo del curso.", 
     "Already a library team member": "Ya es un miembro del equipo de la librer\u00eda", 
     "Already a member": "Ya es miembro", 
-    "Already have an {platformName} account?": "\u00bfYa tiene una cuenta en la plataforma {platformName}?", 
+    "Already have a {platformName} account?": "\u00bfYa tiene una cuenta en la plataforma {platformName}?", 
     "Alternative source": "Fuente alternativa", 
     "Always divide content-specific discussion topics": "Dividir siempre el contenido espec\u00edfico de los temas de la discusi\u00f3n.", 
     "Always show assessment results": "Mostrar siempre los resultados de la evaluaci\u00f3n", 
