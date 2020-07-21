@@ -9,6 +9,7 @@ import logging
 from datetime import datetime
 
 import pytz
+from django.db import IntegrityError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -151,9 +152,12 @@ def enroll_email(course_id, student_email, auto_enroll=False, email_students=Fal
             email_params['full_name'] = previous_state.full_name
             send_mail_to_student(student_email, email_params, language=language)
     elif not is_email_retired(student_email):
-        cea, _ = CourseEnrollmentAllowed.objects.get_or_create(course_id=course_id, email=student_email)
-        cea.auto_enroll = auto_enroll
-        cea.save()
+        try:
+            cea, _ = CourseEnrollmentAllowed.objects.get_or_create(course_id=course_id, email=student_email)
+            cea.auto_enroll = auto_enroll
+            cea.save()
+        except IntegrityError as err:
+            log.error("Could not enroll the user %s in the course %s, because of the error: %s.", student_email, course_id, err)
         if email_students:
             email_params['message'] = 'allowed_enroll'
             email_params['email_address'] = student_email
