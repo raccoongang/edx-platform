@@ -10417,7 +10417,7 @@ msgstr "Rését mý pässwörd Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмє
 
 #: lms/templates/student_account/register.underscore
 #: test_root/staticfiles/templates/student_account/register.underscore
-msgid "Already have an {platformName} account?"
+msgid "Already have a {platformName} account?"
 msgstr ""
 "Àlréädý hävé än {platformName} äççöünt? Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢#"
 
