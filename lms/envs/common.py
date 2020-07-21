@@ -49,6 +49,9 @@ from lms.djangoapps.lms_xblock.mixin import LmsBlockMixin
 PLATFORM_NAME = "Your Platform Name Here"
 CC_MERCHANT_NAME = PLATFORM_NAME
 
+# default lang to set anonymous user lang preferance
+PLATFORM_DEFAULT_LANG = None
+
 PLATFORM_FACEBOOK_ACCOUNT = "http://www.facebook.com/YourPlatformFacebookAccount"
 PLATFORM_TWITTER_ACCOUNT = "@YourPlatformTwitterAccount"
 

@@ -8,6 +8,7 @@ from django.utils.translation.trans_real import parse_accept_lang_header
 from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY
 from openedx.core.djangoapps.lang_pref.api import released_languages
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preference, delete_user_preference
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 
 
 class LanguagePreferenceMiddleware(object):
@@ -25,6 +26,9 @@ class LanguagePreferenceMiddleware(object):
         languages = released_languages()
         system_released_languages = [seq[0] for seq in languages]
 
+        site_default_lang = configuration_helpers.get_value('site_default_lang', settings.PLATFORM_DEFAULT_LANG)
+        cookie_lang = request.session.get(LANGUAGE_SESSION_KEY, None) or site_default_lang
+
         # If the user is logged in, check for their language preference
         if request.user.is_authenticated():
             # Get the user's language preference
@@ -33,9 +37,14 @@ class LanguagePreferenceMiddleware(object):
             if user_pref:
                 if user_pref in system_released_languages:
                     request.session[LANGUAGE_SESSION_KEY] = user_pref
+                elif cookie_lang:
+                    request.session[LANGUAGE_SESSION_KEY] = cookie_lang
                 else:
                     delete_user_preference(request.user, LANGUAGE_KEY)
         else:
+            if cookie_lang:
+                request.session[LANGUAGE_SESSION_KEY] = cookie_lang
+
             preferred_language = request.META.get('HTTP_ACCEPT_LANGUAGE', '')
             lang_headers = [seq[0] for seq in parse_accept_lang_header(preferred_language)]
 

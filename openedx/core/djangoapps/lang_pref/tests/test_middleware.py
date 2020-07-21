@@ -10,6 +10,7 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.utils.translation import LANGUAGE_SESSION_KEY
 
 from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY
+from openedx.core.djangoapps.site_configuration.tests.test_util import with_site_configuration_context
 from openedx.core.djangoapps.lang_pref.middleware import LanguagePreferenceMiddleware
 from openedx.core.djangoapps.user_api.preferences.api import set_user_preference, get_user_preference
 from student.tests.factories import UserFactory
@@ -127,3 +128,33 @@ class TestUserPreferenceMiddleware(TestCase):
         self.request.user = self.anonymous_user
         self.middleware.process_request(self.request)
         self.assertNotEqual(self.request.session.get(LANGUAGE_SESSION_KEY), 'eu-es')   # pylint: disable=no-member
+        with self.assertNumQueries(1):
+            self.middleware.process_response(self.request, response)
+
+    @override_settings(PLATFORM_DEFAULT_LANG='es')
+    def test_default_site_lang(self):
+        """
+        Test that we can override user preferences with default platform lang in site configs or platform settings.
+        Override priority is: reques.COOKIES > site configs > platform settings.
+        """
+        # No preference yet, should write to the database
+        self.assertEqual(get_user_preference(self.user, LANGUAGE_KEY), None)
+
+        # test that we can use default lang from platform settings
+        self.middleware.process_request(self.request)
+        self.assertEqual(get_user_preference(self.user, LANGUAGE_KEY), 'es')
+
+        # site_config should have higher priority than platform settings:
+        with with_site_configuration_context(configuration={"site_default_lang": "uk"}):
+            self.middleware.process_request(self.request)
+            self.assertEqual(get_user_preference(self.user, LANGUAGE_KEY), 'uk')
+
+        # cookies have the highest priority:
+        self.request.COOKIES[settings.LANGUAGE_COOKIE] = 'en'
+        self.middleware.process_request(self.request)
+        self.assertEqual(get_user_preference(self.user, LANGUAGE_KEY), 'en')
+
+        # test that we are not overriding preference from configs if we already have cookie:
+        with with_site_configuration_context(configuration={"site_default_lang": "uk"}):
+            self.middleware.process_request(self.request)
+            self.assertEqual(get_user_preference(self.user, LANGUAGE_KEY), 'en')
