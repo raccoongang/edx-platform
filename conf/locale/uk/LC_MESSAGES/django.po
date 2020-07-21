@@ -27340,3 +27340,7 @@ msgstr "Нова версія була створена: злиття версі
 #: themes/edx.org/lms/templates/header/navbar-authenticated.html
 msgid "Choose courses"
 msgstr "Обрати курси"
+
+#: edx-platform/lms/templates/courseware/progress_graph.js
+msgid "Pass"
+msgstr "Прохідний бал"
