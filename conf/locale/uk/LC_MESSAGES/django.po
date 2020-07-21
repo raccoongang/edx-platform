@@ -9763,6 +9763,50 @@ msgstr ""
 msgid "You have been enrolled in %(course_name)s"
 msgstr "Ви були зареєстровані у %(course_name)s"
 
+#: lms/templates/emails/enroll_email_enrolledsubject.txt
+msgid "You have been enrolled in {course_name}"
+msgstr "Ви були підписані на курс «{course_name}»"
+
+#: lms/templates/emails/add_beta_tester_email_message.txt
+#: lms/templates/emails/enroll_email_enrolledmessage.txt
+#: lms/templates/emails/remove_beta_tester_email_message.txt
+#: lms/templates/emails/unenroll_email_enrolledmessage.txt
+msgid "Dear {full_name}"
+msgstr "Шановний {full_name}!"
+
+#: lms/templates/emails/enroll_email_enrolledmessage.txt
+msgid ""
+"You have been enrolled in {course_name} at {site_name} by a member of the "
+"course staff. The course should now appear on your {site_name} dashboard."
+msgstr ""
+"Ви були підписані на курс «{course_name}» на {site_name} інструктором цього курсу. "
+"Курс з’явиться на сторінці «Мої курси» {site_name}."
+
+#: lms/templates/emails/add_beta_tester_email_message.txt
+#: lms/templates/emails/enroll_email_enrolledmessage.txt
+msgid "To start accessing course materials, please visit {course_url}"
+msgstr ""
+"Щоб отримати доступ до матеріалів курсу, будь ласка відвідайте {course_url}"
+
+#: lms/templates/emails/enroll_email_enrolledmessage.txt
+#: lms/templates/emails/unenroll_email_enrolledmessage.txt
+msgid "This email was automatically sent from {site_name} to {full_name}"
+msgstr ""
+"Цей лист був надісланий автоматично з {site_name} для {full_name}"
+
+#: lms/templates/emails/unenroll_email_subject.txt
+msgid "You have been un-enrolled from {course_name}"
+msgstr "Ви були відписані від курсу «{course_name}»"
+
+#: lms/templates/emails/unenroll_email_enrolledmessage.txt
+msgid ""
+"You have been un-enrolled in {course_name} at {site_name} by a member of the"
+" course staff. The course will no longer appear on your {site_name} "
+"dashboard."
+msgstr ""
+"Ви були відписані від курсу «{course_name}» на {site_name} інструктором цього курсу. "
+"Курс більше не буде відображатися на сторінці «Мої курси» {site_name}."
+
 #: lms/templates/instructor/edx_ace/addbetatester/email/body.html
 #, python-format
 msgid ""
