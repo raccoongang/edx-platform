@@ -12,7 +12,7 @@ from django.db import transaction
 from django.forms import ModelForm
 from django.utils import six, timezone
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
