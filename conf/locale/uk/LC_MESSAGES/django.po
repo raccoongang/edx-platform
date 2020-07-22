@@ -9763,6 +9763,59 @@ msgstr ""
 msgid "You have been enrolled in %(course_name)s"
 msgstr "Ви були зареєстровані у %(course_name)s"
 
+#: lms/templates/emails/enroll_email_enrolledsubject.txt
+msgid "You have been enrolled in {course_name}"
+msgstr "Ви були підписані на курс «{course_name}»"
+
+#: lms/templates/emails/add_beta_tester_email_message.txt
+#: lms/templates/emails/enroll_email_enrolledmessage.txt
+#: lms/templates/emails/remove_beta_tester_email_message.txt
+#: lms/templates/emails/unenroll_email_enrolledmessage.txt
+msgid "Dear {full_name}"
+msgstr "Шановний {full_name},"
+
+#: lms/templates/emails/enroll_email_enrolledmessage.txt
+msgid ""
+"You have been enrolled in {course_name} at {site_name} by a member of the "
+"course staff. The course should now appear on your {site_name} dashboard."
+msgstr ""
+"Ви були підписані на курс «{course_name}» на {site_name} інструктором цього курсу. "
+"Курс з’явиться на сторінці «Мої курси» {site_name}."
+
+#: lms/templates/emails/add_beta_tester_email_message.txt
+#: lms/templates/emails/enroll_email_enrolledmessage.txt
+msgid "To start accessing course materials, please visit {course_url}"
+msgstr ""
+"Щоб отримати доступ до матеріалів курсу, будь ласка відвідайте {course_url}."
+
+#: lms/templates/emails/enroll_email_enrolledmessage.txt
+#: lms/templates/emails/unenroll_email_enrolledmessage.txt
+msgid "This email was automatically sent from {site_name} to {full_name}"
+msgstr ""
+"Цей лист був надісланий автоматично з {site_name} для {full_name}."
+
+#: lms/templates/emails/add_beta_tester_email_message.txt
+#: lms/templates/emails/enroll_email_allowedmessage.txt
+#: lms/templates/emails/remove_beta_tester_email_message.txt
+#: lms/templates/emails/unenroll_email_allowedmessage.txt
+msgid "This email was automatically sent from {site_name} to {email_address}"
+msgstr ""
+"Цей лист був надісланий автоматично з {site_name} для "
+"{email_address}."
+
+#: lms/templates/emails/unenroll_email_subject.txt
+msgid "You have been un-enrolled from {course_name}"
+msgstr "Ви були відписані від курсу «{course_name}»"
+
+#: lms/templates/emails/unenroll_email_enrolledmessage.txt
+msgid ""
+"You have been un-enrolled in {course_name} at {site_name} by a member of the"
+" course staff. The course will no longer appear on your {site_name} "
+"dashboard."
+msgstr ""
+"Ви були відписані від курсу «{course_name}» на {site_name} інструктором цього курсу. "
+"Курс більше не буде відображатися на сторінці «Мої курси» {site_name}."
+
 #: lms/templates/instructor/edx_ace/addbetatester/email/body.html
 #, python-format
 msgid ""
@@ -9916,9 +9969,72 @@ msgstr ""
 msgid "You can then enroll in %(course_name)s."
 msgstr "Пізніше можна зареєструватися в%(course_name)s."
 
+#: lms/templates/emails/enroll_email_allowedsubject.txt
+msgid "You have been invited to register for {course_name}"
+msgstr "Вас було запрошено приєднатися до курсу «{course_name}»"
+
 #: lms/templates/instructor/edx_ace/allowedenroll/email/body.txt
 msgid "Dear student,"
-msgstr "Шановний студент,"
+msgstr "Шановний студенте,"
+
+#: lms/templates/emails/enroll_email_allowedmessage.txt
+msgid ""
+"You have been invited to join {course_name} at {site_name} by a member of "
+"the course staff."
+msgstr ""
+"Вас було запрошено приєднатися до курсу «{course_name}» на {site_name} "
+"інструктором цього курсу."
+
+#: lms/templates/emails/enroll_email_allowedmessage.txt
+msgid "To access the course visit {course_url} and login."
+msgstr ""
+"Щоб отримати доступ до курсу, будь-ласка перейдіть на сторінку {course_url} та увійдіть у "
+"систему."
+
+#: lms/templates/emails/enroll_email_allowedmessage.txt
+msgid ""
+"To access the course visit {course_about_url} and register for the course."
+msgstr ""
+"Щоб отримати доступ до курсу, будь-ласка перейдіть на сторінку {course_about_url} та "
+"зареєструйтесь на цей курс."
+
+#: lms/templates/emails/enroll_email_allowedmessage.txt
+msgid ""
+"To finish your registration, please visit {registration_url} and fill out "
+"the registration form making sure to use {email_address} in the E-mail "
+"field."
+msgstr ""
+"Щоб закінчити реєстрацію, будь-ласка перейдіть на сторінку "
+"{registration_url} та заповніть реєстраційну форму, обов'язково використовуючи електронну "
+" адресу {email_address}."
+
+#: lms/templates/emails/enroll_email_allowedmessage.txt
+msgid ""
+"Once you have registered and activated your account, you will see "
+"{course_name} listed on your dashboard."
+msgstr ""
+"Після того як ви зареєструєте та активуєте свій обліковий запис, курс "
+"«{course_name}» з’явиться на сторінці «Мої курси»."
+
+#: lms/templates/emails/enroll_email_allowedmessage.txt
+msgid ""
+"Once you have registered and activated your account, visit "
+"{course_about_url} to join the course."
+msgstr ""
+"Після того як ви зареєструєте та активуєте свій обліковий запис, відвідайте"
+" {course_about_url}, щоб записатися на курс."
+
+#: lms/templates/emails/enroll_email_allowedmessage.txt
+msgid "You can then enroll in {course_name}."
+msgstr "Після цього ви зможете записатися на курс «{course_name}»."
+
+#: lms/templates/emails/unenroll_email_allowedmessage.txt
+msgid ""
+"You have been un-enrolled from course {course_name} by a member of the "
+"course staff. Please disregard the invitation previously sent."
+msgstr ""
+"Ви були відписані від курсу «{course_name}» інструктором цього курсу. Будь ласка, "
+"проігноруйте раніше надіслане запрошення."
 
 #: lms/templates/instructor/edx_ace/allowedenroll/email/body.txt
 #, python-format
@@ -9978,7 +10094,7 @@ msgstr ""
 
 #: lms/templates/instructor/edx_ace/allowedunenroll/email/body.txt
 msgid "Dear Student,"
-msgstr "Шановний студент,"
+msgstr "Шановний студентe,"
 
 #: lms/templates/instructor/edx_ace/enrolledunenroll/email/body.html
 #, python-format
@@ -27233,3 +27349,7 @@ msgstr "Нова версія була створена: злиття версі
 #: themes/edx.org/lms/templates/header/navbar-authenticated.html
 msgid "Choose courses"
 msgstr "Обрати курси"
+
+#: edx-platform/lms/templates/courseware/progress_graph.js
+msgid "Pass"
+msgstr "Прохідний бал"

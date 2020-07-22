@@ -510,8 +510,8 @@ def render_message_to_string(subject_template, message_template, param_dict, lan
     subject and message.
     """
     language = language or configuration_helpers.get_value(
-        'LANG_CODE',
-        settings.LANGUAGE_CODE
+        'site_default_lang',
+        settings.PLATFORM_DEFAULT_LANG
     )
     with override_language(language):
         return get_subject_and_message(subject_template, message_template, param_dict)
