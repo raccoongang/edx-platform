@@ -27353,3 +27353,11 @@ msgstr "Обрати курси"
 #: edx-platform/lms/templates/courseware/progress_graph.js
 msgid "Pass"
 msgstr "Прохідний бал"
+
+#: edx-theme/lms/templates/footer.html
+msgid "Cooperation"
+msgstr "Співпраця"
+
+#: edx-theme/lms/templates/footer.html
+msgid "New courses"
+msgstr "Нові курси"
