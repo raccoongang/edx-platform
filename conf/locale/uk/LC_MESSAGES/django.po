@@ -9772,7 +9772,7 @@ msgstr "Ви були підписані на курс «{course_name}»"
 #: lms/templates/emails/remove_beta_tester_email_message.txt
 #: lms/templates/emails/unenroll_email_enrolledmessage.txt
 msgid "Dear {full_name}"
-msgstr "Шановний {full_name}!"
+msgstr "Шановний {full_name},"
 
 #: lms/templates/emails/enroll_email_enrolledmessage.txt
 msgid ""
@@ -9786,13 +9786,22 @@ msgstr ""
 #: lms/templates/emails/enroll_email_enrolledmessage.txt
 msgid "To start accessing course materials, please visit {course_url}"
 msgstr ""
-"Щоб отримати доступ до матеріалів курсу, будь ласка відвідайте {course_url}"
+"Щоб отримати доступ до матеріалів курсу, будь ласка відвідайте {course_url}."
 
 #: lms/templates/emails/enroll_email_enrolledmessage.txt
 #: lms/templates/emails/unenroll_email_enrolledmessage.txt
 msgid "This email was automatically sent from {site_name} to {full_name}"
 msgstr ""
-"Цей лист був надісланий автоматично з {site_name} для {full_name}"
+"Цей лист був надісланий автоматично з {site_name} для {full_name}."
+
+#: lms/templates/emails/add_beta_tester_email_message.txt
+#: lms/templates/emails/enroll_email_allowedmessage.txt
+#: lms/templates/emails/remove_beta_tester_email_message.txt
+#: lms/templates/emails/unenroll_email_allowedmessage.txt
+msgid "This email was automatically sent from {site_name} to {email_address}"
+msgstr ""
+"Цей лист був надісланий автоматично з {site_name} для "
+"{email_address}."
 
 #: lms/templates/emails/unenroll_email_subject.txt
 msgid "You have been un-enrolled from {course_name}"
@@ -9973,7 +9982,7 @@ msgid ""
 "You have been invited to join {course_name} at {site_name} by a member of "
 "the course staff."
 msgstr ""
-"Вас було запрошено приєднатися до курсу {course_name} на {site_name} "
+"Вас було запрошено приєднатися до курсу «{course_name}» на {site_name} "
 "інструктором цього курсу."
 
 #: lms/templates/emails/enroll_email_allowedmessage.txt
@@ -10005,7 +10014,7 @@ msgid ""
 "{course_name} listed on your dashboard."
 msgstr ""
 "Після того як ви зареєструєте та активуєте свій обліковий запис, курс "
-"{course_name} з’явиться на сторінці «Мої курси»."
+"«{course_name}» з’явиться на сторінці «Мої курси»."
 
 #: lms/templates/emails/enroll_email_allowedmessage.txt
 msgid ""
@@ -10085,7 +10094,7 @@ msgstr ""
 
 #: lms/templates/instructor/edx_ace/allowedunenroll/email/body.txt
 msgid "Dear Student,"
-msgstr "Шановний студент,"
+msgstr "Шановний студентe,"
 
 #: lms/templates/instructor/edx_ace/enrolledunenroll/email/body.html
 #, python-format
