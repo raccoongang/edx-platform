@@ -27100,3 +27100,11 @@ msgstr "Создана новая версия: слияние версий #%(r
 #: edx-platform/lms/templates/courseware/progress_graph.js
 msgid "Pass"
 msgstr "Проходной бал"
+
+#: edx-theme/lms/templates/footer.html
+msgid "Cooperation"
+msgstr "Сотрудничество"
+
+#: edx-theme/lms/templates/footer.html
+msgid "New courses"
+msgstr "Новые курсы"
