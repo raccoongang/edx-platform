@@ -12,6 +12,7 @@ from openedx.core.djangoapps.user_api.preferences.api import (
     get_user_preference,
     set_user_preference
 )
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 
 
 class LanguagePreferenceMiddleware(object):
@@ -27,7 +28,8 @@ class LanguagePreferenceMiddleware(object):
         If a user's UserPreference contains a language preference, use the user's preference.
         Save the current language preference cookie as the user's preferred language.
         """
-        cookie_lang = request.COOKIES.get(settings.LANGUAGE_COOKIE, None)
+        site_default_lang = configuration_helpers.get_value('site_default_lang', settings.PLATFORM_DEFAULT_LANG)
+        cookie_lang = request.COOKIES.get(settings.LANGUAGE_COOKIE, None) or site_default_lang
         if cookie_lang:
             if request.user.is_authenticated:
                 set_user_preference(request.user, LANGUAGE_KEY, cookie_lang)

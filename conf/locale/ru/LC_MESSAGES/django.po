@@ -27096,3 +27096,15 @@ msgid ""
 "A new revision was created: Merge between Revision #%(r1)d and Revision "
 "#%(r2)d"
 msgstr "Создана новая версия: слияние версий #%(r1)d и #%(r2)d"
+
+#: edx-platform/lms/templates/courseware/progress_graph.js
+msgid "Pass"
+msgstr "Проходной бал"
+
+#: edx-theme/lms/templates/footer.html
+msgid "Cooperation"
+msgstr "Сотрудничество"
+
+#: edx-theme/lms/templates/footer.html
+msgid "New courses"
+msgstr "Новые курсы"
