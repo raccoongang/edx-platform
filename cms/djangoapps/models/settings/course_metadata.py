@@ -22,6 +22,10 @@ class CourseMetadata(object):
     # be used if the field needs to be filtered depending on the feature flag.
     FILTERED_LIST = [
         'cohort_config',
+        'topic',
+        'price',
+        "level",
+        "process_type",
         'xml_attributes',
         'start',
         'end',

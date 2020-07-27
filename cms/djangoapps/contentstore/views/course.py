@@ -1078,7 +1078,21 @@ def settings_handler(request, course_key_string):
                 'enrollment_end_editable': enrollment_end_editable,
                 'is_prerequisite_courses_enabled': is_prerequisite_courses_enabled(),
                 'is_entrance_exams_enabled': is_entrance_exams_enabled(),
-                'enable_extended_course_details': enable_extended_course_details
+                'enable_extended_course_details': enable_extended_course_details,
+                "price_options": [
+                    {"name": _("Free"), "value": "free"},
+                    {"name": _("Paid"), "value": "paid"}
+                ],
+                "level_options": [
+                    {"name": _("Beginner"), "value": "beginner"},
+                    {"name": _("Intermediate"), "value": "intermediate"},
+                    {"name": _("Expert"), "value": "expert"},
+                ],
+                "process_type_options": [
+                    {"name": _("Online"), "value": "online"},
+                    {"name": _("Offline"), "value": "offline"},
+                    {"name": _("Mixed"), "value": "mixed"},
+                ],
             }
             if is_prerequisite_courses_enabled():
                 courses, in_process_course_actions = get_courses_accessible_to_user(request)

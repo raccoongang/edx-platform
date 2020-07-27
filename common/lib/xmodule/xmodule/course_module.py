@@ -584,6 +584,53 @@ class CourseFields(object):
         deprecated=True
     )
 
+    topic = String(
+        display_name=_("Course topic"),
+        help=_("Write course topic classification."),
+        default='',
+        scope=Scope.settings
+    )
+    price = String(
+        display_name=_("Price"),
+        help=_(
+            "Course type price"
+        ),
+        default="free",
+        scope=Scope.settings,
+        values=[
+            {"display_name": _("Free"), "value": "free"},
+            {"display_name": _("Paid"), "value": "paid"},
+        ]
+    )
+
+    level = String(
+        display_name=_("Level"),
+        help=_(
+            "Level of your course (ex. beginner/intermediate/expert)"
+        ),
+        default="beginner",
+        scope=Scope.settings,
+        values=[
+            {"display_name": _("Beginner"), "value": "beginner"},
+            {"display_name": _("Intermediate"), "value": "intermediate"},
+            {"display_name": _("Expert"), "value": "expert"},
+        ]
+    )
+
+    process_type = String(
+        display_name=_("Course process type"),
+        help=_(
+            "Course process type (ex. online/offline/mixed)"
+        ),
+        default="online",
+        scope=Scope.settings,
+        values=[
+            {"display_name": _("Online"), "value": "online"},
+            {"display_name": _("Offline"), "value": "offline"},
+            {"display_name": _("Mixed"), "value": "mixed"},
+        ]
+    )
+
     # TODO: This is a quick kludge to allow CS50 (and other courses) to
     # specify their own discussion forums as external links by specifying a
     # "discussion_link" in their policy JSON file. This should later get
