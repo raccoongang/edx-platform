@@ -27361,3 +27361,11 @@ msgstr "Співпраця"
 #: edx-theme/lms/templates/footer.html
 msgid "New courses"
 msgstr "Нові курси"
+
+#: edx-theme/lms/templates/index.html
+msgid "Training courses and projects from leading experts and organizations"
+msgstr "Навчальні курси та проєкти від провідних експертів та організацій"
+
+#: edx-theme/lms/templates/courses_list.html
+msgid "Current projects"
+msgstr "Поточні проєкти"
