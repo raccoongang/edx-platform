@@ -27108,3 +27108,78 @@ msgstr "Сотрудничество"
 #: edx-theme/lms/templates/footer.html
 msgid "New courses"
 msgstr "Новые курсы"
+
+msgid "Process types"
+msgstr "Тип"
+
+msgid "Levels"
+msgstr "Уровень"
+
+msgid "Price types"
+msgstr "Цена"
+
+msgid "free"
+msgstr "Бесплатно"
+
+msgid "paid"
+msgstr "Платно"
+
+msgid "Paid"
+msgstr "Платно"
+
+msgid "Beginner"
+msgstr "Начинающий"
+
+msgid "beginner"
+msgstr "Начинающий"
+
+msgid "Intermediate"
+msgstr "Средний"
+
+msgid "intermediate"
+msgstr "Средний"
+
+msgid "Expert"
+msgstr "Продвинутый"
+
+msgid "expert"
+msgstr "Продвинутый"
+
+msgid "Online"
+msgstr "Онлайн"
+
+msgid "online"
+msgstr "Онлайн"
+
+msgid "Offline"
+msgstr "Офлайн"
+
+msgid "offline"
+msgstr "Офлайн"
+
+msgid "Mixed"
+msgstr "Смешанный"
+
+msgid "mixed"
+msgstr "Смешанный"
+
+msgid "Course Topic"
+msgstr "Тематика курса"
+
+msgid "Course Price options"
+msgstr "Цена курса"
+
+msgid "Choose your course price type."
+msgstr "Выберете тип цены вашого курса."
+
+msgid "Course level"
+msgstr "Уровень курса"
+
+msgid "Choose your course level."
+msgstr "Выберете уровень курса"
+
+msgid "Course process type"
+msgstr "Тип проведения курса"
+
+msgid "Choose your course process type options."
+msgstr "Выберете тип проведения курса"

@@ -11935,3 +11935,60 @@ msgstr ""
 #: cms/templates/js/video/transcripts/messages/transcripts-use-existing.underscore
 msgid "Use Current Transcript"
 msgstr "Использовать субтитры"
+
+msgid "Process types"
+msgstr "Тип"
+
+msgid "Levels"
+msgstr "Уровень"
+
+msgid "Price types"
+msgstr "Цена"
+
+msgid "free"
+msgstr "Басплатно"
+
+msgid "Free"
+msgstr "Басплатно"
+
+msgid "paid"
+msgstr "Платно"
+
+msgid "Paid"
+msgstr "Платно"
+
+msgid "Beginner"
+msgstr "Начинающий"
+
+msgid "beginner"
+msgstr "Начинающий"
+
+msgid "Intermediate"
+msgstr "Средний"
+
+msgid "intermediate"
+msgstr "Средний"
+
+msgid "Expert"
+msgstr "Продвинутый"
+
+msgid "expert"
+msgstr "Продвинутый"
+
+msgid "Online"
+msgstr "Онлайн"
+
+msgid "online"
+msgstr "Онлайн"
+
+msgid "Offline"
+msgstr "Офлайн"
+
+msgid "offline"
+msgstr "Офлайн"
+
+msgid "Mixed"
+msgstr "Смешанный"
+
+msgid "mixed"
+msgstr "Смешанный"
