@@ -174,31 +174,6 @@ FEATURES['CERTIFICATES_HTML_VIEW'] = True
 
 ########################## Course Discovery #######################
 LANGUAGE_MAP = {'terms': {lang: display for lang, display in ALL_LANGUAGES}, 'name': 'Language'}
-COURSE_DISCOVERY_MEANINGS = {
-    "org": {
-        "org": "Organization",
-    },
-    "modes": {
-        "name": "Course Type",
-        "terms": {
-            "honor": "Honor",
-            "verified": "Verified",
-        },
-    },
-    "language": LANGUAGE_MAP,
-    "topic": {
-        "name": "Topics",
-    },
-    "price": {
-        "name": "Price types",
-    },
-    "level": {
-        "name": "Levels",
-    },
-    "process_type": {
-        "name": "Process types",
-    },
-}
 
 FEATURES['ENABLE_COURSE_DISCOVERY'] = True
 # Setting for overriding default filtering facets for Course discovery
