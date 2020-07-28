@@ -5451,6 +5451,22 @@ msgstr "Центр помощи"
 msgid "Contact"
 msgstr "Контакты"
 
+#: themes/edx-theme/lms/templates/static_templates/contact.html
+msgid "For teachers and sponsors"
+msgstr "Для преподавателей и спонсоров"
+
+#: themes/edx-theme/lms/templates/static_templates/contact.html
+msgid "For students"
+msgstr "Для студентов"
+
+#: themes/edx-theme/lms/templates/static_templates/contact.html
+msgid "Intertelecom"
+msgstr "Интертелеком"
+
+#: themes/edx-theme/lms/templates/static_templates/contact.html
+msgid "Beeline"
+msgstr "Билайн"
+
 #: lms/djangoapps/branding/api.py
 #: themes/stanford-style/lms/templates/footer.html
 #: themes/stanford-style/lms/templates/static_templates/about.html
