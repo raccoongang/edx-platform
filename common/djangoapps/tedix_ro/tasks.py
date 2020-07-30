@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.urls import reverse
+from django.utils.translation import ugettext as _
 import pytz
 
 from edxmako.shortcuts import render_to_string
@@ -48,7 +49,7 @@ def send_teacher_extended_reports():
                     )
                 })
         if lesson_reports:
-            subject = u'{platform_name}: Report for {username}'.format(
+            subject = _(u'{platform_name}: Report for {username}').format(
                 platform_name=settings.PLATFORM_NAME,
                 username=instructor.user.profile.name or instructor.user.username
             )
@@ -133,7 +134,7 @@ def send_student_extended_reports(user_id, course_id):
                     reverse('extended_report', kwargs={'course_key': course.id})
                 )
             }]
-        subject = u'{platform_name}: Report for {username} on "{course_name}"'.format(
+        subject = _(u'{platform_name}: Report for {username} on "{course_name}"').format(
             platform_name=settings.PLATFORM_NAME,
             username=user.profile.name or user.username,
             course_name=course.display_name

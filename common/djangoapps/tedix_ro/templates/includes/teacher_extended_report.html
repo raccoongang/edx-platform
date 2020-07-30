@@ -27,7 +27,7 @@ from django.utils.translation import ugettext as _
                     %for question_name, question_count_answer, done in user_data['questions']:
                         <td style="white-space: nowrap; border: 1px solid; padding: 9px 8px;">
                             %if question_count_answer == 1 and done:
-                                <span style="color: #24ad97;">${ ('First attempt') }</span>
+                                <span style="color: #24ad97;">${ _('First attempt') }</span>
                             %else:
                                 <span style="color: #d9534f;">${ question_count_answer } ${ _("attempt") if question_count_answer == 1 else _("attempts")}</span>
                             %endif
@@ -35,7 +35,7 @@ from django.utils.translation import ugettext as _
                     %endfor
                     <td style="white-space: nowrap; border: 1px solid; padding: 9px 8px;">${ user_data['percent'] }</td>
                     <td style="white-space: nowrap; border: 1px solid; padding: 9px 8px;color: white; border-color: black; ${'background: #24ad97;' if user_data['completion'] == 1 else 'background: #d9534f;'}">
-                        ${'Yes' if user_data['completion'] == 1 else 'No'}
+                        ${_('Yes') if user_data['completion'] == 1 else _('No')}
                     </td>
                 </tr>
             %endfor
