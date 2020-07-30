@@ -347,7 +347,7 @@ def extended_report(request, course_key):
             date_group = _('Past')
         context.update({
             'classroom': classroom,
-            'due_date': '{}, {}'.format(date_group, translate_date(due_date, get_language())),
+            'due_date': '{}, {}'.format(date_group.encode('utf8'), translate_date(due_date, get_language())),
         })
         html = mako_render_to_string('extended_report_popup.html', context)
         return Response({'html': html})
