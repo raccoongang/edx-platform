@@ -465,7 +465,7 @@ class OnboardingSAMLIdentityProvider(EdXSAMLIdentityProvider):
         """
         Compose fullname from the first_name and last_name if it's not provided.
         """
-        details = super(EdXSAMLIdentityProvider, self).get_user_details(attributes)
+        details = super(OnboardingSAMLIdentityProvider, self).get_user_details(attributes)
         username = details['email'].split("@")[0] or details['username']
         details.update({
             'fullname': details['fullname'] or '%s %s' % (details['first_name'], details['last_name']),
