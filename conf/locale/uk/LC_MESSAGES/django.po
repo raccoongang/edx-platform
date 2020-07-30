@@ -5686,6 +5686,10 @@ msgstr "Умови надання послуг і Кодекс честі"
 msgid "Privacy Policy"
 msgstr "Політика конфіденційності"
 
+#: edx-theme/lms/templates/footer.html
+msgid "Privacy Policy "
+msgstr "Політика приватності"
+
 #: lms/djangoapps/branding/api.py
 msgid "Accessibility Policy"
 msgstr "Політика щодо доступності матеріалів"
@@ -5704,6 +5708,10 @@ msgstr "Умови надання послуг"
 #: edx-theme/lms/templates/footer.html
 msgid "Public Offer Agreement"
 msgstr "Договір публічної оферти"
+
+#: edx-theme/lms/templates/footer.html
+msgid "Public Offer Agreement "
+msgstr "Публічна оферта"
 
 #: lms/djangoapps/branding/api.py
 msgid "Sitemap"
