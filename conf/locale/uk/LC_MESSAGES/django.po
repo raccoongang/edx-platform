@@ -5686,6 +5686,10 @@ msgstr "Умови надання послуг і Кодекс честі"
 msgid "Privacy Policy"
 msgstr "Політика конфіденційності"
 
+#: edx-theme/lms/templates/footer.html
+msgid "Privacy Policy "
+msgstr "Політика приватності"
+
 #: lms/djangoapps/branding/api.py
 msgid "Accessibility Policy"
 msgstr "Політика щодо доступності матеріалів"
@@ -5704,6 +5708,10 @@ msgstr "Умови надання послуг"
 #: edx-theme/lms/templates/footer.html
 msgid "Public Offer Agreement"
 msgstr "Договір публічної оферти"
+
+#: edx-theme/lms/templates/footer.html
+msgid "Public Offer Agreement "
+msgstr "Публічна оферта"
 
 #: lms/djangoapps/branding/api.py
 msgid "Sitemap"
@@ -27436,3 +27444,11 @@ msgstr "Тип проведення курсу"
 
 msgid "Choose your course process type options."
 msgstr "Оберіть тип проведення курсу"
+
+#: edx-theme/lms/templates/index.html
+msgid "Training courses and projects from leading experts and organizations"
+msgstr "Навчальні курси та проєкти від провідних експертів та організацій"
+
+#: edx-theme/lms/templates/courses_list.html
+msgid "Current projects"
+msgstr "Поточні проєкти"

@@ -5601,6 +5601,10 @@ msgstr "Условия предоставления услуг и Кодекс �
 msgid "Privacy Policy"
 msgstr "Политика конфиденциальности"
 
+#: edx-theme/lms/templates/footer.html
+msgid "Privacy Policy "
+msgstr "Политика конфиденциальности"
+
 #: lms/djangoapps/branding/api.py
 msgid "Accessibility Policy"
 msgstr "Политика по доступности материалов"
@@ -5622,6 +5626,10 @@ msgstr "Условия предоставления услуг"
 
 #: edx-theme/lms/templates/footer.html
 msgid "Public Offer Agreement"
+msgstr "Договор публичной оферты"
+
+#: edx-theme/lms/templates/footer.html
+msgid "Public Offer Agreement "
 msgstr "Договор публичной оферты"
 
 #: lms/djangoapps/branding/api.py
