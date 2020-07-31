@@ -129,6 +129,55 @@ CMS.URL.UPLOAD_ASSET = '${upload_asset_url | n, js_escaped_string}'
         </div>
         <hr class="divide" />
 
+        <div class="group-settings additional">
+          <header>
+            <h2 class="title-2">${_("Course additional filters")}</h2>
+            <span class="tip">${_("Additional filters for this course")}</span>
+          </header>
+          <ol class="list-input">
+            <li class="field-group">
+              <div class="field text" id="field-topic">
+                <label for="topic">${_("Course Topic")}</label>
+                <input type="text" class="long" id="topic"/>
+              </div>
+            </li>
+            <li class="field-group field-group-columns">
+              <div class="field" id="field-price">
+                <label for="price">${_("Course Price options")}</label>
+                <select id="price">
+                  <option value="" selected> -</option>
+                  % for price_option in price_options:
+                  <option value="${price_option.get('value')}">${price_option.get('name')}</option>
+                  % endfor
+                </select>
+                <span class="tip tip-stacked">${_("Choose your course price type.")}</span>
+              </div>
+
+              <div class="field" id="field-level">
+                <label for="level">${_("Course level")}</label>
+                <select id="level">
+                  <option value="" selected> -</option>
+                  % for option in level_options:
+                  <option value="${option.get('value')}">${option.get('name')}</option>
+                  % endfor
+                </select>
+                <span class="tip tip-stacked">${_("Choose your course level.")}</span>
+              </div>
+
+              <div class="field" id="field-process_type">
+                <label for="process_type">${_("Course process type")}</label>
+                <select id="process_type">
+                  <option value="" selected> -</option>
+                  % for option in process_type_options:
+                  <option value="${option.get('value')}">${option.get('name')}</option>
+                  % endfor
+                </select>
+                <span class="tip tip-stacked">${_("Choose your course process type options.")}</span>
+              </div>
+            </li>
+          </ol>
+        </div>
+
         % if credit_eligibility_enabled and is_credit_course:
           <div class="group-settings basic">
             <header>
