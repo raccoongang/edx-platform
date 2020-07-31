@@ -645,10 +645,12 @@ def create_account_with_params(request, params):
     extended_profile_fields = configuration_helpers.get_value('extended_profile_fields', [])
     enforce_password_policy = not do_external_auth
     # Can't have terms of service for certain SHIB users, like at Stanford
-    registration_fields = getattr(settings, 'REGISTRATION_EXTRA_FIELDS', {})
+    registration_fields = configuration_helpers.get_value(
+        'REGISTRATION_EXTRA_FIELDS',
+        getattr(settings, 'REGISTRATION_EXTRA_FIELDS', {})
+    )
     tos_required = (
-        registration_fields.get('terms_of_service') != 'hidden' or
-        registration_fields.get('honor_code') != 'hidden'
+        registration_fields.get('terms_of_service') == 'required'
     ) and (
         not settings.FEATURES.get("AUTH_USE_SHIB") or
         not settings.FEATURES.get("SHIB_DISABLE_TOS") or
