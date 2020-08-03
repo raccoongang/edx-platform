@@ -3527,4 +3527,16 @@ COURSE_DISCOVERY_MEANINGS = {
         },
     },
     'language': LANGUAGE_MAP,
+    'topic': {
+        'name': "Topics",
+    },
+    'price': {
+        'name': "Price types",
+    },
+    'level': {
+        'name': "Levels",
+    },
+    'process_type': {
+        'name': "Process types",
+    },
 }

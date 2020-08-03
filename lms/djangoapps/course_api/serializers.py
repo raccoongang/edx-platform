@@ -74,6 +74,10 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
     mobile_available = serializers.BooleanField()
     hidden = serializers.SerializerMethodField()
     invitation_only = serializers.BooleanField()
+    topic = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
+    level = serializers.SerializerMethodField()
+    process_type = serializers.SerializerMethodField()
 
     # 'course_id' is a deprecated field, please use 'id' instead.
     course_id = serializers.CharField(source='id', read_only=True)
@@ -95,6 +99,30 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
             urllib.urlencode({'course_id': course_overview.id}),
         ])
         return self.context['request'].build_absolute_uri(base_url)
+
+    def get_topic(self, course_overview):
+        """
+        Get the course topic classification.
+        """
+        return CourseDetails.fetch_about_attribute(course_overview.id, 'topic')
+
+    def get_price(self, course_overview):
+        """
+        Get the course price.
+        """
+        return CourseDetails.fetch_about_attribute(course_overview.id, 'price')
+
+    def get_level(self, course_overview):
+        """
+        Get the course level.
+        """
+        return CourseDetails.fetch_about_attribute(course_overview.id, 'level')
+
+    def get_process_type(self, course_overview):
+        """
+        Get the course process type.
+        """
+        return CourseDetails.fetch_about_attribute(course_overview.id, 'process_type')
 
 
 class CourseDetailSerializer(CourseSerializer):  # pylint: disable=abstract-method

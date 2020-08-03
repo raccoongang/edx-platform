@@ -34,6 +34,10 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    this.$el.find('#course-number').val(this.model.get('course_id'));
                    this.$el.find('#course-name').val(this.model.get('run'));
                    this.$el.find('.set-date').datepicker({dateFormat: 'm/d/yy'});
+                   this.$el.find('#topic').val(this.model.get('topic'));
+                   this.$el.find('#price').val(this.model.get('price'));
+                   this.$el.find('#level').val(this.model.get('level'));
+                   this.$el.find('#process_type').val(this.model.get('process_type'));
 
         // Avoid showing broken image on mistyped/nonexistent image
                    this.$el.find('img').error(function() {
@@ -181,7 +185,11 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    course_settings_learning_fields: 'course-settings-learning-fields',
                    add_course_learning_info: 'add-course-learning-info',
                    add_course_instructor_info: 'add-course-instructor-info',
-                   course_learning_info: 'course-learning-info'
+                   course_learning_info: 'course-learning-info',
+                   topic: 'topic',
+                   price: 'price',
+                   level: "level",
+                   process_type: "process_type"
                },
 
                addLearningFields: function() {
@@ -307,6 +315,10 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    case 'course-duration':
                    case 'course-description':
                    case 'course-short-description':
+                   case 'topic':
+                   case 'price':
+                   case 'level':
+                   case 'process_type':
                        this.setField(event);
                        break;
                    default: // Everything else is handled by datepickers and CodeMirror.

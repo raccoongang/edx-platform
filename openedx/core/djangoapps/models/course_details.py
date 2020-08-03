@@ -28,6 +28,10 @@ ABOUT_ATTRIBUTES = [
     'entrance_exam_id',
     'entrance_exam_minimum_score_pct',
     'about_sidebar_html',
+    'topic',
+    'price',
+    'level',
+    'process_type',
 ]
 
 
@@ -73,6 +77,10 @@ class CourseDetails(object):
         self.self_paced = None
         self.learning_info = []
         self.instructor_info = []
+        self.topic = ""
+        self.price = ""
+        self.level = ""
+        self.process_type = ""
 
     @classmethod
     def fetch_about_attribute(cls, course_key, attribute):
@@ -120,6 +128,10 @@ class CourseDetails(object):
         course_details.self_paced = course_descriptor.self_paced
         course_details.learning_info = course_descriptor.learning_info
         course_details.instructor_info = course_descriptor.instructor_info
+        course_details.topic = getattr(course_descriptor, 'topic', '')
+        course_details.price = getattr(course_descriptor, 'price', '')
+        course_details.level = getattr(course_descriptor, 'level', '')
+        course_details.process_type = getattr(course_descriptor, 'process_type', '')
 
         # Default course license is "All Rights Reserved"
         course_details.license = getattr(course_descriptor, "license", "all-rights-reserved")
@@ -274,6 +286,22 @@ class CourseDetails(object):
 
         if 'language' in jsondict and jsondict['language'] != descriptor.language:
             descriptor.language = jsondict['language']
+            dirty = True
+
+        if 'topic' in jsondict and jsondict['topic'] != descriptor.topic:
+            descriptor.topic = jsondict['topic']
+            dirty = True
+
+        if 'price' in jsondict and jsondict['price'] != descriptor.price:
+            descriptor.price = jsondict['price']
+            dirty = True
+
+        if 'level' in jsondict and jsondict['level'] != descriptor.level:
+            descriptor.level = jsondict['level']
+            dirty = True
+
+        if 'process_type' in jsondict and jsondict['process_type'] != descriptor.process_type:
+            descriptor.process_type = jsondict['process_type']
             dirty = True
 
         if (descriptor.can_toggle_course_pacing

@@ -27369,3 +27369,86 @@ msgstr "Співпраця"
 #: edx-theme/lms/templates/footer.html
 msgid "New courses"
 msgstr "Нові курси"
+
+msgid "Process types"
+msgstr "Тип"
+
+msgid "Levels"
+msgstr "Рівень"
+
+msgid "Price types"
+msgstr "Ціна"
+
+msgid "free"
+msgstr "Безкоштовно"
+
+msgid "paid"
+msgstr "Платно"
+
+msgid "Paid"
+msgstr "Платно"
+
+msgid "Beginner"
+msgstr "Починаючий"
+
+msgid "beginner"
+msgstr "Починаючий"
+
+msgid "Intermediate"
+msgstr "Середній"
+
+msgid "intermediate"
+msgstr "Середній"
+
+msgid "Expert"
+msgstr "Продвинутий"
+
+msgid "expert"
+msgstr "Продвинутий"
+
+msgid "Online"
+msgstr "Онлайн"
+
+msgid "online"
+msgstr "Онлайн"
+
+msgid "Offline"
+msgstr "Офлайн"
+
+msgid "offline"
+msgstr "Офлайн"
+
+msgid "Mixed"
+msgstr "Змішаний"
+
+msgid "mixed"
+msgstr "Змішаний"
+
+msgid "Course Topic"
+msgstr "Тематика курсу"
+
+msgid "Course Price options"
+msgstr "Ціна курсу"
+
+msgid "Choose your course price type."
+msgstr "Оберіть тип ціни вашого курсу."
+
+msgid "Course level"
+msgstr "Рівень курсу"
+
+msgid "Choose your course level."
+msgstr "Оберіть рівень курсу"
+
+msgid "Course process type"
+msgstr "Тип проведення курсу"
+
+msgid "Choose your course process type options."
+msgstr "Оберіть тип проведення курсу"
+
+#: edx-theme/lms/templates/index.html
+msgid "Training courses and projects from leading experts and organizations"
+msgstr "Навчальні курси та проєкти від провідних експертів та організацій"
+
+#: edx-theme/lms/templates/courses_list.html
+msgid "Current projects"
+msgstr "Поточні проєкти"
