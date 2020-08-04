@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import copy
 import crum
 
@@ -829,18 +830,17 @@ class RegistrationFormFactory(object):
             field_type = 'plaintext'
 
             pp_link = marketing_link("PRIVACY")
-            label = Text(_(
-                u"By creating an account with {platform_name}, you agree \
-                  to abide by our {platform_name} \
-                  {terms_of_service_link_start}{terms_of_service}{terms_of_service_link_end} \
-                  and agree to our {privacy_policy_link_start}Privacy Policy{privacy_policy_link_end}."
-            )).format(
-                platform_name=configuration_helpers.get_value("PLATFORM_NAME", settings.PLATFORM_NAME),
-                terms_of_service=terms_label,
-                terms_of_service_link_start=HTML("<a href='{terms_url}' target='_blank'>").format(terms_url=terms_link),
-                terms_of_service_link_end=HTML("</a>"),
-                privacy_policy_link_start=HTML("<a href='{pp_url}' target='_blank'>").format(pp_url=pp_link),
-                privacy_policy_link_end=HTML("</a>"),
+            label = Text(
+                u"{terms_of_service_link_start}{terms_of_service}{terms_of_service_link_end} \
+                yer alan Kişisel Verilerin İşlenmesine İlişkin Aydınlatma Metnini \
+                okuyarak kişisel verilerinizi işleme amacımızı ve bu kapsamda \
+                sizin haklarınızı ayrıntılarıyla incelemenizi rica ediyoruz."
+            ).format(
+                terms_of_service=u"Burada",
+                terms_of_service_link_start=HTML("<a href='{terms_url}' target='_blank'>").format(
+                    terms_url="https://cdn.sanity.io/files/9kdepi1d/production/3fe70d1d7711ef52ff3b9b0b4ef0d1eda1c2af32.pdf"
+                ),
+                terms_of_service_link_end=HTML("</a>")
             )
 
         form_desc.add_field(
