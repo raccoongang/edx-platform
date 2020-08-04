@@ -14380,6 +14380,10 @@ msgid "Log into your {platform_name} Account"
 msgstr "Увійдіть у ваш {platform_name} аккаунт"
 
 #: lms/templates/login.html
+msgid "Log into My {platform_name} Account + Access Courses"
+msgstr "Увійти до облікового запису та переглянути курси"
+
+#: lms/templates/login.html
 msgid "Log into My {platform_name} Account"
 msgstr "Увійти у Мій  {platform_name} Аккаунт"
 
