@@ -425,8 +425,8 @@ function(HTML5Video, HTML5HLSVideo, Resizer, HLS, _, Time) {
             );
         }
 
-        newSpeed = parseFloat(newSpeed).toFixed(2).replace(/\.00$/, '.0');
         this.setSpeed(newSpeed);
+        newSpeed = parseFloat(newSpeed)
         this.videoPlayer.setPlaybackRate(newSpeed);
     }
 
