@@ -14402,16 +14402,8 @@ msgid "Please log in"
 msgstr "Будь ласка, увійдіть в систему"
 
 #: lms/templates/login.html
-msgid "Please log in "
-msgstr "Вітаємо!"
-
-#: lms/templates/login.html
 msgid "to access your account and courses"
 msgstr "для доступу до свого облікового запису і курсів"
-
-#: lms/templates/login.html
-msgid "to access your account and courses "
-msgstr "Увійдіть до системи, щоб дістати доступ до свого облікового запису та курсів"
 
 #: lms/templates/login.html
 msgid "We're Sorry, {platform_name} accounts are unavailable currently"
@@ -14904,16 +14896,8 @@ msgid "Welcome!"
 msgstr "Ласкаво просимо!"
 
 #: lms/templates/register.html
-msgid "Welcome! "
-msgstr "Вітаємо!"
-
-#: lms/templates/register.html
 msgid "Register below to create your {platform_name} account"
 msgstr "Зареєструйтеся, щоб створити свій обліковий запис на {platform_name}"
-
-#: lms/templates/register.html
-msgid "Register below to create your {platform_name} account "
-msgstr "Щоб отримати доступ до освітніх курсів платформи {platform_name}, вам слід створити персональний обліковий запис"
 
 #: lms/templates/resubscribe.html
 msgid "Re-subscribe Successful!"
