@@ -655,3 +655,26 @@ COURSE_LIVE_GLOBAL_CREDENTIALS["BIG_BLUE_BUTTON"] = {
 }
 
 INACTIVE_USER_URL = f'http{"s" if HTTPS == "on" else ""}://{CMS_BASE}'
+
+#RACCOONGANG
+
+if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
+    import sentry_sdk
+    import subprocess
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.celery import CeleryIntegration
+
+    try:
+        platform_git_commit = subprocess.check_output(['git', 'describe', '--always']).strip()
+    except (subprocess.CalledProcessError, OSError):
+        platform_git_commit = ''
+    sentry_sdk.init(
+            AUTH_TOKENS.get('RG_SENTRY_DSN'),
+            auto_enabling_integrations=False,
+            integrations=[DjangoIntegration(), CeleryIntegration()],
+            environment=ENV_TOKENS.get('RG_SENTRY_ENVIRONMENT', ''),
+            release=platform_git_commit,
+            send_default_pii=True
+            )
+
+#RACCOONGANG
