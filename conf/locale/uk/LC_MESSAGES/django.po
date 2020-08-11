@@ -14380,6 +14380,10 @@ msgid "Log into your {platform_name} Account"
 msgstr "Увійдіть у ваш {platform_name} аккаунт"
 
 #: lms/templates/login.html
+msgid "Log into My {platform_name} Account + Access Courses"
+msgstr "Увійти до облікового запису та переглянути курси"
+
+#: lms/templates/login.html
 msgid "Log into My {platform_name} Account"
 msgstr "Увійти у Мій  {platform_name} Аккаунт"
 
@@ -14398,8 +14402,16 @@ msgid "Please log in"
 msgstr "Будь ласка, увійдіть в систему"
 
 #: lms/templates/login.html
+msgid "Please log in "
+msgstr "Вітаємо!"
+
+#: lms/templates/login.html
 msgid "to access your account and courses"
 msgstr "для доступу до свого облікового запису і курсів"
+
+#: lms/templates/login.html
+msgid "to access your account and courses "
+msgstr "Увійдіть до системи, щоб дістати доступ до свого облікового запису та курсів"
 
 #: lms/templates/login.html
 msgid "We're Sorry, {platform_name} accounts are unavailable currently"
@@ -14892,8 +14904,16 @@ msgid "Welcome!"
 msgstr "Ласкаво просимо!"
 
 #: lms/templates/register.html
+msgid "Welcome! "
+msgstr "Вітаємо!"
+
+#: lms/templates/register.html
 msgid "Register below to create your {platform_name} account"
 msgstr "Зареєструйтеся, щоб створити свій обліковий запис на {platform_name}"
+
+#: lms/templates/register.html
+msgid "Register below to create your {platform_name} account "
+msgstr "Щоб отримати доступ до освітніх курсів платформи {platform_name}, вам слід створити персональний обліковий запис"
 
 #: lms/templates/resubscribe.html
 msgid "Re-subscribe Successful!"
@@ -27369,3 +27389,86 @@ msgstr "Співпраця"
 #: edx-theme/lms/templates/footer.html
 msgid "New courses"
 msgstr "Нові курси"
+
+msgid "Process types"
+msgstr "Тип"
+
+msgid "Levels"
+msgstr "Рівень"
+
+msgid "Price types"
+msgstr "Ціна"
+
+msgid "free"
+msgstr "Безкоштовно"
+
+msgid "paid"
+msgstr "Платно"
+
+msgid "Paid"
+msgstr "Платно"
+
+msgid "Beginner"
+msgstr "Починаючий"
+
+msgid "beginner"
+msgstr "Починаючий"
+
+msgid "Intermediate"
+msgstr "Середній"
+
+msgid "intermediate"
+msgstr "Середній"
+
+msgid "Expert"
+msgstr "Продвинутий"
+
+msgid "expert"
+msgstr "Продвинутий"
+
+msgid "Online"
+msgstr "Онлайн"
+
+msgid "online"
+msgstr "Онлайн"
+
+msgid "Offline"
+msgstr "Офлайн"
+
+msgid "offline"
+msgstr "Офлайн"
+
+msgid "Mixed"
+msgstr "Змішаний"
+
+msgid "mixed"
+msgstr "Змішаний"
+
+msgid "Course Topic"
+msgstr "Тематика курсу"
+
+msgid "Course Price options"
+msgstr "Ціна курсу"
+
+msgid "Choose your course price type."
+msgstr "Оберіть тип ціни вашого курсу."
+
+msgid "Course level"
+msgstr "Рівень курсу"
+
+msgid "Choose your course level."
+msgstr "Оберіть рівень курсу"
+
+msgid "Course process type"
+msgstr "Тип проведення курсу"
+
+msgid "Choose your course process type options."
+msgstr "Оберіть тип проведення курсу"
+
+#: edx-theme/lms/templates/index.html
+msgid "Training courses and projects from leading experts and organizations"
+msgstr "Навчальні курси та проєкти від провідних експертів та організацій"
+
+#: edx-theme/lms/templates/courses_list.html
+msgid "Current projects"
+msgstr "Поточні проєкти"

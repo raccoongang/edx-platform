@@ -11288,3 +11288,60 @@ msgstr "Використати Поточний Транскрипт"
 #: lms/templates/discovery/facet.underscore
 msgid "Course Type"
 msgstr "Тип курсу"
+
+msgid "Process types"
+msgstr "Тип"
+
+msgid "Levels"
+msgstr "Рівень"
+
+msgid "Price types"
+msgstr "Ціна"
+
+msgid "free"
+msgstr "Безкоштовно"
+
+msgid "Free"
+msgstr "Безкоштовно"
+
+msgid "paid"
+msgstr "Платно"
+
+msgid "Paid"
+msgstr "Платно"
+
+msgid "Beginner"
+msgstr "Починаючий"
+
+msgid "beginner"
+msgstr "Починаючий"
+
+msgid "Intermediate"
+msgstr "Середній"
+
+msgid "intermediate"
+msgstr "Середній"
+
+msgid "Expert"
+msgstr "Продвинутий"
+
+msgid "expert"
+msgstr "Продвинутий"
+
+msgid "Online"
+msgstr "Онлайн"
+
+msgid "online"
+msgstr "Онлайн"
+
+msgid "Offline"
+msgstr "Офлайн"
+
+msgid "offline"
+msgstr "Офлайн"
+
+msgid "Mixed"
+msgstr "Змішаний"
+
+msgid "mixed"
+msgstr "Змішаний"
