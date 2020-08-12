@@ -72,6 +72,7 @@ from .utils import (
     report_data_preparation,
     get_all_questions_count,
     get_count_answers_first_attempt,
+    reset_student_progress,
 )
 
 
@@ -397,6 +398,7 @@ def manage_courses(request):
                 for course in form.cleaned_data['courses']:
                     due_date = form.cleaned_data['due_date']
                     CourseEnrollment.enroll_by_email(student.user.email, course.id)
+                    reset_student_progress(student.user, course.id)
                     StudentCourseDueDate.objects.update_or_create(
                         student=student,
                         course_id=course.id,
