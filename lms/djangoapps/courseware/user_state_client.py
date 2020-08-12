@@ -301,22 +301,24 @@ class DjangoXBlockUserStateClient(XBlockUserStateClient):
                 else:
                     current_state = json.loads(student_module.state)
                 num_fields_before = len(current_state)
-                current_state.update(state)
-                num_fields_after = len(current_state)
-                student_module.state = json.dumps(current_state)
-                try:
-                    with transaction.atomic():
-                        # Updating the object - force_update guarantees no INSERT will occur.
-                        student_module.save(force_update=True)
-                except IntegrityError:
-                    # The UPDATE above failed. Log information - but ignore the error.
-                    # See https://openedx.atlassian.net/browse/TNL-5365
-                    log.warning("set_many: IntegrityError for student {} - course_id {} - usage key {}".format(
-                        user, repr(unicode(usage_key.course_key)), usage_key
-                    ))
-                    log.warning("set_many: All {} block keys: {}".format(
-                        len(block_keys_to_state), block_keys_to_state.keys()
-                    ))
+                correctness = current_state.get('correct_map').values()[0].get('correctness') if current_state.get('correct_map') else ''
+                if correctness != 'correct':
+                    current_state.update(state)
+                    num_fields_after = len(current_state)
+                    student_module.state = json.dumps(current_state)
+                    try:
+                        with transaction.atomic():
+                            # Updating the object - force_update guarantees no INSERT will occur.
+                            student_module.save(force_update=True)
+                    except IntegrityError:
+                        # The UPDATE above failed. Log information - but ignore the error.
+                        # See https://openedx.atlassian.net/browse/TNL-5365
+                        log.warning("set_many: IntegrityError for student {} - course_id {} - usage key {}".format(
+                            user, repr(unicode(usage_key.course_key)), usage_key
+                        ))
+                        log.warning("set_many: All {} block keys: {}".format(
+                            len(block_keys_to_state), block_keys_to_state.keys()
+                        ))
 
             # DataDog and New Relic reporting
 

@@ -85,7 +85,7 @@ class VideoLessonSerializer(serializers.ModelSerializer):
         video_lesson, create = VideoLesson.objects.get_or_create(course=course, **validated_data)
         for question_data in questions_answered:
             question_id = question_data.pop('question_id')
-            question = Question.objects.update_or_create(
+            Question.objects.get_or_create(
                 video_lesson=video_lesson,
                 question_id=question_id,
                 defaults=question_data,
