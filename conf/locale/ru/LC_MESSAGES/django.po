@@ -4858,6 +4858,12 @@ msgstr "Обзор"
 msgid "Main page"
 msgstr "Главная"
 
+#: themes/edx-theme/lms/templates/navigation/navbar-not-authenticated.html
+#: themes/edx-theme/lms/templates/navigation/navbar-authenticated.html
+#: themes/edx-theme/lms/templates/footer.html
+msgid "For teachers"
+msgstr "Преподавателям"
+
 #: common/lib/xmodule/xmodule/textannotation_module.py
 msgid "Text Annotation"
 msgstr "Пояснение к тексту"
