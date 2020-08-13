@@ -208,3 +208,9 @@ def video_lesson_complited(user, course_key):
     questions_count = video_questions.values('question_id').distinct().count()
     answered_questions_count = video_questions.filter(video_lesson__user=user).exclude(attempt_count=0).count()
     return questions_count == answered_questions_count
+
+
+def reset_student_progress(user, course_key):
+    VideoLesson = apps.get_model('tedix_ro', 'VideoLesson')
+    VideoLesson.objects.filter(user=user, course=course_key).delete()
+    StudentModule.objects.filter(course_id=course_key, student=user).delete()
