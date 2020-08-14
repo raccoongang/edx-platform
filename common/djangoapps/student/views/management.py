@@ -54,6 +54,7 @@ import track.views
 from course_modes.models import CourseMode
 from edxmako.shortcuts import render_to_response, render_to_string
 from entitlements.models import CourseEntitlement
+from lms.djangoapps.verify_student.models import SoftwareSecurePhotoVerification
 from openedx.core.djangoapps import monitoring_utils
 from openedx.core.djangoapps.catalog.utils import (
     get_programs_with_type,
@@ -742,6 +743,15 @@ def create_account_with_params(request, params):
         registration.activate()
     else:
         compose_and_send_activation_email(user, profile, registration)
+
+    # If flag is enabled - creates record for user with approved status of the photo verification
+    if settings.FEATURES.get('AUTO_SOFTWARE_SECURE_PHOTO_VERIFICATION'):
+        SoftwareSecurePhotoVerification.objects.create(
+            status="approved",
+            user_id=user.id,
+            submitted_at=datetime.datetime.now(UTC),
+            photo_id_key="auto-generated"
+        )
 
     # Perform operations that are non-critical parts of account creation
     create_or_set_user_attribute_created_on_site(user, request.site)
