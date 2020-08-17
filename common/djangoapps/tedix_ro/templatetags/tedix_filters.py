@@ -1,5 +1,6 @@
 from django import template
 from tedix_ro.forms import FORM_FIELDS_MAP
+from tedix_ro.utils import encrypted_user_data
 
 register = template.Library()
 
@@ -24,3 +25,8 @@ def get_color(state):
     }
     
     return state_color_map[state]
+
+
+@register.filter
+def encrypted_data(user):
+    return encrypted_user_data(user)

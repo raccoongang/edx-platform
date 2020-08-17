@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load sekizai_tags i18n configuration theme_pipeline optional_include staticfiles %}
+{% load sekizai_tags i18n configuration theme_pipeline optional_include staticfiles tedix_filters %}
 <html lang="{{LANGUAGE_CODE}}">
 <head>
   <meta charset="UTF-8">
@@ -23,6 +23,9 @@
   {% optional_include "head-extra.html"|microsite_template_path %}
 
   <meta name="path_prefix" content="{{EDX_ROOT_URL}}">
+  <script type="text/javascript">
+      var tedixUUid = {{request.user | encrypted_data | safe}};
+  </script>
 </head>
 
 <body class="{% block bodyclass %}{% endblock %} lang_{{LANGUAGE_CODE}}">

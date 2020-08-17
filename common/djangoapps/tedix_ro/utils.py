@@ -2,6 +2,8 @@
 Helper Methods
 """
 import json
+import hashlib
+import time
 from urlparse import urljoin
 
 from babel.dates import format_datetime
@@ -208,3 +210,30 @@ def video_lesson_complited(user, course_key):
     questions_count = video_questions.values('question_id').distinct().count()
     answered_questions_count = video_questions.filter(video_lesson__user=user).exclude(attempt_count=0).count()
     return questions_count == answered_questions_count
+
+
+def encrypted_user_data(user):
+    """
+    Provide special user data to be handled by a third party frontend application.
+    Arguments:
+     - user (obj): Django User model
+    Return:
+        Json object with the following data:
+          - created (int): Timestamp user.date_joined.
+          - id (str): base64 encrypted username.
+    """
+    user_id = None
+    created = None
+    salt = 'tedix-user'
+
+    if user.is_authenticated:
+        created = time.mktime(user.date_joined.timetuple())
+        m = hashlib.md5()
+        m.update(user.username)
+        m.update(salt)
+        user_id = m.hexdigest()
+
+    return json.dumps({
+        'created': int(created) if created is not None else None,
+        'id': user_id
+    })
