@@ -24,6 +24,8 @@ from openedx.core.djangolib.js_utils import dump_js_escaped_json, js_escaped_str
 from openedx.core.release import RELEASE_LINE
 from pipeline_mako import render_require_js_path_overrides
 
+from tedix_ro.utils import encrypted_user_data
+
 %>
 <!DOCTYPE html>
 <!--[if lte IE 9]><html class="ie ie9 lte9" lang="${LANGUAGE_CODE}"><![endif]-->
@@ -163,6 +165,9 @@ from pipeline_mako import render_require_js_path_overrides
 
 ${Template("{% load gtm_tags %}{% gtm_head %}").render(Context(dict_=dict(request=request)))}
 
+<script type="text/javascript">
+  var tedixUUid = ${encrypted_user_data(request.user)};
+</script>
 </head>
 
 <body class="${static.dir_rtl()} <%block name='bodyclass'/> lang_${LANGUAGE_CODE}">
