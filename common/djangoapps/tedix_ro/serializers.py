@@ -84,10 +84,12 @@ class VideoLessonSerializer(serializers.ModelSerializer):
         course = CourseKey.from_string(validated_data.pop('course'))
         video_lesson, create = VideoLesson.objects.get_or_create(course=course, **validated_data)
         for question_data in questions_answered:
-            question_id = question_data.pop('question_id')
-            Question.objects.get_or_create(
-                video_lesson=video_lesson,
-                question_id=question_id,
-                defaults=question_data,
-            )
+            question_id = question_data.get('question_id')
+            attempt_count = question_data.get('attempt_count')
+            if attempt_count: # don't create if it's 0
+                Question.objects.get_or_create(
+                    video_lesson=video_lesson,
+                    question_id=question_id,
+                    attempt_count=attempt_count,
+                )
         return video_lesson
