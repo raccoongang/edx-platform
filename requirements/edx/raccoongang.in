@@ -3,7 +3,7 @@
 
 # Video xblock
 -e git+https://github.com/raccoongang/pycaption.git@1.0.1#egg=pycaption==1.0.1
--e git+https://github.com/raccoongang/xblock-video.git@v0.10.3#egg=xblock-video==0.10.3
+-e git+https://github.com/raccoongang/xblock-video.git@lakeside-hawthorn-rg#egg=xblock-video==0.10.3-lakeside
 
 # Firepad xblock
 -e git+https://github.com/raccoongang/edx_xblock_firepad.git@v0.0.1#egg=xblock-firepad==0.0.1
