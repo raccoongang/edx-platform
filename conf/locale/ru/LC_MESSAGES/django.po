@@ -17687,6 +17687,12 @@ msgstr ""
 "течение года после отправки данных. "
 
 #: lms/templates/dashboard/_dashboard_status_verification.html
+msgid ""
+"Your edX verification has been approved."
+msgstr ""
+"Вы успешно прошли подтверждение личности."
+
+#: lms/templates/dashboard/_dashboard_status_verification.html
 msgid "Current Verification Status: Pending"
 msgstr "Текущий статус подтверждения личности: ожидание рассмотрения"
 

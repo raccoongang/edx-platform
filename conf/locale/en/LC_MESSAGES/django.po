@@ -15428,6 +15428,11 @@ msgid ""
 msgstr ""
 
 #: lms/templates/dashboard/_dashboard_status_verification.html
+msgid ""
+"Your edX verification has been approved."
+msgstr ""
+
+#: lms/templates/dashboard/_dashboard_status_verification.html
 msgid "Current Verification Status: Pending"
 msgstr ""
 
