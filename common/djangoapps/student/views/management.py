@@ -745,7 +745,10 @@ def create_account_with_params(request, params):
         compose_and_send_activation_email(user, profile, registration)
 
     # If flag is enabled - creates record for user with approved status of the photo verification
-    if settings.FEATURES.get('AUTO_SOFTWARE_SECURE_PHOTO_VERIFICATION'):
+    if configuration_helpers.get_value(
+            'AUTO_SOFTWARE_SECURE_PHOTO_VERIFICATION',
+            settings.FEATURES.get('AUTO_SOFTWARE_SECURE_PHOTO_VERIFICATION', False)
+    ):
         SoftwareSecurePhotoVerification.objects.create(
             status="approved",
             user_id=user.id,
