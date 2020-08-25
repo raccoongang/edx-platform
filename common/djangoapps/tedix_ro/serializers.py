@@ -90,6 +90,8 @@ class VideoLessonSerializer(serializers.ModelSerializer):
                 Question.objects.get_or_create(
                     video_lesson=video_lesson,
                     question_id=question_id,
-                    attempt_count=attempt_count,
+                    defaults={
+                        'attempt_count': attempt_count,
+                    }
                 )
         return video_lesson
