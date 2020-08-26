@@ -82,3 +82,31 @@ def get_course_outline_block_tree(request, course_id):
     mark_last_accessed(user, course_key, course_outline_root_block)
 
     return course_outline_root_block
+
+
+def get_flat_course_structure(course_id):
+    """
+    Get course structure directly from modulestore.
+
+    Args:
+        course_id (str): course id as a string
+
+    Returns:
+        List with dicts containing names of course sections and subsections
+    """
+    course_key = CourseKey.from_string(course_id)
+    root_block = modulestore().get_course(course_key)
+
+    course_structure = []
+    sections = root_block.get_children()
+
+    for section in sections:
+        subsections = section.get_children()
+        node = {section.display_name:[]}
+
+        for subsection in subsections:
+            node[section.display_name].append(subsection.display_name)
+
+        course_structure.append(node)
+
+    return course_structure
