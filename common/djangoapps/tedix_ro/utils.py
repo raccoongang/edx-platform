@@ -214,8 +214,10 @@ def video_lesson_complited(user, course_key):
 
 def reset_student_progress(user, course_key):
     VideoLesson = apps.get_model('tedix_ro', 'VideoLesson')
+    StudentReportSending = apps.get_model('tedix_ro', 'StudentReportSending')
     VideoLesson.objects.filter(user=user, course=course_key).delete()
     StudentModule.objects.filter(course_id=course_key, student=user).delete()
+    StudentReportSending.objects.filter(course_id=course_key, user=user).delete()
 
 
 def encrypted_user_data(user):
