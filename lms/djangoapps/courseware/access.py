@@ -195,6 +195,8 @@ def _can_access_descriptor_with_start_date(user, descriptor, course_key):  # pyl
         AccessResponse: The result of this access check. Possible results are
             ACCESS_GRANTED or a StartDateError.
     """
+    if settings.FEATURES.get('DISABLE_START_DATES_FOR_COURSE', False):
+        return ACCESS_GRANTED
     return check_start_date(user, descriptor.days_early_for_beta, descriptor.start, course_key)
 
 
