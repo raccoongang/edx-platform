@@ -232,6 +232,7 @@ def encrypted_user_data(user):
     """
     user_id = None
     created = None
+    user_type = None
     salt = 'tedix-user'
 
     if user.is_authenticated:
@@ -240,8 +241,10 @@ def encrypted_user_data(user):
         m.update(user.username)
         m.update(salt)
         user_id = m.hexdigest()
+        user_type = 'student' if hasattr(user, 'studentprofile') else 'staff'
 
     return json.dumps({
         'created': int(created) if created is not None else None,
-        'id': user_id
+        'id': user_id,
+        'usertype': user_type
     })
