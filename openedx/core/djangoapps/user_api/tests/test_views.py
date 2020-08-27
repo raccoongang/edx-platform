@@ -588,8 +588,8 @@ class LoginSessionViewTest(UserAPITestCase):
                 "defaultValue": "",
                 "type": "email",
                 "required": True,
-                "label": "Email*",
-                "placeholder": "",
+                "label": "Email",
+                "placeholder": "username@domain.com",
                 "instructions": u"The email address you used to register with {platform_name}".format(
                     platform_name=settings.PLATFORM_NAME
                 ),
@@ -606,7 +606,7 @@ class LoginSessionViewTest(UserAPITestCase):
                 "defaultValue": "",
                 "type": "password",
                 "required": True,
-                "label": "Password*",
+                "label": "Password",
                 "placeholder": "",
                 "instructions": "",
                 "restrictions": {
@@ -821,8 +821,8 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
                 u"name": u"email",
                 u"type": u"email",
                 u"required": True,
-                u"label": u"Email*",
-                u"placeholder": u"",
+                u"label": u"Email",
+                u"placeholder": u"username@domain.com",
                 u"instructions": u"This is what you will use to login.",
                 u"restrictions": {
                     "min_length": EMAIL_MIN_LENGTH,
@@ -837,7 +837,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
                 u"name": u"name",
                 u"type": u"text",
                 u"required": True,
-                u"label": u"Full Name*",
+                u"label": u"Full Name",
                 u"placeholder": u"Jane Q. Learner",
                 u"instructions": u"This name will be used on any certificates that you earn.",
                 u"restrictions": {
@@ -853,7 +853,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
                 u"name": u"password",
                 u"type": u"password",
                 u"required": True,
-                u"label": u"Password*",
+                u"label": u"Password",
                 u"restrictions": {
                     'min_length': PASSWORD_MIN_LENGTH,
                     'max_length': PASSWORD_MAX_LENGTH
@@ -872,8 +872,8 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
                 u"name": u"email",
                 u"type": u"email",
                 u"required": True,
-                u"label": u"Email*",
-                u"placeholder": u"",
+                u"label": u"Email",
+                u"placeholder": u"username@domain.com",
                 u"instructions": u"This is what you will use to login.",
                 u"restrictions": {
                     "min_length": EMAIL_MIN_LENGTH,
@@ -964,8 +964,8 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
                     u"defaultValue": u"bob@example.com",
                     u"type": u"email",
                     u"required": True,
-                    u"label": u"Email*",
-                    u"placeholder": u"",
+                    u"label": u"Email",
+                    u"placeholder": u"username@domain.com",
                     u"instructions": u"This is what you will use to login.",
                     u"restrictions": {
                         "min_length": EMAIL_MIN_LENGTH,
@@ -982,7 +982,7 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
                     u"defaultValue": u"Bob",
                     u"type": u"text",
                     u"required": True,
-                    u"label": u"Full Name*",
+                    u"label": u"Full Name",
                     u"placeholder": u"Jane Q. Learner",
                     u"instructions": u"This name will be used on any certificates that you earn.",
                     u"restrictions": {
@@ -1222,7 +1222,10 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
         self._assert_reg_field(
             {"honor_code": "required"},
             {
-                "label": u"I agree to the ",
+                "label": u"I agree to the {platform_name} {link_label}".format(
+                    platform_name=settings.PLATFORM_NAME,
+                    link_label=link_label
+                ),
                 "name": "honor_code",
                 "defaultValue": False,
                 "type": "checkbox",
@@ -1243,7 +1246,10 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
         self._assert_reg_field(
             {"honor_code": "required"},
             {
-                "label": u"I agree to the ",
+                "label": u"I agree to the {platform_name} {link_label}".format(
+                    platform_name=settings.PLATFORM_NAME,
+                    link_label=link_label
+                ),
                 "name": "honor_code",
                 "defaultValue": False,
                 "type": "checkbox",
@@ -1270,7 +1276,10 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
         self._assert_reg_field(
             {"honor_code": "required", "terms_of_service": "required"},
             {
-                "label": u"I agree to the ",
+                "label": u"I agree to the {platform_name} {link_label}".format(
+                    platform_name=settings.PLATFORM_NAME,
+                    link_label=link_label
+                ),
                 "name": "honor_code",
                 "defaultValue": False,
                 "type": "checkbox",
@@ -1314,7 +1323,10 @@ class RegistrationViewTest(ThirdPartyAuthTestMixin, UserAPITestCase):
         self._assert_reg_field(
             {"honor_code": "required", "terms_of_service": "required"},
             {
-                "label": u"I agree to the ",
+                "label": u"I agree to the {platform_name} {link_label}".format(
+                    platform_name=settings.PLATFORM_NAME,
+                    link_label='Honor Code'
+                ),
                 "name": "honor_code",
                 "defaultValue": False,
                 "type": "checkbox",
