@@ -1120,12 +1120,20 @@ ORA2_FILEUPLOAD_CACHE_NAME = ENV_TOKENS.get('ORA2_FILEUPLOAD_CACHE_NAME', 'defau
 
 if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
     import sentry_sdk
+    import subprocess
     from sentry_sdk.integrations.django import DjangoIntegration
     from sentry_sdk.integrations.celery import CeleryIntegration
+
+    try:
+        platform_git_commit = subprocess.check_output(['git', 'describe', '--always']).strip()
+    except (subprocess.CalledProcessError, OSError):
+        platform_git_commit = ''
     sentry_sdk.init(
             AUTH_TOKENS.get('RG_SENTRY_DSN'),
             integrations=[DjangoIntegration(),CeleryIntegration()],
-            environment=ENV_TOKENS.get('RG_SENTRY_ENVIRONMENT', '')
+            environment=ENV_TOKENS.get('RG_SENTRY_ENVIRONMENT', ''),
+            release=platform_git_commit,
+            send_default_pii=True
             )
 
 # Variable for overriding standard MKTG_URLS
