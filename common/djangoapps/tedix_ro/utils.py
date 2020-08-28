@@ -228,7 +228,8 @@ def encrypted_user_data(user):
     Return:
         Json object with the following data:
           - created (int): Timestamp user.date_joined.
-          - id (str): base64 encrypted username.
+          - id (str): md5 hashed username.
+          - usertype (str): "student"/"staff"/"null".
     """
     user_id = None
     created = None
