@@ -1,5 +1,7 @@
 """HTTP end-points for the User API. """
 import copy
+import json
+import logging
 import re
 
 from django.conf import settings
@@ -21,6 +23,7 @@ from rest_framework.views import APIView
 import third_party_auth
 from django_comment_common.models import Role
 from edxmako.shortcuts import marketing_link
+from edx_rest_framework_extensions.authentication import JwtAuthentication
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.lib.api.authentication import SessionAuthenticationAllowInactiveUser
 from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
@@ -43,8 +46,12 @@ from .accounts import (
 from .accounts.api import check_account_exists
 from .helpers import FormDescription, require_post_params, shim_student_view
 from .models import UserPreference, UserProfile
+from .permissions import CanRegisterAccount
 from .preferences.api import get_country_time_zones, update_email_opt_in
 from .serializers import CountryTimeZoneSerializer, UserPreferenceSerializer, UserSerializer
+
+
+log = logging.getLogger(__name__)
 
 
 class LoginSessionView(APIView):
@@ -182,9 +189,8 @@ class RegistrationView(APIView):
         "terms_of_service",
     ]
 
-    # This end-point is available to anonymous users,
-    # so do not require authentication.
-    authentication_classes = []
+    authentication_classes = (JwtAuthentication,)
+    permission_classes = (CanRegisterAccount,)
 
     def _is_field_visible(self, field_name):
         """Check whether a field is visible based on Django settings. """
@@ -328,11 +334,16 @@ class RegistrationView(APIView):
             HttpResponse: 403 operation not allowed
         """
         data = request.POST.copy()
-
+        try:
+            is_active = json.loads(data.get('active'))
+        except (ValueError, TypeError):
+            is_active = False
         email = data.get('email')
-        data['username'] = re.sub('[\W]', '', email)[:30]
-        username = data.get('username')
 
+        username = data.get('username')
+        if email and not username:
+            username = re.sub(r'[\W]', '', email)[:30]
+            data['username'] = username
         # Handle duplicate email/username
         conflicts = check_account_exists(email=email, username=username)
         if conflicts:
@@ -379,6 +390,10 @@ class RegistrationView(APIView):
             return JsonResponse(errors, status=400)
         except PermissionDenied:
             return HttpResponseForbidden(_("Account creation not allowed."))
+        if is_active is True:
+            user.is_active = True
+            user.save()
+            log.info(u'User %s (%s) account is successfully activated.', user.username, user.email)
 
         if "referral_id" in request.COOKIES:
             referral_id = request.COOKIES.get("referral_id")
