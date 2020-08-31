@@ -48,7 +48,10 @@ def marketing_link(name):
         settings.MKTG_URLS
     )
 
-    external_mktg_urls = getattr(settings, 'EXTERNAL_MKTG_URLS', {})
+    external_mktg_urls = configuration_helpers.get_value(
+        'EXTERNAL_MKTG_URLS',
+        getattr(settings, 'EXTERNAL_MKTG_URLS', {})
+    )
 
     if enable_mktg_site and name in marketing_urls:
         # special case for when we only want the root marketing URL

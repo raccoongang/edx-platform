@@ -595,7 +595,7 @@ class CourseFields(object):
         help=_(
             "Course type price"
         ),
-        default="free",
+        default="",
         scope=Scope.settings,
         values=[
             {"display_name": _("Free"), "value": "free"},
@@ -608,7 +608,7 @@ class CourseFields(object):
         help=_(
             "Level of your course (ex. beginner/intermediate/expert)"
         ),
-        default="beginner",
+        default="",
         scope=Scope.settings,
         values=[
             {"display_name": _("Beginner"), "value": "beginner"},
@@ -622,7 +622,7 @@ class CourseFields(object):
         help=_(
             "Course process type (ex. online/offline/mixed)"
         ),
-        default="online",
+        default="",
         scope=Scope.settings,
         values=[
             {"display_name": _("Online"), "value": "online"},
