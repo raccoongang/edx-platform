@@ -194,9 +194,7 @@ line-height: 1;
 .homepage{
 	padding:0 20px 10px;
 }
-.xmodule_display.xmodule_CapaModule div.problem div div.equation{
-        display:inline-block !important;
-}
+
 .xmodule_display.xmodule_HtmlModule img{
     margin: 0 auto;
     display: block;
@@ -1037,5 +1035,7 @@ line-height: 1;
 .main-title {
     margin: 25px 0 30px;
 }
-.xmodule_display.xmodule_CapaModule div.problem div div.equation {display:none!important;}
-.xmodule_display.xmodule_CapaModule div.problem div div.equation span.MathJax_SVG{display:none!important;}
+
+.xmodule_display.xmodule_CapaModule div.equation {
+	display: none !important;
+}
