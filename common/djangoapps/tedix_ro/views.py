@@ -72,6 +72,7 @@ from .utils import (
     report_data_preparation,
     get_all_questions_count,
     get_count_answers_first_attempt,
+    reset_student_progress,
 )
 
 
@@ -79,12 +80,12 @@ def my_reports(request):
     """
     Provides a list of available homework assignments, for the student/parent/teacher/superuser.
     """
-    def user_due_date_data(user, due_date_datetime):
+    def user_due_date_data(user, due_date):
         """
         Function returns updated course due date data depends on user timezone if he has it.
         Arguments:
             user: instance of model User.
-            due_date: datetime field when Course Enrollment model was created.
+            due_date: datetime/date field when Course Enrollment model was created.
         Returns: 
             dict: {
                 "date_group": today/tomorrow/future/past,
@@ -98,13 +99,16 @@ def my_reports(request):
         user_time_zone = user.preferences.filter(key='time_zone').first()
         language = get_language()
 
-        if user_time_zone:
-            user_tz = pytz.timezone(user_time_zone.value)
-            date = pytz.UTC.localize(due_date_datetime.replace(tzinfo=None), is_dst=None).astimezone(user_tz)
+        if isinstance(due_date, datetime.datetime):
+            if user_time_zone:
+                user_tz = pytz.timezone(user_time_zone.value)
+                date = pytz.UTC.localize(due_date.replace(tzinfo=None), is_dst=None).astimezone(user_tz)
+            else:
+                date = due_date.astimezone(pytz.UTC)
+            due_date = due_date.date()
         else:
-            date = due_date_datetime.astimezone(pytz.UTC)
+            date = due_date
 
-        due_date = due_date_datetime.date()
         today = utc_now.date()
         date_data = time.mktime(date.timetuple())
         _today = _('Today')
@@ -200,18 +204,18 @@ def my_reports(request):
                 student__classroom__name=students_class,
                 course_id=course_key,
                 due_date__lt=utc_now_date,
-            ).values_list('due_date', flat=True).distinct().order_by('-due_date')[:200]
+            ).order_by('-due_date').dates('due_date', 'day')[:200]
 
             course_due_dates = StudentCourseDueDate.objects.filter(
                 student__user__in=students_list,
                 student__classroom__name=students_class,
                 course_id=course_key,
                 due_date__gte=utc_now_date,
-            ).values_list('due_date', flat=True).distinct().union(course_due_dates_past)
+            ).dates('due_date', 'day').union(course_due_dates_past)
 
             for course_due_date in course_due_dates:
                 students_in_class = StudentCourseDueDate.objects.filter(
-                    due_date__contains=course_due_date.date(),
+                    due_date__contains=course_due_date,
                     student__classroom__name=students_class,
                     student__user__in=students_list,
                 ).values_list('student__user_id', flat=True).distinct()
@@ -397,6 +401,7 @@ def manage_courses(request):
                 for course in form.cleaned_data['courses']:
                     due_date = form.cleaned_data['due_date']
                     CourseEnrollment.enroll_by_email(student.user.email, course.id)
+                    reset_student_progress(student.user, course.id)
                     StudentCourseDueDate.objects.update_or_create(
                         student=student,
                         course_id=course.id,
