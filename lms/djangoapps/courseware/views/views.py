@@ -88,7 +88,7 @@ from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.features.course_experience import UNIFIED_COURSE_TAB_FLAG, course_home_url_name
 from openedx.features.course_experience.views.course_dates import CourseDatesFragmentView
-from openedx.features.course_experience.utils import get_course_outline_block_tree
+from openedx.features.course_experience.utils import get_course_outline_block_tree, get_flat_course_structure
 from openedx.features.enterprise_support.api import data_sharing_consent_required
 
 from shoppingcart.utils import is_shopping_cart_enabled
@@ -817,7 +817,8 @@ def course_about(request, course_id):
 
         certificate_data = certs_api.get_active_web_certificate(course)
 
-        course_block_tree = get_course_outline_block_tree(request, course_id)
+        course_structure = get_flat_course_structure(course_id)
+
         course_start_end_date = strftime_localized(course.start, "%d %B")
         if course.end:
             end_date = strftime_localized(course.end, "%d %B")
@@ -854,7 +855,7 @@ def course_about(request, course_id):
             'reviews_fragment_view': reviews_fragment_view,
             'certificate_data': certificate_data,
             'disable_window_wrap': True,
-            'blocks': course_block_tree,
+            'course_structure': course_structure,
             'duration': duration,
             'course_start_end_date': course_start_end_date,
         }

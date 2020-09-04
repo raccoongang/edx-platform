@@ -69,7 +69,8 @@ FEATURES = {
 
     ## DO NOT SET TO True IN THIS FILE
     ## Doing so will cause all courses to be released on production
-    'DISABLE_START_DATES': False,  # When True, all courses will be active, regardless of start date
+    'DISABLE_START_DATES': False,  # When True, all courses and other blocks will be active, regardless of start date
+    'DISABLE_START_DATES_FOR_COURSE': False,  # When True, all courses will be active, regardless of start date
 
     # for consistency in user-experience, keep the value of the following 3 settings
     # in sync with the corresponding ones in cms/envs/common.py

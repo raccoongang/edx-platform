@@ -1,6 +1,8 @@
 """
 Start Date Transformer implementation.
 """
+from django.conf import settings
+
 from lms.djangoapps.courseware.access_utils import check_start_date
 from openedx.core.djangoapps.content.block_structure.transformer import (
     BlockStructureTransformer,
@@ -72,10 +74,12 @@ class StartDateTransformer(FilteringTransformerMixin, BlockStructureTransformer)
         if usage_info.has_staff_access:
             return [block_structure.create_universal_filter()]
 
+        ignore_course_start = settings.FEATURES.get('DISABLE_START_DATES_FOR_COURSE', False)
+
         removal_condition = lambda block_key: not check_start_date(
             usage_info.user,
             block_structure.get_xblock_field(block_key, 'days_early_for_beta'),
             self._get_merged_start_date(block_structure, block_key),
             usage_info.course_key,
-        )
+        ) and not (ignore_course_start and block_structure.get_xblock_field(block_key, 'category') == 'course')
         return [block_structure.create_removal_filter(removal_condition)]

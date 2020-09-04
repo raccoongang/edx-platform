@@ -331,10 +331,12 @@ def _has_access_course(user, action, courselike):
 
         NOTE: this is not checking whether user is actually enrolled in the course.
         """
-        response = (
-            _visible_to_nonstaff_users(courselike) and
-            _can_access_descriptor_with_start_date(user, courselike, courselike.id)
-        )
+        if settings.FEATURES.get('DISABLE_START_DATES_FOR_COURSE', False):
+            course_access_by_start_date = ACCESS_GRANTED
+        else:
+            course_access_by_start_date = _can_access_descriptor_with_start_date(user, courselike, courselike.id)
+
+        response = (_visible_to_nonstaff_users(courselike) and course_access_by_start_date)
 
         return (
             ACCESS_GRANTED if (response or _has_staff_access_to_descriptor(user, courselike, courselike.id))
