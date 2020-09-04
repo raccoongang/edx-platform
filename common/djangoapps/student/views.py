@@ -21,8 +21,9 @@ from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import password_reset_confirm
 from django.contrib import messages
-from django.core.context_processors import csrf
 from django.core import mail
+from django.core.context_processors import csrf
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse, NoReverseMatch, reverse_lazy
 from django.core.validators import validate_email, ValidationError
 from django.db import IntegrityError, transaction
@@ -1545,6 +1546,10 @@ def _do_create_account(form, custom_form=None):
 
     Note: this function is also used for creating test users.
     """
+    # To disable a user creation, this part is taken from the future releases of the platform,
+    # https://github.com/edx/edx-platform/blob/master/common/djangoapps/student/helpers.py#L614
+    raise PermissionDenied()
+
     errors = {}
     errors.update(form.errors)
     if custom_form:
