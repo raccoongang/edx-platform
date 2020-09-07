@@ -18,12 +18,3 @@ def task_reindex_courses(category_id=None, course_keys=None):
     for course_key in courses:
         course_key = CourseKey.from_string(course_key)
         CoursewareSearchIndexer.do_course_reindex(modulestore(), course_key)
-
-
-@task
-def task_add_categories(category_names, course_id):
-    from course_category.models import CourseCategory
-    for category_name in category_names:
-        category = CourseCategory.objects.filter(name=category_name).first()
-        if category:
-            category.courses.add(CourseKey.from_string(course_id))
