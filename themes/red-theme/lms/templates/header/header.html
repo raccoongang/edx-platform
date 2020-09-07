@@ -28,6 +28,60 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
     </%static:require_module>
     </%block>
 % endif
+  <script type="text/javascript"><!--
+function Blockingnoplan() {
+		$(".modal-overlay").show()
+		$(".modal-window").show()
+}
+function Blockingplan() {
+		$(".modal-overlay").show()
+		$(".modal-window-plan").show()
+}
+//--></script>
+        % if user.is_authenticated:
+	  <script type="text/javascript">
+!function(e){var t=Math.floor(Date.now()/1e3),n=tedixUUid.created;tedixUUid.usertype;if("student"==tedixUUid.usertype){function o(){var t=e.createElement("script");t.type="text/javascript",t.async=!0,t.src="https://install-dev.simpleshop.ro/simpleshop.js";var n=e.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)}window.__simpleShopConfig={storeId:"JPJHNTSHMW",shopActions:{openWindow:".selectPlanLink"},shopOverride:{productCta:"Buy"},euid:tedixUUid.id,onLoad:e=>{e.getLastTransaction().then(o=>{if(o.number){switch(o.content.data.items[0]._id){case"5f4f68bc68c04f75643ed572":var a=o.created_time+2592e3-t;break;case"5f4f692268c04f758103f792":a=o.created_time+7776e3-t;break;case"5f4f693e68c04f758e084d32":a=o.created_time+31104e3-t}var s=(a/86400).toFixed(0);$(".insert").html(s),$(".message-noplan").hide(),$(".message-plan").html("<strong>"+e.getExternalUID()+"</strong> "+JSON.stringify(o)).hide(),s>30?console.log("Userul mai are abonament"):s>15&&s<=30?$(".announces-green-new").show():s>0&&s<=15?$(".announces-red-new").show():setInterval(Blockingplan,12e3)}else{var i=t-n,r=30-(i/86400).toFixed(0);console.log("ct"+t),console.log("uct"+n),console.log("utr"+i),$(".insert").html(r),r>0&&r<=7?$(".announces-red").show():r>7&&r<=30?$(".announces-green").show():setInterval(Blockingnoplan,12e3)}})}},window.attachEvent?window.attachEvent("onload",o):window.addEventListener("load",o,!1)}}(document);
+  </script>	
+
+	<div class="announces-green" style="background-color:#24AD97;padding:15px;color: #ffffff;text-align:center;display:none;">
+		<span class="" style="text-align:center;font-size:16px;">Bine ai venit pe platforma TEDIX! <b>Mai ai <span class="insert">.</span> zile de utilizare gratuită a sistemului. Abonează-te dând click </b> <a href="javascript:;" class="selectPlanLink" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display:inline-block;">Aici</a></span>
+	</div>
+	<div class="announces-green-new" style="background-color:#24AD97;padding:15px;color: #ffffff;text-align:center;display:none;">
+		<span class="" style="text-align:center;font-size:16px;">Mulțumim că utilizezi platforma TEDIX. <b> Mai ai <span class="insert">.</span> zile până la expirarea abonamentului. Reînnoiește-ți abonamentul dând click</b> <a href="javascript:;" class="selectPlanLink" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display:inline-block;">Aici</a></span>
+	</div>
+	<div class="announces-red" style="background-color:#c90000;padding:15px;color: #ffffff;text-align:center;display:none;">
+		<span class="" style="text-align:center; font-size:16px;">Bine ai venit pe platforma TEDIX! <b>Mai ai <span class="insert">.</span> zile de utilizare gratuită a sistemului. Abonează-te dând click </b> <a href="javascript:;" class="selectPlanLink" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display: inline-block;">Aici</a></span>
+	</div>
+	<div class="announces-red-new" style="background-color:#c90000;padding:15px;color: #ffffff;text-align:center;display:none;">
+		<span class="" style="text-align:center; font-size:16px;">Mulțumim că utilizezi platforma TEDIX. <b>Mai ai <span class="insert">.</span> zile până la expirarea abonamentului. Reînnoiește-ți abonamentul dând click</b> <a href="javascript:;" class="selectPlanLink" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display: inline-block;">Aici</a></span>
+	</div>
+	<div class="modal-window" style="display:none;">
+		<div class="logo" style=""><img src="${static.url("images/logo.png" )}" style="width:70%;max-width:40vw;"></div>
+		<div style="text-align:center;padding: 8% 7%;font-weight: normal;">
+			<p>Ne pare rău dar perioada de grație pentru utilizarea gratuită a platformei TEDIX s-a încheiat.</p>
+			<p>Pentru a putea utiliza în continuare platforma te rugăm să dai click pe butonul de mai jos</p>
+		</Div>
+		<div class="modal-content"style="">
+		  <div style="display:none !important;"class="alert alert-danger mb-3 message-noplan">The set user doesn't have a payment plan</div>
+			<div class="alert alert-info mb-3 message-plan" style="display:none;">...</div>
+			<a href="javascript:;" id="selectPlanLink" class="btn btn-primary selectPlanLink" style="">Cumpară Abonament</a>
+		</div>
+	</div>
+	<div class="modal-window-plan" style="display:none;">
+		<div class="logo" style=""><img src="${static.url("images/logo.png" )}" style="width:70%;max-width:40vw;"></div>
+		<div style="text-align:center;padding: 8% 7%;font-weight: normal;">
+			<p>Ne pare rău dar abonamentul tău a expirat.</p>
+			<p>Pentru a putea utiliza în continuare platforma te rugăm să prelungești abonamentul dând click pe butonul de mai jos</p>
+		</Div>
+		<div class="modal-content"style="">
+		  <div style="display:none !important;"class="alert alert-danger mb-3 message-noplan">The set user doesn't have a payment plan </div>
+			<div class="alert alert-info mb-3 message-plan" style="display:none;">...</div>
+			<a href="javascript:;" id="selectPlanLink" class="btn btn-primary selectPlanLink" style="">Cumpară Abonament</a>
+		</div>
+	</div>
+	<div class="modal-overlay" style="display:none;"></div>
+        % else:
+        % endif
 
 <header class="global-header ${'slim' if course else ''}">
     % if use_cookie_banner:
