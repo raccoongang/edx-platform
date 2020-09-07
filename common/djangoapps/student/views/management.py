@@ -1057,8 +1057,6 @@ def activate_account(request, key):
                     parent_user.save()
             if parent_user:
                 compose_and_send_activation_email(parent_user, parent_user.profile, registration)
-            if parentprofile:
-                send_payment_link_to_parent(parentprofile.user.id)
 
             # Success message for logged in users.
             message = _('{html_start}Success{html_end} You have activated your account.')
