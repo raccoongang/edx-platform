@@ -262,6 +262,7 @@ def get_report_data_for_course_users(courses, course_id):
 
         status_list = []
         # Need to go through parent-children structure again for catching html-only lessons
+        status = "-"
         for sequential in sequentials:
             for vertical in _get_children(sequential, course_ordered):
                 for unit in _get_children(vertical, course_ordered):
