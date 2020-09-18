@@ -27472,3 +27472,25 @@ msgstr "Навчальні курси та проєкти від провідн�
 #: edx-theme/lms/templates/courses_list.html
 msgid "Current projects"
 msgstr "Поточні проєкти"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "Certificate"
+msgstr "Сертифікат"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "This certificate is provided to"
+msgstr "Цей сертифікат надається"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "successfully completed, received a passing grade, and was awarded this "
+"{platform_name} Certificate of Completion in"
+msgstr "успішно завершив, отримав прохідний бал, і був удостоєний Сертифіката про "
+"закінчення курсу на {platform_name}"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "T.S. Wojtiuk"
+msgstr "Т.С. Войтюк"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "Head of online learning department"
+msgstr "Керівник відділу онлайн-навчання"
