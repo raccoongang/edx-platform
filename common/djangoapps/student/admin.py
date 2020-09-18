@@ -169,6 +169,7 @@ class UserAdmin(BaseUserAdmin):
     def get_readonly_fields(self, request, obj=None):
         """
         Allows editing the users while skipping the username check, so we can have Unicode username with no problems.
+
         The username is marked read-only when editing existing users regardless of `ENABLE_UNICODE_USERNAME`, to simplify the bokchoy tests.
         """
         django_readonly = super(UserAdmin, self).get_readonly_fields(request, obj)

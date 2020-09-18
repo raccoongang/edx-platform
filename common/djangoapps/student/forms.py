@@ -114,6 +114,7 @@ class TrueField(forms.BooleanField):
 def validate_username(username):
     """
     Verifies a username is valid, raises a ValidationError otherwise.
+
     Args:
         username (unicode): The username to validate.
     """
@@ -159,7 +160,6 @@ class UsernameField(forms.CharField):
 
         Similar to what `django.forms.SlugField` does.
         """
-
         value = self.to_python(value).strip()
         return super(UsernameField, self).clean(value)
 
