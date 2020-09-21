@@ -610,7 +610,9 @@ USAGE_KEY_PATTERN = r'(?P<usage_key_string>(?:i4x://?[^/]+/[^/]+/[^/]+/[^@]+(?:@
 ASSET_KEY_PATTERN = r'(?P<asset_key_string>(?:/?c4x(:/)?/[^/]+/[^/]+/[^/]+/[^@]+(?:@[^/]+)?)|(?:[^/]+))'
 USAGE_ID_PATTERN = r'(?P<usage_id>(?:i4x://?[^/]+/[^/]+/[^/]+/[^@]+(?:@[^/]+)?)|(?:[^/]+))'
 
-USERNAME_PATTERN = r'(?P<username>[\w.@+-]+)'
+# Pattern for username validation that is used in the AccountCreationForm and the user_api.
+USERNAME_REGEX_PARTIAL = r'[\w.@_+-]+'
+USERNAME_PATTERN = r'(?P<username>{regex})'.format(regex=USERNAME_REGEX_PARTIAL)
 
 ############################## EVENT TRACKING #################################
 LMS_SEGMENT_KEY = None

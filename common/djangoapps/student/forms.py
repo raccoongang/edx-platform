@@ -7,6 +7,7 @@ import re
 from django import forms
 from django.forms import widgets
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.hashers import UNUSABLE_PASSWORD_PREFIX
@@ -20,6 +21,7 @@ from django.conf import settings
 from student.models import CourseEnrollmentAllowed
 from util.password_policy_validators import validate_password_strength
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.core.djangoapps.user_api import accounts as accounts_settings
 
 
 class PasswordResetFormNoActive(PasswordResetForm):
@@ -109,7 +111,59 @@ class TrueField(forms.BooleanField):
     widget = TrueCheckbox
 
 
+def validate_username(username):
+    """
+    Verifies a username is valid, raises a ValidationError otherwise.
+
+    Args:
+        username (unicode): The username to validate.
+    """
+
+    username_re = r"^{regex}$".format(regex=settings.USERNAME_REGEX_PARTIAL)
+    flags = re.UNICODE
+    message = accounts_settings.USERNAME_INVALID_CHARS_UNICODE
+
+    validator = RegexValidator(
+        regex=username_re,
+        flags=flags,
+        message=message,
+        code='invalid',
+    )
+
+    validator(username)
+
+
 _USERNAME_TOO_SHORT_MSG = _("Username must be minimum of two characters long")
+
+
+class UsernameField(forms.CharField):
+    """
+    A CharField that validates usernames.
+    """
+
+    default_validators = [validate_username]
+
+    def __init__(self, *args, **kwargs):
+        super(UsernameField, self).__init__(
+            min_length=accounts_settings.USERNAME_MIN_LENGTH,
+            max_length=accounts_settings.USERNAME_MAX_LENGTH,
+            error_messages={
+                "required": _USERNAME_TOO_SHORT_MSG,
+                "min_length": _USERNAME_TOO_SHORT_MSG,
+                "max_length": _("Username cannot be more than %(limit_value)s characters long"),
+            }
+        )
+
+    def clean(self, value):
+        """
+        Strips the spaces from the username.
+
+        Similar to what `django.forms.SlugField` does.
+        """
+        value = self.to_python(value).strip()
+        return super(UsernameField, self).clean(value)
+
+
 _EMAIL_INVALID_MSG = _("A properly formatted e-mail is required")
 _PASSWORD_INVALID_MSG = _("A valid password is required")
 _NAME_TOO_SHORT_MSG = _("Your legal name must be a minimum of two characters long")
@@ -121,17 +175,9 @@ class AccountCreationForm(forms.Form):
     validation, not rendering.
     """
     # TODO: Resolve repetition
-    username = forms.SlugField(
-        min_length=2,
-        max_length=30,
-        error_messages={
-            "required": _USERNAME_TOO_SHORT_MSG,
-            "invalid": _("Usernames can only contain Roman letters, western numerals (0-9), underscores (_), and "
-                         "hyphens (-)."),
-            "min_length": _USERNAME_TOO_SHORT_MSG,
-            "max_length": _("Username cannot be more than %(limit_value)s characters long"),
-        }
-    )
+
+    username = UsernameField()
+
     email = forms.EmailField(
         max_length=254,  # Limit per RFCs is 254
         error_messages={

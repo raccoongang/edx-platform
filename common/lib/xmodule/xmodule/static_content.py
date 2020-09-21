@@ -186,9 +186,6 @@ def main():
     Generate
     Usage: static_content.py <output_root>
     """
-    from django.conf import settings
-    settings.configure()
-
     args = docopt(main.__doc__)
     root = path(args['<output_root>'])
 
