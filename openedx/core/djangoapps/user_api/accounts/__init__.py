@@ -2,7 +2,6 @@
 Account constants
 """
 
-from django.utils.text import format_lazy
 from django.utils.translation import ugettext_lazy as _
 
 # The minimum and maximum length for the name ("full name") account field
@@ -28,3 +27,7 @@ ALL_USERS_VISIBILITY = 'all_users'
 
 # Indicates the user's preference that all their account information be private.
 PRIVATE_VISIBILITY = 'private'
+
+USERNAME_INVALID_CHARS_UNICODE = _(
+    u"Usernames can only contain letters, numerals, and @/./+/-/_ characters."
+)
