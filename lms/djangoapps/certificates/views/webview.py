@@ -17,6 +17,7 @@ from django.utils import translation
 from eventtracking import tracker
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 from badges.events.course_complete import get_completion_badge
 from badges.utils import badges_enabled
@@ -252,6 +253,17 @@ def _update_course_context(request, context, course, course_key, platform_name):
                                                               '{partner_short_name}.').format(
             partner_short_name=context['organization_short_name'],
             platform_name=platform_name)
+        
+    # Translators: this text describes the course duration
+    course_duration = CourseOverview.get_from_id(course.id).effort
+    if course_duration:
+        if course_duration.strip().isnumeric():
+            num_hour = int(course_duration.strip())
+            context['course_duration'] = translation.ungettext(
+                "{num_hour} hour", "{num_hour} hours", num_hour
+            ).format(num_hour=num_hour)
+        else:
+            context['course_duration'] = _(course_duration)
 
 
 def _update_social_context(request, context, course, user, user_certificate, platform_name):
