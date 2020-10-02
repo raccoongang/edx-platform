@@ -27478,14 +27478,12 @@ msgid "Certificate"
 msgstr "Сертифікат"
 
 #: lms/templates/certificates/_accomplishment-rendering.html
-msgid "This certificate is provided to"
-msgstr "Цей сертифікат надається"
+msgid "which confirms that:"
+msgstr "який підтверджує що:"
 
 #: lms/templates/certificates/_accomplishment-rendering.html
-msgid "successfully completed, received a passing grade, and was awarded this "
-"{platform_name} Certificate of Completion in"
-msgstr "успішно завершив, отримав прохідний бал, і був удостоєний Сертифіката про "
-"закінчення курсу на {platform_name}"
+msgid "successfully passed the course/webinar at LLC \"Educational Portal\" and received the appropriate number of ECTS points."
+msgstr "успішно пройшов(-ла) курс/вебінар на ТОВ \"Освітній Портал\" та отримав відповідну кількість балів ЄКТС."
 
 #: lms/templates/certificates/_accomplishment-rendering.html
 msgid "T.S. Wojtiuk"
