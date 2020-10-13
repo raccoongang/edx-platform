@@ -496,6 +496,14 @@ def get_certificate_template(course_key, mode, language):
         )
         template = get_language_specific_template_or_default(language, org_mode_and_key_templates)
 
+    if not template and mode:
+        mode_and_key_templates = active_templates.filter(
+            mode=mode,
+            course_key=course_key,
+            organization_id=None
+        )
+        template = get_language_specific_template_or_default(language, mode_and_key_templates)
+
     # since no template matched that course_key, only consider templates with empty course_key
     empty_course_key_templates = active_templates.filter(course_key=CourseKeyField.Empty)
     if not template and org_id and mode:  # get template by org and mode
@@ -516,6 +524,16 @@ def get_certificate_template(course_key, mode, language):
             mode=mode
         )
         template = get_language_specific_template_or_default(language, mode_templates)
+
+    # Use template specified only by course_key
+    if not template:
+        course_key_templates = active_templates.filter(
+            course_key=course_key,
+            organization_id=None,
+            mode=None
+        )
+        template = get_language_specific_template_or_default(language, course_key_templates)
+
     return template if template else None
 
 
