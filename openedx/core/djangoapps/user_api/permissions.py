@@ -49,7 +49,7 @@ class CanRegisterAccount(permissions.IsAuthenticated):
     def has_permission(self, request, view):
         if request.method != 'POST':
             return True
-        if request.META.get('HTTP_REFERER') == request.build_absolute_uri(reverse('register_user')):
+        if request.META.get('HTTP_REFERER').split('?')[0] == request.build_absolute_uri(reverse('register_user')):
             return True
         if third_party_auth.is_enabled():
             if third_party_auth.pipeline.running(request):
