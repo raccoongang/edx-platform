@@ -44,7 +44,7 @@ def calculate_page_info(offset, total_students):
     previous_offset = offset - MAX_STUDENTS_PER_PAGE_GRADE_BOOK
 
     # calculate current page number.
-    page_num = ((offset / MAX_STUDENTS_PER_PAGE_GRADE_BOOK) + 1)
+    page_num = int((offset / MAX_STUDENTS_PER_PAGE_GRADE_BOOK) + 1)
 
     # calculate total number of pages.
     total_pages = int(math.ceil(float(total_students) / MAX_STUDENTS_PER_PAGE_GRADE_BOOK)) or 1
