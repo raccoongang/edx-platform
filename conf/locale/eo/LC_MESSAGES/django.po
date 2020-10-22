@@ -7229,6 +7229,14 @@ msgstr ""
 "Märkdöwn sýntäx ïs ällöwéd. Séé thé %(start_link)sçhéätshéét%(end_link)s för"
 " hélp. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя α#"
 
+#: lms/templates/wiki/includes/editor_widget.html
+msgid "Markdown syntax is allowed. "
+msgstr "Märkdöwn sýntäx ïs ällöwéd. "
+
+#: lms/templates/wiki/includes/editor_widget.html
+msgid "See the cheatsheet for help."
+msgstr "Séé thé çhéätshéét för hélp. Ⱡ'σяєм ιρѕυм ∂σłσя ѕιт αмєт, ¢σηѕє¢тєтυя α#"
+
 #: lms/templates/wiki/plugins/attachments/index.html
 #: wiki/plugins/attachments/templates/wiki/plugins/attachments/index.html
 #: wiki/plugins/attachments/wiki_plugin.py
