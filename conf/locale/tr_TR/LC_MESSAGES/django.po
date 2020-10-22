@@ -6414,6 +6414,14 @@ msgid ""
 "help."
 msgstr ""
 
+#: lms/templates/wiki/includes/editor_widget.html
+msgid "Markdown syntax is allowed. "
+msgstr "Markdown yazımına izin verilmektedir. "
+
+#: lms/templates/wiki/includes/editor_widget.html
+msgid "See the cheatsheet for help."
+msgstr "Yardım için ipuçları sayfasına bakın."
+
 #: lms/templates/wiki/plugins/attachments/index.html
 #: wiki/plugins/attachments/templates/wiki/plugins/attachments/index.html
 #: wiki/plugins/attachments/wiki_plugin.py
