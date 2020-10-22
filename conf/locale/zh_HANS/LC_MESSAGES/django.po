@@ -6097,6 +6097,14 @@ msgid ""
 " help."
 msgstr "此处允许使用MarkDown语法。请参阅%(start_link)s快捷键管理%(end_link)s并寻求帮助。"
 
+#: lms/templates/wiki/includes/editor_widget.html
+msgid "Markdown syntax is allowed. "
+msgstr ""
+
+#: lms/templates/wiki/includes/editor_widget.html
+msgid "See the cheatsheet for help."
+msgstr ""
+
 #: lms/templates/wiki/plugins/attachments/index.html
 #: wiki/plugins/attachments/templates/wiki/plugins/attachments/index.html
 #: wiki/plugins/attachments/wiki_plugin.py
