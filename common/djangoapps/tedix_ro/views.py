@@ -35,7 +35,7 @@ from student.helpers import do_create_account, get_next_url_for_login_page
 from student.models import CourseEnrollment
 from xmodule.modulestore.django import modulestore
 
-from .admin import INSTRUCTOR_EXPORT_FIELD_NAMES, STUDENT_PARENT_EXPORT_FIELD_NAMES
+from .admin import INSTRUCTOR_EXPORT_FIELD_NAMES, STUDENT_PARENT_IMPORT_FIELD_NAMES, EMPTY_VALUE
 from .forms import (
     FORM_FIELDS_MAP,
     AccountImportValidationForm,
@@ -645,7 +645,7 @@ class ProfileImportView(View):
                         dataset = json.loads(import_form.cleaned_data['file_to_import'].read())
                     for i, row in enumerate(dataset, 1):
                         errors = {}
-                        form_data = {FORM_FIELDS_MAP.get(k, k):v for k,v in row.items()}
+                        form_data = self.replace_empty_value(row)
                         form_data['role'] = self.role
                         form_data['password'] = User.objects.make_random_password()
                         user_form = AccountImportValidationForm(form_data, tos_required=False)
@@ -680,6 +680,14 @@ class ProfileImportView(View):
             'row_headers': self.headers
         })
         return render(request, self.template_name, context)
+
+    def replace_empty_value(self, row):
+        form_data = {}
+        for key, value in row.items():
+            if value == EMPTY_VALUE:
+                value = ''
+            form_data.update({FORM_FIELDS_MAP.get(key, key): value})
+        return form_data
 
     def send_email(self, user, data, send_payment_link=False):
         to_address = user.email
@@ -735,7 +743,7 @@ class InstructorProfileImportView(ProfileImportView):
 
 class StudentProfileImportView(ProfileImportView):
     import_form = StudentProfileImportForm
-    headers = STUDENT_PARENT_EXPORT_FIELD_NAMES
+    headers = STUDENT_PARENT_IMPORT_FIELD_NAMES
     profile_form = StudentImportRegisterForm
     template_name = 'admin_import.html'
     role = 'student'
