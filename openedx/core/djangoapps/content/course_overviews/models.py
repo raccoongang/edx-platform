@@ -76,6 +76,8 @@ class CourseOverview(TimeStampedModel):
         blank=True
     )
 
+    price = IntegerField(default=0)
+
     # Course identification
     id = CourseKeyField(db_index=True, primary_key=True, max_length=255)
     _location = UsageKeyField(max_length=255)
@@ -174,6 +176,7 @@ class CourseOverview(TimeStampedModel):
             skilltag = json.dumps(course.skilltag),
             course_level = course.course_level,
             total_effort = course.total_effort,
+            price=course.cosmetic_display_price,
 
             id=course.id,
             _location=course.location,
