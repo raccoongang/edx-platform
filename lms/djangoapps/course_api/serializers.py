@@ -62,6 +62,7 @@ class CourseSerializer(serializers.Serializer):  # pylint: disable=abstract-meth
     skilltag = serializers.SerializerMethodField()
     course_level = serializers.CharField()
     total_effort = serializers.CharField()
+    price = serializers.IntegerField()
 
     blocks_url = serializers.SerializerMethodField()
     effort = serializers.CharField()
