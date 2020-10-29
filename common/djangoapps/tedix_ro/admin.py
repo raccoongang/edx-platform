@@ -4,10 +4,12 @@ import pytz
 import time
 
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.widgets import AdminSplitDateTime
 from django.contrib.auth.models import User
 from django.http.response import HttpResponseRedirect
+from django.utils import timezone
 from django.utils.translation import ugettext as _
 from import_export import resources, widgets
 from import_export.admin import ImportExportModelAdmin, ImportMixin
@@ -190,6 +192,17 @@ class StudentProfileField(Field):
             return EMPTY_VALUE
         return self.widget.render(value, obj)
 
+
+class StudentProfileDateTimeWidget(widgets.DateTimeWidget):
+
+    def render(self, value, obj=None):
+        if not value:
+            return ""
+        if settings.USE_TZ:
+            value = timezone.localtime(value)
+        return value.strftime(self.formats[0])
+
+
 class StudentProfileResource(resources.ModelResource):
 
     school = StudentProfileField(
@@ -228,13 +241,13 @@ class StudentProfileResource(resources.ModelResource):
     account_creation_date = StudentProfileField(
         attribute='user__date_joined',
         column_name='account_creation_date',
-        widget=widgets.DateWidget('%d %b %Y %H:%M'),
+        widget=StudentProfileDateTimeWidget('%d %b %Y %H:%M'),
     )
 
     last_login_date = StudentProfileField(
         attribute='user__last_login',
         column_name='last_login_date',
-        widget=widgets.DateWidget('%d %b %Y %H:%M'),
+        widget=StudentProfileDateTimeWidget('%d %b %Y %H:%M'),
     )
 
     parent_email = StudentProfileField()
