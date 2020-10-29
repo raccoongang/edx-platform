@@ -27472,3 +27472,23 @@ msgstr "Навчальні курси та проєкти від провідн�
 #: edx-theme/lms/templates/courses_list.html
 msgid "Current projects"
 msgstr "Поточні проєкти"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "Certificate"
+msgstr "Сертифікат"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "which confirms that:"
+msgstr "який підтверджує що:"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "successfully passed the course/webinar at LLC \"Educational Portal\" and received the appropriate number of ECTS points."
+msgstr "успішно пройшов(-ла) курс/вебінар на ТОВ \"Освітній Портал\" та отримав відповідну кількість балів ЄКТС."
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "T.S. Wojtiuk"
+msgstr "Т.С. Войтюк"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "Head of online learning department"
+msgstr "Керівник відділу онлайн-навчання"
