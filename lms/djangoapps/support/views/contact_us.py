@@ -8,6 +8,7 @@ from django.http import Http404
 from django.shortcuts import redirect
 from django.views.generic import View
 
+from common.djangoapps.student.views import get_course_enrollments, get_org_black_and_whitelist_for_site
 from common.djangoapps.edxmako.shortcuts import render_to_response
 from common.djangoapps.student.models import CourseEnrollment
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
@@ -45,7 +46,13 @@ class ContactUsView(View):
 
         if request.user.is_authenticated:
             context['course_id'] = request.session.get('course_id', '')
-            context['user_enrollments'] = CourseEnrollment.enrollments_for_user_with_overviews_preload(request.user)
+
+            # Get the org whitelist or the org blacklist for the current site
+            site_org_whitelist, site_org_blacklist = get_org_black_and_whitelist_for_site()
+            context['user_enrollments'] = list(
+                get_course_enrollments(request.user, site_org_whitelist, site_org_blacklist)
+            )
+
             enterprise_customer = enterprise_api.enterprise_customer_for_request(request)
             if enterprise_customer:
                 tags.append('enterprise_learner')
