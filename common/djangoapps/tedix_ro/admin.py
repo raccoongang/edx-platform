@@ -178,6 +178,27 @@ class InstructorProfileAdmin(ImportExportModelAdmin):
         base_formats.JSON,
     )
     search_fields = ['user__username', 'user__profile__name']
+    list_display = ('user', 'number_of_students', 'date_joined', 'last_login',)
+    readonly_fields = ('number_of_students', 'date_joined', 'last_login',)
+
+    def number_of_students(self, obj):
+        return obj.students.count()
+
+    def last_login(self, obj):
+        if obj.user.last_login:
+            last_login = timezone.localtime(obj.user.last_login)
+            return last_login.strftime('%d %b %Y %H:%M')
+        else:
+            return 'n/a'
+
+    def date_joined(self, obj):
+        date_joined = timezone.localtime(obj.user.date_joined)
+        return date_joined.strftime('%d %b %Y %H:%M')
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return self.readonly_fields
+        return ()
 
 
 class StudentProfileField(Field):
