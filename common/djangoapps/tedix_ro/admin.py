@@ -71,6 +71,8 @@ INSTRUCTOR_EXPORT_FIELD_NAMES = (
     'school'
 )
 
+DATE_TIME_FORMAT = '%d %b %Y %H:%M'
+
 
 admin.site.register(Classroom)
 
@@ -187,13 +189,13 @@ class InstructorProfileAdmin(ImportExportModelAdmin):
     def last_login(self, obj):
         if obj.user.last_login:
             last_login = timezone.localtime(obj.user.last_login)
-            return last_login.strftime('%d %b %Y %H:%M')
+            return last_login.strftime(DATE_TIME_FORMAT)
         else:
             return 'n/a'
 
     def date_joined(self, obj):
         date_joined = timezone.localtime(obj.user.date_joined)
-        return date_joined.strftime('%d %b %Y %H:%M')
+        return date_joined.strftime(DATE_TIME_FORMAT)
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
@@ -262,13 +264,13 @@ class StudentProfileResource(resources.ModelResource):
     account_creation_date = StudentProfileField(
         attribute='user__date_joined',
         column_name='account_creation_date',
-        widget=StudentProfileDateTimeWidget('%d %b %Y %H:%M'),
+        widget=StudentProfileDateTimeWidget(DATE_TIME_FORMAT),
     )
 
     last_login_date = StudentProfileField(
         attribute='user__last_login',
         column_name='last_login_date',
-        widget=StudentProfileDateTimeWidget('%d %b %Y %H:%M'),
+        widget=StudentProfileDateTimeWidget(DATE_TIME_FORMAT),
     )
 
     parent_email = StudentProfileField()
@@ -375,6 +377,6 @@ class StudentCourseDueDateAdmin(admin.ModelAdmin):
     date_hierarchy = 'due_date'
     
     def format_date(self, obj):
-        return obj.due_date.strftime('%d %b %Y %H:%M')
+        return obj.due_date.strftime(DATE_TIME_FORMAT)
         
     format_date.short_description = _('Due Date (UTC)')
