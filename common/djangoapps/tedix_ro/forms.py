@@ -323,9 +323,9 @@ class StudentEnrollForm(forms.Form):
             'autocomplete': 'off'
         })
     )
-    send_to_students = forms.BooleanField(required=False, label=_('Notify Student(s) via e-mail'))
+    send_to_students = forms.BooleanField(required=False, initial=True, label=_('Notify Student(s) via e-mail'))
     send_to_parents = forms.BooleanField(required=False, label=_('Notify Parent(s) via e-mail'))
-    send_sms = forms.BooleanField(required=False, label=_('Notify Parent(s) via SMS'))
+    send_sms = forms.BooleanField(required=False, initial=True, label=_('Notify Parent(s) via SMS'))
 
     def __init__(self, *args, **kwargs):
         courses = kwargs.pop('courses')

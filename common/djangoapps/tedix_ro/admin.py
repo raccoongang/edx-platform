@@ -4,12 +4,14 @@ import pytz
 import time
 
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.widgets import AdminSplitDateTime
 from django.contrib.auth.models import User
 from django.http.response import HttpResponseRedirect
+from django.utils import timezone
 from django.utils.translation import ugettext as _
-from import_export import resources
+from import_export import resources, widgets
 from import_export.admin import ImportExportModelAdmin, ImportMixin
 from import_export.fields import Field
 from import_export.formats import base_formats
@@ -40,8 +42,25 @@ STUDENT_PARENT_EXPORT_FIELD_NAMES = (
     'teacher_email',
     'city',
     'school',
-    'classroom'
+    'classroom',
+    'account_creation_date',
+    'last_login_date',
 )
+
+STUDENT_PARENT_IMPORT_FIELD_NAMES = (
+    'username',
+    'email',
+    'public_name',
+    'phone',
+    'parent_email',
+    'parent_phone',
+    'teacher_email',
+    'city',
+    'school',
+    'classroom',
+)
+
+EMPTY_VALUE = 'n/a' 
 
 INSTRUCTOR_EXPORT_FIELD_NAMES = (
     'username',
@@ -161,42 +180,78 @@ class InstructorProfileAdmin(ImportExportModelAdmin):
     search_fields = ['user__username', 'user__profile__name']
 
 
+class StudentProfileField(Field):
+
+    def export(self, obj):
+        """
+        Returns value from the provided object converted to export
+        representation.
+        """
+        value = self.get_value(obj)
+        if value is None:
+            return EMPTY_VALUE
+        return self.widget.render(value, obj)
+
+
+class StudentProfileDateTimeWidget(widgets.DateTimeWidget):
+
+    def render(self, value, obj=None):
+        if not value:
+            return ""
+        if settings.USE_TZ:
+            value = timezone.localtime(value)
+        return value.strftime(self.formats[0])
+
+
 class StudentProfileResource(resources.ModelResource):
 
-    school = Field(
+    school = StudentProfileField(
         attribute='school__name',
         column_name='school'
     )
 
-    city = Field(
+    city = StudentProfileField(
         attribute='school_city__name',
         column_name='city',
     )
 
-    username = Field(
+    username = StudentProfileField(
         attribute='user__username',
         column_name='username',
     )
 
-    email = Field(
+    email = StudentProfileField(
         attribute='user__email',
         column_name='email',
     )
 
-    public_name = Field(
+    public_name = StudentProfileField(
         attribute='user__profile__name',
         column_name='public_name',
     )
-    teacher_email = Field(
+    teacher_email = StudentProfileField(
         attribute='instructor__user__email',
-        column_name='teacher_email'
+        column_name='teacher_email',
     )
-    classroom = Field(
+    classroom = StudentProfileField(
         attribute='classroom__name',
         column_name='classroom',
     )
-    parent_email = Field()
-    parent_phone = Field()
+
+    account_creation_date = StudentProfileField(
+        attribute='user__date_joined',
+        column_name='account_creation_date',
+        widget=StudentProfileDateTimeWidget('%d %b %Y %H:%M'),
+    )
+
+    last_login_date = StudentProfileField(
+        attribute='user__last_login',
+        column_name='last_login_date',
+        widget=StudentProfileDateTimeWidget('%d %b %Y %H:%M'),
+    )
+
+    parent_email = StudentProfileField()
+    parent_phone = StudentProfileField()
 
     class Meta:
         model = StudentProfile
@@ -204,10 +259,10 @@ class StudentProfileResource(resources.ModelResource):
         export_order = STUDENT_PARENT_EXPORT_FIELD_NAMES
 
     def dehydrate_parent_email(self, student_profile):
-        return student_profile.parents.all().first().user.email
+        return student_profile.parents.first().user.email if student_profile.parents.exists() else EMPTY_VALUE
     
     def dehydrate_parent_phone(self, student_profile):
-        return student_profile.parents.all().first().phone
+        return student_profile.parents.first().phone if student_profile.parents.exists() else EMPTY_VALUE
 
 
 @admin.register(StudentProfile)
