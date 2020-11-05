@@ -25072,6 +25072,11 @@ msgstr "încercare"
 msgid "attempts"
 msgstr "încercări"
 
+#: common/djangoapps/tedix_ro/templates/includes/student_extended_report.html
+#: common/djangoapps/tedix_ro/templates/includes/teacher_extended_report.html
+msgid "Video question"
+msgstr "Întrebare video"
+
 #: lms/templates/personal_due_dates.html
 #: themes/red-theme/lms/templates/header/navbar-authenticated.html
 msgid "Personal Due Dates"

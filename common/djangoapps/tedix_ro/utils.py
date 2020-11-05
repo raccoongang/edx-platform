@@ -44,13 +44,13 @@ def report_data_preparation(user, course):
     if user_video_questions:
         for video_question in user_video_questions:
             questions = questions.exclude(video_lesson__video_id=video_question.video_lesson.video_id)
-            questions_data.append((video_question.question_id, video_question.attempt_count, True))
+            questions_data.append((video_question.question_id, video_question.attempt_count, True, 'video_lesson'))
             header.append((video_question.question_id, 'video_lesson'))
             if video_question.attempt_count == 1:
                 count_answer_first_attempt += 1
 
     for question in questions:
-        questions_data.append((question.get('question_id'), 0, False))
+        questions_data.append((question.get('question_id'), 0, False, 'video_lesson'))
         header.append((question.get('question_id'), 'video_lesson'))
 
     for section in course.get_children():
@@ -70,7 +70,7 @@ def report_data_preparation(user, course):
                             attempts = 0
                             done = False
                         header.append((problem.display_name, 'problem'))
-                        questions_data.append((problem.display_name, attempts, done))
+                        questions_data.append((problem.display_name, attempts, done, 'problem'))
 
 
     percent = float(count_answer_first_attempt) / len(questions_data) * 100 if questions_data else 100
