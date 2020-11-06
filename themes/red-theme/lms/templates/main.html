@@ -185,6 +185,23 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=672168620405038&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Facebook Pixel Code --> 
+
+<!-- Event snippet for Apeluri din website conversion page
+In your html page, add the snippet and call gtag_report_conversion when someone clicks on the chosen link or button. -->
+<script>
+function gtag_report_conversion(url) {
+  var callback = function () {
+    if (typeof(url) != 'undefined') {
+      window.location = url;
+    }
+  };
+  gtag('event', 'conversion', {
+      'send_to': 'AW-713266144/caXICI6R6OYBEOCnjtQC',
+      'event_callback': callback
+  });
+  return false;
+}
+</script>
 </head>
 
 <body class="${static.dir_rtl()} <%block name='bodyclass'/> lang_${LANGUAGE_CODE}">
