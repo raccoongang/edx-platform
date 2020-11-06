@@ -29,20 +29,134 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
     </%block>
 % endif
   <script type="text/javascript"><!--
-function Blockingnoplan() {
-		$(".modal-overlay").show()
-		$(".modal-window").show()
-}
-function Blockingplan() {
-		$(".modal-overlay").show()
-		$(".modal-window-plan").show()
-}
+		function Showdemo5() {
+			$(".modal-overlay-video").toggleClass("hidden");
+			$("#demo-modal5").toggleClass("hidden");
+			$('.modal-overlay-video').on( "click", function()	{ Showdemo5()});
+		}	
+		function Showdemo6() {
+			$(".modal-overlay-video").toggleClass("hidden");
+			$("#demo-modal6").toggleClass("hidden");
+			$('.modal-overlay-video').on( "click", function()	{ Showdemo6()});
+		}	
+		function Showdemo7() {
+			$(".modal-overlay-video").toggleClass("hidden");
+			$("#demo-modal7").toggleClass("hidden");
+			$('.modal-overlay-video').on( "click", function()	{ Showdemo7()});
+		}	
+		function Showdemo8() {
+			$(".modal-overlay-video").toggleClass("hidden");
+			$("#demo-modal8").toggleClass("hidden");
+			$('.modal-overlay-video').on( "click", function()	{ Showdemo8()});
+		}			
+	function Blockingnoplan() {
+			$(".modal-overlay").show()
+			$(".modal-window").show()
+	}
+	function Blockingplan() {
+			$(".modal-overlay").show()
+			$(".modal-window-plan").show()
+	}
+	function Showplans() {
+		$(".modal-overlay").toggleClass("hidden");
+		$("#plans-modal").toggleClass("hidden");
+	}
+	
 //--></script>
         % if user.is_authenticated:
 	  <script type="text/javascript">
-!function(e){var t=Math.floor(Date.now()/1e3),n=tedixUUid.created;tedixUUid.usertype;if("student"==tedixUUid.usertype){function o(){var t=e.createElement("script");t.type="text/javascript",t.async=!0,t.src="https://install-dev.simpleshop.ro/simpleshop.js";var n=e.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)}window.__simpleShopConfig={storeId:"JPJHNTSHMW",shopActions:{openWindow:".selectPlanLink"},shopOverride:{productCta:"Buy"},euid:tedixUUid.id,onLoad:e=>{e.getLastTransaction().then(o=>{if(o.number){switch(o.content.data.items[0]._id){case"5f4f68bc68c04f75643ed572":var a=o.created_time+2592e3-t;break;case"5f4f692268c04f758103f792":a=o.created_time+7776e3-t;break;case"5f4f693e68c04f758e084d32":a=o.created_time+31104e3-t}var s=(a/86400).toFixed(0);$(".insert").html(s),$(".message-noplan").hide(),$(".message-plan").html("<strong>"+e.getExternalUID()+"</strong> "+JSON.stringify(o)).hide(),s>30?console.log("Userul mai are abonament"):s>15&&s<=30?$(".announces-green-new").show():s>0&&s<=15?$(".announces-red-new").show():setInterval(Blockingplan,12e3)}else{var i=t-n,r=30-(i/86400).toFixed(0);console.log("ct"+t),console.log("uct"+n),console.log("utr"+i),$(".insert").html(r),r>0&&r<=7?$(".announces-red").show():r>7&&r<=30?$(".announces-green").show():setInterval(Blockingnoplan,12e3)}})}},window.attachEvent?window.attachEvent("onload",o):window.addEventListener("load",o,!1)}}(document);
+  (function(d) {
+  var plan1="5f4f68bc68c04f75643ed572";
+  var plan2="5f4f692268c04f758103f792";
+  var plan3="5f4f693e68c04f758e084d32";
+  var curent_timestamp=Math.floor(Date.now() / 1000);
+  var user_created_time=tedixUUid.created;
+  var user_type=tedixUUid.usertype;
+  if (tedixUUid.usertype =="student"){
+	      window.__simpleShopConfig = {
+      storeId: 'JPJHNTSHMW',
+      shopActions: {
+        openWindow: '.selectPlanLink',
+      },
+      shopOverride: {
+        productCta: 'Cumpără',
+		productSort: 'price:asc',
+		heroHtml: '<span style="text-align:center;display: block;font-size: 18px;"><span style="color:red;padding: 5px;line-height: 1;font-size: 29px;vertical-align: middle;">&#8226;</span>Acces gratuit pentru profesori<span style="color:red;padding: 5px;line-height: 1;font-size: 29px;vertical-align: middle;">&#8226;</span></span><span style="text-align:center;display: block;font-size: 18px;"><span style="color:red;padding: 5px;line-height: 1;font-size: 29px;vertical-align: middle;">&#8226;</span>Elevii au 30 de zile GRATUITE<span style="color:red;padding: 5px;line-height: 1;font-size: 29px;vertical-align: middle;">&#8226;</span></span><span style="text-align:center;display: block;font-size: 16px;"> (din momentul înregistrării)</span><br><div><div class="mb-3"><div class="sscard cart-item-card" style="background-color: rgb(251, 248, 246); border: 1px solid transparent;"><div class="ssrow no-gutters"><div class="col-4"><a href="#"><div class="image-container" style="background-image:url(&quot;https://dev2.tedix.ro/static/red-theme/images/grup.png&quot;);"><!----> <!----></div></a></div> <div class="col-8 content-column"><div class="card-body-container card-body-size-small"><div class="card-body"><h5 class="card-title" style="color: red;font-family: Helvetica Neue;" helvetica="">Abonament de grup</h5> <!----> <!---->  <div><div><div class="price mb-2" style="color: rgb(23, 162, 184); font-family: &quot;Helvetica Neue&quot;;"><span class="old-price" style="display: none;"></span>Contactaţi-ne pentru ofertă<!----> <div class="price-note"></div></div> <div><div class="cart-item-controls" style="color: rgb(0, 0, 0); font-family: &quot;Helvetica Neue&quot;;"><div><a href="mailto:contact@tedix.ro" class="ssbtn btn-light" style="color: rgb(0, 0, 0); background-color: rgb(238, 238, 238); border: none;">Contact</a></div></div> </div></div></div> <div style="display: none;"><span class="item-quantity no-stock">Fără stoc</span></div></div></div></div></div></div></div></div><hr>',
+      },
+      euid: tedixUUid.id,
+      onLoad: interface => {
+        interface.getLastTransaction().then(ret => {
+          if (! ret.number) {
+            //$('.message-noplan').show()
+            //$('.message-plan').hide()
+			var time_since_creation=curent_timestamp - user_created_time;
+			var noplan_remaining_days = 30 - ((time_since_creation / (24 * 3600)).toFixed(0));
+			console.log("ct" + curent_timestamp);
+			console.log("uct" + user_created_time);
+			console.log("utr" + time_since_creation);
+			$(".insert").html(noplan_remaining_days);
+			if(noplan_remaining_days >0 && noplan_remaining_days <= 7 ) {
+				$('.announces-red').show()
+			} else{
+				if(noplan_remaining_days > 7  && noplan_remaining_days <= 30) {
+					$('.announces-green').show()
+				} else{
+						setInterval( Blockingnoplan, 2*6*1000 );
+				}
+			}
+          } else {
+		  var payment_time=ret._created;
+		  console.log(user_created_time);
+		  var time_since_creation=curent_timestamp - user_created_time;
+			switch(ret.content.data.items[0]._id) {
+				case '5f4f68bc68c04f75643ed572':
+					var user_time_time_remaning=ret._created + 2592000 - curent_timestamp;
+					//console.log(user_time_time_remaning)
+					break;
+				case '5f4f692268c04f758103f792':
+					var user_time_time_remaning=ret._created + 7776000 - curent_timestamp;
+					//console.log(user_time_time_remaning)
+					break;
+				case '5f4f693e68c04f758e084d32':
+					var user_time_time_remaning=ret._created + 31104000 - curent_timestamp ;
+					//console.log(user_time_time_remaning)
+					break;
+			}
+			if (time_since_creation <= 30 * 24 * 3600){
+				user_time_time_remaning_final = user_time_time_remaning + (30* 24 * 3600) - ret._created + user_created_time 
+			} else{
+				user_time_time_remaning_final = user_time_time_remaning
+			}
+			var days_remaning=(user_time_time_remaning_final / (24 * 3600)).toFixed(0);
+			console.log("Time remaning final " +  days_remaning)
+			$(".insert").html(days_remaning);
+            $('.message-noplan').hide()
+            $('.message-plan').html(
+              '<strong>' + interface.getExternalUID() + '</strong> ' 
+              + JSON.stringify(ret)).hide()
+			
+			if(days_remaning >30 ) {
+				console.log("Userul mai are abonament")
+			} else{
+				if (days_remaning > 15  && days_remaning <=  30) {	
+					$('.announces-green-new').show()
+				} else{
+				if  (days_remaning >  0  && days_remaning <= 15){
+					$('.announces-red-new').show()
+				} else{
+					setInterval( Blockingplan, 2*6*1000 );
+				}
+				}
+			}
+          }
+        })
+      }
+    }
+	    function l() {var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://install-dev.simpleshop.ro/simpleshop.js';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(window.attachEvent){window.attachEvent('onload',l);}else{window.addEventListener('load',l,false);}
+  }
+  }
+)(document)
   </script>	
-
 	<div class="announces-green" style="background-color:#24AD97;padding:15px;color: #ffffff;text-align:center;display:none;">
 		<span class="" style="text-align:center;font-size:16px;">Bine ai venit pe platforma TEDIX! <b>Mai ai <span class="insert">.</span> zile de utilizare gratuită a sistemului. Abonează-te dând click </b> <a href="javascript:;" class="selectPlanLink" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display:inline-block;">Aici</a></span>
 	</div>
@@ -81,6 +195,19 @@ function Blockingplan() {
 	</div>
 	<div class="modal-overlay" style="display:none;"></div>
         % else:
+		<div class="announces-green" style="background-color:#24AD97;padding:15px;color: #ffffff;text-align:center;display:block;">
+			<span class="" style="text-align:center;font-size:16px;">Beneficiezi de 30 zile GRATUITE. Inregistreaza-te </b> <a href="/register" class="" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display:inline-block;">Acum</a></span>
+		</div>	
+	<div  id="plans-modal" class="modal modal-window-plan hidden" style="display:block;width: 350px;top: 50px;border-radius: 10px;">
+		<div class="" style=""><img src="${static.url("images/logo.png" )}" style="width:40%;max-width:40vw;"></div>
+		<div style="text-align:center;padding: 8% 7%;font-weight: normal;">
+				<img src="${static.url("images/vezi-abonamente.png" )}" style="width:100%;max-height: 600px;">
+		</Div>
+		<div class="modal-content"style="">
+			<a onClick="Showplans();return false;" href="#" class="btn btn-primary plans-modal" style="border-radius: 10px;">Închide</a>
+		</div>
+	</div>
+	<div class="modal-overlay hidden"></div>	
         % endif
 
 <header class="global-header ${'slim' if course else ''}">
