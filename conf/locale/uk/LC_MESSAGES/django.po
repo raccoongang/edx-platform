@@ -17126,6 +17126,10 @@ msgid "I just enrolled in {number} {title} through {account}: {url}"
 msgstr "Я щойно записався на {number} {title} через {account}: {url}"
 
 #: lms/templates/courseware/course_about_sidebar_header.html
+msgid "I just enrolled in {number} {title}: {url}"
+msgstr "Я зареєструвався на курс/вебінар {number} {title}: {url}"
+
+#: lms/templates/courseware/course_about_sidebar_header.html
 msgid "Take a course with {platform} online"
 msgstr "Пройти курс {platform} онлайн"
 
