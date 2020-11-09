@@ -2168,7 +2168,10 @@ INSTALLED_APPS = (
 
     # Unusual migrations
     'database_fixups',
-    'edx_oauth_client'
+    'edx_oauth_client',
+
+    #GTM
+    'gtm.apps.GoogleTagManagerConfig',
 )
 
 ######################### CSRF #########################################
