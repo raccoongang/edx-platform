@@ -282,10 +282,12 @@ class StudentProfileResource(resources.ModelResource):
         export_order = STUDENT_PARENT_EXPORT_FIELD_NAMES
 
     def dehydrate_parent_email(self, student_profile):
-        return student_profile.parents.first().user.email if student_profile.parents.exists() else EMPTY_VALUE
+        parent_profile = student_profile.parents.first()
+        return parent_profile.user.email if parent_profile else EMPTY_VALUE
     
     def dehydrate_parent_phone(self, student_profile):
-        return student_profile.parents.first().phone if student_profile.parents.exists() else EMPTY_VALUE
+        parent_profile = student_profile.parents.first()
+        return parent_profile.phone if parent_profile else EMPTY_VALUE
 
 
 @admin.register(StudentProfile)
