@@ -546,7 +546,7 @@ def personal_due_dates(request):
     student_due_dates = StudentCourseDueDate.objects.filter(
         student=student,
         course_id__in=course_ids
-    )
+    ).order_by('-due_date')
 
     courses_due_dates_list = [
         [urljoin(
