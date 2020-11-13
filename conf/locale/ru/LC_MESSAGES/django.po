@@ -15552,6 +15552,22 @@ msgstr ""
 "Вы пока не записаны на этот курс. {link_start}Записаться сейчас!{link_end}"
 
 #: lms/templates/courseware/info.html
+msgid "You don't have access to the course"
+msgstr "У вас нет доступа к курсу"
+
+#: lms/templates/courseware/info.html
+msgid "Sorry but you can't watch content of this course {start_tag}\"{course_name}\"{end_tag}"
+msgstr "К сожалению, вы не можете смотреть контент курса {start_tag}\"{course_name}\"{end_tag}"
+
+#: lms/templates/courseware/info.html
+msgid "If there was any mistake, write to us {br_tag}{mail_link_start}support@mama-edu.com{mail_link_end}"
+msgstr "Если произошла какая-то ошибка, напишите нам на {br_tag}{mail_link_start}support@mama-edu.com{mail_link_end}"
+
+#: lms/templates/courseware/info.html
+msgid "Enroll now!"
+msgstr "Записаться на курс"
+
+#: lms/templates/courseware/info.html
 msgid "Welcome to {org}'s {course_name}!"
 msgstr "Добро пожаловать на {org} {course_name}!"
 
