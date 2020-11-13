@@ -21,6 +21,11 @@ def get_base_template_context(site):
     except NoReverseMatch:
         dashboard_url = reverse('home')
 
+    theme_dir = settings.DEFAULT_SITE_THEME
+
+    if site is not None and site.themes.first() is not None:
+        theme_dir = getattr(site.themes.first(), 'theme_dir_name')
+
     if hasattr(site, 'configuration'):
         site_configuration_values = site.configuration.site_values
     else:
@@ -44,6 +49,8 @@ def get_base_template_context(site):
         'social_media_logo_urls': get_config_value_from_site_or_settings('SOCIAL_MEDIA_LOGO_URLS', site=site),
         'mobile_store_urls': get_config_value_from_site_or_settings('MOBILE_STORE_ACE_URLS', site=site),
         'mobile_store_logo_urls': get_config_value_from_site_or_settings('MOBILE_STORE_LOGO_URLS', site=site),
-        'logo_url': get_logo_url_for_email(),
+        'logo_url': (
+            f'{get_config_value_from_site_or_settings("LMS_ROOT_URL", site=site)}/static/{theme_dir}/images/'
+        ),
         'site_configuration_values': site_configuration_values,
     }
