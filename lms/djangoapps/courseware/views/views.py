@@ -222,7 +222,7 @@ def jump_to(_request, course_id, location):
 
     return redirect(redirect_url)
 
-
+@login_required
 @ensure_csrf_cookie
 @ensure_valid_course_key
 @data_sharing_consent_required
@@ -396,6 +396,7 @@ class StaticCourseTabView(EdxFragmentView):
     """
     View that displays a static course tab with a given name.
     """
+    @method_decorator(login_required)
     @method_decorator(ensure_csrf_cookie)
     @method_decorator(ensure_valid_course_key)
     def get(self, request, course_id, tab_slug, **kwargs):
@@ -419,6 +420,12 @@ class StaticCourseTabView(EdxFragmentView):
         """
         Renders this static tab's fragment to HTML for a standalone page.
         """
+        user = request.user
+        show_enroll_banner = False if CourseEnrollment.is_enrolled(user, course.id) else True
+        url_to_enroll = reverse(course_about, args=[unicode(course.id)])
+        if settings.FEATURES.get('ENABLE_MKTG_SITE'):
+            url_to_enroll = marketing_link('COURSES')
+
         return render_to_response('courseware/static_tab.html', {
             'course': course,
             'active_page': 'static_tab_{0}'.format(tab['url_slug']),
@@ -426,6 +433,9 @@ class StaticCourseTabView(EdxFragmentView):
             'fragment': fragment,
             'uses_pattern_library': False,
             'disable_courseware_js': True,
+            'show_enroll_banner': show_enroll_banner,
+            'url_to_enroll': url_to_enroll,
+            'staff_access': has_access(user, 'staff', course),
         })
 
 

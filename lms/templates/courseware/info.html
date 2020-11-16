@@ -7,12 +7,13 @@ from datetime import datetime
 from pytz import timezone, utc
 
 from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext as _, ungettext
 
 from courseware.courses import get_course_info_section, get_course_date_blocks
 from openedx.core.djangoapps.self_paced.models import SelfPacedConfiguration
 from openedx.core.djangolib.markup import HTML, Text
 from openedx.features.course_experience import SHOW_REVIEWS_TOOL_FLAG
+from courseware.courses import get_course_about_section
 %>
 
 <%block name="pagetitle">${_("{course_number} Course Info").format(course_number=course.display_number_with_default)}</%block>
@@ -40,139 +41,234 @@ from openedx.features.course_experience import SHOW_REVIEWS_TOOL_FLAG
 </div>
 % endif
 
-<%include file="/courseware/course_navigation.html" args="active_page='info'" />
+% if not show_enroll_banner or staff_access:
+  <%include file="/courseware/course_navigation.html" args="active_page='info'" />
 
-<%static:require_module_async module_name="js/courseware/toggle_element_visibility" class_name="ToggleElementVisibility">
-        ToggleElementVisibility();
-</%static:require_module_async>
-<%static:require_module_async module_name="js/courseware/course_home_events" class_name="CourseHomeEvents">
-        CourseHomeEvents();
-</%static:require_module_async>
+  <%static:require_module_async module_name="js/courseware/toggle_element_visibility" class_name="ToggleElementVisibility">
+          ToggleElementVisibility();
+  </%static:require_module_async>
+  <%static:require_module_async module_name="js/courseware/course_home_events" class_name="CourseHomeEvents">
+          CourseHomeEvents();
+  </%static:require_module_async>
 
-<%block name="js_extra">
-  ## CourseTalk widget js script
-  % if show_coursetalk_widget:
-      <script src="//d3q6qq2zt8nhwv.cloudfront.net/s/js/widgets/coursetalk-write-reviews.js"></script>
-  % endif
-  % if user.is_authenticated() and user.is_active:
-  <script src="https://cdn.jsdelivr.net/clipboard.js/1.6.0/clipboard.min.js"></script>
-  <script type="text/javascript" charset="utf-8">
-      $(document).ready(function () {
-          var domain_address = document.location.origin;
-          $.post(domain_address + "/api/get_referral_hash_key/", {},
-              function (data) {
-                  $(".referral-btn").attr('data-clipboard-text', (domain_address + data.hashkey));
-          });
-          new Clipboard('.referral-btn');
-      });
-  </script>
-  % endif
-</%block>
-
-<%block name="bodyclass">view-in-course view-course-info ${course.css_class or ''}</%block>
-
-<main id="main" aria-label="Content" tabindex="-1">
-    <div class="container"
-    % if getattr(course, 'language'):
-      lang="${course.language}"
+  <%block name="js_extra">
+    % if user.is_authenticated() and user.is_active:
+        <script src="https://cdn.jsdelivr.net/clipboard.js/1.6.0/clipboard.min.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            $(document).ready(function () {
+                var domain_address = document.location.origin;
+                $.post(domain_address + "/api/get_referral_hash_key/", {},
+                    function (data) {
+                        $(".referral-btn").attr('data-clipboard-text', (domain_address + data.hashkey));
+                });
+                new Clipboard('.referral-btn');
+            });
+        </script>
     % endif
-    >
-      <div class="home">
-        <div class="page-header-main">
-            <h2 class="hd hd-2 page-title">${_("Welcome to {org}'s {course_name}!").format(org=course.display_org_with_default, course_name=course.display_number_with_default)}
-              <div class="page-subtitle">${course.display_name_with_default}</div>
-          <!--theme creation-->
-                % if certificate_data:
-                    % for signatory in certificate_data.get('signatories', []):
-                    <div>
-                        <p>
-                            <span>${signatory['organization']}</span>
-                        </p>
-                    </div>
-                    % endfor
-                % endif
-          <!--end-->
-            </h2>
-        </div>
-        % if resume_course_url and user_is_enrolled:
-          <div class="page-header-secondary">
-              <a href="${resume_course_url}" class="last-accessed-link">${_("Resume Course")}</a>
-          </div>
+  </%block>
+
+  <%block name="bodyclass">view-in-course view-course-info ${course.css_class or ''}</%block>
+
+  <main id="main" aria-label="Content" tabindex="-1">
+      <div class="container"
+        % if getattr(course, 'language'):
+          lang="${course.language}"
         % endif
-        % if user.is_authenticated() and user.is_active:
-        <div class="page-header-secondary">
-        <a href="#" class="referral-btn last-accessed-link" data-clipboard-text="Just because you can doesn't mean you should — clipboard.js">
-            ${_("Copy Referral Link")}
-        </a>
-        </div>
-        % endif
-      </div>
-      <div class="info-wrapper">
-      % if user.is_authenticated():
-        <section class="updates">
-          % if (studio_url is not None and masquerade and masquerade.role == 'staff') or user.is_staff:
-            <div class="wrap-instructor-info studio-view">
-              <a class="instructor-info-action" href="${studio_url}">
-                ${_("View Updates in Studio")}
-              </a>
-            </div>
-          % endif
-
-          <h3 class="hd hd-3">${_("Course Updates and News")}</h3>
-
-              <%include file="/edeos/history.html"/>
-
-          ${HTML(get_course_info_section(request, masquerade_user, course, 'updates'))}
-
-        </section>
-  <!--theme creation-->
-        <section>
-        % if blocks.get('children'):
-            % for section in blocks.get('children'):
-                <div>
-                    <h3>${ section['display_name'] }</h3>
+        >
+        <div class="info-wrapper">
+          % if user.is_authenticated():
+            <section class="updates">
+              % if (studio_url is not None and masquerade and masquerade.role == 'staff') or user.is_staff:
+                <div class="wrap-instructor-info studio-view">
+                  <a class="instructor-info-action" href="${studio_url}">
+                    ${_("View Updates in Studio")}
+                  </a>
                 </div>
-                    % for subsection in section.get('children', []):
-                        <span>${ subsection['display_name'] }</span>
-                    % endfor
-            % endfor
-        % endif
-        </section>
-  <!--end-->
-        <section aria-label="${_('Handout Navigation')}" class="handouts">
-          <h3 class="hd hd-3 handouts-header">${_("Course Tools")}</h3>
-            <div>
-                <a class="action-show-bookmarks" href="${reverse('openedx.course_bookmarks.home', args=[course.id])}">
-                    <span class="icon fa fa-bookmark" aria-hidden="true"></span>
-                    ${_("Bookmarks")}
-                </a>
-                % if SHOW_REVIEWS_TOOL_FLAG.is_enabled(course.id) and show_reviews_link:
-                    <a href="${reverse('openedx.course_experience.course_reviews', args=[course.id])}">
-                        <span class="icon fa fa-star" aria-hidden="true"></span>
-                        ${_("Reviews")}
-                    </a>
-                % endif
+              % endif
+            </section>
+            <div class="week_holder">
+              <div class="week-structure-container">
+                <h3 class="h3 week_holder__title">Программа курса</h3>
+                % if blocks.get('children'):
+                  % for section in blocks.get('children'):
+                  <section class="week-structure">
+                      <div class="week-structure__name">
+                        <span class="week-structure__ico"></span>
+                        <strong>${ section['display_name'] }</strong>
+                      </div>
+                      <div class="week-structure__box">
+                          <ul class="week-structure__list">
+                            % for subsection in section.get('children', []):
+                              <%
+                              is_checked = ''
+                              if subsection['last_accessed']:
+                                is_checked = 'is-checked'
+                              %>
+                              <li class="week-structure__list-item">
+                                  <div class="week-structure__helper ${is_checked}"></div>
+                                  <a
+                                  class="outline-item focusable"
+                                  href="${ subsection['lms_web_url'] }"
+                                  id="${ subsection['id'] }"
+                                >
+                                ${ subsection['display_name'] }</a>
+                              </li>
+                            % endfor
+                          </ul>
+                      </div>
+                  </section>
+                  % endfor
+              % endif
             </div>
+            </div>
+            <section aria-label="${_('Handout Navigation')}" class="handouts">
+              <h3 class="hd hd-3 handouts-header">${_("Course Tools")}</h3>
+                <div>
+                    <a class="action-show-bookmarks" href="${reverse('openedx.course_bookmarks.home', args=[course.id])}">
+                        <span class="icon fa fa-bookmark" aria-hidden="true"></span>
+                        ${_("Bookmarks")}
+                    </a>
+                    % if SHOW_REVIEWS_TOOL_FLAG.is_enabled(course.id) and show_reviews_link:
+                        <a href="${reverse('openedx.course_experience.course_reviews', args=[course.id])}">
+                            <span class="icon fa fa-star" aria-hidden="true"></span>
+                            ${_("Reviews")}
+                        </a>
+                    % endif
+                </div>
 
-          % if SelfPacedConfiguration.current().enable_course_home_improvements:
-            ${HTML(dates_fragment.body_html())}
+              % if SelfPacedConfiguration.current().enable_course_home_improvements:
+                ${HTML(dates_fragment.body_html())}
+              % endif
+                <h3 class="hd hd-3  handouts-header">${_(course.info_sidebar_name)}</h3>
+                ${HTML(get_course_info_section(request, masquerade_user, course, 'handouts'))}
+            </section>
+          % else:
+            <section class="updates">
+              <h3 class="hd hd-3 handouts-header">${_("Course Updates and News")}</h3>
+              ${HTML(get_course_info_section(request, masquerade_user, course, 'guest_updates'))}
+            </section>
+            <section aria-label="${_('Handout Navigation')}" class="handouts">
+              <h3 class="hd hd-3 handouts-header">${_("Course Handouts")}</h3>
+              ${HTML(get_course_info_section(request, masquerade_user, course, 'guest_handouts'))}
+            </section>
+          % endif <!-- if course authenticated -->
+        </div>
+        <div class="home">
+          <div class="course-review-section">
+            <h2 class="course-review-section__title">ОБЗОР КУРСА</h2>
+            <div class="course-review-section__container">
+              <ul class="course-review-list">
+                <li class="course-review-list__item">
+                  <div class="course-review-list__title">Дата старта курса</div>
+                  <% course_start = course.start.strftime('%d %b. %Y') %>
+                  <div class="course-review-list__text">${course_start}</div>
+                </li>
+                <li class="course-review-list__item">
+                  <div class="course-review-list__title">Язык курса</div>
+                  <div class="course-review-list__text">${_(course.language)}</div>
+                </li>
+                <li class="course-review-list__item">
+                  <div class="course-review-list__title">Нагрузка в неделю</div>
+                  % if get_course_about_section(request, course, 'effort'):
+                    <%
+                    effort = get_course_about_section(request, course, 'effort').split(':')[0].strip()
+                    if effort[0] == '0':
+                      effort = effort[1]
+                    %>
+                    <div class="course-review-list__text">
+                      ${effort} ${ungettext("Hour per week", "Hours per week", int(effort))}
+                    </div>
+                  % else:
+                    <div class="course-review-list__text">Не доступно</div>
+                  % endif
+                </li>
+                <li class="course-review-list__item">
+                  <div class="course-review-list__title">Домашние задания</div>
+                  <div class="course-review-list__text">${course.number_of_homeworks}</div>
+                </li>
+                <li class="course-review-list__item">
+                  <div class="course-review-list__title">Время занятий</div>
+                  <%
+                  class_time = 'Не доступно'
+                  if get_course_about_section(request, course, 'class_time'):
+                    class_time = get_course_about_section(request, course, 'class_time')
+                  %>
+                  <div class="course-review-list__text">${class_time}</div>
+                </li>
+                <li class="course-review-list__item">
+                  <div class="course-review-list__title">Количество видео</div>
+                  <div class="course-review-list__text">${course.number_of_videos}</div>
+                </li>
+                <li class="course-review-list__item">
+                  <div class="course-review-list__title">Время прохождения курса</div>
+                  % if course_duration:
+                    <div class="course-review-list__text">
+                      ${course_duration} ${ungettext("Week", "Weeks", course_duration)}
+                    </div>
+                  % else:
+                    <div class="course-review-list__text">
+                      Не доступно
+                    </div>
+                  % endif
+                </li>
+                <li class="course-review-list__item">
+                  <div class="course-review-list__title">Лекций</div>
+                  <div class="course-review-list__text">${course.number_of_lections}</div>
+                </li>
+                <li class="course-review-list__item">
+                  <div class="course-review-list__title">Тесты</div>
+                  <div class="course-review-list__text">${course.number_of_tests}</div>
+                </li>
+              </ul>
+              <div class="course-review-info">
+                <ul>
+                  <li>
+                    <a href="${course.telegram_chat_link}" target="_blank">
+                      <svg class="svg-icon" viewBox="0 0 24 24">
+                        <use xlink:href="#fa-brands_telegram"></use>
+                      </svg>
+                      <span>${_("@Chat")}</span>
+                    </a>
+                  </li>
+                  <li>
+                    % if resume_course_url and user_is_enrolled:
+                      <div class="page-header-secondary">
+                          <a href="${resume_course_url}" class="last-accessed-link js-referral-btn">
+                            <svg class="svg-icon" viewBox="0 0 24 24">
+                              <use xlink:href="#referal-link"></use>
+                            </svg>
+                            <svg class="svg-icon svg-icon_done" viewBox="0 0 24 24">
+                              <use xlink:href="#referal-link-done"></use>
+                            </svg>
+                            <span class="tooltip-info" data-tooltip-before="скопировать" data-tooltip-after="скопированно">${_("Resume Course")}</span>
+                          </a>
+                      </div>
+                    % endif
+                    % if user.is_authenticated() and user.is_active:
+                        <div class="page-header-secondary">
+                            <a href="javascript:;" class="referral-btn js-referral-btn last-accessed-link" data-clipboard-text="An error happened while fetching the referral link from the backend.">
+                                <svg class="svg-icon" viewBox="0 0 24 24">
+                                  <use xlink:href="#referal-link"></use>
+                                </svg>
+                                <svg class="svg-icon svg-icon_done" viewBox="0 0 24 24">
+                                  <use xlink:href="#referal-link-done"></use>
+                                </svg>
+                                <span class="tooltip-info" data-tooltip-before="скопировать" data-tooltip-after="скопированно">${_("Copy Referral Link")}</span>
+                            </a>
+                        </div>
+                    % endif
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          % if get_course_about_section(request, course, "overview_teacher"):
+            ${get_course_about_section(request, course, "overview_teacher") | n}
           % endif
-            <h3 class="hd hd-3  handouts-header">${_(course.info_sidebar_name)}</h3>
-            ${HTML(get_course_info_section(request, masquerade_user, course, 'handouts'))}
-        </section>
-      % else:
-        <section class="updates">
-          <h3 class="hd hd-3 handouts-header">${_("Course Updates and News")}</h3>
-          ${HTML(get_course_info_section(request, masquerade_user, course, 'guest_updates'))}
-        </section>
-        <section aria-label="${_('Handout Navigation')}" class="handouts">
-          <h3 class="hd hd-3 handouts-header">${_("Course Handouts")}</h3>
-          ${HTML(get_course_info_section(request, masquerade_user, course, 'guest_handouts'))}
-        </section>
-      % endif <!-- if course authenticated -->
-      </div>
-  </div>
-</main>
+        </div>
+    </div>
+  </main>
+% endif
 
 <%static:require_module_async module_name="js/dateutil_factory" class_name="DateUtilFactory">
     DateUtilFactory.transform(iterationKey=".localized-datetime");
