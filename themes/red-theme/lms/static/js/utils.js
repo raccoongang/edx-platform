@@ -1,7 +1,7 @@
 $( document ).ready(function() {
 setTimeout(function(){ 
 console.log("TIME!!!")
-$('input').on( "click", function(){
+$('#register input').on( "click", function(){
 	var parentElem = $(this).parent()
 	var myElem = parentElem.find("[id$='validation-error-msg']")
 	var myElemParent = parentElem.find("[id$='validation-error']")
@@ -12,7 +12,7 @@ $('input').on( "click", function(){
 		myElemParent.attr('style', 'display: block !important');
 	}     
 });
-$('.input-inline').on( "click", function(){
+$('#register .input-inline').on( "click", function(){
 	// console.log($(this).attr('id'))
 	var parentElem = $(this).parent()
 	var myElem = parentElem.find("[id$='validation-error-msg']")

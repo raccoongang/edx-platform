@@ -86,9 +86,10 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
       euid: tedixUUid.id,
       onLoad: interface => {
         interface.getLastTransaction().then(ret => {
-          if (! ret.number) {
+          if (! ret.number || ret.payment_status =="rejected") {
             //$('.message-noplan').show()
             //$('.message-plan').hide()
+			console.log("Status plata respinsa : " + ret.payment_status);
 			var time_since_creation=curent_timestamp - user_created_time;
 			var noplan_remaining_days = 30 - ((time_since_creation / (24 * 3600)).toFixed(0));
 			console.log("ct" + curent_timestamp);
@@ -107,6 +108,8 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
           } else {
 		  var payment_time=ret._created;
 		  console.log(user_created_time);
+		  var paymentstatus=ret.payment_status;
+		  console.log("Status plata : " + paymentstatus);
 		  var time_since_creation=curent_timestamp - user_created_time;
 			switch(ret.content.data.items[0]._id) {
 				case '5f4f68bc68c04f75643ed572':
