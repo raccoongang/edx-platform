@@ -71,6 +71,8 @@ INSTRUCTOR_EXPORT_FIELD_NAMES = (
     'school'
 )
 
+DATE_TIME_FORMAT = '%d %b %Y %H:%M'
+
 
 admin.site.register(Classroom)
 
@@ -178,6 +180,27 @@ class InstructorProfileAdmin(ImportExportModelAdmin):
         base_formats.JSON,
     )
     search_fields = ['user__username', 'user__profile__name']
+    list_display = ('user', 'number_of_students', 'date_joined', 'last_login',)
+    readonly_fields = ('number_of_students', 'date_joined', 'last_login',)
+
+    def number_of_students(self, obj):
+        return obj.students.count()
+
+    def last_login(self, obj):
+        if obj.user.last_login:
+            last_login = timezone.localtime(obj.user.last_login)
+            return last_login.strftime(DATE_TIME_FORMAT)
+        else:
+            return 'n/a'
+
+    def date_joined(self, obj):
+        date_joined = timezone.localtime(obj.user.date_joined)
+        return date_joined.strftime(DATE_TIME_FORMAT)
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return self.readonly_fields
+        return ()
 
 
 class StudentProfileField(Field):
@@ -241,13 +264,13 @@ class StudentProfileResource(resources.ModelResource):
     account_creation_date = StudentProfileField(
         attribute='user__date_joined',
         column_name='account_creation_date',
-        widget=StudentProfileDateTimeWidget('%d %b %Y %H:%M'),
+        widget=StudentProfileDateTimeWidget(DATE_TIME_FORMAT),
     )
 
     last_login_date = StudentProfileField(
         attribute='user__last_login',
         column_name='last_login_date',
-        widget=StudentProfileDateTimeWidget('%d %b %Y %H:%M'),
+        widget=StudentProfileDateTimeWidget(DATE_TIME_FORMAT),
     )
 
     parent_email = StudentProfileField()
@@ -259,10 +282,12 @@ class StudentProfileResource(resources.ModelResource):
         export_order = STUDENT_PARENT_EXPORT_FIELD_NAMES
 
     def dehydrate_parent_email(self, student_profile):
-        return student_profile.parents.first().user.email if student_profile.parents.exists() else EMPTY_VALUE
+        parent_profile = student_profile.parents.first()
+        return parent_profile.user.email if parent_profile else EMPTY_VALUE
     
     def dehydrate_parent_phone(self, student_profile):
-        return student_profile.parents.first().phone if student_profile.parents.exists() else EMPTY_VALUE
+        parent_profile = student_profile.parents.first()
+        return parent_profile.phone if parent_profile else EMPTY_VALUE
 
 
 @admin.register(StudentProfile)
@@ -354,6 +379,6 @@ class StudentCourseDueDateAdmin(admin.ModelAdmin):
     date_hierarchy = 'due_date'
     
     def format_date(self, obj):
-        return obj.due_date.strftime('%d %b %Y %H:%M')
+        return obj.due_date.strftime(DATE_TIME_FORMAT)
         
     format_date.short_description = _('Due Date (UTC)')

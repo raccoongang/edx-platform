@@ -1004,9 +1004,14 @@ line-height: 1;
         margin: initial;
 
 		th {
-			min-width: 145px;
-			max-width: 145px;
-		}
+            min-width: 170px !important;
+            max-width: 170px !important;
+
+            &:nth-last-child(2) {
+                min-width: initial !important;
+                max-width: initial !important;
+            }
+        }
 
 		th[aria-label="Score"] {
 			min-width: initial;
