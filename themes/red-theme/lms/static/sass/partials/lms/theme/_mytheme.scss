@@ -1003,7 +1003,7 @@ line-height: 1;
         width: auto;
         margin: initial;
 
-        th {
+		th {
             min-width: 170px !important;
             max-width: 170px !important;
 
@@ -1043,4 +1043,262 @@ line-height: 1;
 
 .xmodule_display.xmodule_CapaModule div.equation {
 	display: none !important;
+}
+
+.modal-overlay{
+	width:100%;
+	height:100%;
+	position:fixed;
+	background-color:#000;
+	opacity: 0.7;
+	z-index:997;
+	top: 0;
+}
+.modal-overlay-video{
+	width:100%;
+	height:100%;
+	position:fixed;
+	background-color:#000;
+	opacity: 0.7;
+	z-index:9997;
+	top: 0;
+	right: 0;
+    left: 0;
+	overflow-x: hidden;
+}
+.modal-window{
+	width:25vw;
+	margin:0 auto;
+	right: 0;
+	left:0;
+	background-color:#f4f5f6;
+	position:absolute;
+	z-index:9999;
+	padding:25px;
+	top:25vh;
+	border-radius:15px;
+	height: auto;
+	@media screen and (max-width: 768px) {
+		width:auto;
+		height: auto;
+	}
+	@media screen and (min-width: 769px) and (max-width: 1200px) {
+		width: 40vw;
+		height: auto;
+	}
+	.logo{
+	text-align: center;
+	width: auto;
+	text-align:center;
+	padding:25px;
+	}
+}
+.modal-window-plan{
+	display:block;
+	width:25vw;
+	margin:0 auto;
+	right: 0;
+	left:0;
+	background-color:#f4f5f6;
+	position:absolute;
+	z-index:9999;
+	padding:25px;
+	top:25vh;
+	border-radius:15px;
+	height: auto;
+	@media screen and (max-width: 768px) {
+		width:auto;
+		height: auto;
+	}
+	@media screen and (min-width: 769px) and (max-width: 1200px) {
+		width: 40vw;
+		height: auto;
+	}
+	.logo{
+	text-align: center;
+	width: auto;
+	text-align:center;
+	padding:25px;
+	}
+}
+.modal-text{
+	text-align:center;
+	padding: 10% 7%;
+	font-weight: bold;
+}
+.modal-content{
+	margin:0 auto;
+	text-align:center;
+	background: transparent !important;
+	border:none !important;
+	a{
+	background-color:#fcb813;
+	color:#000000!important;
+	text-align:center;
+	border-radius:10px;
+	padding:20px;
+	display: inline-block!important;
+	text-decoration:none!important;
+	font-weight: 600!important;
+	border: none!important;
+	}
+}
+.hidden {
+    display: none !important;
+    visibility: hidden;
+}
+.login-register .form-field label.focus-out, .financial-assistance-wrapper .financial-assistance-form .form-field label.focus-out, .login-register .form-field input.focus-out, .financial-assistance-wrapper .financial-assistance-form .form-field input.focus-out, .login-register .form-field select.focus-out, .financial-assistance-wrapper .financial-assistance-form .form-field select.focus-out, .login-register .form-field textarea.focus-out, .financial-assistance-wrapper .financial-assistance-form .form-field textarea.focus-out, .login-register .form-field .plaintext-field.focus-out, .financial-assistance-wrapper .financial-assistance-form .form-field .plaintext-field.focus-out{
+	padding-top: inherit !important;
+	padding-left: inherit !important;
+	opacity: 1 !important;
+}
+.login-register .form-field .tip, .financial-assistance-wrapper .financial-assistance-form .form-field .tip {
+		display:none!important;
+}
+.login-register .form-field label, .financial-assistance-wrapper .financial-assistance-form .form-field label {
+	padding-left:15px !important;
+}
+.login-register .form-field input, .financial-assistance-wrapper .financial-assistance-form .form-field input, .login-register .form-field select, .financial-assistance-wrapper .financial-assistance-form .form-field select, .login-register .form-field textarea, .financial-assistance-wrapper .financial-assistance-form .form-field textarea {
+	outline: 0px;
+    border-radius: 15px;
+	height:38px;
+}
+.register-form select:not(.forum-nav-filter-main-control):not(.forum-nav-sort-control), .select2-container--default .select2-selection--single{
+	outline: 0px !important;
+    border-radius: 15px !important;
+	height: 38px !important;
+	border:1px solid #c8c8c8 !important;
+}
+.login-register .label-required{
+	display:none !important;
+}
+.login-register .fa-exclamation {
+	display:none !important;
+}
+.login-register .form-field span.tip.error{
+    position: absolute;
+    z-index: 1;
+    bottom: 52px;
+    background: #d9534f;
+    right: 0px;
+	width: 60%;
+	color: #ffffff;
+	border-radius:15px;
+	padding: 10px;
+}
+.login-register .form-field span.tip.error::after {
+  content: " ";
+  position: absolute;
+  top: 100%; /* At the bottom of the tooltip */
+  left: 50%;
+  margin-left: -5px;
+  border-width: 10px;
+  border-style: solid;
+  border-color: #d9534f transparent transparent transparent;
+}
+
+.login-register .form-field span.tip.error span.sr-only{
+    visibility: hidden !important;
+    display: none!important;
+}
+.login-register .form-field span.tip-input{
+    position: absolute;
+    z-index: 1;
+    display: none !important;
+    bottom: 52px;
+    background: #24AD97;
+    right: 0px;
+	width: 60%;
+	color: #ffffff;
+	border-radius:15px;
+}
+a.modal-target{
+	text-decoration:none;
+	&:hover{
+	text-decoration:none;
+	}
+}
+.modal-demo-plan{
+	display:block;
+	width:45vw;
+	margin:0 auto;
+	right: 0;
+	left:0;
+	background-color:#f4f5f6;
+	position:fixed;
+	z-index:9999;
+	padding:25px;
+	top:10vh;
+	border-radius:15px;
+	height: auto;
+	@media screen and (max-width: 768px) {
+		width:auto;
+		height: auto;
+		padding: 5px;
+	}
+	@media screen and (min-width: 769px) and (max-width: 1200px) {
+		width: 40vw;
+		height: auto;
+	}
+	.logo{
+	text-align: center;
+	width: auto;
+	text-align:center;
+	padding:25px;
+	}
+	iframe{
+		@media screen and (max-width: 768px) {
+		width: 100%!important;
+		}
+	}	
+}
+.demo-bar{
+    border-radius: 5px;
+	padding: 10px;
+    margin-bottom: 20px;
+	&.cl-5{
+	background-color: #ec6765;
+	}
+	&.cl-6{
+	background-color: #ecbc2f;
+	}
+	&.cl-7{
+	background-color: #2ac6a8;
+	}
+	&.cl-8{
+	background-color: #e5e5e5;
+	}
+	.video-text{
+		font-size: 18px;
+		text-align: right;
+		padding-left: 10%;
+	@media screen and (max-width: 768px) {
+		font-size: 16px;
+		padding-left: 8%;
+	}
+	@media screen and (min-width: 769px) and (max-width: 1200px) {
+		font-size: 18px;
+		padding-left: 10%;
+	}	
+	&.white {
+		color:#ffffff;
+		}
+	&.black {
+		color:#000000;
+		}
+	}
+	.yt-icon{
+		display: inline-block;
+		padding-left: 5%;
+	@media screen and (max-width: 768px) {
+		padding-left: 5%;
+		display: inline-block;
+	}
+	@media screen and (min-width: 769px) and (max-width: 1200px) {
+		padding-left: 10%;
+	}	
+	}
+}
+a.plans-modal:hover{
+	background-color:#ffffff;
 }

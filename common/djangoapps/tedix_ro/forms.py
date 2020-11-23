@@ -34,8 +34,8 @@ from tedix_ro.models import (
 
 
 ROLE_CHOICES = (
-    ('student', _('Student')),
-    ('instructor', _('Instructor')),
+    ('student', _('Elev')),
+    ('instructor', _('Profesor')),
 )
 
 

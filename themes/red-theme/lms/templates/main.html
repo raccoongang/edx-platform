@@ -41,6 +41,16 @@ from tedix_ro.utils import encrypted_user_data
 ## into non-inheriting templates via the %namespace tag.
 
 ## this needs to be here to prevent the title from mysteriously appearing in the body, in one case
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-5S3C27S');</script>
+<!-- End Google Tag Manager -->
+
+
 <%def name="pagetitle()" />
   <%block name="title">
       <title>
@@ -168,9 +178,48 @@ ${Template("{% load gtm_tags %}{% gtm_head %}").render(Context(dict_=dict(reques
 <script type="text/javascript">
   var tedixUUid = ${encrypted_user_data(request.user)};
 </script>
+<!-- Facebook Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '672168620405038');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=672168620405038&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Facebook Pixel Code --> 
+
+<!-- Event snippet for Apeluri din website conversion page
+In your html page, add the snippet and call gtag_report_conversion when someone clicks on the chosen link or button. -->
+<script>
+function gtag_report_conversion(url) {
+  var callback = function () {
+    if (typeof(url) != 'undefined') {
+      window.location = url;
+    }
+  };
+  gtag('event', 'conversion', {
+      'send_to': 'AW-713266144/caXICI6R6OYBEOCnjtQC',
+      'event_callback': callback
+  });
+  return false;
+}
+</script>
 </head>
 
 <body class="${static.dir_rtl()} <%block name='bodyclass'/> lang_${LANGUAGE_CODE}">
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5S3C27S"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 ${Template("{% load gtm_tags %}{% gtm_body %}").render(Context(dict_=dict(request=request)))}
 
@@ -211,6 +260,8 @@ ${Template("{% load gtm_tags %}{% gtm_body %}").render(Context(dict_=dict(reques
   <script type="text/javascript" src="${static.url('js/utils/navigation.js')}" charset="utf-8"></script>
   <script type="text/javascript" src="${static.url('js/header/header.js')}"></script>
   <%static:optional_include_mako file="body-extra.html" is_theming_enabled="True" />
+  <script type="text/javascript" src="http://www.youtube.com/player_api"></script>
+  <script type="text/javascript" src="${static.url('js/utils.js')}"></script>
 </body>
 </html>
 
