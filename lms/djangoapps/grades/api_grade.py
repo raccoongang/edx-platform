@@ -27,12 +27,12 @@ class APIGrade(object):
                         "You must set `{}` in `API_GRADE_PROPERTIES`".format(param)
                     )
 
-    def api_call(self, contentProvider, user, courseId, lastlogin, percentageOfcompletion, duration,
+    def api_call(self, contentProvider, user_email, user_id, courseId, lastlogin, percentageOfcompletion, duration,
             lastVisit, completationDate, studentGrade, main_topic, skilltag, course_level, effort):
         if self.is_enabled:
             data = {
                 "contentProvider": contentProvider,
-                "user": user,
+                "user": user_id,
                 "courseId": courseId,
                 "lastlogin": lastlogin,
                 "percentageOfcompletion": percentageOfcompletion,
@@ -50,11 +50,10 @@ class APIGrade(object):
                 'Cache-Control': 'no-cache',
             }
             response = requests.post(
-                'https://{api_url}/api/orchestrators/feedbackloop/{userId}?code={secret}==&clientId={client_id}'.format(
+                'https://{api_url}/api/orchestrators/feedbackloop/{user_email}?code={secret}'.format(
                     api_url=self.API_GRADE_PROPERTIES['API_URL'],
-                    userId=user,
+                    user_email=user_email,
                     secret=self.API_GRADE_PROPERTIES['APP_SECRET'],
-                    client_id=self.API_GRADE_PROPERTIES['APP_CLIENT_ID'],
                 ),
                 data=json.dumps(data),
                 headers=headers
