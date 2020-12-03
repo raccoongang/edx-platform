@@ -118,7 +118,7 @@ def _get_lms_root_url(platform_name):
     
     return lms_root_url_from_settings
     
-def _get_course_email_context(course):
+def _get_course_email_context(course, platform_name=None):
     """
     Returns context arguments to apply to all emails, independent of recipient.
     """
@@ -129,6 +129,8 @@ def _get_course_email_context(course):
     lms_root_url = configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL)
     course_url = '{}{}'.format(lms_root_url, course_root)
     image_url = u'{}{}'.format(lms_root_url, course_image_url(course))
+    if not platform_name:
+        platform_name = configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
     email_context = {
         'course_title': course_title,
         'course_root': course_root,
@@ -138,7 +140,7 @@ def _get_course_email_context(course):
         'course_end_date': course_end_date,
         'account_settings_url': '{}{}'.format(lms_root_url, reverse('account_settings')),
         'email_settings_url': '{}{}'.format(lms_root_url, reverse('dashboard')),
-        'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
+        'platform_name': platform_name,
     }
     return email_context
 
