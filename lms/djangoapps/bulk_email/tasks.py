@@ -126,7 +126,7 @@ def _get_course_email_context(course, platform_name=None):
     course_title = course.display_name
     course_end_date = get_default_time_display(course.end)
     course_root = reverse('course_root', kwargs={'course_id': course_id})
-    lms_root_url = configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL)
+    lms_root_url = _get_lms_root_url(platform_name)
     course_url = '{}{}'.format(lms_root_url, course_root)
     image_url = u'{}{}'.format(lms_root_url, course_image_url(course))
     if not platform_name:
