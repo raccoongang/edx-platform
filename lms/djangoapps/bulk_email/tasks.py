@@ -28,6 +28,7 @@ from celery.exceptions import RetryTaskError  # pylint: disable=no-name-in-modul
 from celery.states import FAILURE, RETRY, SUCCESS  # pylint: disable=no-name-in-module, import-error
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import MultipleObjectsReturned
 from django.core.mail import EmailMultiAlternatives, get_connection
 from django.core.mail.message import forbid_multi_line_headers
 from django.urls import reverse
@@ -47,6 +48,7 @@ from lms.djangoapps.instructor_task.subtasks import (
     update_subtask_status
 )
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.core.djangoapps.site_configuration.models import SiteConfiguration
 from openedx.core.lib.courses import course_image_url
 from util.date_utils import get_default_time_display
 
@@ -93,7 +95,29 @@ BULK_EMAIL_FAILURE_ERRORS = (
     SMTPException,
 )
 
-
+def _get_lms_root_url(platform_name):
+    """
+    Returns lMS_ROOT_URL for the email context
+    
+    Arguments:
+        platform_name(str): platform_name from `task_input`
+    Returns:
+         LMS_ROOT_URL(str)
+    """
+    lms_root_url_from_settings = configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL)
+    
+    if platform_name:
+        try:
+            query_set = SiteConfiguration.objects.get(values__contains='"PLATFORM_NAME":"{}"'.format(platform_name))
+        except (MultipleObjectsReturned, SiteConfiguration.DoesNotExist):
+            return lms_root_url_from_settings
+        
+        lms_root_url_from_db = query_set.values.get('LMS_ROOT_URL')
+        if lms_root_url_from_db:
+            return lms_root_url_from_db
+    
+    return lms_root_url_from_settings
+    
 def _get_course_email_context(course):
     """
     Returns context arguments to apply to all emails, independent of recipient.
