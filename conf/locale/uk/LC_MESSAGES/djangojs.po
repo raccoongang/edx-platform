@@ -11345,3 +11345,15 @@ msgstr "Змішаний"
 
 msgid "mixed"
 msgstr "Змішаний"
+
+#: lms/templates/student_account/login.underscore
+msgid "Forgot password?"
+msgstr "Забули пароль?"
+
+#: lms/templates/student_account/password_reset.underscore
+msgid "Please enter your email address below and we will send you instructions for setting a new password."
+msgstr "Вкажіть email, який ви вказували при реєстрації і на який буде надіслано інструкцію з відновлення паролю"
+
+#: lms/templates/student_account/password_reset.underscore
+msgid "Reset my password"
+msgstr "Відновити пароль"

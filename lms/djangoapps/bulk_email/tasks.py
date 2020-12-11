@@ -28,6 +28,7 @@ from celery.exceptions import RetryTaskError  # pylint: disable=no-name-in-modul
 from celery.states import FAILURE, RETRY, SUCCESS  # pylint: disable=no-name-in-module, import-error
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import MultipleObjectsReturned
 from django.core.mail import EmailMultiAlternatives, get_connection
 from django.core.mail.message import forbid_multi_line_headers
 from django.urls import reverse
@@ -47,6 +48,7 @@ from lms.djangoapps.instructor_task.subtasks import (
     update_subtask_status
 )
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.core.djangoapps.site_configuration.models import SiteConfiguration
 from openedx.core.lib.courses import course_image_url
 from util.date_utils import get_default_time_display
 
@@ -93,8 +95,30 @@ BULK_EMAIL_FAILURE_ERRORS = (
     SMTPException,
 )
 
-
-def _get_course_email_context(course):
+def _get_lms_root_url(platform_name):
+    """
+    Returns lMS_ROOT_URL for the email context
+    
+    Arguments:
+        platform_name(str): platform_name from `task_input`
+    Returns:
+         LMS_ROOT_URL(str)
+    """
+    lms_root_url_from_settings = configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL)
+    
+    if platform_name:
+        try:
+            query_set = SiteConfiguration.objects.get(values__contains='"PLATFORM_NAME":"{}"'.format(platform_name))
+        except (MultipleObjectsReturned, SiteConfiguration.DoesNotExist):
+            return lms_root_url_from_settings
+        
+        lms_root_url_from_db = query_set.values.get('LMS_ROOT_URL')
+        if lms_root_url_from_db:
+            return lms_root_url_from_db
+    
+    return lms_root_url_from_settings
+    
+def _get_course_email_context(course, platform_name=None):
     """
     Returns context arguments to apply to all emails, independent of recipient.
     """
@@ -102,11 +126,11 @@ def _get_course_email_context(course):
     course_title = course.display_name
     course_end_date = get_default_time_display(course.end)
     course_root = reverse('course_root', kwargs={'course_id': course_id})
-    course_url = '{}{}'.format(
-        configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
-        course_root
-    )
-    image_url = u'{}{}'.format(settings.LMS_ROOT_URL, course_image_url(course))
+    lms_root_url = _get_lms_root_url(platform_name)
+    course_url = '{}{}'.format(lms_root_url, course_root)
+    image_url = u'{}{}'.format(lms_root_url, course_image_url(course))
+    if not platform_name:
+        platform_name = configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
     email_context = {
         'course_title': course_title,
         'course_root': course_root,
@@ -114,9 +138,9 @@ def _get_course_email_context(course):
         'course_url': course_url,
         'course_image_url': image_url,
         'course_end_date': course_end_date,
-        'account_settings_url': '{}{}'.format(settings.LMS_ROOT_URL, reverse('account_settings')),
-        'email_settings_url': '{}{}'.format(settings.LMS_ROOT_URL, reverse('dashboard')),
-        'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
+        'account_settings_url': '{}{}'.format(lms_root_url, reverse('account_settings')),
+        'email_settings_url': '{}{}'.format(lms_root_url, reverse('dashboard')),
+        'platform_name': platform_name,
     }
     return email_context
 
@@ -172,9 +196,7 @@ def perform_delegate_email_batches(entry_id, course_id, task_input, action_name)
 
     # Get arguments that will be passed to every subtask.
     targets = email_obj.targets.all()
-    global_email_context = _get_course_email_context(course)
-    if task_input.get('platform_name', False):
-        global_email_context['platform_name'] = task_input['platform_name']
+    global_email_context = _get_course_email_context(course, task_input.get('platform_name', False))
     recipient_qsets = [
         target.get_users(course_id, user_id)
         for target in targets
