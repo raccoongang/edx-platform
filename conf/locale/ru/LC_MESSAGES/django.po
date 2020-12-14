@@ -15031,6 +15031,26 @@ msgstr "Добавить в Mozilla Backpack"
 msgid "Print Certificate"
 msgstr "Распечатать сертификат"
 
+#: lms/templates/certificates/_accomplishment-banner.html
+msgid "copy"
+msgstr "скопировать"
+
+#: lms/templates/certificates/_accomplishment-banner.html
+msgid "copied"
+msgstr "скопировано"
+
+#: lms/templates/certificates/_accomplishment-banner.html
+msgid "Download pdf file"
+msgstr "Скачать в формате pdf"
+
+#: lms/templates/certificates/_accomplishment-banner.html
+msgid "Copy link"
+msgstr "Скопировать ссылку"
+
+#: lms/templates/certificates/_accomplishment-rendering.html
+msgid "Share it"
+msgstr "Поделиться в"
+
 #: lms/templates/certificates/_accomplishment-header.html
 msgid "{platform_name} Home"
 msgstr "Главная страница {platform_name}"
