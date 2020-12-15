@@ -3622,6 +3622,50 @@ msgstr "О проекте"
 msgid "About us"
 msgstr "О проекте"
 
+#: themes/edx-theme/lms/templates/footer.html
+msgid "Contacts"
+msgstr "Контакты"
+
+#: themes/edx-theme/lms/templates/footer.html
+msgid "Subscribe"
+msgstr "Подписаться"
+
+#: themes/edx-theme/lms/templates/footer.html
+msgid "Be in the know"
+msgstr "Хотите знать больше?"
+
+#: themes/edx-theme/lms/templates/footer.html
+msgid "Sign up to our newsletter"
+msgstr "Подпишитесь на наши новости"
+
+#: themes/edx-theme/lms/templates/footer.html
+msgid "All courses"
+msgstr "Все курсы"
+
+#: themes/edx-theme/lms/templates/footer.html
+msgid "telegram channel"
+msgstr "канал в телеграм"
+
+#: themes/edx-theme/lms/templates/footer.html
+msgid "telegram chat"
+msgstr "чат в телеграм"
+
+#: themes/edx-theme/lms/templates/footer.html
+msgid "Platform"
+msgstr "Платформа на"
+
+#: themes/edx-theme/lms/templates/footer.html
+msgid "Developed by"
+msgstr "Разработка"
+
+#: themes/edx-theme/lms/templates/footer.html
+msgid "and"
+msgstr "совместно с"
+
+#: themes/edx-theme/lms/templates/footer.html
+msgid "vacancies for MAMA graduates"
+msgstr "вакансии для выпускников"
+
 #: common/lib/xmodule/xmodule/course_module.py cms/templates/settings.html
 msgid "None"
 msgstr "Нет"
