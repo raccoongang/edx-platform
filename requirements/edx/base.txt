@@ -134,6 +134,9 @@ reportlab==3.1.44
 # Used for extracting/parsing pdf text
 pdfminer==20140328
 
+# Used for generating pdf certificates (MAMA customization)
+xhtml2pdf==0.2.5
+
 # Used for development operation
 watchdog==0.8.3
 
