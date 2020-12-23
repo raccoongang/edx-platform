@@ -83,11 +83,13 @@ def download_certificate_pdf(request):
         'accomplishment_user_id': 6L, u'company_verified_certificate_url': u'http://www.example.com/verified-certificate',
         'company_privacy_urltext': u'\u041f\u043e\u043b\u0438\u0442\u0438\u043a\u0430 \u043a\u043e\u043d\u0444\u0438\u0434\u0435\u043d\u0446\u0438\u0430\u043b\u044c\u043d\u043e\u0441\u0442\u0438', 'certificate_info_title': u'\u041e \u0441\u0435\u0440\u0442\u0438\u0444\u0438\u043a\u0430\u0442\u0430\u0445 Your Platform Name Here', 'certificate_verify_url': 'Nonebb238da30c10487ca741572f856f1d74None', 'accomplishment_more_title': u'\u0414\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u0430\u044f \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044f \u043e \u0441\u0435\u0440\u0442\u0438\u0444\u0438\u043a\u0430\u0442\u0435 \u0441\u043b\u0443\u0448\u0430\u0442\u0435\u043b\u044f\n Olena Persianova:', 'certificate_id_number': u'bb238da30c10487ca741572f856f1d74', 'platform_name': u'Your Platform Name Here', 'twitter_share_enabled': False, u'certificate_title': u'Verified Certificate of Achievement', u'company_about_url': u'/about', 'points_total': 1.0}
 
+    # TODO styles
     html = render_to_string(template_rel_path, context_dict)
+
     result = BytesIO()
     #pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
-    # TODO styles
-    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)  # FIXME ru, rn
+    pdf = pisa.pisaDocument(BytesIO(html.encode("utf-8")), result)  # FIXME ru, en
 
     if not pdf.err:
         return HttpResponse(result.getvalue(), content_type='application/pdf')
+    # TODO else - use case ?
