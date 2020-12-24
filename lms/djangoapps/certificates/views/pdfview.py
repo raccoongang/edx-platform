@@ -43,8 +43,8 @@ def _prepare_pdf_content(template_rel_path, context, html=None):
     """
     html = html or render_to_string(template_rel_path, context)
     result = BytesIO()
-    #pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
-    pdf = pisa.pisaDocument(BytesIO(html.encode("utf-8")), result)  # FIXME ru, en
+    # FIXME cyrillic https://stackoverflow.com/a/2147026
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result, encoding="UTF-8")
     return result, pdf
 
 
