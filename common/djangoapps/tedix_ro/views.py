@@ -35,7 +35,7 @@ from student.helpers import do_create_account, get_next_url_for_login_page
 from student.models import CourseEnrollment
 from xmodule.modulestore.django import modulestore
 
-from .admin import INSTRUCTOR_EXPORT_FIELD_NAMES, STUDENT_PARENT_IMPORT_FIELD_NAMES, EMPTY_VALUE
+from .admin import INSTRUCTOR_IMPORT_FIELD_NAMES, STUDENT_PARENT_IMPORT_FIELD_NAMES, EMPTY_VALUE
 from .forms import (
     FORM_FIELDS_MAP,
     AccountImportValidationForm,
@@ -733,7 +733,7 @@ class ProfileImportView(View):
 
 class InstructorProfileImportView(ProfileImportView):
     import_form = ProfileImportForm
-    headers = INSTRUCTOR_EXPORT_FIELD_NAMES
+    headers = INSTRUCTOR_IMPORT_FIELD_NAMES
     profile_form = InstructorImportValidationForm
     template_name = 'admin_import.html'
     role = 'instructor'
