@@ -520,7 +520,7 @@ def render_html_view(request, user_id, course_id):
     platform_name = configuration_helpers.get_value("platform_name", settings.PLATFORM_NAME)
     configuration = CertificateHtmlViewConfiguration.get_config()
     # Create the initial view context, bootstrapping with Django settings and passed-in values
-    context = {}
+    context = {"is_pdf": False}
     _update_context_with_basic_info(context, course_id, platform_name, configuration)
     invalid_template_path = 'certificates/invalid.html'
 

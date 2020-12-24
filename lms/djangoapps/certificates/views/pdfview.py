@@ -72,14 +72,13 @@ def download_certificate_pdf(request, user_id, course_id):
     """
     Handle a request to download a certificate in the pdf form.
     """
-    # TODO instead of template duplication, introduce "is_pdf" var to the context, to exclude social sharing
-    template_rel_path = "certificates/valid_pdf.html"  # "certificates/valid.html"
+    template_rel_path = "certificates/valid.html"
     invalid_template_path = 'certificates/invalid.html'
     platform_name = configuration_helpers.get_value("platform_name", settings.PLATFORM_NAME)
     html = None
 
     # Populate the context in the same way it's done for webview certificates.
-    context = {}
+    context = {"is_pdf": True}
     configuration = CertificateHtmlViewConfiguration.get_config()
     _update_context_with_basic_info(context, course_id, platform_name, configuration)
 
