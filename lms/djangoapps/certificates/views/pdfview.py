@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Custom PDF certificates logic.
 """
@@ -43,7 +44,7 @@ def _prepare_pdf_content(template_rel_path, context, html=None):
     """
     html = html or render_to_string(template_rel_path, context)
     result = BytesIO()
-    # FIXME cyrillic https://stackoverflow.com/a/2147026
+    # FIXME cyrillic, ref https://stackoverflow.com/a/34160324, https://stackoverflow.com/a/46820692
     pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result, encoding="UTF-8")
     return result, pdf
 
@@ -52,6 +53,7 @@ def _prepare_pdf_file_response(template_rel_path, context, user_id, course_id, h
     """
     Process the content and return a pdf file in the http response.
     """
+    # TODO filename
     result, pdf = _prepare_pdf_content(template_rel_path, context, html)
 
     if pdf.err:
