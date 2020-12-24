@@ -30,4 +30,11 @@ urlpatterns = patterns(
     url(r'search', views.search_certificates, name="search"),
     url(r'regenerate', views.regenerate_certificate_for_user, name="regenerate_certificate_for_user"),
     url(r'generate', views.generate_certificate_for_user, name="generate_certificate_for_user"),
+
+    # Custom endpoint to download certificate PDF
+    url(
+        r'download_certificate_pdf/(?P<user_id>\w+)/(?P<course_id>.+)$',
+        views.download_certificate_pdf,
+        name="download_certificate_pdf",
+    ),
 )

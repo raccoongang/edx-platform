@@ -13,11 +13,9 @@ from django.contrib.auth.models import User
 from django.http import Http404, HttpResponse
 from django.template import RequestContext
 from django.utils.encoding import smart_str
-from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
-from django.contrib.auth.decorators import login_required
 
 from badges.events.course_complete import get_completion_badge
 from badges.utils import badges_enabled
@@ -231,6 +229,7 @@ def _update_course_context(request, context, course, platform_name):
     context['accomplishment_copy_course_name'] = accomplishment_copy_course_name
     course_number = course.display_coursenumber if course.display_coursenumber else course.number
     context['course_number'] = course_number
+    context['course_id'] = str(course.id)
     context['course_end_date'] = ''
     if course.end:
         context['course_end_date'] = strftime_localized(course.end, "%d %B %Y")
