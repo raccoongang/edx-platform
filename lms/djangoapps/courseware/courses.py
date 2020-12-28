@@ -432,6 +432,58 @@ def get_course_syllabus_section(course, section_key):
     raise KeyError("Invalid about key " + str(section_key))
 
 
+def sort_courses_by_hardcoded_ids_order(courses):
+    """
+    Sort a batch of courses as per the course ids hardcoded order.
+
+    Sequence of hardcoded courses will always go first.
+
+    No course appearing in the `COURSES_ORDER` should be removed
+    from the platform.
+
+    Arguments:
+        courses (tuple): courses objects to sort.
+
+    Returns:
+        re-ordered courses (list)
+    """
+    # TODO remove once debugged
+    # COURSES_ORDER = [
+    #     "course-v1:RG+SC1001+2020_SC01",
+    #     "course-v1:RG+SC1002+2020_SC02",
+    #     "course-v1:RG+SC1003+2020_SC03",
+    # ]
+    # TODO move up
+    # The order of courses is important
+    COURSES_ORDER = [
+        "course-v1:Lakeside+TE101+2019",  # The Essentials of Trauma - The Opioid Crisis # 1
+        "course-v1:NeuroLogic+NL101+2020Q2",  # The Trauma-Informed Classroom # 2
+        "course-v1:Neurologic+NL105+2021_T1", # Resilience: Increasing Students' Tolerance for Stress # 3
+        "course-v1:LakesideGlobalInstitute+2000+2020_T1",  # Enhancing Trauma Awareness # 4
+        "course-v1:Lakeside+PRE1101+2020",  # PRESENCE - Introductory Track  # 5
+        "course-v1:Lakeside+PRE1101+2020_T2",  # PRESENCE-Leadership Track # 6
+        "course-v1:Lakeside+PRE1103+2029_T2",  # PRESENCE - Clinical Track  # 7
+    ]
+
+    kourses = list(courses)
+    new_courses = []
+    for course_id in COURSES_ORDER:
+        kourse = [kourse for kourse in courses if str(kourse.id) == course_id][0]
+        new_courses.append(kourse)
+        original_index = kourses.index(kourse)
+        try:
+            del kourses[original_index]
+        except IndexError:
+            # e.g. a course got removed, config's wrong
+            log.error("Course key {course_key} isn't present in the sortable courses".format(
+                course_key=course_id,
+            ))
+            # Ignore any re-ordering that could have already happened
+            return list(courses)
+
+    return new_courses + kourses
+
+
 def get_courses(user, org=None, filter_=None):
     """
     Returns a list of courses available, sorted by course.number and optionally
@@ -444,7 +496,11 @@ def get_courses(user, org=None, filter_=None):
         settings.COURSE_CATALOG_VISIBILITY_PERMISSION
     )
 
-    courses = [c for c in courses if has_access(user, permission_name, c)]
+    unsorted_courses = [c for c in courses if has_access(user, permission_name, c)]
+
+    courses = sort_courses_by_hardcoded_ids_order(
+        tuple(unsorted_courses),
+    )
 
     return courses
 

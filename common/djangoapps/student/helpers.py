@@ -68,7 +68,6 @@ DISABLE_UNENROLL_CERT_STATES = [
 ]
 USERNAME_EXISTS_MSG_FMT = _("An account with the Public Username '{username}' already exists.")
 
-
 log = logging.getLogger(__name__)
 
 
