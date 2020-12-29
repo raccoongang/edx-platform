@@ -27,6 +27,7 @@
 
             renderNext: function() {
                 this.renderItems();
+                //reorderCourses();
                 this.isLoading = false;
             },
 
@@ -39,6 +40,7 @@
                 }, this);
 
                 this.$list.append(items)
+                //reorderCourses();
                 return this.el;
                 /* eslint no-param-reassign: [2, { "props": false }] */
             },
