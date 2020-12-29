@@ -41,6 +41,7 @@
 
                 this.$list.append(items)
                 //reorderCourses();
+                debugger;
                 return this.el;
                 /* eslint no-param-reassign: [2, { "props": false }] */
             },
