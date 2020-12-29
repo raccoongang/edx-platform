@@ -16,6 +16,7 @@
 
             initialize: function() {
                 this.$list = this.$el.find('.programs-listing');
+                debugger;
                 this.attachScrollHandler();
             },
 
