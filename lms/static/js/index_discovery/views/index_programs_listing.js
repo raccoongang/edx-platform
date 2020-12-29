@@ -40,6 +40,7 @@
                 });
 
                 this.$list.append(items);
+                debugger;
                 //this.reorderCourses();
                 /* eslint no-param-reassign: [2, { "props": false }] */
             },
