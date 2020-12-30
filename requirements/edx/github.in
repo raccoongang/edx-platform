@@ -106,3 +106,6 @@
 # Raccoongang Instructor analytics
 -e git+ssh://git@gitlab.raccoongang.com/Duck-Team/fastlane-lakeside/instructor-analytics@v2.3.0-lakeside-markup-emails-fixed#egg=rg_instructor_analytics
 -e git+ssh://git@gitlab.raccoongang.com/Duck-Team/fastlane-lakeside/instructor-analytics-log-collector@v2.3.0-lakeside#egg=rg_instructor_analytics_log_collector
+
+# Forks
+-e git+https://github.com/raccoongang/edx-search.git@lakeside-hawthorn#egg=edx-search
