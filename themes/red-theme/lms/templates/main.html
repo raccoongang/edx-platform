@@ -166,7 +166,7 @@ from tedix_ro.utils import encrypted_user_data
 ${Template("{% load gtm_tags %}{% gtm_head %}").render(Context(dict_=dict(request=request)))}
 
 <script type="text/javascript">
-  var tedixUUid = ${encrypted_user_data(request.user)};
+  var tedixUUid = ${encrypted_user_data(request)};
 </script>
 </head>
 

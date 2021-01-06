@@ -24,7 +24,7 @@
 
   <meta name="path_prefix" content="{{EDX_ROOT_URL}}">
   <script type="text/javascript">
-      var tedixUUid = {{request.user | encrypted_data | safe}};
+      var tedixUUid = {{request | encrypted_data | safe}};
   </script>
 </head>
 
