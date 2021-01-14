@@ -70,8 +70,8 @@ INSTRUCTOR_EXPORT_FIELD_NAMES = (
     'city',
     'school',
     'number_of_students',
-    'last_login_date',
     'account_creation_date',
+    'last_login_date',
 )
 
 INSTRUCTOR_IMPORT_FIELD_NAMES = (
