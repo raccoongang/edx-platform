@@ -408,7 +408,14 @@ def manage_courses(request):
                         defaults={'due_date':form.cleaned_data['due_date']}
                     )
                     courses_list.append([
-                        urljoin(settings.LMS_ROOT_URL, reverse('openedx.course_experience.course_home', kwargs={'course_id': course.id})),
+                        urljoin(settings.LMS_ROOT_URL,
+                        reverse(
+                            'jump_to',
+                            kwargs={
+                                'course_id': course.id,
+                                'location': modulestore().make_course_usage_key(course.id)
+                            }
+                        )),
                         course.display_name
                     ])
                     user_time_zone = student.user.preferences.filter(key='time_zone').first()
@@ -549,13 +556,19 @@ def personal_due_dates(request):
     ).order_by('-due_date')
 
     courses_due_dates_list = [
-        [urljoin(
-            settings.LMS_ROOT_URL,
-            reverse(
-                'openedx.course_experience.course_home',
-                kwargs={'course_id': student_due_date.course_id})),
-         CourseOverview.objects.get(id=student_due_date.course_id).display_name,
-         format_due_date(student, student_due_date.due_date)
+        [
+            urljoin(
+                settings.LMS_ROOT_URL,
+                reverse(
+                    'jump_to',
+                    kwargs={
+                        'course_id': unicode(student_due_date.course_id),
+                        'location': modulestore().make_course_usage_key(student_due_date.course_id)
+                    }
+                )
+            ),
+            CourseOverview.objects.get(id=student_due_date.course_id).display_name,
+            format_due_date(student, student_due_date.due_date)
         ] for student_due_date in student_due_dates
     ]
 

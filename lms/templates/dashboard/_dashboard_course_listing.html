@@ -21,6 +21,7 @@ from student.helpers import (
   DISABLE_UNENROLL_CERT_STATES,
 )
 from util.course import get_link_for_about_page, get_encoded_course_sharing_utm_params
+from xmodule.modulestore.django import modulestore
 %>
 
 <%
@@ -60,7 +61,14 @@ from util.course import get_link_for_about_page, get_encoded_course_sharing_utm_
         % endif
       >
 <article class="course${mode_class}" aria-labelledby="course-title-${enrollment.course_id}" id="course-card-${course_card_index}">
-  <% course_target = reverse(course_home_url_name(course_overview.id), args=[unicode(course_overview.id)]) %>
+  <% course_target = reverse(
+      'jump_to',
+      kwargs={
+        'course_id': unicode(course_overview.id),
+        'location': modulestore().make_course_usage_key(course_overview.id)
+      }
+    )
+  %>
   <section class="details" aria-labelledby="details-heading-${enrollment.course_id}">
       <h2 class="hd hd-2 sr" id="details-heading-${enrollment.course_id}">${_('Course details')}</h2>
     <div class="wrapper-course-image" aria-hidden="true">
