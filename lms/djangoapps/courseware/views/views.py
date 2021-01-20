@@ -279,7 +279,8 @@ def jump_to(_request, course_id, location):
     except InvalidKeyError:
         raise Http404(u"Invalid course_key or usage_key")
     try:
-        CourseEnrollment.enroll_by_email(_request.user.email, course_key)
+        if _request.user.is_authenticated:
+            CourseEnrollment.enroll_by_email(_request.user.email, course_key)
         redirect_url = get_redirect_url(course_key, usage_key)
     except ItemNotFoundError:
         raise Http404(u"No data at this location: {0}".format(usage_key))
