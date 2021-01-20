@@ -28,5 +28,5 @@ def get_color(state):
 
 
 @register.filter
-def encrypted_data(user):
-    return encrypted_user_data(user)
+def encrypted_data(request):
+    return encrypted_user_data(request)

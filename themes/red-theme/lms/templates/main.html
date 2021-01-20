@@ -176,7 +176,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 ${Template("{% load gtm_tags %}{% gtm_head %}").render(Context(dict_=dict(request=request)))}
 
 <script type="text/javascript">
-  var tedixUUid = ${encrypted_user_data(request.user)};
+  var tedixUUid = ${encrypted_user_data(request)};
 </script>
 <!-- Facebook Pixel Code -->
 <script>

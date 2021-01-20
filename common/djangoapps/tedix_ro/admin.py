@@ -68,7 +68,19 @@ INSTRUCTOR_EXPORT_FIELD_NAMES = (
     'public_name',
     'phone',
     'city',
-    'school'
+    'school',
+    'number_of_students',
+    'account_creation_date',
+    'last_login_date',
+)
+
+INSTRUCTOR_IMPORT_FIELD_NAMES = (
+    'username',
+    'email',
+    'public_name',
+    'phone',
+    'city',
+    'school',
 )
 
 DATE_TIME_FORMAT = '%d %b %Y %H:%M'
@@ -130,37 +142,83 @@ class ParentProfileForm(ProfileForm):
         fields = '__all__'
 
 
+class ProfileField(Field):
+
+    def export(self, obj):
+        """
+        Returns value from the provided object converted to export
+        representation.
+        """
+        value = self.get_value(obj)
+        if value is None:
+            return EMPTY_VALUE
+        return self.widget.render(value, obj)
+
+
+class ProfileDateTimeWidget(widgets.DateTimeWidget):
+
+    def render(self, value, obj=None):
+        if not value:
+            return ""
+        if settings.USE_TZ:
+            value = timezone.localtime(value)
+        return value.strftime(self.formats[0])
+
+
 @admin.register(ParentProfile)
 class ParentProfileAdmin(admin.ModelAdmin):
     form = ParentProfileForm
     search_fields = ['user__username', 'user__profile__name']
 
 
+
 class InstructorProfileResource(resources.ModelResource):
 
-    school = Field(
+    school = ProfileField(
         attribute='school__name',
         column_name='school'
     )
 
-    city = Field(
+    city = ProfileField(
         attribute='school_city__name',
         column_name='city',
     )
 
-    username = Field(
+    username = ProfileField(
         attribute='user__username',
         column_name='username',
     )
 
-    email = Field(
+    email = ProfileField(
         attribute='user__email',
         column_name='email',
     )
 
-    public_name = Field(
+    public_name = ProfileField(
         attribute='user__profile__name',
         column_name='public_name',
+    )
+
+    last_login_date = ProfileField(
+        attribute='user__last_login',
+        column_name='last_login_date',
+    )
+
+    account_creation_date = ProfileField(
+        attribute='user__date_joined',
+        column_name='account_creation_date',
+        widget=ProfileDateTimeWidget(DATE_TIME_FORMAT),
+    )
+
+    last_login_date = ProfileField(
+        attribute='user__last_login',
+        column_name='last_login_date',
+        widget=ProfileDateTimeWidget(DATE_TIME_FORMAT),
+    )
+
+    number_of_students = ProfileField(
+        attribute='user__date_joined',
+        column_name='number_of_students',
     )
 
     class Meta:
@@ -169,6 +227,9 @@ class InstructorProfileResource(resources.ModelResource):
         export_order = INSTRUCTOR_EXPORT_FIELD_NAMES
         import_id_fields = ('email',)
         skip_unchanged = True
+
+    def dehydrate_number_of_students(self, instructor_profile):
+        return instructor_profile.students.count()
 
 
 @admin.register(InstructorProfile)
@@ -203,78 +264,55 @@ class InstructorProfileAdmin(ImportExportModelAdmin):
         return ()
 
 
-class StudentProfileField(Field):
-
-    def export(self, obj):
-        """
-        Returns value from the provided object converted to export
-        representation.
-        """
-        value = self.get_value(obj)
-        if value is None:
-            return EMPTY_VALUE
-        return self.widget.render(value, obj)
-
-
-class StudentProfileDateTimeWidget(widgets.DateTimeWidget):
-
-    def render(self, value, obj=None):
-        if not value:
-            return ""
-        if settings.USE_TZ:
-            value = timezone.localtime(value)
-        return value.strftime(self.formats[0])
-
-
 class StudentProfileResource(resources.ModelResource):
 
-    school = StudentProfileField(
+    school = ProfileField(
         attribute='school__name',
         column_name='school'
     )
 
-    city = StudentProfileField(
+    city = ProfileField(
         attribute='school_city__name',
         column_name='city',
     )
 
-    username = StudentProfileField(
+    username = ProfileField(
         attribute='user__username',
         column_name='username',
     )
 
-    email = StudentProfileField(
+    email = ProfileField(
         attribute='user__email',
         column_name='email',
     )
 
-    public_name = StudentProfileField(
+    public_name = ProfileField(
         attribute='user__profile__name',
         column_name='public_name',
     )
-    teacher_email = StudentProfileField(
+    teacher_email = ProfileField(
         attribute='instructor__user__email',
         column_name='teacher_email',
     )
-    classroom = StudentProfileField(
+    classroom = ProfileField(
         attribute='classroom__name',
         column_name='classroom',
     )
 
-    account_creation_date = StudentProfileField(
+    account_creation_date = ProfileField(
         attribute='user__date_joined',
         column_name='account_creation_date',
-        widget=StudentProfileDateTimeWidget(DATE_TIME_FORMAT),
+        widget=ProfileDateTimeWidget(DATE_TIME_FORMAT),
     )
 
-    last_login_date = StudentProfileField(
+    last_login_date = ProfileField(
         attribute='user__last_login',
         column_name='last_login_date',
-        widget=StudentProfileDateTimeWidget(DATE_TIME_FORMAT),
+        widget=ProfileDateTimeWidget(DATE_TIME_FORMAT),
     )
 
-    parent_email = StudentProfileField()
-    parent_phone = StudentProfileField()
+    parent_email = ProfileField()
+    parent_phone = ProfileField()
 
     class Meta:
         model = StudentProfile

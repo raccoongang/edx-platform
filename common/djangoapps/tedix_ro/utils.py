@@ -18,6 +18,8 @@ from lms.djangoapps.grades.course_grade import CourseGrade
 from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 
+from util.request import course_id_from_url
+
 
 def get_payment_link(user):
     if not user:
@@ -220,17 +222,22 @@ def reset_student_progress(user, course_key):
     StudentReportSending.objects.filter(course_id=course_key, user=user).delete()
 
 
-def encrypted_user_data(user):
+def encrypted_user_data(request):
     """
     Provide special user data to be handled by a third party frontend application.
     Arguments:
-     - user (obj): Django User model
+     - request: WSGI request object
     Return:
         Json object with the following data:
           - created (int): Timestamp user.date_joined.
           - id (str): md5 hashed username.
           - usertype (str): "student"/"staff"/"null".
+          - lesson_is_active_homework (bool): 
+            true if the user has homework (StudentCourseDueDate) for a course and the due date did not pass yet.
     """
+    StudentCourseDueDate = apps.get_model('tedix_ro', 'StudentCourseDueDate')
+    user = request.user
+    lesson_is_active_homework = None
     user_id = None
     created = None
     user_type = None
@@ -243,9 +250,14 @@ def encrypted_user_data(user):
         m.update(salt)
         user_id = m.hexdigest()
         user_type = 'student' if hasattr(user, 'studentprofile') else 'staff'
+        course_id = course_id_from_url(request.get_full_path())
+        lesson_is_active_homework = False
+        if course_id:
+            lesson_is_active_homework = StudentCourseDueDate.is_active(user, course_id)
 
     return json.dumps({
         'created': int(created) if created is not None else None,
         'id': user_id,
-        'usertype': user_type
+        'usertype': user_type,
+        'lesson_is_active_homework': lesson_is_active_homework,
     })

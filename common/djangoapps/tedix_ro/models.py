@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import models
 from django.dispatch import receiver
+from django.utils import timezone
 from django.utils.translation import ugettext as _
 from opaque_keys.edx.django.models import CourseKeyField
 
@@ -123,6 +124,18 @@ class StudentCourseDueDate(models.Model):
 
     def __unicode__(self):
         return _(u'Student course due date')
+
+    @classmethod
+    def is_active(cls, user, course_id):
+        studentprofile = getattr(user, 'studentprofile', None)
+        course_due_date = False
+        if studentprofile:
+            course_due_date = cls.objects.filter(
+                student=user.studentprofile,
+                course_id=course_id,
+                due_date__gt=timezone.now(),
+            ).exists()
+        return course_due_date
 
 
 @receiver(user_logged_in)
