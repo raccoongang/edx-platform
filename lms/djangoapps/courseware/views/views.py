@@ -11,6 +11,7 @@ import analytics
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse
 from django.db import transaction
@@ -281,7 +282,9 @@ def jump_to(_request, course_id, location):
     try:
         if _request.user.is_authenticated:
             CourseEnrollment.enroll_by_email(_request.user.email, course_key)
-        redirect_url = get_redirect_url(course_key, usage_key)
+            redirect_url = get_redirect_url(course_key, usage_key)
+        else:
+            return redirect_to_login(_request.get_full_path())
     except ItemNotFoundError:
         raise Http404(u"No data at this location: {0}".format(usage_key))
     except NoPathToItem:
