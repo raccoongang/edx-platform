@@ -1103,6 +1103,8 @@ def change_enrollment(request, check_access=True):
         return HttpResponseBadRequest(_("Invalid course id"))
 
     if action == "enroll":
+        # close the enrollment for the user from the web side
+        return HttpResponseBadRequest(_("Could not enroll"))
         # Make sure the course exists
         # We don't do this check on unenroll, or a bad course id can't be unenrolled from
         if not modulestore().has_course(course_id):
