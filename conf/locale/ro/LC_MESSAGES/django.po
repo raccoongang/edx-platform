@@ -2510,7 +2510,7 @@ msgid ""
 "Your answers were previously saved. Click '{button_name}' to grade them."
 msgstr ""
 "Răspunsurile dumneavoastră au fost salvate anterior. Faceți clic pe "
-"'{Button_name}' pentru a le nota."
+"'{button_name}' pentru a le nota."
 
 #: common/lib/xmodule/xmodule/capa_base.py
 #, python-brace-format
@@ -3565,7 +3565,7 @@ msgstr ""
 "acoladei pentru fiecare subiect, și o altă virgulă după paranteza finală. De "
 "exemplu, pentru a specifica faptul că echipele trebuie să aibă maximum 5 "
 "participanți și să furnizeze o listă de 2 subiecte, introduceți configurația "
-"în acest format: {exemplu_format}. În valorile \"id\", singurele caractere "
+"în acest format: {example_format}. În valorile \"id\", singurele caractere "
 "speciale suportate sunt underscore, cratimă și punct."
 
 #: common/lib/xmodule/xmodule/course_module.py
@@ -4443,7 +4443,7 @@ msgstr ""
 "videoclipurile de curs. Introduceți ID-ul video de pe pagina Încărcări Video "
 "și unul sau mai multe fișiere pentru transcriere în următorul format: "
 "{format}. De exemplu, o intrare pentru un videoclip cu două transcripturi "
-"arată astfel: {exemple}"
+"arată astfel: {example}"
 
 #: common/lib/xmodule/xmodule/modulestore/inheritance.py
 msgid "Show Reset Button for Problems"
@@ -5665,10 +5665,10 @@ msgid ""
 "certificate also indicates that the identity of the learner has been checked "
 "and is valid."
 msgstr ""
-"Un certificat {cert_Type} înseamnă că un elev a fost de acord să respecte "
-"codul de onoare stabilit de {Platform_name} și a finalizat toate sarcinile "
+"Un certificat {cert_type} înseamnă că un elev a fost de acord să respecte "
+"codul de onoare stabilit de {platform_name} și a finalizat toate sarcinile "
 "necesare pentru acest curs conform instrucțiunilor sale. Un certificat "
-"{cert_Type} indică, de asemenea, că identitatea elevului a fost verificată "
+"{cert_type} indică, de asemenea, că identitatea elevului a fost verificată "
 "și este validă."
 
 #. Translators:  This text describes the 'XSeries' course certificate type.
@@ -5681,7 +5681,7 @@ msgid ""
 "An {cert_type} certificate demonstrates a high level of achievement in a "
 "program of study, and includes verification of the student's identity."
 msgstr ""
-"Un certificat {cert_Type} demonstrează un nivel ridicat de realizare într-un "
+"Un certificat {cert_type} demonstrează un nivel ridicat de realizare într-un "
 "program de studiu și include verificarea identității studentului."
 
 #: lms/djangoapps/certificates/views/webview.py
@@ -5697,7 +5697,7 @@ msgid ""
 "participated in {partner_short_name} {course_number}"
 msgstr ""
 "Acesta este un certificat {platform_name} valid pentru {user_name}, care a "
-"participat la {partner_short_name} {curs_number}"
+"participat la {partner_short_name} {course_number}"
 
 #. Translators:  This text is bound to the HTML 'title' element of the page
 #. and appears in the browser title bar
@@ -12108,7 +12108,7 @@ msgstr "Imaginea trebuie să fie mai mică decât {image_max_size}. "
 #: cms/djangoapps/contentstore/views/videos.py
 #, python-brace-format
 msgid "This image file must be larger than {image_min_size}."
-msgstr "Această imagine trebuie să fie mai mare decât {image_max_size}. "
+msgstr "Această imagine trebuie să fie mai mare decât {image_min_size}. "
 
 #: cms/djangoapps/contentstore/views/videos.py
 msgid ""
