@@ -22,10 +22,9 @@ from six import text_type
 
         ## Translators: This text will be automatically posted to the student's
         ## Twitter account. {url} should appear at the end of the text.
-        tweet_text = _("I just enrolled in {number} {title} through {account}: {url}").format(
+        tweet_text = _("I just enrolled in {number} {title}: {url}").format(
             number=course.number,
             title=course.display_name_with_default_escaped,
-            account=static.get_value('course_about_twitter_account', settings.PLATFORM_TWITTER_ACCOUNT),
             url=u"{protocol}://{domain}{path}".format(
                 protocol=site_protocol,
                 domain=site_domain,
@@ -36,7 +35,9 @@ from six import text_type
         ).replace(u" ", u"+")
         tweet_action = u"http://twitter.com/intent/tweet?text={tweet_text}".format(tweet_text=tweet_text)
 
-        facebook_link = static.get_value('course_about_facebook_link', settings.PLATFORM_FACEBOOK_ACCOUNT)
+        facebook_link = "https://www.facebook.com/sharer/sharer.php?u={uri}".format(
+          uri = urllib.quote(request.build_absolute_uri(), safe='')
+        )
 
         email_subject = u"mailto:?subject={subject}&body={body}".format(
             subject=_("Take a course with {platform} online").format(platform=platform_name),
