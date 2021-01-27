@@ -3,27 +3,24 @@
 <%! from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers %>
 
 <%block name="message">
-<p>
-${_("Danke, dass Sie sich bei {platform_name} registriert haben!").format(
-    platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
-)}
-</p>
-<p>
-${_("Sie sind nur mehr einen Schritt von Ihrem Kurs entfernt: "
-    "klicken Sie auf folgenden Link um Ihr {platform_name} Profil zu aktivieren. "
-    "Profil zu aktivieren. Sollte der Link nicht funktionieren, kopieren Sie ihn bitte in die Adressleiste Ihres Browsers.").format(
-        platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
-    )}
-</p>
-<p>
-% if is_secure:
-  https://${ site }/activate/${ key }
-% else:
-  http://${ site }/activate/${ key }
-% endif
-</p>
-<p>
-${_("Sollten Sie kein Profil angelegt haben, betrachten Sie diese Nachricht als gegenstandslos; Sie werden keine weiteren E-Mails von uns bekommen. Sollten Sie Hilfe benötigen antworten Sie bitte NICHT auf diese E-Mail, sondern besuchen Sie unsere Webseite: http://www.trainit.academy").format(platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME))}
-</p>
+  <p>
+    Danke, dass Sie sich bei ${configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)} registriert haben!
+    Sie erhalten in Kürze eine Mail, um Ihren Account zu aktivieren.
+    Bitte überprüfen Sie auch Ihren Spam Ordner.
+  </p>
+  <p>Falls Sie Fragen haben, stehen wir Ihnen sehr gerne zur Verfügung!</p>
+  <p>Beste Grüße,</p>
+  <p>Ihr Learning Service Team </p>
+  <p>
+    ETC - Enterprise Training Center <br>
+    1030 Wien, Modecenterstrasse 22/Office 4 <br>
+    T: +43 1 533 1 777 - 0 <br>
+    mailto: LSS@etc.at <br>
+    http://www.etc.at
+  </p>
+  <p>
+    Kennzeichnung gem. § 14 UGB: <br>
+    ETC – Enterprise Training Center GmbH,  Modecenterstrasse 22/Office 4, 1030 Wien | Handelsgericht Wien, FN 430941m
+  </p>
 </%block>
 
