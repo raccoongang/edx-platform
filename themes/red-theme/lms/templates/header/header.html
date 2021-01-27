@@ -52,10 +52,12 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
 	function Blockingnoplan() {
 			$(".modal-overlay").show()
 			$(".modal-window").show()
+			document.body.style.overflow = "hidden";
 	}
 	function Blockingplan() {
 			$(".modal-overlay").show()
 			$(".modal-window-plan").show()
+			document.body.style.overflow = "hidden";
 	}
 	function Showplans() {
 		$(".modal-overlay").toggleClass("hidden");
@@ -72,7 +74,9 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
   var curent_timestamp=Math.floor(Date.now() / 1000);
   var user_created_time=tedixUUid.created;
   var user_type=tedixUUid.usertype;
-  if (tedixUUid.usertype =="student"){
+  var homework=tedixUUid.lesson_is_active_homework;
+  console.log(homework)
+  if (tedixUUid.usertype =="student" ){
 	      window.__simpleShopConfig = {
       storeId: 'JPJHNTSHMW',
       shopActions: {
@@ -85,8 +89,9 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
       },
       euid: tedixUUid.id,
       onLoad: interface => {
-        interface.getLastTransaction().then(ret => {
-          if (! ret.number || ret.payment_status =="rejected") {
+      interface.getLastTransaction().then(ret => {
+	  	  if ( homework == false){
+	            if (! ret.number || ret.payment_status =="rejected") {
             //$('.message-noplan').show()
             //$('.message-plan').hide()
 			console.log("Status plata respinsa : " + ret.payment_status);
@@ -102,7 +107,7 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
 				if(noplan_remaining_days > 7  && noplan_remaining_days <= 30) {
 					$('.announces-green').show()
 				} else{
-						setInterval( Blockingnoplan, 2*6*1000 );
+						//setInterval( Blockingnoplan, 2*6*1000 );
 				}
 			}
           } else {
@@ -130,7 +135,7 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
 			} else{
 				user_time_time_remaning_final = user_time_time_remaning
 			}
-			var days_remaning=(user_time_time_remaning_final / (24 * 3600)).toFixed(0);
+			days_remaning=(user_time_time_remaning_final / (24 * 3600)).toFixed(0);
 			console.log("Time remaning final " +  days_remaning)
 			$(".insert").html(days_remaning);
             $('.message-noplan').hide()
@@ -147,11 +152,16 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
 				if  (days_remaning >  0  && days_remaning <= 15){
 					$('.announces-red-new').show()
 				} else{
-					setInterval( Blockingplan, 2*6*1000 );
+					//setInterval( Blockingplan, 2*6*1000 );
 				}
 				}
 			}
           }
+	  
+	  }
+	  else{
+		console.log("Userul are teme de casa: ")
+	  }
         })
       }
     }
