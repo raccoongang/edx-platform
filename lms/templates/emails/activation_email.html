@@ -4,23 +4,24 @@
 
 <%block name="message">
   <p>
-    Danke, dass Sie sich bei ${configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)} registriert haben!
-    Sie erhalten in Kürze eine Mail, um Ihren Account zu aktivieren.
-    Bitte überprüfen Sie auch Ihren Spam Ordner.
+    ${_("Thank you for registering with {platform_name}! You will shortly receive an email to activate your account. "
+    "Please also check your spam folder").format(
+        platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)
+    )}
   </p>
-  <p>Falls Sie Fragen haben, stehen wir Ihnen sehr gerne zur Verfügung!</p>
-  <p>Beste Grüße,</p>
-  <p>Ihr Learning Service Team </p>
+  <p>${_("If you have any questions, please do not hesitate to contact us!")}</p>
+  <p>${_("Best regards,")}</p>
+  <p>${_("Your Learning Service Team")}</p>
   <p>
-    ETC - Enterprise Training Center <br>
-    1030 Wien, Modecenterstrasse 22/Office 4 <br>
-    T: +43 1 533 1 777 - 0 <br>
-    mailto: LSS@etc.at <br>
-    http://www.etc.at
+  ${_("ETC - Enterprise Training Center")} <br>
+  ${_("1030 Vienna, Modecenterstrasse 22/Office 4")} <br>
+  ${_("T:")} +43 1 533 1 777 - 0 <br>
+  ${_("mailto")}: LSS@etc.at <br>
+  http://www.etc.at
   </p>
   <p>
-    Kennzeichnung gem. § 14 UGB: <br>
-    ETC – Enterprise Training Center GmbH,  Modecenterstrasse 22/Office 4, 1030 Wien | Handelsgericht Wien, FN 430941m
+  ${_("Labeling according to § 14 UGB")}: <br>
+  ${_("ETC - Enterprise Training Center GmbH, Modecenterstrasse 22 / Office 4, 1030 Vienna | Commercial Court Vienna, FN 430941m")}
   </p>
 </%block>
 
