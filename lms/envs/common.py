@@ -2259,6 +2259,7 @@ INSTALLED_APPS = (
 
     'edeos',
     'referrals',
+    'partners',
 )
 
 # Migrations which are not in the standard module "migrations"
