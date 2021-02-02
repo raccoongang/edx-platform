@@ -14,6 +14,7 @@ ALLOWED_IMG_FORMATS = (
     ".png",
     ".svg",
     ".jpeg",
+    ".jpg",
 )
 PARTNERS_ASSETS_DIRNAME = "partners_assets"
 
@@ -70,7 +71,8 @@ class Partner(TimeStampedModel):
         max_length=255,
         help_text="Partner website url.",
     )
-    image = models.ImageField(
+    # ImageField doesn't support SVG
+    image = models.FileField(
         upload_to=partners_assets_path,
         validators=[validate_partner_image],
         help_text="Partner logo image.",
