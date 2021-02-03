@@ -97,8 +97,9 @@ class QuestionInline(admin.TabularInline):
 
 @admin.register(VideoLesson)
 class VideoLessonAdmin(admin.ModelAdmin):
-    list_display = ('user', 'course')
+    list_display = ('user', 'course', 'video_id')
     inlines = [QuestionInline]
+    search_fields = ['course', 'video_id', 'user__username']
 
 
 class ProfileForm(forms.ModelForm):
