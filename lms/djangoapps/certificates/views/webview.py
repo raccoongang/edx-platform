@@ -115,7 +115,7 @@ def _update_certificate_context(context, course, user_certificate, platform_name
 
     # Translators:  EEF format of the date
     context['certificate_date_issued_eef'] = _('{day}/{month}/{year}').format(
-        day=date.day,
+        day=date.strftime("%d"),
         month=date.strftime("%m"),
         year=date.year
     )
