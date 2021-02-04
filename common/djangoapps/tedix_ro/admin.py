@@ -97,9 +97,12 @@ class QuestionInline(admin.TabularInline):
 
 @admin.register(VideoLesson)
 class VideoLessonAdmin(admin.ModelAdmin):
-    list_display = ('user', 'course', 'video_id')
+    list_display = ('user', 'profile_name', 'course', 'video_id')
     inlines = [QuestionInline]
-    search_fields = ['course', 'video_id', 'user__username']
+    search_fields = ['course', 'video_id', 'user__username', 'user__profile__name']
+
+    def profile_name(self, obj):
+        return obj.user.profile.name
 
 
 class ProfileForm(forms.ModelForm):
