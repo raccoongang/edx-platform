@@ -1754,19 +1754,19 @@ msgstr "Întrebare {0}"
 
 #: common/lib/capa/capa/capa_problem.py common/lib/xmodule/xmodule/capa_base.py
 msgid "Incorrect"
-msgstr "Incorect/ă"
+msgstr "Greșit"
 
 #: common/lib/capa/capa/capa_problem.py common/lib/xmodule/xmodule/capa_base.py
 msgid "Correct"
-msgstr "Corect/ă"
-
-#: common/lib/capa/capa/inputtypes.py
-msgid "correct"
 msgstr "Corect"
 
 #: common/lib/capa/capa/inputtypes.py
+msgid "correct"
+msgstr "corect"
+
+#: common/lib/capa/capa/inputtypes.py
 msgid "incorrect"
-msgstr "incorect"
+msgstr "greșit"
 
 #: common/lib/capa/capa/inputtypes.py
 msgid "partially correct"
@@ -25133,3 +25133,9 @@ msgstr ""
 #: themes/red-theme/lms/templates/static_templates/donate.html
 msgid "Donatii"
 msgstr ""
+
+msgid "out of"
+msgstr "din"
+
+msgid "Partially correct"
+msgstr "Parțial corect"

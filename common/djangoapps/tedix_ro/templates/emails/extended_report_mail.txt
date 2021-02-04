@@ -16,16 +16,31 @@ ${_("Students Progress for {roll} '{username}'").format(roll=roll, username=user
 
 ${_("Student name")}: ${ user_data['full_name'] }
 ${_("Activity report for lesson")}: ${ lesson_report['course_name'] }
-${_("Lesson completed")}: ${_("Yes") if user_data['completion'] == 1 else _("No")}
-${_("Number of question completed from first attempt")}: ${ user_data['percent'] }% (${user_data['count_answer_first_attempt']} ${_("out of")} ${len(user_data['questions'])})
+${_("Lesson completed")}: ${_("Yes") if user_data['completion'] else _("No")}
+${_("Score")}: ${ user_data['percent'] }
 
-    %for question_name, question_count_answer, done, question_type in user_data['questions']:
-    ${_("Question")} ${loop.index + 1}: ${ question_name }
-        %if question_count_answer == 1:
+    %for question_data in user_data['questions']:
+    <%
+        earned = question_data['score_info'].get('earned', 0)
+        possible = question_data['score_info'].get('possible', 0)
+    %>
+    ${_("Question")} ${loop.index + 1}: ${ question_data['title'] }
+        %if question_data['type'] == 'video_lesson':
+            %if question_data['attempts'] == 1:
         ${ ('First attempt') }
+            %else:
+        ${ question_data['attempts'] } ${ _("attempts") }
+            %endif
         %else:
-        ${ question_count_answer } ${ _("attempts") }
+            %if earned > 0 and earned < possible:
+        ${_('Partially correct')}
+            %elif earned!=0 and earned == possible:
+        ${_('Correct')}
+            %else:
+        ${_('Incorrect')}
+            %endif
         %endif
+        ${ earned } / ${ possible }
     %endfor
 %endfor
 
