@@ -622,7 +622,7 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
             should_enable = len(demand_hints) > 0
         else:
             should_enable = len(demand_hints) > 0 and hint_index + 1 < len(demand_hints)
-        return len(demand_hints) > 0, should_enable
+        return len(demand_hints) > 0, should_enable and self.is_submitted()
 
     def get_demand_hint(self, hint_index):
         """
