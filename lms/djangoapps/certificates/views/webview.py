@@ -113,6 +113,13 @@ def _update_certificate_context(context, course, user_certificate, platform_name
         year=date.year
     )
 
+    # Translators:  EEF format of the date
+    context['certificate_date_issued_eef'] = _('{day}/{month}/{year}').format(
+        day=date.strftime("%d"),
+        month=date.strftime("%m"),
+        year=date.year
+    )
+
     # Translators:  This text represents the verification of the certificate
     context['document_meta_description'] = _('This is a valid {platform_name} certificate for {user_name}, '
                                              'who participated in {partner_short_name} {course_number}').format(
