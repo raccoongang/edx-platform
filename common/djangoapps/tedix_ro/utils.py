@@ -295,14 +295,16 @@ def all_problems_have_answer(user, course_grade):
     """
     Return "True" if all problems have attempts
     """
-    for problem in course_grade.problem_scores:
-        student_module = StudentModule.objects.filter(
-            student=user,
-            module_state_key=problem
-        ).first()
-        if not student_module or not json.loads(student_module.state).get("done"):
-            return False
-    return True
+    if course_grade.problem_scores:
+        for problem in course_grade.problem_scores:
+            student_module = StudentModule.objects.filter(
+                student=user,
+                module_state_key=problem
+            ).first()
+            if not student_module or not json.loads(student_module.state).get("done"):
+                return False
+        return True
+    return False
 
 
 def video_lesson_completed(user, course_key):
