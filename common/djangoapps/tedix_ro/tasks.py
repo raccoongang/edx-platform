@@ -18,7 +18,7 @@ from xmodule.modulestore.django import modulestore
 
 from .models import InstructorProfile, StudentCourseDueDate, StudentReportSending
 from .sms_client import SMSClient
-from .utils import report_data_preparation, lesson_course_grade, video_lesson_complited, all_problems_have_answer
+from .utils import report_data_preparation, lesson_course_grade, video_lesson_completed, all_problems_have_answer
 
 
 @periodic_task(run_every=crontab(hour='15', minute='30'))
@@ -86,13 +86,13 @@ def send_extended_reports_by_deadline():
         user = due_date.student.user
         course_id = due_date.course_id
         course_grade = lesson_course_grade(user, course_id)
-        if not (course_grade.passed and all_problems_have_answer(user, course_grade)
-            and video_lesson_complited(user, course_id)):
+        if not (all_problems_have_answer(user, course_grade)
+            and video_lesson_completed(user, course_id)):
             send_student_extended_reports(user.id, str(course_id))
 
 
 @task
-def send_student_complited_report(user_id, course_id):
+def send_student_completed_report(user_id, course_id):
     """
     Sends an extended report to the student if  questions have attempts and
     the course has been passed and the grade has been raised
@@ -108,9 +108,9 @@ def send_student_complited_report(user_id, course_id):
             }
         )
         course_grade = lesson_course_grade(user, course_key)
-        if (video_lesson_complited(user, course_key) and course_grade.passed and
-            (created or student_report_sending.grade < course_grade.percent) and
+        if (video_lesson_completed(user, course_key) and created and
             all_problems_have_answer(user, course_grade)):
+
             student_report_sending.grade = course_grade.percent
             student_report_sending.save()
             send_student_extended_reports(user_id, course_id)

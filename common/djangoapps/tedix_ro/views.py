@@ -71,7 +71,7 @@ from .utils import (
     get_payment_link,
     report_data_preparation,
     get_all_questions_count,
-    get_count_answers_first_attempt,
+    get_points_earned_possible,
     reset_student_progress,
 )
 
@@ -175,8 +175,6 @@ def my_reports(request):
         course_due_date = None
         students_classes = []
         students_list = []
-        modulestore_course = modulestore().get_course(course_key)
-        all_questions_count = get_all_questions_count(modulestore_course)
 
         if user.is_superuser:
             students_list = CourseEnrollment.objects.filter(
@@ -220,23 +218,24 @@ def my_reports(request):
                     student__user__in=students_list,
                 ).values_list('student__user_id', flat=True).distinct()
 
-                students_in_class_count = 0
-                count_answers_first_attempt = 0
+                students_in_class_count = possible = earned = st_earned = st_possible = 0
+
                 for student in students_in_class:
                     students_in_class_count += 1
-                    count_answers_first_attempt += get_count_answers_first_attempt(student, course_key)[0]
-                average_score = 'n/a'
-                if count_answers_first_attempt:
-                    average_score = '{:.1f}%'.format(
-                        (float(count_answers_first_attempt)/students_in_class_count) / all_questions_count * 100
-                    )
+                    st_earned, st_possible, complete = get_points_earned_possible(course_key, user_id=student)
+                    earned += st_earned
+                    possible += st_possible
+                average_score = 0
+
+                if earned:
+                    average_score = (float(earned) / possible) * 10
 
                 data.append({
                     'course_name': course_name,
                     'report_link': course_report_link,
                     'due_date': user_due_date_data(user, course_due_date),
                     'classroom': students_class,
-                    'average_score': average_score,
+                    'average_score': round(average_score, 2) if average_score else 'n/a',
                 })
 
         if hasattr(user, 'studentprofile'): 
@@ -246,11 +245,11 @@ def my_reports(request):
                 course_id=course_key,
             ).first()
 
-            count_answers_first_attempt, answered_questions_count = get_count_answers_first_attempt(user, course_key)
+            earned, possible, complete = get_points_earned_possible(course_key, user=user)
             average_score = 'n/a'
-            if count_answers_first_attempt:
-                average_score = '{:.1f}%'.format(
-                    float(count_answers_first_attempt) / all_questions_count * 100
+            if earned:
+                average_score = '{:.2f}'.format(
+                    float(earned) / possible * 10
                 )
 
 
@@ -258,7 +257,7 @@ def my_reports(request):
                 course_due_date_data = user_due_date_data(user, course_due_date.due_date)
 
                 data.append({
-                    'complete': bool(answered_questions_count == all_questions_count),
+                    'complete': complete,
                     'course_name': course_name,
                     'report_link': course_report_link,
                     'due_date': course_due_date_data,

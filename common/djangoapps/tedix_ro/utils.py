@@ -4,12 +4,16 @@ Helper Methods
 import json
 import hashlib
 import time
+
+from django.core.exceptions import ImproperlyConfigured
 from urlparse import urljoin
 
 from babel.dates import format_datetime
 from django.apps import apps
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.urls import reverse
+from django.utils.translation import ugettext as _
 
 from courseware.models import StudentModule
 from lms.djangoapps.grades.config.models import PersistentGradesEnabledFlag
@@ -17,6 +21,7 @@ from lms.djangoapps.grades.course_data import CourseData
 from lms.djangoapps.grades.course_grade import CourseGrade
 from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from xmodule.modulestore.django import modulestore
 
 from util.request import course_id_from_url
 
@@ -29,6 +34,26 @@ def get_payment_link(user):
     )
 
 
+def get_common_possible(user, course):
+        """
+        Get possible score for each problem in a course.
+
+        Arguments:
+            - user (obj): django model User.
+            - course (obj): coursemodule instance
+        Return dict {'block_id': <possible_score>}.
+        """
+        course_grade = CourseGradeFactory().read(user, course)
+        courseware_summary = course_grade.chapter_grades.values()
+        score_mapping = {}
+        for chapter in courseware_summary:
+            for section in chapter['sections']:
+                for problem, score in section.problem_scores.items():
+                    score_mapping[problem.block_id] = int(score.possible)
+        
+        return score_mapping
+
+
 def report_data_preparation(user, course):
     """
     Takes user and course
@@ -38,7 +63,11 @@ def report_data_preparation(user, course):
     questions_data = []
     header = []
     video_questions = Question.objects.filter(video_lesson__course=course.id)
-    count_answer_first_attempt = 0
+    total_earned = 0
+    raw_possible = 0
+    raw_earned = 0
+    video_earned_count = 0
+    video_possible_count = 0
 
     questions = video_questions.values('question_id', 'video_lesson__video_id').distinct()
     user_video_questions = video_questions.filter(video_lesson__user=user)
@@ -46,86 +75,157 @@ def report_data_preparation(user, course):
     if user_video_questions:
         for video_question in user_video_questions:
             questions = questions.exclude(video_lesson__video_id=video_question.video_lesson.video_id)
-            questions_data.append((video_question.question_id, video_question.attempt_count, True, 'video_lesson'))
             header.append((video_question.question_id, 'video_lesson'))
+            score_info = {
+                'earned': 0,
+                'possible': 1
+            }
+            raw_possible += 1
+            video_earned_count += 1 if video_question.attempt_count > 0 else 0
+            video_possible_count += 1
+
             if video_question.attempt_count == 1:
-                count_answer_first_attempt += 1
+                total_earned += 1
+                score_info['earned'] = 1
+                raw_earned += 1
 
-    for question in questions:
-        questions_data.append((question.get('question_id'), 0, False, 'video_lesson'))
-        header.append((question.get('question_id'), 'video_lesson'))
+            questions_data.append({
+                'title': video_question.question_id,
+                'attempts': video_question.attempt_count,
+                'done': True,
+                'type': 'video_lesson',
+                'score_info': score_info
+            })
+    else:
+        for question in questions:
+            score_info = {
+                'earned': 0,
+                'possible': 1
+            }
+            raw_possible += 1
+            video_possible_count += 1
+            questions_data.append({
+                'title': question.get('question_id'),
+                'attempts': 0,
+                'done': False,
+                'type': 'video_lesson',
+                'score_info': score_info
+            })
 
+    course_complete_list = []
+
+    # in case when StudentModule does not exist we get possible score from here
+    common_possible = get_common_possible(user, course)
+            
+
+    # this huge loop is only for getting problem's display_name, otherwise we could use StudentModule instances
     for section in course.get_children():
         for subsection in section.get_children():
             for unit in subsection.get_children():
                 for problem in unit.get_children():
                     if problem.location.block_type == 'problem':
                         student_module = StudentModule.objects.filter(student=user, module_state_key=problem.location).first()
+                        score_info = {}
                         if student_module:
-                            attempts = json.loads(student_module.state).get("attempts", 0)
-                            correct_map = json.loads(student_module.state).get('correct_map', {})
-                            correctness = correct_map.values()[0].get('correctness') if correct_map else False
-                            done = True if correctness == 'correct' else False
-                            if attempts == 1 and done:
-                                count_answer_first_attempt += 1
+                            student_module_state = json.loads(student_module.state)
+                            score = student_module_state['score']
+
+                            # done means an answer was submitted
+                            course_complete_list.append(student_module_state.get('done'))
+
+                            raw_possible += score['raw_possible']
+                            raw_earned += score['raw_earned']
+                            score_info = {
+                                'earned': score['raw_earned'],
+                                'possible': score['raw_possible']
+                            }
                         else:
-                            attempts = 0
-                            done = False
+                            score_info = {
+                                'earned': 0,
+                                'possible': common_possible[problem.location.block_id]
+                            }
+                            raw_possible += common_possible[problem.location.block_id]
+
                         header.append((problem.display_name, 'problem'))
-                        questions_data.append((problem.display_name, attempts, done, 'problem'))
+                        questions_data.append({
+                            'title': problem.display_name,
+                            'type': 'problem',
+                            'score_info': score_info,
+                        })
 
-
-    percent = float(count_answer_first_attempt) / len(questions_data) * 100 if questions_data else 100
+    percent = (float(raw_earned) / raw_possible) * 10 if raw_possible else 0
     report_data = {
         'full_name': user.profile.name or user.username,
-        'completion': not bool([item for item in questions_data if item[1] == 0]) and lesson_course_grade(user, course.id).passed,
+        'completion': len(course_complete_list) > 0 and all(course_complete_list) and video_earned_count >= video_possible_count,
         'questions': questions_data,
-        'count_answer_first_attempt': count_answer_first_attempt,
-        'percent': '{:.1f}%'.format(percent) if percent else 'n/a',
+        'earned': raw_earned,
+        'percent': '{} ({} {} {})'.format(round(percent, 2) or 0, raw_earned, _('out of'), raw_possible) if percent else 'n/a',
     }
     return header, report_data
 
 
-def get_all_questions_count(course):
+def get_all_questions_count(course_key):
     """
-    Returns the number of problem and questions from the video lessons by the course in modulestore
-    """
-    Question = apps.get_model('tedix_ro', 'Question')
-    questions_count = 0
-
-    for section in course.get_children():
-        for subsection in section.get_children():
-            for unit in subsection.get_children():
-                for problem in unit.get_children():
-                    if problem.location.block_type == 'problem':
-                        questions_count += 1
-
-    questions_count += Question.objects.filter(video_lesson__course=course.id).values('question_id', 'video_lesson__video_id').distinct().count()
-
-    return questions_count
-
-
-def get_count_answers_first_attempt(user, course_key):
-    """
-    Returns the number of answered questions on the first attempt and the number
-    of answered questions for the student on the course
+    Return a number off all questions in a course including video lessons.
     """
     Question = apps.get_model('tedix_ro', 'Question')
-    questions = Question.objects.filter(video_lesson__course=course_key, video_lesson__user=user)
-    questions_count = questions.exclude(attempt_count=0).count()
-    count_answers_first_attempt = questions.filter(attempt_count=1).count()
-    student_modules = StudentModule.objects.filter(student=user, course_id=course_key, module_type='problem')
+    questions_count = Question.objects.filter(video_lesson__course=course_key).values('question_id', 'video_lesson__video_id').distinct().count()
+
+    student_modules = StudentModule.objects.filter(course_id=course_key, module_type='problem')
+    all_q = 0
+
     for student_module in student_modules:
-        attempts = json.loads(student_module.state).get('attempts', 0)
-        correct_map = json.loads(student_module.state).get('correct_map', {})
-        correctness = correct_map.values()[0].get('correctness') if correct_map else False
-        done = True if correctness == 'correct' else False
-        if attempts == 1 and done:
-            count_answers_first_attempt += 1
-        if done:
-            questions_count += 1
+        student_module_state = json.loads(student_module.state)
+        raw_possible = student_module_state['score']['raw_possible']
 
-    return count_answers_first_attempt, questions_count
+        all_q += raw_possible
+    return all_q + questions_count
+
+
+def get_points_earned_possible(course_key, user_id=None, user=None):
+    """
+    Get points earned and possible for a user in the certain course.
+    
+    Arguments:
+        user_id (int)
+        user (obj): Django model User or user_id
+        course_key (obj): CourseKeyField
+    Return:
+        earned (int): points the user earned.
+        possible (int): points possible in the course.
+        complete (bool): whether all problem were submitted.
+    """
+    assert user_id is not None or user is not None
+
+    user_id = user_id or user.id
+
+    Question = apps.get_model('tedix_ro', 'Question')
+    questions = Question.objects.filter(video_lesson__course=course_key, video_lesson__user=user_id)
+    possible_questions_by_course = Question.objects.filter(video_lesson__course=course_key).values_list('question_id').distinct().count()
+    possible = possible_questions_by_course
+    earned = questions.filter(attempt_count=1).count()
+    student_modules = StudentModule.objects.filter(student=user_id, course_id=course_key, module_type='problem')
+    complete_list = []
+
+    if student_modules:
+        for student_module in student_modules:
+            student_module_state = json.loads(student_module.state)
+            attempts = student_module_state.get('attempts', 0)
+            raw_possible = student_module_state['score']['raw_possible']
+            raw_earned = student_module_state['score']['raw_earned']
+
+            complete_list.append(student_module_state.get('done'))
+
+            possible += raw_possible
+            if attempts == 1:
+                earned += raw_earned
+    else: # when student didn't get to the lesson page
+        course = modulestore().get_course(course_key)
+        user = user or User.objects.get(id=user_id)
+        common_possible_for_course = get_common_possible(user, course)
+        possible += int(sum(common_possible_for_course.values()))
+
+    return earned, possible, len(complete_list) > 0 and all(complete_list)
 
 
 def light_report_data_preparation(user, course):
@@ -198,12 +298,12 @@ def all_problems_have_answer(user, course_grade):
             student=user,
             module_state_key=problem
         ).first()
-        if not student_module or not json.loads(student_module.state).get("attempts"):
+        if not student_module or not json.loads(student_module.state).get("done"):
             return False
     return True
 
 
-def video_lesson_complited(user, course_key):
+def video_lesson_completed(user, course_key):
     """
     Return "True" if all question in video lesson has attempts
     """

@@ -13,15 +13,27 @@ from django.utils.translation import ugettext as _
         </h4>
         <h2 class="hd hd-2" style="padding-bottom: 20px">${_('Questions answered report break-down:')}</h2>
 
-        %for question_name, question_count_answer, done, question_type in user_data['questions']:
+        %for question_data in user_data['questions']:
+        <%
+            earned = question_data['score_info'].get('earned', 0)
+            possible = question_data['score_info'].get('possible', 0)
+        %>
             <h4 class="hd hd-6" style="padding-bottom: 20px">
-                ${_("Video question") if question_type == 'video_lesson' else _("Question")} ${loop.index + 1}: <span style="color: #24ad97;">${ question_name }</span><br>
-                    ${_('Number of attempts:')}
-                %if question_count_answer == 1 and done:
-                    <span style="color: green;">${ _('First attempt') }</span>
+                %if question_data['type'] == 'video_lesson':
+                    ${_("Video question")} ${loop.index + 1}: <span style="color: #24ad97;">${ question_data['title'] }</span><br>
+                        ${_('Number of attempts:')}
+                    <span style="color: red;">${ question_data['attempts'] } ${ _("attempt") if question_data['attempts'] == 1 else _("attempts")}</span>
                 %else:
-                    <span style="color: red;">${ question_count_answer } ${ _("attempt") if question_count_answer == 1 else _("attempts")}</span>
+                    ${_("Question")} ${loop.index + 1}: <span style="color: #24ad97;">${ question_data['title'] }</span><br>
+                    %if earned > 0 and earned < possible:
+                        <span style="color: #d3620b;">${_('Partially correct')}</span>
+                    %elif earned == possible:
+                        <span style="color: #24ad97;">${_('Correct')}</span>
+                    %else:
+                        <span style="color: #ff0900;">${_('Incorrect')}</span>
+                    %endif
                 %endif
+                <span>(${ earned } / ${ possible })</span>
             </h4>
         %endfor
     %endfor
