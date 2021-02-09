@@ -98,6 +98,8 @@ def report_data_preparation(user, course):
             })
     else:
         for question in questions:
+            question_id = question.get('question_id')
+            header.append((question_id, 'video_lesson'))
             score_info = {
                 'earned': 0,
                 'possible': 1
@@ -105,7 +107,7 @@ def report_data_preparation(user, course):
             raw_possible += 1
             video_possible_count += 1
             questions_data.append({
-                'title': question.get('question_id'),
+                'title': question_id,
                 'attempts': 0,
                 'done': False,
                 'type': 'video_lesson',
