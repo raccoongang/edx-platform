@@ -100,18 +100,19 @@ def send_student_completed_report(user_id, course_id):
     user = User.objects.filter(id=user_id).first()
     if user and hasattr(user, 'studentprofile'):
         course_key = CourseKey.from_string(course_id)
-        student_report_sending, created = StudentReportSending.objects.get_or_create(
+        student_report_sending_exists = StudentReportSending.objects.filter(
             course_id=course_key,
-            user=user,
-            defaults={
-                'grade': 0
-            }
-        )
+            user=user
+        ).exists()
         course_grade = lesson_course_grade(user, course_key)
-        if (video_lesson_completed(user, course_key) and created and
+        if (video_lesson_completed(user, course_key) and not student_report_sending_exists and
             all_problems_have_answer(user, course_grade)):
 
-            student_report_sending.grade = course_grade.percent
+            student_report_sending = StudentReportSending(
+                course_id=course_key,
+                user=user,
+                grade=course_grade.percent or 0
+            )
             student_report_sending.save()
             send_student_extended_reports(user_id, course_id)
 
