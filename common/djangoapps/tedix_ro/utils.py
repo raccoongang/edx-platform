@@ -208,10 +208,15 @@ def get_points_earned_possible(course_key, user_id=None, user=None):
     user_id = user_id or user.id
 
     Question = apps.get_model('tedix_ro', 'Question')
-    questions = Question.objects.filter(video_lesson__course=course_key, video_lesson__user=user_id)
+    student_questions = Question.objects.filter(video_lesson__course=course_key, video_lesson__user=user_id)
+
     possible_questions_by_course = Question.objects.filter(video_lesson__course=course_key).values_list('question_id').distinct().count()
     possible = possible_questions_by_course
-    earned = questions.filter(attempt_count=1).count()
+
+    earned = video_questions_complete = student_questions.filter(attempt_count=1).count()
+
+    common_questions_with_attempts = student_questions.filter(attempt_count__gt=0).count()
+
     student_modules = StudentModule.objects.filter(student=user_id, course_id=course_key, module_type='problem')
     complete_list = []
 
@@ -233,7 +238,8 @@ def get_points_earned_possible(course_key, user_id=None, user=None):
         common_possible_for_course = get_common_possible(user, course)
         possible += int(sum(common_possible_for_course.values()))
 
-    return earned, possible, len(complete_list) > 0 and all(complete_list)
+    complete = len(complete_list) > 0 and all(complete_list) and video_questions_complete != 0 and common_questions_with_attempts >= possible_questions_by_course
+    return earned, possible, complete
 
 
 def light_report_data_preparation(user, course):
