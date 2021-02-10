@@ -88,6 +88,7 @@ from openedx.core.djangoapps.user_api.preferences import api as preferences_api
 from openedx.core.djangolib.markup import HTML
 from openedx.features.course_experience import course_home_url_name
 from openedx.features.enterprise_support.api import get_dashboard_consent_notification
+from partners.models import Partner
 from referrals.models import ActivatedLink, Referral
 from shoppingcart.api import order_history
 from shoppingcart.models import CourseRegistrationCode, DonationConfiguration
@@ -210,6 +211,8 @@ def index(request, extra_context=None, user=AnonymousUser()):
     context.update(extra_context)
 
     context['programs_list'] = get_programs_with_type(include_hidden=False)
+
+    context["partners"] = Partner.objects.all() or []
 
     return render_to_response('index.html', context)
 
