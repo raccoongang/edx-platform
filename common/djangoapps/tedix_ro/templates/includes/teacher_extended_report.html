@@ -37,9 +37,11 @@ from django.utils.translation import ugettext as _
                                     <span style="color: #ff0900;">${ question_data['attempts'] } ${ _("attempt") if question_data['attempts'] == 1 else _("attempts")}</span>
                                 %endif
                             %else:
-                                %if earned > 0 and earned < possible:
+                                %if not question_data['score_info'].get('done'):
+                                    <span style="color: #767676;">n/a</span>
+                                %elif earned > 0 and earned < possible:
                                     <span style="color: #d3620b;">${_('Partially correct')}</span>
-                                %elif earned!=0 and earned == possible:
+                                %elif earned !=0 and earned == possible:
                                     <span style="color: #24ad97;">${_('Correct')}</span>
                                 %else:
                                     <span style="color: #ff0900;">${_('Incorrect')}</span>

@@ -134,7 +134,8 @@ def report_data_preparation(user, course):
                             attempts = student_module_state.get('attempts', 0)
 
                             # done means an answer was submitted
-                            course_complete_list.append(student_module_state.get('done'))
+                            done = student_module_state.get('done')
+                            course_complete_list.append(done)
 
                             if attempts == 1:
                                 raw_earned += score['raw_earned']
@@ -142,12 +143,14 @@ def report_data_preparation(user, course):
                             raw_possible += score['raw_possible']
                             score_info = {
                                 'earned': score['raw_earned'],
-                                'possible': score['raw_possible']
+                                'possible': score['raw_possible'],
+                                'done': done
                             }
                         else:
                             score_info = {
                                 'earned': 0,
-                                'possible': common_possible[problem.location.block_id]
+                                'possible': common_possible[problem.location.block_id],
+                                'done': False
                             }
                             raw_possible += common_possible[problem.location.block_id]
 
