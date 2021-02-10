@@ -131,12 +131,15 @@ def report_data_preparation(user, course):
                         if student_module:
                             student_module_state = json.loads(student_module.state)
                             score = student_module_state['score']
+                            attempts = student_module_state.get('attempts', 0)
 
                             # done means an answer was submitted
                             course_complete_list.append(student_module_state.get('done'))
 
+                            if attempts == 1:
+                                raw_earned += score['raw_earned']
+
                             raw_possible += score['raw_possible']
-                            raw_earned += score['raw_earned']
                             score_info = {
                                 'earned': score['raw_earned'],
                                 'possible': score['raw_possible']
