@@ -22,7 +22,11 @@ from django.utils.translation import ugettext as _
                 %if question_data['type'] == 'video_lesson':
                     ${_("Video question")} ${loop.index + 1}: <span style="color: #24ad97;">${ question_data['title'] }</span><br>
                         ${_('Number of attempts:')}
-                    <span style="color: red;">${ question_data['attempts'] } ${ _("attempt") if question_data['attempts'] == 1 else _("attempts")}</span>
+                        %if question_data['attempts'] == 1:
+                            <span style="color: green;">${ _('First attempt') }</span>
+                        %else:
+                            <span style="color: red;">${ question_data['attempts'] } ${ _("attempt") if question_data['attempts'] == 1 else _("attempts")}</span>
+                        %endif
                 %else:
                     ${_("Question")} ${loop.index + 1}: <span style="color: #24ad97;">${ question_data['title'] }</span><br>
                     %if earned > 0 and earned < possible:
