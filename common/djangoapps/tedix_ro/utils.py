@@ -132,17 +132,19 @@ def report_data_preparation(user, course):
                             student_module_state = json.loads(student_module.state)
                             score = student_module_state['score']
                             attempts = student_module_state.get('attempts', 0)
+                            st_earned = 0
 
                             # done means an answer was submitted
                             done = student_module_state.get('done')
                             course_complete_list.append(done)
 
                             if attempts == 1:
+                                st_earned = score['raw_earned']
                                 raw_earned += score['raw_earned']
 
                             raw_possible += score['raw_possible']
                             score_info = {
-                                'earned': score['raw_earned'],
+                                'earned': st_earned,
                                 'possible': score['raw_possible'],
                                 'done': done
                             }
@@ -207,6 +209,8 @@ def get_points_earned_possible(course_key, user_id=None, user=None):
 
     user_id = user_id or user.id
 
+    user = user or User.objects.get(id=user_id)
+
     Question = apps.get_model('tedix_ro', 'Question')
     student_questions = Question.objects.filter(video_lesson__course=course_key, video_lesson__user=user_id)
 
@@ -217,26 +221,56 @@ def get_points_earned_possible(course_key, user_id=None, user=None):
 
     common_questions_with_attempts = student_questions.filter(attempt_count__gt=0).count()
 
-    student_modules = StudentModule.objects.filter(student=user_id, course_id=course_key, module_type='problem')
+    # student_modules = StudentModule.objects.filter(student=user_id, course_id=course_key, module_type='problem')
     complete_list = []
 
-    if student_modules:
-        for student_module in student_modules:
-            student_module_state = json.loads(student_module.state)
-            attempts = student_module_state.get('attempts', 0)
-            raw_possible = student_module_state['score']['raw_possible']
-            raw_earned = student_module_state['score']['raw_earned']
+    course = modulestore().get_course(course_key)
+    common_possible = get_common_possible(user, course)
 
-            complete_list.append(student_module_state.get('done'))
+    # raw_earned = 0
+    # raw_possible = 0
 
-            possible += raw_possible
-            if attempts == 1:
-                earned += raw_earned
-    else: # when student didn't get to the lesson page
-        course = modulestore().get_course(course_key)
-        user = user or User.objects.get(id=user_id)
-        common_possible_for_course = get_common_possible(user, course)
-        possible += int(sum(common_possible_for_course.values()))
+    for section in course.get_children():
+        for subsection in section.get_children():
+            for unit in subsection.get_children():
+                for problem in unit.get_children():
+                    if problem.location.block_type == 'problem':
+                        student_module = StudentModule.objects.filter(student=user, module_state_key=problem.location).first()
+                        if student_module:
+                            student_module_state = json.loads(student_module.state)
+                            score = student_module_state['score']
+                            attempts = student_module_state.get('attempts', 0)
+                            st_earned = 0
+
+                            # done means an answer was submitted
+                            done = student_module_state.get('done')
+                            complete_list.append(done)
+
+                            if attempts == 1:
+                                st_earned = score['raw_earned']
+                                earned += score['raw_earned']
+
+                            possible += score['raw_possible']
+                        else:
+                            possible += common_possible[problem.location.block_id]
+
+    # if student_modules:
+    #     for student_module in student_modules:
+    #         student_module_state = json.loads(student_module.state)
+    #         attempts = student_module_state.get('attempts', 0)
+    #         raw_possible = student_module_state['score']['raw_possible']
+    #         raw_earned = student_module_state['score']['raw_earned']
+
+    #         complete_list.append(student_module_state.get('done'))
+
+    #         possible += raw_possible
+    #         if attempts == 1:
+    #             earned += raw_earned
+    # else: # when student didn't get to the lesson page
+    #     course = modulestore().get_course(course_key)
+    #     user = user or User.objects.get(id=user_id)
+    #     common_possible_for_course = get_common_possible(user, course)
+    #     possible += int(sum(common_possible_for_course.values()))
 
     complete = len(complete_list) > 0 and all(complete_list) and video_questions_complete != 0 and common_questions_with_attempts >= possible_questions_by_course
     return earned, possible, complete
