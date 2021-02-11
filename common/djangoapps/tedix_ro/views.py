@@ -216,6 +216,7 @@ def my_reports(request):
                     due_date__contains=course_due_date,
                     student__classroom__name=students_class,
                     student__user__in=students_list,
+                    course_id=course_key,
                 ).values_list('student__user_id', flat=True).distinct()
 
                 students_in_class_count = possible = earned = st_earned = st_possible = 0
@@ -304,23 +305,23 @@ def extended_report(request, course_key):
     modulestore_course = modulestore().get_course(course_key)
     if user.is_superuser:
         if classroom:
-            query_params['studentprofile__classroom__name'] = classroom
+            query_params['student__classroom__name'] = classroom
         if due_date:
-            query_params['studentprofile__course_due_dates__due_date__contains'] = due_date
-        for student in User.objects.filter(
-                courseenrollment__course_id=course.id,
-                **query_params
-            ).exclude(id=user.id).select_related('profile').distinct():
+            query_params['due_date__contains'] = due_date # TODO: consider using __year, __month, __day lookups
+        users_by_due_date = StudentCourseDueDate.objects.filter(course_id=course_key, **query_params).values_list('student__user_id').distinct()
+        users = User.objects.filter(id__in=users_by_due_date)
+        for student in users:
             header, user_data = report_data_preparation(student, modulestore_course)
             report_data.append(user_data)
     elif user.is_staff and hasattr(user, 'instructorprofile'):
         if classroom:
-            query_params['classroom__name'] = classroom
+            query_params['student__classroom__name'] = classroom
         if due_date:
-            query_params['course_due_dates__due_date__contains'] = due_date
+            query_params['due_date__contains'] = due_date # TODO: consider using __year, __month, __day lookups
+        users_by_due_date = StudentCourseDueDate.objects.filter(course_id=course_key, **query_params).values_list('student__user_id').distinct()
         for student_profile in user.instructorprofile.students.filter(
                 user__courseenrollment__course_id=course.id,
-                **query_params
+                user_id__in=users_by_due_date
             ).select_related('user__profile').distinct():
             header, user_data = report_data_preparation(student_profile.user, modulestore_course)
             report_data.append(user_data)

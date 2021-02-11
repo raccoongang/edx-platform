@@ -238,7 +238,10 @@ def get_points_earned_possible(course_key, user_id=None, user=None):
         common_possible_for_course = get_common_possible(user, course)
         possible += int(sum(common_possible_for_course.values()))
 
-    complete = len(complete_list) > 0 and all(complete_list) and video_questions_complete != 0 and common_questions_with_attempts >= possible_questions_by_course
+    complete = len(complete_list) > 0 and all(complete_list) and (
+            (video_questions_complete == 0 and possible_questions_by_course==0) or \
+            (video_questions_complete != 0 and common_questions_with_attempts >= possible_questions_by_course)
+        )
     return earned, possible, complete
 
 
