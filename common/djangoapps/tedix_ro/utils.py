@@ -142,7 +142,7 @@ def report_data_preparation(user, course):
 
                             raw_possible += score['raw_possible']
                             score_info = {
-                                'earned': score['raw_earned'],
+                                'earned': score['raw_earned'] if attempts == 1 else 0,
                                 'possible': score['raw_possible'],
                                 'done': done
                             }
