@@ -295,7 +295,7 @@ class DjangoXBlockUserStateClient(XBlockUserStateClient):
 
             num_fields_before = num_fields_after = num_new_fields_set = len(state)
             num_fields_updated = 0
-            if not created:
+            if not created and state.get('attempts', 0) < 2:
                 if student_module.state is None:
                     current_state = {}
                 else:

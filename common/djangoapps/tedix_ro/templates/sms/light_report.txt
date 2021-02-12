@@ -12,8 +12,8 @@ ${static.get_platform_name()}
 ${_("Student name")}: ${ user_data['full_name'] }
 
 ${_("Activity report for lesson")}: "${ lesson_report['course_name'] }"
-${_("Lesson completed")}: ${_('Yes') if user_data['completion'] == 1 else _('No')}
-${_("Number of question completed from first attempt")}: ${ user_data['percent'] }% (${user_data['count_answer_first_attempt']} out of ${len(user_data['questions'])})
+${_("Lesson completed")}: ${_('Yes') if user_data['completion'] else _('No')}
+${_("Score")}: ${ user_data['percent'] }
 ${_("Lesson deadline")}: ${due_date}
 %endfor
 
