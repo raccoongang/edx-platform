@@ -404,6 +404,9 @@ FEATURES = {
 
     # Disable bulk email send from random different addresses when 'False'
     'BULK_EMAIL_FROM_DIFFERENT_ADDRESSES': False,
+
+    # Use platform user language to generate custom certificate when 'True'
+    'USE_USER_LANG_FOR_CUSTOM_CERT': False,
 }
 
 # Settings for the course reviews tool template and identification key, set either to None to disable course reviews

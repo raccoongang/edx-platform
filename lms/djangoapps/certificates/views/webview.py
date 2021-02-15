@@ -260,7 +260,7 @@ def _update_course_context(request, context, course, course_key, platform_name):
                                                               '{partner_short_name}.').format(
             partner_short_name=context['organization_short_name'],
             platform_name=platform_name)
-        
+
     # Translators: this text describes the course duration
     course_duration = CourseOverview.get_from_id(course.id).effort
     if course_duration:
@@ -582,7 +582,11 @@ def render_html_view(request, user_id, course_id):
     # For the standard certificate template, use the user language. For custom templates, use
     # the language associated with the template.
     user_language = translation.get_language()
-    certificate_language = custom_template_language if custom_template else user_language
+    use_user_lang = configuration_helpers.get_value(
+        "USE_USER_LANG_FOR_CUSTOM_CERT",
+        settings.FEATURES.get('USE_USER_LANG_FOR_CUSTOM_CERT', False)
+    )
+    certificate_language = custom_template_language if not use_user_lang and custom_template else user_language
 
     # Generate the certificate context in the correct language, then render the template.
     with translation.override(certificate_language):
