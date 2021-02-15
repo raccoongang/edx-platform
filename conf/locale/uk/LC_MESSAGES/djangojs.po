@@ -4746,6 +4746,11 @@ msgstr "Не вдалося перевизначити оцінку задачі
 msgid "New Password"
 msgstr "Новий пароль"
 
+#: common/static/bundles/PasswordResetConfirmation.js
+#: lms/static/js/student_account/components/PasswordResetConfirmation.jsx
+msgid "Confirm Password"
+msgstr "Підтвердіть новий пароль"
+
 #: lms/static/js/student_account/components/PasswordResetInput.jsx
 msgid "Error: "
 msgstr "Помилка:"
@@ -5063,6 +5068,15 @@ msgstr "Пароль"
 msgid "Reset Your Password"
 msgstr "Скинути свій пароль"
 
+#: common/static/bundles/PasswordResetConfirmation.js
+#: lms/static/js/student_account/components/PasswordResetConfirmation.jsx
+msgid "Enter and confirm your new password."
+msgstr "Введіть ваш новий пароль."
+
+#: lms/static/xmodule_js/common_static/bundles/PasswordResetConfirmation.js
+msgid "Reset My Password"
+msgstr "Змінити пароль"
+
 #: lms/static/js/student_account/views/account_settings_factory.js
 msgid "Check your email account for instructions to reset your password."
 msgstr ""
@@ -5259,6 +5273,10 @@ msgstr "Приєднання"
 #: lms/static/js/student_account/views/account_settings_fields.js
 msgid "Successfully unlinked."
 msgstr "Успішно роз’єднано."
+
+#: lms/static/js/student_account/views/account_settings_view.js
+msgid "Account Information"
+msgstr "Інформація вашого облікового запису"
 
 #: lms/static/js/verify_student/views/image_input_view.js
 msgid "Image Upload Error"
@@ -11356,4 +11374,4 @@ msgstr "Вкажіть email, який ви вказували при реєст
 
 #: lms/templates/student_account/password_reset.underscore
 msgid "Reset my password"
-msgstr "Відновити пароль"
+msgstr "Змінити пароль"
