@@ -1719,7 +1719,10 @@ def generate_registration_codes(request, course_id):
         'sale_price': sale_price,
         'quantity': quantity,
         'registration_codes': registration_codes,
-        'currency_symbol': settings.PAID_COURSE_REGISTRATION_CURRENCY[1],
+        'currency_symbol': configuration_helpers.get_value(
+            'PAID_COURSE_REGISTRATION_CURRENCY',
+            settings.PAID_COURSE_REGISTRATION_CURRENCY
+        )[1],
         'course_url': course_url,
         'platform_name': configuration_helpers.get_value('platform_name', settings.PLATFORM_NAME),
         'dashboard_url': dashboard_url,

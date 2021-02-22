@@ -16,6 +16,7 @@ from instructor_analytics.basic import enrolled_students_features, list_may_enro
 from instructor_analytics.csvs import format_dictlist
 from lms.djangoapps.instructor.paidcourse_enrollment_report import PaidCourseEnrollmentReportProvider
 from lms.djangoapps.instructor_task.models import ReportStore
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from shoppingcart.models import (
     CouponRedemption,
     CourseRegCodeItem,
@@ -278,7 +279,10 @@ def get_executive_report(course_id):
         avg_price_paid = gross_revenue / total_seats
 
     course = get_course_by_id(course_id, depth=0)
-    currency = settings.PAID_COURSE_REGISTRATION_CURRENCY[1]
+    currency = configuration_helpers.get_value(
+        'PAID_COURSE_REGISTRATION_CURRENCY',
+        settings.PAID_COURSE_REGISTRATION_CURRENCY
+    )[1]
 
     return {
         'display_name': course.display_name,

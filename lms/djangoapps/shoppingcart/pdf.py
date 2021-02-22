@@ -91,7 +91,10 @@ class PDFInvoice(object):
         """
 
         # From settings
-        self.currency = settings.PAID_COURSE_REGISTRATION_CURRENCY[1]
+        self.currency = configuration_helpers.get_value(
+            'PAID_COURSE_REGISTRATION_CURRENCY',
+            settings.PAID_COURSE_REGISTRATION_CURRENCY
+        )[1]
         self.logo_path = configuration_helpers.get_value("PDF_RECEIPT_LOGO_PATH", settings.PDF_RECEIPT_LOGO_PATH)
         self.cobrand_logo_path = configuration_helpers.get_value(
             "PDF_RECEIPT_COBRAND_LOGO_PATH", settings.PDF_RECEIPT_COBRAND_LOGO_PATH
