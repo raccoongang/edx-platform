@@ -16724,9 +16724,9 @@ msgid "Enrollment is Closed"
 msgstr "Einschreibung ist geschlossen"
 
 #: lms/templates/courseware/course_about.html
-msgid "Add {course_name} to Cart <span>({price} USD)</span>"
+msgid "Add {course_name} to Cart <span>({price} {currency})</span>"
 msgstr ""
-"Den Kurs {course_name} zum Warenkorb hinzufügen <span>({price} USD)</span>"
+"Den Kurs {course_name} zum Warenkorb hinzufügen <span>({price} {currency})</span>"
 
 #: lms/templates/courseware/course_about.html
 msgid "Enroll in {course_name}"
@@ -16966,8 +16966,8 @@ msgid "Original Price"
 msgstr "Original Preis"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${oldPrice}"
-msgstr "${oldPrice}"
+msgid "{currency_sign}{oldPrice}"
+msgstr "{currency_sign}{oldPrice}"
 
 #: lms/templates/courseware/program_marketing.html
 msgid "Discounted Price"
@@ -17048,20 +17048,20 @@ msgid "{number_of_courses} courses in program"
 msgstr "{number_of_courses} Kurse im Programm"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "Price (USD)"
-msgstr "Preis (USD)"
+msgid "Price ({currency})"
+msgstr "Preis ({currency})"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${newPrice}{htmlEnd} for entire program"
-msgstr "${newPrice}{htmlEnd} für das gesamte Programm"
+msgid "{currency_sign}{newPrice}{htmlEnd} for entire program"
+msgstr "{currency_sign}{newPrice}{htmlEnd} für das gesamte Programm"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "You save ${discount_value} {currency}"
-msgstr "Sie sparen ${discount_value} {currency}"
+msgid "You save {currency_sign}{discount_value} {currency}"
+msgstr "Sie sparen {currency_sign}{discount_value} {currency}"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${full_program_price} for entire program"
-msgstr "${full_program_price} für das gesamte Programm"
+msgid "{currency_sign}{full_program_price} for entire program"
+msgstr "{currency_sign}{full_program_price} für das gesamte Programm"
 
 #: lms/templates/courseware/program_marketing.html
 msgid "Courses in the {}"
