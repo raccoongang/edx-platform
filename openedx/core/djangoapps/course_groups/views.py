@@ -20,6 +20,7 @@ from six import text_type
 
 from courseware.courses import get_course_with_access
 from edxmako.shortcuts import render_to_response
+from student.models import UserProfile
 from util.json_request import JsonResponse, expect_json
 
 from . import cohorts
@@ -78,15 +79,60 @@ def _get_cohort_representation(cohort, course):
     """
     group_id, partition_id = cohorts.get_group_info_for_cohort(cohort)
     assignment_type = cohorts.get_assignment_type(cohort)
+    cohort_users_and_leaders = cohort.users.all() | User.objects.filter(profile__cohort_leader=cohort.cohort)
     return {
         'name': cohort.name,
         'id': cohort.id,
         'user_count': cohort.users.filter(courseenrollment__course_id=course.location.course_key,
                                           courseenrollment__is_active=1).count(),
+        'cohort_users': [
+            {
+                'email': u.email,
+                'username': u.username,
+                'is_leader': True if u.profile.cohort_leader.filter(pk=cohort.cohort.pk).exists() else False
+            } for u in cohort_users_and_leaders.distinct()
+        ],
         'assignment_type': assignment_type,
         'user_partition_id': partition_id,
         'group_id': group_id,
     }
+
+
+@require_POST
+@ensure_csrf_cookie
+@expect_json
+@login_required
+def handle_cohort_leader(request, course_key_string, cohort_id):
+    """
+    Endpoint to assign cohort leader role.
+
+    Expects 'email': email in POST data.
+
+    Return json dict of:
+        {'success': True} or
+        {'success': False, 'msg': error_msg}
+    """
+    email = request.POST.get('email')
+    if not email:
+        log.debug('No user email received')
+        return json_http_response({'success': False,
+                                   'msg': 'No user email specified'})
+    course_key = CourseKey.from_string(course_key_string)
+    try:
+        course_cohort = cohorts.get_cohort_by_id(course_key, cohort_id).cohort
+    except CourseUserGroup.DoesNotExist:
+        log.debug('Cohort with id [{}] does not exist'.format(cohort_id))
+        return json_http_response({'success': False,
+                                   'msg': 'Cohort with id [{}] does not exist'.format(cohort_id)})
+    try:
+        candidate_profile = UserProfile.objects.get(user__email=email)
+    except UserProfile.DoesNotExist:
+        log.debug('User with email {} does not exist'.format(email))
+        return json_http_response({'success': False,
+                                   'msg': 'User with email {} does not exist'.format(email)})
+    candidate_profile.cohort_leader.add(course_cohort)
+
+    return json_http_response({'success': True})
 
 
 @require_http_methods(("GET", "PATCH"))

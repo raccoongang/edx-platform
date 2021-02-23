@@ -10,7 +10,8 @@
                     'click .wrapper-tabs .tab': 'selectTab',
                     'click .tab-content-settings .action-save': 'saveSettings',
                     'click .tab-content-settings .action-cancel': 'cancelSettings',
-                    'submit .cohort-management-group-add-form': 'addStudents'
+                    'submit .cohort-management-group-add-form': 'addStudents',
+                    'submit .cohort-management-add-leader': 'setLeader'
                 },
 
                 initialize: function(options) {
@@ -124,6 +125,33 @@
                     }
                 },
 
+                setLeader: function(event) {
+                    event.preventDefault();
+                    var self = this,
+                        input = this.$('.cohort-leader-select'),
+                        cohorts = this.cohorts,
+                        assign_url = this.model.url() + '/assign_leader',
+                        email = input.val().trim(),
+                        cohortId = this.model.id;
+
+                    if (email) {
+                        $.post(
+                            assign_url, {'email': email}
+                        ).done(function(assign_resp) {
+                            self.refreshCohorts().done(function() {
+                                // Find the equivalent cohort in the new collection and select it
+                                var cohort = cohorts.get(cohortId);
+                                self.setCohort(cohort);
+                            });
+                        }).fail(function() {
+                            self.showLeaderErrorMessage(gettext('Error assigning leader.'), true);
+                        });
+                    } else {
+                        self.showLeaderErrorMessage(gettext('Select a user to assign the role.'), true);
+                        input.val('');
+                    }
+                },
+
                 /**
                 * Refresh the cohort collection to get the latest set as well as up-to-date counts.
                 */
@@ -153,6 +181,27 @@
 
                     this.errorNotifications = new NotificationView({
                         el: this.$('.cohort-errors'),
+                        model: model
+                    });
+                    this.errorNotifications.render();
+                },
+
+                showLeaderErrorMessage: function(message, removeConfirmations, model) {
+                    if (removeConfirmations && this.confirmationNotifications) {
+                        this.undelegateViewEvents(this.confirmationNotifications);
+                        this.confirmationNotifications.$el.html('');
+                        this.confirmationNotifications = null;
+                    }
+                    if (model === undefined) {
+                        model = new NotificationModel();
+                    }
+                    model.set('type', 'error');
+                    model.set('title', message);
+
+                    this.undelegateViewEvents(this.errorNotifications);
+
+                    this.errorNotifications = new NotificationView({
+                        el: this.$('.cohort-leader-errors'),
                         model: model
                     });
                     this.errorNotifications.render();

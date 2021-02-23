@@ -7,6 +7,34 @@
     </ul>
 
     <div class="cohort-management-group-add tab-content tab-content-manage_students" tabindex="-1">
+        <form action="" method="post" id="cohort-management-add-leader" class="cohort-management-add-leader">
+            <h4 class="hd hd-3 form-title"><%- gettext('Add a leader for this cohort') %></h4>
+            <div class="cohort-leader-errors" aria-live="polite" tabindex="-1"></div>
+            <label for="cohort-leader-select"><%- gettext('Select a user to assign the Cohort Leader role:')%></label>
+            <select id="cohort-leader-select" class="input cohort-leader-select" name="cohort-leader-select">
+                <option value=""></option>
+                <% var cohort_users = cohort.get('cohort_users') %>
+                <% _.each(cohort_users, function(user) { %>
+                    <%
+                    var label = interpolate(
+                        gettext('%(email)s (%(username)s)'),
+                        { email: user.email, username: user.username },
+                        true
+                    );
+                    %>
+                <option value="<%- user.email %>"
+                <% if (user.is_leader) { %>
+                    selected
+                <% } %>
+                > <%- label %></option>
+            <% }); %>
+            </select>
+            <div class="form-actions">
+                <button class="form-submit button action-primary">
+                    <%- gettext('Assign') %>
+                </button>
+            </div>
+        </form>
         <form action="" method="post" id="cohort-management-group-add-form" class="cohort-management-group-add-form">
 
             <h4 class="hd hd-3 form-title"><%- gettext('Add learners to this cohort') %></h4>

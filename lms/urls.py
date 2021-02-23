@@ -570,6 +570,13 @@ urlpatterns += [
         name='list_cohort',
     ),
     url(
+        r'^courses/{}/cohorts/(?P<cohort_id>[0-9]+)/assign_leader$'.format(
+            settings.COURSE_KEY_PATTERN,
+        ),
+        course_groups_views.handle_cohort_leader,
+        name='handle_cohort_leader',
+    ),
+    url(
         r'^courses/{}/cohorts/(?P<cohort_id>[0-9]+)/add$'.format(
             settings.COURSE_KEY_PATTERN,
         ),
