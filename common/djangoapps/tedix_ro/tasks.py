@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime, timedelta
 from urlparse import urljoin
 
@@ -20,23 +21,43 @@ from .models import InstructorProfile, StudentCourseDueDate, StudentReportSendin
 from .sms_client import SMSClient
 from .utils import report_data_preparation, lesson_course_grade, video_lesson_completed, all_problems_have_answer
 
+TEACHER_EXTENDED_REPORT_TIME_RANGE = 1 # in minutes
 
-@periodic_task(run_every=crontab(hour='15', minute='30'))
+
+@periodic_task(run_every=crontab(minute='*/{}'.format(TEACHER_EXTENDED_REPORT_TIME_RANGE)))
 def send_teacher_extended_reports():
     """
     Sends extended report for the teacher with all his courses and all his students
     """
     datetime_now = datetime.utcnow().replace(tzinfo=pytz.UTC)
-    for instructor in InstructorProfile.objects.filter(user__is_staff=True).prefetch_related('students'):
+    course_due_dates = StudentCourseDueDate.objects.filter(
+        due_date__range=(datetime_now - timedelta(minutes=TEACHER_EXTENDED_REPORT_TIME_RANGE), datetime_now)
+    ).exclude(
+        student__instructor__user_id=None
+    ).values(
+        'course_id', 'student__user_id', 'student__instructor__user_id'
+    ).distinct()
+    grouped_due_dates = defaultdict(dict)
+    for course_due_date in course_due_dates:
+        instructor_user_id = course_due_date['student__instructor__user_id']
+        if 'courses' not in grouped_due_dates[instructor_user_id]:
+            grouped_due_dates[instructor_user_id] = {
+                'courses': defaultdict(list)
+            }
+        grouped_due_dates[instructor_user_id]['courses'][course_due_date['course_id']].append(
+            course_due_date['student__user_id']
+        )
+
+    for instructor_user_id in grouped_due_dates:
+        instructor_user = User.objects.get(id=instructor_user_id)
         lesson_reports = []
-        for enrollment in instructor.user.courseenrollment_set.filter():
-            course = modulestore().get_course(enrollment.course_id)
-            if course.end and course.end + timedelta(1) < datetime_now:
-                continue
+        for course_id in grouped_due_dates[instructor_user_id]['courses']:
+            course = modulestore().get_course(course_id)
             report_data = []
             header = []
-            for student_profile in instructor.students.filter(user__courseenrollment__course_id=course.id):
-                header, user_data = report_data_preparation(student_profile.user, course)
+            for student_user_id in grouped_due_dates[instructor_user_id]['courses'][course_id]:
+                student_user = User.objects.get(id=student_user_id)
+                header, user_data = report_data_preparation(student_user, course)
                 report_data.append(user_data)
             if report_data:
                 lesson_reports.append({
@@ -51,11 +72,11 @@ def send_teacher_extended_reports():
         if lesson_reports:
             subject = _(u'{platform_name}: Report for {username}').format(
                 platform_name=settings.PLATFORM_NAME,
-                username=instructor.user.profile.name or instructor.user.username
+                username=instructor_user.profile.name or instructor_user.username
             )
             context = {
                 'lms_url': configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
-                'user': instructor.user,
+                'user': instructor_user,
                 'lesson_reports': lesson_reports
             }
             html_message = render_to_string(
@@ -70,7 +91,7 @@ def send_teacher_extended_reports():
                 'email_from_address',
                 settings.DEFAULT_FROM_EMAIL
             )
-            send_mail(subject, txt_message, from_address, [instructor.user.email], html_message=html_message)
+            send_mail(subject, txt_message, from_address, [instructor_user.email], html_message=html_message)
 
 
 @periodic_task(run_every=crontab(hour='15', minute='30'))
