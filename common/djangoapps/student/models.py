@@ -60,6 +60,7 @@ from courseware.models import (
 )
 from enrollment.api import _default_course_mode
 
+from openedx.core.djangoapps.course_groups.models import CourseCohort
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.request_cache import clear_cache, get_cache
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
@@ -417,6 +418,7 @@ class UserProfile(models.Model):
     allow_certificate = models.BooleanField(default=1)
     bio = models.CharField(blank=True, null=True, max_length=3000, db_index=False)
     profile_image_uploaded_at = models.DateTimeField(null=True, blank=True)
+    cohort_leader = models.ManyToManyField(CourseCohort, blank=True)
 
     @property
     def has_profile_image(self):

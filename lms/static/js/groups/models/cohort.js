@@ -6,6 +6,7 @@
             defaults: {
                 name: '',
                 user_count: 0,
+                cohort_users: [],
                 /**
                 * Indicates how students are added to the cohort. Will be "manual" (signifying manual assignment) or
                 * "random" (indicating students are randomly assigned).
