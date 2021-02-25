@@ -168,7 +168,12 @@ def my_reports(request):
     data = []
     utc_now_date = datetime.datetime.utcnow().date()
     from collections import OrderedDict, defaultdict
-
+    filter_lt = {
+        'due_date__lt': utc_now_date
+    }
+    filter__gte = {
+        'due_date__gte': utc_now_date
+    }
     is_student = False
     if user.is_superuser:
         filter_ = {}
@@ -182,10 +187,15 @@ def my_reports(request):
         filter_ = {
             'student': user.studentprofile.id
         }
-
-    x = StudentCourseDueDate.objects.filter(**filter_).values(
+    f = dict(filter_lt.items() + filter_.items())
+    y = StudentCourseDueDate.objects.filter(**f).values(
+        'course_id', 'student__classroom__name', 'student__user', 'due_date'
+    ).order_by('-due_date')[:200]
+    f = dict(filter__gte.items() + filter_.items())
+    z = StudentCourseDueDate.objects.filter(**f).values(
         'course_id', 'student__classroom__name', 'student__user', 'due_date'
     ).order_by('-due_date')
+    x = z.union(y)
 
 
     my_d = {}
