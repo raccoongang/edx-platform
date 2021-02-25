@@ -194,12 +194,12 @@ def my_reports(request):
         if due_date not in my_d:
             my_d[due_date] = defaultdict(dict)
 
-        if i['course_id'] not in my_d[due_date]:
-            my_d[due_date][i['course_id']] = defaultdict(dict)
+        if i['student__classroom__name'] not in my_d[due_date]:
+            my_d[due_date][i['student__classroom__name']] = defaultdict(dict)
 
-        if i['student__classroom__name'] not in my_d[due_date][i['course_id']]:
-            my_d[due_date][i['course_id']] = defaultdict(list)
-        my_d[due_date][i['course_id']][i['student__classroom__name']].append(i['student__user'])
+        if i['course_id'] not in my_d[due_date][i['student__classroom__name']]:
+            my_d[due_date][i['student__classroom__name']] = defaultdict(list)
+        my_d[due_date][i['student__classroom__name']][i['course_id']].append(i['student__user'])
 
     course_overs = CourseOverview.objects.filter(id__in=map(lambda c: c['course_id'], x)).values('id', 'display_name')
 
@@ -208,12 +208,13 @@ def my_reports(request):
         course_names_dict[c_o['id']] = c_o['display_name']
 
     for due_date in my_d:
-        students_in_class_count = possible = earned = st_earned = st_possible = 0
-        for course_k in my_d[due_date]:
-            course_report_link = reverse('extended_report', kwargs={'course_key': unicode(course_k)} )
-            for class_name in my_d[due_date][course_k]:
-                students_in_class = my_d[due_date][course_k][class_name]
+        for class_name in my_d[due_date]:
+            students_in_class_count = possible = earned = st_earned = st_possible = 0
+            for course_k in my_d[due_date][class_name]:
+                students_in_class = my_d[due_date][class_name][course_k]
                 users_by_class = StudentProfile.objects.filter(user__in=students_in_class)
+                course_report_link = reverse('extended_report', kwargs={'course_key': unicode(course_k)} )
+
                 for u in users_by_class:
                     students_in_class_count += 1
                     st_earned, st_possible, complete = get_points_earned_possible(course_k, user_id=u.user_id)
@@ -240,6 +241,38 @@ def my_reports(request):
                             'classroom': class_name,
                             'average_score': round(average_score, 2) if average_score else 'n/a',
                         })
+        
+        # for course_k in my_d[due_date]:
+        #     course_report_link = reverse('extended_report', kwargs={'course_key': unicode(course_k)} )
+        #     for class_name in my_d[due_date][course_k]:
+        #         students_in_class = my_d[due_date][course_k][class_name]
+        #         users_by_class = StudentProfile.objects.filter(user__in=students_in_class)
+        #         for u in users_by_class:
+        #             students_in_class_count += 1
+        #             st_earned, st_possible, complete = get_points_earned_possible(course_k, user_id=u.user_id)
+        #             earned += st_earned
+        #             possible += st_possible
+        #             average_score = 0
+
+        #             if earned:
+        #                 average_score = (float(earned) / possible) * 10
+        #             if is_student:
+        #                 data.append({
+        #                     'complete': complete,
+        #                     'course_name': course_names_dict[course_k],
+        #                     'report_link': course_report_link,
+        #                     'due_date': user_due_date_data(user, due_date),
+        #                     'classroom': class_name,
+        #                     'average_score': average_score,
+        #                 })
+        #             else:
+        #                 data.append({
+        #                     'course_name': course_names_dict[course_k],
+        #                     'report_link': course_report_link,
+        #                     'due_date': user_due_date_data(user, due_date),
+        #                     'classroom': class_name,
+        #                     'average_score': round(average_score, 2) if average_score else 'n/a',
+        #                 })
 
     context = {
         'data': data,
