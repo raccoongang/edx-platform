@@ -188,17 +188,17 @@ def my_reports(request):
     ).order_by('-due_date')
 
 
-    my_d = defaultdict(dict)
+    my_d = {}
     for i in x:
         due_date = i['due_date'].date()
         if due_date not in my_d:
-            my_d[due_date] = defaultdict(dict)
+            my_d[due_date] = {}
 
         if i['student__classroom__name'] not in my_d[due_date]:
-            my_d[due_date][i['student__classroom__name']] = defaultdict(dict)
+            my_d[due_date][i['student__classroom__name']] = {}
 
         if i['course_id'] not in my_d[due_date][i['student__classroom__name']]:
-            my_d[due_date][i['student__classroom__name']] = defaultdict(list)
+            my_d[due_date][i['student__classroom__name']][i['course_id']] = []
         my_d[due_date][i['student__classroom__name']][i['course_id']].append(i['student__user'])
 
     course_overs = CourseOverview.objects.filter(id__in=map(lambda c: c['course_id'], x)).values('id', 'display_name')
