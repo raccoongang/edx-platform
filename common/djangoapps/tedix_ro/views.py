@@ -190,15 +190,16 @@ def my_reports(request):
 
     my_d = defaultdict(dict)
     for i in x:
-        if i['due_date'] not in my_d:
-            my_d[i['due_date']] = defaultdict(dict)
+        due_date = i['due_date'].date()
+        if due_date not in my_d:
+            my_d[due_date] = defaultdict(dict)
 
-        if i['course_id'] not in my_d[i['due_date']]:
-            my_d[i['due_date']][i['course_id']] = defaultdict(dict)
+        if i['course_id'] not in my_d[due_date]:
+            my_d[due_date][i['course_id']] = defaultdict(dict)
 
-        if i['student__classroom__name'] not in my_d[i['due_date']][i['course_id']]:
-            my_d[i['due_date']][i['course_id']] = defaultdict(list)
-        my_d[i['due_date']][i['course_id']][i['student__classroom__name']].append(i['student__user'])
+        if i['student__classroom__name'] not in my_d[due_date][i['course_id']]:
+            my_d[due_date][i['course_id']] = defaultdict(list)
+        my_d[due_date][i['course_id']][i['student__classroom__name']].append(i['student__user'])
 
     course_overs = CourseOverview.objects.filter(id__in=map(lambda c: c['course_id'], x)).values('id', 'display_name')
 
@@ -239,104 +240,6 @@ def my_reports(request):
                             'classroom': class_name,
                             'average_score': round(average_score, 2) if average_score else 'n/a',
                         })
-
-    # for course_overview in courses:
-    #     course_name = course_overview.display_name
-    #     course_key = course_overview.id
-    #     course_report_link = reverse('extended_report', kwargs={'course_key': unicode(course_key)} )
-    #     course_due_date = None
-    #     students_classes = []
-    #     students_list = []
-
-    #     if user.is_superuser:
-    #         students_list = CourseEnrollment.objects.filter(
-    #             course=course_overview, 
-    #             user__studentprofile__isnull=False
-    #         ).values_list('user_id', flat=True).distinct()
-    #         students_classes = StudentProfile.objects.filter(
-    #             user__in=students_list
-    #         ).values_list('classroom__name', flat=True).distinct()
-
-    #     elif hasattr(user, 'instructorprofile'):
-    #         teacher_students = user.instructorprofile.students.all().values_list('user_id', flat=True)
-    #         students_list = CourseEnrollment.objects.filter(
-    #             course=course_overview, 
-    #             user__in=teacher_students
-    #         ).values_list('user_id', flat=True).distinct()
-
-    #         students_classes = user.instructorprofile.students.filter(
-    #             user__in=students_list
-    #         ).values_list('classroom__name', flat=True).distinct()
-
-    #     for students_class in students_classes:
-    #         course_due_dates_past = StudentCourseDueDate.objects.filter(
-    #             student__user__in=students_list,
-    #             student__classroom__name=students_class,
-    #             course_id=course_key,
-    #             due_date__lt=utc_now_date,
-    #         ).order_by('-due_date').dates('due_date', 'day')[:200]
-
-    #         course_due_dates = StudentCourseDueDate.objects.filter(
-    #             student__user__in=students_list,
-    #             student__classroom__name=students_class,
-    #             course_id=course_key,
-    #             due_date__gte=utc_now_date,
-    #         ).dates('due_date', 'day').union(course_due_dates_past)
-
-    #         for course_due_date in course_due_dates:
-    #             students_in_class = StudentCourseDueDate.objects.filter(
-    #                 due_date__contains=course_due_date,
-    #                 student__classroom__name=students_class,
-    #                 student__user__in=students_list,
-    #                 course_id=course_key,
-    #             ).values_list('student__user_id', flat=True).distinct()
-
-    #             students_in_class_count = possible = earned = st_earned = st_possible = 0
-
-    #             for student in students_in_class:
-    #                 students_in_class_count += 1
-    #                 st_earned, st_possible, complete = get_points_earned_possible(course_key, user_id=student)
-    #                 earned += st_earned
-    #                 possible += st_possible
-    #             average_score = 0
-
-    #             if earned:
-    #                 average_score = (float(earned) / possible) * 10
-
-    #             data.append({
-    #                 'course_name': course_name,
-    #                 'report_link': course_report_link,
-    #                 'due_date': user_due_date_data(user, course_due_date),
-    #                 'classroom': students_class,
-    #                 'average_score': round(average_score, 2) if average_score else 'n/a',
-    #             })
-
-    #     if hasattr(user, 'studentprofile'): 
-    #         student_class = user.studentprofile.classroom
-    #         course_due_date = StudentCourseDueDate.objects.filter(
-    #             student=user.studentprofile, 
-    #             course_id=course_key,
-    #         ).first()
-
-    #         earned, possible, complete = get_points_earned_possible(course_key, user=user)
-    #         average_score = 'n/a'
-    #         if earned:
-    #             average_score = '{:.2f}'.format(
-    #                 float(earned) / possible * 10
-    #             )
-
-
-    #         if course_due_date:
-    #             course_due_date_data = user_due_date_data(user, course_due_date.due_date)
-
-    #             data.append({
-    #                 'complete': complete,
-    #                 'course_name': course_name,
-    #                 'report_link': course_report_link,
-    #                 'due_date': course_due_date_data,
-    #                 'classroom': student_class,
-    #                 'average_score': average_score,
-    #             })
 
     context = {
         'data': data,
