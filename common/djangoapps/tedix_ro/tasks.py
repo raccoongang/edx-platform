@@ -31,9 +31,8 @@ def send_teacher_extended_reports():
     """
     datetime_now = datetime.utcnow().replace(tzinfo=pytz.UTC)
     course_due_dates = StudentCourseDueDate.objects.filter(
-        due_date__range=(datetime_now - timedelta(minutes=TEACHER_EXTENDED_REPORT_TIME_RANGE), datetime_now)
-    ).exclude(
-        student__instructor__user_id=None
+        due_date__range=(datetime_now - timedelta(minutes=TEACHER_EXTENDED_REPORT_TIME_RANGE), datetime_now),
+        student__instructor__user__is_staff=True
     ).values(
         'course_id', 'student__user_id', 'student__instructor__user_id'
     ).distinct()
