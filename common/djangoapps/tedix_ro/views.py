@@ -207,8 +207,8 @@ def my_reports(request):
     for c_o in course_overs:
         course_names_dict[c_o['id']] = c_o['display_name']
 
-    students_in_class_count = possible = earned = st_earned = st_possible = 0
     for due_date in my_d:
+        students_in_class_count = possible = earned = st_earned = st_possible = 0
         for course_k in my_d[due_date]:
             course_report_link = reverse('extended_report', kwargs={'course_key': unicode(course_k)} )
             for class_name in my_d[due_date][course_k]:
