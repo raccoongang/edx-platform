@@ -185,11 +185,11 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
 	<div class="modal-window" style="display:none;">
 		<div class="logo" style=""><img src="${static.url("images/logo.png" )}" style="width:70%;max-width:40vw;"></div>
 		<div style="text-align:center;padding: 5% 2%;font-weight: normal;">
-			<p style="color:#ec6765">Platforma TEDIX este GRATUITA in scop didactic.</p>
-			<p>Perioada de gratie a abonamentului dumneavoastra s-a incheiat.</p>
-			<p>Temele si lectiile se pot accesa gratuit pana la data limita stabilita de profesor.</p>
-			<p>Pentru aceasta tema/lectie ai depasit data limita stabilta de profesor.</p>
-			<p>Pentru a putea accesa aceasta lectie (sau alte lectii), alege un abonament apasand butonul de mai jos:</p>
+			<p style="color:#ec6765;text-align:center;">Platforma TEDIX este GRATUITA in scop didactic.</p>
+			<p style="text-align:left;font-size:14px;line-height: 1.3;">Temele se pot accesa gratuit <b> pana la data limita </b> de predare.</p>
+						<p style="padding: 20px;margin:0;"></p>
+			<p style="text-align:left;font-size:14px;line-height: 1.3;margin: 5px 0;">Perioada de TEST cu acces NELIMITAT s-a incheiat! </p>
+			<p style="text-align:left;font-size:14px;line-height: 1.3;margin: 10px 0 0 0;">Daca doriti sa accesati FARA RESTRICTII lectiile noastre, va rugam sa <b> alegeti un abonament </b> apasand butonul de mai jos:</p>
 		</Div>
 		<div class="modal-content"style="">
 		  <div style="display:none !important;"class="alert alert-danger mb-3 message-noplan">The set user doesn't have a payment plan</div>
@@ -200,10 +200,11 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
 	<div class="modal-window-plan" style="display:none;">
 		<div class="logo" style=""><img src="${static.url("images/logo.png" )}" style="width:70%;max-width:40vw;"></div>
 		<div style="text-align:center;padding: 5% 2%;font-weight: normal;">
-			<p style="color:#ec6765">Platforma TEDIX este GRATUITA in scop didactic.</p>
-			<p>Temele si lectiile se pot accesa gratuit pana la data limita stabilita de profesor.</p>
-			<p>Pentru aceasta tema/lectie ai depasit data limita stabilta de profesor.</p>
-			<p>Pentru a putea accesa aceasta lectie (sau alte lectii), alege un abonament apasand butonul de mai jos:</p>
+			<p style="color:#ec6765;text-align:center;line-height: 1.3;">Platforma TEDIX este GRATUITA in scop didactic.</p>
+			<p style="text-align:left;font-size:14px;line-height: 1.3;">Temele se pot accesa GRATUIT <b>pana la data limita </b> de predare!</p>
+			<p style="padding: 20px;margin:0;"></p>
+			<p style="text-align:left;font-size:14px;line-height: 1.3;margin: 5px 0;">Perioada de TEST cu acces NELIMITAT a-a incheiat!</p>
+			<p style="text-align:left;font-size:14px;line-height: 1.3;margin: 10px 0 0 0;">Daca doriti sa accesati FARA RESTRICTII lectiile noastre, va rugam sa <b>alegeti un abonament</b> apasand butonul de mai jos:</p>
 		</Div>
 		<div class="modal-content"style="">
 		  <div style="display:none !important;"class="alert alert-danger mb-3 message-noplan">The set user doesn't have a payment plan </div>
@@ -215,12 +216,14 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
         % else:
 		<div class="announces-green" style="background-color:#24AD97;padding:15px;color: #ffffff;text-align:center;display:block;">
 			<span class="" style="text-align:center;font-size:16px;">Beneficiezi de 30 zile GRATUITE. Inregistreaza-te </b> <a href="/register" class="" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display:inline-block;">Acum</a></span>
+			<span class="" style="text-align:center;font-size:16px;color:#000000;display: block;padding-top: 10px;">( Acces neconditionat la TEME si RAPOARTE )</span>
 		</div>	
 	<div  id="plans-modal" class="modal modal-window-plan hidden" style="display:block;width: 350px;top: 50px;border-radius: 10px;">
 		<div class="" style=""><img src="${static.url("images/logo.png" )}" style="width:40%;max-width:40vw;"></div>
 		<div style="text-align:center;padding: 8% 7%;font-weight: normal;">
 				<img src="${static.url("images/vezi-abonamente.png" )}" style="width:100%;max-height: 600px;">
 		</Div>
+		<p style="color:#ec6765;text-align:center;margin-bottom:15px;">Pentru ABONARE va rugam sa va conectati!</p>
 		<div class="modal-content"style="">
 			<a onClick="Showplans();return false;" href="#" class="btn btn-primary plans-modal" style="border-radius: 10px;">Închide</a>
 		</div>
