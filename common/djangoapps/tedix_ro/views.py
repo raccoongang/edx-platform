@@ -188,11 +188,7 @@ def my_reports(request):
 
 
     my_d = {}
-    counter = 0
     for i in x:
-        counter += 1
-        if counter == 200:
-            break
         due_date = i['due_date'].date()
         if due_date not in my_d:
             my_d[due_date] = {}
