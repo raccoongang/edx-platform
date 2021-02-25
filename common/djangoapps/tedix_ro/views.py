@@ -190,16 +190,33 @@ def my_reports(request):
     f = dict(filter_lt.items() + filter_.items())
     y = StudentCourseDueDate.objects.filter(**f).values(
         'course_id', 'student__classroom__name', 'student__user', 'due_date'
-    ).order_by('-due_date')[:200]
+    ).order_by('-due_date')
     f = dict(filter__gte.items() + filter_.items())
     z = StudentCourseDueDate.objects.filter(**f).values(
         'course_id', 'student__classroom__name', 'student__user', 'due_date'
     ).order_by('-due_date')
-    x = z.union(y)
+    # x = z.union(y)
 
 
     my_d = {}
-    for i in x:
+    for i in y:
+        due_date = i['due_date'].date()
+        if due_date not in my_d:
+            my_d[due_date] = {}
+
+        if i['student__classroom__name'] not in my_d[due_date]:
+            my_d[due_date][i['student__classroom__name']] = {}
+
+        if i['course_id'] not in my_d[due_date][i['student__classroom__name']]:
+            my_d[due_date][i['student__classroom__name']][i['course_id']] = []
+
+        my_d[due_date][i['student__classroom__name']][i['course_id']].append(i['student__user'])
+    
+    counter = 0
+    for i in z:
+        counter += 1
+        if counter ==200:
+            break
         due_date = i['due_date'].date()
         if due_date not in my_d:
             my_d[due_date] = {}
@@ -212,7 +229,7 @@ def my_reports(request):
 
         my_d[due_date][i['student__classroom__name']][i['course_id']].append(i['student__user'])
 
-    course_overs = CourseOverview.objects.filter(id__in=map(lambda c: c['course_id'], x)).values('id', 'display_name')
+    course_overs = CourseOverview.objects.filter(id__in=map(lambda c: c['course_id'], z.union(y))).values('id', 'display_name')
     print('-------------------- ', my_d)
     course_names_dict = {}
     for c_o in course_overs:
