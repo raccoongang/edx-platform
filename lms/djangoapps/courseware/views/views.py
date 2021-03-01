@@ -106,6 +106,7 @@ from xmodule.x_module import STUDENT_VIEW
 
 from ..entrance_exams import user_can_skip_entrance_exam
 from ..module_render import get_module, get_module_by_usage_id, get_module_for_descriptor
+from ast import literal_eval
 
 
 log = logging.getLogger("edx.courseware")
@@ -161,14 +162,26 @@ def courses(request):
 
     programs_list = get_programs_with_type(include_hidden=False)
 
-    return render_to_response(
+    cpa_cookie = {}
+    if 'cpa_cookie' not in request.COOKIES:
+        for var in request.GET:
+            cpa_cookie[var] = request.GET[var]
+
+    response = render_to_response(
         "courseware/courses.html",
         {
             'courses': courses_list,
             'course_discovery_meanings': course_discovery_meanings,
-            'programs_list': programs_list
+            'programs_list': programs_list,
         }
     )
+
+    expires = datetime.now() + timedelta(days=30)
+
+    if cpa_cookie:
+        response.set_cookie('cpa_cookie', cpa_cookie, expires=expires)
+
+    return response
 
 
 @ensure_csrf_cookie
@@ -736,8 +749,18 @@ def course_about(request, course_id):
         if configuration_helpers.get_value('ENABLE_MKTG_SITE', settings.FEATURES.get('ENABLE_MKTG_SITE', False)):
             return redirect(reverse(course_home_url_name(course.id), args=[unicode(course.id)]))
 
+        if 'cpa_cookie' in request.COOKIES:
+            cpa_cookie = request.COOKIES.get('cpa_cookie')
+            try:
+                cpa_cookie = literal_eval(cpa_cookie)
+            except ValueError:
+                pass
+
+        query_param = ("?" + urllib.urlencode(cpa_cookie)) if cpa_cookie else None
+
         if course.landing_url:
-            return redirect(course.landing_url)
+            cpa_url = course.landing_url + query_param
+            return redirect(cpa_url)
 
         registered = registered_for_course(course, request.user)
 
