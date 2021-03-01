@@ -756,7 +756,7 @@ def course_about(request, course_id):
             except ValueError:
                 pass
 
-        query_param = ("?" + urllib.urlencode(cpa_cookie)) if cpa_cookie else None
+        query_param = ("?" + urllib.urlencode(cpa_cookie)) if cpa_cookie else ""
 
         if course.landing_url:
             cpa_url = course.landing_url + query_param
