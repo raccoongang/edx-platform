@@ -732,6 +732,7 @@ def course_about(request, course_id):
     Display the course's about page.
     """
     course_key = CourseKey.from_string(course_id)
+    cpa_cookie = None
 
     if hasattr(course_key, 'ccx'):
         # if un-enrolled/non-registered user try to access CCX (direct for registration)
