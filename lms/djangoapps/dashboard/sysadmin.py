@@ -299,7 +299,7 @@ class Users(SysadminDashboardView):
         track.views.server_track(request, action, {}, page='user_sysdashboard')
 
         if action == 'download_users':
-            header = [_('username'), _('email'), ]
+            header = [_('username').encode('utf-8'), _('email'), ]
             data = ([u.username, u.email] for u in
                     (User.objects.all().iterator()))
             return self.return_csv('users_{0}.csv'.format(
