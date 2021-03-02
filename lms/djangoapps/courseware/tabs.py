@@ -343,10 +343,16 @@ def _get_dynamic_tabs(course, user):
     instead added dynamically based upon the user's role.
     """
     dynamic_tabs = list()
+    cohort_report_tab = None
     for tab_type in CourseTabPluginManager.get_tab_types():
         if getattr(tab_type, "is_dynamic", False):
             tab = tab_type(dict())
             if tab.is_enabled(course, user=user):
-                dynamic_tabs.append(tab)
+                if tab.type == 'cohort_report':
+                    cohort_report_tab = tab
+                else:
+                    dynamic_tabs.append(tab)
     dynamic_tabs.sort(key=lambda dynamic_tab: dynamic_tab.name)
+    if cohort_report_tab:
+        dynamic_tabs.append(cohort_report_tab)
     return dynamic_tabs
