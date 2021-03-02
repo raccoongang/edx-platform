@@ -143,7 +143,7 @@ def user_groups(user):
 
 
 @ensure_csrf_cookie
-@cache_if_anonymous()
+@cache_control(no_cache=True, no_store=True, must_revalidate=True)
 def courses(request):
     """
     Render "find courses" page.  The course selection work is done in courseware.courses.
