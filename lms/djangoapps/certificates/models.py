@@ -1036,13 +1036,19 @@ class CertificateTemplate(TimeStampedModel):
         null=True,
         blank=True,
         db_index=True,
-        help_text=_(u'Organization of template.'),
+        help_text=_(u'Organization id of template.'),
     )
     course_key = CourseKeyField(
         max_length=255,
         null=True,
         blank=True,
         db_index=True,
+    )
+    organization = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_(u'Organization of template.')
     )
     mode = models.CharField(
         max_length=125,

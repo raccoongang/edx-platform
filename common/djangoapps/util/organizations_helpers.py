@@ -4,6 +4,7 @@ Utility library for working with the edx-organizations app
 
 from django.conf import settings
 from django.db.utils import DatabaseError
+import re
 
 
 def add_organization(organization_data):
@@ -103,3 +104,10 @@ def organizations_enabled():
     Returns boolean indication if organizations app is enabled on not.
     """
     return settings.FEATURES.get('ORGANIZATIONS_APP', False)
+
+
+def get_course_organization(course_key):
+    organization = re.match(r'.*:(\w*).*', course_key).group(1)
+
+    return organization
+
