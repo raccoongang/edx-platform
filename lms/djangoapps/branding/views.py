@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 
 
 @ensure_csrf_cookie
-@cache_if_anonymous()
+@cache_control(no_cache=True, no_store=True, must_revalidate=True)
 def index(request):
     '''
     Redirects to main page -- info page if user authenticated, or marketing if not
@@ -77,7 +77,7 @@ def index(request):
 
 
 @ensure_csrf_cookie
-@cache_if_anonymous()
+@cache_control(no_cache=True, no_store=True, must_revalidate=True)
 def courses(request):
     """
     Render the "find courses" page. If the marketing site is enabled, redirect

@@ -726,7 +726,7 @@ class EnrollStaffView(View):
 
 @ensure_csrf_cookie
 @ensure_valid_course_key
-@cache_if_anonymous()
+@cache_control(no_cache=True, no_store=True, must_revalidate=True)
 def course_about(request, course_id):
     """
     Display the course's about page.
