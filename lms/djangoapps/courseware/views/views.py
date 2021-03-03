@@ -143,7 +143,6 @@ def user_groups(user):
 
 
 @ensure_csrf_cookie
-@cache_control(no_cache=True, no_store=True, must_revalidate=True)
 def courses(request):
     """
     Render "find courses" page.  The course selection work is done in courseware.courses.
@@ -726,7 +725,6 @@ class EnrollStaffView(View):
 
 @ensure_csrf_cookie
 @ensure_valid_course_key
-@cache_if_anonymous()
 def course_about(request, course_id):
     """
     Display the course's about page.
