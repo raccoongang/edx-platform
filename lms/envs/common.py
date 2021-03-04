@@ -804,6 +804,10 @@ SESSION_COOKIE_SECURE = False
 SESSION_SAVE_EVERY_REQUEST = False
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
+# django-session-cookie middleware
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE_FORCE_ALL = True
+
 # CMS base
 CMS_BASE = 'localhost:8001'
 
@@ -1111,6 +1115,8 @@ simplefilter('ignore')
 ################################# Middleware ###################################
 
 MIDDLEWARE_CLASSES = (
+    'django_cookies_samesite.middleware.CookiesSameSite',
+
     'crum.CurrentRequestUserMiddleware',
 
     'request_cache.middleware.RequestCache',
