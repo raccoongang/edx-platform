@@ -1048,7 +1048,7 @@ class CertificateTemplate(TimeStampedModel):
         max_length=255,
         null=True,
         blank=True,
-        help_text=_(u'Organization of template.')
+        help_text=_(u'Organization name of template.Used if organization id is not set.')
     )
     mode = models.CharField(
         max_length=125,
