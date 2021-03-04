@@ -104,7 +104,7 @@
 -e git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.1.6#egg=xblock-drag-and-drop-v2==2.1.6
 
 # Raccoongang Instructor analytics
--e git+ssh://git@gitlab.raccoongang.com/Duck-Team/fastlane-lakeside/instructor-analytics@v2.3.0-lakeside-cohort-reports#egg=rg_instructor_analytics
+-e git+ssh://git@gitlab.raccoongang.com/Duck-Team/fastlane-lakeside/instructor-analytics@v2.3.0-lakeside-cohort-reports-gradebook#egg=rg_instructor_analytics
 -e git+ssh://git@gitlab.raccoongang.com/Duck-Team/fastlane-lakeside/instructor-analytics-log-collector@v2.3.0-lakeside#egg=rg_instructor_analytics_log_collector
 
 # Forks
