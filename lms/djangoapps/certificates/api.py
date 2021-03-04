@@ -27,7 +27,7 @@ from lms.djangoapps.certificates.models import (
 from lms.djangoapps.certificates.queue import XQueueCertInterface
 from eventtracking import tracker
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-from util.organizations_helpers import get_course_organization_id, get_course_organization
+from util.organizations_helpers import get_course_organization_id, get_course_organization_name
 from xmodule.modulestore.django import modulestore
 
 log = logging.getLogger("edx.certificate")
@@ -484,7 +484,7 @@ def get_certificate_template(course_key, mode, language):
     template = None
     # fetch organization of the course
     org_id = get_course_organization_id(course_key)
-    organization = get_course_organization(course_key)
+    organization = get_course_organization_name(course_key)
 
     # only consider active templates
     active_templates = CertificateTemplate.objects.filter(is_active=True)

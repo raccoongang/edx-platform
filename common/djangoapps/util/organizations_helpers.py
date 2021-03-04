@@ -106,7 +106,10 @@ def organizations_enabled():
     return settings.FEATURES.get('ORGANIZATIONS_APP', False)
 
 
-def get_course_organization(course_key):
+def get_course_organization_name(course_key):
+    """
+    Returns organization name given from course key
+    """
     organization = re.match(r'.*:(\w*).*', course_key).group(1)
 
     return organization
