@@ -484,6 +484,7 @@ def get_certificate_template(course_key, mode, language):
     template = None
     # fetch organization of the course
     org_id = get_course_organization_id(course_key)
+    organization_name = course_key.org
 
     # only consider active templates
     active_templates = CertificateTemplate.objects.filter(is_active=True)
@@ -534,6 +535,11 @@ def get_certificate_template(course_key, mode, language):
         )
         template = get_language_specific_template_or_default(language, course_key_templates)
 
+    if not template:
+        organization_templates = empty_course_key_templates.filter(
+            organization_name=organization_name
+        )
+        template = get_language_specific_template_or_default(language, organization_templates)
     return template if template else None
 
 

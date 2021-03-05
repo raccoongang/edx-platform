@@ -60,6 +60,7 @@ parsel==1.2.0
 -e git+https://github.com/raccoongang/xblock-free-text-response.git@v0.2.1#egg=xblock-free-text-response==0.2.1
 -e git+https://github.com/raccoongang/django-oauth2-provider@1.2.5-multiple-redirect_uris#egg=edx-django-oauth2-provider==1.2.5
 -e git+https://github.com/raccoongang/edx-search@1.2.1-rg#egg=edx-search==1.2.1-rg
+-e git+git@gitlab.raccoongang.com:ferret/microsite-reports.git@v0.0.2#egg=microsite_reports
 -e common/lib/xmodule
 amqp==1.4.9               # via kombu
 analytics-python==1.1.0
