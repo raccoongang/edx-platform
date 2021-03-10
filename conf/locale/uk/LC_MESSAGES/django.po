@@ -21197,7 +21197,7 @@ msgstr "Відновлення вашого паролю завершено"
 #: lms/templates/registration/password_reset_complete.html
 msgid ""
 "Your password has been reset. {start_link}Sign-in to your account.{end_link}"
-msgstr "Ваш пароль скинуто. {start_link}Увійдіть до свого акаунту.{end_link}"
+msgstr "Ваш пароль скинуто. {start_link}Увідійть у свій обліковий запис.{end_link}"
 
 #: lms/templates/registration/password_reset_confirm.html
 msgid "Reset Your {platform_name} Password"
