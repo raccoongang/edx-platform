@@ -17,7 +17,6 @@ from django.utils.translation import ugettext_noop
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
-from microsite_reports.utils import microsite_report_access_allowed
 from mock import patch
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
@@ -112,7 +111,6 @@ def instructor_dashboard_2(request, course_id):
         'sales_admin': CourseSalesAdminRole(course_key).has_user(request.user),
         'staff': bool(has_access(request.user, 'staff', course)),
         'forum_admin': has_forum_access(request.user, course_key, FORUM_ROLE_ADMINISTRATOR),
-        'microsite_reports': microsite_report_access_allowed(request.user.username, request.site.id)
     }
 
     if not access['staff']:
@@ -618,7 +616,6 @@ def _section_data_download(course, access):
         'section_display_name': _('Data Download'),
         'access': access,
         'show_generate_proctored_exam_report_button': show_proctored_report_button,
-        'get_microsite_reports_url': reverse('microsite_reports:view_report_page'),
         'get_problem_responses_url': reverse('get_problem_responses', kwargs={'course_id': unicode(course_key)}),
         'get_grading_config_url': reverse('get_grading_config', kwargs={'course_id': unicode(course_key)}),
         'get_students_features_url': reverse('get_students_features', kwargs={'course_id': unicode(course_key)}),
