@@ -24776,10 +24776,6 @@ msgid "Students List"
 msgstr "Listă Elevi"
 
 #: common/djangoapps/tedix_ro/forms.py
-msgid "Due Date (UTC):"
-msgstr "Data Limită (UTC)"
-
-#: common/djangoapps/tedix_ro/forms.py
 msgid "Notify Student(s) via e-mail"
 msgstr "Notificare Elevi prin E-mail"
 

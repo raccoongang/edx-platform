@@ -247,7 +247,7 @@ class CustomDateTimeField(forms.DateTimeField):
     def to_python(self, value):
         value = super(forms.DateTimeField, self).to_python(value)
         if isinstance(value, datetime.datetime):
-            value = value.replace(tzinfo=pytz.UTC)
+            value = self.user_tz.localize(value).astimezone(pytz.UTC)
         return value
 
 class CourseMultipleModelChoiceField(forms.ModelMultipleChoiceField):
@@ -316,7 +316,7 @@ class StudentEnrollForm(forms.Form):
     classrooms = forms.ModelMultipleChoiceField(label=_('Classroom List'), required=False, queryset=Classroom.objects.none())
     students = StudentMultipleModelChoiceField(label=_('Students List'), queryset=StudentProfile.objects.none(), widget=StudentSelect())
     due_date = CustomDateTimeField(
-        label=_('Due Date (UTC):'),
+        label=_('Due Date'),
         input_formats=['%d/%m/%Y %H:%M'],
         widget=forms.DateTimeInput(attrs={
             'type': 'datetime',
@@ -331,7 +331,9 @@ class StudentEnrollForm(forms.Form):
         courses = kwargs.pop('courses')
         students = kwargs.pop('students')
         classrooms = kwargs.pop('classrooms')
+        user_tz = kwargs.pop('user_tz')
         super(StudentEnrollForm, self).__init__(*args, **kwargs)
+        self.fields['due_date'].user_tz = user_tz
         self.fields['courses'].queryset = courses
         self.fields['courses'].error_messages={
             'invalid_choice': _(u'The enrollment end date has passed. The following courses are no longer available for enrollment: "%(value)s".'),
