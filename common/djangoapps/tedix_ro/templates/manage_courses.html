@@ -32,7 +32,7 @@ from openedx.core.djangolib.markup import HTML, Text
             ${form['students'].as_widget()|h}
         </div>
         <div class="due_date-field field">
-            <label for="${form['due_date'].id_for_label}">${form['due_date'].label}</label>
+            <label for="${form['due_date'].id_for_label}">${form['due_date'].label} (${timezone}):</label>
             ${form['due_date'].as_widget()|h}
         </div>
     </div>

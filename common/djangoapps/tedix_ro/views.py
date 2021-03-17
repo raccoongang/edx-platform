@@ -368,9 +368,13 @@ def manage_courses(request):
     if not (user.is_staff or user.is_superuser):
         return redirect(reverse('dashboard'))
 
+    user_time_zone = user.preferences.filter(key='time_zone').first()
+    user_tz = pytz.timezone(user_time_zone.value) if user_time_zone else pytz.timezone(settings.TIME_ZONE)
+    user_timezone_str = datetime.datetime.now(user_tz).strftime('UTC%z')
     context = {
-        "csrftoken": csrf(request)["csrf_token"],
-        'show_dashboard_tabs': True
+        'csrftoken': csrf(request)['csrf_token'],
+        'show_dashboard_tabs': True,
+        'timezone': user_timezone_str
     }
     try:
         if user.is_superuser:
@@ -383,7 +387,7 @@ def manage_courses(request):
     classrooms = Classroom.objects.all()
     now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
     courses = CourseOverview.objects.filter(enrollment_end__gt=now, enrollment_start__lt=now)
-    form = StudentEnrollForm(students=students, courses=courses, classrooms=classrooms)
+    form = StudentEnrollForm(students=students, courses=courses, classrooms=classrooms, user_tz=user_tz)
     if request.method == 'POST':
         data = dict(
             courses = map(CourseKey.from_string, request.POST.getlist('courses')),
@@ -393,7 +397,7 @@ def manage_courses(request):
             send_to_parents=request.POST.get('send_to_parents'),
             send_sms=request.POST.get('send_sms')
         )
-        form = StudentEnrollForm(data=data, courses=courses, students=students, classrooms=classrooms)
+        form = StudentEnrollForm(data=data, courses=courses, students=students, classrooms=classrooms, user_tz=user_tz)
         if form.is_valid():
             sms_client = SMSClient()
             for student in form.cleaned_data['students']:
@@ -418,14 +422,14 @@ def manage_courses(request):
                         )),
                         course.display_name
                     ])
-                    user_time_zone = student.user.preferences.filter(key='time_zone').first()
-                    if user_time_zone:
-                        user_tz = pytz.timezone(user_time_zone.value)
-                        course_tz_due_datetime = pytz.UTC.localize(due_date.replace(tzinfo=None), is_dst=None).astimezone(user_tz)
+                    student_time_zone = student.user.preferences.filter(key='time_zone').first()
+                    if student_time_zone:
+                        student_tz = pytz.timezone(student_time_zone.value)
+                        course_tz_due_datetime = pytz.UTC.localize(due_date.replace(tzinfo=None), is_dst=None).astimezone(student_tz)
                         context = {
                             'courses': courses_list,
                             'due_date': course_tz_due_datetime.strftime(
-                                "%b %d, %Y, %H:%M %P {} (%Z, UTC%z)".format(user_time_zone.value.replace("_", " "))
+                                "%b %d, %Y, %H:%M %P {} (%Z, UTC%z)".format(student_time_zone.value.replace("_", " "))
                             )
                         }
                     else:
@@ -486,7 +490,8 @@ def manage_courses(request):
                 html = mako_render_to_string('manage_courses.html', {
                     "csrftoken": csrf(request)["csrf_token"],
                     'show_dashboard_tabs': True,
-                    'form': StudentEnrollForm(courses=courses, students=students, classrooms=classrooms)
+                    'form': StudentEnrollForm(courses=courses, students=students, classrooms=classrooms, user_tz=user_tz),
+                    'timezone': user_timezone_str
                 })
                 return HttpResponse(json.dumps({'html': html}), content_type="application/json")
             return redirect(reverse('manage_courses'))
