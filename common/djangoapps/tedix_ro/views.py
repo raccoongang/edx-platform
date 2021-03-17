@@ -370,10 +370,11 @@ def manage_courses(request):
 
     user_time_zone = user.preferences.filter(key='time_zone').first()
     user_tz = pytz.timezone(user_time_zone.value) if user_time_zone else pytz.timezone(settings.TIME_ZONE)
+    user_timezone_str = datetime.datetime.now(user_tz).strftime('UTC%z')
     context = {
         'csrftoken': csrf(request)['csrf_token'],
         'show_dashboard_tabs': True,
-        'timezone': datetime.datetime.now(user_tz).strftime('UTC%z')
+        'timezone': user_timezone_str
     }
     try:
         if user.is_superuser:
@@ -490,7 +491,7 @@ def manage_courses(request):
                     "csrftoken": csrf(request)["csrf_token"],
                     'show_dashboard_tabs': True,
                     'form': StudentEnrollForm(courses=courses, students=students, classrooms=classrooms, user_tz=user_tz),
-                    'timezone': datetime.datetime.now(user_tz).strftime('UTC%z')
+                    'timezone': user_timezone_str
                 })
                 return HttpResponse(json.dumps({'html': html}), content_type="application/json")
             return redirect(reverse('manage_courses'))
