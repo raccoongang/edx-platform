@@ -919,7 +919,6 @@ body {
         @media screen and (max-width: 860px) {
             justify-content: space-around;
             flex-wrap: wrap;
-            margin-top: 20px;
             width: 100%;
         }
     }
@@ -1345,6 +1344,7 @@ body .theme-header-info_text {
 body .theme-nav-wrapper {
     @media all and (max-width: 860px) {
         display: none;
+        padding-bottom: 0;
     }
 
     .theme-main-nav__open & {
