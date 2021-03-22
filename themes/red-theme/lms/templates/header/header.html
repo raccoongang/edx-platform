@@ -75,8 +75,18 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
   var user_created_time=tedixUUid.created;
   var user_type=tedixUUid.usertype;
   var homework=tedixUUid.lesson_is_active_homework;
-  console.log(homework)
-  if (tedixUUid.usertype =="student" ){
+  console.log(homework);
+  let x;
+  let today=new Date();
+  let verifyaccount= true;
+  for ( x=0; x<acounts.length; x++ ){
+	console.log(acounts[x])
+	if(acounts[x].id = tedixUUid.id && today <= acounts[x].date){
+		verifyaccount=false;
+		break;
+	}
+  }
+  if (tedixUUid.usertype =="student" && verifyaccount === true) {
 	      window.__simpleShopConfig = {
       storeId: 'JPJHNTSHMW',
       shopActions: {

@@ -1072,7 +1072,7 @@ line-height: 1;
 	right: 0;
 	left:0;
 	background-color:#f4f5f6;
-	position:absolute;
+	position:fixed;
 	z-index:9999;
 	padding:25px;
 	top:25vh;
@@ -1081,9 +1081,10 @@ line-height: 1;
 	@media screen and (max-width: 768px) {
 		width:auto;
 		height: auto;
+		top: 10vh;
 	}
 	@media screen and (min-width: 769px) and (max-width: 1200px) {
-		width: 40vw;
+		width: 45vw;
 		height: auto;
 	}
 	.logo{
@@ -1100,7 +1101,7 @@ line-height: 1;
 	right: 0;
 	left:0;
 	background-color:#f4f5f6;
-	position:absolute;
+	position:fixed;
 	z-index:9999;
 	padding:25px;
 	top:25vh;
@@ -1109,9 +1110,10 @@ line-height: 1;
 	@media screen and (max-width: 768px) {
 		width:auto;
 		height: auto;
+		top: 10vh;
 	}
 	@media screen and (min-width: 769px) and (max-width: 1200px) {
-		width: 40vw;
+		width: 45vw;
 		height: auto;
 	}
 	.logo{

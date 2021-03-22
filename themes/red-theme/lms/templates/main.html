@@ -34,7 +34,7 @@ from tedix_ro.utils import encrypted_user_data
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+	<meta name="facebook-domain-verification" content="s8l2m21mjp4sll55a73s97la0em3qg"/>
 ## Define a couple of helper functions to make life easier when
 ## embedding theme conditionals into templates. All inheriting
 ## templates have access to these functions, and we can import these
@@ -93,6 +93,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <script type="text/javascript" src="${static.url(jsi18n_path)}"></script>
   <script type="text/javascript" src="${static.url(ie11_fix_path)}"></script>
   <script type="text/javascript" src="${static.url('js/reporting.js')}"></script>
+  <script type="text/javascript" src="${static.url('js/accounts.js')}"></script>
   <link rel="icon" type="image/x-icon" href="${static.url(static.get_value('favicon_path', settings.FAVICON_PATH))}" />
 
   <%static:css group='style-vendor'/>
