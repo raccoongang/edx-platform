@@ -14,6 +14,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.translation import ugettext as _
+import pytz
 
 from courseware.models import StudentModule
 from lms.djangoapps.grades.config.models import PersistentGradesEnabledFlag
@@ -380,3 +381,20 @@ def encrypted_user_data(request):
         'usertype': user_type,
         'lesson_is_active_homework': lesson_is_active_homework,
     })
+
+
+def get_user_time_zone(user):
+    """
+    Return time_zone from user preferences or settings.TIME_ZONE
+    """
+    user_time_zone = user.preferences.filter(key='time_zone').first()
+    return pytz.timezone(user_time_zone.value) if user_time_zone else pytz.timezone(settings.TIME_ZONE)
+
+
+def get_timezoned_date(user, date):
+    """
+    Return the date with time_zone from user preferences or
+    from settings.TIME_ZONE
+    """
+    user_time_zone = get_user_time_zone(user)
+    return pytz.UTC.localize(date.replace(tzinfo=None), is_dst=None).astimezone(user_time_zone)
