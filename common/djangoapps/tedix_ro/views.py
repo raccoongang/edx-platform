@@ -73,6 +73,8 @@ from .utils import (
     get_all_questions_count,
     get_points_earned_possible,
     reset_student_progress,
+    get_user_time_zone,
+    get_timezoned_date,
 )
 
 
@@ -368,8 +370,7 @@ def manage_courses(request):
     if not (user.is_staff or user.is_superuser):
         return redirect(reverse('dashboard'))
 
-    user_time_zone = user.preferences.filter(key='time_zone').first()
-    user_tz = pytz.timezone(user_time_zone.value) if user_time_zone else pytz.timezone(settings.TIME_ZONE)
+    user_tz = get_user_time_zone(user)
     user_timezone_str = datetime.datetime.now(user_tz).strftime('UTC%z')
     context = {
         'csrftoken': csrf(request)['csrf_token'],
@@ -422,21 +423,12 @@ def manage_courses(request):
                         )),
                         course.display_name
                     ])
-                    student_time_zone = student.user.preferences.filter(key='time_zone').first()
-                    if student_time_zone:
-                        student_tz = pytz.timezone(student_time_zone.value)
-                        course_tz_due_datetime = pytz.UTC.localize(due_date.replace(tzinfo=None), is_dst=None).astimezone(student_tz)
-                        context = {
-                            'courses': courses_list,
-                            'due_date': course_tz_due_datetime.strftime(
-                                "%b %d, %Y, %H:%M %P {} (%Z, UTC%z)".format(student_time_zone.value.replace("_", " "))
-                            )
-                        }
-                    else:
-                        context = {
-                            'courses': courses_list,
-                            'due_date': '{} UTC'.format(due_date.astimezone(pytz.UTC).strftime('%b %d, %Y, %H:%M %P'))
-                        }
+                    course_tz_due_datetime = get_timezoned_date(student.user, due_date)
+                    context = {
+                        'courses': courses_list,
+                        'due_date': course_tz_due_datetime.strftime("%b %d, %Y, %H:%M %P (%Z, UTC%z)")
+                    }
+
                 context.update({
                     'lms_url': configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
                     'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
@@ -524,20 +516,12 @@ def personal_due_dates(request):
         """
         Format due_date based on user preferences.
         """
-        user_time_zone = student_profile.user.preferences.filter(key='time_zone').first()
         language = get_language()
-        if user_time_zone:
-            user_tz = pytz.timezone(user_time_zone.value)
-            course_tz_due_datetime = pytz.UTC.localize(
-                due_date.replace(tzinfo=None), is_dst=None).astimezone(user_tz)
-            return  '{}, {}'.format(
-                translate_date(course_tz_due_datetime, language),
-                course_tz_due_datetime.strftime(
-                    "%H:%M %P {} (%Z, UTC%z)".format(
-                        user_time_zone.value.replace("_", " "))))
-        return '{}, {} UTC'.format(
-            translate_date(due_date.astimezone(pytz.UTC), language),
-            due_date.astimezone(pytz.UTC).strftime('%H:%M %P'))
+        course_tz_due_datetime = get_timezoned_date(student_profile.user, due_date)
+        return  '{}, {}'.format(
+            translate_date(course_tz_due_datetime, language),
+            course_tz_due_datetime.strftime("%H:%M %P (%Z, UTC%z)")
+        )
 
     user = request.user
     if not user.is_authenticated():
