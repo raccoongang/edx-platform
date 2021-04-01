@@ -266,15 +266,15 @@ ${HTML(fragment.foot_html())}
             //$('.message-plan').hide()
 			console.log("Status plata respinsa : " + ret.payment_status);
 			var time_since_creation=curent_timestamp - user_created_time;
-			var noplan_remaining_days = 30 - ((time_since_creation / (24 * 3600)).toFixed(0));
+			var noplan_remaining_days = 7 - ((time_since_creation / (24 * 3600)).toFixed(0));
 			console.log("ct" + curent_timestamp);
 			console.log("uct" + user_created_time);
 			console.log("utr" + time_since_creation);
 			$(".insert").html(noplan_remaining_days);
-			if(noplan_remaining_days >0 && noplan_remaining_days <= 7 ) {
+			if(noplan_remaining_days >0 && noplan_remaining_days <= 3 ) {
 				$('.announces-red').show()
 			} else{
-				if(noplan_remaining_days > 7  && noplan_remaining_days <= 30) {
+				if(noplan_remaining_days > 3  && noplan_remaining_days <= 7) {
 					$('.announces-green').show()
 				} else{
 						setInterval( Blockingnoplan, 2*4*1000 );
