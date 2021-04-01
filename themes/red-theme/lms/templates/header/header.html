@@ -106,15 +106,15 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
             //$('.message-plan').hide()
 			console.log("Status plata respinsa : " + ret.payment_status);
 			var time_since_creation=curent_timestamp - user_created_time;
-			var noplan_remaining_days = 30 - ((time_since_creation / (24 * 3600)).toFixed(0));
+			var noplan_remaining_days = 7 - ((time_since_creation / (24 * 3600)).toFixed(0));
 			console.log("ct" + curent_timestamp);
 			console.log("uct" + user_created_time);
 			console.log("utr" + time_since_creation);
 			$(".insert").html(noplan_remaining_days);
-			if(noplan_remaining_days >0 && noplan_remaining_days <= 7 ) {
+			if(noplan_remaining_days >0 && noplan_remaining_days <= 3 ) {
 				$('.announces-red').show()
 			} else{
-				if(noplan_remaining_days > 7  && noplan_remaining_days <= 30) {
+				if(noplan_remaining_days > 3  && noplan_remaining_days <= 7) {
 					$('.announces-green').show()
 				} else{
 						//setInterval( Blockingnoplan, 2*6*1000 );
@@ -225,7 +225,7 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
 	<div class="modal-overlay" style="display:none;"></div>
         % else:
 		<div class="announces-green" style="background-color:#24AD97;padding:15px;color: #ffffff;text-align:center;display:block;">
-			<span class="" style="text-align:center;font-size:16px;">Beneficiezi de 30 zile GRATUITE. Inregistreaza-te </b> <a href="/register" class="" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display:inline-block;">Acum</a></span>
+			<span class="" style="text-align:center;font-size:16px;">Beneficiezi de 7 zile GRATUITE. Inregistreaza-te </b> <a href="/register" class="" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display:inline-block;">Acum</a></span>
 			<span class="" style="text-align:center;font-size:16px;color:#000000;display: block;padding-top: 10px;">( Acces neconditionat la TEME si RAPOARTE )</span>
 		</div>	
 	<div  id="plans-modal" class="modal modal-window-plan hidden" style="display:block;width: 350px;top: 50px;border-radius: 10px;">
