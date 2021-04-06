@@ -381,7 +381,7 @@
                                     receiptUrl: order.receipt_url,
                                     valueAttribute: 'order-' + orderNumber,
                                     lines: order.lines,
-                                    currency: this.currency
+                                    currency: order.currency
                                 })
                             };
                         })
