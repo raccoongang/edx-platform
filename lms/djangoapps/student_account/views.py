@@ -451,6 +451,7 @@ def get_user_orders(user):
                 'order_date': strftime_localized(date_placed, 'SHORT_DATE'),
                 'receipt_url': EcommerceService().get_receipt_page_url(order['number']),
                 'lines': order['lines'],
+                'currency': order['currency'],
             }
             user_orders.append(order_data)
 
