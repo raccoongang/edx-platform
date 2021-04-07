@@ -460,7 +460,9 @@ edx-organizations==6.9.0
     # via -r requirements/edx/base.in
 edx-proctoring-proctortrack==1.0.5
     # via -r requirements/edx/base.in
-edx-proctoring==3.11.4
+-e git+https://github.com/raccoongang/edx-proctoring@oex_proctoring#egg=edx-proctoring  # via -r requirements/edx/github.in, edx-proctoring-proctortrack
+
+#edx-proctoring==3.11.4
     # via
     #   -r requirements/edx/base.in
     #   edx-proctoring-proctortrack
