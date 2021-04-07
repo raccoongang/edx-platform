@@ -18,6 +18,7 @@ from opaque_keys.edx.django.models import CourseKeyField
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.request_cache.middleware import RequestCache, ns_request_cached
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 
 Mode = namedtuple('Mode',
                   [
@@ -680,7 +681,8 @@ class CourseMode(models.Model):
         If there is no mode found, will return the price of DEFAULT_MODE, which is 0
         """
         modes = cls.modes_for_course(course_id)
-        return min(mode.min_price for mode in modes if mode.currency.lower() == currency.lower())
+        course_modes = [mode.min_price for mode in modes if mode.currency.lower() == currency.lower()]
+        return min(course_modes) if course_modes else 0
 
     @classmethod
     def is_eligible_for_certificate(cls, mode_slug):
@@ -753,15 +755,19 @@ def get_course_prices(course, verified_only=False):
     cosmetic_display_prices is the course price as a string preceded by correct currency, or 'Free'.
     """
     # Find the
+    currency = configuration_helpers.get_value(
+        'PAID_COURSE_REGISTRATION_CURRENCY',
+        settings.PAID_COURSE_REGISTRATION_CURRENCY
+    )[0]
     if verified_only:
         registration_price = CourseMode.min_course_price_for_verified_for_currency(
             course.id,
-            settings.PAID_COURSE_REGISTRATION_CURRENCY[0]
+            currency
         )
     else:
         registration_price = CourseMode.min_course_price_for_currency(
             course.id,
-            settings.PAID_COURSE_REGISTRATION_CURRENCY[0]
+            currency
         )
 
     if registration_price > 0:
@@ -779,7 +785,10 @@ def format_course_price(price):
     """
     Return a formatted price for a course (a string preceded by correct currency, or 'Free').
     """
-    currency_symbol = settings.PAID_COURSE_REGISTRATION_CURRENCY[1]
+    currency_symbol = configuration_helpers.get_value(
+        'PAID_COURSE_REGISTRATION_CURRENCY',
+        settings.PAID_COURSE_REGISTRATION_CURRENCY
+    )[1]
 
     if price:
         # Translators: This will look like '$50', where {currency_symbol} is a symbol such as '$' and {price} is a
