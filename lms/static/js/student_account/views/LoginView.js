@@ -114,6 +114,13 @@
             forgotPassword: function(event) {
                 event.preventDefault();
 
+                // Hide custom toggle form for the Freeteam microsite if html exists
+                var $themeToggleForm = $('.js-toggle-form');
+
+                if ($themeToggleForm.length > 0 ) {
+                    $themeToggleForm.addClass('hidden');
+                }
+
                 this.trigger('password-help');
                 this.clearPasswordResetSuccess();
             },
