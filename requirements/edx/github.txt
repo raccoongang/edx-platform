@@ -95,7 +95,7 @@ git+https://github.com/edx/edx-proctoring.git@0.17.0#egg=edx-proctoring==0.17.0
 
 # Base RG modules
 git+https://github.com/raccoongang/edx-search.git@0.1.2-rg#egg=edx-search==0.1.2.1
--e git+https://github.com/raccoongang/edx-oauth-client.git@v1.0.2-ficus#egg=edx-oauth-client
+-e git+https://github.com/raccoongang/edx-oauth-client.git@v1.0.0-ficus-phyd#egg=edx-oauth-client
 
 # GTM
 -e git+https://github.com/raccoongang/django-google-tag-manager.git@v0.1.1#egg=django-google-tag-manager

@@ -20,6 +20,7 @@ from django.conf import settings
 from student.models import CourseEnrollmentAllowed
 from util.password_policy_validators import validate_password_strength
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.core.djangoapps.user_api.accounts import USERNAME_MAX_LENGTH
 
 
 class PasswordResetFormNoActive(PasswordResetForm):
@@ -119,7 +120,7 @@ class AccountCreationForm(forms.Form):
     # TODO: Resolve repetition
     username = forms.SlugField(
         min_length=2,
-        max_length=30,
+        max_length=USERNAME_MAX_LENGTH,
         error_messages={
             "required": _USERNAME_TOO_SHORT_MSG,
             "invalid": _("Usernames can only contain Roman letters, western numerals (0-9), underscores (_), and "
