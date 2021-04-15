@@ -285,6 +285,10 @@ class ProviderConfig(ConfigurationModel):
         """Gets associated Django settings.AUTHENTICATION_BACKEND string."""
         return '{}.{}'.format(self.backend_class.__module__, self.backend_class.__name__)
 
+    def is_auth0(self):
+        """Define if it's an Auth0 provider we are working with."""
+        return self.backend_class.is_auth0()
+
     @property
     def display_for_login(self):
         """

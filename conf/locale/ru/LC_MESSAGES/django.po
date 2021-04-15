@@ -11987,6 +11987,22 @@ msgstr "Просмотр блока в Studio"
 msgid "E-mail change failed"
 msgstr "Не удалось изменить адрес электронной почты"
 
+#: themes/edx-theme/lms/templates/student_account/login_and_register.html
+msgid "If you already have an FreeTeamClub courses account, login here"
+msgstr "У вас уже есть аккаунт в Курсы FreeTeamClub?"
+
+#: themes/edx-theme/lms/templates/student_account/login_and_register.html
+msgid "Sign in."
+msgstr "Войти."
+
+#: themes/edx-theme/lms/templates/student_account/login_and_register.html
+msgid "First time here?"
+msgstr "Вы здесь первый раз?"
+
+#: themes/edx-theme/lms/templates/student_account/login_and_register.html
+msgid "Create an Account."
+msgstr "Создайте учетную запись."
+
 #: lms/templates/email_change_failed.html
 msgid "We were unable to send a confirmation email to {email}"
 msgstr "Нам не удалось отправить подтверждение на адрес {email}"
