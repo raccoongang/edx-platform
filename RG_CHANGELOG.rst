@@ -1,6 +1,10 @@
 [Koa Release]
 ~~~~~~~~~~~~~
 
+[Fix] 2021-04-26
+~~~~~~~~~~~~~~~~
+‘Linked accounts’ tab is hidden if there are no SSO provider are installed
+
 [Documentation|Enhancement] - 2021-02-24
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * RG_CHANGELOG is added!

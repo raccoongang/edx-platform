@@ -439,6 +439,7 @@
                 },
                 userPreferencesModel: userPreferencesModel,
                 disableOrderHistoryTab: disableOrderHistoryTab,
+                enableAccountsTab: authData.providers !== undefined && authData.providers.length > 0,
                 betaLanguage: betaLanguage
             });
 
