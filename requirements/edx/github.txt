@@ -99,3 +99,7 @@ git+https://github.com/edx-solutions/xblock-drag-and-drop-v2@v2.0.18#egg=xblock-
 
 # Scorm XBlock
 -e git+https://github.com/raccoongang/edx_xblock_scorm.git@v1.0.3#egg=edx_xblock_scorm
+
+# RG Instructor Analytics
+-e git+git@gitlab.raccoongang.com:rg-developers/instructor-analytics.git@v2.4.2#egg=rg_instructor_analytics
+-e git+git@gitlab.raccoongang.com:rg-developers/instructor-analytics-log-collector.git@v2.3.0#egg=rg_instructor_analytics_log_collector
