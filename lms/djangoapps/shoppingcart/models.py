@@ -388,7 +388,10 @@ class Order(models.Model):
                         'order_items': orderitems,
                         'course_names': ", ".join(course_names),
                         'dashboard_url': dashboard_url,
-                        'currency_symbol': settings.PAID_COURSE_REGISTRATION_CURRENCY[1],
+                        'currency_symbol': configuration_helpers.get_value(
+                            'PAID_COURSE_REGISTRATION_CURRENCY',
+                            settings.PAID_COURSE_REGISTRATION_CURRENCY
+                        )[1],
                         'order_placed_by': '{username} ({email})'.format(
                             username=self.user.username, email=self.user.email
                         ),

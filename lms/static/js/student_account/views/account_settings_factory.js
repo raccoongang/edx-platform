@@ -380,7 +380,8 @@
                                     orderDate: order.order_date,
                                     receiptUrl: order.receipt_url,
                                     valueAttribute: 'order-' + orderNumber,
-                                    lines: order.lines
+                                    lines: order.lines,
+                                    currency: order.currency
                                 })
                             };
                         })

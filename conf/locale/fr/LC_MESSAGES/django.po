@@ -15378,7 +15378,7 @@ msgid "Enrollment is Closed"
 msgstr "Les inscriptions sont fermées"
 
 #: lms/templates/courseware/course_about.html
-msgid "Add {course_name} to Cart <span>({price} USD)</span>"
+msgid "Add {course_name} to Cart <span>({price} {currency})</span>"
 msgstr ""
 
 #: lms/templates/courseware/course_about.html
@@ -15608,7 +15608,7 @@ msgid "Original Price"
 msgstr ""
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${oldPrice}"
+msgid "{currency_sign}{oldPrice}"
 msgstr ""
 
 #: lms/templates/courseware/program_marketing.html
@@ -15616,7 +15616,7 @@ msgid "Discounted Price"
 msgstr ""
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${newPrice}"
+msgid "{currency_sign}{newPrice}"
 msgstr ""
 
 #: lms/templates/courseware/program_marketing.html
@@ -15688,19 +15688,19 @@ msgid "{number_of_courses} courses in program"
 msgstr ""
 
 #: lms/templates/courseware/program_marketing.html
-msgid "Price (USD)"
+msgid "Price ({currency})"
 msgstr ""
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${newPrice}{htmlEnd} for entire program"
+msgid "{currency_sign}{newPrice}{htmlEnd} for entire program"
 msgstr ""
 
 #: lms/templates/courseware/program_marketing.html
-msgid "You save ${discount_value} {currency}"
+msgid "You save {currency_sign}{discount_value} {currency}"
 msgstr ""
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${full_program_price} for entire program"
+msgid "{currency_sign}{full_program_price} for entire program"
 msgstr ""
 
 #: lms/templates/courseware/program_marketing.html

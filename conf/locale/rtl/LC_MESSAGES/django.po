@@ -16190,8 +16190,8 @@ msgid "Enrollment is Closed"
 msgstr "ثرقخمموثرف هس ذمخسثي"
 
 #: lms/templates/courseware/course_about.html
-msgid "Add {course_name} to Cart <span>({price} USD)</span>"
-msgstr "شيي {course_name} فخ ذشقف <span>({price} عسي)</span>"
+msgid "Add {course_name} to Cart <span>({price} {currency})</span>"
+msgstr "شيي {course_name} فخ ذشقف <span>({price} {currency})</span>"
 
 #: lms/templates/courseware/course_about.html
 msgid "Enroll in {course_name}"
@@ -16422,16 +16422,16 @@ msgid "Original Price"
 msgstr "خقهلهرشم حقهذث"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${oldPrice}"
-msgstr "${oldPrice}"
+msgid "{currency_sign}{oldPrice}"
+msgstr "{currency_sign}{oldPrice}"
 
 #: lms/templates/courseware/program_marketing.html
 msgid "Discounted Price"
 msgstr "يهسذخعرفثي حقهذث"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${newPrice}"
-msgstr "${newPrice}"
+msgid "{currency_sign}{newPrice}"
+msgstr "{currency_sign}{newPrice}"
 
 #: lms/templates/courseware/program_marketing.html
 msgid "{currency})"
@@ -16504,20 +16504,20 @@ msgid "{number_of_courses} courses in program"
 msgstr "{number_of_courses} ذخعقسثس هر حقخلقشو"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "Price (USD)"
-msgstr "حقهذث (عسي)"
+msgid "Price ({currency})"
+msgstr "حقهذث ({currency})"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${newPrice}{htmlEnd} for entire program"
-msgstr "${newPrice}{htmlEnd} بخق ثرفهقث حقخلقشو"
+msgid "{currency_sign}{newPrice}{htmlEnd} for entire program"
+msgstr "{currency_sign}{newPrice}{htmlEnd} بخق ثرفهقث حقخلقشو"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "You save ${discount_value} {currency}"
-msgstr "غخع سشدث ${discount_value} {currency}"
+msgid "You save {currency_sign}{discount_value} {currency}"
+msgstr "غخع سشدث {currency_sign}{discount_value} {currency}"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${full_program_price} for entire program"
-msgstr "${full_program_price} بخق ثرفهقث حقخلقشو"
+msgid "{currency_sign}{full_program_price} for entire program"
+msgstr "{currency_sign}{full_program_price} بخق ثرفهقث حقخلقشو"
 
 #: lms/templates/courseware/program_marketing.html
 msgid "Courses in the {}"

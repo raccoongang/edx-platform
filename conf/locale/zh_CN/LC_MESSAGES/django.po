@@ -14965,8 +14965,8 @@ msgid "Enrollment is Closed"
 msgstr "选课已关闭"
 
 #: lms/templates/courseware/course_about.html
-msgid "Add {course_name} to Cart <span>({price} USD)</span>"
-msgstr "添加{course_name}到购物<span>({price} USD)</span>"
+msgid "Add {course_name} to Cart <span>({price} {currency})</span>"
+msgstr "添加{course_name}到购物<span>({price} {currency})</span>"
 
 #: lms/templates/courseware/course_about.html
 msgid "Enroll in {course_name}"
@@ -15191,16 +15191,16 @@ msgid "Original Price"
 msgstr "原价"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${oldPrice}"
-msgstr "${oldPrice}"
+msgid "{currency_sign}{oldPrice}"
+msgstr "{currency_sign}{oldPrice}"
 
 #: lms/templates/courseware/program_marketing.html
 msgid "Discounted Price"
 msgstr "折扣价"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${newPrice}"
-msgstr "${newPrice}"
+msgid "{currency_sign}{newPrice}"
+msgstr "{currency_sign}{newPrice}"
 
 #: lms/templates/courseware/program_marketing.html
 msgid "{currency})"
@@ -15271,20 +15271,20 @@ msgid "{number_of_courses} courses in program"
 msgstr "{number_of_courses} 专项课"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "Price (USD)"
-msgstr "价格 (USD)"
+msgid "Price ({currency})"
+msgstr "价格 ({currency})"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${newPrice}{htmlEnd} for entire program"
-msgstr "${newPrice}{htmlEnd} 全部专项"
+msgid "{currency_sign}{newPrice}{htmlEnd} for entire program"
+msgstr "{currency_sign}{newPrice}{htmlEnd} 全部专项"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "You save ${discount_value} {currency}"
-msgstr "你省了 ${discount_value} {currency}"
+msgid "You save {currency_sign}{discount_value} {currency}"
+msgstr "你省了 {currency_sign}{discount_value} {currency}"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${full_program_price} for entire program"
-msgstr "${full_program_price}  全部专项"
+msgid "{currency_sign}{full_program_price} for entire program"
+msgstr "{currency_sign}{full_program_price}  全部专项"
 
 #: lms/templates/courseware/program_marketing.html
 msgid "Courses in the {}"

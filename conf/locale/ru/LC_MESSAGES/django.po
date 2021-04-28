@@ -16672,9 +16672,9 @@ msgid "Enrollment is Closed"
 msgstr "Запись на курс закрыта"
 
 #: lms/templates/courseware/course_about.html
-msgid "Add {course_name} to Cart <span>({price} USD)</span>"
+msgid "Add {course_name} to Cart <span>({price} {currency})</span>"
 msgstr ""
-"Добавить курс {course_name} в корзину <span>({price} долларов США)</span>"
+"Добавить курс {course_name} в корзину <span>({price} {currency})</span>"
 
 #: lms/templates/courseware/course_about.html
 msgid "Enroll in {course_name}"
@@ -16904,16 +16904,16 @@ msgid "Original Price"
 msgstr "Исходная цена"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${oldPrice}"
-msgstr "${oldPrice}"
+msgid "{currency_sign}{oldPrice}"
+msgstr "{currency_sign}{oldPrice}"
 
 #: lms/templates/courseware/program_marketing.html
 msgid "Discounted Price"
 msgstr "Цена со скидкой"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${newPrice}"
-msgstr "${newPrice}"
+msgid "{currency_sign}{newPrice}"
+msgstr "{currency_sign}{newPrice}"
 
 #: lms/templates/courseware/program_marketing.html
 msgid "{currency})"
@@ -16986,20 +16986,20 @@ msgid "{number_of_courses} courses in program"
 msgstr "в программе {number_of_courses} курса"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "Price (USD)"
-msgstr "Цена (USD)"
+msgid "Price ({currency})"
+msgstr "Цена ({currency})"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${newPrice}{htmlEnd} for entire program"
-msgstr "${newPrice}{htmlEnd} за всю программу"
+msgid "{currency_sign}{newPrice}{htmlEnd} for entire program"
+msgstr "{currency_sign}{newPrice}{htmlEnd} за всю программу"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "You save ${discount_value} {currency}"
-msgstr "Вы экономите ${discount_value} {currency}"
+msgid "You save {currency_sign}{discount_value} {currency}"
+msgstr "Вы экономите {currency_sign}{discount_value} {currency}"
 
 #: lms/templates/courseware/program_marketing.html
-msgid "${full_program_price} for entire program"
-msgstr "${full_program_price} за всю программу"
+msgid "{currency_sign}{full_program_price} for entire program"
+msgstr "{currency_sign}{full_program_price} за всю программу"
 
 #: lms/templates/courseware/program_marketing.html
 msgid "Courses in the {}"

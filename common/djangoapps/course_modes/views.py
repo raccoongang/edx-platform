@@ -26,8 +26,10 @@ from courseware.access import has_access
 from edxmako.shortcuts import render_to_response
 from lms.djangoapps.commerce.utils import EcommerceService
 from lms.djangoapps.experiments.utils import get_experiment_user_metadata_context
+from django.conf import settings
 from openedx.core.djangoapps.catalog.utils import get_currency_data
 from openedx.core.djangoapps.embargo import api as embargo_api
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from student.models import CourseEnrollment
 from util.db import outer_atomic
 from xmodule.modulestore.django import modulestore
@@ -194,6 +196,17 @@ class ChooseModeView(View):
                     context['currency_data'] = json.dumps(currency_data)
                 except TypeError:
                     pass
+
+        # add currency data to context
+        currency = configuration_helpers.get_value(
+            'PAID_COURSE_REGISTRATION_CURRENCY',
+            settings.PAID_COURSE_REGISTRATION_CURRENCY
+        )
+        context.update({
+            'currency': currency[0],
+            'currency_sign': currency[1]
+        })
+        
         return render_to_response("course_modes/choose.html", context)
 
     @method_decorator(transaction.non_atomic_requests)

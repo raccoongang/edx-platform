@@ -877,6 +877,10 @@ def course_about(request, course_id):
             'course_image_urls': overview.image_urls,
             'reviews_fragment_view': reviews_fragment_view,
             'sidebar_html_enabled': sidebar_html_enabled,
+            'currency': configuration_helpers.get_value(
+                'PAID_COURSE_REGISTRATION_CURRENCY',
+                settings.PAID_COURSE_REGISTRATION_CURRENCY
+            )[0],
         }
 
         return render_to_response('courseware/course_about.html', context)
@@ -904,7 +908,17 @@ def program_marketing(request, program_uuid):
         context['buy_button_href'] = ecommerce_service.get_checkout_page_url(*skus, program_uuid=program_uuid)
 
     context['uses_bootstrap'] = True
-
+    
+    # add currency data to context
+    currency = configuration_helpers.get_value(
+        'PAID_COURSE_REGISTRATION_CURRENCY',
+        settings.PAID_COURSE_REGISTRATION_CURRENCY
+    )
+    context.update({
+        'currency': currency[0],
+        'currency_sign': currency[1]
+    })
+    
     return render_to_response('courseware/program_marketing.html', context)
 
 
