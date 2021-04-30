@@ -122,9 +122,10 @@ COURSEWARE_OPTIMIZED_RENDER_XBLOCK = CourseWaffleFlag(
 # .. toggle_creation_date: 2021-4-29
 # .. toggle_target_removal_date: 2021-6-30
 # .. toggle_warnings: None
-MICROFRONTEND_SPECIAL_EXAM = CourseWaffleFlag(
-    WAFFLE_FLAG_NAMESPACE, 'microfrontend_special_exams', __name__
+COURSEWARE_MICROFRONTEND_SPECIAL_EXAMS = CourseWaffleFlag(
+    WAFFLE_FLAG_NAMESPACE, 'mfe_special_exams', __name__
 )
+
 
 def special_exams_is_active(course_key: CourseKey) -> bool:
     """
@@ -134,7 +135,8 @@ def special_exams_is_active(course_key: CourseKey) -> bool:
     if course_key.deprecated:
         return False
     # OTHERWISE: Defer to value of waffle flag for this course run and user.
-    return MICROFRONTEND_SPECIAL_EXAM.is_enabled(course_key)
+    return COURSEWARE_MICROFRONTEND_SPECIAL_EXAMS.is_enabled(course_key)
+
 
 def courseware_mfe_is_active(course_key: CourseKey) -> bool:
     """
