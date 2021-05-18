@@ -33,6 +33,8 @@ ABOUT_ATTRIBUTES = [
     'entrance_exam_enabled',
     'entrance_exam_id',
     'entrance_exam_minimum_score_pct',
+    'course_in_recording',
+    'course_in_development',
 ]
 
 
@@ -79,13 +81,15 @@ class CourseDetails(object):
         self.self_paced = None
         self.learning_info = []
         self.instructor_info = []
+        self.course_in_recording = ""
+        self.course_in_development = ""
 
     @classmethod
     def fetch_about_attribute(cls, course_key, attribute):
         """
         Retrieve an attribute from a course's "about" info
         """
-        if attribute not in ABOUT_ATTRIBUTES + ['video']:
+        if attribute not in ABOUT_ATTRIBUTES + ['video']:#, 'course_in_recording', 'course_in_development']:
             raise ValueError("'{0}' is not a valid course about attribute.".format(attribute))
 
         usage_key = course_key.make_usage_key('about', attribute)
@@ -271,6 +275,15 @@ class CourseDetails(object):
 
         if 'language' in jsondict and jsondict['language'] != descriptor.language:
             descriptor.language = jsondict['language']
+            dirty = True
+
+        if 'course_in_recording' in jsondict and jsondict['course_in_recording'] != descriptor.course_in_recording:
+            descriptor.course_in_recording = jsondict['course_in_recording']
+            dirty = True
+
+        if 'course_in_development' in jsondict \
+                and jsondict['course_in_development'] != descriptor.course_in_development:
+            descriptor.course_in_development = jsondict['course_in_development']
             dirty = True
 
         if (SelfPacedConfiguration.current().enabled

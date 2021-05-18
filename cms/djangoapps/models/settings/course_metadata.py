@@ -61,6 +61,8 @@ class CourseMetadata(object):
         'show_correctness',
         'chrome',
         'default_tab',
+        'course_in_recording',
+        'course_in_development',
     ]
 
     @classmethod

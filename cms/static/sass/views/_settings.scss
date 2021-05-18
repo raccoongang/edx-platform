@@ -347,7 +347,13 @@
 
       #field-course-name {
         float: left;
-        width: flex-grid(5, 9);
+        width: flex-grid(2, 9);
+        margin-right: flex-gutter();
+      }
+
+      #field-course-status {
+        float: left;
+        width: flex-grid(3, 9);
       }
 
       // Credit eligibility requirements

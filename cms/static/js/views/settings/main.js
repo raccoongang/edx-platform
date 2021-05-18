@@ -126,6 +126,17 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    pre_requisite_courses = pre_requisite_courses.length > 0 ? pre_requisite_courses : '';
                    this.$el.find('#' + this.fieldToSelectorMap['pre_requisite_courses']).val(pre_requisite_courses);
 
+                   if (this.model.get('course_in_recording') == 'true') {
+                       this.$('#' + this.fieldToSelectorMap['course_in_recording']).attr('checked', this.model.get('course_in_recording'));
+                   } else {
+                       this.$('#' + this.fieldToSelectorMap['course_in_recording']).removeAttr('checked');
+                   }
+
+                   if (this.model.get('course_in_development') == 'true') {
+                       this.$('#' + this.fieldToSelectorMap['course_in_development']).attr('checked', this.model.get('course_in_development'));
+                   } else {
+                       this.$('#' + this.fieldToSelectorMap['course_in_development']).removeAttr('checked');
+                   }
                    if (this.model.get('entrance_exam_enabled') == 'true') {
                        this.$('#' + this.fieldToSelectorMap['entrance_exam_enabled']).attr('checked', this.model.get('entrance_exam_enabled'));
                        this.$('.div-grade-requirements').show();
@@ -182,7 +193,9 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                    'course_settings_learning_fields': 'course-settings-learning-fields',
                    'add_course_learning_info': 'add-course-learning-info',
                    'add_course_instructor_info': 'add-course-instructor-info',
-                   'course_learning_info': 'course-learning-info'
+                   'course_learning_info': 'course-learning-info',
+                   'course_in_recording': 'course-in-recording',
+                   'course_in_development': 'course-in-development'
                },
 
                addLearningFields: function() {
@@ -259,6 +272,18 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        break;
                    case 'video-thumbnail-image-url':
                        this.updateImageField(event, 'video_thumbnail_image_name', '#video-thumbnail-image');
+                       break;
+                   case 'course-in-recording':
+                       if ($(event.currentTarget).is(':checked')) {
+                           this.handleCourseStatusChange('course_in_development');
+                       }
+                       this.setField(event);
+                       break;
+                   case 'course-in-development':
+                       if ($(event.currentTarget).is(':checked')) {
+                           this.handleCourseStatusChange('course_in_recording');
+                       }
+                       this.setField(event);
                        break;
                    case 'entrance-exam-enabled':
                        if ($(event.currentTarget).is(':checked')) {
@@ -341,6 +366,14 @@ define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui'
                        this.$el.find('#' + this.fieldToSelectorMap['intro_video']).val('');
                        this.$el.find('.remove-course-introduction-video').hide();
                    }
+               },
+               handleCourseStatusChange: function(fieldName) {
+                   var fieldToCheck = this.$('#' + this.fieldToSelectorMap[fieldName]);
+                   var newCourseStatusVal = '';
+                   fieldToCheck.removeAttr('checked');
+                   newCourseStatusVal = fieldToCheck.is(':checked').toString();
+                   this.model.set(fieldName, newCourseStatusVal);
+                   this.model.isValid();
                },
                codeMirrors: {},
                codeMirrorize: function(e, forcedTarget) {

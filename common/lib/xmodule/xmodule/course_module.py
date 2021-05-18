@@ -749,6 +749,24 @@ class CourseFields(object):
             {"display_name": _("None"), "value": CATALOG_VISIBILITY_NONE}]
     )
 
+    course_in_recording = Boolean(
+        display_name=_("Course in recording"),
+        help=_(
+            "Specify whether the course is in the recording status."
+        ),
+        default=False,
+        scope=Scope.settings,
+    )
+
+    course_in_development = Boolean(
+        display_name=_("Course in development"),
+        help=_(
+            "Specify whether the course is in the development status."
+        ),
+        default=False,
+        scope=Scope.settings,
+    )
+
     entrance_exam_enabled = Boolean(
         display_name=_("Entrance Exam Enabled"),
         help=_(
