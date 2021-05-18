@@ -229,7 +229,7 @@ body {
 
 .theme-header-info {
     box-sizing: border-box;
-    padding: 14px 1em 36px;
+    padding: 14px 1em 15px;
     max-width: 1170px;
     margin: 0 auto;
     display: flex;
@@ -773,8 +773,12 @@ body {
     }
 
     .theme-nav-wrapper_logo-holder img {
-        width: 200px;
-        height: 79px;
+        width: 160px;
+        margin: 0;
+
+        @media screen and (max-width: 860px) {
+            width: 75px;
+        }
     }
 
     .theme-btn {
@@ -1025,7 +1029,7 @@ body {
     justify-content: space-between;
     max-width: 1170px;
     margin: 0 auto;
-    padding: 0 $mobile-indent 28px;
+    padding: 0 $mobile-indent 20px;
     box-sizing: border-box;
     flex-wrap: wrap;
 
@@ -1157,6 +1161,10 @@ body {
     @media all and (max-width: 860px) {
         padding-left: 0;
     }
+}
+
+.wrapper-footer footer#footer-openedx .wrapper-logo img {
+    width: 140px;
 }
 
 .wrapper-footer {
