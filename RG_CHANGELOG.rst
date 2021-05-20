@@ -1,9 +1,13 @@
 [Unreleased]
 ~~~~~~~~~~~~
 
-[Fix] - 2022-02-15
-~~~~~~~~~~~~~~~~~~
-* Fix text mistakes on the cookie policy page
+[Feature] - 2022-02-09
+~~~~~~~~~~~~~~~~~~~~~~
+* Add microsites support for the `enable_programs` command
+
+  * fixed overriding for `ProgramsApiConfig` marketing path
+  * `ProgramsApiConfig` doesn’t have the marketing path by default
+  * removed the `--site-domain` arg, updating site configurations for all sites instead
 
 [Fix] - 2022-01-28
 * Avoid django loaders template caching
@@ -47,6 +51,10 @@
 
   * contact_email
   * platform_name
+
+[Feature] 2021-05-20
+~~~~~~~~~~~~~~~~
+‘enable_programs’ command is added.
 
 [Documentation|Enhancement] - 2021-02-24
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
