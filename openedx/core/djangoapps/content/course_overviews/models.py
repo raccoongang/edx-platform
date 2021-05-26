@@ -62,6 +62,7 @@ class CourseOverview(TimeStampedModel):
     end = DateTimeField(null=True)
     advertised_start = TextField(null=True)
     announcement = DateTimeField(null=True)
+    archived = BooleanField(default=False)
 
     # Skillonomy advanced settings
     price = TextField(default="Free")
@@ -174,6 +175,7 @@ class CourseOverview(TimeStampedModel):
         course_overview.end = end
         course_overview.advertised_start = course.advertised_start
         course_overview.announcement = course.announcement
+        course_overview.archived = course.archived
 
         course_overview.price = course.price
         course_overview.learning_format = course.learning_format
