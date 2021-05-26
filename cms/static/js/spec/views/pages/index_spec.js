@@ -147,19 +147,28 @@ define(['jquery',
 
             it('can switch tabs', function() {
                 var $courses_tab = $('.courses-tab'),
-                    $libraraies_tab = $('.libraries-tab');
+                    $libraraies_tab = $('.libraries-tab'),
+                    $archive_tab = $('.archive_tab');
 
                 // precondition check - courses tab is loaded by default
                 expect($courses_tab).toHaveClass('active');
                 expect($libraraies_tab).not.toHaveClass('active');
+                expect($archive_tab).not.toHaveClass('active');
 
                 $('#course-index-tabs .libraries-tab').click();  // switching to library tab
                 expect($courses_tab).not.toHaveClass('active');
                 expect($libraraies_tab).toHaveClass('active');
+                expect($archive_tab).not.toHaveClass('active');
 
                 $('#course-index-tabs .courses-tab').click(); // switching to course tab
                 expect($courses_tab).toHaveClass('active');
                 expect($libraraies_tab).not.toHaveClass('active');
+                expect($archive_tab).not.toHaveClass('active');
+
+                $('#course-index-tabs .archive-tab').click(); // switching to archive tab
+                expect($archive_tab).toHaveClass('active');
+                expect($libraraies_tab).not.toHaveClass('active');
+                expect($courses_tab).not.toHaveClass('active');
             });
         });
     });
