@@ -344,11 +344,11 @@ from openedx.core.djangolib.js_utils import dump_js_escaped_json, js_escaped_str
       </ul>
       % endif
 
-      %if (len(courses) > 0 or optimization_enabled) and (len(courses) != len([course_info for course_info in courses if course_info['archived'] == True])):
+      %if (len(courses) > 0 or optimization_enabled) and (len(courses) != len([course_info for course_info in courses if course_info['archived']])):
       <div class="courses courses-tab active">
         <ul class="list-courses">
           %for course_info in sorted(courses, key=lambda s: s['display_name'].lower() if s['display_name'] is not None else ''):
-          % if course_info['archived'] == False:
+          % if not course_info['archived']:
           <li id="course_key-${course_info['course_key']}" class="course-item" data-course-key="${course_info['course_key']}">
             <a class="course-link" href="${course_info['url']}">
               <h3 class="course-title">${course_info['display_name']}</h3>
@@ -368,7 +368,7 @@ from openedx.core.djangolib.js_utils import dump_js_escaped_json, js_escaped_str
             </a>
 
             <ul  class="item-actions course-actions">
-              % if allow_course_reruns and rerun_creator_status and course_creator_status=='granted':
+              % if allow_course_reruns and rerun_creator_status and course_creator_status == 'granted':
               <li class="action action-rerun">
                 <a href="${course_info['rerun_link']}" class="button rerun-button">${_("Re-run Course")}</a>
               </li>
@@ -377,10 +377,9 @@ from openedx.core.djangolib.js_utils import dump_js_escaped_json, js_escaped_str
                 <script>
                   function changeArch(event) {
                       var course_key = event.target.value
-                      console.log(course_key)
                       var archived = JSON.stringify({"archived": true})
 
-                      var url = "http://localhost:9001/settings/details/".concat(course_key)
+                      var url = "/settings/details/".concat(course_key)
                       $.ajax({
                           url: url,
                           type: "POST",
