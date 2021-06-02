@@ -210,7 +210,7 @@ class CourseDetails(object):
             converted = date.from_json(jsondict['start_date'])
         else:
             converted = None
-        if converted != descriptor.start:
+        if converted != descriptor.start and converted:
             dirty = True
             descriptor.start = converted
 
@@ -219,7 +219,7 @@ class CourseDetails(object):
         else:
             converted = None
 
-        if converted != descriptor.end:
+        if converted != descriptor.end and converted:
             dirty = True
             descriptor.end = converted
 
@@ -228,7 +228,7 @@ class CourseDetails(object):
         else:
             converted = None
 
-        if converted != descriptor.enrollment_start:
+        if converted != descriptor.enrollment_start and converted:
             dirty = True
             descriptor.enrollment_start = converted
 
@@ -237,7 +237,7 @@ class CourseDetails(object):
         else:
             converted = None
 
-        if converted != descriptor.enrollment_end:
+        if converted != descriptor.enrollment_end and converted:
             dirty = True
             descriptor.enrollment_end = converted
 
