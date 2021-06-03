@@ -193,6 +193,7 @@ class CourseDetails(object):
         """
         Decode the json into CourseDetails and save any changed attrs to the db
         """
+        import pdb; pdb.set_trace()
         module_store = modulestore()
         descriptor = module_store.get_course(course_key)
 
@@ -219,7 +220,7 @@ class CourseDetails(object):
         else:
             converted = None
 
-        if  converted and converted != descriptor.end:
+        if converted and converted != descriptor.end:
             dirty = True
             descriptor.end = converted
 
