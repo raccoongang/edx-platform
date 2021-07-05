@@ -672,7 +672,8 @@ def _remove_in_process_courses(courses_iter, in_process_course_actions):
             'rerun_link': _get_rerun_link_for_item(course.id),
             'org': course.display_org_with_default,
             'number': course.display_number_with_default,
-            'run': course.location.run
+            'run': course.location.run,
+            'archived': course.archived
         }
 
     in_process_action_course_keys = {uca.course_key for uca in in_process_course_actions}
@@ -869,6 +870,7 @@ def _rerun_course(request, org, number, run, fields):
 
     # Clear the fields that must be reset for the rerun
     fields['advertised_start'] = None
+    fields['archived'] = False
 
     # Rerun the course as a new celery task
     json_fields = json.dumps(fields, cls=EdxJSONEncoder)

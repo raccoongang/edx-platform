@@ -318,7 +318,7 @@
   }
 
   // ELEM: course listings
-  .courses-tab, .libraries-tab {
+  .courses-tab, .libraries-tab, .archive-tab {
     display: none;
 
     &.active {
@@ -326,7 +326,7 @@
     }
   }
 
-  .courses, .libraries {
+  .courses, .libraries , .archive {
     .title {
       @extend %t-title6;
       margin-bottom: $baseline;

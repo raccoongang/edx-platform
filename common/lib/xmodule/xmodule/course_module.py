@@ -267,6 +267,8 @@ class CourseFields(object):
         scope=Scope.settings
     )
     end = Date(help=_("Date that this class ends"), scope=Scope.settings)
+    archived = Boolean(scope=Scope.settings, help=_('Enter "true" or "false". Enable/Disable feature'), default=False)
+
     certificate_available_date = Date(
         help=_("Date that certificates become available to learners"),
         scope=Scope.content
@@ -1469,9 +1471,10 @@ class CourseSummary(object):
     A lightweight course summary class, which constructs split/mongo course summary without loading
     the course. It is used at cms for listing courses to global staff user.
     """
-    course_info_fields = ['display_name', 'display_coursenumber', 'display_organization']
+    course_info_fields = ['display_name', 'display_coursenumber', 'display_organization', 'archived']
 
-    def __init__(self, course_locator, display_name=u"Empty", display_coursenumber=None, display_organization=None):
+    def __init__(self, course_locator, display_name=u"Empty", display_coursenumber=None, display_organization=None,
+                 archived=False):
         """
         Initialize and construct course summary
 
@@ -1487,11 +1490,13 @@ class CourseSummary(object):
         display_coursenumber (unicode|None): Course number that is specified & appears in the courseware
 
         display_organization (unicode|None): Course organization that is specified & appears in the courseware
+        archived: False
 
         """
         self.display_coursenumber = display_coursenumber
         self.display_organization = display_organization
         self.display_name = display_name
+        self.archived = archived
 
         self.id = course_locator  # pylint: disable=invalid-name
         self.location = course_locator.make_usage_key('course', 'course')

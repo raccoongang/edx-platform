@@ -79,6 +79,7 @@ class CourseDetails(object):
         self.self_paced = None
         self.learning_info = []
         self.instructor_info = []
+        self.archived = False
 
     @classmethod
     def fetch_about_attribute(cls, course_key, attribute):
@@ -125,6 +126,7 @@ class CourseDetails(object):
         course_details.self_paced = course_descriptor.self_paced
         course_details.learning_info = course_descriptor.learning_info
         course_details.instructor_info = course_descriptor.instructor_info
+        course_details.archived = course_descriptor.archived
 
         # Default course license is "All Rights Reserved"
         course_details.license = getattr(course_descriptor, "license", "all-rights-reserved")
@@ -208,7 +210,7 @@ class CourseDetails(object):
             converted = date.from_json(jsondict['start_date'])
         else:
             converted = None
-        if converted != descriptor.start:
+        if converted and converted != descriptor.start:
             dirty = True
             descriptor.start = converted
 
@@ -217,7 +219,7 @@ class CourseDetails(object):
         else:
             converted = None
 
-        if converted != descriptor.end:
+        if converted and converted != descriptor.end:
             dirty = True
             descriptor.end = converted
 
@@ -226,7 +228,7 @@ class CourseDetails(object):
         else:
             converted = None
 
-        if converted != descriptor.enrollment_start:
+        if converted and converted != descriptor.enrollment_start:
             dirty = True
             descriptor.enrollment_start = converted
 
@@ -235,7 +237,7 @@ class CourseDetails(object):
         else:
             converted = None
 
-        if converted != descriptor.enrollment_end:
+        if converted and converted != descriptor.enrollment_end:
             dirty = True
             descriptor.enrollment_end = converted
 
@@ -273,6 +275,10 @@ class CourseDetails(object):
             descriptor.language = jsondict['language']
             dirty = True
 
+        if 'archived' in jsondict:
+            descriptor.archived = jsondict['archived']
+            dirty = True
+
         if (SelfPacedConfiguration.current().enabled
                 and descriptor.can_toggle_course_pacing
                 and 'self_paced' in jsondict
@@ -295,8 +301,8 @@ class CourseDetails(object):
         for attribute in ABOUT_ATTRIBUTES:
             if attribute in jsondict:
                 cls.update_about_item(descriptor, attribute, jsondict[attribute], user.id)
-
-        cls.update_about_video(descriptor, jsondict['intro_video'], user.id)
+        if 'intro_video' in jsondict and jsondict['intro_video']:
+            cls.update_about_video(descriptor, jsondict['intro_video'], user.id)
 
         # Could just return jsondict w/o doing any db reads, but I put
         # the reads in as a means to confirm it persisted correctly
