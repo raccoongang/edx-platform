@@ -690,9 +690,9 @@ def associate_by_email_if_login_api(auth_entry, backend, details, user, *args, *
     same email address in the database.  It defers to the social library's associate_by_email
     implementation, which verifies that only a single database user is associated with the email.
 
-    This association is done ONLY if the user entered the pipeline through a LOGIN API.
+    This association is done ONLY if the user entered the pipeline through a LOGIN or LOGIN API.
     """
-    if auth_entry == AUTH_ENTRY_LOGIN_API:
+    if auth_entry in [AUTH_ENTRY_LOGIN_API, AUTH_ENTRY_LOGIN]:
         association_response = associate_by_email(backend, details, user, *args, **kwargs)
         if (
             association_response and
