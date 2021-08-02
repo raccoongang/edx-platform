@@ -2,7 +2,10 @@
 """
 Utility library for working with the edx-milestones app
 """
+import logging
+
 from django.conf import settings
+from django.db import IntegrityError
 from django.utils.translation import ugettext as _
 from milestones import api as milestones_api
 from milestones.exceptions import InvalidMilestoneRelationshipTypeException, InvalidUserException
@@ -20,6 +23,8 @@ NAMESPACE_CHOICES = {
 }
 
 REQUEST_CACHE_NAME = "milestones"
+
+log = logging.getLogger(__name__)
 
 
 def get_namespace_choices():
@@ -427,7 +432,16 @@ def add_user_milestone(user, milestone):
     """
     if not settings.FEATURES.get('MILESTONES_APP'):
         return None
-    return milestones_api.add_user_milestone(user, milestone)
+    try:
+        return milestones_api.add_user_milestone(user, milestone)
+    # to handle rare cases when milestone is already created
+    except IntegrityError:
+        msg = u"Tried to create duplicate milestone {milestone} for user {user}".format(
+            milestone=milestone.get('id', None),
+            user=user['id'],
+        )
+        log.error(msg)
+        return None
 
 
 def remove_user_milestone(user, milestone):
