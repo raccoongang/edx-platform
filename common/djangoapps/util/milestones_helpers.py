@@ -2,6 +2,8 @@
 """
 Utility library for working with the edx-milestones app
 """
+import logging
+
 from django.conf import settings
 from django.db import IntegrityError
 from django.utils.translation import ugettext as _
@@ -21,6 +23,8 @@ NAMESPACE_CHOICES = {
 }
 
 REQUEST_CACHE_NAME = "milestones"
+
+log = logging.getLogger(__name__)
 
 
 def get_namespace_choices():
@@ -432,7 +436,12 @@ def add_user_milestone(user, milestone):
         return milestones_api.add_user_milestone(user, milestone)
     # to handle rare cases when milestone is already created
     except IntegrityError:
-        pass
+        msg = u"Tried to create duplicate milestone {milestone} for user {user}".format(
+            milestone=milestone.get('id', None),
+            user=user['id'],
+        )
+        log.error(msg)
+        return None
 
 
 def remove_user_milestone(user, milestone):
