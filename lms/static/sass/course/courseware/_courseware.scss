@@ -121,6 +121,10 @@ html.video-fullscreen {
 
   .course-content {
     padding: 0;
+    .finalize-course{
+      text-align: center;
+      padding: $baseline;
+    }
   }
 
   .courseware-results-wrapper {

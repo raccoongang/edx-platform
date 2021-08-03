@@ -30,6 +30,7 @@ from tedix_ro.models import (
     StudentCourseDueDate,
     Question,
     VideoLesson,
+    StudentCourseReport,
 )
 
 STUDENT_PARENT_EXPORT_FIELD_NAMES = (
@@ -419,8 +420,14 @@ class StudentCourseDueDateAdmin(admin.ModelAdmin):
     form = StudentCourseDueDateForm
     search_fields = ['student__user__username', 'student__user__profile__name', 'course_id']
     date_hierarchy = 'due_date'
-    
+
     def format_date(self, obj):
         return obj.due_date.strftime(DATE_TIME_FORMAT)
-        
+
     format_date.short_description = _('Due Date (UTC)')
+
+
+@admin.register(StudentCourseReport)
+class StudentCourseReportAdmin(admin.ModelAdmin):
+    list_display = ('course_id', 'student', 'created_time')
+    search_fields = ['student__user__username', 'student__user__profile__name', 'course_id']
