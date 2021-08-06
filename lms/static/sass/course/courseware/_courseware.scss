@@ -740,3 +740,9 @@ body.answer-loading .modal-loader {
     }
     box-shadow: 1px 2px 5px;
 }
+
+.pre-exam-error {
+    .question-label, .sequential-footer {
+        font-weight: bold;
+    }
+}
