@@ -326,6 +326,7 @@ class SequenceModule(SequenceFields, ProctoringFields, XModule):
             'prev_url': context.get('prev_url'),
             'banner_text': banner_text,
             'is_error_in_pre_exam': context.get('is_error_in_pre_exam'),
+            'pre_exam_context': context.get('pre_exam_context', {}),
         }
         fragment.add_content(self.system.render_template("seq_module.html", params))
 
