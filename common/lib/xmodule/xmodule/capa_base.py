@@ -1024,7 +1024,7 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
         self.set_state_from_lcp()
         return response
 
-    def get_answer(self, _data):
+    def get_answer(self, _data, check_answer_available=True):
         """
         For the "show answer" button.
 
@@ -1038,7 +1038,7 @@ class CapaMixin(ScorableXBlockMixin, CapaFields):
         event_info = dict()
         event_info['problem_id'] = self.location.to_deprecated_string()
         self.track_function_unmask('showanswer', event_info)
-        if not self.answer_available():
+        if check_answer_available and not self.answer_available():
             raise NotFoundError('Answer is not available')
         else:
             answers = self.lcp.get_question_answers()
