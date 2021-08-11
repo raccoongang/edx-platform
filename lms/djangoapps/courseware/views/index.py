@@ -528,12 +528,12 @@ class CoursewareIndex(View):
     def get_pre_exam_data(usage_key):
         pre_exam_block = modulestore().get_item(usage_key)
         answers = {}
-        for problem_id, _answers in pre_exam_block.get_answer(None).get('answers', {}).items():
+        for problem_id, _answers in pre_exam_block.get_answer(None, check_answer_available=False).get('answers', {}).items():
             answers[problem_id] = []
             if hasattr(_answers, '__iter__'):
                 for answer in _answers:
                     xml_answer = pre_exam_block.lcp.tree.find(".//*[@name='{}']".format(answer))
-                    if xml_answer:
+                    if xml_answer is not None:
                         xml_answer = lxml.html.fromstring(lxml.html.tostring(xml_answer))
                         xml_answer.tag = 'span'
                         xml_answer.text = '"{}" '.format(xml_answer.text)
