@@ -39,7 +39,9 @@
                     userLanguage = this.model.userPreferences.userLanguage;
                     userTimezone = this.model.userPreferences.userTimezone;
                 }
-
+                if (userLanguage == 'en' &&  this.model.attributes.eng_cert_course_name !== undefined) {
+                    data.content.display_name = this.model.attributes.eng_cert_course_name
+                };
                 if (data.enrollment_start && (currentDate < new Date(data.enrollment_start))) {
                     courseStatus = "Will start soon";
                 } else if (currentDate < new Date(data.start)) {
