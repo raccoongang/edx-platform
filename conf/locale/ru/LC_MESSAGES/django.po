@@ -2880,12 +2880,12 @@ msgid "Enter the course telegram chat link. It'll be displayed on course /info p
 msgstr "Введите ссылку на telegram чат группы курса, которая будет отображаться на странице /info курса"
 
 #: common/lib/xmodule/xmodule/course_module.py
-msgid "Course name in the ENG version"
-msgstr "Название курса в ENG версии:"
+msgid "Course Name For English Version Of Certificate"
+msgstr "Название курса в ENG версии сертификата:"
 
 #: common/lib/xmodule/xmodule/course_module.py
-msgid "Enter the name of the course that will be displayed in the English version."
-msgstr "Введите имя курса, которое будет отображаться в английской версии."
+msgid "Enter the course name that will be displayed in english version of certificate."
+msgstr "Введите имя курса, которое будет отображаться в английской версии сертификата."
 
 #: common/lib/xmodule/xmodule/course_module.py
 msgid "Landing URL"

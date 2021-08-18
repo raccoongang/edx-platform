@@ -236,8 +236,8 @@ class CourseFields(object):
         scope=Scope.settings
     )
     eng_cert_course_name = String(
-        display_name=_("Course name in the ENG version"),
-        help=_("Enter the name of the course that will be displayed in the English version."),
+        display_name=_("Course Name For English Version Of Certificate"),
+        help=_("Enter the course name that will be displayed in english version of certificate."),
         default="",
         scope=Scope.settings
     )

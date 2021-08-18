@@ -604,7 +604,6 @@ class CourseAboutSearchIndexer(object):
             'number_of_tests': course.number_of_tests,
             'number_of_videos': course.number_of_videos,
             'number_of_lections': course.number_of_lections,
-            'eng_cert_course_name': course.eng_cert_course_name,
         }
 
         # load data for all of the 'about' modules for this course into a dictionary

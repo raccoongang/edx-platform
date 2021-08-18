@@ -885,17 +885,14 @@ def dashboard(request):
         'display_sidebar_on_dashboard': display_sidebar_on_dashboard,
     }
 
-    eng_name = {}
     # Get completed courses count by reaching minimal passing grade
     courses_completed = 0
     for enrollment in course_enrollments:
         course_id = enrollment.course_id
         course = get_course_with_access(request.user, 'load', course_id)
-        eng_name[str(enrollment.course_id)] = course.eng_cert_course_name
         if is_course_passed(course, student=user):
             courses_completed += 1
     context['courses_completed'] = courses_completed
-    context['eng_name'] = eng_name
 
     ecommerce_service = EcommerceService()
     if ecommerce_service.is_enabled(request.user):
