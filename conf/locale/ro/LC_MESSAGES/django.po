@@ -24958,13 +24958,13 @@ msgstr "Raportul de activitate pentru lecția:"
 
 #: common/djangoapps/tedix_ro/templates/extended_report_popup.html
 msgid ""
-"Report for lesson assigend to Class '{classroom}' with due date: {due_date}"
+"Report for lesson assigned to Class '{classroom}' with due date: {due_date}"
 msgstr ""
 "Raportul pentru lecția alocată Clasei '{classroom}' cu data limită: "
 "{due_date}"
 
 #: common/djangoapps/tedix_ro/templates/extended_report_popup.html
-msgid "Report for lesson assigend to '{username}' with due date: {due_date}"
+msgid "Report for lesson assigned to '{username}' with due date: {due_date}"
 msgstr ""
 "Raportul de activitate pentru tema de casă a utilizatorului '{username}' cu "
 "data limită: {due_date}"
@@ -25026,6 +25026,14 @@ msgstr "Afișare"
 #: common/djangoapps/tedix_ro/templates/my_reports.html
 msgid "Open report"
 msgstr "Deschide Raport"
+
+#: common/djangoapps/tedix_ro/templates/my_reports.html
+msgid "Has Due Date"
+msgstr "Tema de casa"
+
+#: common/djangoapps/tedix_ro/templates/my_reports.html
+msgid "Finalize Date"
+msgstr "Data finalizarii"
 
 #: common/djangoapps/tedix_ro/templates/emails/extended_report_mail.html
 msgid "Report link:"
@@ -25135,3 +25143,7 @@ msgstr "din"
 
 msgid "Partially correct"
 msgstr "Parțial corect"
+
+#: lms/templates/courseware/courseware.html
+msgid "Finalize Lesson"
+msgstr "Finalizează Lecţia"

@@ -915,7 +915,15 @@ line-height: 1;
             }
 
             &.isCourseName {
-                width: 65% !important;
+                width: 45% !important;
+            }
+
+            &.isHasDueDate {
+                width: 10% !important;
+            }
+
+            &.isFinalizeDate {
+                width: 10% !important;
             }
 
             &.isScore {
@@ -930,7 +938,8 @@ line-height: 1;
                 &.isDueDate,
                 &.isClass,
                 &.isCourseName,
-                &.isCourseName,
+                &.isHasDueDate,
+                &.isFinalizeDate,
                 &.isScore,
                 &.isView {
                     width: auto !important;
@@ -948,7 +957,7 @@ line-height: 1;
 .my_report_popup {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    z-index: 1000; /* Sit on top */
     padding-top: 100px; /* Location of the box */
     left: 0;
     top: 0;

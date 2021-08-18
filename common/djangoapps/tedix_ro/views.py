@@ -10,7 +10,6 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db import transaction
-from django.db.models import Avg
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.template.context_processors import csrf
@@ -50,13 +49,13 @@ from .forms import (
 )
 from .models import (
     City,
-    ParentProfile,
     School,
     StudentCourseDueDate,
     StudentProfile,
     VideoLesson,
     Classroom,
     StudentReportSending,
+    StudentCourseReport,
     )
 from .serializers import (
     CitySerializer,
@@ -66,15 +65,13 @@ from .serializers import (
     VideoLessonSerializer,
 )
 from .sms_client import SMSClient
-from .signals import VIDEO_LESSON_COMPLETED
+from .tasks import send_student_completed_report
 from .utils import (
     get_payment_link,
-    report_data_preparation,
-    get_all_questions_count,
-    get_points_earned_possible,
     reset_student_progress,
     get_user_time_zone,
     get_timezoned_date,
+    create_student_course_report
 )
 
 
@@ -102,6 +99,7 @@ def my_reports(request):
         language = get_language()
 
         if isinstance(due_date, datetime.datetime):
+            date_utc = due_date.replace(tzinfo=None)
             if user_time_zone:
                 user_tz = pytz.timezone(user_time_zone.value)
                 date = pytz.UTC.localize(due_date.replace(tzinfo=None), is_dst=None).astimezone(user_tz)
@@ -112,7 +110,7 @@ def my_reports(request):
             date = due_date
 
         today = utc_now.date()
-        date_data = time.mktime(date.timetuple())
+        date_data = time.mktime(date_utc.timetuple())
         _today = _('Today')
         _tomorrow = _('Tomorrow')
         _future = _('Future')
@@ -160,113 +158,109 @@ def my_reports(request):
     if not user.is_authenticated():
         return redirect(get_next_url_for_login_page(request))
 
-    if user.is_staff:
-        courses = CourseOverview.objects.all()
-    else:
-        course_enrollments = CourseEnrollment.enrollments_for_user(user=user)
-        course_overview_id_list = [course_enrollment.course_id for course_enrollment in course_enrollments]
-        courses = CourseOverview.objects.filter(id__in=course_overview_id_list)
-
     data = []
     utc_now_date = datetime.datetime.utcnow().date()
 
-    for course_overview in courses:
-        course_name = course_overview.display_name
-        course_key = course_overview.id
-        course_report_link = reverse('extended_report', kwargs={'course_key': unicode(course_key)} )
-        course_due_date = None
-        students_classes = []
-        students_list = []
-
-        if user.is_superuser:
-            students_list = CourseEnrollment.objects.filter(
-                course=course_overview, 
-                user__studentprofile__isnull=False
-            ).values_list('user_id', flat=True).distinct()
-            students_classes = StudentProfile.objects.filter(
-                user__in=students_list
-            ).values_list('classroom__name', flat=True).distinct()
-
-        elif hasattr(user, 'instructorprofile'):
-            teacher_students = user.instructorprofile.students.all().values_list('user_id', flat=True)
-            students_list = CourseEnrollment.objects.filter(
-                course=course_overview, 
-                user__in=teacher_students
-            ).values_list('user_id', flat=True).distinct()
-
-            students_classes = user.instructorprofile.students.filter(
-                user__in=students_list
-            ).values_list('classroom__name', flat=True).distinct()
-
-        for students_class in students_classes:
-            course_due_dates_past = StudentCourseDueDate.objects.filter(
-                student__user__in=students_list,
-                student__classroom__name=students_class,
-                course_id=course_key,
-                due_date__lt=utc_now_date,
-            ).order_by('-due_date').dates('due_date', 'day')[:200]
-
-            course_due_dates = StudentCourseDueDate.objects.filter(
-                student__user__in=students_list,
-                student__classroom__name=students_class,
-                course_id=course_key,
-                due_date__gte=utc_now_date,
-            ).dates('due_date', 'day').union(course_due_dates_past)
-
-            for course_due_date in course_due_dates:
-                students_in_class = StudentCourseDueDate.objects.filter(
-                    due_date__contains=course_due_date,
-                    student__classroom__name=students_class,
-                    student__user__in=students_list,
-                    course_id=course_key,
-                ).values_list('student__user_id', flat=True).distinct()
-
-                students_in_class_count = possible = earned = st_earned = st_possible = 0
-
-                for student in students_in_class:
-                    students_in_class_count += 1
-                    st_earned, st_possible, complete = get_points_earned_possible(course_key, user_id=student)
-                    earned += st_earned
-                    possible += st_possible
-                average_score = 0
-
-                if earned:
-                    average_score = (float(earned) / possible) * 10
-
-                data.append({
-                    'course_name': course_name,
-                    'report_link': course_report_link,
-                    'due_date': user_due_date_data(user, course_due_date),
-                    'classroom': students_class,
-                    'average_score': round(average_score, 2) if average_score else 'n/a',
-                })
-
-        if hasattr(user, 'studentprofile'): 
-            student_class = user.studentprofile.classroom
-            course_due_date = StudentCourseDueDate.objects.filter(
-                student=user.studentprofile, 
-                course_id=course_key,
-            ).first()
-
-            earned, possible, complete = get_points_earned_possible(course_key, user=user)
+    if hasattr(user, 'studentprofile'): 
+        student = user.studentprofile
+        student_class = student.classroom
+        student_course_reports = StudentCourseReport.objects.filter(
+            student=student,
+        )
+        for course_report in student_course_reports:
+            course_key = course_report.course_id
+            course_due_date = course_report.course_due_date
+            course_report_link = reverse('extended_report', kwargs={'course_key': unicode(course_key)} )
+            earned = course_report.data['report_data']['earned']
+            possible = course_report.data['report_data']['possible']
+            complete = course_report.data['report_data']['completion']
             average_score = 'n/a'
+
+            default_course_due_date_data = {
+                'due_date_order': 5,
+                'date_group': '',
+                'date_data': '',
+                'displayed_date': 'n/a',
+            }
+            course_due_date_data = user_due_date_data(user, course_due_date.due_date) if course_due_date else default_course_due_date_data
+
             if earned:
                 average_score = '{:.2f}'.format(
                     float(earned) / possible * 10
                 )
 
+            finalize_date_timezoned = get_timezoned_date(student.user, course_report.created_time)
 
-            if course_due_date:
-                course_due_date_data = user_due_date_data(user, course_due_date.due_date)
+            data.append({
+                'complete': complete,
+                'course_name': course_report.course.display_name,
+                'report_link': course_report_link,
+                'due_date': course_due_date_data,
+                'classroom': student_class,
+                'average_score': average_score,
+                'has_due_date': _('Yes') if course_due_date else _('No'),
+                'finalize_date': {
+                    'display_data': finalize_date_timezoned.strftime("%b %d, %Y, %H:%M %P UTC%z"),
+                    'date_data': time.mktime(course_report.created_time.timetuple()),
+                },
+                'active_report_link': True,
+                'course_report_id': course_report.id,
+            })
+    else:
+        if user.is_superuser:
+            students_classes = user.course_due_dates.values_list('student__classroom__name', flat=True).distinct()
+        elif hasattr(user, 'instructorprofile'):
+            students_classes = user.instructorprofile.students.all().values_list('classroom__name', flat=True).distinct()
 
-                data.append({
-                    'complete': complete,
-                    'course_name': course_name,
-                    'report_link': course_report_link,
-                    'due_date': course_due_date_data,
-                    'classroom': student_class,
-                    'average_score': average_score,
-                })
+        course_ids = user.course_due_dates.values_list('course_id', flat=True).distinct()
+        for course_id in course_ids:
+            course = CourseOverview.get_from_id(course_id)
+            course_report_link = reverse('extended_report', kwargs={'course_key': unicode(course_id)} )
+            for students_class in students_classes:
+                course_due_dates_past = user.course_due_dates.filter(
+                    due_date__lt=utc_now_date,
+                    student__classroom__name=students_class,
+                    course_id=course_id,
+                ).order_by('-due_date').values_list('due_date', flat=True)[:200]
+
+                course_due_dates = user.course_due_dates.filter(
+                    due_date__gte=utc_now_date,
+                    student__classroom__name=students_class,
+                    course_id=course_id,
+                ).values_list('due_date', flat=True).union(course_due_dates_past).distinct()
+
+                for course_due_date in course_due_dates:
+                    students_in_class = user.course_due_dates.filter(
+                        due_date=course_due_date,
+                        student__classroom__name=students_class,
+                        course_id=course_id,
+                    ).values_list('student__user_id', flat=True).distinct()
+
+                    possible = earned = 0
+                    has_students_with_report = False
+                    course_reports = StudentCourseReport.objects.filter(
+                        student__user_id__in=students_in_class,
+                        course_id=course_id,
+                        course_due_date__due_date=course_due_date
+                    )
+                    for course_report in course_reports:
+                        course_report_data = course_report.data
+                        has_students_with_report = True
+                        earned += course_report_data['report_data']['earned']
+                        possible += course_report_data['report_data']['possible']
+
+                    average_score = 0
+                    if earned:
+                        average_score = (float(earned) / possible) * 10
+
+                    data.append({
+                        'course_name': course.display_name,
+                        'active_report_link': has_students_with_report,
+                        'report_link': course_report_link,
+                        'due_date': user_due_date_data(user, course_due_date),
+                        'classroom': students_class,
+                        'average_score': round(average_score, 2) if average_score else 'n/a',
+                    })
 
     context = {
         'data': data,
@@ -285,15 +279,61 @@ def my_reports_main(request):
 
 
 @api_view(['GET'])
+def create_report(request, course_key):
+    user = request.user
+    if not user.is_authenticated():
+        raise Http404
+    course_key = CourseKey.from_string(course_key)
+
+    report_data = []
+    course = get_course_with_access(user, 'load', course_key, check_if_enrolled=True)
+    student_course_report = create_student_course_report(user.id, course_key)
+    send_student_completed_report.delay(student_course_report.id)
+    header, user_data = student_course_report.data.values()
+    report_data.append(user_data)
+    context = {
+        'course_name': course.display_name,
+        'header': header,
+        'report_data': report_data,
+        'user': user,
+    }
+
+    reset_student_progress(user, course_key)
+    if request.is_ajax():
+        course_due_date = student_course_report.course_due_date
+        today = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC).date()
+        due_date_value = 'n/a'
+        if course_due_date:
+            due_date = course_due_date.due_date.date()
+            if today == due_date:
+                date_group = _('Today')
+            elif (today - due_date).days == -1:
+                date_group = _('Tomorrow')
+            elif (today - due_date).days < -1:
+                date_group = _('Future')
+            elif (today - due_date).days > 0:
+                date_group = _('Past')
+            due_date_value = '{}, {}'.format(date_group.encode('utf8'), translate_date(due_date, get_language()))
+
+        context.update({
+            'due_date': due_date_value,
+        })
+        html = mako_render_to_string('extended_report_popup.html', context)
+        return Response({'html': html})
+    return render_to_response('extended_report.html', student_course_report.data)
+
+
+@api_view(['GET'])
 def extended_report(request, course_key):
     """
     Provides an extended report, depending on the role
     """
     classroom = request.GET.get('classroom')
     due_date_str = request.GET.get('due_date')
+    course_report_id = request.GET.get('course_report_id')
     due_date = None
     if due_date_str:
-        due_date = datetime.datetime.fromtimestamp(float(due_date_str).__abs__()).date()
+        due_date = pytz.UTC.localize(datetime.datetime.fromtimestamp(float(due_date_str).__abs__()))
 
     user = request.user
     if not user.is_authenticated():
@@ -304,31 +344,44 @@ def extended_report(request, course_key):
     header = []
     report_data = []
     query_params = {}
-    modulestore_course = modulestore().get_course(course_key)
     if user.is_superuser:
         if classroom:
             query_params['student__classroom__name'] = classroom
         if due_date:
-            query_params['due_date__contains'] = due_date # TODO: consider using __year, __month, __day lookups
+            query_params['due_date'] = due_date # TODO: consider using __year, __month, __day lookups
         users_by_due_date = StudentCourseDueDate.objects.filter(course_id=course_key, **query_params).values_list('student__user_id').distinct()
-        users = User.objects.filter(id__in=users_by_due_date)
-        for student in users:
-            header, user_data = report_data_preparation(student, modulestore_course)
-            report_data.append(user_data)
+        students = User.objects.filter(id__in=users_by_due_date)
+        for student in students:
+            student_course_report = StudentCourseReport.objects.filter(
+                student__user=student,
+                course_id=course_key,
+                course_due_date__due_date=due_date
+            ).first()
+            if student_course_report:
+                header, user_data = student_course_report.data.values()
+                report_data.append(user_data)
     elif user.is_staff and hasattr(user, 'instructorprofile'):
         if classroom:
             query_params['student__classroom__name'] = classroom
         if due_date:
-            query_params['due_date__contains'] = due_date # TODO: consider using __year, __month, __day lookups
+            query_params['due_date'] = due_date # TODO: consider using __year, __month, __day lookups
         users_by_due_date = StudentCourseDueDate.objects.filter(course_id=course_key, **query_params).values_list('student__user_id').distinct()
-        for student_profile in user.instructorprofile.students.filter(
-                user__courseenrollment__course_id=course.id,
-                user_id__in=users_by_due_date
-            ).select_related('user__profile').distinct():
-            header, user_data = report_data_preparation(student_profile.user, modulestore_course)
-            report_data.append(user_data)
+        students = user.instructorprofile.students.filter(
+            user__courseenrollment__course_id=course.id,
+            user_id__in=users_by_due_date
+        ).select_related('user__profile').distinct()
+        for student in students:
+            student_course_report = StudentCourseReport.objects.filter(
+                student=student,
+                course_id=course_key,
+                course_due_date__due_date=due_date
+            ).first()
+            if student_course_report:
+                header, user_data = student_course_report.data.values()
+                report_data.append(user_data)
     else:
-        header, user_data = report_data_preparation(user, modulestore_course)
+        student_course_report = StudentCourseReport.objects.get(id=course_report_id)
+        header, user_data = student_course_report.data.values()
         report_data.append(user_data)
 
     if not report_data:
@@ -339,22 +392,25 @@ def extended_report(request, course_key):
         'header': header,
         'report_data': report_data,
         'user': user,
+        'classroom': classroom,
+        'due_date': 'n/a',
     }
     if request.is_ajax():
-        today = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC).date()
+        if due_date:
+            today = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC).date()
+            due_date_date = due_date.date()
+            if today == due_date_date:
+                date_group = _('Today')
+            elif (today - due_date_date).days == -1:
+                date_group = _('Tomorrow')
+            elif (today - due_date_date).days < -1:
+                date_group = _('Future')
+            elif (today - due_date_date).days > 0:
+                date_group = _('Past')
+            context.update({
+                'due_date': '{}, {}'.format(date_group.encode('utf8'), translate_date(due_date, get_language())),
+            })
 
-        if today == due_date:
-            date_group = _('Today')
-        elif (today - due_date).days == -1:
-            date_group = _('Tomorrow')
-        elif (today - due_date).days < -1:
-            date_group = _('Future')
-        elif (today - due_date).days > 0:
-            date_group = _('Past')
-        context.update({
-            'classroom': classroom,
-            'due_date': '{}, {}'.format(date_group.encode('utf8'), translate_date(due_date, get_language())),
-        })
         html = mako_render_to_string('extended_report_popup.html', context)
         return Response({'html': html})
     else:
@@ -386,8 +442,8 @@ def manage_courses(request):
         students = StudentProfile.objects.none()
 
     classrooms = Classroom.objects.all()
-    now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
-    courses = CourseOverview.objects.filter(enrollment_end__gt=now, enrollment_start__lt=now)
+    utc_now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
+    courses = CourseOverview.objects.filter(enrollment_end__gt=utc_now, enrollment_start__lt=utc_now)
     form = StudentEnrollForm(students=students, courses=courses, classrooms=classrooms, user_tz=user_tz)
     if request.method == 'POST':
         data = dict(
@@ -407,11 +463,24 @@ def manage_courses(request):
                     due_date = form.cleaned_data['due_date']
                     CourseEnrollment.enroll_by_email(student.user.email, course.id)
                     reset_student_progress(student.user, course.id)
-                    StudentCourseDueDate.objects.update_or_create(
+                    StudentReportSending.objects.filter(course_id=course.id, user=student.user).delete()
+                    course_due_date = StudentCourseDueDate.objects.filter(
                         student=student,
                         course_id=course.id,
-                        defaults={'due_date':form.cleaned_data['due_date']}
+                        due_date__gt=utc_now
                     )
+                    if course_due_date:
+                        course_due_date.update(
+                            creator=user,
+                            due_date=due_date
+                        )
+                    else:
+                        StudentCourseDueDate.objects.create(
+                            student=student,
+                            course_id=course.id,
+                            creator=user,
+                            due_date=due_date
+                        )
                     courses_list.append([
                         urljoin(settings.LMS_ROOT_URL,
                         reverse(
@@ -604,12 +673,6 @@ class VideoLessonViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=data, context=self.get_serializer_context())
         if serializer.is_valid():
             serializer.save()
-            if not( any(d['attempt_count'] == 0 for d in data['questions'])):
-                VIDEO_LESSON_COMPLETED.send(
-                    sender=VideoLesson,
-                    user=request.user,
-                    course_id=data['course']
-                )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
