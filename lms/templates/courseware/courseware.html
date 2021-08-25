@@ -280,27 +280,37 @@ ${HTML(fragment.foot_html())}
     $(document).ready(function() {
       var $modal = $(".my_report_popup");
       var $closePopup = $(".close_popup");
-      var $finalizeBtn = $('#finalize-course-btn')
+      var $finalizeBtn = $('#finalize-course-btn');
+      var submitCount = 0;
 
       function checkFinalizeBtn(){
-        var $problemProgress = $('.course-wrapper').find('.problem-progress');
-        var answeredProblemCount = 0;
-        var problemCount = $problemProgress.length
-        if (problemCount) {
-            $problemProgress.each(function(){
-            if ($(this).data('answered')) {
-              answeredProblemCount += 1;
-            }
-          });
-          if (answeredProblemCount == problemCount && problemCount > 0) {
-            $finalizeBtn.removeClass('is-disabled');
+        var reg = /data-attempts-used="(?<atempts>[0-9])"/;
+        var regGlobal = /data-attempts-used="[0-9]"/g;
+        var searchResult = $('.sequence').text().match(regGlobal);
+        var attemptsUsedCount = 0;
+        submitCount++;
+        searchResult.forEach(function(result) {
+          if (result.match(reg).groups.atempts > 0) {
+            attemptsUsedCount++;
           }
+        });
+        if (attemptsUsedCount === searchResult.length || submitCount === searchResult.length) {
+          setTimeout(
+            function() {
+              $finalizeBtn.removeClass('is-disabled');
+            }, 500
+          )
         }
+
+        return attemptsUsedCount;
       };
 
-      checkFinalizeBtn();
+      window.checkFinalizeBtn = checkFinalizeBtn;
+
+      submitCount = checkFinalizeBtn();
 
       $(".problem .submit").on("click", function(event){
+        submitCount++;
         setTimeout(
           checkFinalizeBtn, 500
         )

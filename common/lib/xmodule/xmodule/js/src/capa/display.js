@@ -508,6 +508,9 @@
                 requiredFilesNotSubmitted, settings, timeoutId, unallowedFileSubmitted, i, len,
                 that = this;
 
+            // can not catch click by submit from outside
+            window.checkFinalizeBtn();
+
             // If there are no file inputs in the problem, we can fall back on submit.
             if (this.el.find('input:file').length === 0) {
                 this.submit();
