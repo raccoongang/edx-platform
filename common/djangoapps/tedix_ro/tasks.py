@@ -163,7 +163,7 @@ def send_student_extended_reports(course_report_id):
                 'report_data': [user_data,],
                 'report_url': urljoin(
                     configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
-                    reverse('extended_report', kwargs={'course_key': course.id})
+                    reverse('extended_report', kwargs={'course_key': course.id, 'course_report_id': student_course_report.id})
                 )
             }]
         subject = _(u'{platform_name}: Report for {username} on "{course_name}"').format(
