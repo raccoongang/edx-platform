@@ -368,14 +368,14 @@ def extended_report(request, course_key, course_report_id=None):
 
     if user.is_superuser:
         students = User.objects.filter(id__in=get_users_from_due_dates(classroom, due_date))
-        header = add_report(students, report_data)
+        header = add_report(students)
 
     elif user.is_staff and hasattr(user, 'instructorprofile'):
         students = user.instructorprofile.students.filter(
             user__courseenrollment__course_id=course.id,
             user_id__in=get_users_from_due_dates(classroom, due_date)
         ).select_related('user__profile').distinct()
-        header = add_report(students, report_data)
+        header = add_report(students)
 
     else:
         student_course_report = get_object_or_404(StudentCourseReport, id=course_report_id, course_id=course_key)
