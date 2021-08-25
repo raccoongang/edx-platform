@@ -170,7 +170,7 @@ def my_reports(request):
         for course_report in student_course_reports:
             course_key = course_report.course_id
             course_due_date = course_report.course_due_date
-            course_report_link = reverse('extended_report', kwargs={'course_key': unicode(course_key)} )
+            course_report_link = reverse('extended_report', kwargs={'course_key': unicode(course_key), 'course_report_id': course_report.id})
             earned = course_report.data['report_data']['earned']
             possible = course_report.data['report_data']['possible']
             complete = course_report.data['report_data']['completion']
@@ -204,7 +204,6 @@ def my_reports(request):
                     'date_data': time.mktime(course_report.created_time.timetuple()),
                 },
                 'active_report_link': True,
-                'course_report_id': course_report.id,
             })
     else:
         if user.is_superuser:
@@ -378,7 +377,7 @@ def extended_report(request, course_key, course_report_id=None):
         header = add_report(students)
 
     else:
-        student_course_report = get_object_or_404(StudentCourseReport, id=course_report_id, course_id=course_key)
+        student_course_report = get_object_or_404(StudentCourseReport, id=course_report_id, course_id=course_key, student__user=user)
         header, user_data = student_course_report.data.values()
         report_data.append(user_data)
 
