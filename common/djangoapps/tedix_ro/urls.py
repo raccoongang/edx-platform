@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^my_reports/$', my_reports_main, name='my_reports'),
     url(r'^my_reports_data/$', my_reports, name='my_reports_data'),
     url(r'^extended_report/(?P<course_key>[^/]*)/$', extended_report, name='extended_report'),
+    url(r'^extended_report/(?P<course_key>[^/]*)/(?P<course_report_id>\d)/$', extended_report, name='extended_report'),
     url(r'^create_report/(?P<course_key>[^/]*)/$', create_report, name='create_report'),
     url(r'^manage_courses$', manage_courses_main, name='manage_courses'),
     url(r'^manage_courses_data$', manage_courses, name='manage_courses_data'),
