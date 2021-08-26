@@ -289,11 +289,13 @@ ${HTML(fragment.foot_html())}
         var searchResult = $('.sequence').text().match(regGlobal);
         var attemptsUsedCount = 0;
         submitCount++;
+
         searchResult.forEach(function(result) {
           if (result.match(reg).groups.atempts > 0) {
             attemptsUsedCount++;
           }
         });
+
         if (attemptsUsedCount === searchResult.length || submitCount === searchResult.length) {
           setTimeout(
             function() {
@@ -308,13 +310,6 @@ ${HTML(fragment.foot_html())}
       window.checkFinalizeBtn = checkFinalizeBtn;
 
       submitCount = checkFinalizeBtn();
-
-      $(".problem .submit").on("click", function(event){
-        submitCount++;
-        setTimeout(
-          checkFinalizeBtn, 500
-        )
-      });
 
       $("#finalize-course-btn").on("click", function(event){
         event.preventDefault();
