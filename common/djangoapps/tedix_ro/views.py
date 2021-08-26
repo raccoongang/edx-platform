@@ -287,7 +287,7 @@ def create_report(request, course_key):
     report_data = []
     course = get_course_with_access(user, 'load', course_key, check_if_enrolled=True)
     student_course_report = create_student_course_report(user.id, course_key)
-    send_student_completed_report.delay(student_course_report.id)
+    send_student_completed_report.apply_async(args=(student_course_report.id, ), countdown=5)
     header, user_data = student_course_report.data.values()
     report_data.append(user_data)
     context = {
@@ -345,7 +345,7 @@ def extended_report(request, course_key, course_report_id=None):
     def add_report(students):
         for student in students:
             student_course_report = StudentCourseReport.objects.filter(
-                student__user=student,
+                student__user=student if isinstance(student, User) else student.user,
                 course_id=course_key,
             )
             if due_date:
@@ -607,7 +607,8 @@ def personal_due_dates(request):
 
     student_due_dates = StudentCourseDueDate.objects.filter(
         student=student,
-        course_id__in=course_ids
+        course_id__in=course_ids,
+        due_date__gt=now
     ).order_by('-due_date')
 
     courses_due_dates_list = [
