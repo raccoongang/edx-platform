@@ -508,9 +508,6 @@
                 requiredFilesNotSubmitted, settings, timeoutId, unallowedFileSubmitted, i, len,
                 that = this;
 
-            // can not catch click by submit from outside
-            window.checkFinalizeBtn();
-
             // If there are no file inputs in the problem, we can fall back on submit.
             if (this.el.find('input:file').length === 0) {
                 this.submit();
@@ -609,6 +606,8 @@
                         case 'correct':
                             that.render(response.contents);
                             that.updateProgress(response);
+                            // can not catch click by submit from outside
+                            window.checkFinalizeBtn();
                             break;
                         default:
                             that.gentle_alert(response.success);
@@ -638,6 +637,8 @@
                     that.el.trigger('contentChanged', [that.id, response.contents, response]);
                     that.render(response.contents, that.focus_on_submit_notification);
                     that.updateProgress(response);
+                    // can not catch click by submit from outside
+                    window.checkFinalizeBtn();
                     break;
                 default:
                     that.saveNotification.hide();

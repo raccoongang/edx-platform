@@ -132,7 +132,8 @@ def send_student_completed_report(course_report_id):
     student has due date for course
     """
     course_report = StudentCourseReport.objects.filter(id=course_report_id).first()
-    if course_report:
+    course_completed = course_report and course_report.data['report_data']['completion']
+    if course_completed:
         user = course_report.student.user
         course_id=course_report.course_id
         student_report_sending_exists = StudentReportSending.objects.filter(

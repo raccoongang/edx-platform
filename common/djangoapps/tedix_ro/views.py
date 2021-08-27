@@ -343,6 +343,7 @@ def extended_report(request, course_key, course_report_id=None):
     query_params = {}
     
     def add_report(students):
+        header = []
         for student in students:
             student_course_report = StudentCourseReport.objects.filter(
                 student__user=student if isinstance(student, User) else student.user,
@@ -355,7 +356,8 @@ def extended_report(request, course_key, course_report_id=None):
             if student_course_report:
                 header, user_data = student_course_report.data.values()
                 report_data.append(user_data)
-                return header
+        # header is always the same
+        return header
     
     def get_users_from_due_dates(classroom, due_date):
         if classroom:
