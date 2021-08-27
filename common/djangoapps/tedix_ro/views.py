@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db import transaction
 from django.http import Http404, HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
@@ -170,7 +170,7 @@ def my_reports(request):
         for course_report in student_course_reports:
             course_key = course_report.course_id
             course_due_date = course_report.course_due_date
-            course_report_link = reverse('extended_report', kwargs={'course_key': unicode(course_key)} )
+            course_report_link = reverse('extended_report', kwargs={'course_key': unicode(course_key), 'course_report_id': course_report.id})
             earned = course_report.data['report_data']['earned']
             possible = course_report.data['report_data']['possible']
             complete = course_report.data['report_data']['completion']
@@ -204,7 +204,6 @@ def my_reports(request):
                     'date_data': time.mktime(course_report.created_time.timetuple()),
                 },
                 'active_report_link': True,
-                'course_report_id': course_report.id,
             })
     else:
         if user.is_superuser:
@@ -288,7 +287,7 @@ def create_report(request, course_key):
     report_data = []
     course = get_course_with_access(user, 'load', course_key, check_if_enrolled=True)
     student_course_report = create_student_course_report(user.id, course_key)
-    send_student_completed_report.delay(student_course_report.id)
+    send_student_completed_report.apply_async(args=(student_course_report.id, ), countdown=5)
     header, user_data = student_course_report.data.values()
     report_data.append(user_data)
     context = {
@@ -323,14 +322,12 @@ def create_report(request, course_key):
     return render_to_response('extended_report.html', student_course_report.data)
 
 
-@api_view(['GET'])
-def extended_report(request, course_key):
+def extended_report(request, course_key, course_report_id=None):
     """
     Provides an extended report, depending on the role
     """
     classroom = request.GET.get('classroom')
     due_date_str = request.GET.get('due_date')
-    course_report_id = request.GET.get('course_report_id')
     due_date = None
     if due_date_str:
         due_date = pytz.UTC.localize(datetime.datetime.fromtimestamp(float(due_date_str).__abs__()))
@@ -344,43 +341,43 @@ def extended_report(request, course_key):
     header = []
     report_data = []
     query_params = {}
-    if user.is_superuser:
-        if classroom:
-            query_params['student__classroom__name'] = classroom
-        if due_date:
-            query_params['due_date'] = due_date # TODO: consider using __year, __month, __day lookups
-        users_by_due_date = StudentCourseDueDate.objects.filter(course_id=course_key, **query_params).values_list('student__user_id').distinct()
-        students = User.objects.filter(id__in=users_by_due_date)
+    
+    def add_report(students):
         for student in students:
             student_course_report = StudentCourseReport.objects.filter(
-                student__user=student,
+                student__user=student if isinstance(student, User) else student.user,
                 course_id=course_key,
-                course_due_date__due_date=due_date
-            ).first()
+            )
+            if due_date:
+                student_course_report = student_course_report.filter(course_due_date__due_date=due_date)
+            student_course_report = student_course_report.first()
+
             if student_course_report:
                 header, user_data = student_course_report.data.values()
                 report_data.append(user_data)
-    elif user.is_staff and hasattr(user, 'instructorprofile'):
+                return header
+    
+    def get_users_from_due_dates(classroom, due_date):
         if classroom:
             query_params['student__classroom__name'] = classroom
         if due_date:
             query_params['due_date'] = due_date # TODO: consider using __year, __month, __day lookups
-        users_by_due_date = StudentCourseDueDate.objects.filter(course_id=course_key, **query_params).values_list('student__user_id').distinct()
+
+        return StudentCourseDueDate.objects.filter(course_id=course_key, **query_params).values_list('student__user_id').distinct()
+
+    if user.is_superuser:
+        students = User.objects.filter(id__in=get_users_from_due_dates(classroom, due_date))
+        header = add_report(students)
+
+    elif user.is_staff and hasattr(user, 'instructorprofile'):
         students = user.instructorprofile.students.filter(
             user__courseenrollment__course_id=course.id,
-            user_id__in=users_by_due_date
+            user_id__in=get_users_from_due_dates(classroom, due_date)
         ).select_related('user__profile').distinct()
-        for student in students:
-            student_course_report = StudentCourseReport.objects.filter(
-                student=student,
-                course_id=course_key,
-                course_due_date__due_date=due_date
-            ).first()
-            if student_course_report:
-                header, user_data = student_course_report.data.values()
-                report_data.append(user_data)
+        header = add_report(students)
+
     else:
-        student_course_report = StudentCourseReport.objects.get(id=course_report_id)
+        student_course_report = get_object_or_404(StudentCourseReport, id=course_report_id, course_id=course_key, student__user=user)
         header, user_data = student_course_report.data.values()
         report_data.append(user_data)
 
@@ -412,7 +409,7 @@ def extended_report(request, course_key):
             })
 
         html = mako_render_to_string('extended_report_popup.html', context)
-        return Response({'html': html})
+        return HttpResponse(json.dumps({'html': html}), content_type="application/json")
     else:
         return render_to_response('extended_report.html', context)
 
@@ -610,7 +607,8 @@ def personal_due_dates(request):
 
     student_due_dates = StudentCourseDueDate.objects.filter(
         student=student,
-        course_id__in=course_ids
+        course_id__in=course_ids,
+        due_date__gt=now
     ).order_by('-due_date')
 
     courses_due_dates_list = [

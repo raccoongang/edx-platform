@@ -57,7 +57,6 @@ role = _('Superuser') if user.is_superuser else _('Student') if hasattr(user, 's
                             <a class="open_report ${'is-disabled' if not datum['active_report_link'] else ''}"
                                 data-due_date="${datum['due_date']['date_data']}"
                                 data-classroom="${datum['classroom']}"
-                                data-course_report_id="${datum.get('course_report_id')}"
                                 href="${datum['report_link']}">
                                     ${_("Open report")}
                                 </a>
