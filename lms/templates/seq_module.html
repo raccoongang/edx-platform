@@ -21,9 +21,34 @@
 
   % if is_error_in_pre_exam:
     <div class="pre-exam-error">
-      <p class="sequential-status-message">
-          ${_('Unfortunately, you failed this topic in your Pre-Exam. Please pay attention to this Chapter.')}
-      </p>
+      <%
+        answers = pre_exam_context.get('answers', {})
+      %>
+      % for problem_id, problem in pre_exam_context.get('problems', {}).items():
+        <div class="sequential-status-message" id="pre_exam_error_${problem_id}">
+          You missed this question in the pre-quiz:
+          <span class="question-label" id="label_${problem_id}">"${problem.get('label', '')}"</span>
+          % for description_id, description in problem.get('descriptions', {}).items():
+            <p class="question-description" id="${description_id}">${description}</p>
+          % endfor
+          <%
+            answer = answers.get(problem_id)
+          %>
+          % if len(answer) == 1:
+            <div class="correct-answer">${_('The correct answer is:')} ${answer[0] | n}</div>
+          % elif len(answer) >= 2:
+            <div class="correct-answer">
+              ${_('The correct answers is:')}
+              <ul>
+                % for a in answer:
+                  <li>${a | n}</li>
+                %endfor
+              </ul>
+            </div>
+          % endif
+          <div class="sequential-footer">Please pay special attention to this chapter. This material and other supporting materials are covered here.</div>
+        </div>
+      % endfor
     </div>
   % endif
 

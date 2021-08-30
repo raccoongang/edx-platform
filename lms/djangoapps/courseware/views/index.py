@@ -4,6 +4,7 @@ View for Courseware Index
 import logging
 import urllib
 import json
+import lxml
 # pylint: disable=attribute-defined-outside-init
 from datetime import datetime
 
@@ -467,11 +468,15 @@ class CoursewareIndex(View):
             section_context['next_url'] = _compute_section_url(next_of_active_section, 'first')
         # sections can hide data that masquerading staff should see when debugging issues with specific students
         section_context['specific_masquerade'] = self._is_masquerading_as_specific_student()
-        section_context['is_error_in_pre_exam'] = self.section_has_error_in_pre_exam()
+        section_context['is_error_in_pre_exam'], section_context['pre_exam_context'] = self.section_has_error_in_pre_exam()
         return section_context
 
     def section_has_error_in_pre_exam(self):
         is_error_in_pre_exam = False
+        context = {
+            'problems': {},
+            'answers': {},
+        }
         if course_has_entrance_exam(self.course):
             entrance_exam_key = self.course.location.course_key.make_usage_key_from_deprecated_string(self.course.entrance_exam_id)
             exam_chapter = modulestore().get_item(entrance_exam_key)
@@ -511,9 +516,53 @@ class CoursewareIndex(View):
                                         ).first()
 
                                         if student_module is None or student_module.grade != student_module.max_grade:
+                                            pre_exam_block = modulestore().get_item(usage_key)
                                             is_error_in_pre_exam = True
-                                            break
-        return is_error_in_pre_exam
+                                            _context = self.get_pre_exam_data(usage_key)
+                                            context['problems'].update(_context['problems'])
+                                            context['answers'].update(_context['answers'])
+                                            #break
+        return is_error_in_pre_exam, context
+
+    @staticmethod
+    def get_pre_exam_data(usage_key):
+        pre_exam_block = modulestore().get_item(usage_key)
+        answers = {}
+        for problem_id, _answers in pre_exam_block.get_answer(None, check_answer_available=False).get('answers', {}).items():
+            answers[problem_id] = []
+            if hasattr(_answers, '__iter__'):
+                for answer in _answers:
+                    xml_answer = pre_exam_block.lcp.tree.find(".//*[@name='{}']".format(answer))
+                    if xml_answer is not None:
+                        xml_answer = lxml.html.fromstring(lxml.html.tostring(xml_answer))
+                        xml_answer.tag = 'span'
+                        xml_answer.text = '"{}" '.format(xml_answer.text)
+                        xml_answer.set('class', 'answer')
+                        hint = xml_answer.xpath(
+                            ".//*[re:test(local-name(), '.*hint$')]",
+                            namespaces={'re': 'http://exslt.org/regular-expressions'}
+                        )
+                        if hint:
+                            hint[0].tag = 'span'
+                            hint[0].set('class', 'hint')
+                        answer = lxml.etree.tostring(xml_answer)
+                    else:
+                        answer = '<span class="answer">"{}"</span>'.format(answer)
+                    answers[problem_id].append(answer)
+            else:
+                hint = pre_exam_block.lcp.tree.find('.//correcthint')
+                _answers = '"{}"'.format(_answers)
+                if hint:
+                    hint.tag = 'span'
+                    hint.set('class', 'hint')
+                    _answers = '{} {}'.format(_answers, lxml.etree.tostring(hint))
+                answers[problem_id].append('<span class="answer">{}</span>'.format(_answers))
+
+        data = {
+            'problems': pre_exam_block.lcp.problem_data,
+            'answers': answers,
+        }
+        return data
 
 
 def render_accordion(request, course, table_of_contents):
