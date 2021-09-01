@@ -87,6 +87,7 @@ class CourseOverview(TimeStampedModel):
     has_any_active_web_certificate = BooleanField(default=False)
     cert_name_short = TextField()
     cert_name_long = TextField()
+    eng_cert_course_name = TextField(default='')
 
     # Grading
     lowest_passing_grade = DecimalField(max_digits=5, decimal_places=2, null=True)
@@ -169,6 +170,7 @@ class CourseOverview(TimeStampedModel):
         course_overview.org = course.location.org
         course_overview.display_name = display_name
         course_overview.display_number_with_default = course.display_number_with_default
+        course_overview.eng_cert_course_name = course.eng_cert_course_name
         course_overview.display_org_with_default = course.display_org_with_default
 
         course_overview.start = start
