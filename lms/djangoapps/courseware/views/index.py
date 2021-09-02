@@ -536,7 +536,7 @@ class CoursewareIndex(View):
                     if xml_answer is not None:
                         xml_answer = lxml.html.fromstring(lxml.html.tostring(xml_answer))
                         xml_answer.tag = 'span'
-                        xml_answer.text = '"{}" '.format(xml_answer.text)
+                        xml_answer.text = u'"{}" '.format(xml_answer.text)
                         xml_answer.set('class', 'answer')
                         hint = xml_answer.xpath(
                             ".//*[re:test(local-name(), '.*hint$')]",
@@ -547,16 +547,16 @@ class CoursewareIndex(View):
                             hint[0].set('class', 'hint')
                         answer = lxml.etree.tostring(xml_answer)
                     else:
-                        answer = '<span class="answer">"{}"</span>'.format(answer)
+                        answer = u'<span class="answer">"{}"</span>'.format(answer)
                     answers[problem_id].append(answer)
             else:
                 hint = pre_exam_block.lcp.tree.find('.//correcthint')
-                _answers = '"{}"'.format(_answers)
+                _answers = u'"{}"'.format(_answers)
                 if hint:
                     hint.tag = 'span'
                     hint.set('class', 'hint')
-                    _answers = '{} {}'.format(_answers, lxml.etree.tostring(hint))
-                answers[problem_id].append('<span class="answer">{}</span>'.format(_answers))
+                    _answers = u'{} {}'.format(_answers, lxml.etree.tostring(hint))
+                answers[problem_id].append(u'<span class="answer">{}</span>'.format(_answers))
 
         data = {
             'problems': pre_exam_block.lcp.problem_data,
