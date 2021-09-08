@@ -13,13 +13,6 @@ from openedx.core.djangolib.markup import HTML, Text
       <header style="background: transparent;box-shadow: none;">
 <iframe width="50vh" height="auto" style="width: 50%;margin: 0 auto;display: block;min-height: 50vh;" src="https://www.youtube.com/embed/6KA-f1ISzSQ?autoplay=0&showinfo=0&rel=0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </header>
-	<section style="margin: 0 auto;background: #ffffff;width: 50%; margin-top: 25px ;margin-bottom: -50px;">
-    <div class="text-center" style="width: 80%;background-color: white;padding: 25px;margin: 0 auto;">
-    <p style="font-size:16px;">Tinand cont de conditiile actuale, accesul pe platforma de educatie interactiva <a href="http://tedix.ro">www.tedix.ro</a><b> este GRATUIT</b>, puteti sa va inregistrati <a href="http://www.tedix.ro/register">AICI</a>.</p>
-	<p>Recomandam utilizarea dispozitivelor de tip PC / Tableta. Accesul MOBIL este posibil dar nu este optimizat momentan.</p>
-    <p style="font-size:16px;">Asteptam parerile si sugestiile voastre pentru a imbunatati acest proiect la <a href="mailto:sugestii@tedix.ro">sugestii@tedix.ro</a>. Multa sanatate! Echipa TEDIX. </p>
-    </div>
-	</section>
     <section class="find-courses" style="background:transparent!important;">
       <section class="courses-container">
         % if course_discovery_enabled:
@@ -43,10 +36,50 @@ from openedx.core.djangolib.markup import HTML, Text
         <div id="filter-bar" class="filters hide-phone is-collapsed">
         </div>
         % endif
-
+	<div  id="demo-modal5" class="modal modal-demo-plan hidden" style="display:block;border-radius: 10px;">
+		<div class="" style="padding-bottom: 20px;"><img src="${static.url("images/logo.png" )}" style="width:20%;max-width:20vw;"></div>
+		<iframe  id="player5" class="youtube-video" width="50vh" height="auto" style="width: 80%;margin: 0 auto;display: block;min-height: 50vh;" src="https://www.youtube.com/embed/J94SuT5y17s?autoplay=0&showinfo=0&rel=0&enablejsapi=1&version=3" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+		<div class="modal-content"style="margin-top:15px;">
+		
+			<a onClick="Showdemo5();return false;" href="#" class="btn btn-primary plans-modal close-modal5" style="border-radius: 10px;">Închide</a>
+		</div>
+	</div>
+		<div  id="demo-modal6" class="modal modal-demo-plan hidden" style="display:block;border-radius: 10px;">
+		<div class="" style="padding-bottom: 20px;"><img src="${static.url("images/logo.png" )}" style="width:20%;max-width:20vw;"></div>
+		<iframe id="player6" class="youtube-video" width="50vh" height="auto" style="width: 80%;margin: 0 auto;display: block;min-height: 50vh;" src="https://www.youtube.com/embed/FV_73OawhVk?autoplay=0&showinfo=0&rel=0&enablejsapi=1&version=3" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+		<div class="modal-content"style="margin-top:15px;">
+		
+			<a onClick="Showdemo6();return false;" href="#" class="btn btn-primary plans-modal close-modal6" style="border-radius: 10px;">Închide</a>
+		</div>
+	</div>
+		<div  id="demo-modal7" class="modal modal-demo-plan hidden" style="display:block;border-radius: 10px;">
+		<div class="" style="padding-bottom: 20px;"><img src="${static.url("images/logo.png" )}" style="width:20%;max-width:20vw;"></div>
+		<iframe id="player7" class="youtube-video" width="50vh" height="auto" style="width: 80%;margin: 0 auto;display: block;min-height: 50vh;" src="https://www.youtube.com/embed/BjWkupYgUWw?autoplay=0&showinfo=0&rel=0&enablejsapi=1&version=3" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+		<div class="modal-content"style="margin-top:15px;">
+		
+			<a onClick="Showdemo7();return false;" href="#" class="btn btn-primary plans-modal close-modal7" style="border-radius: 10px;">Închide</a>
+		</div>
+	</div>
+		<div  id="demo-modal8" class="modal modal-demo-plan hidden" style="display:block;border-radius: 10px;">
+		<div class="" style="padding-bottom: 20px;"><img src="${static.url("images/logo.png" )}" style="width:20%;max-width:20vw;"></div>
+		<iframe id="player8" class="youtube-video" width="50vh" height="auto" style="width: 80%;margin: 0 auto;display: block;min-height: 50vh;" src="https://www.youtube.com/embed/uNuBoucXvgk?autoplay=0&showinfo=0&rel=0&enablejsapi=1&version=3" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+		<div class="modal-content"style="margin-top:15px;">
+		
+			<a onClick="Showdemo8();return false;" href="#" class="btn btn-primary plans-modal close-modal8" style="border-radius: 10px;">Închide</a>
+		</div>
+	</div>
+	<div class="modal-overlay-video hidden"></div>
         <div class="courses${'' if course_discovery_enabled else ' no-course-discovery'}" role="region" aria-label="${_('List of Courses')}">
           <ul class="courses-listing">
             <li class="courses-listing-item">
+				<a onClick="Showdemo5();return false;" href="#" class="modal-target">
+				<div class="demo-bar video-bar cl-5">
+					<div class="yt-icon">
+						<img src="${static.url("images/yt-logo.png")}">
+					</div>
+					<span class="video-text white">Vezi demo lectie clasa a-5-a</span>
+				</div>
+				</a>			
 				<article class="course" id="course-v1:Tedix+5+v1" role="region" aria-label="Curs clasa a V-a">
 				  <a href="/courses_cl5">
 					<header class="course-image">
@@ -72,8 +105,16 @@ from openedx.core.djangolib.markup import HTML, Text
 				  </a>
 				</article>
             </li>
-			            <li class="courses-listing-item">
-				<article class="course" id="course-v1:Tedix+5+v1" role="region" aria-label="Curs clasa a V-a">
+			<li class="courses-listing-item">
+			<a onClick="Showdemo6();return false;" href="#"  class="modal-target">
+			 	<div class="demo-bar video-bar cl-6">
+					<div class="yt-icon">
+						<img src="${static.url("images/yt-logo.png")}">
+					</div>
+					<span class="video-text white">Vezi demo lectie clasa a-6-a</span>
+				</div>
+			</a>
+				<article class="course" id="course-v1:Tedix+5+v1" role="region" aria-label="Curs clasa a VI-a">
 				  <a href="/courses_cl6">
 					<header class="course-image">
 					  <div class="cover-image">
@@ -98,8 +139,16 @@ from openedx.core.djangolib.markup import HTML, Text
 				  </a>
 				</article>
             </li>
-			            <li class="courses-listing-item">
-				<article class="course" id="course-v1:Tedix+5+v1" role="region" aria-label="Curs clasa a V-a">
+			<li class="courses-listing-item">
+			<a onClick="Showdemo7();return false;" href="#" class="modal-target">
+				<div class="demo-bar video-bar cl-7">
+					<div class="yt-icon">
+						<img src="${static.url("images/yt-logo.png")}">
+					</div>
+					<span class="video-text white">Vezi demo lectie clasa a-7-a</span>
+				</div>
+			</a>			
+				<article class="course" id="course-v1:Tedix+5+v1" role="region" aria-label="Curs clasa a VII-a">
 				  <a href="/courses_cl7">
 					<header class="course-image">
 					  <div class="cover-image">
@@ -124,7 +173,15 @@ from openedx.core.djangolib.markup import HTML, Text
 				  </a>
 				</article>
             </li>
-			            <li class="courses-listing-item">
+			<li class="courses-listing-item">
+			<a onClick="Showdemo8();return false;" href="#"  class="modal-target">
+				<div class="demo-bar video-bar cl-8">
+					<div class="yt-icon">
+						<img src="${static.url("images/yt-logo.png")}">
+					</div>
+					<span class="video-text black">Vezi demo lectie clasa a-8-a</span>
+				</div>
+			</a>
 				<article class="course" id="course-v1:Tedix+5+v1" role="region" aria-label="Curs clasa a V-a">
 				  <a href="/courses_cl8">
 					<header class="course-image">
@@ -175,7 +232,32 @@ from openedx.core.djangolib.markup import HTML, Text
     </div>
   </section>
 % endif
-
+   <script type="text/javascript">
+	$(".close-modal5, .modal-overlay-video").click(function() {
+      $('#player5').each(function(index) {
+        $(this).attr('src', $(this).attr('src'));
+        return false;
+      });
+    });
+		$(".close-modal6, .modal-overlay-video").click(function() {
+      $('#player6').each(function(index) {
+        $(this).attr('src', $(this).attr('src'));
+        return false;
+      });
+    });
+		$(".close-modal7, .modal-overlay-video").click(function() {
+      $('#player7').each(function(index) {
+        $(this).attr('src', $(this).attr('src'));
+        return false;
+      });
+    });
+		$(".close-modal8, .modal-overlay-video").click(function() {
+      $('#player8').each(function(index) {
+        $(this).attr('src', $(this).attr('src'));
+        return false;
+      });
+    });
+   </script>
 <%block name="js_extra">
    <script type="text/javascript">
       $(window).load(function() {
