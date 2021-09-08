@@ -246,7 +246,18 @@ ${HTML(fragment.foot_html())}
   var user_type=tedixUUid.usertype;
   var homework=tedixUUid.lesson_is_active_homework;
   console.log(homework)
-  if (tedixUUid.usertype =="student" ){
+    let x;
+  let today=new Date();
+  let verifyaccount= true;
+  for ( x=0; x<acounts.length; x++ ){
+	console.log("Tedix uiid: " + tedixUUid.id)
+	console.log(acounts[0].id)
+	if(acounts[x].id == tedixUUid.id && today <= acounts[x].date){
+		verifyaccount=false;
+		break;
+	}
+  }
+  if (tedixUUid.usertype =="student" && verifyaccount === true){
 	      window.__simpleShopConfig = {
       storeId: 'JPJHNTSHMW',
       shopActions: {
