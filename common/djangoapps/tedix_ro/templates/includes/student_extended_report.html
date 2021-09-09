@@ -7,9 +7,9 @@ from django.utils.translation import ugettext as _
     %for user_data in report_data:
         <h4 class="hd hd-4">
             <p>${_("Student name")}: <span style="color: red;">${ user_data['full_name'] }</span><p>
-            <p>${_("Activity report for lesson")}: <br><span style="font-size: 30px; color: #24ad97;">${ course_name }</span><p>
-            <p>${_("Lesson completed")}: <span style="color: ${'green' if user_data['completion'] else 'red'};">${_('Yes') if user_data['completion'] else _('No')}</span>
-            <br>${_("Score")}:<span style="color: green"> ${ user_data['percent'] }</span><p>
+            <p>${_("Activity report for lesson")}: <br><span style="color: #24ad97;">${ course_name }</span><p>
+            <p>${_("Lesson completed")}: <span style="color: ${'#24ad97' if user_data['completion'] else 'red'};">${_('Yes') if user_data['completion'] else _('No')}</span>
+            <br>${_("Score")}:<span style="color: #24ad97;"> ${ user_data['percent'] }</span><p>
         </h4>
         <h2 class="hd hd-2" style="padding-bottom: 20px">${_('Questions answered report break-down:')}</h2>
 
@@ -23,7 +23,7 @@ from django.utils.translation import ugettext as _
                     ${_("Video question")} ${loop.index + 1}: <span style="color: #24ad97;">${ question_data['title'] }</span><br>
                         ${_('Number of attempts:')}
                         %if question_data['attempts'] == 1:
-                            <span style="color: green;">${ _('First attempt') }</span>
+                            <span style="color: #24ad97;">${ _('First attempt') }</span>
                         %else:
                             <span style="color: red;">${ question_data['attempts'] } ${ _("attempt") if question_data['attempts'] == 1 else _("attempts")}</span>
                         %endif

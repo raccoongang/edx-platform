@@ -26,13 +26,17 @@ role = _('Superuser') if user.is_superuser else _('Student') if hasattr(user, 's
             ${_("Students Progress for {role} '{username}'").format(role=role, username=username)}
         </h2>
 
-        <table class="table-my-reports">
+        <table class="table-my-reports" data-role="${'student' if hasattr(user, 'studentprofile') else 'instructor'}">
             <thead>
                 <tr>
                     <th class="table-date-group asc">${_("Date Group")}</th>
                     <th class="table-date isDueDate asc">${_("Due Date")}</th>
                     <th class="table-class isClass">${_("Class")}</th>
                     <th class="table-course_name isCourseName">${_("Course Name")}</th>
+                    %if hasattr(user, 'studentprofile'):
+                        <th class="table-has-due-date isHasDueDate">${_("Has Due Date")}</th>
+                        <th class="table-finalize-date isFinalizeDate">${_("Finalize Date")}</th>
+                    %endif
                     <th class="table-score isScore">${_("Score") if hasattr(user, 'studentprofile') else _("Average score")}</th>
                     <th class="table-view isView">${_("Display")}</th>
                 </tr>
@@ -44,12 +48,18 @@ role = _('Superuser') if user.is_superuser else _('Student') if hasattr(user, 's
                         <td class="table-date ${datum['due_date']['date_group']} ${'complete' if datum.get('complete') else ''}" data-sort="${datum['due_date']['date_data']}">${datum['due_date']['displayed_date']}</td>
                         <td class="table-class">${datum['classroom']}</td>
                         <td class="table-course_name">${datum['course_name']}</td>
+                        %if hasattr(user, 'studentprofile'):
+                            <td class="table-has-due-date isHasDueDate">${datum['has_due_date']}</td>
+                            <td class="table-finalize-date isFinalizeDate" data-sort="${datum['finalize_date']['date_data']}">${datum['finalize_date']['display_data']}</td>
+                        %endif
                         <td class="table-average_score">${datum['average_score']}</td>
                         <td class="table-view">
-                            <a class="open_report"
+                            <a class="open_report ${'is-disabled' if not datum['active_report_link'] else ''}"
                                 data-due_date="${datum['due_date']['date_data']}"
                                 data-classroom="${datum['classroom']}"
-                                href="${datum['report_link']}">${_("Open report")}</a>
+                                href="${datum['report_link']}">
+                                    ${_("Open report")}
+                                </a>
                         </td>
                     </tr>
                 %endfor

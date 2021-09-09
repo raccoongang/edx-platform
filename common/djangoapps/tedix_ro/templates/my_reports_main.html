@@ -32,17 +32,34 @@ from django.utils.translation import ugettext as _
         }
     };
     function readyFunc () {
-        var table = $(".table-my-reports").DataTable({
-            "searching": false,
-            "order": [[0, "asc"], [1, "asc"], [2, "asc"]],
-            "columnDefs": [
-                { "targets": 0, "orderable": true, "visible": false},
-                { "orderData": [ 0, 1 ], "targets": 1, "orderable": true},
-                { "targets": 2, "orderable": true },
-                { "targets": "_all", "orderable": false }
-            ],
-            "language": language
-        });
+        var $tableMyReports = $(".table-my-reports");
+        var dataTableParams;
+        if ($tableMyReports.data('role') === 'student') {
+            dataTableParams = {
+                "searching": false,
+                "order": [[5, "desc"]],
+                "columnDefs": [
+                    { "targets": 0, "orderable": true, "visible": false},
+                    { "targets": 5, "orderable": true },
+                    { "targets": "_all", "orderable": false }
+                ],
+                "language": language
+            };
+        } else {
+            dataTableParams = {
+                "searching": false,
+                "order": [[0, "asc"], [1, "asc"], [2, "asc"]],
+                "columnDefs": [
+                    { "targets": 0, "orderable": true, "visible": false},
+                    { "orderData": [ 0, 1 ], "targets": 1, "orderable": true},
+                    { "targets": 2, "orderable": true },
+                    { "targets": "_all", "orderable": false }
+                ],
+                "language": language
+            };
+        }
+        var table = $tableMyReports.DataTable(dataTableParams);
+
 
         var $tableClass = $("th.table-class");
         var $tableDate = $("th.table-date");
@@ -79,7 +96,11 @@ from django.utils.translation import ugettext as _
             $.ajax({
                 method: "GET",
                 url: $openReport.attr("href"),
-                data: {"classroom": $openReport.data("classroom"), "due_date": $openReport.data("due_date")},
+                data: {
+                    "classroom": $openReport.data("classroom"),
+                    "due_date": $openReport.data("due_date"),
+                    "course_report_id": $openReport.data("course_report_id")
+                },
                 success: function(data){
                     $(".report").html(data.html);
                     $modal.show();

@@ -83,3 +83,5 @@ MKTG_URLS = {
 CREDENTIALS_SERVICE_USERNAME = 'credentials_worker'
 
 COURSE_CATALOG_API_URL = 'http://edx.devstack.discovery:18381/api/v1/'
+
+FEATURES['DISABLE_TEDIX_PAYMENT_SYSTEM'] = True

@@ -13,13 +13,11 @@ from django.utils.translation import ugettext as _
 import pytz
 
 from edxmako.shortcuts import render_to_string
-from opaque_keys.edx.keys import CourseKey
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
-from xmodule.modulestore.django import modulestore
 
-from .models import InstructorProfile, StudentCourseDueDate, StudentReportSending
+from .models import StudentCourseDueDate, StudentReportSending, StudentCourseReport
 from .sms_client import SMSClient
-from .utils import report_data_preparation, lesson_course_grade, video_lesson_completed, all_problems_have_answer
+from .utils import create_student_course_report
 
 TEACHER_EXTENDED_REPORT_TIME_RANGE = 1 # in minutes
 
@@ -32,40 +30,46 @@ def send_teacher_extended_reports():
     datetime_now = datetime.utcnow().replace(tzinfo=pytz.UTC)
     course_due_dates = StudentCourseDueDate.objects.filter(
         due_date__range=(datetime_now - timedelta(minutes=TEACHER_EXTENDED_REPORT_TIME_RANGE), datetime_now),
-        student__instructor__user__is_staff=True
+        creator__instructorprofile__user__is_staff=True
     ).values(
-        'course_id', 'student__user_id', 'student__instructor__user_id'
+        'course_id', 'student__user_id', 'creator_id', 'id'
     ).distinct()
     grouped_due_dates = defaultdict(dict)
     for course_due_date in course_due_dates:
-        instructor_user_id = course_due_date['student__instructor__user_id']
-        if 'courses' not in grouped_due_dates[instructor_user_id]:
-            grouped_due_dates[instructor_user_id] = {
+        creator_id = course_due_date['creator_id']
+        if 'courses' not in grouped_due_dates[creator_id]:
+            grouped_due_dates[creator_id] = {
                 'courses': defaultdict(list)
             }
-        grouped_due_dates[instructor_user_id]['courses'][course_due_date['course_id']].append(
-            course_due_date['student__user_id']
-        )
+        grouped_due_dates[creator_id]['courses'][course_due_date['course_id']].append((
+            course_due_date['student__user_id'],
+            course_due_date['id']
+        ))
 
-    for instructor_user_id in grouped_due_dates:
-        instructor_user = User.objects.get(id=instructor_user_id)
+    for creator_id in grouped_due_dates:
+        instructor_user = User.objects.get(id=creator_id)
         lesson_reports = []
-        for course_id in grouped_due_dates[instructor_user_id]['courses']:
-            course = modulestore().get_course(course_id)
+        for course_id in grouped_due_dates[creator_id]['courses']:
             report_data = []
             header = []
-            for student_user_id in grouped_due_dates[instructor_user_id]['courses'][course_id]:
-                student_user = User.objects.get(id=student_user_id)
-                header, user_data = report_data_preparation(student_user, course)
+            for student_user_id, due_date_id in grouped_due_dates[creator_id]['courses'][course_id]:
+                student_course_report = StudentCourseReport.objects.filter(
+                    student__user_id=student_user_id,
+                    course_id=course_id,
+                    course_due_date_id=due_date_id
+                ).first()
+                if not student_course_report:
+                    student_course_report = create_student_course_report(student_user_id, course_id, due_date_id)
+                header, user_data = student_course_report.data.values()
                 report_data.append(user_data)
             if report_data:
                 lesson_reports.append({
-                    'course_name': course.display_name,
+                    'course_name': student_course_report.course.display_name,
                     'header': header,
                     'report_data': report_data,
                     'report_url': urljoin(
                         configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
-                        reverse('extended_report', kwargs={'course_key': course.id})
+                        reverse('extended_report', kwargs={'course_key': student_course_report.course.id})
                     )
                 })
         if lesson_reports:
@@ -97,7 +101,7 @@ def send_teacher_extended_reports():
 def send_extended_reports_by_deadline():
     """
     Sends an extended report to the student if the course deadline has expired in the last 24 hours
-    and the course has not been completed (not all questions have attempts and the course was not passed)
+    and the course report has not been sended
     """
     datetime_now = datetime.utcnow().replace(tzinfo=pytz.UTC)
     for due_date in StudentCourseDueDate.objects.filter(
@@ -105,54 +109,62 @@ def send_extended_reports_by_deadline():
             due_date__gt=datetime_now-timedelta(1)):
         user = due_date.student.user
         course_id = due_date.course_id
-        course_grade = lesson_course_grade(user, course_id)
-        if not (all_problems_have_answer(user, course_grade)
-            and video_lesson_completed(user, course_id)):
-            send_student_extended_reports(user.id, str(course_id))
-
-
-@task
-def send_student_completed_report(user_id, course_id):
-    """
-    Sends an extended report to the student if  questions have attempts and
-    the course has been passed and the grade has been raised
-    """
-    user = User.objects.filter(id=user_id).first()
-    if user and hasattr(user, 'studentprofile'):
-        course_key = CourseKey.from_string(course_id)
         student_report_sending_exists = StudentReportSending.objects.filter(
-            course_id=course_key,
+            course_id=course_id,
             user=user
         ).exists()
-        course_grade = lesson_course_grade(user, course_key)
-        if (video_lesson_completed(user, course_key) and not student_report_sending_exists and
-            all_problems_have_answer(user, course_grade)):
-
-            student_report_sending = StudentReportSending(
-                course_id=course_key,
+        if not student_report_sending_exists:
+            course_report = due_date.course_reports.filter(student__user=user).first()
+            if not course_report:
+                course_report = create_student_course_report(user.id, course_id, due_date.id)
+            send_student_extended_reports(course_report.id)
+            StudentReportSending.objects.create(
+                course_id=course_id,
                 user=user,
-                grade=course_grade.percent or 0
             )
-            student_report_sending.save()
-            send_student_extended_reports(user_id, course_id)
+
 
 
 @task
-def send_student_extended_reports(user_id, course_id):
+def send_student_completed_report(course_report_id):
+    """
+    Sends an extended report to the student if StudentCourseReport has been generated and
+    student has due date for course
+    """
+    course_report = StudentCourseReport.objects.filter(id=course_report_id).first()
+    course_completed = course_report and course_report.data['report_data']['completion']
+    if course_completed:
+        user = course_report.student.user
+        course_id=course_report.course_id
+        student_report_sending_exists = StudentReportSending.objects.filter(
+            course_id=course_id,
+            user=user
+        ).exists()
+        if not student_report_sending_exists and course_report.course_due_date:
+            send_student_extended_reports(course_report_id)
+            StudentReportSending.objects.create(
+                course_id=course_id,
+                user=user,
+            )
+
+
+@task
+def send_student_extended_reports(course_report_id):
     """
     Sends email and SMS with an extended report for student and his parent
     """
-    user = User.objects.filter(id=user_id).first()
-    if user and hasattr(user, 'studentprofile'):
-        course_key = CourseKey.from_string(course_id)
-        course = modulestore().get_course(course_key)
-        header, user_data = report_data_preparation(user, course)
+    student_course_report = StudentCourseReport.objects.filter(id=course_report_id).first()
+    if student_course_report:
+        user = student_course_report.student.user
+        course_key=student_course_report.course_id
+        user_data = student_course_report.data.get('report_data')
+        course = student_course_report.course
         lesson_reports = [{
                 'course_name': course.display_name,
                 'report_data': [user_data,],
                 'report_url': urljoin(
                     configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
-                    reverse('extended_report', kwargs={'course_key': course.id})
+                    reverse('extended_report', kwargs={'course_key': course.id, 'course_report_id': student_course_report.id})
                 )
             }]
         subject = _(u'{platform_name}: Report for {username} on "{course_name}"').format(

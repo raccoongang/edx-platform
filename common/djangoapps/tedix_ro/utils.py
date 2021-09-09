@@ -1,6 +1,7 @@
 """
 Helper Methods
 """
+import datetime
 import json
 import hashlib
 import time
@@ -25,6 +26,7 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
 from xmodule.modulestore.django import modulestore
 
 from util.request import course_id_from_url
+from .models import StudentCourseReport
 
 
 def get_payment_link(user):
@@ -55,15 +57,17 @@ def get_common_possible(user, course):
         return score_mapping
 
 
-def report_data_preparation(user, course):
+def create_student_course_report(user_id, course_key, due_date_id=None):
     """
     Takes user and course
     Return "report_data" - data for extended report
     """
     Question = apps.get_model('tedix_ro', 'Question')
+    course = modulestore().get_course(course_key)
+    user = User.objects.get(id=user_id)
     questions_data = []
     header = []
-    video_questions = Question.objects.filter(video_lesson__course=course.id)
+    video_questions = Question.objects.filter(video_lesson__course=course_key)
     total_earned = 0
     raw_possible = 0
     raw_earned = 0
@@ -119,7 +123,6 @@ def report_data_preparation(user, course):
 
     # in case when StudentModule does not exist we get possible score from here
     common_possible = get_common_possible(user, course)
-            
 
     # this huge loop is only for getting problem's display_name, otherwise we could use StudentModule instances
     for section in course.get_children():
@@ -168,9 +171,30 @@ def report_data_preparation(user, course):
         'completion': len(course_complete_list) > 0 and all(course_complete_list) and video_earned_count >= video_possible_count,
         'questions': questions_data,
         'earned': raw_earned,
+        'possible': raw_possible,
         'percent': '{} ({} {} {})'.format(round(percent, 2) or 0, raw_earned, _('out of'), raw_possible) if percent else 'n/a',
     }
-    return header, report_data
+    data = {'header': header, 'report_data': report_data}
+    if hasattr(user, 'studentprofile'):
+        utc_now = datetime.datetime.now(pytz.utc)
+        if due_date_id:
+            course_due_date = user.studentprofile.course_due_dates.filter(id=due_date_id).first()
+        else:
+            course_due_date = user.studentprofile.course_due_dates.filter(course_id=course_key, due_date__gt=utc_now).first()
+        if course_due_date and StudentCourseReport.objects.filter(
+            student=user.studentprofile,
+            course_id=course_key,
+            course_due_date=course_due_date,
+        ).exists():
+            course_due_date = None
+
+        student_course_report = StudentCourseReport.objects.create(
+            student=user.studentprofile,
+            course_id=course_key,
+            data=data,
+            course_due_date=course_due_date,
+        )
+        return student_course_report
 
 
 def get_all_questions_count(course_key):
@@ -336,10 +360,8 @@ def video_lesson_completed(user, course_key):
 
 def reset_student_progress(user, course_key):
     VideoLesson = apps.get_model('tedix_ro', 'VideoLesson')
-    StudentReportSending = apps.get_model('tedix_ro', 'StudentReportSending')
     VideoLesson.objects.filter(user=user, course=course_key).delete()
     StudentModule.objects.filter(course_id=course_key, student=user).delete()
-    StudentReportSending.objects.filter(course_id=course_key, user=user).delete()
 
 
 def encrypted_user_data(request):

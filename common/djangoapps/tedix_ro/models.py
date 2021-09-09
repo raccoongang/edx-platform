@@ -8,12 +8,10 @@ from django.db import models
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+from jsonfield.fields import JSONField
 from opaque_keys.edx.django.models import CourseKeyField
 
-from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from student.models import AUDIT_LOG
-from student.views.management import compose_and_send_activation_email
-
 
 phone_validator = RegexValidator(regex=r'^\d{10,15}$', message=_('The phone number length must be from 10 to 15 digits.'))
 
@@ -115,12 +113,10 @@ class ParentProfile(UserProfile):
 
 
 class StudentCourseDueDate(models.Model):
+    creator = models.ForeignKey(User, null=True, related_name='course_due_dates', on_delete=models.CASCADE)
     due_date = models.DateTimeField()
     student = models.ForeignKey(StudentProfile, related_name='course_due_dates', on_delete=models.CASCADE)
     course_id = CourseKeyField(max_length=255, db_index=True)
-
-    class Meta:
-        unique_together = ('student', 'course_id')
 
     def __unicode__(self):
         return _(u'Student course due date')
@@ -169,4 +165,11 @@ class Question(models.Model):
 class StudentReportSending(models.Model):
     course_id = CourseKeyField(max_length=255)
     user = models.ForeignKey(User, related_name='stident_report_sending', on_delete=models.CASCADE)
-    grade = models.FloatField()
+
+
+class StudentCourseReport(models.Model):
+    student = models.ForeignKey(StudentProfile, related_name='course_reports', on_delete=models.CASCADE)
+    course_due_date = models.ForeignKey(StudentCourseDueDate, null=True, related_name='course_reports', on_delete=models.CASCADE)
+    course = models.ForeignKey('course_overviews.CourseOverview', related_name='course_reports', on_delete=models.CASCADE)
+    data = JSONField(null=False, blank=True)
+    created_time = models.DateTimeField(auto_now_add=True)

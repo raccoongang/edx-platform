@@ -93,7 +93,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <script type="text/javascript" src="${static.url(jsi18n_path)}"></script>
   <script type="text/javascript" src="${static.url(ie11_fix_path)}"></script>
   <script type="text/javascript" src="${static.url('js/reporting.js')}"></script>
+  <!-- Please don't remove this. We disable tedix payment system for staging environment. Otherwise we can not test anything. -->
+  % if not settings.FEATURES.get('DISABLE_TEDIX_PAYMENT_SYSTEM', False):
   <script type="text/javascript" src="${static.url('js/accounts.js')}"></script>
+  % endif
   <link rel="icon" type="image/x-icon" href="${static.url(static.get_value('favicon_path', settings.FAVICON_PATH))}" />
 
   <%static:css group='style-vendor'/>

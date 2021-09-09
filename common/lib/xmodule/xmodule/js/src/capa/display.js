@@ -606,6 +606,8 @@
                         case 'correct':
                             that.render(response.contents);
                             that.updateProgress(response);
+                            // can not catch click by submit from outside
+                            window.checkFinalizeBtn();
                             break;
                         default:
                             that.gentle_alert(response.success);
@@ -635,6 +637,8 @@
                     that.el.trigger('contentChanged', [that.id, response.contents, response]);
                     that.render(response.contents, that.focus_on_submit_notification);
                     that.updateProgress(response);
+                    // can not catch click by submit from outside
+                    window.checkFinalizeBtn();
                     break;
                 default:
                     that.saveNotification.hide();

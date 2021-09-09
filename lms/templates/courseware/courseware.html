@@ -224,6 +224,11 @@ ${HTML(fragment.foot_html())}
 
               ${HTML(fragment.body_html())}
         </main>
+        % if hasattr(user, 'studentprofile'):
+          <div class='finalize-course'>
+            <a id="finalize-course-btn" class="btn btn-primary is-disabled" href="${reverse('create_report', args=[course.id])}">${_('Finalize Lesson')}</a>
+          </div>
+        % endif
     </section>
 
     <section class="courseware-results-wrapper">
@@ -259,4 +264,68 @@ ${HTML(fragment.foot_html())}
         <%include file="/calculator/toggle_calculator.html" />
       % endif
     </nav>
+% endif
+
+% if hasattr(user, 'studentprofile'):
+  <div class="my_report_popup">
+      <div class="modal-report-content">
+          <div class="report"></div>
+          <div class="close-holder">
+              <button class="close_popup">${_("Close")}</button>
+          </div>
+      </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      var $modal = $(".my_report_popup");
+      var $closePopup = $(".close_popup");
+      var $finalizeBtn = $('#finalize-course-btn');
+      var submitCount = 0;
+
+      function checkFinalizeBtn(){
+        var reg = /data-attempts-used="(?<atempts>[0-9])"/;
+        var regGlobal = /data-attempts-used="[0-9]"/g;
+        var searchResult = $('.sequence').text().match(regGlobal);
+        var attemptsUsedCount = 0;
+        submitCount++;
+
+        searchResult.forEach(function(result) {
+          if (result.match(reg).groups.atempts > 0) {
+            attemptsUsedCount++;
+          }
+        });
+
+        if (attemptsUsedCount === searchResult.length || submitCount === searchResult.length) {
+          setTimeout(
+            function() {
+              $finalizeBtn.removeClass('is-disabled');
+            }, 500
+          )
+        }
+
+        return attemptsUsedCount;
+      };
+
+      window.checkFinalizeBtn = checkFinalizeBtn;
+
+      submitCount = checkFinalizeBtn();
+
+      $("#finalize-course-btn").on("click", function(event){
+        event.preventDefault();
+        $.ajax({
+            method: "GET",
+            url: $finalizeBtn.attr("href"),
+            success: function(data){
+              $(".report").html(data.html);
+              $modal.show();
+              $finalizeBtn.addClass('is-disabled');
+            }
+        });
+      });
+      $(".close_popup").on("click", function() {
+        $modal.hide();
+      });
+    });
+  </script>
 % endif
