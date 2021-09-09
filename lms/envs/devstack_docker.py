@@ -16,4 +16,11 @@ COMPREHENSIVE_THEME_DIRS = [
 ]
 DEFAULT_SITE_THEME = 'edx-theme'
 TEMPLATES[1]["DIRS"] = _make_mako_template_dirs
+ELASTIC_SEARCH_CONFIG = [
+    {
+        'use_ssl': False,
+        'host': 'elasticsearch7.devstack.edx',
+        'port': 9200
+    }
+]
 derive_settings(__name__)
