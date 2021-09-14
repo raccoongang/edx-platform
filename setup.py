@@ -154,6 +154,9 @@ setup(
             "program_enrollments = lms.djangoapps.program_enrollments.apps:ProgramEnrollmentsConfig",
             "courseware_api = openedx.core.djangoapps.courseware_api.apps:CoursewareAPIConfig",
             "course_apps = openedx.core.djangoapps.course_apps.apps:CourseAppsConfig",
+            # [RG]:
+            "_mobile_extensions = openedx.features._mobile_extensions.apps:MobileExtensionsConfig",
+            # :[RG]
         ],
         "cms.djangoapp": [
             "announcements = openedx.features.announcements.apps:AnnouncementsConfig",
@@ -177,6 +180,9 @@ setup(
             "user_authn = openedx.core.djangoapps.user_authn.apps:UserAuthnConfig",
             "instructor = lms.djangoapps.instructor.apps:InstructorConfig",
             "course_apps = openedx.core.djangoapps.course_apps.apps:CourseAppsConfig",
+            # [RG]:
+            "_mobile_extensions = openedx.features._mobile_extensions.apps:MobileExtensionsConfig",
+            # :[RG]
         ],
         'openedx.learning_context': [
             'lib = openedx.core.djangoapps.content_libraries.library_context:LibraryContextImpl',

@@ -11,6 +11,7 @@ from datetime import datetime
 from django.conf import settings
 from fs.errors import ResourceNotFound
 from lxml import etree
+from openedx.features._mobile_extensions.html_block.mobile_api_module import HtmlBlockMobileApiMixin
 from path import Path as path
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
@@ -353,7 +354,7 @@ class HtmlBlockMixin(  # lint-amnesty, pylint: disable=abstract-method
 
 
 @edxnotes
-class HtmlBlock(HtmlBlockMixin):  # lint-amnesty, pylint: disable=abstract-method
+class HtmlBlock(HtmlBlockMobileApiMixin, HtmlBlockMixin):  # lint-amnesty, pylint: disable=abstract-method
     """
     This is the actual HTML XBlock.
     Nothing extra is required; this is just a wrapper to include edxnotes support.
