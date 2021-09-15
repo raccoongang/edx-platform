@@ -1217,9 +1217,9 @@ class VideoBlock(
         # Fall back to other video URLs in the video block if not found in VAL
         if not encoded_videos:
             if all_sources:
-                encoded_videos["fallback"] = {
+                encoded_videos["mobile_high"] = {
                     "url": all_sources[0],
-                    "file_size": 0,  # File size is unknown for fallback URLs
+                    "file_size": self.file_size,
                 }
 
             # Include youtube link if there is no encoding for mobile- ie only a fallback URL or no encodings at all
@@ -1238,7 +1238,7 @@ class VideoBlock(
 
         return {
             "only_on_web": self.only_on_web,
-            "duration": val_video_data.get('duration', None),
+            "duration": int(val_video_data.get('duration', self.file_length.total_seconds())),
             "transcripts": transcripts,
             "encoded_videos": encoded_videos,
             "all_sources": all_sources,
