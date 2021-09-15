@@ -5,7 +5,7 @@ XFields for video block.
 
 import datetime
 
-from xblock.fields import Boolean, DateTime, Dict, Float, List, Scope, String
+from xblock.fields import Boolean, DateTime, Dict, Float, List, Scope, String, Integer
 
 from xmodule.fields import RelativeTime
 
@@ -92,6 +92,18 @@ class VideoFields:
                "set Video Download Allowed to True."),
         display_name=_("Video File URLs"),
         scope=Scope.settings,
+    )
+    file_size = Integer(
+        help=_("Add video size. This size appears in mobile app via file downloading"),
+        display_name=_("Video File Size"),
+        scope=Scope.settings,
+        default=0
+    )
+    file_length = RelativeTime(
+        help=_("Add video length. This length appears in mobile app via file downloading. Formatted as HH:MM:SS"),
+        display_name=_("Video File Length"),
+        scope=Scope.settings,
+        default=datetime.timedelta(seconds=0)
     )
     track = String(
         help=_("By default, students can download an .srt or .txt transcript when you set Download Transcript "
