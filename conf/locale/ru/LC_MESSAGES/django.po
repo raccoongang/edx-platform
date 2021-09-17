@@ -12300,6 +12300,11 @@ msgstr "Начало курса: {date}"
 msgid "View all Courses"
 msgstr "Показать все"
 
+#: lms/templates/courseware/courses.html
+#: lms/templates/courses_list.html
+msgid "Courses coming soon"
+msgstr "Курсы, которые скоро начнутся"
+
 #: lms/templates/dashboard.html lms/templates/user_dropdown.html
 #: themes/edx.org/lms/templates/dashboard.html
 msgid "Dashboard"
@@ -12356,6 +12361,14 @@ msgstr "Сохранить настройки"
 #: themes/edx.org/lms/templates/dashboard.html
 msgid "Unenroll"
 msgstr "Отменить запись"
+
+#: lms/templates/dashboard.html
+msgid "You passed"
+msgstr "Вы прошли"
+
+#: lms/templates/dashboard.html
+msgid "You're enrolled"
+msgstr "Вы записаны"
 
 #: lms/templates/edit_unit_link.html
 msgid "View Unit in Studio"
@@ -15489,6 +15502,54 @@ msgstr "Дополнительные ресурсы"
 msgid "enroll"
 msgstr "принять участие"
 
+#: lms/templates/courseware/course_about.html
+msgid "When"
+msgstr "Когда"
+
+#: lms/templates/courseware/course_about.html
+msgid "Learning format"
+msgstr "Формат обучения"
+
+#: lms/templates/courseware/course_about.html
+msgid "Level"
+msgstr "Уровень"
+
+#: lms/templates/courseware/course_about.html
+msgid "Watch the introductory lecture"
+msgstr "Смотреть вводную лекцию"
+
+#: lms/templates/courseware/course_about.html
+msgid "busyness"
+msgstr "занятость"
+
+#: lms/templates/courseware/course_about.html
+msgid "duration"
+msgstr "продолжительность"
+
+#: lms/templates/courseware/course_about.html
+msgid "lectures"
+msgstr "лекций"
+
+#: lms/templates/courseware/course_about.html
+msgid "videos"
+msgstr "видео"
+
+#: lms/templates/courseware/course_about.html
+msgid "homework"
+msgstr "домашних заданий"
+
+#: lms/templates/courseware/course_about.html
+msgid "tests"
+msgstr "тестов"
+
+#: lms/templates/courseware/course_about.html
+msgid "course language"
+msgstr "язык обучения"
+
+#: lms/templates/courseware/course_about.html
+msgid "access"
+msgstr "доступ"
+
 #: lms/templates/courseware/course_about_sidebar_header.html
 #: themes/stanford-style/lms/templates/courseware/course_about_sidebar_header.html
 msgid "Share with friends and family!"
@@ -15657,6 +15718,52 @@ msgstr "Навигация по наглядным материалам"
 #: openedx/features/course_experience/templates/course_experience/course-home-fragment.html
 msgid "Course Tools"
 msgstr "Дополнительные ресурсы"
+
+#: lms/templates/courseware/info.html
+msgid "COURSE OVERVIEW"
+msgstr "ОБЗОР КУРСА"
+
+#: lms/templates/courseware/info.html
+msgid "Course start date"
+msgstr "Дата старта курса"
+
+#: lms/templates/courseware/info.html
+msgid "Load per week"
+msgstr "Нагрузка в неделю"
+
+#: lms/templates/courseware/info.html
+msgid "Class time"
+msgstr "Время занятий"
+
+#: lms/templates/courseware/info.html
+msgid "Course time"
+msgstr "Время прохождения курса"
+
+#: lms/templates/courseware/info.html
+msgid "Tests"
+msgstr "Тесты"
+
+#: lms/templates/courseware/info.html
+msgid "Course language"
+msgstr "Язык курса"
+
+#: lms/templates/courseware/info.html
+msgid "Homework"
+msgstr "Домашние задания"
+
+#: lms/templates/courseware/info.html
+msgid "Videos"
+msgstr "Количество видео"
+
+#: lms/templates/courseware/info.html
+msgid "Lectures"
+msgstr "Лекций"
+
+#: lms/templates/courseware/course_about.html
+#: lms/templates/courseware/info.html
+#: lms/templates/courseware/courseware.html
+msgid "Course program"
+msgstr "Программа курса"
 
 #: lms/templates/courseware/news.html
 msgid "News - MITx 6.002x"
@@ -16134,6 +16241,14 @@ msgstr "Информация о курсе"
 #: lms/templates/dashboard/_dashboard_course_listing.html
 msgid "{course_number} {course_name} Home Page"
 msgstr "Главная страница {course_number} {course_name}"
+
+#: lms/templates/dashboard/_dashboard_course_listing.html
+msgid "Receive course news by mail"
+msgstr "Получать по почте новости курса"
+
+#: lms/templates/dashboard/_dashboard_course_listing.html
+msgid "leave course"
+msgstr "покинуть курс"
 
 #: lms/templates/dashboard/_dashboard_course_listing.html
 msgid "{course_number} {course_name} Cover Image"
