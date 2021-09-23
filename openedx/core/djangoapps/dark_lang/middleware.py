@@ -16,7 +16,7 @@ import sys
 from django.utils import translation
 
 from openedx.core.djangoapps.dark_lang.models import DarkLangConfig
-from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY
+from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY, LANGUAGE_HEADER
 from openedx.core.djangoapps.user_api.preferences.api import get_user_preference
 
 # If django 1.7 or higher is used, the right-side can be updated with new-style codes.
@@ -33,6 +33,14 @@ CHINESE_LANGUAGE_CODE_MAP = {
     'zh-mo': 'zh-TW',  # Chinese (Traditional, Macau)
     'zh-sg': 'zh-CN',  # Chinese (Simplified, Singapore)
 }
+LANGUAGE_MAP_TO_RU = ['uk', 'be']
+
+
+def check_user_browser_lang(request):
+    """
+    Returns the language code prefered in the user browser if any or settings.LANGUAGE_CODE.
+    """
+    return request.META.get(LANGUAGE_HEADER)[0:2] if request.META.get(LANGUAGE_HEADER) else settings.LANGUAGE_CODE
 
 
 def _dark_parse_accept_lang_header(accept):
@@ -86,6 +94,8 @@ class DarkLangMiddleware(object):
     def _fuzzy_match(self, lang_code):
         """Returns a fuzzy match for lang_code"""
         match = None
+        if lang_code in LANGUAGE_MAP_TO_RU:
+            lang_code = 'ru'
         if lang_code in self.released_langs:
             match = lang_code
         else:
@@ -108,7 +118,7 @@ class DarkLangMiddleware(object):
         new_accept = []
         for lang, priority in _dark_parse_accept_lang_header(accept):
             fuzzy_code = self._fuzzy_match(lang.lower())
-            if fuzzy_code:
+            if fuzzy_code and not any(fuzzy_code in i for i in new_accept):
                 # Formats lang and priority into a valid accept header fragment.
                 new_accept.append("{};q={}".format(fuzzy_code, priority))
 
@@ -126,13 +136,9 @@ class DarkLangMiddleware(object):
         auth_user = request.user.is_authenticated()
 
         if auth_user:
-            preview_lang = get_user_preference(request.user, LANGUAGE_KEY) or settings.LANGUAGE_CODE
+            preview_lang = get_user_preference(request.user, LANGUAGE_KEY) or check_user_browser_lang(request)
         else:
-            preview_lang = settings.LANGUAGE_CODE
-
-        # User doesn't have a dark lang preference, so just return
-        if not preview_lang:
-            return
+            preview_lang = check_user_browser_lang(request)
 
         # Set the session key to the requested preview lang
         request.session[LANGUAGE_SESSION_KEY] = preview_lang
