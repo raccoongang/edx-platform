@@ -5,6 +5,7 @@ from urlparse import urljoin
 from babel.dates import format_datetime
 from celery.schedules import crontab
 from celery.task import periodic_task, task
+from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -15,7 +16,7 @@ import pytz
 from edxmako.shortcuts import render_to_string
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 
-from .models import StudentCourseDueDate, StudentReportSending, StudentCourseReport
+from .models import StudentCourseDueDate, StudentReportSending, StudentCourseReport, StudentProfile, Classroom
 from .sms_client import SMSClient
 from .utils import create_student_course_report
 
@@ -210,3 +211,26 @@ def send_student_extended_reports(course_report_id):
         sms_client = SMSClient()
         sms_client.send_message(user.studentprofile.phone, sms_message)
         sms_client.send_message(parent.phone, sms_message)
+
+
+@periodic_task(run_every=crontab(0, 0, day_of_month='1', month_of_year='9'))
+def move_students_to_higher_classroom():
+    """
+    Assigns all students to the higher classroom that were registered more than month ago
+    """
+    datetime_now = datetime.utcnow().replace(tzinfo=pytz.UTC)
+    august_1st = datetime(datetime_now.year, 8, 1).replace(tzinfo=pytz.UTC)
+    students = StudentProfile.objects.exclude(
+        Q(user__date_joined__gte=august_1st) | Q(classroom__name='private') | Q(classroom__name__startswith='8'))
+    for student in students:
+        current_classroom = getattr(student.classroom, 'name', None)
+        try:
+            next_classroom_number = int(current_classroom[0]) + 1
+        except (IndexError, ValueError):
+            next_classroom_number = None
+
+        if next_classroom_number:
+            next_classroom_name = '{}{}'.format(next_classroom_number, current_classroom[1:])
+            classroom, created = Classroom.objects.get_or_create(name=next_classroom_name)
+            student.classroom = classroom
+            student.save()
