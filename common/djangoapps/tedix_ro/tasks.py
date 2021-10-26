@@ -224,9 +224,10 @@ def move_students_to_higher_classroom():
         Q(user__date_joined__gte=august_1st) | Q(classroom__name='private') | Q(classroom__name__startswith='8'))
     for student in students:
         current_classroom = getattr(student.classroom, 'name', None)
-        try:
+
+        if current_classroom and current_classroom[0].isdigit():
             next_classroom_number = int(current_classroom[0]) + 1
-        except (IndexError, ValueError):
+        else:
             next_classroom_number = None
 
         if next_classroom_number:
