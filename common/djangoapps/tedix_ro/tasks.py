@@ -220,15 +220,13 @@ def move_students_to_higher_classroom():
     """
     datetime_now = datetime.utcnow().replace(tzinfo=pytz.UTC)
     august_1st = datetime(datetime_now.year, 8, 1).replace(tzinfo=pytz.UTC)
-    students = StudentProfile.objects.exclude(
-        Q(user__date_joined__gte=august_1st) | Q(classroom__name='private') | Q(classroom__name__startswith='8'))
+    students = StudentProfile.objects.exclude(Q(user__date_joined__gte=august_1st) | Q(classroom__name__startswith='8'))
     for student in students:
         current_classroom = getattr(student.classroom, 'name', None)
 
+        next_classroom_number = None
         if current_classroom and current_classroom[0].isdigit():
             next_classroom_number = int(current_classroom[0]) + 1
-        else:
-            next_classroom_number = None
 
         if next_classroom_number:
             next_classroom_name = '{}{}'.format(next_classroom_number, current_classroom[1:])
