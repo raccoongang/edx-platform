@@ -1,0 +1,52 @@
+image: python:latest
+
+stages:
+  - quality
+  - conventions
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  COMPARE_BRANCH: origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+
+cache:
+  paths:
+    - .cache/pip
+    - venv/
+
+before_script:
+  - python --version  # For debugging
+  - pip install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
+  - pip install diff-cover pycodestyle pylint
+  - git fetch origin $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+
+.quality:
+  stage: quality
+  only:
+    - merge_requests
+
+code_style:
+  extends: .quality
+  script:
+    - diff-quality --violations=pycodestyle --fail-under=80 --compare-branch=$COMPARE_BRANCH
+
+lint:
+  extends: .quality
+  script:
+    - diff-quality --violations=pylint --fail-under=80 --compare-branch=$COMPARE_BRANCH
+
+commit_convention:
+  stage: conventions
+  image: node:12
+  needs: []
+  cache:
+    key: commitlint-node_modules
+    paths:
+      - node_modules/
+  before_script:
+    - bash -c "[[ -d node_modules/ ]] || npm install @commitlint/cli @commitlint/config-conventional; exit 0;"
+  script:
+    - npx --quiet commitlint --from="$CI_MERGE_REQUEST_DIFF_BASE_SHA" --help-url 'https://raccoongang.atlassian.net/wiki/spaces/PSC/pages/2662006787/RG+Delivery+Solutions+Conventional+Commits'
+  rules:
+    - if: "$CI_MERGE_REQUEST_EVENT_TYPE != 'merge_train' && $CI_MERGE_REQUEST_DIFF_BASE_SHA"
