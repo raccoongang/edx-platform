@@ -3,7 +3,11 @@
 [Fix] - 2022-01-28
 * Avoid django loaders template caching
 * Account activation email site logo theming fix
-* Details: https://youtrack.raccoongang.com/issue/RGOeX-411
+  * Details: https://youtrack.raccoongang.com/issue/RGOeX-411
+* Keep localize course dates after user logout
+  * Details: https://youtrack.raccoongang.com/issue/RGOeX-609
+  * Upstream MR to master https://github.com/openedx/edx-platform/pull/29772
+  * Upstream MR to open-release/maple.master https://github.com/openedx/edx-platform/pull/29773
 
 [Lilac Release] - 2021-06-17
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

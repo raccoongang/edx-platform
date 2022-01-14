@@ -11,6 +11,8 @@ from django.utils.translation import get_language
 from pytz import timezone
 from pytz.exceptions import UnknownTimeZoneError
 
+from django.utils.translation import get_language
+
 from edx_django_utils.cache import TieredCache
 from lms.djangoapps.courseware.models import LastSeenCoursewareTimezone
 from openedx.core.djangoapps.site_configuration.helpers import get_value
