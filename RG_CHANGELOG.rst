@@ -1,6 +1,21 @@
+[Unreleased]
+~~~~~~~~~~~~
+[Fix] - 2022-01-28
+* Avoid django loaders template caching
+* Account activation email site logo theming fix
+* Details: https://youtrack.raccoongang.com/issue/RGOeX-411
+
 [Lilac Release] - 2021-06-17
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+[Fix] 2021-09-10
+~~~~~~~~~~~~~~~~
+* course discovery search error on devstack related to incorrect elasticsearch host in settings
+* course discovery search error related to visibility filters
+  * fixes 6d9f9352
+* course discovery search sidebar filters
+  * relates to update to elasticsearch7
+  * bug cause: now elasticsearch returns `aggs` in the search results instead of `facets`
 
 [Koa Release]
 ~~~~~~~~~~~~~
