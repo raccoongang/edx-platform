@@ -1,6 +1,14 @@
 [Unreleased]
 ~~~~~~~~~~~~
+
+[Fix] - 2022-02-02
+~~~~~~~~~~~~~~~~~~
+* Add settings needed for the Studio SSO logins
+  * Details: https://youtrack.raccoongang.com/issue/RGOeX-687
+
+
 [Fix] - 2022-01-28
+~~~~~~~~~~~~~~~~~~
 * Avoid django loaders template caching
 * Account activation email site logo theming fix
   * Details: https://youtrack.raccoongang.com/issue/RGOeX-411
