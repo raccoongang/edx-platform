@@ -17,6 +17,11 @@
   * Upstream MR to master https://github.com/openedx/edx-platform/pull/29772
   * Upstream MR to open-release/maple.master https://github.com/openedx/edx-platform/pull/29773
 
+[Fix] - 2022-01-26
+~~~~~~~~~~~~~~~~~~
+* fix incorrect symbols on wiki create article page
+* more info: https://youtrack.raccoongang.com/issue/RGOeX-662
+
 [Lilac Release] - 2021-06-17
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
