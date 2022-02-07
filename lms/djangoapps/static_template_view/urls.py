@@ -25,6 +25,7 @@ urlpatterns = [
     path('press', views.render, {'template': 'press.html'}, name="press"),
     path('media-kit', views.render, {'template': 'media-kit.html'}, name="media-kit"),
     path('copyright', views.render, {'template': 'copyright.html'}, name="copyright"),
+    path('cookies', views.render, {'template': 'cookies.html'}, name="cookies"),
 
     # Press releases
     re_path(r'^press/([_a-zA-Z0-9-]+)$', views.render_press_release, name='press_release'),
