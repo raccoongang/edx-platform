@@ -1,0 +1,28 @@
+<%page expression_filter="h"/>
+<%! from django.utils.translation import ugettext as _ %>
+<%inherit file="../main.html" />
+
+<%block name="pagetitle">${_("Cookies policy")}</%block>
+
+<main id="main" aria-label="Content" tabindex="-1">
+    <section class="container about">
+        <h1>
+            <%block name="pageheader">${page_header or _("Cookie policy")}</%block>
+        </h1>
+        <h2>${_("Like many platforms, Open edX uses Cookies and other common Tracking Technologies. For example:")}</h2>
+        <ul>
+            <li>${_("based on your cookie settings, Open edX tracks information indicating, among other things, which pages of the Open edX Site were visited, the order in which they were visited, when they were visited, and which hyperlinks and other user interface controls were used;")}</li>
+            <li>${_("Open edX may log the IP address, operating system, and browser software (including mobile use and device type when you use edX native mobile apps) you used when accessing the Open edX Site, and open edX may be able to determine from an IP address your Internet Service Provider and the geographic location of your point of connectivity;")}</li>
+            <li>${_("Open edX may track and collect information from emails that Open edX sends to you, for example, whether you opened the email or clicked on any links from the email.")}</li>
+        </ul>
+        <p>${_("Open edX uses Cookies and other Tracking Technologies for the following purposes:")}</p>
+        <ul>
+            <li>${_("when necessary for system administration, security, and integrity to ensure the Open edX Site works properly for you. Without these technologies, the Open edX Site may not function correctly;")}</li>
+            <li>${_("to enable analytics, performance, and functionality, to help Open edX gather information about how visitors use the Open edX Site and monitor Open edX Site performance, and to enhance your experience by recognizing and remembering whether you have visited the Open edX Site before and may have any personal preferences.")}</li>
+        </ul>
+        <p>${_("You have an option for managing Cookies and other Tracking Technologies. It include:")}</p>
+        <ul>
+            <li>${_("Modifying your browser settings: You should be able to control how and whether your web browser accepts Cookies by adjusting its privacy and security settings. The “help” feature of the menu bar on most browsers will tell you how to stop accepting new Cookies, how to receive notifications of new Cookies, and how to disable existing Cookies. If you reject edX’s Cookies, many functions and conveniences of the edX Site may not work properly.")}</li>
+        </ul>
+    </section>
+</main>

@@ -22,6 +22,11 @@
 * fix incorrect symbols on wiki create article page
 * more info: https://youtrack.raccoongang.com/issue/RGOeX-662
 
+[Feature] - 2022-01-26
+~~~~~~~~~~~~~~~~~~~~~~
+* cookies policy banner and static page /cookies.html
+* more info: https://youtrack.raccoongang.com/issue/RGOeX-391
+
 [Lilac Release] - 2021-06-17
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -3340,6 +3340,7 @@ MKTG_URL_LINK_MAP = {
     'BLOG': 'blog',
     'DONATE': 'donate',
     'SITEMAP.XML': 'sitemap_xml',
+    'COOKIES': 'cookies',
 
     # Verified Certificates
     'WHAT_IS_VERIFIED_CERT': 'verified-certificate',
