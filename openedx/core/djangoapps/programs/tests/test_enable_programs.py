@@ -2,7 +2,6 @@
 Tests for the enable_programs management command.
 """
 import ddt
-from django.core.management.base import CommandError
 from django.test import TestCase
 
 from openedx.core.djangoapps.catalog.models import CatalogIntegration
@@ -82,6 +81,22 @@ class TestEnablePrograms(TestCase):
             self._assert_succeeded()
             self.assertIn(msg, cm.output[log_index])
 
+    def test_site_config_create(self):
+        """
+        Test command should create SiteConfiguration if it does not exists.
+        """
+        expected = {'COURSE_CATALOG_API_URL': self.discovery_url}
+        msg = "Site configuration for '{site_name}' does not exist. Created a new one.".format(
+            site_name=self.site.domain
+        )
+        with self.assertLogs(logger=LOGGER_NAME, level='INFO') as cm:
+            self._assert_succeeded()
+            self.assertIn(msg, cm.output[3])
+            self.assertEqual(
+                SiteConfiguration.objects.get(site=self.site).site_values,
+                expected
+            )
+
     def test_site_config_update(self):
         """
         Test command should not replace old values for SiteConfiguration.
@@ -91,19 +106,8 @@ class TestEnablePrograms(TestCase):
         msg = "Found existing site configuration for '{site_name}'. Updating it.".format(site_name=self.site.domain)
         with self.assertLogs(logger=LOGGER_NAME, level='INFO') as cm:
             self._assert_succeeded()
-            self.assertIn(msg, cm.output[2])
+            self.assertIn(msg, cm.output[3])
             self.assertEqual(
                 SiteConfiguration.objects.get(site=self.site).site_values,
                 expected
-            )
-
-    def test_wrong_domain_passed(self):
-        """
-        Test that passing the wrong site domain leads to error.
-        """
-        fake_domain = 'errordomain.com'
-        errstring = 'Site configuration was not updated.'
-        with self.assertRaisesRegex(CommandError, errstring):
-            self.command.handle(
-                site_domain=fake_domain, discovery_api_url=self.discovery_url, service_username=self.service_user
             )

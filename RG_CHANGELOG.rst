@@ -1,11 +1,19 @@
 [Unreleased]
 ~~~~~~~~~~~~
 
+[Feature] - 2022-02-09
+~~~~~~~~~~~~~~~~~~~~~~
+* Add microsites support for the `enable_programs` command
+
+  * fixed overriding for `ProgramsApiConfig` marketing path
+  * `ProgramsApiConfig` doesn’t have the marketing path by default
+  * removed the `--site-domain` arg, updating site configurations for all sites instead
+
 [Fix] - 2022-02-02
 ~~~~~~~~~~~~~~~~~~
 * Add settings needed for the Studio SSO logins
-  * Details: https://youtrack.raccoongang.com/issue/RGOeX-687
 
+  * Details: https://youtrack.raccoongang.com/issue/RGOeX-687
 
 [Fix] - 2022-01-28
 ~~~~~~~~~~~~~~~~~~
