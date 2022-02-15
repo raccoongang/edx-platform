@@ -1,6 +1,10 @@
 [Unreleased]
 ~~~~~~~~~~~~
 
+[Fix] - 2022-02-15
+~~~~~~~~~~~~~~~~~~
+* Fix text mistakes on the cookie policy page
+
 [Feature] - 2022-02-09
 ~~~~~~~~~~~~~~~~~~~~~~
 * Add microsites support for the `enable_programs` command
