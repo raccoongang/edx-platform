@@ -1748,3 +1748,11 @@ zipp==3.15.0
 # The following packages are considered to be unsafe in a requirements file:
 # pip
 # setuptools
+
+
+# RACCOONGANG
+
+-e git+https://github.com/open-craft/xblock-pdf.git@v1.1.0#egg=xblock-pdf
+-e git+https://github.com/overhangio/openedx-scorm-xblock.git@master#egg=openedx-scorm-xblock
+
+# RACCOONGANG

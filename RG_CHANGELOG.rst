@@ -8,6 +8,12 @@
   * pass the right site to the email context
   * https://youtrack.raccoongang.com/issue/RGOeX-933
 
+[Feature] - 2022-02-15
+~~~~~~~~~~~~~~~~~~
+* Add default xblock to the requirements
+
+  * https://youtrack.raccoongang.com/issue/RGOeX-935
+
 [Fix] - 2022-02-15
 ~~~~~~~~~~~~~~~~~~
 * Fix text mistakes on the cookie policy page
