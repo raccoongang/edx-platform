@@ -1,6 +1,17 @@
 [Unreleased]
 ~~~~~~~~~~~~
 
+[Fix] - 2022-02-23
+~~~~~~~~~~~~~~~~~~
+* Activation email and Email Change email theming fix
+
+  * pass the right site to the email context
+  * https://youtrack.raccoongang.com/issue/RGOeX-933
+
+[Fix] - 2022-02-15
+~~~~~~~~~~~~~~~~~~
+* Fix text mistakes on the cookie policy page
+
 [Feature] - 2022-02-09
 ~~~~~~~~~~~~~~~~~~~~~~
 * Add microsites support for the `enable_programs` command
