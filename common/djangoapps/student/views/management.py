@@ -238,9 +238,10 @@ def compose_and_send_activation_email(user, profile, user_registration=None, red
     from_address = configuration_helpers.get_value('ACTIVATION_EMAIL_FROM_ADDRESS') or (
         configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
     )
+    site = theming_helpers.get_current_site() or Site.objects.get_current()
 
     try:
-        send_activation_email.delay(str(msg), from_address)
+        send_activation_email.delay(str(msg), from_address, site_id=site.id)
     except Exception:  # pylint: disable=broad-except
         log.exception(f'Activation email task failed for user {user.id}.')
 
@@ -750,7 +751,7 @@ def do_email_change_request(user, new_email, activation_key=None, secondary_emai
 
     use_https = theming_helpers.get_current_request().is_secure()
 
-    site = Site.objects.get_current()
+    site = theming_helpers.get_current_site()
     message_context = get_base_template_context(site)
     message_context.update({
         'old_email': user.email,
@@ -861,7 +862,7 @@ def confirm_email_change(request, key):
                 link=reverse('contact'),
             )
 
-        site = Site.objects.get_current()
+        site = theming_helpers.get_current_site()
         message_context = get_base_template_context(site)
         message_context.update({
             'old_email': user.email,
