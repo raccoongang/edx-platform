@@ -31,7 +31,7 @@ class GetBaseContextTestCase(TestCase):
         }
         SiteConfiguration.objects.create(site=site, enabled=True, site_values=config)
 
-        exp_logo_url = 'http://{}/static/{}/images/logo.svg'.format(site.domain, theme)
+        exp_logo_url = 'http://{}/static/{}/images/'.format(site.domain, theme)
 
         message_context = get_base_template_context(site)
 
@@ -52,7 +52,7 @@ class GetBaseContextTestCase(TestCase):
         }
         SiteConfiguration.objects.create(site=site, enabled=True, site_values=config)
 
-        exp_logo_url = 'http://{}/static/{}/images/logo.svg'.format(site.domain, theme)
+        exp_logo_url = 'http://{}/static/{}/images/'.format(site.domain, theme)
 
         message_context = get_base_template_context(site)
 
