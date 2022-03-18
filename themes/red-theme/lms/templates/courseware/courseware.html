@@ -440,6 +440,11 @@ ${HTML(fragment.foot_html())}
       });
       $(".close_popup").on("click", function() {
         $modal.hide();
+        if (history.scrollRestoration) {
+          history.scrollRestoration = 'manual';
+        } else {
+          $(window).scrollTop(0);
+        }
         window.location.reload(false);
       });
     });
