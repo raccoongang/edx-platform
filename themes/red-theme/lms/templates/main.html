@@ -97,6 +97,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   % if not settings.FEATURES.get('DISABLE_TEDIX_PAYMENT_SYSTEM', False):
   <script type="text/javascript" src="${static.url('js/accounts.js')}"></script>
   % endif
+  <script type="text/javascript" src="${static.url('js/freecourse.js')}"></script>
   <link rel="icon" type="image/x-icon" href="${static.url(static.get_value('favicon_path', settings.FAVICON_PATH))}" />
 
   <%static:css group='style-vendor'/>

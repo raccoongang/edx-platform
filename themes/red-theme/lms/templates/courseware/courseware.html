@@ -90,7 +90,6 @@ from openedx.features.course_experience import course_home_page_title, COURSE_OU
   <script type="text/javascript">
     var $$course_id = "${course.id | n, js_escaped_string}";
   </script>
-
   % if not request.user.is_authenticated:
       <script type="text/javascript">
         // Disable discussions
@@ -250,19 +249,27 @@ ${HTML(fragment.foot_html())}
   var user_created_time=tedixUUid.created;
   var user_type=tedixUUid.usertype;
   var homework=tedixUUid.lesson_is_active_homework;
-  console.log(homework)
     let x;
   let today=new Date();
   let verifyaccount= true;
   for ( x=0; x<acounts.length; x++ ){
-	console.log("Tedix uiid: " + tedixUUid.id)
-	console.log(acounts[0].id)
 	if(acounts[x].id == tedixUUid.id && today <= acounts[x].date){
 		verifyaccount=false;
 		break;
 	}
   }
-  if (tedixUUid.usertype =="student" && verifyaccount === true){
+  let freecourses= false;
+  var cursidnew=$('.courseware-results').data('courseId');
+  for ( x=0; x<freecourse.length; x++ ){
+	console.log("Curs free: " +freecourse[x].id)
+	console.log("id curs " +cursidnew);
+	if(freecourse[x].id == cursidnew){
+		freecourses=true;
+		console.log(freecourses)
+		break;
+	}
+  }
+  if (tedixUUid.usertype =="student" && verifyaccount === true ){
 	      window.__simpleShopConfig = {
       storeId: 'JPJHNTSHMW',
       shopActions: {
@@ -332,13 +339,30 @@ ${HTML(fragment.foot_html())}
 			if(days_remaning >30 ) {
 				console.log("Userul mai are abonament")
 			} else{
-				if (days_remaning > 15  && days_remaning <=  30) {	
-					$('.announces-green-new').show()
+				if (days_remaning > 15  && days_remaning <=  30) {
+						if(freecourses === true){
+							$('.announces-green-new').hide();
+							$('.announces-green-free').show();
+						}
+						else{
+							$('.announces-green-new').show()
+						}
 				} else{
 				if  (days_remaning >  0  && days_remaning <= 15){
-					$('.announces-red-new').show()
+						if(freecourses === true){
+							$('.announces-red-new').hide();
+							$('.announces-green-free').show();
+						}
+						else{
+							$('.announces-red-new').show();
+						}
 				} else{
-					setInterval( Blockingplan, 2*4*1000 );
+						if(freecourses === true){
+							$('.announces-green-free').show();
+						}
+						else{
+							setInterval( Blockingplan, 2*4*1000 );
+						}
 				}
 				}
 			}
