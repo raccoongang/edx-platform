@@ -75,13 +75,10 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
   var user_created_time=tedixUUid.created;
   var user_type=tedixUUid.usertype;
   var homework=tedixUUid.lesson_is_active_homework;
-  console.log(homework);
   let x;
   let today=new Date();
   let verifyaccount= true;
   for ( x=0; x<acounts.length; x++ ){
-	console.log("Tedix uiid: " + tedixUUid.id)
-	console.log(acounts[0].id)
 	if(acounts[x].id == tedixUUid.id && today <= acounts[x].date){
 		verifyaccount=false;
 		break;
@@ -95,6 +92,7 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
       },
       shopOverride: {
         productCta: 'Cumpără',
+		returlUrl:'https://www.tedix.ro/dashboard',
 		productSort: 'price:asc',
 		heroHtml: '<span style="text-align:center;display: block;font-size: 18px;"><span style="color:red;padding: 5px;line-height: 1;font-size: 29px;vertical-align: middle;">&#8226;</span>Acces gratuit pentru profesori<span style="color:red;padding: 5px;line-height: 1;font-size: 29px;vertical-align: middle;">&#8226;</span></span><span style="text-align:center;display: block;font-size: 18px;"><span style="color:red;padding: 5px;line-height: 1;font-size: 29px;vertical-align: middle;">&#8226;</span>Elevii au 30 de zile GRATUITE<span style="color:red;padding: 5px;line-height: 1;font-size: 29px;vertical-align: middle;">&#8226;</span></span><span style="text-align:center;display: block;font-size: 16px;"> (din momentul înregistrării)</span><br><div><div class="mb-3"><div class="sscard cart-item-card" style="background-color: rgb(251, 248, 246); border: 1px solid transparent;"><div class="ssrow no-gutters"><div class="col-4"><a href="#"><div class="image-container" style="background-image:url(&quot;https://dev2.tedix.ro/static/red-theme/images/grup.png&quot;);"><!----> <!----></div></a></div> <div class="col-8 content-column"><div class="card-body-container card-body-size-small"><div class="card-body"><h5 class="card-title" style="color: red;font-family: Helvetica Neue;" helvetica="">Abonament de grup</h5> <!----> <!---->  <div><div><div class="price mb-2" style="color: rgb(23, 162, 184); font-family: &quot;Helvetica Neue&quot;;"><span class="old-price" style="display: none;"></span>Contactaţi-ne pentru ofertă<!----> <div class="price-note"></div></div> <div><div class="cart-item-controls" style="color: rgb(0, 0, 0); font-family: &quot;Helvetica Neue&quot;;"><div><a href="mailto:contact@tedix.ro" class="ssbtn btn-light" style="color: rgb(0, 0, 0); background-color: rgb(238, 238, 238); border: none;">Contact</a></div></div> </div></div></div> <div style="display: none;"><span class="item-quantity no-stock">Fără stoc</span></div></div></div></div></div></div></div></div><hr>',
       },
@@ -182,16 +180,19 @@ from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_en
 )(document)
   </script>	
 	<div class="announces-green" style="background-color:#24AD97;padding:15px;color: #ffffff;text-align:center;display:none;">
-		<span class="" style="text-align:center;font-size:16px;">Bine ai venit pe platforma TEDIX! <b>Mai ai <span class="insert">.</span> zile de utilizare gratuită a sistemului. Abonează-te dând click </b> <a href="javascript:;" class="selectPlanLink" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display:inline-block;">Aici</a></span>
+		<span class="" style="text-align:center;font-size:16px;">Bine ai venit pe platforma TEDIX! <b>Mai ai <span class="insert">.</span> zile de utilizare gratuită a sistemului. Abonează-te dând click </b> <a href="javascript:;"  class="selectPlanLink" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display:inline-block;">Aici</a></span>
 	</div>
 	<div class="announces-green-new" style="background-color:#24AD97;padding:15px;color: #ffffff;text-align:center;display:none;">
-		<span class="" style="text-align:center;font-size:16px;">Mulțumim că utilizezi platforma TEDIX. <b> Mai ai <span class="insert">.</span> zile până la expirarea abonamentului. Reînnoiește-ți abonamentul dând click</b> <a href="javascript:;" class="selectPlanLink" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display:inline-block;">Aici</a></span>
+		<span class="" style="text-align:center;font-size:16px;">Mulțumim că utilizezi platforma TEDIX. <b> Mai ai <span class="insert">.</span> zile până la expirarea abonamentului. Reînnoiește-ți abonamentul dând click</b> <a href="javascript:;"  class="selectPlanLink" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display:inline-block;">Aici</a></span>
+	</div>
+		<div class="announces-green-free" style="background-color:#24AD97;padding:15px;color: #ffffff;text-align:center;display:none;">
+		<span class="" style="text-align:center;font-size:16px;">Mulțumim că utilizezi platforma TEDIX.<br> Aceasta este o lectie gratuita.Daca doriti sa accesati FARA RESTRICTII lectiile noastre, va rugam sa <b> alegeti un abonament </b> <a href="javascript:;"  class="selectPlanLink" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display:inline-block;">Aici</a></span>
 	</div>
 	<div class="announces-red" style="background-color:#c90000;padding:15px;color: #ffffff;text-align:center;display:none;">
 		<span class="" style="text-align:center; font-size:16px;">Bine ai venit pe platforma TEDIX! <b>Mai ai <span class="insert">.</span> zile de utilizare gratuită a sistemului. Abonează-te dând click </b> <a href="javascript:;" class="selectPlanLink" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display: inline-block;">Aici</a></span>
 	</div>
 	<div class="announces-red-new" style="background-color:#c90000;padding:15px;color: #ffffff;text-align:center;display:none;">
-		<span class="" style="text-align:center; font-size:16px;">Mulțumim că utilizezi platforma TEDIX. <b>Mai ai <span class="insert">.</span> zile până la expirarea abonamentului. Reînnoiește-ți abonamentul dând click</b> <a href="javascript:;" class="selectPlanLink" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display: inline-block;">Aici</a></span>
+		<span class="" style="text-align:center; font-size:16px;">Mulțumim că utilizezi platforma TEDIX. <b>Mai ai <span class="insert">.</span> zile până la expirarea abonamentului. Reînnoiește-ți abonamentul dând click</b> <a href="javascript:;"  class="selectPlanLink" style="background-color:orange;border-radius:5px;padding:5px 20px;color:#ffffff;display: inline-block;">Aici</a></span>
 	</div>
 	<div class="modal-window" style="display:none;">
 		<div class="logo" style=""><img src="${static.url("images/logo.png" )}" style="width:70%;max-width:40vw;"></div>
