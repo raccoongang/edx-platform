@@ -502,6 +502,12 @@ def login_user(request):
             running_pipeline = pipeline.get(request)
             redirect_url = pipeline.get_complete_url(backend_name=running_pipeline['backend'])
 
+        if request.user.is_authenticated:
+            if hasattr(request.user, 'studentprofile'):
+                redirect_url = reverse('courses')
+            else:
+                redirect_url = reverse('my_reports')
+
         response = JsonResponse({
             'success': True,
             'redirect_url': redirect_url,

@@ -30,12 +30,6 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
 <div class="nav-links">
   <div class="main">
     % if show_dashboard_tabs:
-      <div class="mobile-nav-item hidden-mobile nav-item nav-tab">
-        <a class="${'active ' if reverse('dashboard') == request.path else ''}tab-nav-link" href="${reverse('dashboard')}">
-         <!-- ${_("Courses")} -->
-		 Istoric
-        </a>
-      </div>
       % if show_program_listing:
         <div class="mobile-nav-item hidden-mobile nav-item nav-tab">
           <a class="${'active ' if reverse('program_listing_view') in request.path else ''}tab-nav-link" href="${reverse('program_listing_view')}">
@@ -74,6 +68,11 @@ from openedx.core.djangoapps.site_configuration import helpers as configuration_
     % endif
       <div class="mobile-nav-item hidden-mobile nav-item nav-tab">
         <a class="tab-nav-link" href="${reverse('my_reports')}">${_("My Reports")}<sup style="color:#24ad97;font-size: 12px;font-weight: bold;">Gratuit</sup></a>
+      </div>
+      <div class="mobile-nav-item hidden-mobile nav-item nav-tab">
+        <a class="${'active ' if reverse('dashboard') == request.path else ''}tab-nav-link" href="${reverse('dashboard')}">
+          ${_("Istoric")}
+        </a>
       </div>
   </div>
   <div class="secondary">
