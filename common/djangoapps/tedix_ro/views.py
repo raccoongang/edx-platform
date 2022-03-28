@@ -523,6 +523,7 @@ def manage_courses(request):
                     send_mail(subject, txt_message, from_address, [student.user.email], html_message=html_message)
                 if form.cleaned_data['send_to_parents']:
                     parent = student.parents.first()
+
                     if parent and parent.user:
                         html_message = render_to_string(
                             'emails/parent_enroll_email_message.html',
@@ -536,15 +537,17 @@ def manage_courses(request):
 
                 if form.cleaned_data['send_sms']:
                     parent = student.parents.first()
-                    context.update({
-                        'student_name': student.user.profile.name or student.user.username,
-                        'courses_due_dates_url': urljoin(settings.LMS_ROOT_URL, reverse('personal_due_dates')),
-                    })
-                    sms_message = render_to_string(
-                        'sms/manage_course_notify.txt',
-                        context
-                    )
-                    sms_client.send_message(parent.phone, sms_message)
+
+                    if parent and parent.phone:
+                        context.update({
+                            'student_name': student.user.profile.name or student.user.username,
+                            'courses_due_dates_url': urljoin(settings.LMS_ROOT_URL, reverse('personal_due_dates')),
+                        })
+                        sms_message = render_to_string(
+                            'sms/manage_course_notify.txt',
+                            context
+                        )
+                        sms_client.send_message(parent.phone, sms_message)
             messages.success(request, _('Successfully assigned.'))
             if request.is_ajax():
                 html = mako_render_to_string('manage_courses.html', {
@@ -774,6 +777,7 @@ class ProfileImportView(View):
         send_mail(subject, message, from_address, [to_address])
         if self.role == 'student':
             parent_user = user.studentprofile.parents.first()
+
             if parent_user and parent_user.user and not parent_user.user.has_usable_password():
                 password = User.objects.make_random_password()
                 parent_user.user.set_password(password)

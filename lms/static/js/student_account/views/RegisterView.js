@@ -206,7 +206,10 @@
                         $('#register-school_city').trigger('blur');
                     });
 
-                    $('#register-school, #register-instructor').prop('disabled', 'disabled');
+                    $('#register-school, #register-instructor, #register-parent_phone').prop('disabled', 'disabled');
+                    $('[for="register-parent_phone"]').append(
+                        '<span id="parent_phone-optional-help" class="label-optional">' + gettext('Please add your parent email first.') + '</span>'
+                    );
                     $('[for="register-school"]').append(
                         '<span id="sity-optional-help" class="label-optional">' + gettext('Please select your city first.') + '</span>'
                     );
