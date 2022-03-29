@@ -17299,6 +17299,9 @@ msgstr ""
 msgid "Programs"
 msgstr "Programe"
 
+msgid "Istoric"
+msgstr "Evoluție"
+
 #: lms/templates/header/navbar-authenticated.html
 #: lms/templates/header/user_dropdown.html
 #: lms/templates/navigation/navbar-authenticated.html

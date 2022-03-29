@@ -14,6 +14,7 @@
 
             ajaxType: '',
             urlRoot: '',
+            redirectUrl: '',
 
             initialize: function(attributes, options) {
                 this.ajaxType = options.method;
@@ -43,7 +44,8 @@
                     type: model.ajaxType,
                     data: data,
                     headers: headers,
-                    success: function() {
+                    success: function(response) {
+                        model.set({'redirectUrl': response.redirect_url});
                         model.trigger('sync');
                     },
                     error: function(error) {
