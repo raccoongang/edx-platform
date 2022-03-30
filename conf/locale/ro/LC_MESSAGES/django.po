@@ -25098,6 +25098,10 @@ msgstr "Selectați orașul mai întâi."
 msgid "Please select your school first."
 msgstr "Selectați mai întâi școala."
 
+#: lms/templates/student_account/login_and_register.html
+msgid "Please add your parent email first."
+msgstr ""
+
 #: themes/red-theme/lms/templates/header/navbar-authenticated.html
 msgid "My Reports"
 msgstr "Rapoarte"

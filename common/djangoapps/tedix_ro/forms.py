@@ -163,7 +163,7 @@ class StudentRegisterForm(RegisterForm):
         user = User.objects.filter(email=parent_email).first() if parent_email else None
         # TODO: there is a validator field, remove the additional validation of
         # the length of the phone number in the future
-        if len(parent_phone) != 0 and len(parent_phone) < 10 or len(parent_phone) > 15:
+        if parent_phone and len(parent_phone) < 10 or len(parent_phone) > 15:
             raise forms.ValidationError(_('The parent phone number length must be from 10 to 15 digits.'))
         if user and getattr(user, 'parentprofile', None) and parent_phone != user.parentprofile.phone:
             raise forms.ValidationError(_('Parent phone number you entered is wrong.'))

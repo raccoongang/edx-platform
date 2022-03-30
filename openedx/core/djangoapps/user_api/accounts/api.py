@@ -784,7 +784,7 @@ def _validate_parent_phone(parent_phone, phone):
     """
     if phone == parent_phone:
         raise errors.AccountParentPhoneInvalid(accounts.REQUIRED_FIELD_PHONE_EQUALS_PARENT_PHONE_MSG)
-    if len(parent_phone) != 0 and len(parent_phone) < 10 or len(parent_phone) > 15:
+    if parent_phone and len(parent_phone) < 10 or len(parent_phone) > 15:
         raise errors.AccountParentPhoneInvalid(accounts.REQUIRED_FIELD_PARENT_PHONE_MIN_MAX_LENGTH_MSG)
 
 
