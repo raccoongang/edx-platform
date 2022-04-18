@@ -1151,7 +1151,6 @@ def settings_handler(request, course_key_string):  # lint-amnesty, pylint: disab
                 settings.FEATURES.get('EDITABLE_SHORT_DESCRIPTION', True)
             )
             sidebar_html_enabled = course_experience_waffle().is_enabled(ENABLE_COURSE_ABOUT_SIDEBAR_HTML)
-            # self_paced_enabled = SelfPacedConfiguration.current().enabled
 
             verified_mode = CourseMode.verified_mode_for_course(course_key, include_expired=True)
             upgrade_deadline = (verified_mode and verified_mode.expiration_datetime and
