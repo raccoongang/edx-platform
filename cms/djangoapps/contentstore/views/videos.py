@@ -21,7 +21,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_noop
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
-from edx_toggles.toggles import LegacyWaffleFlagNamespace, LegacyWaffleSwitchNamespace
+from edx_toggles.toggles import LegacyWaffleSwitchNamespace
 from edxval.api import (
     SortDirection,
     VideoSortField,
@@ -49,7 +49,6 @@ from openedx.core.djangoapps.video_config.models import VideoTranscriptEnabledFl
 from openedx.core.djangoapps.video_pipeline.config.waffle import (
     DEPRECATE_YOUTUBE,
     ENABLE_DEVSTACK_VIDEO_UPLOADS,
-    waffle_flags
 )
 from openedx.core.djangoapps.waffle_utils import CourseWaffleFlag
 from openedx.core.lib.api.view_utils import view_auth_classes
@@ -78,12 +77,10 @@ WAFFLE_SWITCHES = LegacyWaffleSwitchNamespace(name=WAFFLE_NAMESPACE)
 VIDEO_IMAGE_UPLOAD_ENABLED = 'video_image_upload_enabled'
 
 # Waffle flag namespace for studio
-WAFFLE_STUDIO_FLAG_NAMESPACE = LegacyWaffleFlagNamespace(name='studio')
+WAFFLE_STUDIO_FLAG_NAMESPACE = 'studio'
 
 ENABLE_VIDEO_UPLOAD_PAGINATION = CourseWaffleFlag(  # lint-amnesty, pylint: disable=toggle-missing-annotation
-    waffle_namespace=WAFFLE_STUDIO_FLAG_NAMESPACE,
-    flag_name='enable_video_upload_pagination',
-    module_name=__name__,
+    f'{WAFFLE_STUDIO_FLAG_NAMESPACE}.enable_video_upload_pagination', __name__
 )
 # Default expiration, in seconds, of one-time URLs used for uploading videos.
 KEY_EXPIRATION_IN_SECONDS = 86400
@@ -750,12 +747,11 @@ def videos_post(course, request):
             ('course_key', str(course.id)),
         ]
 
-        deprecate_youtube = waffle_flags()[DEPRECATE_YOUTUBE]
         course_video_upload_token = course.video_upload_pipeline.get('course_video_upload_token')
 
         # Only include `course_video_upload_token` if youtube has not been deprecated
         # for this course.
-        if not deprecate_youtube.is_enabled(course.id) and course_video_upload_token:
+        if not DEPRECATE_YOUTUBE.is_enabled(course.id) and course_video_upload_token:
             metadata_list.append(('course_video_upload_token', course_video_upload_token))
 
         is_video_transcript_enabled = VideoTranscriptEnabledFlag.feature_enabled(course.id)
@@ -791,7 +787,7 @@ def storage_service_bucket():
     """
     Returns an S3 bucket for video upload.
     """
-    if waffle_flags()[ENABLE_DEVSTACK_VIDEO_UPLOADS].is_enabled():
+    if ENABLE_DEVSTACK_VIDEO_UPLOADS.is_enabled():
         params = {
             'aws_access_key_id': settings.AWS_ACCESS_KEY_ID,
             'aws_secret_access_key': settings.AWS_SECRET_ACCESS_KEY,

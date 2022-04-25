@@ -99,8 +99,7 @@ class InitializeView(StaffGraderBaseView):
         # This toggle is documented on the edx-ora2 repo in openassessment/xblock/config_mixin.py
         # pylint: disable=toggle-missing-annotation
         enhanced_staff_grader_flag = CourseWaffleFlag(
-            WAFFLE_NAMESPACE,
-            ENHANCED_STAFF_GRADER,
+            f"{WAFFLE_NAMESPACE}.{ENHANCED_STAFF_GRADER}",
             module_name='openassessment.xblock.config_mixin'
         )
         return enhanced_staff_grader_flag.is_enabled(course_key)

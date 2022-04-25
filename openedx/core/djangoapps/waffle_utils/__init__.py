@@ -3,22 +3,14 @@ Extra utilities for waffle: most classes are defined in edx_toggles.toggles (htt
 we keep here some extra classes for usage within edx-platform. These classes cover course override use cases.
 """
 import logging
-import warnings
-from contextlib import contextmanager
 
-from edx_django_utils.monitoring import set_custom_attribute
-from edx_toggles.toggles import (
-    LegacyWaffleFlag,
-    LegacyWaffleFlagNamespace,
-    LegacyWaffleSwitch,
-    LegacyWaffleSwitchNamespace,
-)
+from edx_toggles.toggles import WaffleFlag
 from opaque_keys.edx.keys import CourseKey
 
 log = logging.getLogger(__name__)
 
 
-class CourseWaffleFlag(LegacyWaffleFlag):
+class CourseWaffleFlag(WaffleFlag):
     """
     Represents a single waffle flag that can be forced on/off for a course. This class should be used instead of
     WaffleFlag when in the context of a course. This class will also respect any org-level overrides, though
@@ -28,7 +20,7 @@ class CourseWaffleFlag(LegacyWaffleFlag):
 
     Usage:
 
-       SOME_COURSE_FLAG = CourseWaffleFlag('my_namespace', 'some_course_feature', __name__)
+       SOME_COURSE_FLAG = CourseWaffleFlag('my_namespace.some_course_feature', __name__, log_prefix='')
 
     And then we can check this flag in code with::
 
