@@ -3096,9 +3096,6 @@ INSTALLED_APPS = [
     # Course action state
     'common.djangoapps.course_action_state',
 
-    # Additional problem types
-    'edx_jsme',    # Molecular Structure
-
     # Country list
     'django_countries',
 
