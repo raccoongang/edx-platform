@@ -666,12 +666,6 @@ urlpatterns += [
         fr'^courses/{settings.COURSE_ID_PATTERN}/',
         include('openedx.features.calendar_sync.urls'),
     ),
-
-    # Learner profile
-    path(
-        'u/',
-        include('openedx.features.learner_profile.urls'),
-    ),
 ]
 
 if settings.FEATURES.get('ENABLE_TEAMS'):
