@@ -4,7 +4,7 @@ waffle switches for the contentstore app.
 """
 
 
-from edx_toggles.toggles import LegacyWaffleSwitchNamespace, WaffleFlag
+from edx_toggles.toggles import WaffleSwitch, WaffleFlag
 
 from openedx.core.djangoapps.waffle_utils import CourseWaffleFlag
 
@@ -13,22 +13,9 @@ WAFFLE_NAMESPACE = 'studio'
 LOG_PREFIX = 'Studio: '
 
 # Switches
-# TODO: Replace with WaffleSwitch(). See waffle() docstring.
-ENABLE_ACCESSIBILITY_POLICY_PAGE = 'enable_policy_page'
-
-
-def waffle():
-    """
-    Deprecated: Returns the namespaced, cached, audited Waffle Switch class for Studio pages.
-
-    IMPORTANT: Do NOT copy this pattern and do NOT use this to reference new switches.
-      Instead, replace the string constant above with the actual switch instance.
-      For example::
-
-        ENABLE_ACCESSIBILITY_POLICY_PAGE = WaffleSwitch(f'{WAFFLE_NAMESPACE}.enable_policy_page')
-    """
-    return LegacyWaffleSwitchNamespace(name=WAFFLE_NAMESPACE, log_prefix='Studio: ')
-
+ENABLE_ACCESSIBILITY_POLICY_PAGE = WaffleSwitch(  # lint-amnesty, pylint: disable=toggle-missing-annotation
+    f'{WAFFLE_NAMESPACE}.enable_policy_page', __name__
+)
 
 # TODO: After removing this flag, add a migration to remove waffle flag in a follow-up deployment.
 ENABLE_CHECKLISTS_QUALITY = CourseWaffleFlag(  # lint-amnesty, pylint: disable=toggle-missing-annotation

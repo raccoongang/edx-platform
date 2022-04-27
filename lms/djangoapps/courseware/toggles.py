@@ -2,7 +2,7 @@
 Toggles for courseware in-course experience.
 """
 
-from edx_toggles.toggles import SettingToggle
+from edx_toggles.toggles import SettingToggle, WaffleSwitch
 
 from openedx.core.djangoapps.waffle_utils import CourseWaffleFlag
 
@@ -96,12 +96,17 @@ COURSEWARE_OPTIMIZED_RENDER_XBLOCK = CourseWaffleFlag(
 # .. toggle_status: unsupported
 COURSES_INVITE_ONLY = SettingToggle('COURSES_INVITE_ONLY', default=False)
 
+ENABLE_OPTIMIZELY_IN_COURSEWARE = WaffleSwitch(  # lint-amnesty, pylint: disable=toggle-missing-annotation
+    'RET.enable_optimizely_in_courseware', __name__
+)
+
 
 def courseware_mfe_is_active() -> bool:
     """
     Should we serve the Learning MFE as the canonical courseware experience?
     """
     from lms.djangoapps.courseware.access_utils import in_preview_mode  # avoid a circular import
+
     # We only use legacy views for the Studio "preview mode" feature these days, while everyone else gets the MFE
     return not in_preview_mode()
 

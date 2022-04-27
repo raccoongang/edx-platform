@@ -4,7 +4,7 @@ waffle switches for the Grades app.
 """
 
 
-from edx_toggles.toggles import LegacyWaffleSwitch, LegacyWaffleSwitchNamespace
+from edx_toggles.toggles import WaffleSwitch
 
 from openedx.core.djangoapps.waffle_utils import CourseWaffleFlag
 
@@ -24,8 +24,7 @@ LOG_PREFIX = 'Grades: '
 # .. toggle_creation_date: 2017-04-11
 # .. toggle_tickets: https://github.com/edx/edx-platform/pull/14771
 # .. toggle_warnings: This requires the PersistentGradesEnabledFlag to be enabled.
-# TODO: Replace with WaffleSwitch(). See waffle_switch(name) docstring.
-ASSUME_ZERO_GRADE_IF_ABSENT = 'assume_zero_grade_if_absent'
+ASSUME_ZERO_GRADE_IF_ABSENT = WaffleSwitch(f'{WAFFLE_NAMESPACE}.assume_zero_grade_if_absent', __name__)
 # .. toggle_name: grades.disable_regrade_on_policy_change
 # .. toggle_implementation: WaffleSwitch
 # .. toggle_default: False
@@ -33,8 +32,7 @@ ASSUME_ZERO_GRADE_IF_ABSENT = 'assume_zero_grade_if_absent'
 # .. toggle_use_cases: open_edx
 # .. toggle_creation_date: 2017-08-03
 # .. toggle_tickets: https://github.com/edx/edx-platform/pull/15733
-# TODO: Replace with WaffleSwitch(). See waffle_switch(name) docstring.
-DISABLE_REGRADE_ON_POLICY_CHANGE = 'disable_regrade_on_policy_change'
+DISABLE_REGRADE_ON_POLICY_CHANGE = WaffleSwitch(f'{WAFFLE_NAMESPACE}.disable_regrade_on_policy_change', __name__)
 
 # Course Flags
 
@@ -84,29 +82,6 @@ WRITABLE_GRADEBOOK = CourseWaffleFlag(f'{WAFFLE_NAMESPACE}.writable_gradebook', 
 # .. toggle_creation_date: 2019-08-20
 # .. toggle_tickets: https://github.com/edx/edx-platform/pull/21389
 BULK_MANAGEMENT = CourseWaffleFlag(f'{WAFFLE_NAMESPACE}.bulk_management', __name__, LOG_PREFIX)
-
-
-def waffle():
-    """
-    Deprecated: Returns the namespaced, cached, audited Waffle class for Grades.
-
-    Note: Replace uses of this function with direct references to each switch.
-      See waffle_switch(name) docstring for details.
-    """
-    return LegacyWaffleSwitchNamespace(name=WAFFLE_NAMESPACE, log_prefix='Grades: ')
-
-
-def waffle_switch(name):
-    """
-    Deprecated: Return the corresponding namespaced waffle switch.
-
-    IMPORTANT: Do NOT copy this pattern and do NOT use this to reference new switches.
-      Instead, replace the string constants above with the actual switch instances.
-      For example::
-
-        ASSUME_ZERO_GRADE_IF_ABSENT = WaffleSwitch(f'{WAFFLE_NAMESPACE}.assume_zero_grade_if_absent')
-    """
-    return LegacyWaffleSwitch(waffle(), name, module_name=__name__)
 
 
 def is_writable_gradebook_enabled(course_key):
