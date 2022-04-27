@@ -33,7 +33,7 @@ class TestCourseWaffleFlag(CacheIsolationTestCase):
     TEST_COURSE_KEY = CourseKey.from_string(f"{TEST_ORG}/DemoX/Demo_Course")
     TEST_COURSE_2_KEY = CourseKey.from_string(f"{TEST_ORG}/DemoX/Demo_Course_2")
     TEST_COURSE_3_KEY = CourseKey.from_string("CollegeX/DemoX/Demo_Course")
-    TEST_COURSE_FLAG = CourseWaffleFlag(NAMESPACE_NAME, FLAG_NAME, __name__)
+    TEST_COURSE_FLAG = CourseWaffleFlag(NAMESPACED_FLAG_NAME, __name__)
 
     def setUp(self):
         super().setUp()
@@ -196,11 +196,7 @@ class TestCourseWaffleFlag(CacheIsolationTestCase):
         """
         Test flag with undefined waffle flag.
         """
-        test_course_flag = CourseWaffleFlag(
-            self.NAMESPACE_NAME,
-            self.FLAG_NAME,
-            __name__,
-        )
+        test_course_flag = CourseWaffleFlag(self.NAMESPACED_FLAG_NAME, __name__)
 
         with patch.object(
             WaffleFlagCourseOverrideModel,
@@ -222,11 +218,7 @@ class TestCourseWaffleFlag(CacheIsolationTestCase):
         Test the flag behavior when outside a request context and waffle data undefined.
         """
         crum.set_current_request(None)
-        test_course_flag = CourseWaffleFlag(
-            self.NAMESPACE_NAME,
-            self.FLAG_NAME,
-            __name__,
-        )
+        test_course_flag = CourseWaffleFlag(self.NAMESPACED_FLAG_NAME, __name__)
         assert test_course_flag.is_enabled(self.TEST_COURSE_KEY) is False
 
     def test_without_request_and_everyone_active_waffle(self):
@@ -234,10 +226,7 @@ class TestCourseWaffleFlag(CacheIsolationTestCase):
         Test the flag behavior when outside a request context and waffle active for everyone.
         """
         crum.set_current_request(None)
-        test_course_flag = CourseWaffleFlag(
-            self.NAMESPACE_NAME,
-            self.FLAG_NAME,
-            __name__,
-        )
+
+        test_course_flag = CourseWaffleFlag(self.NAMESPACED_FLAG_NAME, __name__)
         with override_flag(self.NAMESPACED_FLAG_NAME, active=True):
             assert test_course_flag.is_enabled(self.TEST_COURSE_KEY) is True
