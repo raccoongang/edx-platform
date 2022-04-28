@@ -227,7 +227,7 @@ class StudentDashboardTests(SharedModuleStoreTestCase, MilestonesTestCaseMixin, 
         """
         UserProfile.objects.get(user=self.user).delete()
         response = self.client.get(self.path)
-        self.assertRedirects(response, reverse('account_settings'))
+        self.assertRedirects(response, settings.ACCOUNT_MICROFRONTEND_URL, target_status_code=302)
 
     def test_course_cert_available_message_after_course_end(self):
         course_key = CourseKey.from_string('course-v1:edX+DemoX+Demo_Course')

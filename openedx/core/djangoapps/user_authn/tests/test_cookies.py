@@ -60,7 +60,7 @@ class CookieTests(TestCase):
             'logout': reverse('logout'),
             'resume_block': retrieve_last_sitewide_block_completed(self.user),
             'account_settings': settings.ACCOUNT_MICROFRONTEND_URL,
-            'learner_profile': urljoin(settings.PROFILE_MICROFRONTEND_URL + '/', self.user.username),
+            'learner_profile': urljoin(settings.PROFILE_MICROFRONTEND_URL, f'/u/{self.user.username}'),
         }
 
         expected_header_urls = self._convert_to_absolute_uris(self.request, expected_header_urls)
