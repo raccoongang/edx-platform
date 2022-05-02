@@ -4,6 +4,7 @@ Tests for waffle utils features.
 # pylint: disable=toggle-missing-annotation
 
 from unittest.mock import patch
+
 import crum
 import ddt
 from django.test.client import RequestFactory
@@ -11,10 +12,9 @@ from edx_django_utils.cache import RequestCache
 from opaque_keys.edx.keys import CourseKey
 from waffle.testutils import override_flag
 
+from openedx.core.djangoapps.waffle_utils.__future__ import FutureCourseWaffleFlag as CourseWaffleFlag
+from openedx.core.djangoapps.waffle_utils.models import WaffleFlagCourseOverrideModel, WaffleFlagOrgOverrideModel
 from openedx.core.djangolib.testing.utils import CacheIsolationTestCase
-
-from .. import CourseWaffleFlag
-from ..models import WaffleFlagCourseOverrideModel, WaffleFlagOrgOverrideModel
 
 
 @ddt.ddt

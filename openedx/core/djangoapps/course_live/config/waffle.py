@@ -3,7 +3,7 @@ This module contains various configuration settings via
 waffle switches for the live app.
 """
 
-from openedx.core.djangoapps.waffle_utils import CourseWaffleFlag
+from openedx.core.djangoapps.waffle_utils.__future__ import FutureCourseWaffleFlag as CourseWaffleFlag
 
 WAFFLE_NAMESPACE = 'course_live'
 
