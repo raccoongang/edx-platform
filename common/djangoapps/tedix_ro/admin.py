@@ -8,7 +8,6 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.widgets import AdminSplitDateTime
 from django.contrib.auth.models import User
-from django.core.validators import RegexValidator
 from django.http.response import HttpResponseRedirect
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -86,8 +85,6 @@ INSTRUCTOR_IMPORT_FIELD_NAMES = (
 )
 
 DATE_TIME_FORMAT = '%d %b %Y %H:%M'
-
-phone_validator = RegexValidator(regex=r'^\d{10,15}$', message=_('The phone number length must be from 10 to 15 digits.'))
 
 
 admin.site.register(Classroom)

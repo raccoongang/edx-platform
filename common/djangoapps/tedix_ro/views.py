@@ -456,7 +456,6 @@ def manage_courses(request):
         form = StudentEnrollForm(data=data, courses=courses, students=students, classrooms=classrooms, user_tz=user_tz)
         if form.is_valid():
             sms_client = SMSClient()
-
             for student in form.cleaned_data['students']:
                 courses_list = []
                 for course in form.cleaned_data['courses']:
@@ -524,7 +523,6 @@ def manage_courses(request):
                     send_mail(subject, txt_message, from_address, [student.user.email], html_message=html_message)
                 if form.cleaned_data['send_to_parents']:
                     parent = student.parents.first()
-
                     if parent and parent.user:
                         html_message = render_to_string(
                             'emails/parent_enroll_email_message.html',
@@ -539,7 +537,6 @@ def manage_courses(request):
                 if form.cleaned_data['send_sms']:
                     parent = student.parents.first()
                     parent_phone = student.parent_phone
-
                     context.update({
                         'student_name': student.user.profile.name or student.user.username,
                         'courses_due_dates_url': urljoin(settings.LMS_ROOT_URL, reverse('personal_due_dates')),
@@ -782,7 +779,6 @@ class ProfileImportView(View):
         send_mail(subject, message, from_address, [to_address])
         if self.role == 'student':
             parent_user = user.studentprofile.parents.first()
-
             if parent_user and parent_user.user and not parent_user.user.has_usable_password():
                 password = User.objects.make_random_password()
                 parent_user.user.set_password(password)
