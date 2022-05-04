@@ -11178,7 +11178,3 @@ msgstr "Selectați orașul mai întâi."
 #: lms/static/js/student_account/views/RegisterView.js
 msgid "Please select your school first."
 msgstr "Selectați mai întâi școala."
-
-#: lms/static/js/student_account/views/RegisterView.js
-msgid "Please add your parent email first."
-msgstr ""

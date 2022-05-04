@@ -17,7 +17,6 @@
     <%static:require_module module_name="js/student_account/logistration_factory" class_name="LogistrationFactory">
         var options = ${data | n, dump_js_escaped_json};
         LogistrationFactory(options);
-        var label_span_parent_phone = '<span id="parent_phone-optional-help" class="label-optional">${_("Please add your parent email first.")}</span>';
         var label_span_school = '<span id="sity-optional-help" class="label-optional">${_("Please select your city first...")}</span>';
         var label_span_instructor = '<span id="instructor-optional-help" class="label-optional">${_("Please select your school first.")}</span>';
 
@@ -36,19 +35,6 @@
                     field.parent('.form-field').hide();
                 }
             });
-        });
-
-        $(document).on('change', '#register-parent_email', function(event) {
-            var $parentPhoneField = $('#register-parent_phone');
-            var parentEmailFieldValue = $(event.currentTarget).val();
-            if (parentEmailFieldValue) {
-                $parentPhoneField.prop('disabled', false);
-                $('#parent_phone-optional-help').remove();
-            } else {
-                $parentPhoneField.val('');
-                $parentPhoneField.prop('disabled', 'disabled');
-                $('[for="register-parent_phone"]').append(label_span_parent_phone);
-            }
         });
 
         $(document).on('change', '#register-school_city', function(event) {

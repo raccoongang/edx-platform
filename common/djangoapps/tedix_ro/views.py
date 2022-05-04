@@ -456,6 +456,7 @@ def manage_courses(request):
         form = StudentEnrollForm(data=data, courses=courses, students=students, classrooms=classrooms, user_tz=user_tz)
         if form.is_valid():
             sms_client = SMSClient()
+
             for student in form.cleaned_data['students']:
                 courses_list = []
                 for course in form.cleaned_data['courses']:
@@ -537,17 +538,21 @@ def manage_courses(request):
 
                 if form.cleaned_data['send_sms']:
                     parent = student.parents.first()
+                    parent_phone = student.parent_phone
 
-                    if parent and parent.phone:
-                        context.update({
-                            'student_name': student.user.profile.name or student.user.username,
-                            'courses_due_dates_url': urljoin(settings.LMS_ROOT_URL, reverse('personal_due_dates')),
-                        })
-                        sms_message = render_to_string(
-                            'sms/manage_course_notify.txt',
-                            context
-                        )
+                    context.update({
+                        'student_name': student.user.profile.name or student.user.username,
+                        'courses_due_dates_url': urljoin(settings.LMS_ROOT_URL, reverse('personal_due_dates')),
+                    })
+                    sms_message = render_to_string(
+                        'sms/manage_course_notify.txt',
+                        context
+                    )
+                    if parent:
                         sms_client.send_message(parent.phone, sms_message)
+                    elif parent_phone:
+                        sms_client.send_message(parent_phone, sms_message)
+
             messages.success(request, _('Successfully assigned.'))
             if request.is_ajax():
                 html = mako_render_to_string('manage_courses.html', {

@@ -213,10 +213,13 @@ def send_student_extended_reports(course_report_id):
             'sms/light_report.txt',
             context
         )
+        parent_phone = student_course_report.student.parent_phone
         sms_client = SMSClient()
         sms_client.send_message(user.studentprofile.phone, sms_message)
-        if parent and parent.phone:
+        if parent:
             sms_client.send_message(parent.phone, sms_message)
+        elif parent_phone:
+            sms_client.send_message(parent_phone, sms_message)
 
 
 @periodic_task(run_every=crontab(0, 0, day_of_month='1', month_of_year='9'))

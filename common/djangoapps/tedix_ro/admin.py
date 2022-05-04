@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.widgets import AdminSplitDateTime
 from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
 from django.http.response import HttpResponseRedirect
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -85,6 +86,8 @@ INSTRUCTOR_IMPORT_FIELD_NAMES = (
 )
 
 DATE_TIME_FORMAT = '%d %b %Y %H:%M'
+
+phone_validator = RegexValidator(regex=r'^\d{10,15}$', message=_('The phone number length must be from 10 to 15 digits.'))
 
 
 admin.site.register(Classroom)
@@ -269,6 +272,26 @@ class InstructorProfileAdmin(ImportExportModelAdmin):
         return ()
 
 
+class StudentProfileAdminForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(StudentProfileAdminForm, self).__init__(*args, **kwargs)
+        instance = kwargs.get('instance')
+        if instance.parents.first():
+            self.fields['parent_phone'].widget.attrs['readonly'] = True
+            self.fields['parent_phone'].required = False
+
+    class Meta:
+        model = StudentProfile
+        fields = '__all__'
+
+    def clean_parent_phone(self):
+        if self.instance.parents.first():
+            return self.instance.parent_phone
+        else:
+            return self.cleaned_data.get('parent_phone')
+
+
 class StudentProfileResource(resources.ModelResource):
 
     school = ProfileField(
@@ -330,11 +353,13 @@ class StudentProfileResource(resources.ModelResource):
     
     def dehydrate_parent_phone(self, student_profile):
         parent_profile = student_profile.parents.first()
-        return parent_profile.phone if parent_profile else EMPTY_VALUE
+        parent_phone = student_profile.parent_phone or EMPTY_VALUE
+        return parent_profile.phone if parent_profile else parent_phone
 
 
 @admin.register(StudentProfile)
 class StudentProfileImportExportAdmin(ImportExportModelAdmin):
+    form = StudentProfileAdminForm
     resource_class = StudentProfileResource
     formats = (
         base_formats.CSV,
