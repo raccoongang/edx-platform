@@ -274,7 +274,14 @@ def my_reports(request):
 def my_reports_main(request):
     if not request.user.is_authenticated():
         return redirect(get_next_url_for_login_page(request))
-    return render_to_response('my_reports_main.html')
+
+    # Account activation message
+    account_activation_messages = [
+        message for message in messages.get_messages(request) if 'account-activation' in message.tags
+    ]
+    context = {'account_activation_messages': account_activation_messages}
+
+    return render_to_response('my_reports_main.html', context)
 
 
 @api_view(['GET'])

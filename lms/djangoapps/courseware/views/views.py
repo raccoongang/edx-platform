@@ -9,6 +9,7 @@ from datetime import datetime
 
 import analytics
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.auth.views import redirect_to_login
@@ -227,12 +228,18 @@ def courses(request):
     # Add marketable programs to the context.
     programs_list = get_programs_with_type(request.site, include_hidden=False)
 
+    # Account activation message
+    account_activation_messages = [
+        message for message in messages.get_messages(request) if 'account-activation' in message.tags
+    ]
+
     return render_to_response(
         "courseware/courses.html",
         {
+            'account_activation_messages': account_activation_messages,
             'courses': courses_list,
             'course_discovery_meanings': course_discovery_meanings,
-            'programs_list': programs_list
+            'programs_list': programs_list,
         }
     )
 
