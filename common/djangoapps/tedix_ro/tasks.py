@@ -193,7 +193,7 @@ def send_student_extended_reports(course_report_id):
         mail_recipients = [user.email,]
 
         parent = user.studentprofile.parents.first()
-        if parent and parent.user.email:
+        if parent:
             mail_recipients.append(parent.user.email)
 
         send_mail(subject, txt_message, from_address, mail_recipients, html_message=html_message)
@@ -213,7 +213,7 @@ def send_student_extended_reports(course_report_id):
             'sms/light_report.txt',
             context
         )
-        parent_phone = student_course_report.student.parent_phone
+        parent_phone = user.studentprofile.parent_phone
         sms_client = SMSClient()
         sms_client.send_message(user.studentprofile.phone, sms_message)
         if parent:
