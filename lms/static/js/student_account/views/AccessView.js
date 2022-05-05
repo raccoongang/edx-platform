@@ -264,7 +264,7 @@
              *
              */
                 authComplete: function() {
-                    var redirectUrl = this.subview.login.model.get('redirectUrl');
+                    var redirectUrl = this.subview.login.model ? this.subview.login.model.get('redirectUrl') : '';
 
                     if ((!this.nextUrl || this.nextUrl == '/') && redirectUrl) {
                         this.nextUrl = redirectUrl;

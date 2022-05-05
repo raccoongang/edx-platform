@@ -30,6 +30,20 @@
 
 <%block name="pagetitle">${_("Courses")}</%block>
 
+%if messages:
+    <div class="activation-message-container">
+        % for message in messages:
+            %if 'account-activation' in message.tags:
+            <div class="${message.tags}" role="alert" aria-label="Account Activation Message" tabindex="-1">
+                <div class="message-copy" >
+                    ${ message | n, decode.utf8 }
+                </div>
+            </div>
+            %endif
+        % endfor
+    </div>
+%endif
+
 <main id="main" aria-label="Content" tabindex="-1">
     <section class="find-courses">
       <section class="courses-container">
