@@ -30,10 +30,9 @@ if settings.ROOT_URLCONF == 'lms.urls':
     from common.djangoapps.entitlements.tests.factories import CourseEntitlementFactory
 
 
-def update_commerce_config(enabled=False, checkout_page='/test_basket/add/'):
+def update_commerce_config(checkout_page='/test_basket/add/'):
     """ Enable / Disable CommerceConfiguration model """
     CommerceConfiguration.objects.create(
-        checkout_on_ecommerce_service=enabled,
         basket_checkout_page=checkout_page,
     )
 
@@ -60,19 +59,13 @@ class EcommerceServiceTests(TestCase):
         self.request_factory = RequestFactory()
         self.user = UserFactory.create()
         self.request = self.request_factory.get("foo")
-        update_commerce_config(enabled=True)
+        update_commerce_config()
         super().setUp()
 
     def test_is_enabled(self):
         """Verify that is_enabled() returns True when ecomm checkout is enabled. """
         is_enabled = EcommerceService().is_enabled(self.user)
         assert is_enabled
-
-        config = CommerceConfiguration.current()
-        config.checkout_on_ecommerce_service = False
-        config.save()
-        is_not_enabled = EcommerceService().is_enabled(self.user)
-        assert not is_not_enabled
 
     @override_switch(settings.DISABLE_ACCOUNT_ACTIVATION_REQUIREMENT_SWITCH, active=True)
     def test_is_enabled_activation_requirement_disabled(self):
