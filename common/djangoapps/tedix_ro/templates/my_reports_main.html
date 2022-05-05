@@ -139,16 +139,18 @@ from django.utils.translation import ugettext as _
     });
 </script>
 
-%if account_activation_messages:
-  <div class="activation-message-container">
-    % for account_activation_message in account_activation_messages:
-      <div class="account-activation ${account_activation_message.tags}" role="alert" aria-label="Account Activation Message" tabindex="-1">
-        <div class="message-copy" >
-          ${ account_activation_message | n, decode.utf8 }
-        </div>
-      </div>
-    % endfor
-  </div>
+%if messages:
+    <div class="activation-message-container">
+        % for message in messages:
+            %if 'account-activation' in message.tags:
+            <div class="${message.tags}" role="alert" aria-label="Account Activation Message" tabindex="-1">
+                <div class="message-copy" >
+                    ${ message | n, decode.utf8 }
+                </div>
+            </div>
+            %endif
+        % endfor
+    </div>
 %endif
 
 <main id="main" aria-label="Content" tabindex="-1">
