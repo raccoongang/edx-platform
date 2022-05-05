@@ -277,7 +277,8 @@ class FormDescription(object):
 
         if error_messages is not None:
             field_dict["errorMessages"] = error_messages
-        if name == 'instructor':
+        optional_fields_to_show = ['instructor', 'parent_email']
+        if name in optional_fields_to_show:
             field_dict['showInRequired'] = True
         # If there are overrides for this field, apply them now.
         # Any field property can be overwritten (for example, the default value or placeholder)

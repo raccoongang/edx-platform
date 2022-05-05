@@ -190,8 +190,13 @@ def send_student_extended_reports(course_report_id):
             'email_from_address',
             settings.DEFAULT_FROM_EMAIL
         )
+        mail_recipients = [user.email,]
+
         parent = user.studentprofile.parents.first()
-        send_mail(subject, txt_message, from_address, [user.email, parent.user.email], html_message=html_message)
+        if parent:
+            mail_recipients.append(parent.user.email)
+
+        send_mail(subject, txt_message, from_address, mail_recipients, html_message=html_message)
 
         student_course_due_date = StudentCourseDueDate.objects.filter(
             student=user.studentprofile,
@@ -208,9 +213,13 @@ def send_student_extended_reports(course_report_id):
             'sms/light_report.txt',
             context
         )
+        parent_phone = user.studentprofile.parent_phone
         sms_client = SMSClient()
         sms_client.send_message(user.studentprofile.phone, sms_message)
-        sms_client.send_message(parent.phone, sms_message)
+        if parent:
+            sms_client.send_message(parent.phone, sms_message)
+        elif parent_phone:
+            sms_client.send_message(parent_phone, sms_message)
 
 
 @periodic_task(run_every=crontab(0, 0, day_of_month='1', month_of_year='9'))

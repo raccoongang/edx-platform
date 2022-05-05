@@ -25,6 +25,7 @@
                     'click .login-provider': 'thirdPartyAuth',
                     'click input[required][type="checkbox"]': 'liveValidateHandler',
                     'blur input[required], textarea[required], select[required]': 'liveValidateHandler',
+                    'blur #register-parent_phone, #register-parent_email': 'liveValidateHandler',
                     'focus input[required], textarea[required], select[required]': 'handleRequiredInputFocus'
                 },
                 liveValidationFields: [

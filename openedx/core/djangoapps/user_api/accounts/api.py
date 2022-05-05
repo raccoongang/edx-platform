@@ -774,8 +774,6 @@ def _validate_parent_email(parent_email, email):
     """
     Validate the parent email field.
     """
-    if parent_email == '':
-        raise errors.AccountParentEmailInvalid(accounts.REQUIRED_FIELD_PARENT_EMAIL_MSG)
     if parent_email == email:
         raise errors.AccountParentEmailInvalid(accounts.REQUIRED_FIELD_PARENT_EMAIL_EQUALS_USER_EMAIL_MSG)
 

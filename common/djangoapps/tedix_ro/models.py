@@ -85,6 +85,7 @@ class StudentProfile(UserProfile):
     school = models.ForeignKey(School, null=True, on_delete=models.SET_NULL)
     paid = models.BooleanField(default=False)
     classroom = models.ForeignKey(Classroom, related_name='students', null=True, on_delete=models.SET_NULL)
+    parent_phone = models.CharField(validators=[phone_validator], max_length=15, null=True)
 
     def __unicode__(self):
         return unicode(self.user)
