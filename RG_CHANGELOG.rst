@@ -1,6 +1,9 @@
 [Unreleased]
 ~~~~~~~~~~~~
 
+[Maple Release] - 2022-04-29
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 [Fix] - 2022-02-23
 ~~~~~~~~~~~~~~~~~~
 * Activation email and Email Change email theming fix
