@@ -13,7 +13,6 @@ from openedx.core.djangoapps.commerce.utils import ecommerce_api_client
 from openedx.core.djangoapps.oauth_dispatch.jwt import create_jwt_for_user
 
 JSON = 'application/json'
-TEST_PUBLIC_URL_ROOT = 'http://www.example.com'
 TEST_API_URL = 'http://www-internal.example.com/api'
 TEST_BASKET_ID = 7
 TEST_ORDER_NUMBER = '100004'
