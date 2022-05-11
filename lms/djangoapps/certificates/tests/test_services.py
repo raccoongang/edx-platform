@@ -41,8 +41,6 @@ class CertificateServiceTests(ModuleStoreTestCase):
         """
         return {
             'verify_uuid': generated_certificate.verify_uuid,
-            'download_uuid': generated_certificate.download_uuid,
-            'download_url': generated_certificate.download_url,
             'grade': generated_certificate.grade,
             'status': generated_certificate.status
         }
@@ -62,8 +60,6 @@ class CertificateServiceTests(ModuleStoreTestCase):
             self.generated_certificate_to_dict(invalid_generated_certificate),
             {
                 'verify_uuid': invalid_generated_certificate.verify_uuid,
-                'download_uuid': '',
-                'download_url': '',
                 'grade': '',
                 'status': CertificateStatuses.unavailable
             }

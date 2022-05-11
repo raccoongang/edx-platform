@@ -1673,8 +1673,6 @@ class ProgramCourseEnrollmentOverviewGetTests(
             start=cls.yesterday,
             end=cls.tomorrow,
         )
-        cls.relative_certificate_download_url = '/download-the-certificates'
-        cls.absolute_certificate_download_url = 'http://www.certificates.com/'
 
         # create program enrollment
         cls.program_enrollment = ProgramEnrollmentFactory.create(
@@ -1717,13 +1715,12 @@ class ProgramCourseEnrollmentOverviewGetTests(
         super().setUp()
         self.set_program_in_catalog_cache(self.program_uuid, self.program)
 
-    def create_generated_certificate(self, download_url=None):
+    def create_generated_certificate(self):
         return GeneratedCertificateFactory.create(
             user=self.student,
             course_id=self.course_id,
             status=CertificateStatuses.downloadable,
             mode='verified',
-            download_url=(download_url or self.relative_certificate_download_url),
             grade="0.88",
             verify_uuid=uuid4(),
         )
@@ -1849,33 +1846,6 @@ class ProgramCourseEnrollmentOverviewGetTests(
         assert status.HTTP_200_OK == response_status_code
         response_resume_url = response_course_runs[0]['resume_course_run_url']
         assert response_resume_url == resume_url
-
-    def test_no_url_without_certificate(self):
-        self.log_in()
-        response_status_code, response_course_runs = self.get_status_and_course_runs()
-        assert status.HTTP_200_OK == response_status_code
-        assert 'certificate_download_url' not in response_course_runs[0]
-
-    def test_relative_certificate_url_becomes_absolute(self):
-        self.log_in()
-        self.create_generated_certificate(
-            download_url=self.relative_certificate_download_url
-        )
-        response_status_code, response_course_runs = self.get_status_and_course_runs()
-        assert status.HTTP_200_OK == response_status_code
-        response_url = response_course_runs[0]['certificate_download_url']
-        assert response_url.startswith('http://testserver')
-        assert response_url.endswith(self.relative_certificate_download_url)
-
-    def test_absolute_certificate_url_stays_absolute(self):
-        self.log_in()
-        self.create_generated_certificate(
-            download_url=self.absolute_certificate_download_url
-        )
-        response_status_code, response_course_runs = self.get_status_and_course_runs()
-        assert status.HTTP_200_OK == response_status_code
-        response_url = response_course_runs[0]['certificate_download_url']
-        assert response_url == self.absolute_certificate_download_url
 
     def test_no_due_dates(self):
         self.log_in()

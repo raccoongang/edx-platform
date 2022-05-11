@@ -21,7 +21,6 @@ from lms.djangoapps.certificates.api import (
 )
 from lms.djangoapps.certificates.apis.v0.permissions import IsOwnerOrPublicCertificates
 from openedx.core.djangoapps.content.course_overviews.api import (
-    get_course_overview_or_none,
     get_course_overviews_from_ids,
     get_pseudo_course_overview
 )
@@ -69,8 +68,6 @@ class CertificatesDetailView(APIView):
 
             * is_passing: True if the certificate has a passing status, False if not.
 
-            * download_url: A string representation of the certificate url.
-
             * grade: A string representation of a float for the user's course grade.
 
         **Example GET Response**
@@ -82,7 +79,6 @@ class CertificatesDetailView(APIView):
                 "created_date": "2015-12-03T13:14:28+0000",
                 "status": "downloadable",
                 "is_passing": true,
-                "download_url": "http://www.example.com/cert.pdf",
                 "grade": "0.98"
             }
     """
@@ -125,15 +121,6 @@ class CertificatesDetailView(APIView):
                 data={'error_code': 'no_certificate_for_user'}
             )
 
-        course_overview = get_course_overview_or_none(course_id)
-        # return 404 if it's not a PDF certificates and there is no active certificate configuration.
-        if not user_cert['is_pdf_certificate'] and (not course_overview or
-                                                    not course_overview.has_any_active_web_certificate):
-            return Response(
-                status=404,
-                data={'error_code': 'no_certificate_configuration_for_course'}
-            )
-
         return Response(
             {
                 "username": user_cert.get('username'),
@@ -142,7 +129,6 @@ class CertificatesDetailView(APIView):
                 "created_date": user_cert.get('created'),
                 "status": user_cert.get('status'),
                 "is_passing": user_cert.get('is_passing'),
-                "download_url": user_cert.get('download_url'),
                 "grade": user_cert.get('grade')
             }
         )
@@ -212,8 +198,6 @@ class CertificatesListView(APIView):
 
             * is_passing: True if the certificate has a passing status, False if not.
 
-            * download_url: A string representation of the certificate url.
-
             * grade: A string representation of a float for the user's course grade.
 
         **Example GET Response**
@@ -225,7 +209,6 @@ class CertificatesListView(APIView):
                 "created_date": "2015-12-03T13:14:28+0000",
                 "status": "downloadable",
                 "is_passing": true,
-                "download_url": "http://www.example.com/cert.pdf",
                 "grade": "0.98"
             }]
         """
@@ -242,7 +225,6 @@ class CertificatesListView(APIView):
                     'modified_date': user_cert.get('modified'),
                     'status': user_cert.get('status'),
                     'is_passing': user_cert.get('is_passing'),
-                    'download_url': user_cert.get('download_url'),
                     'grade': user_cert.get('grade'),
                 })
         return Response(user_certs)
@@ -283,13 +265,9 @@ class CertificatesListView(APIView):
                 course_overview = get_pseudo_course_overview(course_key)
             if certificates_viewable_for_course(course_overview):
                 course_certificate = passing_certificates[course_key]
-                # add certificate into viewable certificate list only if it's a PDF certificate
-                # or there is an active certificate configuration.
-                if course_certificate['is_pdf_certificate'] or (course_overview and
-                                                                course_overview.has_any_active_web_certificate):
-                    course_certificate['course_display_name'] = course_overview.display_name_with_default
-                    course_certificate['course_organization'] = course_overview.display_org_with_default
-                    viewable_certificates.append(course_certificate)
+                course_certificate['course_display_name'] = course_overview.display_name_with_default
+                course_certificate['course_organization'] = course_overview.display_org_with_default
+                viewable_certificates.append(course_certificate)
 
         viewable_certificates.sort(key=lambda certificate: certificate['created'])
         return viewable_certificates

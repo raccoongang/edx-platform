@@ -79,9 +79,7 @@ class CertificatesViewsSiteTests(ModuleStoreTestCase):
         self.cert = GeneratedCertificateFactory(
             user=self.user,
             course_id=self.course_id,
-            download_uuid=uuid4().hex,
             grade="0.95",
-            key='the_key',
             distinction=True,
             status=CertificateStatuses.downloadable,
             mode='honor',
@@ -134,7 +132,6 @@ class CertificatesViewsSiteTests(ModuleStoreTestCase):
     @with_site_configuration(configuration={'platform_name': 'My Platform Site'})
     def test_html_view_for_site(self):
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -153,7 +150,6 @@ class CertificatesViewsSiteTests(ModuleStoreTestCase):
     @override_settings(FEATURES=FEATURES_WITH_CERTS_ENABLED)
     def test_html_view_site_configuration_missing(self):
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )

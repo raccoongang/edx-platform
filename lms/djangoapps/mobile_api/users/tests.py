@@ -24,8 +24,6 @@ from common.djangoapps.student.models import CourseEnrollment
 from common.djangoapps.student.tests.factories import CourseEnrollmentFactory, UserFactory
 from common.djangoapps.util.milestones_helpers import set_prerequisite_courses
 from common.djangoapps.util.testing import UrlResetMixin
-from lms.djangoapps.certificates.data import CertificateStatuses
-from lms.djangoapps.certificates.tests.factories import GeneratedCertificateFactory
 from lms.djangoapps.courseware.access_response import MilestoneAccessError, StartDateError, VisibilityError
 from lms.djangoapps.mobile_api.testutils import (
     MobileAPITestCase,
@@ -342,26 +340,6 @@ class TestUserEnrollmentCertificates(UrlResetMixin, MobileAPITestCase, Milestone
     REVERSE_INFO = {'name': 'courseenrollment-detail', 'params': ['username', 'api_version']}
     ENABLED_SIGNALS = ['course_published']
 
-    def verify_pdf_certificate(self):
-        """
-        Verifies the correct URL is returned in the response
-        for PDF certificates.
-        """
-        self.login_and_enroll()
-
-        certificate_url = "https://test_certificate_url"
-        GeneratedCertificateFactory.create(
-            user=self.user,
-            course_id=self.course.id,
-            status=CertificateStatuses.downloadable,
-            mode='verified',
-            download_url=certificate_url,
-        )
-
-        response = self.api_response()
-        certificate_data = response.data[0]['certificate']
-        assert certificate_data['url'] == certificate_url
-
     @patch.dict(settings.FEATURES, {'ENABLE_MKTG_SITE': True})
     def test_no_certificate(self):
         self.login_and_enroll()
@@ -369,37 +347,6 @@ class TestUserEnrollmentCertificates(UrlResetMixin, MobileAPITestCase, Milestone
         response = self.api_response()
         certificate_data = response.data[0]['certificate']
         self.assertDictEqual(certificate_data, {})
-
-    @patch.dict(settings.FEATURES, {'CERTIFICATES_HTML_VIEW': False, 'ENABLE_MKTG_SITE': True})
-    def test_pdf_certificate_with_html_cert_disabled(self):
-        """
-        Tests PDF certificates with CERTIFICATES_HTML_VIEW set to True.
-        """
-        self.verify_pdf_certificate()
-
-    @patch.dict(settings.FEATURES, {'CERTIFICATES_HTML_VIEW': True, 'ENABLE_MKTG_SITE': True})
-    def test_pdf_certificate_with_html_cert_enabled(self):
-        """
-        Tests PDF certificates with CERTIFICATES_HTML_VIEW set to True.
-        """
-        self.verify_pdf_certificate()
-
-    @patch.dict(settings.FEATURES, {'CERTIFICATES_HTML_VIEW': True, 'ENABLE_MKTG_SITE': True})
-    def test_web_certificate(self):
-        self.login_and_enroll()
-
-        GeneratedCertificateFactory.create(
-            user=self.user,
-            course_id=self.course.id,
-            status=CertificateStatuses.downloadable
-        )
-
-        response = self.api_response()
-        certificate_data = response.data[0]['certificate']
-        self.assertRegex(
-            certificate_data['url'],
-            r'http.*/certificates/[0-9a-f]{32}'
-        )
 
 
 class CourseStatusAPITestCase(MobileAPITestCase):

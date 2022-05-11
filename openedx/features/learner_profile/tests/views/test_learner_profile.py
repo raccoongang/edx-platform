@@ -33,7 +33,6 @@ class LearnerProfileViewTest(SiteMixin, UrlResetMixin, ModuleStoreTestCase):
     USERNAME = "username"
     OTHER_USERNAME = "other_user"
     PASSWORD = "password"
-    DOWNLOAD_URL = "http://www.example.com/certificate.pdf"
     CONTEXT_DATA = [
         'default_public_account_fields',
         'accounts_api_url',
@@ -141,7 +140,6 @@ class LearnerProfileViewTest(SiteMixin, UrlResetMixin, ModuleStoreTestCase):
             user=self.user,
             course_id=course_key or self.course.id,
             mode=enrollment_mode,
-            download_url=self.DOWNLOAD_URL,
             status=status,
         )
 
@@ -263,7 +261,6 @@ class LearnerProfileViewTest(SiteMixin, UrlResetMixin, ModuleStoreTestCase):
         """
         # Add new certificate
         cert = self._create_certificate(enrollment_mode=CourseMode.VERIFIED)
-        cert.download_url = ''
         cert.save()
 
         response = self.client.get(f'/u/{self.user.username}')

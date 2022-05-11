@@ -6,7 +6,6 @@ Tests for the Certificate REST APIs.
 from unittest.mock import patch
 
 import ddt
-from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 from freezegun import freeze_time
@@ -62,7 +61,6 @@ class CertificatesDetailRestApiTest(AuthAndScopesTestMixin, SharedModuleStoreTes
             course_id=self.course.id,
             status=CertificateStatuses.downloadable,
             mode='verified',
-            download_url='www.google.com',
             grade="0.88"
         )
 
@@ -85,7 +83,6 @@ class CertificatesDetailRestApiTest(AuthAndScopesTestMixin, SharedModuleStoreTes
                 'status': CertificateStatuses.downloadable,
                 'is_passing': True,
                 'grade': '0.88',
-                'download_url': 'www.google.com',
                 'certificate_type': CourseMode.VERIFIED,
                 'course_id': str(self.course.id),
                 'created_date': self.now}
@@ -100,22 +97,6 @@ class CertificatesDetailRestApiTest(AuthAndScopesTestMixin, SharedModuleStoreTes
         assert resp.status_code == status.HTTP_404_NOT_FOUND
         assert 'error_code' in resp.data
         assert resp.data['error_code'] == 'no_certificate_for_user'
-
-    def test_no_certificate_configuration(self):
-        """
-        Verify that certificate is not returned if there is no active
-        certificate configuration.
-        """
-        self.cert.download_url = ''
-        self.cert.save()
-        resp = self.get_response(
-            AuthType.session,
-            requesting_user=self.student,
-            requested_user=self.student,
-        )
-        assert resp.status_code == status.HTTP_404_NOT_FOUND
-        assert 'error_code' in resp.data
-        assert resp.data['error_code'] == 'no_certificate_configuration_for_course'
 
 
 @ddt.ddt
@@ -155,7 +136,6 @@ class CertificatesListRestApiTest(AuthAndScopesTestMixin, SharedModuleStoreTestC
             course_id=self.course.id,
             status=CertificateStatuses.downloadable,
             mode='verified',
-            download_url='www.google.com',
             grade="0.88",
         )
         self.student.is_staff = True
@@ -171,7 +151,7 @@ class CertificatesListRestApiTest(AuthAndScopesTestMixin, SharedModuleStoreTestC
             }
         )
 
-    def assert_success_response_for_student(self, response, download_url='www.google.com'):
+    def assert_success_response_for_student(self, response):
         """ This method is required by AuthAndScopesTestMixin. """
         assert response.data ==\
                [{'username': self.student.username,
@@ -183,7 +163,7 @@ class CertificatesListRestApiTest(AuthAndScopesTestMixin, SharedModuleStoreTestC
                  'modified_date': self.now,
                  'status': CertificateStatuses.downloadable,
                  'is_passing': True,
-                 'download_url': download_url, 'grade': '0.88'}]
+                'grade': '0.88'}]
 
     @patch('edx_rest_framework_extensions.permissions.log')
     @ddt.data(*list(AuthType))
@@ -348,7 +328,6 @@ class CertificatesListRestApiTest(AuthAndScopesTestMixin, SharedModuleStoreTestC
             course_id=self.course.id,
             status=CertificateStatuses.downloadable,
             mode='verified',
-            download_url='www.google.com',
             grade="0.88",
         )
         GeneratedCertificateFactory.create(
@@ -356,7 +335,6 @@ class CertificatesListRestApiTest(AuthAndScopesTestMixin, SharedModuleStoreTestC
             course_id=course.id,
             status=CertificateStatuses.downloadable,
             mode='verified',
-            download_url='www.google.com',
             grade="0.88",
         )
         with self.assertNumQueries(12, table_ignorelist=WAFFLE_TABLES):
@@ -367,58 +345,3 @@ class CertificatesListRestApiTest(AuthAndScopesTestMixin, SharedModuleStoreTestC
             )
             assert resp.status_code == status.HTTP_200_OK
             assert len(resp.data) == 2
-
-    @patch.dict(settings.FEATURES, {'CERTIFICATES_HTML_VIEW': True})
-    def test_with_no_certificate_configuration(self):
-        """
-        Verify that certificates are not returned until there is an active
-        certificate configuration.
-        """
-        self.cert.download_url = ''
-        self.cert.save()
-
-        response = self.get_response(
-            AuthType.jwt,
-            requesting_user=self.global_staff,
-            requested_user=self.student,
-        )
-        assert response.status_code == status.HTTP_200_OK
-        assert response.data == []
-
-        self.course_overview.has_any_active_web_certificate = True
-        self.course_overview.save()
-
-        response = self.get_response(
-            AuthType.jwt,
-            requesting_user=self.global_staff,
-            requested_user=self.student,
-        )
-        kwargs = {"certificate_uuid": self.cert.verify_uuid}
-        expected_download_url = reverse('certificates:render_cert_by_uuid', kwargs=kwargs)
-        self.assert_success_response_for_student(response, download_url=expected_download_url)
-
-    @patch('openedx.core.djangoapps.content.course_overviews.api.get_course_run_details')
-    def test_certificate_without_course(self, mock_get_course_run_details):
-        """
-        Verify that certificates are returned for deleted XML courses.
-        """
-        expected_course_name = 'Test Course Title'
-        mock_get_course_run_details.return_value = {'title': expected_course_name}
-        xml_course_key = self.store.make_course_key('edX', 'testDeletedCourse', '2020')
-        cert_for_deleted_course = GeneratedCertificateFactory.create(
-            user=self.student,
-            course_id=xml_course_key,
-            status=CertificateStatuses.downloadable,
-            mode='honor',
-            download_url='www.edx.org/honor-cert-for-deleted-course.pdf',
-            grade="0.88"
-        )
-
-        response = self.get_response(
-            AuthType.jwt,
-            requesting_user=self.global_staff,
-            requested_user=self.student,
-        )
-        assert response.status_code == status.HTTP_200_OK
-        self.assertContains(response, cert_for_deleted_course.download_url)
-        self.assertContains(response, expected_course_name)

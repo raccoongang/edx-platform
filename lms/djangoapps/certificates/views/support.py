@@ -79,7 +79,6 @@ def search_certificates(request):
                 "course_key": "edX/DemoX/Demo_Course",
                 "type": "verified",
                 "status": "downloadable",
-                "download_url": "http://www.example.com/cert.pdf",
                 "grade": "0.98",
                 "created": 2015-07-31T00:00:00Z,
                 "modified": 2015-07-31T00:00:00Z
@@ -103,7 +102,7 @@ def search_certificates(request):
         cert["course_key"] = str(cert["course_key"])
         cert["created"] = cert["created"].isoformat()
         cert["modified"] = cert["modified"].isoformat()
-        cert["regenerate"] = not cert['is_pdf_certificate']
+        cert["regenerate"] = True
 
     course_id = urllib.parse.quote_plus(request.GET.get("course_id", ""), safe=':/')
     if course_id:

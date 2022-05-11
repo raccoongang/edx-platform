@@ -295,11 +295,6 @@ def get_single_enrollment_overview(
     emails_enabled = get_emails_enabled(user, course_key)
     if emails_enabled is not None:
         result['emails_enabled'] = emails_enabled
-    download_url = certificate_info.get('download_url')
-    if download_url:
-        result['certificate_download_url'] = request.build_absolute_uri(
-            certificate_info['download_url']
-        )
     if program['type'] == 'MicroMasters':
         result['micromasters_title'] = program['title']
     if relative_resume_url:

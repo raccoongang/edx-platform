@@ -513,7 +513,6 @@ class CoursewareInformation(RetrieveAPIView):
 
         # Record a user's browser timezone
         self.set_last_seen_courseware_timezone(original_user)
-
         return overview
 
     def get_serializer_context(self):

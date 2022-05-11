@@ -8,7 +8,6 @@ from rest_framework.reverse import reverse
 
 from common.djangoapps.student.models import CourseEnrollment, User
 from common.djangoapps.util.course import get_encoded_course_sharing_utm_params, get_link_for_about_page
-from lms.djangoapps.certificates.api import certificate_downloadable_status
 from lms.djangoapps.courseware.access import has_access
 from openedx.features.course_duration_limits.access import get_user_course_expiration_date
 
@@ -97,18 +96,6 @@ class CourseEnrollmentSerializer(serializers.ModelSerializer):
         Returns expiration date for a course audit expiration, if any or null
         """
         return get_user_course_expiration_date(model.user, model.course)
-
-    def get_certificate(self, model):
-        """Returns the information about the user's certificate in the course."""
-        certificate_info = certificate_downloadable_status(model.user, model.course_id)
-        if certificate_info['is_downloadable']:
-            return {
-                'url': self.context['request'].build_absolute_uri(
-                    certificate_info['download_url']
-                ),
-            }
-        else:
-            return {}
 
     class Meta:
         model = CourseEnrollment

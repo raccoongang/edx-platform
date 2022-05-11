@@ -588,16 +588,6 @@ class ProgramDataExtender:
 
                     self._execute('_attach_course_run', course_run)
 
-    def _attach_course_run_certificate_url(self, run_mode):
-        certificate_data = certificate_api.certificate_downloadable_status(self.user, self.course_run_key)
-        certificate_uuid = certificate_data.get('uuid')
-        run_mode['certificate_url'] = certificate_api.get_certificate_url(
-            user_id=self.user.id,  # Providing user_id allows us to fall back to PDF certificates
-                                   # if web certificates are not configured for a given course.
-            course_id=self.course_run_key,
-            uuid=certificate_uuid,
-        ) if certificate_uuid else None
-
     def _attach_course_run_course_url(self, run_mode):
         if self.mobile_only:
             run_mode['course_url'] = 'edxapp://enrolled_course_info?course_id={}'.format(run_mode.get('key'))
@@ -929,16 +919,6 @@ class ProgramMarketingDataExtender(ProgramDataExtender):
 
     def _attach_course_run_can_enroll(self, run_mode):
         run_mode['can_enroll'] = bool(self.user.has_perm(ENROLL_IN_COURSE, self.course_overview))
-
-    def _attach_course_run_certificate_url(self, run_mode):
-        """
-        We override this function here and stub it out because
-        the superclass (ProgramDataExtender) requires a non-anonymous
-        User which we may or may not have when rendering marketing
-        pages. The certificate URL is not needed when rendering
-        the program marketing page.
-        """
-        pass  # lint-amnesty, pylint: disable=unnecessary-pass
 
     def _attach_course_run_upgrade_url(self, run_mode):
         if not self.user.is_anonymous:

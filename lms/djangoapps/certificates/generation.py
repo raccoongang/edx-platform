@@ -84,10 +84,8 @@ def _generate_certificate(user, course_key, status, enrollment_mode, course_grad
             'name': preferred_name,
             'status': status,
             'grade': course_grade,
-            'download_url': '',
-            'key': '',
             'verify_uuid': uuid,
-            'error_reason': ''
+            'error_reason': '',
         }
     )
 

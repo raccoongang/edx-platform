@@ -57,7 +57,7 @@ def emit_certificate_event(event_name, user, course_id, course_overview=None, ev
     data = {
         'user_id': user.id,
         'course_id': str(course_id),
-        'certificate_url': get_certificate_url(user.id, course_id, uuid=event_data['certificate_id'])
+        'certificate_url': get_certificate_url(course_id, uuid=event_data['certificate_id'])
     }
     event_data = event_data or {}
     event_data.update(data)
@@ -66,7 +66,7 @@ def emit_certificate_event(event_name, user, course_id, course_overview=None, ev
         tracker.emit(event_name, event_data)
 
 
-def get_certificate_url(user_id=None, course_id=None, uuid=None, user_certificate=None):
+def get_certificate_url(course_id=None, uuid=None):
     """
     Returns the certificate URL
     """
@@ -78,8 +78,7 @@ def get_certificate_url(user_id=None, course_id=None, uuid=None, user_certificat
 
     if has_html_certificates_enabled(course_overview):
         url = _certificate_html_url(uuid)
-    else:
-        url = _certificate_download_url(user_id, course_id, user_certificate=user_certificate)
+
     return url
 
 
@@ -99,29 +98,6 @@ def _certificate_html_url(uuid):
     return reverse(
         'certificates:render_cert_by_uuid', kwargs={'certificate_uuid': uuid}
     ) if uuid else ''
-
-
-def _certificate_download_url(user_id, course_id, user_certificate=None):
-    """
-    Returns the certificate download URL
-    """
-    if not user_certificate:
-        try:
-            user_certificate = GeneratedCertificate.eligible_certificates.get(
-                user=user_id,
-                course_id=_safe_course_key(course_id)
-            )
-        except GeneratedCertificate.DoesNotExist:
-            log.critical(
-                'Unable to lookup certificate\n'
-                'user id: %s\n'
-                'course: %s', str(user_id), str(course_id)
-            )
-
-    if user_certificate:
-        return user_certificate.download_url
-
-    return ''
 
 
 def _safe_course_key(course_key):
@@ -185,9 +161,6 @@ def certificate_status(generated_certificate):
     """
     This returns a dictionary with a key for status, and other information.
 
-    If the status is "downloadable", the dictionary also contains
-    "download_url".
-
     If the student has been graded, the dictionary also contains their
     grade for the course with the key "grade".
     """
@@ -211,10 +184,6 @@ def certificate_status(generated_certificate):
             if 'honor' not in course_mode_slugs:
                 cert_status['status'] = CertificateStatuses.auditing
                 return cert_status
-
-        if generated_certificate.status == CertificateStatuses.downloadable:
-            cert_status['download_url'] = generated_certificate.download_url
-
         return cert_status
     else:
         return {'status': CertificateStatuses.unavailable, 'mode': GeneratedCertificate.MODES.honor, 'uuid': None}

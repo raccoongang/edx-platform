@@ -7,7 +7,6 @@ import logging
 import unittest
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
-from urllib.parse import quote
 
 import ddt
 import pytz
@@ -28,7 +27,6 @@ from common.djangoapps.student.helpers import _cert_info, process_survey_link
 from common.djangoapps.student.models import (
     AnonymousUserId,
     CourseEnrollment,
-    LinkedInAddToProfileConfiguration,
     UserAttribute,
     anonymous_id_for_user,
     unique_id_for_user,
@@ -82,14 +80,6 @@ class CourseEndingTest(ModuleStoreTestCase):
             certificates_display_behavior=CertificatesDisplayBehaviors.END,
             end=datetime.now(pytz.UTC) - timedelta(days=2)
         )
-        cert = GeneratedCertificateFactory.create(
-            user=user,
-            course_id=course.id,
-            status=CertificateStatuses.downloadable,
-            mode='honor',
-            grade='67',
-            download_url='http://s3.edx/cert'
-        )
         enrollment = CourseEnrollmentFactory(user=user, course_id=course.id, mode=CourseMode.VERIFIED)
 
         assert _cert_info(user, enrollment, None) ==\
@@ -116,19 +106,16 @@ class CourseEndingTest(ModuleStoreTestCase):
         cert_status = {
             'status': 'downloadable',
             'grade': '0.67',
-            'download_url': cert.download_url,
             'mode': 'honor',
             'uuid': 'fakeuuidbutitsfine',
         }
         assert _cert_info(user, enrollment, cert_status) == {'status': 'downloadable',
-                                                             'download_url': cert.download_url,
                                                              'show_survey_button': True, 'survey_url': survey_url,
                                                              'grade': '0.67', 'mode': 'honor', 'linked_in_url': None,
                                                              'can_unenroll': False}
 
         cert_status = {
             'status': 'notpassing', 'grade': '0.67',
-            'download_url': cert.download_url,
             'mode': 'honor',
             'uuid': 'fakeuuidbutitsfine',
         }
@@ -145,7 +132,7 @@ class CourseEndingTest(ModuleStoreTestCase):
 
         cert_status = {
             'status': 'notpassing', 'grade': '0.67',
-            'download_url': cert.download_url, 'mode': 'honor', 'uuid': 'fakeuuidbutitsfine'
+            'mode': 'honor', 'uuid': 'fakeuuidbutitsfine'
         }
         assert _cert_info(user, enrollment2, cert_status) == {'status': 'notpassing', 'show_survey_button': False,
                                                               'grade': '0.67', 'mode': 'honor', 'linked_in_url': None,
@@ -164,7 +151,6 @@ class CourseEndingTest(ModuleStoreTestCase):
 
         cert_status = {
             'status': 'notpassing', 'grade': '0.67',
-            'download_url': cert.download_url,
             'mode': 'honor',
             'uuid': 'fakeuuidbutitsfine'
         }
@@ -177,25 +163,17 @@ class CourseEndingTest(ModuleStoreTestCase):
         mode = CourseMode.VERIFIED
         grade = '0.67'
         status = CertificateStatuses.downloadable
-        cert = GeneratedCertificateFactory.create(
-            user=user,
-            course_id=course.id,
-            status=status,
-            mode=mode
-        )
         enrollment = CourseEnrollmentFactory(user=user, course_id=course.id, mode=mode)
 
         cert_status = {
             'status': status,
             'grade': grade,
-            'download_url': cert.download_url,
             'mode': mode,
             'uuid': 'blah',
         }
         with patch(BETA_TESTER_METHOD, return_value=False):
             assert _cert_info(user, enrollment, cert_status) == {
                 'status': status,
-                'download_url': cert.download_url,
                 'show_survey_button': False,
                 'grade': grade,
                 'mode': mode,
@@ -389,14 +367,12 @@ class DashboardTest(ModuleStoreTestCase, TestVerificationBase):
         self.course.display_name = "Omega"
         self.course = self.update_course(self.course, self.user.id)
 
-        download_url = 'www.edx.org'
         GeneratedCertificateFactory.create(
             user=self.user,
             course_id=self.course.id,
             status=CertificateStatuses.downloadable,
             mode='honor',
             grade='67',
-            download_url=download_url
         )
         response = self.client.get(reverse('dashboard'))
 
@@ -405,63 +381,6 @@ class DashboardTest(ModuleStoreTestCase, TestVerificationBase):
 
         response_url = 'https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME'
         self.assertNotContains(response, escape(response_url))
-
-    @unittest.skipUnless(settings.ROOT_URLCONF == 'lms.urls', 'Test only valid in lms')
-    @patch.dict('django.conf.settings.FEATURES', {'CERTIFICATES_HTML_VIEW': False})
-    def test_linked_in_add_to_profile_btn_with_certificate(self):
-        # If user has a certificate with valid linked-in config then Add Certificate to LinkedIn button
-        # should be visible. and it has URL value with valid parameters.
-        self.client.login(username="jack", password="test")
-
-        linkedin_config = LinkedInAddToProfileConfiguration.objects.create(company_identifier='1337', enabled=True)
-        CourseModeFactory.create(
-            course_id=self.course.id,
-            mode_slug='verified',
-            mode_display_name='verified',
-            expiration_datetime=datetime.now(pytz.UTC) - timedelta(days=1)
-        )
-        CourseEnrollment.enroll(self.user, self.course.id, mode='honor')
-        self.course.certificate_available_date = datetime.now(pytz.UTC) - timedelta(days=1)
-        self.course.start = datetime.now(pytz.UTC) - timedelta(days=2)
-        self.course.end = datetime.now(pytz.UTC) - timedelta(days=1)
-        self.course.display_name = 'Omega'
-        self.course = self.update_course(self.course, self.user.id)
-
-        cert = GeneratedCertificateFactory.create(
-            user=self.user,
-            course_id=self.course.id,
-            status=CertificateStatuses.downloadable,
-            mode='honor',
-            grade='67',
-            download_url='https://www.edx.org'
-        )
-        response = self.client.get(reverse('dashboard'))
-
-        assert response.status_code == 200
-        self.assertContains(response, 'Add Certificate to LinkedIn')
-
-        # We can switch to this and the commented out assertContains once edx-platform reaches Python 3.8
-        # expected_url = (
-        #     'https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&'
-        #     'name={platform}+Honor+Code+Certificate+for+Omega&certUrl={cert_url}&'
-        #     'organizationId={company_identifier}'
-        # ).format(
-        #     platform=quote(settings.PLATFORM_NAME.encode('utf-8')),
-        #     cert_url=quote(cert.download_url, safe=''),
-        #     company_identifier=linkedin_config.company_identifier,
-        # )
-
-        # self.assertContains(response, escape(expected_url))
-
-        # These can be removed (in favor of the above) once we are on Python 3.8. Fails in 3.5 because of dict ordering
-        self.assertContains(response, escape('https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME'))
-        self.assertContains(response, escape('&name={platform}+Honor+Code+Certificate+for+Omega'.format(
-            platform=quote(settings.PLATFORM_NAME.encode('utf-8'))
-        )))
-        self.assertContains(response, escape('&certUrl={cert_url}'.format(cert_url=quote(cert.download_url, safe=''))))
-        self.assertContains(response, escape('&organizationId={company_identifier}'.format(
-            company_identifier=linkedin_config.company_identifier
-        )))
 
     @unittest.skipUnless(settings.ROOT_URLCONF == 'lms.urls', 'Test only valid in lms')
     @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)

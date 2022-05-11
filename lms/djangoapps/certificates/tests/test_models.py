@@ -89,13 +89,11 @@ class ExampleCertificateTest(TestCase, OpenEdxEventsTestMixin):
 
     def test_update_status_success(self):
         self.cert.update_status(
-            ExampleCertificate.STATUS_SUCCESS,
-            download_url=self.DOWNLOAD_URL
+            ExampleCertificate.STATUS_SUCCESS
         )
         assert self.cert.status_dict ==\
                {'description': self.DESCRIPTION,
-                'status': ExampleCertificate.STATUS_SUCCESS,
-                'download_url': self.DOWNLOAD_URL}
+                'status': ExampleCertificate.STATUS_SUCCESS}
 
     def test_update_status_error(self):
         self.cert.update_status(

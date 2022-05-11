@@ -493,7 +493,6 @@ def _cert_info(user, enrollment, cert_status):
             'survey_url': url, only if course_overview.end_of_course_survey_url is not None
             'show_cert_web_view': bool if html web certs are enabled and there is an active web cert
             'cert_web_view_url': url if html web certs are enabled and there is an active web cert
-            'download_url': url to download a cert
             'grade': if status is in 'generating', 'downloadable', 'notpassing', 'restricted',
                 'auditing', or 'unverified'
     """
@@ -563,28 +562,19 @@ def _cert_info(user, enrollment, cert_status):
                     'show_cert_web_view': True,
                     'cert_web_view_url': get_certificate_url(course_id=course_overview.id, uuid=cert_status['uuid'])
                 })
-            elif cert_status['download_url']:
-                status_dict['download_url'] = cert_status['download_url']
             else:
                 # don't show download certificate button if we don't have an active certificate for course
                 status_dict['status'] = 'unavailable'
-        elif 'download_url' not in cert_status:
-            log.warning(
-                "User %s has a downloadable cert for %s, but no download url",
-                user.username,
-                course_overview.id
-            )
-            return default_info
         else:
-            status_dict['download_url'] = cert_status['download_url']
-
             # If enabled, show the LinkedIn "add to profile" button
             # Clicking this button sends the user to LinkedIn where they
             # can add the certificate information to their profile.
             linkedin_config = LinkedInAddToProfileConfiguration.current()
             if linkedin_config.is_enabled():
                 status_dict['linked_in_url'] = linkedin_config.add_to_profile_url(
-                    course_overview.display_name, cert_status.get('mode'), cert_status['download_url'],
+                    course_overview.display_name,
+                    cert_status.get('mode'),
+                    get_certificate_url(course_id=course_overview.id, uuid=cert_status['uuid']),
                 )
 
     if status in {'generating', 'downloadable', 'notpassing', 'restricted', 'auditing', 'unverified'}:

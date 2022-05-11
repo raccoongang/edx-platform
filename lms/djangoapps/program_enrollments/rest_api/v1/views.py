@@ -866,7 +866,6 @@ class UserProgramCourseEnrollmentView(
                         }
                     ],
                     "micromasters_title": "Animals",
-                    "certificate_download_url": "https://courses.edx.org/certificates/123"
                 },
                 {
                     "course_run_id": "edX+AnimalsX+Baboons",
@@ -878,7 +877,6 @@ class UserProgramCourseEnrollmentView(
                     "emails_enabled": false,
                     "due_dates": [],
                     "micromasters_title": "Animals",
-                    "certificate_download_url": "https://courses.edx.org/certificates/123",
                     "resume_course_run_url": "https://courses.edx.org/courses/course-v1:edX+AnimalsX+Baboons/jump_to/
                                                block-v1:edX+AnimalsX+Baboons+type@sequential+block@edx_introduction"
                 }

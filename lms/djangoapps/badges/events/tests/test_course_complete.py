@@ -58,9 +58,7 @@ class CourseCompleteTestCase(ModuleStoreTestCase):
         cert = GeneratedCertificate.eligible_certificates.create(
             user=user,
             course_id=self.course_key,
-            download_uuid=uuid4(),
             grade="0.95",
-            key='the_key',
             distinction=True,
             status='downloadable',
             mode='honor',

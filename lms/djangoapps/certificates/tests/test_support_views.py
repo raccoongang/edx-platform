@@ -9,7 +9,6 @@ from uuid import uuid4
 
 import ddt
 from django.conf import settings
-from django.test.utils import override_settings
 from django.urls import reverse
 from opaque_keys.edx.keys import CourseKey
 
@@ -47,7 +46,6 @@ class CertificateSupportTestCase(ModuleStoreTestCase):
     CERT_GRADE = 0.89
     CERT_STATUS = CertificateStatuses.downloadable
     CERT_MODE = "verified"
-    CERT_DOWNLOAD_URL = "https://www.example.com/cert.pdf"
 
     def setUp(self):
         """
@@ -83,7 +81,6 @@ class CertificateSupportTestCase(ModuleStoreTestCase):
             grade=self.CERT_GRADE,
             status=self.CERT_STATUS,
             mode=self.CERT_MODE,
-            download_url=self.CERT_DOWNLOAD_URL,
             verify_uuid=uuid4().hex
         )
 
@@ -208,25 +205,6 @@ class CertificateSearchTests(CertificateSupportTestCase):
         assert retrieved_cert['grade'] == str(self.CERT_GRADE)
         assert retrieved_cert['status'] == self.CERT_STATUS
         assert retrieved_cert['type'] == self.CERT_MODE
-        assert retrieved_cert['download_url'] == self.CERT_DOWNLOAD_URL
-        assert not retrieved_cert['regenerate']
-
-    @override_settings(FEATURES=FEATURES_WITH_CERTS_ENABLED)
-    def test_download_link(self):
-        self.cert.course_id = self.course_key
-        self.cert.download_url = ''
-        self.cert.save()
-
-        response = self._search(self.STUDENT_USERNAME)
-        assert response.status_code == 200
-        results = json.loads(response.content.decode('utf-8'))
-
-        assert len(results) == 1
-        retrieved_cert = results[0]
-
-        assert retrieved_cert['download_url'] ==\
-               reverse('certificates:render_cert_by_uuid',
-                       kwargs={'certificate_uuid': self.cert.verify_uuid})
         assert retrieved_cert['regenerate']
 
     def _search(self, user_filter, course_filter=None):

@@ -64,7 +64,6 @@ class ProgressTabView(RetrieveAPIView):
             cert_status: (str) the status of a user's certificate (full list of statuses are defined in
                          lms/djangoapps/certificates/models.py)
             cert_web_view_url: (str) the url to view the certificate
-            download_url: (str) the url to download the certificate
         completion_summary: Object containing unit completion counts with the following fields:
             complete_count: (float) number of complete units
             incomplete_count: (float) number of incomplete units

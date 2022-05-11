@@ -14,15 +14,15 @@ class CertificateStatuses:
 
     audit_notpassing    - User is in the audit track and has not achieved a passing grade.
     audit_passing       - User is in the audit track and has achieved a passing grade.
-    deleted             - The PDF certificate has been deleted.
-    deleting            - A request has been made to delete the PDF certificate.
+    deleted             - The certificate has been deleted.
+    deleting            - A request has been made to delete the certificate.
     downloadable        - The user has been granted this certificate and the certificate is ready and available.
-    error               - An error occurred during PDF certificate generation.
-    generating          - A request has been made to generate a PDF certificate, but it has not been generated yet.
+    error               - An error occurred during certificate generation.
+    generating          - A request has been made to generate a certificate, but it has not been generated yet.
     honor_passing       - User is in the honor track and has achieved a passing grade.
     invalidated         - Certificate is not valid.
     notpassing          - The user has not achieved a passing grade.
-    requesting          - A request has been made to generate the PDF certificate.
+    requesting          - A request has been made to generate the certificate.
     restricted          - The user is restricted from receiving a certificate.
     unavailable         - Certificate has been invalidated.
     unverified          - The user does not have an approved, unexpired identity verification.

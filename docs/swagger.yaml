@@ -454,8 +454,6 @@ paths:
 
             * is_passing: True if the certificate has a passing status, False if not.
 
-            * download_url: A string representation of the certificate url.
-
             * grade: A string representation of a float for the user's course grade.
 
         **Example GET Response**
@@ -467,7 +465,6 @@ paths:
                 "created_date": "2015-12-03T13:14:28+0000",
                 "status": "downloadable",
                 "is_passing": true,
-                "download_url": "http://www.example.com/cert.pdf",
                 "grade": "0.98"
             }]
       parameters:
@@ -1324,7 +1321,6 @@ paths:
                 cert_status: (str) the status of a user's certificate (full list of statuses are defined in
                              lms/djangoapps/certificates/models.py)
                 cert_web_view_url: (str) the url to view the certificate
-                download_url: (str) the url to download the certificate
             completion_summary: Object containing unit completion counts with the following fields:
                 complete_count: (float) number of complete units
                 incomplete_count: (float) number of incomplete units
@@ -5553,7 +5549,6 @@ paths:
                         }
                     ],
                     "micromasters_title": "Animals",
-                    "certificate_download_url": "https://courses.edx.org/certificates/123"
                 },
                 {
                     "course_run_id": "edX+AnimalsX+Baboons",
@@ -5565,7 +5560,6 @@ paths:
                     "emails_enabled": false,
                     "due_dates": [],
                     "micromasters_title": "Animals",
-                    "certificate_download_url": "https://courses.edx.org/certificates/123",
                     "resume_course_run_url": "https://courses.edx.org/courses/course-v1:edX+AnimalsX+Baboons/jump_to/
                                                block-v1:edX+AnimalsX+Baboons+type@sequential+block@edx_introduction"
                 }
@@ -7721,7 +7715,6 @@ definitions:
     required:
       - cert_status
       - cert_web_view_url
-      - download_url
     type: object
     properties:
       cert_status:
@@ -7730,10 +7723,6 @@ definitions:
         minLength: 1
       cert_web_view_url:
         title: Cert web view url
-        type: string
-        minLength: 1
-      download_url:
-        title: Download url
         type: string
         minLength: 1
   CourseGrade:
@@ -8860,12 +8849,6 @@ definitions:
         title: Micromasters title
         description: Title of the MicroMasters program that the course run is a part
           of; if absent, the course run is not a part of a MicroMasters program.
-        type: string
-        minLength: 1
-      certificate_download_url:
-        title: Certificate download url
-        description: URL to download a certificate, if available; if absent, certificate
-          is not downloadable.
         type: string
         minLength: 1
   CourseRunOverviewList:

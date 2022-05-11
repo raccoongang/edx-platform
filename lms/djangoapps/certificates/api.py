@@ -69,7 +69,7 @@ def _format_certificate_for_user(username, cert):
     Returns: dict
     """
     course_overview = get_course_overview_or_none(cert.course_id)
-    if cert.download_url or course_overview:
+    if course_overview:
         return {
             "username": username,
             "course_key": cert.course_id,
@@ -79,13 +79,6 @@ def _format_certificate_for_user(username, cert):
             "created": cert.created_date,
             "modified": cert.modified_date,
             "is_passing": CertificateStatuses.is_passing_status(cert.status),
-            "is_pdf_certificate": bool(cert.download_url),
-            "download_url": (
-                cert.download_url or get_certificate_url(cert.user.id, cert.course_id, uuid=cert.verify_uuid,
-                                                         user_certificate=cert)
-                if cert.status == CertificateStatuses.downloadable
-                else None
-            ),
         }
 
     return None
@@ -108,7 +101,6 @@ def get_certificates_for_user(username):
             "course_key": CourseLocator('edX', 'DemoX', 'Demo_Course', None, None),
             "type": "verified",
             "status": "downloadable",
-            "download_url": "https://www.example.com/cert.pdf",
             "grade": "0.98",
             "created": 2015-07-31T00:00:00Z,
             "modified": 2015-07-31T00:00:00Z
@@ -278,7 +270,7 @@ def certificate_downloadable_status(student, course_key):
         course_key (CourseKey): ID associated with the course
 
     Returns:
-        Dict containing student passed status also download url, uuid for cert if available
+        Dict containing student passed status also uuid for cert if available
     """
     current_status = _certificate_status_for_student(student, course_key)
 
@@ -290,7 +282,6 @@ def certificate_downloadable_status(student, course_key):
         'is_generating': True if current_status['status'] in [CertificateStatuses.generating,  # pylint: disable=simplifiable-if-expression
                                                               CertificateStatuses.error] else False,
         'is_unverified': True if current_status['status'] == CertificateStatuses.unverified else False,  # pylint: disable=simplifiable-if-expression
-        'download_url': None,
         'uuid': None,
     }
 
@@ -321,10 +312,6 @@ def certificate_downloadable_status(student, course_key):
     )
     if current_status['status'] == CertificateStatuses.downloadable and may_view_certificate:
         response_data['is_downloadable'] = True
-        response_data['download_url'] = current_status['download_url'] or get_certificate_url(
-            student.id, course_key, current_status['uuid']
-        )
-        response_data['is_pdf_certificate'] = bool(current_status['download_url'])
         response_data['uuid'] = current_status['uuid']
 
     return response_data
@@ -431,7 +418,6 @@ def example_certificates_status(course_key):
             {
                 'description': 'honor',
                 'status': 'success',
-                'download_url': 'https://www.example.com/abcd/honor_cert.pdf'
             },
             {
                 'description': 'verified',
@@ -448,8 +434,8 @@ def has_html_certificates_enabled(course_overview):
     return _has_html_certificates_enabled(course_overview)
 
 
-def get_certificate_url(user_id=None, course_id=None, uuid=None, user_certificate=None):
-    return _get_certificate_url(user_id, course_id, uuid, user_certificate)
+def get_certificate_url(course_id=None, uuid=None):
+    return _get_certificate_url(course_id, uuid)
 
 
 def get_active_web_certificate(course, is_preview_mode=None):
@@ -907,10 +893,6 @@ def display_date_for_certificate(course, certificate):
         return course.certificate_available_date
 
     return certificate.modified_date
-
-
-def is_valid_pdf_certificate(cert_data):
-    return cert_data.cert_status == CertificateStatuses.downloadable and cert_data.download_url
 
 
 def _has_passed_or_is_allowlisted(course, student, course_grade):

@@ -45,9 +45,7 @@ class LearnerAchievementsFragmentView(EdxFragmentView):
                     course_overview = CourseOverview.get_from_id(course_key)
                     course_certificate['course'] = course_overview
                     if certificate_api.certificates_viewable_for_course(course_overview):
-                        # add certificate into passing certificate list only if it's a PDF certificate
-                        # or there is an active certificate configuration.
-                        if course_certificate['is_pdf_certificate'] or course_overview.has_any_active_web_certificate:
+                        if course_overview.has_any_active_web_certificate:
                             passing_certificates.append(course_certificate)
                 except CourseOverview.DoesNotExist:
                     # This is unlikely to fail as the course should exist.

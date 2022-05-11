@@ -90,7 +90,6 @@ class CertificateEventTest(SharedModuleStoreTestCase, OpenEdxEventsTestMixin):
             mode=GeneratedCertificate.MODES.honor,
             name="Certificate",
             grade="100",
-            download_url="https://certificate.pdf"
         )
 
         self.assertTrue(self.receiver_called)
@@ -114,7 +113,6 @@ class CertificateEventTest(SharedModuleStoreTestCase, OpenEdxEventsTestMixin):
                     mode=certificate.mode,
                     grade=certificate.grade,
                     current_status=certificate.status,
-                    download_url=certificate.download_url,
                     name=certificate.name,
                 ),
             },
@@ -140,7 +138,6 @@ class CertificateEventTest(SharedModuleStoreTestCase, OpenEdxEventsTestMixin):
             mode=GeneratedCertificate.MODES.honor,
             name="Certificate",
             grade="100",
-            download_url="https://certificate.pdf"
         )
 
         certificate.grade = "50"
@@ -167,7 +164,6 @@ class CertificateEventTest(SharedModuleStoreTestCase, OpenEdxEventsTestMixin):
                     mode=certificate.mode,
                     grade=certificate.grade,
                     current_status=certificate.status,
-                    download_url=certificate.download_url,
                     name=certificate.name,
                 ),
             },
@@ -193,7 +189,6 @@ class CertificateEventTest(SharedModuleStoreTestCase, OpenEdxEventsTestMixin):
             mode=GeneratedCertificate.MODES.honor,
             name="Certificate",
             grade="100",
-            download_url="https://certificate.pdf"
         )
 
         certificate.invalidate()
@@ -219,7 +214,6 @@ class CertificateEventTest(SharedModuleStoreTestCase, OpenEdxEventsTestMixin):
                     mode=certificate.mode,
                     grade=certificate.grade,
                     current_status=certificate.status,
-                    download_url=certificate.download_url,
                     name=certificate.name,
                 ),
             },

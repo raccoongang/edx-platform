@@ -5,7 +5,6 @@ import datetime
 from unittest import skipUnless
 from unittest.mock import patch
 from urllib.parse import urlencode
-from uuid import uuid4
 
 import ddt
 from django.conf import settings
@@ -101,10 +100,7 @@ class CommonCertificatesTestCase(ModuleStoreTestCase):
         self.cert = GeneratedCertificateFactory.create(
             user=self.user,
             course_id=self.course_id,
-            download_uuid=uuid4().hex,
-            download_url="https://www.example.com/certificates/download",
             grade="0.95",
-            key='the_key',
             distinction=True,
             status=CertificateStatuses.downloadable,
             mode='honor',
@@ -455,7 +451,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         organizations_api.add_organization_course(organization_data=test_org, course_key=str(self.course.id))
         self._add_course_certificates(count=1, signatory_count=1, is_active=True)
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -483,7 +478,7 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
             mock_get_completion_badge.return_value = badge_class
 
             self._add_course_certificates(count=1, signatory_count=1, is_active=True)
-            test_url = get_certificate_url(user_id=self.user.id, course_id=self.cert.course_id,
+            test_url = get_certificate_url(course_id=self.cert.course_id,
                                            uuid=self.cert.verify_uuid)
             response = self.client.get(test_url)
             assert response.status_code == 200
@@ -536,7 +531,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self.update_course(self.course, self.user.id)
 
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -575,7 +569,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
     def test_render_html_view_valid_certificate(self):
         self._add_course_certificates(count=1, signatory_count=2)
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -602,7 +595,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         """
         self._add_course_certificates(count=1, signatory_count=2)
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -636,7 +628,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
 
         self._add_course_certificates(count=1, signatory_count=2)
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -654,7 +645,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         """
         self._add_course_certificates(count=1, signatory_count=2)
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -675,7 +665,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         """
         self._add_course_certificates(count=1, signatory_count=2)
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -720,7 +709,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self.update_course(self.course, self.user.id)
 
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -733,7 +721,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
     def test_render_html_view_with_valid_signatories(self):
         self._add_course_certificates(count=1, signatory_count=2)
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -763,7 +750,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self.course.save()
         self.update_course(self.course, self.user.id)
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -782,7 +768,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         """
         self._add_course_certificates(count=1, signatory_count=2)
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -812,7 +797,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self.update_course(self.course, self.user.id)
 
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -824,7 +808,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
     def test_render_html_view_without_signatories(self):
         self._add_course_certificates(count=1, signatory_count=0)
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -853,22 +836,12 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self.update_course(self.course, self.user.id)
 
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
         response = self.client.get(test_url)
         self.assertNotContains(response, '<script>')
         self.assertContains(response, '&lt;script&gt;course_title&lt;/script&gt;')
-
-    @override_settings(FEATURES=FEATURES_WITH_CERTS_DISABLED)
-    def test_render_html_view_disabled_feature_flag_returns_static_url(self):
-        test_url = get_certificate_url(
-            user_id=self.user.id,
-            course_id=str(self.course.id),
-            uuid=self.cert.verify_uuid
-        )
-        assert str(self.cert.download_url) in test_url
 
     @override_settings(FEATURES=FEATURES_WITH_CERTS_ENABLED)
     def test_render_html_view_invalid_course(self):
@@ -883,7 +856,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
     def test_render_html_view_invalid_user_certificate(self):
         self._add_course_certificates(count=1, signatory_count=0)
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -898,7 +870,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self._add_course_certificates(count=1, signatory_count=0)
 
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -952,7 +923,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         CourseStaffRole(self.course.id).add_users(self.user)
 
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -980,7 +950,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self.update_course(self.course, self.user.id)
         self._add_course_certificates(count=1, signatory_count=1, is_active=True)
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -1023,7 +992,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self.update_course(self.course, self.user.id)
         self._add_course_certificates(count=1, signatory_count=1, is_active=True)
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -1053,7 +1021,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self.update_course(self.course, self.user.id)
 
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -1079,7 +1046,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         )
         self._create_custom_named_template('test_template_3_course', org_id=2, mode='honor')
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -1120,7 +1086,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self._create_custom_named_template('test_template_3_course', org_id=1, mode='verified')  # wrong mode
         self._create_custom_named_template('test_template_4_course', org_id=2, mode='honor')  # wrong org
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -1144,7 +1109,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self._create_custom_named_template('test_template_2_course', org_id=1, mode='verified')  # wrong mode
         self._create_custom_named_template('test_template_3_course', org_id=2, mode=None)  # wrong org
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -1169,7 +1133,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self._create_custom_named_template('test_template_2_course', org_id=None, mode='verified')  # wrong mode
         self._create_custom_named_template('test_template_3_course', org_id=2, mode=mode)  # wrong org
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -1215,7 +1178,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self._add_course_certificates(count=1, signatory_count=2)
 
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -1295,7 +1257,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self._add_course_certificates(count=1, signatory_count=2)
 
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -1353,7 +1314,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
 
         self._add_course_certificates(count=1, signatory_count=2)
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -1412,7 +1372,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self._add_course_certificates(count=1, signatory_count=2)
 
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -1474,7 +1433,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self._add_course_certificates(count=1, signatory_count=2)
 
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -1531,7 +1489,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self._add_course_certificates(count=1, signatory_count=2)
         self._create_custom_template_with_hours_of_effort(org_id=1, language=None)
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -1557,7 +1514,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
             "CUSTOM_CERTIFICATE_TEMPLATES_ENABLED": custom_certs_enabled
         }):
             test_url = get_certificate_url(
-                user_id=self.user.id,
                 course_id=str(self.course.id),
                 uuid=self.cert.verify_uuid
             )
@@ -1587,7 +1543,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
         self._add_course_certificates(count=1, signatory_count=2)
         self._create_custom_template(mode='honor')
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -1640,7 +1595,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
 
         self._add_course_certificates(count=1, signatory_count=1)
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -1668,7 +1622,6 @@ class CertificatesViewsTests(CommonCertificatesTestCase, CacheIsolationTestCase)
             self.cert.mode = 'verified'
             self.cert.save()
             test_url = get_certificate_url(
-                user_id=self.user.id,
                 course_id=str(self.course.id),
                 uuid=self.cert.verify_uuid
             )
@@ -1694,7 +1647,6 @@ class CertificateEventTests(CommonCertificatesTestCase, EventTrackingTestCase):
         self._add_course_certificates(count=1, signatory_count=2)
         self.recreate_tracker()
         test_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=str(self.course.id),
             uuid=self.cert.verify_uuid
         )
@@ -1725,7 +1677,6 @@ class CertificateEventTests(CommonCertificatesTestCase, EventTrackingTestCase):
         self._add_course_certificates(count=1, signatory_count=2)
 
         cert_url = get_certificate_url(
-            user_id=self.user.id,
             course_id=self.course_id,
             uuid=self.cert.verify_uuid
         )

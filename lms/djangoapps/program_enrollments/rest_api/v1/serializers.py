@@ -211,13 +211,6 @@ class CourseRunOverviewSerializer(serializers.Serializer):
             "if absent, the course run is not a part of a MicroMasters program."
         ),
     )
-    certificate_download_url = serializers.CharField(
-        required=False,
-        help_text=(
-            "URL to download a certificate, if available; "
-            "if absent, certificate is not downloadable."
-        ),
-    )
 
 
 class CourseRunOverviewListSerializer(serializers.Serializer):

@@ -142,7 +142,7 @@ log = logging.getLogger("edx.courseware")
 REQUIREMENTS_DISPLAY_MODES = CourseMode.CREDIT_MODES + [CourseMode.VERIFIED]
 
 CertData = namedtuple(
-    "CertData", ["cert_status", "title", "msg", "download_url", "cert_web_view_url", "certificate_available_date"]
+    "CertData", ["cert_status", "title", "msg", "cert_web_view_url", "certificate_available_date"]
 )
 EARNED_BUT_NOT_AVAILABLE_CERT_STATUS = 'earned_but_not_available'
 
@@ -150,7 +150,6 @@ AUDIT_PASSING_CERT_DATA = CertData(
     CertificateStatuses.audit_passing,
     _('Your enrollment: Audit track'),
     _('You are enrolled in the audit track for this course. The audit track does not include a certificate.'),
-    download_url=None,
     cert_web_view_url=None,
     certificate_available_date=None
 )
@@ -159,7 +158,6 @@ HONOR_PASSING_CERT_DATA = CertData(
     CertificateStatuses.honor_passing,
     _('Your enrollment: Honor track'),
     _('You are enrolled in the honor track for this course. The honor track does not include a certificate.'),
-    download_url=None,
     cert_web_view_url=None,
     certificate_available_date=None
 )
@@ -176,7 +174,6 @@ GENERATING_CERT_DATA = CertData(
         "We're creating your certificate. You can keep working in your courses and a link "
         "to it will appear here and on your Dashboard when it is ready."
     ),
-    download_url=None,
     cert_web_view_url=None,
     certificate_available_date=None
 )
@@ -185,7 +182,6 @@ INVALID_CERT_DATA = CertData(
     CertificateStatuses.invalidated,
     _('Your certificate has been invalidated'),
     _('Please contact your course team if you have any questions.'),
-    download_url=None,
     cert_web_view_url=None,
     certificate_available_date=None
 )
@@ -194,7 +190,6 @@ REQUESTING_CERT_DATA = CertData(
     CertificateStatuses.requesting,
     _('Congratulations, you qualified for a certificate!'),
     _("You've earned a certificate for this course."),
-    download_url=None,
     cert_web_view_url=None,
     certificate_available_date=None
 )
@@ -206,7 +201,6 @@ UNVERIFIED_CERT_DATA = CertData(
         'You have not received a certificate because you do not have a current {platform_name} '
         'verified identity.'
     ).format(platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME)),
-    download_url=None,
     cert_web_view_url=None,
     certificate_available_date=None
 )
@@ -217,18 +211,16 @@ def _earned_but_not_available_cert_data(cert_downloadable_status):
         EARNED_BUT_NOT_AVAILABLE_CERT_STATUS,
         _('Your certificate will be available soon!'),
         _('After this course officially ends, you will receive an email notification with your certificate.'),
-        download_url=None,
         cert_web_view_url=None,
         certificate_available_date=cert_downloadable_status.get('certificate_available_date')
     )
 
 
-def _downloadable_cert_data(download_url=None, cert_web_view_url=None):
+def _downloadable_cert_data(cert_web_view_url=None):
     return CertData(
         CertificateStatuses.downloadable,
         _('Your certificate is available'),
         _("You've earned a certificate for this course."),
-        download_url=download_url,
         cert_web_view_url=cert_web_view_url,
         certificate_available_date=None
     )
@@ -1147,15 +1139,14 @@ def _downloadable_certificate_message(course, cert_downloadable_status):  # lint
     if certs_api.has_html_certificates_enabled(course):
         if certs_api.get_active_web_certificate(course) is not None:
             return _downloadable_cert_data(
-                download_url=None,
                 cert_web_view_url=certs_api.get_certificate_url(
                     course_id=course.id, uuid=cert_downloadable_status['uuid']
                 )
             )
-        elif not cert_downloadable_status['is_pdf_certificate']:
+        else:
             return GENERATING_CERT_DATA
 
-    return _downloadable_cert_data(download_url=cert_downloadable_status['download_url'])
+    return _downloadable_cert_data()
 
 
 def _missing_required_verification(student, enrollment_mode):
@@ -1212,7 +1203,7 @@ def get_cert_data(student, course, enrollment_mode, course_grade=None):
     if not certs_api.can_show_certificate_message(course, student, course_grade, certificates_enabled_for_course):
         return
 
-    if not certs_api.get_active_web_certificate(course) and not certs_api.is_valid_pdf_certificate(cert_data):
+    if not certs_api.get_active_web_certificate(course):
         return
 
     return cert_data

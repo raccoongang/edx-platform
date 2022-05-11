@@ -145,7 +145,6 @@ class CertificateDownloadableStatusTests(WebCertificateTestMixin, ModuleStoreTes
                {'is_downloadable': False,
                 'is_generating': True,
                 'is_unverified': False,
-                'download_url': None,
                 'uuid': None}
 
     def test_cert_status_with_error(self):
@@ -161,7 +160,6 @@ class CertificateDownloadableStatusTests(WebCertificateTestMixin, ModuleStoreTes
                {'is_downloadable': False,
                 'is_generating': True,
                 'is_unverified': False,
-                'download_url': None,
                 'uuid': None}
 
     def test_without_cert(self):
@@ -169,37 +167,7 @@ class CertificateDownloadableStatusTests(WebCertificateTestMixin, ModuleStoreTes
                {'is_downloadable': False,
                 'is_generating': False,
                 'is_unverified': False,
-                'download_url': None,
                 'uuid': None}
-
-    def verify_downloadable_pdf_cert(self):
-        """
-        Verifies certificate_downloadable_status returns the
-        correct response for PDF certificates.
-        """
-        cert_user = UserFactory()
-        cert = GeneratedCertificateFactory.create(
-            user=cert_user,
-            course_id=self.course.id,
-            status=CertificateStatuses.downloadable,
-            mode='verified',
-            download_url='www.google.com',
-        )
-
-        assert certificate_downloadable_status(cert_user, self.course.id) ==\
-               {'is_downloadable': True,
-                'is_generating': False,
-                'is_unverified': False,
-                'download_url': 'www.google.com',
-                'is_pdf_certificate': True,
-                'uuid': cert.verify_uuid}
-
-    @patch.dict(settings.FEATURES, {'CERTIFICATES_HTML_VIEW': True})
-    def test_pdf_cert_with_html_enabled(self):
-        self.verify_downloadable_pdf_cert()
-
-    def test_pdf_cert_with_html_disabled(self):
-        self.verify_downloadable_pdf_cert()
 
     @patch.dict(settings.FEATURES, {'CERTIFICATES_HTML_VIEW': True})
     def test_with_downloadable_web_cert(self):
@@ -208,8 +176,6 @@ class CertificateDownloadableStatusTests(WebCertificateTestMixin, ModuleStoreTes
                {'is_downloadable': True,
                 'is_generating': False,
                 'is_unverified': False,
-                'download_url': f'/certificates/{cert_status["uuid"]}',
-                'is_pdf_certificate': False,
                 'uuid': cert_status['uuid']}
 
     @ddt.data(
@@ -397,12 +363,6 @@ class CertificateGetTests(SharedModuleStoreTestCase):
             display_name='Verified Course 1',
             cert_html_view_enabled=True
         )
-        cls.pdf_cert_course = CourseFactory.create(
-            org='edx',
-            number='verified_2',
-            display_name='Verified Course 2',
-            cert_html_view_enabled=False
-        )
         cls.no_cert_course = CourseFactory.create(
             org='edx',
             number='verified_3',
@@ -414,18 +374,7 @@ class CertificateGetTests(SharedModuleStoreTestCase):
             course_id=cls.web_cert_course.id,
             status=CertificateStatuses.downloadable,
             mode='verified',
-            download_url='www.google.com',
             grade="0.88",
-            verify_uuid=cls.uuid,
-        )
-        # certificate for the second course
-        GeneratedCertificateFactory.create(
-            user=cls.student,
-            course_id=cls.pdf_cert_course.id,
-            status=CertificateStatuses.downloadable,
-            mode='honor',
-            download_url='www.gmail.com',
-            grade="0.99",
             verify_uuid=cls.uuid,
         )
         # certificate for a course that will be deleted
@@ -453,7 +402,6 @@ class CertificateGetTests(SharedModuleStoreTestCase):
         assert cert['status'] == CertificateStatuses.downloadable
         assert cert['grade'] == '0.88'
         assert cert['is_passing'] is True
-        assert cert['download_url'] == 'www.google.com'
 
     def test_get_certificate_for_user_id(self):
         """
@@ -472,23 +420,14 @@ class CertificateGetTests(SharedModuleStoreTestCase):
         Test to get all the certificates for a user
         """
         certs = get_certificates_for_user(self.student.username)
-        assert len(certs) == 2
+        assert len(certs) == 1
         assert certs[0]['username'] == self.student.username
-        assert certs[1]['username'] == self.student.username
         assert certs[0]['course_key'] == self.web_cert_course.id
-        assert certs[1]['course_key'] == self.pdf_cert_course.id
         assert certs[0]['created'] == self.now
-        assert certs[1]['created'] == self.now
         assert certs[0]['type'] == CourseMode.VERIFIED
-        assert certs[1]['type'] == CourseMode.HONOR
         assert certs[0]['status'] == CertificateStatuses.downloadable
-        assert certs[1]['status'] == CertificateStatuses.downloadable
         assert certs[0]['is_passing'] is True
-        assert certs[1]['is_passing'] is True
         assert certs[0]['grade'] == '0.88'
-        assert certs[1]['grade'] == '0.99'
-        assert certs[0]['download_url'] == 'www.google.com'
-        assert certs[1]['download_url'] == 'www.gmail.com'
 
     def test_get_certificates_for_user_by_course_keys(self):
         """
@@ -503,7 +442,6 @@ class CertificateGetTests(SharedModuleStoreTestCase):
         cert = certs[self.web_cert_course.id]
         assert cert['username'] == self.student.username
         assert cert['course_key'] == self.web_cert_course.id
-        assert cert['download_url'] == 'www.google.com'
 
     def test_no_certificate_for_user(self):
         """
@@ -527,7 +465,6 @@ class CertificateGetTests(SharedModuleStoreTestCase):
             kwargs=dict(certificate_uuid=self.uuid)
         )
         cert_url = get_certificate_url(
-            user_id=self.student.id,
             course_id=self.web_cert_course.id,
             uuid=self.uuid
         )
@@ -539,23 +476,10 @@ class CertificateGetTests(SharedModuleStoreTestCase):
         )
 
         cert_url = get_certificate_url(
-            user_id=self.student.id,
             course_id=self.web_cert_course.id,
             uuid=self.uuid
         )
         assert expected_url == cert_url
-
-    @patch.dict(settings.FEATURES, {'CERTIFICATES_HTML_VIEW': True})
-    def test_get_pdf_certificate_url(self):
-        """
-        Test the get_certificate_url with a pdf cert course
-        """
-        cert_url = get_certificate_url(
-            user_id=self.student.id,
-            course_id=self.pdf_cert_course.id,
-            uuid=self.uuid
-        )
-        assert 'www.gmail.com' == cert_url
 
     def test_get_certificate_with_deleted_course(self):
         """
@@ -580,14 +504,6 @@ class GenerateUserCertificatesTest(ModuleStoreTestCase):
             is_active=True,
             mode=CourseMode.VERIFIED,
         )
-
-    @patch.dict(settings.FEATURES, {'CERTIFICATES_HTML_VIEW': False})
-    def test_cert_url_empty_with_invalid_certificate(self):
-        """
-        Test certificate url is empty if html view is not enabled and certificate is not yet generated
-        """
-        url = get_certificate_url(self.user.id, self.course_run_key)
-        assert url == ''
 
     @patch.dict(settings.FEATURES, {'CERTIFICATES_HTML_VIEW': True})
     def test_generation(self):

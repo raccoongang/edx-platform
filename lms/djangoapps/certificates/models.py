@@ -172,14 +172,11 @@ class GeneratedCertificate(models.Model):
     course_id       - Course run key
     created_date    - Date and time the certificate was created
     distinction     - Indicates whether the user passed the course with distinction. Currently unused.
-    download_url    - URL where the PDF version of the certificate, if any, can be found
-    download_uuid   - UUID associated with a PDF certificate
-    error_reason    - Reason a PDF certificate could not be created
+    error_reason    - Reason a certificate could not be created
     grade           - User's grade in this course run. This grade is set at the same time as the status. This
                     GeneratedCertificate grade is *not* updated whenever the user's course grade changes and so it
                     should not be considered the source of truth. It is suggested that the PersistentCourseGrade be
                     used instead of the GeneratedCertificate grade.
-    key             - Certificate identifier, used for PDF certificates
     mode            - Course run mode (ex. verified)
     modified_date   - Date and time the certificate was last modified
     name            - User's name
@@ -224,10 +221,7 @@ class GeneratedCertificate(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     course_id = CourseKeyField(max_length=255, blank=True, default=None)
     verify_uuid = models.CharField(max_length=32, blank=True, default='', db_index=True)
-    download_uuid = models.CharField(max_length=32, blank=True, default='')
-    download_url = models.CharField(max_length=128, blank=True, default='')
     grade = models.CharField(max_length=5, blank=True, default='')
-    key = models.CharField(max_length=32, blank=True, default='')
     distinction = models.BooleanField(default=False)
     status = models.CharField(max_length=32, default='unavailable')
     mode = models.CharField(max_length=32, choices=MODES, default=MODES.honor)
@@ -357,8 +351,6 @@ class GeneratedCertificate(models.Model):
         `status` argument. This will prevent the learner from being able to access their certificate in the associated
         course run.
 
-        We remove the `download_uuid` and the `download_url` as well, but this is only important to PDF certificates.
-
         Invalidating a certificate fires the `COURSE_CERT_REVOKED` signal. This kicks off a task to determine if there
         are any program certificates that also need to be revoked from the learner.
 
@@ -382,8 +374,6 @@ class GeneratedCertificate(models.Model):
         preferred_name = self._get_preferred_certificate_name(self.user)
 
         self.error_reason = ''
-        self.download_uuid = ''
-        self.download_url = ''
         self.grade = grade
         self.status = status
         self.mode = mode
@@ -416,7 +406,6 @@ class GeneratedCertificate(models.Model):
                 mode=self.mode,
                 grade=self.grade,
                 current_status=self.status,
-                download_url=self.download_url,
                 name=self.name,
             )
         )
@@ -496,7 +485,6 @@ class GeneratedCertificate(models.Model):
                 mode=self.mode,
                 grade=self.grade,
                 current_status=self.status,
-                download_url=self.download_url,
                 name=self.name,
             )
         )
@@ -528,7 +516,6 @@ class GeneratedCertificate(models.Model):
                     mode=self.mode,
                     grade=self.grade,
                     current_status=self.status,
-                    download_url=self.download_url,
                     name=self.name,
                 )
             )
