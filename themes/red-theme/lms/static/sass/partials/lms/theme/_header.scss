@@ -8,3 +8,8 @@ html, body {
 html {
     font-size: 100% !important;
 	}
+
+.mobile-nav-link.is-mobile {
+    display: none;
+    visibility: hidden;
+}
