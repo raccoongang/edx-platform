@@ -46,6 +46,9 @@ from webpack_loader.templatetags.webpack_loader import render_bundle
         edxSupportUrl = '${ edx_support_url | n, js_escaped_string }',
         extendedProfileFields = ${ extended_profile_fields | n, dump_js_escaped_json },
         displayAccountDeletion = ${ enable_account_deletion | n, dump_js_escaped_json};
+        isUserStudent = ${ is_user_student | n, dump_js_escaped_json};
+        isParent = ${ request.session.get('is_parent') | n, dump_js_escaped_json};
+        isUserHasParent = ${ is_user_has_parent | n, dump_js_escaped_json};
 
     AccountSettingsFactory(
         fieldsData,
@@ -65,7 +68,10 @@ from webpack_loader.templatetags.webpack_loader import render_bundle
         enterpriseReadonlyAccountFields,
         edxSupportUrl,
         extendedProfileFields,
-        displayAccountDeletion
+        displayAccountDeletion,
+        isUserStudent,
+        isParent,
+        isUserHasParent
     );
 </%static:require_module>
 

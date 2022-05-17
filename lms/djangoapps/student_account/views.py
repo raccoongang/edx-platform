@@ -57,6 +57,8 @@ from third_party_auth import pipeline
 from third_party_auth.decorators import xframe_allow_whitelisted
 from util.bad_request_rate_limiter import BadRequestRateLimiter
 from util.date_utils import strftime_localized
+from tedix_ro.models import Classroom, City, InstructorProfile, School
+from tedix_ro.serializers import InstructorProfileSerilizer
 
 
 AUDIT_LOG = logging.getLogger("audit")
@@ -536,7 +538,22 @@ def account_settings_context(request):
         # it will be broken if exception raised
         user_orders = []
 
+    is_user_student = False
+    is_user_has_parent = False
+    city_options = list(City.objects.all().values_list('id', 'name'))
+    classroom_options = []
+
+    if hasattr(user, 'studentprofile'):
+        student = user.studentprofile
+        is_user_student = True
+        if student.parents.first():
+            is_user_has_parent = True
+
+        classroom_options = list(Classroom.objects.all().values_list('id', 'name'))
+
     context = {
+        'cities_api_url': reverse('city-list'),
+        'schools_api_url': reverse('school-list'),
         'auth': {},
         'duplicate_provider': None,
         'nav_hidden': True,
@@ -557,8 +574,15 @@ def account_settings_context(request):
                 'options': all_languages(),
             }, 'time_zone': {
                 'options': TIME_ZONE_CHOICES,
-            }
+            }, 'school_city': {
+                'options': city_options,
+            }, 'classroom': {
+                'options': classroom_options,
+            },
+
         },
+        'is_user_student': is_user_student,
+        'is_user_has_parent': is_user_has_parent,
         'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
         'password_reset_support_link': configuration_helpers.get_value(
             'PASSWORD_RESET_SUPPORT_LINK', settings.PASSWORD_RESET_SUPPORT_LINK
