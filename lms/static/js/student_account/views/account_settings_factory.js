@@ -29,7 +29,8 @@
             extendedProfileFields,
             displayAccountDeletion,
             isUserStudent,
-            isParent
+            isParent,
+            isUserHasParent,
         ) {
             var $accountSettingsElement, userAccountModel, userPreferencesModel, aboutSectionsData,
                 accountsSectionData, ordersSectionData, accountSettingsView, showAccountSettingsPage,
@@ -233,6 +234,11 @@
                         {
                             view: new AccountSettingsFieldViews.SchoolFieldView(schoolFieldData)
                         },
+                    ]
+                },
+                {
+                    title: gettext('Additional Information'),
+                    fields: [
                         {
                             view: new AccountSettingsFieldViews.LanguagePreferenceFieldView({
                                 model: userPreferencesModel,
@@ -263,12 +269,7 @@
                                 }],
                                 persistChanges: true
                             })
-                        }
-                    ]
-                },
-                {
-                    title: gettext('Additional Information'),
-                    fields: [
+                        },
                         {
                             view: new AccountSettingsFieldViews.DropdownFieldView({
                                 model: userAccountModel,
@@ -393,7 +394,7 @@
                 }).view;
             };
             userFields = _.find(aboutSectionsData, function(section) {
-                return section.title === gettext('Basic Account Information');
+                return section.title === gettext('Additional Information');
             }).fields;
             timeZoneDropdownField = getUserField(userFields, 'time_zone');
             countryDropdownField = getUserField(userFields, 'country');
