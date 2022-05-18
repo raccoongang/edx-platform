@@ -116,7 +116,7 @@
                 model: userAccountModel,
                 title: gettext('Parent phone number'),
                 valueAttribute: 'parent_phone',
-                helpMessage: gettext("Please input your parent's phone number here."),  // eslint-disable-line max-len,
+                helpMessage: gettext('Please input your parent\'s phone number here.'),  // eslint-disable-line max-len,
                 persistChanges: true
             };
             if (!isUserHasParent || isParent) {
@@ -331,8 +331,6 @@
             };
 
             for (var socialPlatform in socialPlatforms) {  // eslint-disable-line guard-for-in, no-restricted-syntax, vars-on-top, max-len
-
-                if (socialPlatform == 'linkedin') continue;
 
                 platformData = socialPlatforms[socialPlatform];
                 socialFields.fields.push(

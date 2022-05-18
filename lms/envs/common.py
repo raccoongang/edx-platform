@@ -3075,11 +3075,6 @@ SOCIAL_PLATFORMS = {
         'url_stub': 'twitter.com/',
         'example': 'https://www.twitter.com/username'
     },
-    'linkedin': {
-        'display_name': 'LinkedIn',
-        'url_stub': 'linkedin.com/in/',
-        'example': 'www.linkedin.com/in/username'
-    }
 }
 
 # E-Commerce API Configuration
