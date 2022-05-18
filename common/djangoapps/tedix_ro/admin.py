@@ -9,6 +9,7 @@ from django.contrib import admin
 from django.contrib.admin.widgets import AdminSplitDateTime
 from django.contrib.auth.models import User
 from django.http.response import HttpResponseRedirect
+from django.template.loader import render_to_string as django_render_to_string
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 from import_export import resources, widgets
@@ -19,6 +20,8 @@ from import_export.forms import ImportForm
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from student.tasks import send_activation_email
 
 from tedix_ro.models import (
     City,
@@ -175,6 +178,37 @@ class ParentProfileAdmin(admin.ModelAdmin):
     form = ParentProfileForm
     search_fields = ['user__username', 'user__profile__name']
 
+    def save_model(self, request, obj, form, change):
+
+        if not change:
+            user = obj.user
+            dest_addr = user.email
+
+            password = User.objects.make_random_password()
+            user.set_password(password)
+            user.save()
+
+            context = {
+                'lms_url': configuration_helpers.get_value('LMS_ROOT_URL', settings.LMS_ROOT_URL),
+                'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
+                'support_url': configuration_helpers.get_value('SUPPORT_SITE_LINK', settings.SUPPORT_SITE_LINK),
+                'support_email': configuration_helpers.get_value('CONTACT_EMAIL', settings.CONTACT_EMAIL),
+                'email': user.email,
+                'password': password,
+            }
+
+            activation_email_template = 'emails/parent_activation_email.txt'
+            subject = 'Activati-va contul de Parinte TEDIX urmand linkul din acest e-mail'
+
+            # Email subject *must not* contain newlines
+            subject = ''.join(subject.splitlines())
+            message_for_activation = django_render_to_string(activation_email_template, context)
+            from_address = configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
+            from_address = configuration_helpers.get_value('ACTIVATION_EMAIL_FROM_ADDRESS', from_address)
+
+            send_activation_email.delay(subject, message_for_activation, from_address, dest_addr)
+
+        super(ParentProfileAdmin, self).save_model(request, obj, form, change)
 
 
 class InstructorProfileResource(resources.ModelResource):
