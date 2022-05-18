@@ -564,14 +564,10 @@ def account_settings_context(request):
                 'options': [(choice[0], _(choice[1])) for choice in UserProfile.GENDER_CHOICES],  # pylint: disable=translation-of-non-string
             }, 'language': {
                 'options': released_languages(),
-            }, 'level_of_education': {
-                'options': [(choice[0], _(choice[1])) for choice in UserProfile.LEVEL_OF_EDUCATION_CHOICES],  # pylint: disable=translation-of-non-string
             }, 'password': {
                 'url': reverse('password_reset'),
             }, 'year_of_birth': {
                 'options': year_of_birth_options,
-            }, 'preferred_language': {
-                'options': all_languages(),
             }, 'time_zone': {
                 'options': TIME_ZONE_CHOICES,
             }, 'school_city': {

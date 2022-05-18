@@ -273,15 +273,6 @@
                         {
                             view: new AccountSettingsFieldViews.DropdownFieldView({
                                 model: userAccountModel,
-                                title: gettext('Education Completed'),
-                                valueAttribute: 'level_of_education',
-                                options: fieldsData.level_of_education.options,
-                                persistChanges: true
-                            })
-                        },
-                        {
-                            view: new AccountSettingsFieldViews.DropdownFieldView({
-                                model: userAccountModel,
                                 title: gettext('Gender'),
                                 valueAttribute: 'gender',
                                 options: fieldsData.gender.options,
@@ -294,15 +285,6 @@
                                 title: gettext('Year of Birth'),
                                 valueAttribute: 'year_of_birth',
                                 options: fieldsData.year_of_birth.options,
-                                persistChanges: true
-                            })
-                        },
-                        {
-                            view: new AccountSettingsFieldViews.LanguageProficienciesFieldView({
-                                model: userAccountModel,
-                                title: gettext('Preferred Language'),
-                                valueAttribute: 'language_proficiencies',
-                                options: fieldsData.preferred_language.options,
                                 persistChanges: true
                             })
                         }
@@ -349,6 +331,9 @@
             };
 
             for (var socialPlatform in socialPlatforms) {  // eslint-disable-line guard-for-in, no-restricted-syntax, vars-on-top, max-len
+
+                if (socialPlatform == 'linkedin') continue;
+
                 platformData = socialPlatforms[socialPlatform];
                 socialFields.fields.push(
                     {
