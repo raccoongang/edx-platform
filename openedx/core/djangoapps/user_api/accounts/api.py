@@ -92,6 +92,7 @@ def get_account_settings(request, usernames=None, configuration=None, view=None)
             custom_fields=admin_fields,
             context={'request': request}
         ).data)
+
     return serialized_users
 
 

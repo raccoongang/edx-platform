@@ -571,6 +571,7 @@
     "Profile image for {username}": "Imagine de profil pentru {username}", 
     "Provisionally Supported": "Sus\u021binut\u0103 provizoriu", 
     "Public": "Public", 
+    "Public Username": "Nume utilizator", 
     "Publish": "Public\u0103", 
     "Publishing": "Editare", 
     "Question": "\u00centrebare", 

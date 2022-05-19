@@ -11214,3 +11214,6 @@ msgstr "Clasa"
 
 msgid "Please pick your class."
 msgstr "Alegeți clasa in care studiați."
+
+msgid "Public Username"
+msgstr "Nume utilizator"

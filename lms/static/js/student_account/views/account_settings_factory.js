@@ -202,7 +202,7 @@
                         {
                             view: new AccountSettingsFieldViews.ReadonlyFieldView({
                                 model: userAccountModel,
-                                title: gettext('Username'),
+                                title: gettext('Public Username'),
                                 valueAttribute: 'username',
                                 helpMessage: StringUtils.interpolate(
                                     gettext('The name that identifies you on {platform_name}. You cannot change your username.'),  // eslint-disable-line max-len
@@ -331,7 +331,6 @@
             };
 
             for (var socialPlatform in socialPlatforms) {  // eslint-disable-line guard-for-in, no-restricted-syntax, vars-on-top, max-len
-
                 platformData = socialPlatforms[socialPlatform];
                 socialFields.fields.push(
                     {
