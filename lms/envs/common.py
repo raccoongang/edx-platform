@@ -3045,6 +3045,14 @@ ACCOUNT_VISIBILITY_CONFIGURATION = {
         "account_privacy",
         "accomplishments_shared",
         "extended_profile",
+        "phone",
+        "parent_phone",
+        "school_city",
+        "school",
+        "instructor",
+        "classroom",
+        "school_options",
+        "instructor_options",
     ]
 }
 
@@ -3067,11 +3075,6 @@ SOCIAL_PLATFORMS = {
         'url_stub': 'twitter.com/',
         'example': 'https://www.twitter.com/username'
     },
-    'linkedin': {
-        'display_name': 'LinkedIn',
-        'url_stub': 'linkedin.com/in/',
-        'example': 'www.linkedin.com/in/username'
-    }
 }
 
 # E-Commerce API Configuration

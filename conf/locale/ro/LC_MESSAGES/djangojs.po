@@ -11178,3 +11178,42 @@ msgstr "Selectați orașul mai întâi."
 #: lms/static/js/student_account/views/RegisterView.js
 msgid "Please select your school first."
 msgstr "Selectați mai întâi școala."
+
+msgid "Phone number"
+msgstr "Număr de Telefon"
+
+msgid "Please input your personal phone number here."
+msgstr "Introduceți numărul dumneavoastră de telefon."
+
+msgid "Parent phone number"
+msgstr "Numărul de Telefon al Părintelui"
+
+msgid "Please input your parent's phone number here."
+msgstr "Introduceți telefonul părintelui dumneavoastră."
+
+msgid "City"
+msgstr "Oraș"
+
+msgid "Please input the city where you study here."
+msgstr "Introduceți orașul unde studiați."
+
+msgid "School"
+msgstr "Școală"
+
+msgid "Please input the school where you study here."
+msgstr "Introduceți școala unde studiați."
+
+msgid "Teacher"
+msgstr "Profesor"
+
+msgid "Please pick your teacher from the list (if none, please leave blank)."
+msgstr "Alegeți profesorul dumneavoastră din listă (daca nu aveți profesor, lăsați gol)."
+
+msgid "Class"
+msgstr "Clasa"
+
+msgid "Please pick your class."
+msgstr "Alegeți clasa in care studiați."
+
+msgid "Public Username"
+msgstr "Nume utilizator"

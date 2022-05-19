@@ -7,9 +7,11 @@ import logging
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.core.validators import RegexValidator
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from six import text_type
+from django.utils.translation import ugettext_lazy as _
 
 from lms.djangoapps.badges.utils import badges_enabled
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
@@ -20,6 +22,8 @@ from openedx.core.djangoapps.user_api.models import (
     UserRetirementStatus
 )
 from openedx.core.djangoapps.user_api.serializers import ReadOnlyFieldsSerializerMixin
+from tedix_ro.models import StudentProfile, InstructorProfile
+from tedix_ro.serializers import InstructorProfileSerilizer
 from student.models import UserProfile, LanguageProficiency, SocialLink
 
 from . import (
@@ -31,6 +35,8 @@ from .utils import validate_social_link, format_social_link
 
 PROFILE_IMAGE_KEY_PREFIX = 'image_url'
 LOGGER = logging.getLogger(__name__)
+
+phone_validator = RegexValidator(regex=r'^\d{10,15}$', message=_('The phone number length must be from 10 to 15 digits.'))
 
 
 class LanguageProficiencySerializer(serializers.ModelSerializer):
@@ -120,6 +126,14 @@ class UserReadOnlySerializer(serializers.Serializer):
             "account_privacy": self.configuration.get('default_visibility'),
             "social_links": None,
             "extended_profile_fields": None,
+            "phone": None,
+            "parent_phone": None,
+            "school_city": None,
+            "school": None,
+            "instructor": None,
+            "classroom": None,
+            "school_options": [],
+            "instructor_options": [],
         }
 
         if user_profile:
@@ -147,6 +161,46 @@ class UserReadOnlySerializer(serializers.Serializer):
                         user_profile.social_links.all(), many=True
                     ).data,
                     "extended_profile": get_extended_profile(user_profile),
+                }
+            )
+        if hasattr(user, 'studentprofile'):
+            student = user.studentprofile
+            student_parent = student.parents.first()
+            school_options = []
+            instructor_options = []
+            if student.school_city:
+                school_options = list(student.school_city.schools.all().values_list('id', 'name'))
+            if student.school:
+                instructors = InstructorProfileSerilizer(
+                    student.school.instructorprofile_set.filter(user__is_staff=True, user__is_active=True),
+                    many=True
+                ).data
+                instructor_options = [instructor.values() for instructor in instructors]
+
+            data.update(
+                {
+                    "phone": student.phone,
+                    "parent_phone": student_parent.phone if student_parent else student.parent_phone,
+                    "school_city": student.school_city.id if student.school_city else None,
+                    "school": student.school.id if student.school else None,
+                    "instructor": student.instructor.id if student.instructor else None,
+                    "classroom": student.classroom.id if student.classroom else None,
+                    "school_options": school_options,
+                    "instructor_options": instructor_options,
+                }
+            )
+        elif hasattr(user, 'instructorprofile'):
+            instructor = user.instructorprofile
+            school_options = []
+            if instructor.school_city:
+                school_options = list(instructor.school_city.schools.all().values_list('id', 'name'))
+
+            data.update(
+                {
+                    "phone": instructor.phone,
+                    "school_city": instructor.school_city.id if instructor.school_city else None,
+                    "school": instructor.school.id if instructor.school else None,
+                    "school_options": school_options,
                 }
             )
 
@@ -348,6 +402,84 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
                         SocialLink(user_profile=instance, platform=current_social_link.platform,
                                    social_link=current_social_link.social_link)
                     ])
+
+        instance.save()
+
+        return instance
+
+
+class AccountStudentProfileSerializer(serializers.ModelSerializer):
+    """
+    Class that serializes the portion of StudentProfile model needed for account information.
+    """
+    phone = serializers.CharField(required=False, validators=[phone_validator], max_length=15)
+
+    class Meta(object):
+        model = StudentProfile
+        fields = (
+            "phone", "parent_phone", "school_city", "school", "instructor", "classroom",
+        )
+
+    def update(self, instance, validated_data):
+
+        phone_validation_error = serializers.ValidationError((_('Student and parent phone numbers must be different.')))
+
+        instance.instructor = validated_data.get('instructor', instance.instructor)
+        instance.classroom = validated_data.get('classroom', instance.classroom)
+
+        student_parent_phone = None
+        student_parent = instance.parents.first()
+        if student_parent:
+            student_parent_phone = student_parent.phone
+
+        new_phone = validated_data.get('phone')
+        if new_phone:
+            parent_phone = student_parent_phone or instance.parent_phone
+            if new_phone == parent_phone:
+                raise phone_validation_error
+            instance.phone = new_phone
+
+        new_parent_phone = validated_data.get('parent_phone')
+        if new_parent_phone:
+            if new_parent_phone == instance.phone:
+                raise phone_validation_error
+            if student_parent:
+                student_parent.phone = new_parent_phone
+                student_parent.save()
+            else:
+                instance.parent_phone = new_parent_phone
+
+        if 'school_city' in validated_data:
+            instance.school_city = validated_data.get('school_city')
+            instance.school = None
+            instance.instructor = None
+
+        if 'school' in validated_data:
+            instance.school = validated_data.get('school')
+            instance.instructor = None
+
+        instance.save()
+
+        return instance
+
+
+class AccountInstructorProfileSerializer(serializers.ModelSerializer):
+    """
+    Class that serializes the portion of InstructorProfile model needed for account information.
+    """
+    phone = serializers.CharField(required=False, validators=[phone_validator], max_length=15)
+
+    class Meta(object):
+        model = InstructorProfile
+        fields = ("phone", "school_city", "school")
+
+    def update(self, instance, validated_data):
+        instance.phone = validated_data.get('phone', instance.phone)
+        instance.school = validated_data.get('school', instance.school)
+
+        if 'school_city' in validated_data:
+            instance.school_city = validated_data.get('school_city')
+            instance.school = None
 
         instance.save()
 

@@ -140,12 +140,14 @@ def student_parent_logged_in(sender, request, user, **kwargs):  # pylint: disabl
     """
     Relogin as student when parent logins successfully
     """
+    request.session['is_parent'] = False
     try:
         parent_profile = user.parentprofile
         AUDIT_LOG.info(u'Parent Login success - {0} ({1})'.format(user.username, user.email))
         student = parent_profile.students.first() if parent_profile else None
         if student is not None and student.user.is_active:
             login(request, student.user, backend=settings.AUTHENTICATION_BACKENDS[0])
+            request.session['is_parent'] = True
             AUDIT_LOG.info(u'Relogin as parent student - {0} ({1})'.format(student.user.username, student.user.email))
     except ParentProfile.DoesNotExist:
         pass

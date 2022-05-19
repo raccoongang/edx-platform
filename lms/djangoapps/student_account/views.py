@@ -57,6 +57,8 @@ from third_party_auth import pipeline
 from third_party_auth.decorators import xframe_allow_whitelisted
 from util.bad_request_rate_limiter import BadRequestRateLimiter
 from util.date_utils import strftime_localized
+from tedix_ro.models import Classroom, City, InstructorProfile, School
+from tedix_ro.serializers import InstructorProfileSerilizer
 
 
 AUDIT_LOG = logging.getLogger("audit")
@@ -536,6 +538,18 @@ def account_settings_context(request):
         # it will be broken if exception raised
         user_orders = []
 
+    is_user_student = False
+    user_has_parent = False
+    classroom_options = []
+
+    if hasattr(user, 'studentprofile'):
+        student = user.studentprofile
+        is_user_student = True
+        if student.parents.first():
+            user_has_parent = True
+
+        classroom_options = list(Classroom.objects.all().values_list('id', 'name'))
+
     context = {
         'auth': {},
         'duplicate_provider': None,
@@ -547,18 +561,21 @@ def account_settings_context(request):
                 'options': [(choice[0], _(choice[1])) for choice in UserProfile.GENDER_CHOICES],  # pylint: disable=translation-of-non-string
             }, 'language': {
                 'options': released_languages(),
-            }, 'level_of_education': {
-                'options': [(choice[0], _(choice[1])) for choice in UserProfile.LEVEL_OF_EDUCATION_CHOICES],  # pylint: disable=translation-of-non-string
             }, 'password': {
                 'url': reverse('password_reset'),
             }, 'year_of_birth': {
                 'options': year_of_birth_options,
-            }, 'preferred_language': {
-                'options': all_languages(),
             }, 'time_zone': {
                 'options': TIME_ZONE_CHOICES,
-            }
+            }, 'school_city': {
+                'options': list(City.objects.all().values_list('id', 'name')),
+            }, 'classroom': {
+                'options': classroom_options,
+            },
+
         },
+        'is_user_student': is_user_student,
+        'user_has_parent': user_has_parent,
         'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
         'password_reset_support_link': configuration_helpers.get_value(
             'PASSWORD_RESET_SUPPORT_LINK', settings.PASSWORD_RESET_SUPPORT_LINK

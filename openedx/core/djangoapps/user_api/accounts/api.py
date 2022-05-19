@@ -30,9 +30,11 @@ from openedx.core.djangoapps.user_api.errors import (
 )
 from openedx.core.djangoapps.user_api.preferences.api import update_user_preferences
 from openedx.core.lib.api.view_utils import add_serializer_errors
+from tedix_ro.models import InstructorProfile
 
 from .serializers import (
-    AccountLegacyProfileSerializer, AccountUserSerializer,
+    AccountInstructorProfileSerializer, AccountLegacyProfileSerializer,
+    AccountStudentProfileSerializer, AccountUserSerializer,
     UserReadOnlySerializer, _visible_fields  # pylint: disable=invalid-name
 )
 
@@ -127,6 +129,7 @@ def update_account_settings(requesting_user, update, username=None):
         username = requesting_user.username
 
     existing_user, existing_user_profile = _get_user_and_profile(username)
+    user_student_profile, user_instructor_profile = _get_user_role_profiles(existing_user)
 
     if requesting_user.username != username:
         raise errors.UserNotAuthorized()
@@ -166,7 +169,18 @@ def update_account_settings(requesting_user, update, username=None):
     user_serializer = AccountUserSerializer(existing_user, data=update)
     legacy_profile_serializer = AccountLegacyProfileSerializer(existing_user_profile, data=update)
 
-    for serializer in user_serializer, legacy_profile_serializer:
+    serializers = [user_serializer, legacy_profile_serializer]
+
+    if user_student_profile:
+        serializers.append(
+            AccountStudentProfileSerializer(user_student_profile, data=update)
+        )
+    elif user_instructor_profile:
+        serializers.append(
+            AccountInstructorProfileSerializer(user_instructor_profile, data=update)
+        )
+
+    for serializer in serializers:
         field_errors = add_serializer_errors(serializer, update, field_errors)
 
     # If the user asked to change email, validate it.
@@ -201,7 +215,7 @@ def update_account_settings(requesting_user, update, username=None):
         if "language_proficiencies" in update:
             old_language_proficiencies = list(existing_user_profile.language_proficiencies.values('code'))
 
-        for serializer in user_serializer, legacy_profile_serializer:
+        for serializer in serializers:
             serializer.save()
 
         # if any exception is raised for user preference (i.e. account_privacy), the entire transaction for user account
@@ -549,6 +563,13 @@ def _get_user_and_profile(username):
     existing_user_profile, _ = UserProfile.objects.get_or_create(user=existing_user)
 
     return existing_user, existing_user_profile
+
+
+def _get_user_role_profiles(user):
+    """
+    Helper method to return the student and instructor profile objects based on user.
+    """
+    return getattr(user, 'studentprofile', None), getattr(user, 'instructorprofile', None)
 
 
 def _validate(validation_func, err, *args):

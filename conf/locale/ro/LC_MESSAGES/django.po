@@ -11179,7 +11179,7 @@ msgstr ""
 #: themes/stanford-style/lms/templates/register-form.html
 #: themes/stanford-style/lms/templates/register-shib.html
 msgid "Public Username"
-msgstr "Pseudonim public"
+msgstr "Nume utilizator"
 
 #. Translators: These instructions appear on the registration form,
 #. immediately

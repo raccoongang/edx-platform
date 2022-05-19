@@ -25,7 +25,15 @@
                 profile_image: null,
                 accomplishments_shared: false,
                 default_public_account_fields: [],
-                extended_profile: []
+                extended_profile: [],
+                phone: '',
+                parent_phone: '',
+                school_city: null,
+                school: null,
+                instructor: null,
+                classroom: null,
+                school_options: [],
+                instructor_options: [],
             },
 
             parse: function(response) {

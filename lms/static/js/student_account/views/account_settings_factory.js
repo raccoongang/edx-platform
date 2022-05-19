@@ -27,14 +27,19 @@
             enterpriseReadonlyAccountFields,
             edxSupportUrl,
             extendedProfileFields,
-            displayAccountDeletion
+            displayAccountDeletion,
+            isUserStudent,
+            isParent,
+            userHasParent,
         ) {
             var $accountSettingsElement, userAccountModel, userPreferencesModel, aboutSectionsData,
                 accountsSectionData, ordersSectionData, accountSettingsView, showAccountSettingsPage,
                 showLoadingError, orderNumber, getUserField, userFields, timeZoneDropdownField, countryDropdownField,
                 emailFieldView, socialFields, accountDeletionFields, platformData,
                 aboutSectionMessageType, aboutSectionMessage, fullnameFieldView, countryFieldView,
-                fullNameFieldData, emailFieldData, countryFieldData, additionalFields, fieldItem;
+                fullNameFieldData, emailFieldData, countryFieldData, additionalFields, fieldItem, phoneFieldData,
+                parentPhoneFieldData, schoolCityFieldData, schoolFieldData, instructorFieldData, classroomFieldData,
+                parentPhoneFieldView, accountInformationFields, instructorFieldView, classroomFieldView;
 
             $accountSettingsElement = $('.wrapper-account-settings');
 
@@ -99,6 +104,70 @@
                 };
             }
 
+            phoneFieldData = {
+                model: userAccountModel,
+                title: gettext('Phone number'),
+                valueAttribute: 'phone',
+                helpMessage: gettext('Please input your personal phone number here.'),  // eslint-disable-line max-len,
+                persistChanges: true
+            };
+
+            parentPhoneFieldData = {
+                model: userAccountModel,
+                title: gettext('Parent phone number'),
+                valueAttribute: 'parent_phone',
+                helpMessage: gettext('Please input your parent\'s phone number here.'),  // eslint-disable-line max-len,
+                persistChanges: true
+            };
+            if (!userHasParent || isParent) {
+                parentPhoneFieldView = {
+                    view: new AccountSettingsFieldViews.TextFieldView(parentPhoneFieldData)
+                };
+            } else {
+                parentPhoneFieldView = {
+                    view: new AccountSettingsFieldViews.ReadonlyFieldView(parentPhoneFieldData)
+                };
+            }
+
+            schoolCityFieldData = {
+                model: userAccountModel,
+                title: gettext('City'),
+                valueAttribute: 'school_city',
+                helpMessage: gettext('Please input the city where you study here.'),  // eslint-disable-line max-len,
+                options: fieldsData.school_city.options,
+                persistChanges: true
+            };
+
+            schoolFieldData = {
+                model: userAccountModel,
+                title: gettext('School'),
+                valueAttribute: 'school',
+                helpMessage: gettext('Please input the school where you study here.'),  // eslint-disable-line max-len,
+                persistChanges: true
+            };
+
+            instructorFieldData = {
+                model: userAccountModel,
+                title: gettext('Teacher'),
+                valueAttribute: 'instructor',
+                helpMessage: gettext('Please pick your teacher from the list (if none, please leave blank).'),  // eslint-disable-line max-len,
+                persistChanges: true
+            };
+            instructorFieldView = {
+                view: new AccountSettingsFieldViews.InstructorFieldView(instructorFieldData)
+            };
+
+            classroomFieldData = {
+                model: userAccountModel,
+                title: gettext('Class'),
+                valueAttribute: 'classroom',
+                helpMessage: gettext('Please pick your class.'),  // eslint-disable-line max-len,
+                options: fieldsData.classroom.options,
+                persistChanges: true
+            };
+            classroomFieldView = {
+                view: new AccountSettingsFieldViews.ClassroomFieldView(classroomFieldData)
+            };
             countryFieldData = {
                 model: userAccountModel,
                 required: true,
@@ -133,7 +202,7 @@
                         {
                             view: new AccountSettingsFieldViews.ReadonlyFieldView({
                                 model: userAccountModel,
-                                title: gettext('Username'),
+                                title: gettext('Public Username'),
                                 valueAttribute: 'username',
                                 helpMessage: StringUtils.interpolate(
                                     gettext('The name that identifies you on {platform_name}. You cannot change your username.'),  // eslint-disable-line max-len
@@ -156,6 +225,20 @@
                                 helpMessage: gettext('Check your email account for instructions to reset your password.')  // eslint-disable-line max-len
                             })
                         },
+                        {
+                            view: new AccountSettingsFieldViews.TextFieldView(phoneFieldData)
+                        },
+                        {
+                            view: new AccountSettingsFieldViews.SchoolCityFieldView(schoolCityFieldData)
+                        },
+                        {
+                            view: new AccountSettingsFieldViews.SchoolFieldView(schoolFieldData)
+                        },
+                    ]
+                },
+                {
+                    title: gettext('Additional Information'),
+                    fields: [
                         {
                             view: new AccountSettingsFieldViews.LanguagePreferenceFieldView({
                                 model: userPreferencesModel,
@@ -186,20 +269,6 @@
                                 }],
                                 persistChanges: true
                             })
-                        }
-                    ]
-                },
-                {
-                    title: gettext('Additional Information'),
-                    fields: [
-                        {
-                            view: new AccountSettingsFieldViews.DropdownFieldView({
-                                model: userAccountModel,
-                                title: gettext('Education Completed'),
-                                valueAttribute: 'level_of_education',
-                                options: fieldsData.level_of_education.options,
-                                persistChanges: true
-                            })
                         },
                         {
                             view: new AccountSettingsFieldViews.DropdownFieldView({
@@ -216,15 +285,6 @@
                                 title: gettext('Year of Birth'),
                                 valueAttribute: 'year_of_birth',
                                 options: fieldsData.year_of_birth.options,
-                                persistChanges: true
-                            })
-                        },
-                        {
-                            view: new AccountSettingsFieldViews.LanguageProficienciesFieldView({
-                                model: userAccountModel,
-                                title: gettext('Preferred Language'),
-                                valueAttribute: 'language_proficiencies',
-                                options: fieldsData.preferred_language.options,
                                 persistChanges: true
                             })
                         }
@@ -291,6 +351,13 @@
             }
             aboutSectionsData.push(socialFields);
 
+             if (isUserStudent) {
+                accountInformationFields = aboutSectionsData[0].fields;
+                // Adding fields for the Student role in a specific order
+                accountInformationFields.splice(5, 0, parentPhoneFieldView);
+                accountInformationFields.splice(8, 0, instructorFieldView, classroomFieldView);
+             }
+
             // Add account deletion fields
             if (displayAccountDeletion) {
                 accountDeletionFields = {
@@ -310,7 +377,7 @@
                 }).view;
             };
             userFields = _.find(aboutSectionsData, function(section) {
-                return section.title === gettext('Basic Account Information');
+                return section.title === gettext('Additional Information');
             }).fields;
             timeZoneDropdownField = getUserField(userFields, 'time_zone');
             countryDropdownField = getUserField(userFields, 'country');
