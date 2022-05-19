@@ -175,7 +175,7 @@ class UserReadOnlySerializer(serializers.Serializer):
                     student.school.instructorprofile_set.filter(user__is_staff=True, user__is_active=True),
                     many=True
                 ).data
-                instructor_options = [tuple(instructor.values()) for instructor in instructors]
+                instructor_options = [instructor.values() for instructor in instructors]
 
             data.update(
                 {
@@ -408,7 +408,7 @@ class AccountLegacyProfileSerializer(serializers.HyperlinkedModelSerializer, Rea
         return instance
 
 
-class AccountStudentProfileSerializer(serializers.ModelSerializer, ReadOnlyFieldsSerializerMixin):
+class AccountStudentProfileSerializer(serializers.ModelSerializer):
     """
     Class that serializes the portion of StudentProfile model needed for account information.
     """
@@ -419,9 +419,6 @@ class AccountStudentProfileSerializer(serializers.ModelSerializer, ReadOnlyField
         fields = (
             "phone", "parent_phone", "school_city", "school", "instructor", "classroom",
         )
-        # Currently no read-only field, but keep this so view code doesn't need to know.
-        read_only_fields = ()
-        explicit_read_only_fields = ()
 
     def update(self, instance, validated_data):
 
@@ -466,7 +463,7 @@ class AccountStudentProfileSerializer(serializers.ModelSerializer, ReadOnlyField
         return instance
 
 
-class AccountInstructorProfileSerializer(serializers.ModelSerializer, ReadOnlyFieldsSerializerMixin):
+class AccountInstructorProfileSerializer(serializers.ModelSerializer):
     """
     Class that serializes the portion of InstructorProfile model needed for account information.
     """
@@ -475,9 +472,6 @@ class AccountInstructorProfileSerializer(serializers.ModelSerializer, ReadOnlyFi
     class Meta(object):
         model = InstructorProfile
         fields = ("phone", "school_city", "school")
-        # Currently no read-only field, but keep this so view code doesn't need to know.
-        read_only_fields = ()
-        explicit_read_only_fields = ()
 
     def update(self, instance, validated_data):
         instance.phone = validated_data.get('phone', instance.phone)

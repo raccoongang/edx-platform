@@ -30,7 +30,7 @@
             displayAccountDeletion,
             isUserStudent,
             isParent,
-            isUserHasParent,
+            UserHasParent,
         ) {
             var $accountSettingsElement, userAccountModel, userPreferencesModel, aboutSectionsData,
                 accountsSectionData, ordersSectionData, accountSettingsView, showAccountSettingsPage,
@@ -119,7 +119,7 @@
                 helpMessage: gettext('Please input your parent\'s phone number here.'),  // eslint-disable-line max-len,
                 persistChanges: true
             };
-            if (!isUserHasParent || isParent) {
+            if (!UserHasParent || isParent) {
                 parentPhoneFieldView = {
                     view: new AccountSettingsFieldViews.TextFieldView(parentPhoneFieldData)
                 };
@@ -353,6 +353,7 @@
 
              if (isUserStudent) {
                 accountInformationFields = aboutSectionsData[0].fields;
+                // Adding fields for the Student role in a specific order
                 accountInformationFields.splice(5, 0, parentPhoneFieldView);
                 accountInformationFields.splice(8, 0, instructorFieldView, classroomFieldView);
              }

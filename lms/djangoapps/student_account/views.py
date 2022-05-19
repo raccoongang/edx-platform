@@ -539,15 +539,14 @@ def account_settings_context(request):
         user_orders = []
 
     is_user_student = False
-    is_user_has_parent = False
-    city_options = list(City.objects.all().values_list('id', 'name'))
+    user_has_parent = False
     classroom_options = []
 
     if hasattr(user, 'studentprofile'):
         student = user.studentprofile
         is_user_student = True
         if student.parents.first():
-            is_user_has_parent = True
+            user_has_parent = True
 
         classroom_options = list(Classroom.objects.all().values_list('id', 'name'))
 
@@ -569,14 +568,14 @@ def account_settings_context(request):
             }, 'time_zone': {
                 'options': TIME_ZONE_CHOICES,
             }, 'school_city': {
-                'options': city_options,
+                'options': list(City.objects.all().values_list('id', 'name')),
             }, 'classroom': {
                 'options': classroom_options,
             },
 
         },
         'is_user_student': is_user_student,
-        'is_user_has_parent': is_user_has_parent,
+        'user_has_parent': user_has_parent,
         'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
         'password_reset_support_link': configuration_helpers.get_value(
             'PASSWORD_RESET_SUPPORT_LINK', settings.PASSWORD_RESET_SUPPORT_LINK

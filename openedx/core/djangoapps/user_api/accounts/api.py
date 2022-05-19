@@ -169,17 +169,18 @@ def update_account_settings(requesting_user, update, username=None):
     user_serializer = AccountUserSerializer(existing_user, data=update)
     legacy_profile_serializer = AccountLegacyProfileSerializer(existing_user_profile, data=update)
 
-    list_of_serializer = [user_serializer, legacy_profile_serializer]
+    serializers = [user_serializer, legacy_profile_serializer]
 
     if user_student_profile:
-        user_student_profile_serializer = AccountStudentProfileSerializer(user_student_profile, data=update)
-        list_of_serializer.append(user_student_profile_serializer)
+        serializers.append(
+            AccountStudentProfileSerializer(user_student_profile, data=update)
+        )
     elif user_instructor_profile:
-        test_instructor = InstructorProfile.objects.filter(user=existing_user).first()
-        user_instructor_profile_serializer = AccountInstructorProfileSerializer(test_instructor, data=update)
-        list_of_serializer.append(user_instructor_profile_serializer)
+        serializers.append(
+            AccountInstructorProfileSerializer(user_instructor_profile, data=update)
+        )
 
-    for serializer in list_of_serializer:
+    for serializer in serializers:
         field_errors = add_serializer_errors(serializer, update, field_errors)
 
     # If the user asked to change email, validate it.
@@ -214,7 +215,7 @@ def update_account_settings(requesting_user, update, username=None):
         if "language_proficiencies" in update:
             old_language_proficiencies = list(existing_user_profile.language_proficiencies.values('code'))
 
-        for serializer in list_of_serializer:
+        for serializer in serializers:
             serializer.save()
 
         # if any exception is raised for user preference (i.e. account_privacy), the entire transaction for user account
@@ -568,14 +569,7 @@ def _get_user_role_profiles(user):
     """
     Helper method to return the student and instructor profile objects based on user.
     """
-    user_student_profile = None
-    user_instructor_profile = None
-    if hasattr(user, 'studentprofile'):
-        user_student_profile = user.studentprofile
-    elif hasattr(user, 'instructorprofile'):
-        user_instructor_profile = user.instructorprofile
-
-    return user_student_profile, user_instructor_profile
+    return getattr(user, 'studentprofile', None), getattr(user, 'instructorprofile', None)
 
 
 def _validate(validation_func, err, *args):
