@@ -182,7 +182,6 @@ class ParentProfileAdmin(admin.ModelAdmin):
 
         if not change:
             user = obj.user
-            dest_addr = user.email
 
             password = User.objects.make_random_password()
             user.set_password(password)
@@ -206,7 +205,7 @@ class ParentProfileAdmin(admin.ModelAdmin):
             from_address = configuration_helpers.get_value('email_from_address', settings.DEFAULT_FROM_EMAIL)
             from_address = configuration_helpers.get_value('ACTIVATION_EMAIL_FROM_ADDRESS', from_address)
 
-            send_activation_email.delay(subject, message_for_activation, from_address, dest_addr)
+            send_activation_email.delay(subject, message_for_activation, from_address, user.email)
 
         super(ParentProfileAdmin, self).save_model(request, obj, form, change)
 
