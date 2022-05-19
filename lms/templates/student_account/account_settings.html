@@ -48,7 +48,7 @@ from webpack_loader.templatetags.webpack_loader import render_bundle
         displayAccountDeletion = ${ enable_account_deletion | n, dump_js_escaped_json};
         isUserStudent = ${ is_user_student | n, dump_js_escaped_json};
         isParent = ${ request.session.get('is_parent') | n, dump_js_escaped_json};
-        UserHasParent = ${ user_has_parent | n, dump_js_escaped_json};
+        userHasParent = ${ user_has_parent | n, dump_js_escaped_json};
 
     AccountSettingsFactory(
         fieldsData,
@@ -71,7 +71,7 @@ from webpack_loader.templatetags.webpack_loader import render_bundle
         displayAccountDeletion,
         isUserStudent,
         isParent,
-        UserHasParent
+        userHasParent
     );
 </%static:require_module>
 

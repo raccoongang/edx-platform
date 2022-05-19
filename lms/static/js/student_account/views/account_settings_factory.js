@@ -30,7 +30,7 @@
             displayAccountDeletion,
             isUserStudent,
             isParent,
-            UserHasParent,
+            userHasParent,
         ) {
             var $accountSettingsElement, userAccountModel, userPreferencesModel, aboutSectionsData,
                 accountsSectionData, ordersSectionData, accountSettingsView, showAccountSettingsPage,
@@ -119,7 +119,7 @@
                 helpMessage: gettext('Please input your parent\'s phone number here.'),  // eslint-disable-line max-len,
                 persistChanges: true
             };
-            if (!UserHasParent || isParent) {
+            if (!userHasParent || isParent) {
                 parentPhoneFieldView = {
                     view: new AccountSettingsFieldViews.TextFieldView(parentPhoneFieldData)
                 };
