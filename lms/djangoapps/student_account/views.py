@@ -552,8 +552,6 @@ def account_settings_context(request):
         classroom_options = list(Classroom.objects.all().values_list('id', 'name'))
 
     context = {
-        'cities_api_url': reverse('city-list'),
-        'schools_api_url': reverse('school-list'),
         'auth': {},
         'duplicate_provider': None,
         'nav_hidden': True,
