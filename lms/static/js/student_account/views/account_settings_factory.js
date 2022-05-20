@@ -30,7 +30,7 @@
             displayAccountDeletion,
             isUserStudent,
             isParent,
-            userHasParent,
+            userHasParent
         ) {
             var $accountSettingsElement, userAccountModel, userPreferencesModel, aboutSectionsData,
                 accountsSectionData, ordersSectionData, accountSettingsView, showAccountSettingsPage,
