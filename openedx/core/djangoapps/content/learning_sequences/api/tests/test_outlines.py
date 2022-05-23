@@ -2,29 +2,25 @@
 Top level API tests. Tests API public contracts only. Do not import/create/mock
 models for this app.
 """
+import unittest
 from datetime import datetime, timezone
 from unittest.mock import patch
-import unittest
 
+import attr
+import pytest
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
-from django.db.models import signals
 from edx_proctoring.exceptions import ProctoredExamNotFoundException
 from edx_toggles.toggles.testutils import override_waffle_flag
 from edx_when.api import set_dates_for_course
 from opaque_keys.edx.keys import CourseKey
 from opaque_keys.edx.locator import LibraryLocator
-import attr
-import ddt
-import pytest
 
-from openedx.core.djangolib.testing.utils import CacheIsolationTestCase
-from openedx.features.course_experience import COURSE_ENABLE_UNENROLLED_ACCESS_FLAG
-from common.djangoapps.course_modes.models import CourseMode
-from common.djangoapps.course_modes.signals import update_masters_access_course
 from common.djangoapps.student.auth import user_has_role
 from common.djangoapps.student.roles import CourseBetaTesterRole
 from common.djangoapps.student.tests.factories import BetaTesterFactory, UserFactory
+from openedx.core.djangolib.testing.utils import CacheIsolationTestCase
+from openedx.features.course_experience import COURSE_ENABLE_UNENROLLED_ACCESS_FLAG
 
 from ...data import (
     ContentErrorData,
@@ -34,7 +30,6 @@ from ...data import (
     CourseVisibility,
     ExamData,
     VisibilityData,
-
 )
 from ..outlines import (
     get_content_errors,
@@ -1285,112 +1280,6 @@ class SequentialVisibilityTestCase(CacheIsolationTestCase):
                     assert len(user_course_outline.sequences) == 6
                     assert all(is_sequence_accessible),\
                         'Sequences should be accessible to enrolled, staff users for a public_outline course'
-
-
-@ddt.ddt
-class EnrollmentTrackPartitionGroupsTestCase(OutlineProcessorTestCase):  # lint-amnesty, pylint: disable=missing-class-docstring
-    """Tests for enrollment track partitions outline processor that affect outlines"""
-
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-        cls.visibility = VisibilityData(
-            hide_from_toc=False,
-            visible_to_staff_only=False
-        )
-
-    def _add_course_mode(
-        self,
-        course_key,
-        mode_slug=CourseMode.VERIFIED,
-        mode_display_name='Verified Certificate'
-    ):
-        """
-        Add a course mode to the test course_key.
-        Args:
-            course_key
-            mode_slug (str): the slug of the mode to add
-            mode_display_name (str): the display name of the mode to add
-            upgrade_deadline_expired (bool): whether the upgrade deadline has passed
-        """
-        signals.post_save.disconnect(update_masters_access_course, sender=CourseMode)
-        try:
-            CourseMode.objects.create(
-                course_id=course_key,
-                mode_slug=mode_slug,
-                mode_display_name=mode_display_name,
-                min_price=50
-            )
-        finally:
-            signals.post_save.connect(update_masters_access_course, sender=CourseMode)
-
-    def _create_and_enroll_learner(self, username, mode, is_staff=False):
-        """
-        Helper function to create the learner based on the username,
-        then enroll the learner into the test course with the specified
-        mode.
-        Returns created learner
-        """
-        learner = UserFactory.create(
-            username=username, email='{}@example.com'.format(username), is_staff=is_staff
-        )
-        learner.courseenrollment_set.create(course_id=self.course_key, is_active=True, mode=mode)
-        return learner
-
-    def _setup_course_outline_with_sections(
-        self,
-        course_sections,
-        course_start_date=datetime(2021, 3, 26, tzinfo=timezone.utc)
-    ):
-        """
-        Helper function to update the course outline under test with
-        the course sections passed in.
-        Returns the newly constructed course outline
-        """
-        set_dates_for_course(
-            self.course_key,
-            [
-                (
-                    self.course_key.make_usage_key('course', 'course'),
-                    {'start': course_start_date}
-                )
-            ]
-        )
-
-        new_outline = CourseOutlineData(
-            course_key=self.course_key,
-            title="User Partition Test Course",
-            published_at=course_start_date,
-            published_version="8ebece4b69dd593d82fe2021",
-            sections=course_sections,
-            self_paced=False,
-            days_early_for_beta=None,
-            entrance_exam_id=None,
-            course_visibility=CourseVisibility.PRIVATE,
-        )
-
-        replace_course_outline(new_outline)
-
-        return new_outline
-
-    def test_roundtrip(self):
-        new_outline = self._setup_course_outline_with_sections(
-            [
-                CourseSectionData(
-                    usage_key=self.course_key.make_usage_key('chapter', '0'),
-                    title="Section 0",
-                    user_partition_groups={
-                        50: frozenset([1, 2]),
-                        # Just making these up to add more data
-                        51: frozenset([100]),
-                        52: frozenset([1, 2, 3, 4, 5]),
-                    }
-                )
-            ],
-        )
-
-        replace_course_outline(new_outline)
-        assert new_outline == get_course_outline(self.course_key)
 
 
 class ContentErrorTestCase(CacheIsolationTestCase):

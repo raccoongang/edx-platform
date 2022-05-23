@@ -5,14 +5,9 @@ Signal handler for setting default course mode expiration dates
 
 import logging
 
-from crum import get_current_user
-from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models.signals import post_save
 from django.dispatch.dispatcher import receiver
-
 from xmodule.modulestore.django import SignalHandler, modulestore
-from xmodule.modulestore.exceptions import ItemNotFoundError
 
 from .models import CourseMode, CourseModeExpirationConfig
 

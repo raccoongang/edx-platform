@@ -108,7 +108,7 @@ def can_show_streak_discount_coupon(user, course):
     except CourseEnrollment.DoesNotExist:
         return False
 
-    if not enrollment.mode in CourseMode.UPSELL_TO_VERIFIED_MODES:
+    if enrollment.mode not in CourseMode.UPSELL_TO_VERIFIED_MODES:
         return False
 
     # We can't import this at Django load time within the openedx tests settings context

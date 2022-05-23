@@ -8,7 +8,6 @@ from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_AMNESTY_MODUL
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 from xmodule.partitions.partitions import MINIMUM_STATIC_PARTITION_ID, Group, UserPartition
 
-from common.djangoapps.course_modes.tests.factories import CourseModeFactory
 from common.lib.xmodule.xmodule.tests.test_export import PureXBlock
 
 

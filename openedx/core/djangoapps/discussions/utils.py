@@ -92,8 +92,8 @@ def get_accessible_discussion_xblocks_by_course_id(
 def available_division_schemes(course_key: CourseKey) -> List[str]:
     """
     Returns a list of possible discussion division schemes for this course.
-    This takes into account if cohorts are enabled and if there are multiple
-    enrollment tracks. If no schemes are available, returns an empty list.
+
+    This takes into account if cohorts are enabled. If no schemes are available, returns an empty list.
     Args:
         course_key: CourseKey
 
