@@ -11,7 +11,6 @@ from django.urls import reverse
 from django.utils.timezone import now
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
-from xmodule.partitions.partitions import ENROLLMENT_TRACK_PARTITION_ID
 
 from common.djangoapps.course_modes.models import CourseMode
 from common.djangoapps.student.models import CourseEnrollment, FBEEnrollmentExclusion
@@ -212,10 +211,6 @@ class CourseExpirationTestCase(ModuleStoreTestCase, MasqueradeMixin):
           'group_id': CONTENT_TYPE_GATE_GROUP_IDS['limited_access']}, True),
         ({'user_partition_id': CONTENT_GATING_PARTITION_ID,
           'group_id': CONTENT_TYPE_GATE_GROUP_IDS['full_access']}, False),
-        ({'user_partition_id': ENROLLMENT_TRACK_PARTITION_ID,
-          'group_id': settings.COURSE_ENROLLMENT_MODES['audit']['id']}, True),
-        ({'user_partition_id': ENROLLMENT_TRACK_PARTITION_ID,
-          'group_id': settings.COURSE_ENROLLMENT_MODES['verified']['id']}, False),
         ({'role': 'staff'}, False),
         ({'role': 'student'}, True),
         ({'username': 'audit'}, True),

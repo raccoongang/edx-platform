@@ -17,7 +17,6 @@ from xmodule.modulestore.tests.django_utils import (
     TEST_DATA_MONGO_AMNESTY_MODULESTORE, ModuleStoreTestCase, SharedModuleStoreTestCase,
 )
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
-from xmodule.partitions.partitions import ENROLLMENT_TRACK_PARTITION_ID
 
 from lms.djangoapps.course_api.blocks.api import get_blocks
 from common.djangoapps.course_modes.tests.factories import CourseModeFactory
@@ -668,10 +667,6 @@ class TestProblemTypeAccess(SharedModuleStoreTestCase, MasqueradeMixin):  # pyli
           'group_id': CONTENT_TYPE_GATE_GROUP_IDS['limited_access']}, True),
         ({'user_partition_id': CONTENT_GATING_PARTITION_ID,
           'group_id': CONTENT_TYPE_GATE_GROUP_IDS['full_access']}, False),
-        ({'user_partition_id': ENROLLMENT_TRACK_PARTITION_ID,
-          'group_id': settings.COURSE_ENROLLMENT_MODES['audit']['id']}, True),
-        ({'user_partition_id': ENROLLMENT_TRACK_PARTITION_ID,
-          'group_id': settings.COURSE_ENROLLMENT_MODES['verified']['id']}, False),
         ({'role': 'staff'}, False),
         ({'role': 'student'}, True),
         ({'username': 'audit'}, True),
