@@ -37,16 +37,20 @@ class MasqueradeTestBase(SharedModuleStoreTestCase, MasqueradeMixin):
     def setUp(self):
         super().setUp()
         self.course_staff = UserFactory.create()
-        # we will use this user to masquerade
-        self.user = UserFactory.create()
+        # we will use this users to masquerade
+        self.verified_user = UserFactory.create()
+        self.masters_user = UserFactory.create()
         CourseStaffRole(self.verified_course.id).add_users(self.course_staff)
         CourseStaffRole(self.masters_course.id).add_users(self.course_staff)
 
         # Enroll the user in the two courses
         CourseEnrollmentFactory.create(user=self.course_staff, course_id=self.verified_course.id)
         CourseEnrollmentFactory.create(user=self.course_staff, course_id=self.masters_course.id)
-        self.student_enrollment = CourseEnrollmentFactory.create(
-            user=self.user, course_id=self.verified_course.id, mode='verified'
+        CourseEnrollmentFactory.create(
+            user=self.verified_user, course_id=self.verified_course.id, mode='verified'
+        )
+        CourseEnrollmentFactory.create(
+            user=self.masters_user, course_id=self.masters_course.id, mode='masters'
         )
 
         # Log the staff user in
@@ -73,7 +77,7 @@ class TestVerifiedUpgradesWithMasquerade(MasqueradeTestBase):
         """
         Test staff masquerade as verified student.
         """
-        self.update_masquerade(course=self.verified_course, username=self.user.username)
+        self.update_masquerade(course=self.verified_course, username=self.verified_user.username)
         response = self.client.get(reverse('courseware', kwargs={'course_id': str(self.verified_course.id)}))
         self.assertNotContains(response, TEST_VERIFICATION_SOCK_LOCATOR, html=False)
 
@@ -82,9 +86,7 @@ class TestVerifiedUpgradesWithMasquerade(MasqueradeTestBase):
         """
         Test staff masquerade as masters student.
         """
-        self.student_enrollment.mode = 'masters'
-        self.student_enrollment.save()
-        self.update_masquerade(course=self.masters_course, username=self.user.username)
+        self.update_masquerade(course=self.masters_course, username=self.masters_user.username)
         response = self.client.get(reverse('courseware', kwargs={'course_id': str(self.masters_course.id)}))
 
         self.assertNotContains(response, TEST_VERIFICATION_SOCK_LOCATOR, html=False)

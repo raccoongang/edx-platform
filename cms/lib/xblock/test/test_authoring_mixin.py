@@ -185,7 +185,7 @@ class AuthoringMixinTestCase(ModuleStoreTestCase):
         """
         self.verify_visibility_view_contains(
             self.video_location,
-            [self.NO_RESTRICTIONS_MSG, self.NO_CONTENT_GROUP]
+            [self.NO_RESTRICTIONS_MSG, self.NO_CONTENT_GROUP_MSG]
         )
 
     def test_pure_xblock_visibility(self):
