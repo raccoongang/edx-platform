@@ -514,12 +514,10 @@ def _section_cohort_management(course, access):
 def _section_discussions_management(course, access):  # lint-amnesty, pylint: disable=unused-argument
     """ Provide data for the corresponding discussion management section """
     course_key = course.id
-    enrollment_track_schemes = available_division_schemes(course_key)
     section_data = {
         'section_key': 'discussions_management',
         'section_display_name': _('Discussions'),
-        'is_hidden': (not is_course_cohorted(course_key) and
-                      CourseDiscussionSettings.ENROLLMENT_TRACK not in enrollment_track_schemes),
+        'is_hidden': not is_course_cohorted(course_key),
         'discussion_topics_url': reverse('discussion_topics', kwargs={'course_key_string': str(course_key)}),
         'course_discussion_settings': reverse(
             'course_discussions_settings',
