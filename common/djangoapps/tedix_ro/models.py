@@ -85,6 +85,7 @@ class StudentProfile(UserProfile):
     school = models.ForeignKey(School, null=True, on_delete=models.SET_NULL)
     paid = models.BooleanField(default=False)
     classroom = models.ForeignKey(Classroom, related_name='students', null=True, on_delete=models.SET_NULL)
+    parent_phone = models.CharField(validators=[phone_validator], max_length=15, null=True)
 
     def __unicode__(self):
         return unicode(self.user)
@@ -139,12 +140,14 @@ def student_parent_logged_in(sender, request, user, **kwargs):  # pylint: disabl
     """
     Relogin as student when parent logins successfully
     """
+    request.session['is_parent'] = False
     try:
         parent_profile = user.parentprofile
         AUDIT_LOG.info(u'Parent Login success - {0} ({1})'.format(user.username, user.email))
         student = parent_profile.students.first() if parent_profile else None
         if student is not None and student.user.is_active:
             login(request, student.user, backend=settings.AUTHENTICATION_BACKENDS[0])
+            request.session['is_parent'] = True
             AUDIT_LOG.info(u'Relogin as parent student - {0} ({1})'.format(student.user.username, student.user.email))
     except ParentProfile.DoesNotExist:
         pass

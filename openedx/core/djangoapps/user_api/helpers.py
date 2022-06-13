@@ -277,7 +277,8 @@ class FormDescription(object):
 
         if error_messages is not None:
             field_dict["errorMessages"] = error_messages
-        if name == 'instructor':
+        optional_fields_to_show = ['instructor', 'parent_email']
+        if name in optional_fields_to_show:
             field_dict['showInRequired'] = True
         # If there are overrides for this field, apply them now.
         # Any field property can be overwritten (for example, the default value or placeholder)
@@ -513,8 +514,6 @@ def shim_student_view(view_func, check_logged_in=False):
         # If the response is successful, then return the content
         # of the response directly rather than including it
         # in a JSON-serialized dictionary.
-        else:
-            response.content = msg
 
         # Return the response, preserving the original headers.
         # This is really important, since the student views set cookies

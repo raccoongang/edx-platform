@@ -11179,7 +11179,7 @@ msgstr ""
 #: themes/stanford-style/lms/templates/register-form.html
 #: themes/stanford-style/lms/templates/register-shib.html
 msgid "Public Username"
-msgstr "Pseudonim public"
+msgstr "Nume utilizator"
 
 #. Translators: These instructions appear on the registration form,
 #. immediately
@@ -17298,6 +17298,9 @@ msgstr ""
 #: themes/edx.org/lms/templates/header/navbar-authenticated.html
 msgid "Programs"
 msgstr "Programe"
+
+msgid "Istoric"
+msgstr "Evoluție"
 
 #: lms/templates/header/navbar-authenticated.html
 #: lms/templates/header/user_dropdown.html

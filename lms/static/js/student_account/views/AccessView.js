@@ -30,7 +30,7 @@
                     institutionLogin: {},
                     hintedLogin: {}
                 },
-                nextUrl: '/dashboard',
+                nextUrl: '',
             // The form currently loaded
                 activeForm: '',
 
@@ -264,6 +264,11 @@
              *
              */
                 authComplete: function() {
+                    var redirectUrl = this.subview.login.model ? this.subview.login.model.get('redirectUrl') : '';
+
+                    if ((!this.nextUrl || this.nextUrl == '/') && redirectUrl) {
+                        this.nextUrl = redirectUrl;
+                    }
                     if (this.thirdPartyAuth && this.thirdPartyAuth.finishAuthUrl) {
                         this.redirect(this.thirdPartyAuth.finishAuthUrl);
                     // Note: the third party auth URL likely contains another redirect URL embedded inside

@@ -420,7 +420,8 @@
                     iconName: this.options.iconName,
                     showBlankOption: (!this.options.required || !this.modelValueIsSet()),
                     groupOptions: this.createGroupOptions(),
-                    message: this.helpMessage
+                    message: this.helpMessage,
+                    model: this.model,
                 }));
                 this.delegateEvents();
                 this.updateValueInField();

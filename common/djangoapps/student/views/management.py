@@ -1079,7 +1079,13 @@ def activate_account(request, key):
                 extra_tags='account-activation aa-icon',
             )
 
-    return redirect('dashboard')
+    if request.user.is_authenticated:
+        if hasattr(request.user, 'studentprofile'):
+            return redirect('courses')
+        else:
+            return redirect('my_reports')
+    else:
+        return redirect(reverse('signin_user') + '?next=/')
 
 
 @ensure_csrf_cookie

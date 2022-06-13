@@ -10,6 +10,8 @@
         'text!templates/fields/field_readonly_account.underscore',
         'text!templates/fields/field_link_account.underscore',
         'text!templates/fields/field_dropdown_account.underscore',
+        'text!templates/fields/school_field_dropdown.underscore',
+        'text!templates/fields/instructor_field_dropdown.underscore',
         'text!templates/fields/field_social_link_account.underscore',
         'text!templates/fields/field_order_history.underscore',
         'edx-ui-toolkit/js/utils/string-utils',
@@ -21,6 +23,8 @@
         field_readonly_account_template,
         field_link_account_template,
         field_dropdown_account_template,
+        school_field_dropdown_account_template,
+        instructor_field_dropdown_account_template,
         field_social_link_template,
         field_order_history_template,
         StringUtils,
@@ -47,6 +51,30 @@
                         )
                     );
                 }
+            }),
+            SchoolCityFieldView: FieldViews.DropdownFieldView.extend({
+                fieldTemplate: field_dropdown_account_template
+            }),
+            SchoolFieldView: FieldViews.DropdownFieldView.extend({
+                fieldTemplate: school_field_dropdown_account_template,
+
+                initialize: function(options) {
+                    this._super(options);
+                    this.listenTo(this.model, 'change', this.render);
+                },
+
+            }),
+            InstructorFieldView: FieldViews.DropdownFieldView.extend({
+                fieldTemplate: instructor_field_dropdown_account_template,
+
+                initialize: function(options) {
+                    this._super(options);
+                    this.listenTo(this.model, 'change', this.render);
+                },
+
+            }),
+            ClassroomFieldView: FieldViews.DropdownFieldView.extend({
+                fieldTemplate: field_dropdown_account_template
             }),
             LanguagePreferenceFieldView: FieldViews.DropdownFieldView.extend({
                 fieldTemplate: field_dropdown_account_template,

@@ -115,9 +115,10 @@ class StudentRegisterForm(RegisterForm):
             'max_length': 15,
         }
     )
-    parent_email = forms.EmailField(label=_('Parent Email'), error_messages={
-        'required': _('Please enter your parent email.')
-    })
+    parent_email = forms.EmailField(
+        required=False,
+        label=_('Parent Email'),
+    )
     instructor = forms.ModelChoiceField(
         required=False,
         label=_('Teacher'),
@@ -172,9 +173,10 @@ class StudentRegisterForm(RegisterForm):
         return parent_phone
 
     def save(self, commit=True):
-        if self.cleaned_data['role'] == 'student':
+        parent_email = self.cleaned_data['parent_email']
+
+        if self.cleaned_data['role'] == 'student' and parent_email:
             # Make user for parent
-            parent_email = self.cleaned_data['parent_email']
             parent_user = User.objects.filter(email=parent_email).first()
             if parent_user:
                 created = False
