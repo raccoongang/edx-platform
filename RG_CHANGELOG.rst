@@ -1,6 +1,16 @@
 [Unreleased]
 ~~~~~~~~~~~~
 
+[Feature] 2022-06-27
+~~~~~~~~~~~~~~~~
+
+* Add ability to notify Credentials about received honor course certificate
+
+  * YT: https://youtrack.raccoongang.com/issue/RGOeX-1413
+  * Added the new WaffleFlag `course_modes.extend_certificate_relevant_modes_with_honor`
+  * The new WaffleFlag is disabled by default
+  * Use case for enabling the WaffleFlag - usage of programs that include honor courses
+
 [Maple Release] - 2022-04-29
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
