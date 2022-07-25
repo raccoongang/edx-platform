@@ -12,10 +12,10 @@ List any non-trivial configuration instructions (if any).
 
 **Reviewers:**
 - [ ] @idegtiarov
-- [ ] @cmltaWt0
+- [ ] @dyudyunov
 
 
-**Related Confluence documents:**
+**Related Confluence|Other documents:**
 - < URL to Confluence document 1 >
 - < URL to Confluence document 2 >
 
@@ -23,10 +23,12 @@ List any non-trivial configuration instructions (if any).
 
 - [ ] Demo status: OK
 - [ ] All related documentation is updated
-  - [ ] Confluence (if needed)
   - [ ] Described your changes in RG_CHANGELOG.rst
-  - [ ] DevOps notes added
-- [ ] Meaningless commits are squashed
+  base changlog on https://keepachangelog.com/en/1.0.0/
+  - [ ] (Optional) Confluence
+  - [ ] (Optional) DevOps notes added
+- [ ] Meaningless commits are squashed commit message following
+ [RG conventional commit](https://raccoongang.atlassian.net/wiki/spaces/PSC/pages/2662006787/RG+Delivery+Solutions+Conventional+Commits)
 - [ ] Confirmed Gitlab reports all automated tests/checks are passing.
 - [ ] Approved by at least one additional reviewer.
 
