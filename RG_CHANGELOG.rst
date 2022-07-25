@@ -1,15 +1,25 @@
+RG Changelog
+############
+
+All notable changes to this project will be documented in this file.
+
+The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_, and this project adheres to customized Semantic Versioning e.g.: `nutmeg-rg.v1`
+
 [Unreleased]
 ~~~~~~~~~~~~
+Changed
+-------
+- RG-LMS gitlab MR template renamed to the Default template, some minor
+  changes to the template were also added.
 
-[Feature] 2022-06-27
-~~~~~~~~~~~~~~~~
+Added
+-----
 
-* Add ability to notify Credentials about received honor course certificate
+- Add ability to notify Credentials about received honor course certificate `RGOeX-1413 <https://youtrack.raccoongang.com/issue/RGOeX-1413>`_
 
-  * YT: https://youtrack.raccoongang.com/issue/RGOeX-1413
-  * Added the new WaffleFlag `course_modes.extend_certificate_relevant_modes_with_honor`
-  * The new WaffleFlag is disabled by default
-  * Use case for enabling the WaffleFlag - usage of programs that include honor courses
+  - Added the new WaffleFlag `course_modes.extend_certificate_relevant_modes_with_honor`
+  - The new WaffleFlag is disabled by default
+  - Use case for enabling the WaffleFlag - usage of programs that include honor courses
 
 [Maple Release] - 2022-04-29
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
