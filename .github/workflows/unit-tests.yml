@@ -9,7 +9,7 @@ on:
 
 jobs:
   run-tests:
-    runs-on: [ edx-platform-runner ]
+    runs-on: [ ubuntu-20.04 ]
     strategy:
       matrix:
         python-version: ['3.8']
