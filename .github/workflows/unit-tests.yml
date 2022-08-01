@@ -60,6 +60,7 @@ jobs:
       - name: install requirements
         run: |
           sudo pip install -r requirements/pip.txt
+          sudo pip install --ignore-installed pyyaml==6.0
           sudo pip install -r requirements/edx/testing.txt
           if [[ "${{ matrix.django-version }}" == "pinned" ]]; then
             sudo pip install -r requirements/edx/django.txt
