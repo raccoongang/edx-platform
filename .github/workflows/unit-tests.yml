@@ -54,6 +54,8 @@ jobs:
 #      - name: set pytest randomly option
 #        run: |
 #          echo "pytest_randomly_option=$(if [ '${{ env.module_name }}' = 'cms' ] || [ '${{ env.module_name }}' = 'common' ]; then echo '-p no:randomly'; else echo '' ; fi)" >> $GITHUB_ENV
+      - name: install required packages
+        run: sudo apt-get update && apt-get install libxmlsec1-dev pkg-config
 
       - name: install requirements
         run: |
