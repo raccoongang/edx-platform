@@ -21,6 +21,13 @@ Added
   - The new WaffleFlag is disabled by default
   - Use case for enabling the WaffleFlag - usage of programs that include honor courses
 
+[Refactor] 2022-08-12
+
+* Remove RG-specific settings that were moved to deployment
+
+  * YT: https://youtrack.raccoongang.com/issue/RGOeX-1713
+  * This reverts changes from the https://youtrack.raccoongang.com/issue/RGOeX-687
+
 [Maple Release] - 2022-04-29
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
