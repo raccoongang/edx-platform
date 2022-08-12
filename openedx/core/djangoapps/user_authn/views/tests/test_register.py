@@ -17,6 +17,7 @@ from django.test.utils import override_settings
 from django.urls import reverse
 from pytz import UTC
 from social_django.models import Partial, UserSocialAuth
+from testfixtures import LogCapture
 from openedx_events.tests.utils import OpenEdxEventsTestMixin
 
 from edx_toggles.toggles.testutils import override_waffle_flag
@@ -836,7 +837,7 @@ class RegistrationViewTestV1(
                     "options": country_options,
                     "instructions": "The country or region where you live.",
                     "errorMessages": {
-                        "required": "Select your country or region of residence."
+                        "required": "Select your country or region of residence"
                     },
                 }
             )
@@ -862,7 +863,7 @@ class RegistrationViewTestV1(
                     {"value": "other", "name": "Other education", "default": False},
                 ],
                 "errorMessages": {
-                    "required": "Select the highest level of education you have completed."
+                    "required": "Select the highest level of education you have completed"
                 }
             }
         )
@@ -891,7 +892,7 @@ class RegistrationViewTestV1(
                     {"value": "other", "name": "Other education TRANSLATED", "default": False},
                 ],
                 "errorMessages": {
-                    "required": "Select the highest level of education you have completed."
+                    "required": "Select the highest level of education you have completed"
                 }
             }
         )
@@ -989,7 +990,7 @@ class RegistrationViewTestV1(
                 "required": True,
                 "label": "Profession",
                 "errorMessages": {
-                    "required": "Enter your profession."
+                    "required": "Enter your profession"
                 }
             }
         )
@@ -1009,7 +1010,7 @@ class RegistrationViewTestV1(
                 "label": "Profession",
                 "options": self.PROFESSION_OPTIONS,
                 "errorMessages": {
-                    "required": "Select your profession."
+                    "required": "Select your profession"
                 },
             }
         )
@@ -1023,7 +1024,7 @@ class RegistrationViewTestV1(
                 "required": True,
                 "label": "Specialty",
                 "errorMessages": {
-                    "required": "Enter your specialty."
+                    "required": "Enter your specialty"
                 }
             }
         )
@@ -1043,7 +1044,7 @@ class RegistrationViewTestV1(
                 "label": "Specialty",
                 "options": self.SPECIALTY_OPTIONS,
                 "errorMessages": {
-                    "required": "Select your specialty."
+                    "required": "Select your specialty"
                 },
             }
         )
@@ -1057,7 +1058,7 @@ class RegistrationViewTestV1(
                 "required": False,
                 "label": "Mailing address",
                 "errorMessages": {
-                    "required": "Enter your mailing address."
+                    "required": "Enter your mailing address"
                 }
             }
         )
@@ -1073,7 +1074,7 @@ class RegistrationViewTestV1(
                     platform_name=settings.PLATFORM_NAME
                 ),
                 "errorMessages": {
-                    "required": "Tell us your goals."
+                    "required": "Tell us your goals"
                 }
             }
         )
@@ -1087,7 +1088,7 @@ class RegistrationViewTestV1(
                 "required": False,
                 "label": "City",
                 "errorMessages": {
-                    "required": "Enter your city."
+                    "required": "Enter your city"
                 }
             }
         )
@@ -1130,7 +1131,7 @@ class RegistrationViewTestV1(
                 "required": True,
                 "options": country_options,
                 "errorMessages": {
-                    "required": "Select your country or region of residence."
+                    "required": "Select your country or region of residence"
                 },
             }
         )
@@ -2193,7 +2194,7 @@ class RegistrationViewTestV2(RegistrationViewTestV1):
                 "required": True,
                 "label": "Confirm Email",
                 "errorMessages": {
-                    "required": "The email addresses do not match.",
+                    "required": "The email addresses do not match",
                 }
             }
         )
@@ -2284,6 +2285,37 @@ class RegistrationViewTestV2(RegistrationViewTestV1):
             HTTP_ACCEPT='*/*',
         )
         self._assert_redirect_url(response, expected_redirect)
+
+    @mock.patch('openedx.core.djangoapps.user_authn.views.register._record_is_marketable_attribute')
+    def test_logs_for_error_when_setting_is_marketable_attribute(self, set_is_marketable_attr):
+        """
+        Test that if some error occurs while setting is_marketable attribute, error
+        is logged and that it doesn't affect the user registration workflow.
+        """
+        set_is_marketable_attr.side_effect = Exception('BOOM!')
+        post_params = {
+            "email": self.EMAIL,
+            "name": self.NAME,
+            "username": self.USERNAME,
+            "password": self.PASSWORD,
+            "honor_code": "true",
+        }
+
+        with LogCapture() as logger:
+            response = self.client.post(
+                self.url,
+                post_params,
+                HTTP_ACCEPT='*/*',
+            )
+            logger.check_present(
+                (
+                    'edx.student',
+                    'ERROR',
+                    'Error while setting is_marketable attribute.'
+                )
+            )
+
+            assert response.status_code == 200
 
 
 @httpretty.activate
