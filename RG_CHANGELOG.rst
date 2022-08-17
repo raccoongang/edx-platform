@@ -12,8 +12,16 @@ Changed
 - RG-LMS gitlab MR template renamed to the Default template, some minor
   changes to the template were also added.
 
+- Remove RG-specific settings that were moved to deployment `RGOeX-1713 <https://youtrack.raccoongang.com/issue/RGOeX-1713>`_
+
+  - This reverts changes from the `RGOeX-687 <https://youtrack.raccoongang.com/issue/RGOeX-687>`_
+
 Added
 -----
+
+- Add modified favicon redirect view to be able to use the themed version `RGOeX-771 <https://youtrack.raccoongang.com/issue/RGOeX-771>`_ `RGOeX-1564 <https://youtrack.raccoongang.com/issue/RGOeX-1564>`_
+
+  - This requires modifications in nginx configurations because favicon url was redifined there for some reason
 
 - Add ability to notify Credentials about received honor course certificate `RGOeX-1413 <https://youtrack.raccoongang.com/issue/RGOeX-1413>`_
 
@@ -21,12 +29,6 @@ Added
   - The new WaffleFlag is disabled by default
   - Use case for enabling the WaffleFlag - usage of programs that include honor courses
 
-[Refactor] 2022-08-12
-
-* Remove RG-specific settings that were moved to deployment
-
-  * YT: https://youtrack.raccoongang.com/issue/RGOeX-1713
-  * This reverts changes from the https://youtrack.raccoongang.com/issue/RGOeX-687
 
 [Maple Release] - 2022-04-29
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
