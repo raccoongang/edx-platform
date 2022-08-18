@@ -127,7 +127,7 @@ def split_mongo_store_config(modulestore_options):
     """
     store = {
         'default': {
-            'NAME': 'draft',
+            'NAME': 'split',
             'ENGINE': 'xmodule.modulestore.split_mongo.split_draft.DraftVersioningModuleStore',
             'DOC_STORE_CONFIG': {
                 'host': MONGO_HOST,

@@ -314,6 +314,10 @@ def modulestore():
     """
     global _MIXED_MODULESTORE  # pylint: disable=global-statement
     if _MIXED_MODULESTORE is None:
+        options = settings.MODULESTORE.get('default', {}).get('OPTIONS', {})
+        if options:
+            options['stores'] = [store for store in options.get('stores') if store.get('NAME')!='split']
+
         _MIXED_MODULESTORE = create_modulestore_instance(
             settings.MODULESTORE['default']['ENGINE'],
             contentstore(),
