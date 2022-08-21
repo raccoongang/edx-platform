@@ -1485,15 +1485,20 @@ class ContentStoreTest(ContentStoreTestCase):
         """Test viewing the course overview page with an existing course"""
         course = CourseFactory.create()
         resp = self._show_course_overview(course.id)
-        self.assertContains(
-            resp,
-            '<article class="outline outline-complex outline-course" data-locator="{locator}" data-course-key="{course_key}">'.format(  # lint-amnesty, pylint: disable=line-too-long
-                locator=str(course.location),
-                course_key=str(course.id),
-            ),
-            status_code=200,
-            html=True
-        )
+
+        # course_handler raise 404 for old mongo course
+        if course.id.deprecated:
+            self.assertEqual(resp.status_code, 404)
+        else:
+            self.assertContains(
+                resp,
+                '<article class="outline outline-complex outline-course" data-locator="{locator}" data-course-key="{course_key}">'.format(  # lint-amnesty, pylint: disable=line-too-long
+                    locator=str(course.location),
+                    course_key=str(course.id),
+                ),
+                status_code=200,
+                html=True
+            )
 
     def test_create_item(self):
         """Test creating a new xblock instance."""
@@ -1548,6 +1553,10 @@ class ContentStoreTest(ContentStoreTestCase):
             self.store, self.user.id, TEST_DATA_DIR, ['simple'], create_if_not_present=True
         )
         course_key = course_items[0].id
+
+        # course_handler raise 404 for old mongo course
+        if course_key.deprecated:
+            raise SkipTest("course_handler raise 404 for old mongo course")
 
         resp = self._show_course_overview(course_key)
         self.assertEqual(resp.status_code, 200)

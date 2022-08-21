@@ -164,7 +164,6 @@ class TestCourseListing(ModuleStoreTestCase):
 
     @ddt.data(
         (ModuleStoreEnum.Type.split, 2),
-        (ModuleStoreEnum.Type.mongo, 1)
     )
     @ddt.unpack
     def test_staff_course_listing(self, default_store, mongo_calls):
@@ -194,7 +193,7 @@ class TestCourseListing(ModuleStoreTestCase):
         with check_mongo_calls(mongo_calls):
             list(_accessible_courses_summary_iter(self.request))
 
-    @ddt.data(ModuleStoreEnum.Type.split, ModuleStoreEnum.Type.mongo)
+    @ddt.data(ModuleStoreEnum.Type.split)
     def test_get_course_list_with_invalid_course_location(self, store):
         """
         Test getting courses with invalid course location (course deleted from modulestore).
@@ -246,8 +245,7 @@ class TestCourseListing(ModuleStoreTestCase):
         )
 
     @ddt.data(
-        (ModuleStoreEnum.Type.split, 1, 2),
-        (ModuleStoreEnum.Type.mongo, 1, 2),
+        (ModuleStoreEnum.Type.split, 2, 3),
     )
     @ddt.unpack
     def test_course_listing_performance(self, store, courses_list_from_group_calls, courses_list_calls):

@@ -5,7 +5,7 @@ Unit tests for getting the list of courses and the course outline.
 
 import datetime
 import json
-from unittest import mock
+from unittest import SkipTest, mock, skip
 from unittest.mock import patch
 
 import ddt
@@ -100,6 +100,8 @@ class TestCourseIndex(CourseTestCase):
         """
         Test that people with is_staff see the courses and can navigate into them
         """
+        if self.course.id.deprecated:
+            raise SkipTest("Skip test for old mongo course")
         self.check_courses_on_index(self.client)
 
     def test_negative_conditions(self):
@@ -116,6 +118,9 @@ class TestCourseIndex(CourseTestCase):
         """
         Make and register course_staff and ensure they can access the courses
         """
+        if self.course.id.deprecated:
+            raise SkipTest("Skip test for old mongo course")
+
         course_staff_client, course_staff = self.create_non_staff_authed_user_client()
         for course in [self.course, self.odd_course]:
             permission_url = reverse_course_url('course_team_handler', course.id, kwargs={'email': course_staff.email})
@@ -131,6 +136,9 @@ class TestCourseIndex(CourseTestCase):
         self.check_courses_on_index(course_staff_client)
 
     def test_json_responses(self):
+        if self.course.id.deprecated:
+            raise SkipTest("Skip test for old mongo course")
+
         outline_url = reverse_course_url('course_handler', self.course.id)
         chapter = ItemFactory.create(parent_location=self.course.location, category='chapter', display_name="Week 1")
         lesson = ItemFactory.create(parent_location=chapter.location, category='sequential', display_name="Lesson 1")
@@ -296,6 +304,10 @@ class TestCourseIndex(CourseTestCase):
         """
         Tests course outline when 'display_coursenumber' field is none.
         """
+        # course_handler raise 404 for old mongo course
+        if self.course.id.deprecated:
+            raise SkipTest("course_handler raise 404 for old mongo course")
+
         # Change 'display_coursenumber' field to None and update the course.
         self.course.display_coursenumber = None
         updated_course = self.update_course(self.course, self.user.id)
@@ -401,6 +413,7 @@ class TestCourseIndexArchived(CourseTestCase):
         archived_course_tab = parsed_html.find_class('archived-courses')
         self.assertEqual(len(archived_course_tab), 1 if separate_archived_courses else 0)
 
+    @skip('Skip test for old mongo course')
     @ddt.data(
         # Staff user has course staff access
         (True, 'staff', None, 0, 20),
@@ -466,6 +479,8 @@ class TestCourseOutline(CourseTestCase):
         Arguments:
             is_concise (Boolean) : If True, fetch concise version of course outline.
         """
+        if self.course.id.deprecated:
+            raise SkipTest("Skip test for old mongo course")
         outline_url = reverse_course_url('course_handler', self.course.id)
         outline_url = outline_url + '?format=concise' if is_concise else outline_url
         resp = self.client.get(outline_url, HTTP_ACCEPT='application/json')
@@ -613,6 +628,8 @@ class TestCourseOutline(CourseTestCase):
         """
         Test to check proctored exam settings mfe url is rendering properly
         """
+        if self.course.id.deprecated:
+            raise SkipTest("Skip test for old mongo course")
         mock_validate_proctoring_settings.return_value = [
             {
                 'key': 'proctoring_provider',
