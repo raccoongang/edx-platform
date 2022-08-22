@@ -12,7 +12,7 @@ from django.conf import settings
 from django.urls import reverse
 from rest_framework.test import APIClient
 from xmodule.modulestore import ModuleStoreEnum
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_AMNESTY_MODULESTORE
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE
 
 from openedx.core.djangolib.testing.utils import skip_unless_lms
 
@@ -72,7 +72,7 @@ class BookmarksListViewTests(BookmarksViewsTestsBase):
     GET /api/bookmarks/v1/bookmarks/?course_id={course_id1}
     POST /api/bookmarks/v1/bookmarks
     """
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     @ddt.data(
         (1, False),

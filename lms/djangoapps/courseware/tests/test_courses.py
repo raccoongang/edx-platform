@@ -20,7 +20,7 @@ from django.urls import reverse
 from opaque_keys.edx.keys import CourseKey
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.django import _get_modulestore_branch_setting, modulestore
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_AMNESTY_MODULESTORE, ModuleStoreTestCase
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory, check_mongo_calls
 from xmodule.modulestore.xml_importer import import_course_from_xml
 from xmodule.tests.xml import XModuleXmlImportTest
@@ -88,18 +88,6 @@ class CoursesTest(ModuleStoreTestCase):
         assert str(error.value) == 'Course not found.'
         assert error.value.access_response.error_code == 'not_visible_to_user'
         assert not error.value.access_response.has_access
-
-    @ddt.data(GET_COURSE_WITH_ACCESS, GET_COURSE_OVERVIEW_WITH_ACCESS)
-    def test_old_mongo_access_error(self, course_access_func_name):
-        course_access_func = self.COURSE_ACCESS_FUNCS[course_access_func_name]
-        user = UserFactory.create()
-        with self.store.default_store(ModuleStoreEnum.Type.mongo):
-            course = CourseFactory.create()
-
-        with pytest.raises(CourseAccessRedirect) as error:
-            course_access_func(user, 'load', course.id)
-        assert error.value.access_error.error_code == 'old_mongo'
-        assert not error.value.access_error.has_access
 
     @ddt.data(
         (GET_COURSE_WITH_ACCESS, 2),
@@ -281,7 +269,7 @@ class XmlCourseImageTestCase(XModuleXmlImportTest):
 
 class CoursesRenderTest(ModuleStoreTestCase):
     """Test methods related to rendering courses content."""
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     # TODO: this test relies on the specific setup of the toy course.
     # It should be rewritten to build the course it needs and then test that.

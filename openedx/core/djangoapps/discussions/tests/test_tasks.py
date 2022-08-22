@@ -12,7 +12,7 @@ from openedx.core.djangoapps.discussions.tasks import (
     update_discussions_settings_from_course,
     update_unit_discussion_state_from_discussion_blocks,
 )
-from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 
 
@@ -22,6 +22,7 @@ class UpdateDiscussionsSettingsFromCourseTestCase(ModuleStoreTestCase):
     """
     Tests for the discussions settings update tasks
     """
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     def setUp(self):
         super().setUp()
