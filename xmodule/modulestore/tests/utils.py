@@ -431,14 +431,14 @@ XBLOCK_MIXINS = (InheritanceMixin, XModuleMixin)
 
 
 MIXED_MODULESTORE_BOTH_SETUP = MixedModulestoreBuilder([
-    ('draft', MongoModulestoreBuilder()),
-    ('split', VersioningModulestoreBuilder())
+    ('split', VersioningModulestoreBuilder()),
+    ('draft', MongoModulestoreBuilder())
 ])
 DRAFT_MODULESTORE_SETUP = MixedModulestoreBuilder([('draft', MongoModulestoreBuilder())])
 SPLIT_MODULESTORE_SETUP = MixedModulestoreBuilder([('split', VersioningModulestoreBuilder())])
 MIXED_MODULESTORE_SETUPS = (
-    DRAFT_MODULESTORE_SETUP,
     SPLIT_MODULESTORE_SETUP,
+    DRAFT_MODULESTORE_SETUP,
 )
 MIXED_MS_SETUPS_SHORT = (
     'mixed_mongo',

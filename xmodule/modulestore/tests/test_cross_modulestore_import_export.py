@@ -61,8 +61,8 @@ class CrossStoreXMLRoundtrip(CourseComparisonTest, PartitionTestCase):
 
     @patch('xmodule.video_module.video_module.edxval_api', None)
     @ddt.data(*itertools.product(
-        MODULESTORE_SETUPS,
-        MODULESTORE_SETUPS,
+        (SPLIT_MODULESTORE_SETUP,),
+        (SPLIT_MODULESTORE_SETUP,),
         CONTENTSTORE_SETUPS,
         CONTENTSTORE_SETUPS,
         COURSE_DATA_NAMES,
