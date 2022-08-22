@@ -9,7 +9,7 @@ from unittest import mock, skip
 from django.utils import translation
 from django.utils.translation import get_language
 from xmodule.modulestore.django import ModuleI18nService
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_AMNESTY_MODULESTORE, ModuleStoreTestCase
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 
 from cms.djangoapps.contentstore.tests.utils import AjaxEnabledTestClient
@@ -57,7 +57,7 @@ class FakeTranslations(ModuleI18nService):
 
 class TestModuleI18nService(ModuleStoreTestCase):
     """ Test ModuleI18nService """
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     def setUp(self):
         """ Setting up tests """

@@ -8,7 +8,7 @@ import mock
 from openedx_events.learning.data import DiscussionTopicContext
 from openedx.core.djangoapps.discussions.tasks import update_discussions_settings_from_course
 
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_AMNESTY_MODULESTORE, ModuleStoreTestCase
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 
 
@@ -18,7 +18,7 @@ class UpdateDiscussionsSettingsFromCourseTestCase(ModuleStoreTestCase):
     """
     Tests for the discussions settings update tasks
     """
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     def setUp(self):
         super().setUp()

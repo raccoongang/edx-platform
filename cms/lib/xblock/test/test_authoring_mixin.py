@@ -6,7 +6,7 @@ Tests for the Studio authoring XBlock mixin.
 from django.conf import settings
 from django.test.utils import override_settings
 from xblock.core import XBlock
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_AMNESTY_MODULESTORE, ModuleStoreTestCase
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 from xmodule.partitions.partitions import (
     ENROLLMENT_TRACK_PARTITION_ID,
@@ -23,7 +23,7 @@ class AuthoringMixinTestCase(ModuleStoreTestCase):
     """
     Tests the studio authoring XBlock mixin.
     """
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
     GROUP_NO_LONGER_EXISTS = "This group no longer exists"
     NO_CONTENT_OR_ENROLLMENT_GROUPS = "Access to this component is not restricted"
     NO_CONTENT_ENROLLMENT_TRACK_ENABLED = "You can restrict access to this component to learners in specific enrollment tracks or content groups"  # lint-amnesty, pylint: disable=line-too-long

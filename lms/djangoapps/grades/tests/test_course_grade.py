@@ -5,7 +5,7 @@ import ddt
 from crum import set_current_request
 from django.conf import settings
 from edx_toggles.toggles.testutils import override_waffle_switch
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_AMNESTY_MODULESTORE, SharedModuleStoreTestCase
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, SharedModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 
 from common.djangoapps.student.models import CourseEnrollment
@@ -73,7 +73,7 @@ class TestScoreForModule(SharedModuleStoreTestCase):
                    (2/5) (3/5) (0/1)   -   (1/3)   -   (3/10)
 
     """
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     @classmethod
     def setUpClass(cls):

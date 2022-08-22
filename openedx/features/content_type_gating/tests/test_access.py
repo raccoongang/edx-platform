@@ -14,7 +14,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from pyquery import PyQuery as pq
 from xmodule.modulestore.tests.django_utils import (
-    TEST_DATA_MONGO_AMNESTY_MODULESTORE, ModuleStoreTestCase, SharedModuleStoreTestCase,
+    TEST_DATA_SPLIT_MODULESTORE, ModuleStoreTestCase, SharedModuleStoreTestCase,
 )
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 from xmodule.partitions.partitions import ENROLLMENT_TRACK_PARTITION_ID
@@ -1123,7 +1123,7 @@ class TestContentTypeGatingService(ModuleStoreTestCase):
     to check whether a sequence contains content type gated blocks
     The content_type_gate_for_block can be used to return the content type gate for a given block
     """
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     def setUp(self):
         super().setUp()

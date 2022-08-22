@@ -9,7 +9,7 @@ import ddt
 from django.urls import reverse
 from pytz import UTC
 from xmodule.modulestore import ModuleStoreEnum
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_AMNESTY_MODULESTORE, SharedModuleStoreTestCase
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, SharedModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 from xmodule.capa.tests.response_xml_factory import MultipleChoiceResponseXMLFactory
 from common.djangoapps.student.tests.factories import GlobalStaffFactory
@@ -159,7 +159,7 @@ class CourseGradingPolicyTests(GradingPolicyTestMixin, SharedModuleStoreTestCase
     """
     Tests for CourseGradingPolicy view.
     """
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
     view_name = 'grades_api:v1:course_grading_policy'
 
     raw_grader = [
@@ -211,7 +211,7 @@ class CourseGradingPolicyMissingFieldsTests(GradingPolicyTestMixin, SharedModule
     """
     Tests for CourseGradingPolicy view when fields are missing.
     """
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
     view_name = 'grades_api:v1:course_grading_policy'
 
     # Raw grader with missing keys

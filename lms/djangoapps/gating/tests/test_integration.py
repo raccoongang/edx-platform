@@ -11,7 +11,7 @@ from edx_toggles.toggles.testutils import override_waffle_switch
 from milestones import api as milestones_api
 from milestones.tests.utils import MilestonesTestCaseMixin
 from xmodule.modulestore.django import modulestore
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_AMNESTY_MODULESTORE, SharedModuleStoreTestCase
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, SharedModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 
 from common.djangoapps.student.tests.factories import UserFactory
@@ -28,7 +28,7 @@ class TestGatedContent(MilestonesTestCaseMixin, SharedModuleStoreTestCase):
     Base TestCase class for setting up a basic course structure
     and testing the gating feature
     """
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     @classmethod
     def setUpClass(cls):

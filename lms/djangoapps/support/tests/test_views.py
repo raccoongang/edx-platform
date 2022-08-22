@@ -30,7 +30,7 @@ from pytz import UTC
 from rest_framework import status
 from social_django.models import UserSocialAuth
 from xmodule.modulestore.tests.django_utils import (
-    TEST_DATA_MONGO_AMNESTY_MODULESTORE, ModuleStoreTestCase, SharedModuleStoreTestCase,
+    TEST_DATA_SPLIT_MODULESTORE, ModuleStoreTestCase, SharedModuleStoreTestCase,
 )
 from xmodule.modulestore.tests.factories import CourseFactory
 
@@ -254,7 +254,7 @@ class SupportViewCertificatesTests(SupportViewTestCase):
     """
     Tests for the certificates support view.
     """
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     def setUp(self):
         """Make the user support staff. """
@@ -1846,7 +1846,7 @@ class TestOnboardingView(SupportViewTestCase, ProctoredExamTestCase):
     """
     Tests for OnboardingView
     """
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     def setUp(self):
         super().setUp()
