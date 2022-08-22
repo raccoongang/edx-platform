@@ -3,6 +3,7 @@ Test data created by CourseSerializer and CourseDetailSerializer
 """
 
 
+from collections import OrderedDict
 from datetime import datetime
 from unittest import TestCase
 
@@ -12,7 +13,7 @@ from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
 from xblock.core import XBlock
 from xmodule.course_module import DEFAULT_START_DATE
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_AMNESTY_MODULESTORE, ModuleStoreTestCase
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import check_mongo_calls
 
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
@@ -31,7 +32,7 @@ class TestCourseSerializer(CourseApiFactoryMixin, ModuleStoreTestCase):
     maxDiff = 5000  # long enough to show mismatched dicts, in case of error
     serializer_class = CourseSerializer
 
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
     ENABLED_SIGNALS = ['course_published']
 
     def setUp(self):
@@ -40,45 +41,47 @@ class TestCourseSerializer(CourseApiFactoryMixin, ModuleStoreTestCase):
         self.honor_user = self.create_user('honor', is_staff=False)
         self.request_factory = APIRequestFactory()
 
-        course_id = 'edX/toy/2012_Fall'
-        banner_image_uri = '/c4x/edX/toy/asset/images_course_image.jpg'
+        course_id = 'course-v1:edX+toy+2012_Fall'
+        banner_image_uri = '/asset-v1:edX+toy+2012_Fall+type@asset+block@images_course_image.jpg'
         banner_image_absolute_uri = 'http://testserver' + banner_image_uri
-        image_path = '/c4x/edX/toy/asset/just_a_test.jpg'
+        image_path = '/asset-v1:edX+toy+2012_Fall+type@asset+block@just_a_test.jpg'
         image_url = 'http://testserver' + image_path
         self.expected_data = {
             'id': course_id,
             'name': 'Toy Course',
             'number': 'toy',
             'org': 'edX',
-            'short_description': 'A course about toys.',
-            'media': {
-                'banner_image': {
-                    'uri': banner_image_uri,
-                    'uri_absolute': banner_image_absolute_uri,
-                },
-                'course_image': {
-                    'uri': image_path,
-                },
-                'course_video': {
-                    'uri': 'http://www.youtube.com/watch?v=test_youtube_id',
-                },
-                'image': {
-                    'raw': image_url,
-                    'small': image_url,
-                    'large': image_url,
-                },
-            },
+            'short_description': None,
+            'media': OrderedDict([
+                (
+                    'banner_image',
+                    OrderedDict([
+                        ('uri', banner_image_uri),
+                        ('uri_absolute', banner_image_absolute_uri)
+                    ])
+                ),
+                ('course_image', OrderedDict([('uri', image_path)])),
+                ('course_video', OrderedDict([('uri', None)])),
+                (
+                    'image',
+                    OrderedDict([
+                        ('raw', image_url),
+                        ('small', image_url),
+                        ('large', image_url)
+                    ])
+                )]
+            ),
             'start': '2015-07-17T12:00:00Z',
             'start_type': 'timestamp',
             'start_display': 'July 17, 2015',
             'end': '2015-09-19T18:00:00Z',
             'enrollment_start': '2015-06-15T00:00:00Z',
             'enrollment_end': '2015-07-15T00:00:00Z',
-            'blocks_url': 'http://testserver/api/courses/v2/blocks/?course_id=edX%2Ftoy%2F2012_Fall',
-            'effort': '6 hours',
+            'blocks_url': 'http://testserver/api/courses/v2/blocks/?course_id=course-v1%3AedX%2Btoy%2B2012_Fall',
+            'effort': None,
             'pacing': 'instructor',
             'mobile_available': True,
-            'hidden': True,  # because it's an old mongo course
+            'hidden': False,
             'invitation_only': False,
 
             # 'course_id' is a deprecated field, please use 'id' instead.
@@ -125,14 +128,14 @@ class TestCourseSerializer(CourseApiFactoryMixin, ModuleStoreTestCase):
             advertised_start='The Ides of March'
         )
         result = self._get_result(course)
-        assert result['course_id'] == 'edX/custom/2012_Fall'
+        assert result['course_id'] == 'course-v1:edX+custom+2012_Fall'
         assert result['start_type'] == 'string'
         assert result['start_display'] == 'The Ides of March'
 
     def test_empty_start(self):
         course = self.create_course(start=DEFAULT_START_DATE, course='custom')
         result = self._get_result(course)
-        assert result['course_id'] == 'edX/custom/2012_Fall'
+        assert result['course_id'] == 'course-v1:edX+custom+2012_Fall'
         assert result['start_type'] == 'empty'
         assert result['start_display'] is None
 
@@ -154,8 +157,8 @@ class TestCourseDetailSerializer(TestCourseSerializer):  # lint-amnesty, pylint:
     CourseDetailSerializer serializer class.
 
     """
-    # 1 mongo call is made to get the course About overview text.
-    expected_mongo_calls = 1
+    # 2 mongo call is made to get the course About overview text.
+    expected_mongo_calls = 2
     serializer_class = CourseDetailSerializer
 
     def setUp(self):

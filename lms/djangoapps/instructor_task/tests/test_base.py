@@ -21,7 +21,7 @@ from opaque_keys.edx.locations import Location
 
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.django import modulestore
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_AMNESTY_MODULESTORE, ModuleStoreTestCase
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 from xmodule.capa.tests.response_xml_factory import OptionResponseXMLFactory
 from common.djangoapps.student.tests.factories import CourseEnrollmentFactory, UserFactory
@@ -108,7 +108,7 @@ class InstructorTaskCourseTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase)
     Base test class for InstructorTask-related tests that require
     the setup of a course.
     """
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
     course = None
     current_user = None
 
