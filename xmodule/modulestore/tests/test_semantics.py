@@ -19,7 +19,7 @@ from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.draft_and_published import DIRECT_ONLY_CATEGORIES
 from xmodule.modulestore.exceptions import ItemNotFoundError
 from xmodule.modulestore.tests.factories import CourseFactory
-from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase, TEST_DATA_MONGO_MODULESTORE
+from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 
 DETACHED_BLOCK_TYPES = dict(XBlock.load_tagged_classes('detached'))
 
@@ -403,13 +403,7 @@ class DirectOnlyCategorySemantics(ModuleStoreTestCase):
         self.assertCoursePointsToBlock(block_usage_key)
         self.assertNotParentOf(block_usage_key, child_usage_key)
 
-        if child_published and self.store.get_modulestore_type(self.course.id) == ModuleStoreEnum.Type.mongo:
-            # N.B. This block is being left as an orphan in old-mongo. This test will
-            # fail when that is fixed. At that time, this condition should just be removed,
-            # as SplitMongo and OldMongo will have the same semantics.
-            self.assertBlockHasContent(child_usage_key, 'data', child_data)
-        else:
-            self.assertBlockDoesntExist(child_usage_key)
+        self.assertBlockDoesntExist(child_usage_key)
 
 
 @ddt.ddt

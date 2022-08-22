@@ -1044,7 +1044,7 @@ class MongoModuleStore(ModuleStoreDraftAndPublished, ModuleStoreWriteBase, Mongo
             ],
             []
         )
-        return [course for course in base_list if not isinstance(course, ErrorBlock)]
+        return []
 
     @autoretry_read()
     def _find_one(self, location):
