@@ -472,18 +472,13 @@ class DashboardTest(ModuleStoreTestCase, TestVerificationBase):
         )))
 
     @unittest.skipUnless(settings.ROOT_URLCONF == 'lms.urls', 'Test only valid in lms')
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
-    def test_dashboard_metadata_caching(self, modulestore_type):
+    def test_dashboard_metadata_caching(self):
         """
         Check that the student dashboard makes use of course metadata caching.
 
         After creating a course, that course's metadata should be cached as a
         CourseOverview. The student dashboard should never have to make calls to
         the modulestore.
-
-        Arguments:
-            modulestore_type (ModuleStoreEnum.Type): Type of modulestore to create
-                test course in.
 
         Note to future developers:
             If you break this test so that the "check_mongo_calls(0)" fails,
@@ -494,7 +489,7 @@ class DashboardTest(ModuleStoreTestCase, TestVerificationBase):
         """
         # Create a course and log in the user.
         # Creating a new course will trigger a publish event and the course will be cached
-        test_course = CourseFactory.create(default_store=modulestore_type, emit_signals=True)
+        test_course = CourseFactory.create(emit_signals=True)
         self.client.login(username="jack", password="test")
 
         with check_mongo_calls(0):

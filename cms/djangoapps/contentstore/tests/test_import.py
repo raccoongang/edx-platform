@@ -18,7 +18,6 @@ from xmodule.exceptions import NotFoundError
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
-from xmodule.modulestore.tests.factories import check_exact_number_of_calls, check_number_of_calls
 from xmodule.modulestore.xml_importer import import_course_from_xml
 
 TEST_DATA_CONTENTSTORE = copy.deepcopy(settings.CONTENTSTORE)
@@ -175,28 +174,12 @@ class ContentStoreImportTest(ModuleStoreTestCase):
         print(f"course tabs = {course.tabs}")
         self.assertEqual(course.tabs[1]['name'], 'Syllabus')
 
-    def test_import_performance_mongo(self):
-        store = modulestore()._get_modulestore_by_type(ModuleStoreEnum.Type.mongo)
-
-        # we try to refresh the inheritance tree for each update_item in the import
-        with check_exact_number_of_calls(store, 'refresh_cached_metadata_inheritance_tree', 28):
-
-            # _get_cached_metadata_inheritance_tree should be called once
-            with check_exact_number_of_calls(store, '_get_cached_metadata_inheritance_tree', 1):
-
-                # with bulk-edit in progress, the inheritance tree should be recomputed only at the end of the import
-                # NOTE: On Jenkins, with memcache enabled, the number of calls here is 1.
-                #       Locally, without memcache, the number of calls is 1 (publish no longer counted)
-                with check_number_of_calls(store, '_compute_metadata_inheritance_tree', 1):
-                    self.load_test_import_course(create_if_not_present=False, module_store=store)
-
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
-    def test_reimport(self, default_ms_type):
-        with modulestore().default_store(default_ms_type):
-            __, __, course = self.load_test_import_course(create_if_not_present=True)
-            self.load_test_import_course(target_id=course.id)
+    def test_reimport(self):
+        __, __, course = self.load_test_import_course(create_if_not_present=True)
+        self.load_test_import_course(target_id=course.id)
 
     def test_rewrite_reference_list(self):
+        # FIXME
         # This test fails with split modulestore (the HTML component is not in "different_course_id" namespace).
         # More investigation needs to be done.
         module_store = modulestore()._get_modulestore_by_type(ModuleStoreEnum.Type.mongo)
@@ -272,22 +255,20 @@ class ContentStoreImportTest(ModuleStoreTestCase):
 
         self.assertEqual(remapped_verticals, split_test_module.group_id_to_child)
 
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
-    def test_video_components_present_while_import(self, store):
+    def test_video_components_present_while_import(self):
         """
         Test that video components with same edx_video_id are present while re-importing
         """
-        with modulestore().default_store(store):
-            module_store = modulestore()
-            course_id = module_store.make_course_key('edX', 'test_import_course', '2012_Fall')
+        module_store = modulestore()
+        course_id = module_store.make_course_key('edX', 'test_import_course', '2012_Fall')
 
-            # Import first time
-            __, __, course = self.load_test_import_course(target_id=course_id, module_store=module_store)
+        # Import first time
+        __, __, course = self.load_test_import_course(target_id=course_id, module_store=module_store)
 
-            # Re-import
-            __, __, re_course = self.load_test_import_course(target_id=course.id, module_store=module_store)
+        # Re-import
+        __, __, re_course = self.load_test_import_course(target_id=course.id, module_store=module_store)
 
-            vertical = module_store.get_item(re_course.id.make_usage_key('vertical', 'vertical_test'))
+        vertical = module_store.get_item(re_course.id.make_usage_key('vertical', 'vertical_test'))
 
-            video = module_store.get_item(vertical.children[1])
-            self.assertEqual(video.display_name, 'default')
+        video = module_store.get_item(vertical.children[1])
+        self.assertEqual(video.display_name, 'default')

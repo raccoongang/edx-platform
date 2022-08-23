@@ -52,9 +52,8 @@ from openedx.core.djangoapps.django_comment_common.utils import seed_permissions
 from openedx.core.djangoapps.util.testing import ContentGroupTestCase
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.django import modulestore
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MIXED_MODULESTORE, ModuleStoreTestCase
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory, ToyCourseFactory
-from xmodule.tabs import CourseTabList
 
 
 class DictionaryTestCase(TestCase):
@@ -194,7 +193,7 @@ class CoursewareContextTestCase(ModuleStoreTestCase):
         utils.add_courseware_context([thread], self.course, self.user)
         assert '/' not in thread.get('courseware_title')
 
-    @ddt.data((ModuleStoreEnum.Type.mongo, 2), (ModuleStoreEnum.Type.split, 1))
+    @ddt.data((ModuleStoreEnum.Type.split, 1))
     @ddt.unpack
     def test_get_accessible_discussion_xblocks(self, modulestore_type, expected_discussion_xblocks):
         """
@@ -1239,7 +1238,7 @@ class IsCommentableDividedTestCase(ModuleStoreTestCase):
     Test the is_commentable_divided function.
     """
 
-    MODULESTORE = TEST_DATA_MIXED_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     def setUp(self):
         """

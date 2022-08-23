@@ -1205,21 +1205,19 @@ class ContentStoreTest(ContentStoreTestCase):
         self.course_data['run'] = 'run.name'
         self.assert_created_course()
 
-    @ddt.data(ModuleStoreEnum.Type.split, ModuleStoreEnum.Type.mongo)
-    def test_course_with_different_cases(self, default_store):
+    def test_course_with_different_cases(self):
         """
         Tests that course can not be created with different case using an AJAX request to
         course handler.
         """
         course_number = '99x'
-        with self.store.default_store(default_store):
-            # Verify create a course passes with lower case.
-            self.course_data['number'] = course_number.lower()
-            self.assert_created_course()
+        # Verify create a course passes with lower case.
+        self.course_data['number'] = course_number.lower()
+        self.assert_created_course()
 
-            # Verify create a course fail when same course number is provided with different case.
-            self.course_data['number'] = course_number.upper()
-            self.assert_course_creation_failed(self.duplicate_course_error)
+        # Verify create a course fail when same course number is provided with different case.
+        self.course_data['number'] = course_number.upper()
+        self.assert_course_creation_failed(self.duplicate_course_error)
 
     def test_create_course_check_forum_seeding(self):
         """Test new course creation and verify forum seeding """
@@ -1358,36 +1356,33 @@ class ContentStoreTest(ContentStoreTestCase):
 
         self.assert_course_creation_failed(self.duplicate_course_error)
 
-    @ddt.data(ModuleStoreEnum.Type.split, ModuleStoreEnum.Type.mongo)
-    def test_create_course_case_change(self, default_store):
+    def test_create_course_case_change(self):
         """Test new course creation - error path due to case insensitive name equality"""
         self.course_data['number'] = '99x'
 
-        with self.store.default_store(default_store):
+        # Verify that the course was created properly.
+        self.assert_created_course()
 
-            # Verify that the course was created properly.
-            self.assert_created_course()
+        # Keep the copy of original org
+        cache_current = self.course_data['org']
 
-            # Keep the copy of original org
-            cache_current = self.course_data['org']
+        # Change `org` to lower case and verify that course did not get created
+        self.course_data['org'] = self.course_data['org'].lower()
+        self.assert_course_creation_failed(self.duplicate_course_error)
 
-            # Change `org` to lower case and verify that course did not get created
-            self.course_data['org'] = self.course_data['org'].lower()
-            self.assert_course_creation_failed(self.duplicate_course_error)
+        # Replace the org with its actual value, and keep the copy of course number.
+        self.course_data['org'] = cache_current
+        cache_current = self.course_data['number']
 
-            # Replace the org with its actual value, and keep the copy of course number.
-            self.course_data['org'] = cache_current
-            cache_current = self.course_data['number']
+        self.course_data['number'] = self.course_data['number'].upper()
+        self.assert_course_creation_failed(self.duplicate_course_error)
 
-            self.course_data['number'] = self.course_data['number'].upper()
-            self.assert_course_creation_failed(self.duplicate_course_error)
+        # Replace the org with its actual value, and keep the copy of course number.
+        self.course_data['number'] = cache_current
+        __ = self.course_data['run']
 
-            # Replace the org with its actual value, and keep the copy of course number.
-            self.course_data['number'] = cache_current
-            __ = self.course_data['run']
-
-            self.course_data['run'] = self.course_data['run'].upper()
-            self.assert_course_creation_failed(self.duplicate_course_error)
+        self.course_data['run'] = self.course_data['run'].upper()
+        self.assert_course_creation_failed(self.duplicate_course_error)
 
     def test_course_substring(self):
         """
@@ -1677,13 +1672,12 @@ class ContentStoreTest(ContentStoreTestCase):
         # make sure we found the item (e.g. it didn't error while loading)
         self.assertTrue(did_load_item)
 
-    @ddt.data(ModuleStoreEnum.Type.split, ModuleStoreEnum.Type.mongo)
-    def test_forum_id_generation(self, default_store):
+    def test_forum_id_generation(self):
         """
         Test that a discussion item, even if it doesn't set its discussion_id,
         consistently generates the same one
         """
-        course = CourseFactory.create(default_store=default_store)
+        course = CourseFactory.create()
 
         # create a discussion item
         discussion_item = self.store.create_item(self.user.id, course.id, 'discussion', 'new_component')

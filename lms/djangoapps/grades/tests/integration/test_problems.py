@@ -58,10 +58,12 @@ class TestMultipleProblemTypesSubsectionScores(SharedModuleStoreTestCase):
         For details on the contents and structure of the file, see
         `common/test/data/scoreable/README`.
         """
+        password = 'test'
+        user = UserFactory.create(is_staff=False, username='test_student', password=password)
 
         course_items = import_course_from_xml(
             cls.store,
-            'test_user',
+            user.id,
             TEST_DATA_DIR,
             source_dirs=['scoreable'],
             static_content_store=None,

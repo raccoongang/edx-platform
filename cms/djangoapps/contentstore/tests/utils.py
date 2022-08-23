@@ -15,7 +15,7 @@ from xmodule.contentstore.django import contentstore
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.inheritance import own_metadata
 from xmodule.modulestore.split_mongo.split import SplitMongoModuleStore
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_MODULESTORE, ModuleStoreTestCase
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory
 from xmodule.modulestore.tests.utils import ProceduralCourseTestMixin
 from xmodule.modulestore.xml_importer import import_course_from_xml
@@ -74,7 +74,7 @@ class CourseTestCase(ProceduralCourseTestMixin, ModuleStoreTestCase):
     Base class for Studio tests that require a logged in user and a course.
     Also provides helper methods for manipulating and verifying the course.
     """
-    MODULESTORE = TEST_DATA_MONGO_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     def setUp(self):
         """

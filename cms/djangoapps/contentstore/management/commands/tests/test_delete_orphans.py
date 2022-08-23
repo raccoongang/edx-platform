@@ -23,26 +23,24 @@ class TestDeleteOrphan(TestOrphanBase):
         with self.assertRaisesRegex(CommandError, errstring):
             call_command('delete_orphans')
 
-    @ddt.data(ModuleStoreEnum.Type.split, ModuleStoreEnum.Type.mongo)
-    def test_delete_orphans_no_commit(self, default_store):
+    def test_delete_orphans_no_commit(self):
         """
         Tests that running the command without a '--commit' argument
         results in no orphans being deleted
         """
-        course = self.create_course_with_orphans(default_store)
+        course = self.create_course_with_orphans(ModuleStoreEnum.Type.split)
         call_command('delete_orphans', str(course.id))
         self.assertTrue(self.store.has_item(course.id.make_usage_key('html', 'multi_parent_html')))
         self.assertTrue(self.store.has_item(course.id.make_usage_key('vertical', 'OrphanVert')))
         self.assertTrue(self.store.has_item(course.id.make_usage_key('chapter', 'OrphanChapter')))
         self.assertTrue(self.store.has_item(course.id.make_usage_key('html', 'OrphanHtml')))
 
-    @ddt.data(ModuleStoreEnum.Type.split, ModuleStoreEnum.Type.mongo)
-    def test_delete_orphans_commit(self, default_store):
+    def test_delete_orphans_commit(self):
         """
         Tests that running the command WITH the '--commit' argument
         results in the orphans being deleted
         """
-        course = self.create_course_with_orphans(default_store)
+        course = self.create_course_with_orphans(ModuleStoreEnum.Type.split)
 
         call_command('delete_orphans', str(course.id), '--commit')
 

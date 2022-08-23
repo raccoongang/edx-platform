@@ -76,6 +76,10 @@ class TestGatedContent(MilestonesTestCaseMixin, SharedModuleStoreTestCase):
                 display_name='chapter 1'
             )
 
+            cls.course.children = [
+                cls.chapter1.location
+            ]
+
             # create sequentials
             cls.seq1 = ItemFactory.create(
                 parent_location=cls.chapter1.location,
@@ -98,6 +102,12 @@ class TestGatedContent(MilestonesTestCaseMixin, SharedModuleStoreTestCase):
                 graded=True,
                 format='Homework',
             )
+
+            cls.chapter1.children = [
+                cls.seq1.location,
+                cls.seq2.location,
+                cls.seq3.location,
+            ]
 
             # create problem
             cls.gating_prob1 = ItemFactory.create(

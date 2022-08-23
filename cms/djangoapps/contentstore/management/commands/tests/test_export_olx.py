@@ -74,9 +74,8 @@ class TestCourseExportOlx(ModuleStoreTestCase):
         self.assertIn(f"{dirname}/assets/assets.xml", names)
         self.assertIn(f"{dirname}/policies", names)
 
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
-    def test_export_course(self, store_type):
-        test_course_key = self.create_dummy_course(store_type)
+    def test_export_course(self):
+        test_course_key = self.create_dummy_course(ModuleStoreEnum.Type.split)
         tmp_dir = path(mkdtemp())
         self.addCleanup(shutil.rmtree, tmp_dir)
         filename = tmp_dir / 'test.tar.gz'
@@ -91,9 +90,8 @@ class TestCourseExportOlx(ModuleStoreTestCase):
     # django this is fixed.  Howevere it's not possible to get this test to
     # pass in Python3 and django 1.11
     @unittest.skip("Bug in django 1.11 prevents this from working in python3.  Re-enable after django 2.x upgrade.")
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
     def test_export_course_stdout(self, store_type):
-        test_course_key = self.create_dummy_course(store_type)
+        test_course_key = self.create_dummy_course(ModuleStoreEnum.Type.split)
         out = StringIO()
         call_command('export_olx', str(test_course_key), stdout=out)
         out.seek(0)

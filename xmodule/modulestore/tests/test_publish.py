@@ -416,13 +416,6 @@ class DraftPublishedOpBaseTestSetup(OLXFormatChecker, DraftPublishedOpTestCourse
         """
         return self.store.get_modulestore_type(self.course.id) == ModuleStoreEnum.Type.split
 
-    @property
-    def is_old_mongo_modulestore(self):
-        """
-        ``True`` when modulestore under test is a MongoModuleStore.
-        """
-        return self.store.get_modulestore_type(self.course.id) == ModuleStoreEnum.Type.mongo
-
     def _make_new_export_dir_name(self):
         """
         Make a unique name for the new export dir.
@@ -716,10 +709,6 @@ class ElementalUnpublishingTests(DraftPublishedOpBaseTestSetup):
                 # Split:
                 # The parent now has a draft *and* published item.
                 self.assertOLXIsDraftAndPublished(block_list_parent)
-            elif self.is_old_mongo_modulestore:
-                # Old Mongo:
-                # The parent remains published only.
-                self.assertOLXIsPublishedOnly(block_list_parent)
             else:
                 raise Exception("Must test either Old Mongo or Split modulestore!")
 
@@ -820,12 +809,7 @@ class ElementalDeleteItemTests(DraftPublishedOpBaseTestSetup):
             # The unit is a draft.
             self.assertOLXIsDraftOnly(block_list_to_delete)
             # MODULESTORE_DIFFERENCE:
-            if self.is_old_mongo_modulestore:
-                # Old Mongo throws no exception when trying to delete an item from the published branch
-                # that isn't yet published.
-                self.delete_item(block_list_to_delete, revision=revision)
-                self._check_for_item_deletion(block_list_to_delete, result)
-            elif self.is_split_modulestore:
+            if self.is_split_modulestore:
                 if revision in (ModuleStoreEnum.RevisionOption.published_only, ModuleStoreEnum.RevisionOption.all):
                     # Split throws an exception when trying to delete an item from the published branch
                     # that isn't yet published.
@@ -969,10 +953,6 @@ class ElementalConvertToDraftTests(DraftPublishedOpBaseTestSetup):
                 # Split:
                 # This operation is a no-op is Split since there's always a draft version maintained.
                 self.assertOLXIsPublishedOnly(block_list_to_convert)
-            elif self.is_old_mongo_modulestore:
-                # Old Mongo:
-                # A draft -and- a published block now exists.
-                self.assertOLXIsDraftAndPublished(block_list_to_convert)
             else:
                 raise Exception("Must test either Old Mongo or Split modulestore!")
 
@@ -992,11 +972,6 @@ class ElementalConvertToDraftTests(DraftPublishedOpBaseTestSetup):
                 self.convert_to_draft(block_list_to_convert)
                 # This operation is a no-op is Split since there's always a draft version maintained.
                 self.assertOLXIsPublishedOnly(block_list_to_convert)
-            elif self.is_old_mongo_modulestore:
-                # Old Mongo:
-                # Direct-only categories are never allowed to be converted to draft.
-                with pytest.raises(InvalidVersionError):
-                    self.convert_to_draft(block_list_to_convert)
             else:
                 raise Exception("Must test either Old Mongo or Split modulestore!")
 

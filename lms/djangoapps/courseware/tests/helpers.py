@@ -31,7 +31,7 @@ from common.djangoapps.student.models import CourseEnrollment, Registration
 from common.djangoapps.student.tests.factories import CourseEnrollmentFactory, UserFactory
 from common.djangoapps.util.date_utils import strftime_localized_html
 from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disable=wrong-import-order
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_MODULESTORE, ModuleStoreTestCase  # lint-amnesty, pylint: disable=wrong-import-order
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, ModuleStoreTestCase  # lint-amnesty, pylint: disable=wrong-import-order
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory  # lint-amnesty, pylint: disable=wrong-import-order
 from xmodule.tests import get_test_descriptor_system, get_test_system  # lint-amnesty, pylint: disable=wrong-import-order
 
@@ -52,10 +52,9 @@ class BaseTestXmodule(ModuleStoreTestCase):
     This class should not contain any tests, because CATEGORY
     should be defined in child class.
     """
-    MODULESTORE = TEST_DATA_MONGO_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     USER_COUNT = 2
-    COURSE_DATA = {}
 
     # Data from YAML xmodule/templates/NAME/default.yaml
     CATEGORY = "vertical"
@@ -99,7 +98,7 @@ class BaseTestXmodule(ModuleStoreTestCase):
         self.item_url = str(self.item_descriptor.location)
 
     def setup_course(self):  # lint-amnesty, pylint: disable=missing-function-docstring
-        self.course = CourseFactory.create(data=self.COURSE_DATA)
+        self.course = CourseFactory.create()
 
         # Turn off cache.
         modulestore().request_cache = None

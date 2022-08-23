@@ -3156,7 +3156,7 @@ class TestEntranceExamInstructorAPIRegradeTask(SharedModuleStoreTestCase, LoginE
         )
         self.ee_modules = [ee_module_to_reset1.module_state_key, ee_module_to_reset2.module_state_key]
 
-    @ddt.data(ModuleStoreEnum.Type.split, ModuleStoreEnum.Type.mongo)
+    @ddt.data(ModuleStoreEnum.Type.split)
     def test_grade_histogram(self, store):
         """
         Verify that a histogram has been created.
@@ -4121,15 +4121,15 @@ class TestDueDateExtensionsDeletedDate(ModuleStoreTestCase, LoginEnrollmentTestC
             self.week2 = ItemFactory.create(due=self.due)
             self.week3 = ItemFactory.create()  # No due date
             self.course.children = [
-                str(self.week1.location),
-                str(self.week2.location),
-                str(self.week3.location)
+                self.week1.location,
+                self.week2.location,
+                self.week3.location
             ]
             self.homework = ItemFactory.create(
                 parent_location=self.week1.location,
                 due=self.due
             )
-            self.week1.children = [str(self.homework.location)]
+            self.week1.children = [self.homework.location]
 
         user1 = UserFactory.create()
         StudentModule(

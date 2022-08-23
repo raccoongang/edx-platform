@@ -80,12 +80,11 @@ class TestOrphan(TestOrphanBase):
     Test finding orphans via view and django config
     """
 
-    @ddt.data(ModuleStoreEnum.Type.split, ModuleStoreEnum.Type.mongo)
-    def test_get_orphans(self, default_store):
+    def test_get_orphans(self):
         """
         Test that the orphan handler finds the orphans
         """
-        course = self.create_course_with_orphans(default_store)
+        course = self.create_course_with_orphans(ModuleStoreEnum.Type.split)
         orphan_url = reverse_course_url('orphan_handler', course.id)
 
         orphans = json.loads(
@@ -104,7 +103,6 @@ class TestOrphan(TestOrphanBase):
 
     @ddt.data(
         (ModuleStoreEnum.Type.split, 5, 3),
-        (ModuleStoreEnum.Type.mongo, 34, 12),
     )
     @ddt.unpack
     def test_delete_orphans(self, default_store, max_mongo_calls, min_mongo_calls):
@@ -126,12 +124,11 @@ class TestOrphan(TestOrphanBase):
         # parent are not deleted
         self.assertTrue(self.store.has_item(course.id.make_usage_key('html', "multi_parent_html")))
 
-    @ddt.data(ModuleStoreEnum.Type.split, ModuleStoreEnum.Type.mongo)
-    def test_not_permitted(self, default_store):
+    def test_not_permitted(self):
         """
         Test that auth restricts get and delete appropriately
         """
-        course = self.create_course_with_orphans(default_store)
+        course = self.create_course_with_orphans(ModuleStoreEnum.Type.split)
         orphan_url = reverse_course_url('orphan_handler', course.id)
 
         test_user_client, test_user = self.create_non_staff_authed_user_client()
