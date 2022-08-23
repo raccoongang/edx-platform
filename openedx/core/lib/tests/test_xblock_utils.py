@@ -38,13 +38,7 @@ class TestXblockUtils(SharedModuleStoreTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.course_mongo = CourseFactory.create(
-            default_store=ModuleStoreEnum.Type.mongo,
-            org='TestX',
-            number='TS01',
-            run='2015'
-        )
-        cls.course_split = CourseFactory.create(
+        cls.course = CourseFactory.create(
             default_store=ModuleStoreEnum.Type.split,
             org='TestX',
             number='TS02',
@@ -86,21 +80,15 @@ class TestXblockUtils(SharedModuleStoreTestCase):
         test_uuid = uuid.UUID(token, version=1)
         assert token == test_uuid.hex
 
-    @ddt.data(
-        ('course_mongo', 'data-usage-id="i4x:;_;_TestX;_TS01;_course;_2015"'),
-        ('course_split', 'data-usage-id="block-v1:TestX+TS02+2015+type@course+block@course"')
-    )
-    @ddt.unpack
-    def test_wrap_xblock(self, course_id, data_usage_id):
+    def test_wrap_xblock(self):
         """
         Verify that new content is added and the resources are the same.
         """
         fragment = self.create_fragment("<h1>Test!</h1>")
         fragment.initialize_js('BlockMain')  # wrap_block() sets some attributes only if there is JS.
-        course = getattr(self, course_id)
         test_wrap_output = wrap_xblock(
             runtime_class='TestRuntime',
-            block=course,
+            block=self.course,
             view='baseview',
             frag=fragment,
             context={"wrap_xblock_data": {"custom-attribute": "custom-value"}},
@@ -110,7 +98,7 @@ class TestXblockUtils(SharedModuleStoreTestCase):
         assert isinstance(test_wrap_output, Fragment)
         assert 'xblock-baseview' in test_wrap_output.content
         assert 'data-runtime-class="TestRuntime"' in test_wrap_output.content
-        assert data_usage_id in test_wrap_output.content
+        assert 'data-usage-id="block-v1:TestX+TS02+2015+type@course+block@course"' in test_wrap_output.content
         assert '<h1>Test!</h1>' in test_wrap_output.content
         assert 'data-custom-attribute="custom-value"' in test_wrap_output.content
         assert test_wrap_output.resources[0].data == 'body {background-color:red;}'

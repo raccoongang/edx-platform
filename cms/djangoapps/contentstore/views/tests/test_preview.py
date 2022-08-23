@@ -15,10 +15,9 @@ from xblock.core import XBlock, XBlockAside
 
 from xmodule.contentstore.django import contentstore
 from xmodule.lti_module import LTIBlock
-from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.tests.django_utils import (
-    TEST_DATA_MONGO_MODULESTORE, ModuleStoreTestCase, upload_file_to_course,
+    TEST_DATA_SPLIT_MODULESTORE, ModuleStoreTestCase, upload_file_to_course,
 )
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 from xmodule.modulestore.tests.test_asides import AsideTestType
@@ -45,7 +44,7 @@ class GetPreviewHtmlTestCase(ModuleStoreTestCase):
         Test for calling get_preview_html. Ensures data-usage-id is correctly set and
         asides are correctly included.
         """
-        course = CourseFactory.create(default_store=ModuleStoreEnum.Type.split)
+        course = CourseFactory.create()
         html = ItemFactory.create(
             parent_location=course.location,
             category="html",
@@ -93,7 +92,7 @@ class GetPreviewHtmlTestCase(ModuleStoreTestCase):
         Test for calling get_preview_html. Ensures data-usage-id is correctly set and
         asides are correctly excluded because they are not enabled.
         """
-        course = CourseFactory.create(default_store=ModuleStoreEnum.Type.split)
+        course = CourseFactory.create()
         html = ItemFactory.create(
             parent_location=course.location,
             category="html",
@@ -127,52 +126,49 @@ class GetPreviewHtmlTestCase(ModuleStoreTestCase):
         client = Client()
         client.login(username=self.user.username, password=self.user_password)
 
-        with self.store.default_store(ModuleStoreEnum.Type.split):
-            course = CourseFactory.create()
+        course = CourseFactory.create()
 
-            conditional_block = ItemFactory.create(
-                parent_location=course.location,
-                category="conditional"
-            )
+        conditional_block = ItemFactory.create(
+            parent_location=course.location,
+            category="conditional"
+        )
 
-            # child conditional_block
-            ItemFactory.create(
-                parent_location=conditional_block.location,
-                category="conditional"
-            )
+        # child conditional_block
+        ItemFactory.create(
+            parent_location=conditional_block.location,
+            category="conditional"
+        )
 
-            url = reverse_usage_url(
-                'preview_handler',
-                conditional_block.location,
-                kwargs={'handler': 'xmodule_handler/conditional_get'}
-            )
-            response = client.post(url)
-            self.assertEqual(response.status_code, 200)
+        url = reverse_usage_url(
+            'preview_handler',
+            conditional_block.location,
+            kwargs={'handler': 'xmodule_handler/conditional_get'}
+        )
+        response = client.post(url)
+        self.assertEqual(response.status_code, 200)
 
-    @ddt.data(ModuleStoreEnum.Type.split, ModuleStoreEnum.Type.mongo)
-    def test_block_branch_not_changed_by_preview_handler(self, default_store):
+    def test_block_branch_not_changed_by_preview_handler(self):
         """
         Tests preview_handler should not update blocks being previewed
         """
         client = Client()
         client.login(username=self.user.username, password=self.user_password)
 
-        with self.store.default_store(default_store):
-            course = CourseFactory.create()
+        course = CourseFactory.create()
 
-            block = ItemFactory.create(
-                parent_location=course.location,
-                category="problem"
-            )
+        block = ItemFactory.create(
+            parent_location=course.location,
+            category="problem"
+        )
 
-            url = reverse_usage_url(
-                'preview_handler',
-                block.location,
-                kwargs={'handler': 'xmodule_handler/problem_check'}
-            )
-            response = client.post(url)
-            self.assertEqual(response.status_code, 200)
-            self.assertFalse(modulestore().has_changes(modulestore().get_item(block.location)))
+        url = reverse_usage_url(
+            'preview_handler',
+            block.location,
+            kwargs={'handler': 'xmodule_handler/problem_check'}
+        )
+        response = client.post(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(modulestore().has_changes(modulestore().get_item(block.location)))
 
 
 @XBlock.needs("field-data")
@@ -229,7 +225,7 @@ class CmsModuleSystemShimTest(ModuleStoreTestCase):
     """
     Tests that the deprecated attributes in the Module System (XBlock Runtime) return the expected values.
     """
-    MODULESTORE = TEST_DATA_MONGO_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
     COURSE_ID = 'edX/CmsModuleShimTest/2021_Fall'
     PYTHON_LIB_FILENAME = 'test_python_lib.zip'
     PYTHON_LIB_SOURCE_FILE = './common/test/data/uploads/python_lib.zip'

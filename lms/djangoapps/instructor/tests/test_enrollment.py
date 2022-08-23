@@ -373,16 +373,22 @@ class TestInstructorEnrollmentStudentModule(SharedModuleStoreTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.course = CourseFactory(
+        cls.course = CourseFactory.create(
             name='fake',
             org='course',
             run='id',
         )
+
         cls.course_key = cls.course.location.course_key  # lint-amnesty, pylint: disable=no-member
         with cls.store.bulk_operations(cls.course.id, emit_signals=False):  # lint-amnesty, pylint: disable=no-member
+            cls.chapter = ItemFactory.create(
+                parent_location=cls.course.location,
+                category='chapter',
+                display_name='chapter'
+            )
             cls.parent = ItemFactory(
                 category="library_content",
-                parent=cls.course,
+                parent=cls.chapter,
                 publish_item=True,
             )
             cls.child = ItemFactory(
@@ -392,7 +398,7 @@ class TestInstructorEnrollmentStudentModule(SharedModuleStoreTestCase):
             )
             cls.unrelated = ItemFactory(
                 category="html",
-                parent=cls.course,
+                parent=cls.chapter,
                 publish_item=True,
             )
             cls.team_enabled_ora = ItemFactory.create(

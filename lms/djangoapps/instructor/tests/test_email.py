@@ -13,7 +13,7 @@ from common.djangoapps.student.tests.factories import AdminFactory
 from lms.djangoapps.bulk_email.models_api import is_bulk_email_enabled_for_course, is_bulk_email_feature_enabled
 
 from lms.djangoapps.bulk_email.models import BulkEmailFlag, CourseAuthorization, DisabledCourse
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MIXED_MODULESTORE, SharedModuleStoreTestCase  # lint-amnesty, pylint: disable=wrong-import-order
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, SharedModuleStoreTestCase  # lint-amnesty, pylint: disable=wrong-import-order
 from xmodule.modulestore.tests.factories import CourseFactory  # lint-amnesty, pylint: disable=wrong-import-order
 
 from lms.djangoapps.bulk_email.models_api import is_bulk_email_disabled_for_course
@@ -131,7 +131,7 @@ class TestNewInstructorDashboardEmailViewXMLBacked(SharedModuleStoreTestCase):
     Check for email view on the new instructor dashboard
     """
 
-    MODULESTORE = TEST_DATA_MIXED_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     @classmethod
     def setUpClass(cls):

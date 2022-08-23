@@ -26,7 +26,6 @@ from openedx.core.lib.tests import attr
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.tests.utils import (
     CONTENTSTORE_SETUPS,
-    MODULESTORE_SETUPS,
     SPLIT_MODULESTORE_SETUP,
     TEST_DATA_DIR,
     MongoContentstoreBuilder,

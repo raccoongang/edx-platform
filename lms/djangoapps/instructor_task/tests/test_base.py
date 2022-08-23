@@ -37,7 +37,7 @@ from openedx.core.lib.url_utils import quote_slashes
 TEST_COURSE_ORG = 'edx'
 TEST_COURSE_NAME = 'test_course'
 TEST_COURSE_NUMBER = '1.23x'
-TEST_COURSE_KEY = CourseKey.from_string('/'.join([TEST_COURSE_ORG, TEST_COURSE_NUMBER, TEST_COURSE_NAME]))
+TEST_COURSE_KEY = CourseKey.from_string(f'course-v1:{TEST_COURSE_ORG}+{TEST_COURSE_NUMBER}+{TEST_COURSE_NAME}')
 TEST_CHAPTER_NAME = "Section"
 TEST_SECTION_NAME = "Subsection"
 

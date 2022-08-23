@@ -770,13 +770,12 @@ class GroupConfigurationsUsageInfoTestCase(CourseTestCase, HelperMethods):
 
         self.assertEqual(actual, expected)
 
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
-    def test_can_get_correct_usage_info_with_orphan(self, module_store_type):
+    def test_can_get_correct_usage_info_with_orphan(self):
         """
         Test if content group json updated successfully with usage information
         even if there is an orphan in content group.
         """
-        self.course = CourseFactory.create(default_store=module_store_type)
+        self.course = CourseFactory.create()
         self._add_user_partitions(count=1, scheme_id='cohort')
         vertical, __ = self._create_problem_with_content_group(cid=0, group_id=1, name_suffix='0', orphan=True)
 
@@ -784,16 +783,8 @@ class GroupConfigurationsUsageInfoTestCase(CourseTestCase, HelperMethods):
         self.assertEqual(len(self.store.get_orphans(self.course.id)), 1)
         self.assertIn(vertical.location, self.store.get_orphans(self.course.id))
 
-        # Get the expected content group information based on module store.
-        if module_store_type == ModuleStoreEnum.Type.mongo:
-            expected = self._get_expected_content_group(usage_for_group=[
-                {
-                    'url': f'/container/{vertical.location}',
-                    'label': 'Test Unit 0 / Test Problem 0'
-                }
-            ])
-        else:
-            expected = self._get_expected_content_group(usage_for_group=[])
+        # Get the expected content group information.
+        expected = self._get_expected_content_group(usage_for_group=[])
 
         # Get the actual content group information
         actual = self._get_user_partition('cohort')

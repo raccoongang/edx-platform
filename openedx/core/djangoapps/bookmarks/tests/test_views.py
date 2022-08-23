@@ -11,7 +11,6 @@ import ddt
 from django.conf import settings
 from django.urls import reverse
 from rest_framework.test import APIClient
-from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE
 
 from openedx.core.djangolib.testing.utils import skip_unless_lms
@@ -90,9 +89,7 @@ class BookmarksListViewTests(BookmarksViewsTestsBase):
         expected order without optional fields.
         """
 
-        course, __, bookmarks = self.create_course_with_bookmarks_count(
-            bookmarks_count, store_type=ModuleStoreEnum.Type.mongo
-        )
+        course, __, bookmarks = self.create_course_with_bookmarks_count(bookmarks_count)
 
         query_parameters = 'course_id={}&page_size={}'.format(
             quote(str(course.id)), 100)
@@ -133,9 +130,7 @@ class BookmarksListViewTests(BookmarksViewsTestsBase):
         Test that requesting bookmarks for a course return results with pagination 200 code.
         """
 
-        course, __, bookmarks = self.create_course_with_bookmarks_count(
-            bookmarks_count, store_type=ModuleStoreEnum.Type.mongo
-        )
+        course, __, bookmarks = self.create_course_with_bookmarks_count(bookmarks_count)
 
         page_size = 5
         query_parameters = 'course_id={}&page_size={}'.format(

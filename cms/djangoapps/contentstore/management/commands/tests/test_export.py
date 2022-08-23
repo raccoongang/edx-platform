@@ -45,16 +45,15 @@ class TestCourseExport(ModuleStoreTestCase):
         self.addCleanup(shutil.rmtree, self.temp_dir_1)
         self.addCleanup(shutil.rmtree, self.temp_dir_2)
 
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
-    def test_export_course_with_directory_name(self, store):
+    def test_export_course_with_directory_name(self):
         """
         Create a new course try exporting in a path specified
         """
-        course = CourseFactory.create(default_store=store)
+        course = CourseFactory.create()
         course_id = str(course.id)
         self.assertTrue(
             modulestore().has_course(course.id),
-            f"Could not find course in {store}"
+            f"Could not find course in {ModuleStoreEnum.Type.split}"
         )
         # Test `export` management command with invalid course_id
         errstring = "Invalid course_key: 'InvalidCourseID'."

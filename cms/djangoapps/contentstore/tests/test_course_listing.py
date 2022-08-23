@@ -162,12 +162,8 @@ class TestCourseListing(ModuleStoreTestCase):
             courses_iter, __ = _accessible_courses_iter_for_tests(self.request)
             self.assertEqual(len(list(courses_iter)), 0)
 
-    @ddt.data(
-        (ModuleStoreEnum.Type.split, 2),
-        (ModuleStoreEnum.Type.mongo, 1)
-    )
     @ddt.unpack
-    def test_staff_course_listing(self, default_store, mongo_calls):
+    def test_staff_course_listing(self):
         """
         Create courses and verify they take certain amount of mongo calls to call get_courses_accessible_to_user.
         Also verify that fetch accessible courses list for staff user returns CourseSummary instances.
@@ -177,11 +173,10 @@ class TestCourseListing(ModuleStoreTestCase):
         GlobalStaff().add_users(self.user)
         self.assertTrue(GlobalStaff().has_user(self.user))
 
-        with self.store.default_store(default_store):
-            # Create few courses
-            for num in range(TOTAL_COURSES_COUNT):
-                course_location = self.store.make_course_key('Org', 'CreatedCourse' + str(num), 'Run')
-                self._create_course_with_access_groups(course_location, self.user)
+        # Create few courses
+        for num in range(TOTAL_COURSES_COUNT):
+            course_location = self.store.make_course_key('Org', 'CreatedCourse' + str(num), 'Run')
+            self._create_course_with_access_groups(course_location, self.user)
 
         # Fetch accessible courses list & verify their count
         courses_list_by_staff, __ = get_courses_accessible_to_user(self.request)
@@ -192,7 +187,7 @@ class TestCourseListing(ModuleStoreTestCase):
         self.assertTrue(all(isinstance(course, CourseSummary) for course in courses_list_by_staff))
 
         # Now count the db queries for staff
-        with check_mongo_calls(mongo_calls):
+        with check_mongo_calls(2):
             list(_accessible_courses_summary_iter(self.request))
 
     @ddt.data(ModuleStoreEnum.Type.split)

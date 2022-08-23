@@ -191,7 +191,7 @@ class GetItemTest(ItemTest):
         (3, 34),
     )
     @ddt.unpack
-    def test_container_get_query_count(self, branching_factor, unit_queries,):
+    def test_container_get_query_count(self, branching_factor, unit_queries):
         self.populate_course(branching_factor)
         with check_mongo_calls(unit_queries):
             self.client.get(reverse_usage_url('xblock_container_handler', self.populated_usage_keys['vertical'][-1]))
@@ -483,9 +483,8 @@ class GetItemTest(ItemTest):
 class DeleteItem(ItemTest):
     """Tests for '/xblock' DELETE url."""
 
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
-    def test_delete_static_page(self, store):
-        course = CourseFactory.create(default_store=store)
+    def test_delete_static_page(self):
+        course = CourseFactory.create()
         # Add static tab
         resp = self.create_xblock(category='static_tab', parent_usage_key=course.location)
         usage_key = self.response_usage_key(resp)
@@ -918,15 +917,14 @@ class TestMoveItem(ItemTest):
         self.assertIn(source_usage_key, target_parent.children)
         self.assertNotIn(source_usage_key, source_parent.children)
 
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
-    def test_move_component(self, store_type):
+    def test_move_component(self):
         """
         Test move component with different xblock types.
 
         Arguments:
             store_type (ModuleStoreEnum.Type): Type of modulestore to create test course in.
         """
-        self.setup_course(default_store=store_type)
+        self.setup_course()
         for source_usage_key, target_usage_key in [
                 (self.html_usage_key, self.vert2_usage_key),
                 (self.vert_usage_key, self.seq2_usage_key),
@@ -1255,8 +1253,7 @@ class TestMoveItem(ItemTest):
             insert_at
         )
 
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
-    def test_move_and_discard_changes(self, store_type):
+    def test_move_and_discard_changes(self):
         """
         Verifies that discard changes operation brings moved component back to source location and removes the component
         from target location.
@@ -1264,7 +1261,7 @@ class TestMoveItem(ItemTest):
         Arguments:
             store_type (ModuleStoreEnum.Type): Type of modulestore to create test course in.
         """
-        self.setup_course(default_store=store_type)
+        self.setup_course()
 
         old_parent_loc = self.store.get_parent_location(self.html_usage_key)
 
@@ -1308,15 +1305,14 @@ class TestMoveItem(ItemTest):
         self.assertIn(self.html_usage_key, source_parent.children)
         self.assertNotIn(self.html_usage_key, target_parent.children)
 
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
-    def test_move_item_not_found(self, store_type=ModuleStoreEnum.Type.mongo):
+    def test_move_item_not_found(self):
         """
         Test that an item not found exception raised when an item is not found when getting the item.
 
         Arguments:
             store_type (ModuleStoreEnum.Type): Type of modulestore to create test course in.
         """
-        self.setup_course(default_store=store_type)
+        self.setup_course()
 
         data = {
             'move_source_locator': str(self.usage_key.course_key.make_usage_key('html', 'html_test')),
@@ -2563,31 +2559,26 @@ class TestXBlockInfo(ItemTest):
         json_response = json.loads(resp.content.decode('utf-8'))
         self.validate_course_xblock_info(json_response, course_outline=True)
 
-    @ddt.data(
-        (ModuleStoreEnum.Type.split, 3, 3),
-        (ModuleStoreEnum.Type.mongo, 5, 7),
-    )
     @ddt.unpack
-    def test_xblock_outline_handler_mongo_calls(self, store_type, chapter_queries, chapter_queries_1):
-        with self.store.default_store(store_type):
-            course = CourseFactory.create()
-            chapter = ItemFactory.create(
-                parent_location=course.location, category='chapter', display_name='Week 1'
-            )
-            outline_url = reverse_usage_url('xblock_outline_handler', chapter.location)
-            with check_mongo_calls(chapter_queries):
-                self.client.get(outline_url, HTTP_ACCEPT='application/json')
+    def test_xblock_outline_handler_mongo_calls(self):
+        course = CourseFactory.create()
+        chapter = ItemFactory.create(
+            parent_location=course.location, category='chapter', display_name='Week 1'
+        )
+        outline_url = reverse_usage_url('xblock_outline_handler', chapter.location)
+        with check_mongo_calls(3):
+            self.client.get(outline_url, HTTP_ACCEPT='application/json')
 
-            sequential = ItemFactory.create(
-                parent_location=chapter.location, category='sequential', display_name='Sequential 1'
-            )
+        sequential = ItemFactory.create(
+            parent_location=chapter.location, category='sequential', display_name='Sequential 1'
+        )
 
-            ItemFactory.create(
-                parent_location=sequential.location, category='vertical', display_name='Vertical 1'
-            )
-            # calls should be same after adding two new children for split only.
-            with check_mongo_calls(chapter_queries_1):
-                self.client.get(outline_url, HTTP_ACCEPT='application/json')
+        ItemFactory.create(
+            parent_location=sequential.location, category='vertical', display_name='Vertical 1'
+        )
+        # calls should be same after adding two new children for split only.
+        with check_mongo_calls(3):
+            self.client.get(outline_url, HTTP_ACCEPT='application/json')
 
     def test_entrance_exam_chapter_xblock_info(self):
         chapter = ItemFactory.create(
@@ -2703,28 +2694,26 @@ class TestXBlockInfo(ItemTest):
         )
         self.validate_component_xblock_info(xblock_info)
 
-    @ddt.data(ModuleStoreEnum.Type.split, ModuleStoreEnum.Type.mongo)
-    def test_validate_start_date(self, store_type):
+    def test_validate_start_date(self):
         """
         Validate if start-date year is less than 1900 reset the date to DEFAULT_START_DATE.
         """
-        with self.store.default_store(store_type):
-            course = CourseFactory.create()
-            chapter = ItemFactory.create(
-                parent_location=course.location, category='chapter', display_name='Week 1'
-            )
+        course = CourseFactory.create()
+        chapter = ItemFactory.create(
+            parent_location=course.location, category='chapter', display_name='Week 1'
+        )
 
-            chapter.start = datetime(year=1899, month=1, day=1, tzinfo=UTC)
+        chapter.start = datetime(year=1899, month=1, day=1, tzinfo=UTC)
 
-            xblock_info = create_xblock_info(
-                chapter,
-                include_child_info=True,
-                include_children_predicate=ALWAYS,
-                include_ancestor_info=True,
-                user=self.user
-            )
+        xblock_info = create_xblock_info(
+            chapter,
+            include_child_info=True,
+            include_children_predicate=ALWAYS,
+            include_ancestor_info=True,
+            user=self.user
+        )
 
-            self.assertEqual(xblock_info['start'], DEFAULT_START_DATE.strftime('%Y-%m-%dT%H:%M:%SZ'))
+        self.assertEqual(xblock_info['start'], DEFAULT_START_DATE.strftime('%Y-%m-%dT%H:%M:%SZ'))
 
     def test_highlights_enabled(self):
         self.course.highlights_enabled_for_messaging = True
@@ -3185,9 +3174,8 @@ class TestXBlockPublishingInfo(ItemTest):
         xblock_info = self._get_xblock_info(empty_chapter.location)
         self._verify_visibility_state(xblock_info, VisibilityState.unscheduled)
 
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
-    def test_chapter_self_paced_default_start_date(self, store_type):
-        course = CourseFactory.create(default_store=store_type)
+    def test_chapter_self_paced_default_start_date(self):
+        course = CourseFactory.create()
         course.self_paced = True
         self.store.update_item(course, self.user.id)
         chapter = self._create_child(course, 'chapter', "Test Chapter")
@@ -3408,8 +3396,7 @@ class TestXBlockPublishingInfo(ItemTest):
         self._verify_has_staff_only_message(xblock_info, True, path=self.FIRST_SUBSECTION_PATH)
         self._verify_has_staff_only_message(xblock_info, True, path=self.FIRST_UNIT_PATH)
 
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
-    def test_self_paced_item_visibility_state(self, store_type):
+    def test_self_paced_item_visibility_state(self):
         """
         Test that in self-paced course, item has `live` visibility state.
         Test that when item was initially in `scheduled` state in instructor mode, change course pacing to self-paced,
@@ -3417,7 +3404,7 @@ class TestXBlockPublishingInfo(ItemTest):
         """
 
         # Create course, chapter and setup future release date to make chapter in scheduled state
-        course = CourseFactory.create(default_store=store_type)
+        course = CourseFactory.create()
         chapter = self._create_child(course, 'chapter', "Test Chapter")
         self._set_release_date(chapter.location, datetime.now(UTC) + timedelta(days=1))
 
