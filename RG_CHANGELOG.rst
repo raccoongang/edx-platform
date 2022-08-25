@@ -29,6 +29,11 @@ Added
   - The new WaffleFlag is disabled by default
   - Use case for enabling the WaffleFlag - usage of programs that include honor courses
 
+Fixes
+-----
+
+- Fix error for the CMS logistration `RGOeX-1597 <https://youtrack.raccoongang.com/issue/RGOeX-1597>`_
+
 
 [Maple Release] - 2022-04-29
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

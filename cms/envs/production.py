@@ -677,4 +677,6 @@ if AUTH_TOKENS.get('RG_SENTRY_DSN', None):
             send_default_pii=True
             )
 
+INACTIVE_USER_URL = f'http{"s" if HTTPS == "on" else ""}://{CMS_BASE}'
+
 #RACCOONGANG
