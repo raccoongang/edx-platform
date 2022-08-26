@@ -198,6 +198,7 @@ def get_bundles(uuids=None, text_search=None):
     Get the details of all bundles.
     """
     query_params = {}
+    data = {}
     if uuids:
         # Potentially we could have a lot of libraries which will lead to 414 error (Request-URI Too Long)
         # if sending uuids in the query_params. So we have to use the request data instead.
