@@ -77,7 +77,7 @@ from xblock.exceptions import XBlockNotFoundError
 from edx_rest_api_client.client import OAuthAPIClient
 from openedx.core.djangoapps.content_libraries import permissions
 from openedx.core.djangoapps.content_libraries.constants import DRAFT_NAME, COMPLEX
-from openedx.core.djangoapps.content_libraries.library_bundle import LibraryBundle
+from openedx.core.djangoapps.content_libraries.library_bundle import LibraryBundle, bundle_uuid_for_library_key
 from openedx.core.djangoapps.content_libraries.libraries_index import ContentLibraryIndexer, LibraryBlockIndexer
 from openedx.core.djangoapps.content_libraries.models import (
     ContentLibrary,
@@ -619,6 +619,7 @@ def delete_library(library_key):
     CONTENT_LIBRARY_DELETED.send(sender=None, library_key=ref.library_key)
     try:
         delete_bundle(bundle_uuid)
+        bundle_uuid_for_library_key.cache_clear()
     except:
         log.exception("Failed to delete blockstore bundle %s when deleting library. Delete it manually.", bundle_uuid)
         raise

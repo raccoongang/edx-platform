@@ -216,6 +216,7 @@ class ContentLibrariesTestMixin:
         with override_settings(FEATURES={**settings.FEATURES, 'ENABLE_CONTENT_LIBRARY_INDEX': is_indexing_enabled}):
             lib1 = self._create_library(slug="some-slug-1", title="Existing Library")
             lib2 = self._create_library(slug="some-slug-2", title="Existing Library")
+            lib1['can_delete'] = lib2['can_delete'] = True
             if not is_indexing_enabled:
                 lib1['num_blocks'] = lib2['num_blocks'] = None
                 lib1['last_published'] = lib2['last_published'] = None

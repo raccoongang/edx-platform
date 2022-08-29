@@ -180,6 +180,14 @@ class LibraryRootView(APIView):
             result = api.get_metadata_from_index(paginated_qs)
 
         serializer = ContentLibraryMetadataSerializer(result, many=True)
+
+        # add permisson for deleting library in response
+        for library_data in serializer.data:
+            library_key = LibraryLocatorV2.from_string(library_data['id'])
+            library_obj = ContentLibrary.objects.get_by_key(library_key)
+            can_delete = request.user.has_perm(permissions.CAN_DELETE_THIS_CONTENT_LIBRARY, obj=library_obj)
+            library_data['can_delete'] = can_delete
+
         # Verify `pagination` param to maintain compatibility with older
         # non pagination-aware clients
         if request.GET.get('pagination', 'false').lower() == 'true':
