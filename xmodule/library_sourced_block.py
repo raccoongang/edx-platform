@@ -285,10 +285,7 @@ class LibrarySourcedBlock(
         Return a list of possible values for self.source_library_id
         """
         user_perms = self.runtime.service(self, 'studio_user_permissions')
-        all_libraries = [
-            (key, bleach.clean(name)) for key, name in self.tools.list_available_libraries()
-            if user_perms.can_read(key) or self.source_library_id == str(key)
-        ]
+        all_libraries = self.tools.list_available_libraries(user_perms)
         all_libraries.sort(key=lambda entry: entry[1])  # Sort by name
         if self.source_library_id and self.source_library_key not in [entry[0] for entry in all_libraries]:
             all_libraries.append((self.source_library_id, _("Invalid Library")))

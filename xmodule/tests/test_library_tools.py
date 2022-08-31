@@ -31,7 +31,8 @@ class ContentLibraryToolsTest(MixedSplitTestCase, ContentLibrariesRestApiTest):
         UserFactory(is_staff=True, id=self.user_id)
         self.tools = LibraryToolsService(self.store, self.user_id)
 
-    def test_list_available_libraries(self):
+    @patch('cms.djangoapps.contentstore.views.item.StudioPermissionsService')
+    def test_list_available_libraries(self, mock_user_perm):
         """
         Test listing of libraries.
 
@@ -41,17 +42,20 @@ class ContentLibraryToolsTest(MixedSplitTestCase, ContentLibrariesRestApiTest):
         _ = LibraryFactory.create(modulestore=self.store)
         # create V2 library
         self._create_library(slug="testlib1_preview", title="Test Library 1", description="Testing XBlocks")
-        all_libraries = self.tools.list_available_libraries()
+        all_libraries = self.tools.list_available_libraries(mock_user_perm)
         assert all_libraries
+        assert mock_user_perm.called
         assert len(all_libraries) == 2
 
     @patch('xmodule.modulestore.split_mongo.split.SplitMongoModuleStore.get_library_summaries')
-    def test_list_available_libraries_fetch(self, mock_get_library_summaries):
+    @patch('cms.djangoapps.contentstore.views.item.StudioPermissionsService')
+    def test_list_available_libraries_fetch(self, mock_get_library_summaries, mock_user_perm):
         """
         Test that library list is compiled using light weight library summary objects.
         """
-        _ = self.tools.list_available_libraries()
+        _ = self.tools.list_available_libraries(mock_user_perm)
         assert mock_get_library_summaries.called
+        assert mock_user_perm.called
 
     def test_import_from_blockstore(self):
         # Create a blockstore content library
