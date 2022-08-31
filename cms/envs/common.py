@@ -516,6 +516,14 @@ FEATURES = {
     #   in the LMS and CMS.
     # .. toggle_tickets: 'https://github.com/open-craft/edx-platform/pull/429'
     'DISABLE_UNENROLLMENT': False,
+
+    # .. toggle_name: FEATURES['ENABLE_LIBRARY_DELETION']
+    # .. toggle_implementation: DjangoSetting
+    # .. toggle_default: False
+    # .. toggle_description: Set to True to enable deletion functionality for library mfe.
+    # .. toggle_use_cases: open_edx
+    # .. toggle_creation_date: 2022-08-31
+    'ENABLE_LIBRARY_DELETION': False,
 }
 
 # .. toggle_name: ENABLE_COPPA_COMPLIANCE
