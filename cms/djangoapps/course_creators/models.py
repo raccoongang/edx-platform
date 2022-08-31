@@ -60,6 +60,9 @@ class CourseCreator(models.Model):
     def __str__(self):
         return f"{self.user} | {self.state} [{self.state_changed}]"
 
+    def member_of_organizations_name(self):
+        return self.organizations.values_list("short_name", flat=True)
+
 
 @receiver(post_init, sender=CourseCreator)
 def post_init_callback(sender, **kwargs):  # lint-amnesty, pylint: disable=unused-argument

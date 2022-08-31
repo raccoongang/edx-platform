@@ -165,7 +165,7 @@ class LibraryToolsService:
         """
         return self.import_task_status(location) == UserTaskStatus.IN_PROGRESS
 
-    def list_available_libraries(self):
+    def list_available_libraries(self, user_perms):
         """
         List all known libraries.
 
@@ -177,6 +177,7 @@ class LibraryToolsService:
         v1_libs = [
             (lib.location.library_key.replace(version_guid=None, branch=None), lib.display_name)
             for lib in self.store.get_library_summaries()
+            if user_perms.can_read(lib.location.library_key.replace(version_guid=None, branch=None))
         ]
         v2_query = library_api.get_libraries_for_user(user)
         v2_libs_with_meta = library_api.get_metadata_from_index(v2_query)
