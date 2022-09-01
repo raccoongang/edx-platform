@@ -1554,11 +1554,13 @@ class ContentStoreTest(ContentStoreTestCase):
         )
         course_key = course_items[0].id
 
+        resp = self._show_course_overview(course_key)
+
         # course_handler raise 404 for old mongo course
         if course_key.deprecated:
-            raise SkipTest("course_handler raise 404 for old mongo course")
+            self.assertEqual(resp.status_code, 404)
+            return
 
-        resp = self._show_course_overview(course_key)
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, 'Chapter 2')
 

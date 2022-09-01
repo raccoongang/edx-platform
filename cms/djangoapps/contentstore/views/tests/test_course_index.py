@@ -58,7 +58,7 @@ class TestCourseIndex(CourseTestCase):
             display_name='dotted.course.name-2',
         )
 
-    def check_courses_on_index(self, authed_client):
+    def check_courses_on_index(self, authed_client, expected_course_tab_len):
         """
         Test that the React course listing is present.
         """
@@ -66,7 +66,7 @@ class TestCourseIndex(CourseTestCase):
         index_response = authed_client.get(index_url, {}, HTTP_ACCEPT='text/html')
         parsed_html = lxml.html.fromstring(index_response.content)
         courses_tab = parsed_html.find_class('react-course-listing')
-        self.assertEqual(len(courses_tab), 1)
+        self.assertEqual(len(courses_tab), expected_course_tab_len)
 
     def test_libraries_on_index(self):
         """
@@ -100,9 +100,7 @@ class TestCourseIndex(CourseTestCase):
         """
         Test that people with is_staff see the courses and can navigate into them
         """
-        if self.course.id.deprecated:
-            raise SkipTest("Skip test for old mongo course")
-        self.check_courses_on_index(self.client)
+        self.check_courses_on_index(self.client, 0)
 
     def test_negative_conditions(self):
         """
@@ -118,9 +116,6 @@ class TestCourseIndex(CourseTestCase):
         """
         Make and register course_staff and ensure they can access the courses
         """
-        if self.course.id.deprecated:
-            raise SkipTest("Skip test for old mongo course")
-
         course_staff_client, course_staff = self.create_non_staff_authed_user_client()
         for course in [self.course, self.odd_course]:
             permission_url = reverse_course_url('course_team_handler', course.id, kwargs={'email': course_staff.email})
@@ -133,11 +128,9 @@ class TestCourseIndex(CourseTestCase):
             )
 
         # test access
-        self.check_courses_on_index(course_staff_client)
+        self.check_courses_on_index(course_staff_client, 0)
 
     def test_json_responses(self):
-        if self.course.id.deprecated:
-            raise SkipTest("Skip test for old mongo course")
 
         outline_url = reverse_course_url('course_handler', self.course.id)
         chapter = ItemFactory.create(parent_location=self.course.location, category='chapter', display_name="Week 1")
@@ -150,6 +143,11 @@ class TestCourseIndex(CourseTestCase):
         ItemFactory.create(parent_location=subsection.location, category="video", display_name="My Video")
 
         resp = self.client.get(outline_url, HTTP_ACCEPT='application/json')
+
+        if self.course.id.deprecated:
+            self.assertEqual(resp.status_code, 404)
+            return
+
         json_response = json.loads(resp.content.decode('utf-8'))
 
         # First spot check some values in the root response
@@ -479,11 +477,13 @@ class TestCourseOutline(CourseTestCase):
         Arguments:
             is_concise (Boolean) : If True, fetch concise version of course outline.
         """
-        if self.course.id.deprecated:
-            raise SkipTest("Skip test for old mongo course")
         outline_url = reverse_course_url('course_handler', self.course.id)
         outline_url = outline_url + '?format=concise' if is_concise else outline_url
         resp = self.client.get(outline_url, HTTP_ACCEPT='application/json')
+        if self.course.id.deprecated:
+            self.assertEqual(resp.status_code, 404)
+            return
+
         json_response = json.loads(resp.content.decode('utf-8'))
 
         # First spot check some values in the root response
