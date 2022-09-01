@@ -302,10 +302,6 @@ class TestCourseIndex(CourseTestCase):
         """
         Tests course outline when 'display_coursenumber' field is none.
         """
-        # course_handler raise 404 for old mongo course
-        if self.course.id.deprecated:
-            raise SkipTest("course_handler raise 404 for old mongo course")
-
         # Change 'display_coursenumber' field to None and update the course.
         self.course.display_coursenumber = None
         updated_course = self.update_course(self.course, self.user.id)
@@ -316,6 +312,11 @@ class TestCourseIndex(CourseTestCase):
         # Perform GET request on course outline url with the course id.
         course_outline_url = reverse_course_url('course_handler', updated_course.id)
         response = self.client.get_html(course_outline_url)
+
+        # course_handler raise 404 for old mongo course
+        if self.course.id.deprecated:
+            self.assertEqual(response.status_code, 404)
+            return
 
         # Assert that response code is 200.
         self.assertEqual(response.status_code, 200)
