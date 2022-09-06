@@ -6,10 +6,11 @@ from collections import namedtuple
 
 import pytest
 import ddt
+from pytz import UTC
 
 from xmodule.data import CertificatesDisplayBehaviors
 from xmodule.modulestore import ModuleStoreEnum
-from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, ModuleStoreTestCase
+from xmodule.modulestore.tests.django_utils import TEST_DATA_ONLY_SPLIT_MODULESTORE_DRAFT_PREFERRED, ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, check_mongo_calls
 
 from ..models import CourseOverview
@@ -23,9 +24,9 @@ class CourseOverviewSignalsTestCase(ModuleStoreTestCase):
     """
     Tests for CourseOverview signals.
     """
-    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
+    MODULESTORE = TEST_DATA_ONLY_SPLIT_MODULESTORE_DRAFT_PREFERRED
     ENABLED_SIGNALS = ['course_deleted', 'course_published']
-    TODAY = datetime.datetime.utcnow()
+    TODAY = datetime.datetime.now(UTC)
     NEXT_WEEK = TODAY + datetime.timedelta(days=7)
 
     def test_caching(self):

@@ -20,10 +20,10 @@ from opaque_keys import InvalidKeyError
 from xmodule.contentstore.django import contentstore
 from xmodule.contentstore.content import StaticContent, VERSIONED_ASSETS_PREFIX
 from xmodule.modulestore.django import modulestore
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_MODULESTORE, SharedModuleStoreTestCase
-from xmodule.modulestore.xml_importer import import_course_from_xml
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, SharedModuleStoreTestCase
 from xmodule.assetstore.assetmgr import AssetManager
 from xmodule.modulestore.exceptions import ItemNotFoundError
+from xmodule.modulestore.tests.factories import ToyCourseFactory  # lint-amnesty, pylint: disable=wrong-import-order
 
 from common.djangoapps.student.models import CourseEnrollment
 from common.djangoapps.student.tests.factories import UserFactory, AdminFactory
@@ -73,7 +73,7 @@ class ContentStoreToyCourseTest(SharedModuleStoreTestCase):
     """
     Tests that use the toy course.
     """
-    MODULESTORE = TEST_DATA_MONGO_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     @classmethod
     def setUpClass(cls):
@@ -82,12 +82,8 @@ class ContentStoreToyCourseTest(SharedModuleStoreTestCase):
         cls.contentstore = contentstore()
         cls.modulestore = modulestore()
 
-        cls.course_key = cls.modulestore.make_course_key('edX', 'toy', '2012_Fall')
-
-        import_course_from_xml(
-            cls.modulestore, 1, TEST_DATA_DIR, ['toy'],
-            static_content_store=cls.contentstore, verbose=True
-        )
+        cls.course = ToyCourseFactory()
+        cls.course_key = cls.course.id
 
         # A locked asset
         cls.locked_asset = cls.course_key.make_asset_key('asset', 'sample_static.html')

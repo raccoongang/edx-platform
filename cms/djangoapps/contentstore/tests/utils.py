@@ -124,15 +124,18 @@ class CourseTestCase(ProceduralCourseTestMixin, ModuleStoreTestCase):
     SEQUENTIAL = 'vertical_sequential'
     DRAFT_HTML = 'draft_html'
     DRAFT_VIDEO = 'draft_video'
-    LOCKED_ASSET_KEY = AssetKey.from_string('/c4x/edX/toy/asset/sample_static.html')
+    LOCKED_ASSET_KEY = AssetKey.from_string('asset-v1:edX+toy+2012_Fall+type@asset+block@sample_static.html')
 
     def import_and_populate_course(self):
         """
         Imports the test toy course and populates it with additional test data
         """
         content_store = contentstore()
-        import_course_from_xml(self.store, self.user.id, TEST_DATA_DIR, ['toy'], static_content_store=content_store)
-        course_id = CourseKey.from_string('/'.join(['edX', 'toy', '2012_Fall']))
+        import_course_from_xml(
+            self.store, self.user.id, TEST_DATA_DIR, ['toy'], static_content_store=content_store, verbose=True,
+            create_if_not_present=True
+        )
+        course_id = self.store.make_course_key('edX', 'toy', '2012_Fall')
 
         # create an Orphan
         # We had a bug where orphaned draft nodes caused export to fail. This is here to cover that case.
@@ -154,11 +157,6 @@ class CourseTestCase(ProceduralCourseTestMixin, ModuleStoreTestCase):
         )
         orphan_draft_vertical.children.append(orphan_draft_html.location)
         self.store.update_item(orphan_draft_vertical, self.user.id)
-
-        # create a Draft vertical
-        vertical = self.store.get_item(course_id.make_usage_key('vertical', self.TEST_VERTICAL), depth=1)
-        draft_vertical = self.store.convert_to_draft(vertical.location, self.user.id)
-        self.assertTrue(self.store.has_published_version(draft_vertical))
 
         # create a Private (draft only) vertical
         private_vertical = self.store.create_item(self.user.id, course_id, 'vertical', self.PRIVATE_VERTICAL)
@@ -185,23 +183,9 @@ class CourseTestCase(ProceduralCourseTestMixin, ModuleStoreTestCase):
         self.store.update_item(public_vertical, self.user.id)
         # publish changes to vertical
         self.store.publish(public_vertical.location, self.user.id)
-        # convert html/video to draft
-        self.store.convert_to_draft(draft_html.location, self.user.id)
-        self.store.convert_to_draft(draft_video.location, self.user.id)
 
         # lock an asset
         content_store.set_attr(self.LOCKED_ASSET_KEY, 'locked', True)
-
-        # create a non-portable link - should be rewritten in new courses
-        html_module = self.store.get_item(course_id.make_usage_key('html', 'nonportable'))
-        new_data = html_module.data = html_module.data.replace(
-            '/static/',
-            f'/c4x/{course_id.org}/{course_id.course}/asset/'
-        )
-        self.store.update_item(html_module, self.user.id)
-
-        html_module = self.store.get_item(html_module.location)
-        self.assertEqual(new_data, html_module.data)
 
         return course_id
 
@@ -234,12 +218,7 @@ class CourseTestCase(ProceduralCourseTestMixin, ModuleStoreTestCase):
         for child in vertical.get_children():
             verify_item_publish_state(child, True)
 
-        # verify that it has a draft too
-        self.assertTrue(getattr(vertical, "is_draft", False))
-
-        # make sure that we don't have a sequential that is in draft mode
         sequential = get_and_verify_publish_state('sequential', self.SEQUENTIAL, True)
-        self.assertFalse(getattr(sequential, "is_draft", False))
 
         # verify that we have the private vertical
         private_vertical = get_and_verify_publish_state('vertical', self.PRIVATE_VERTICAL, False)
@@ -248,22 +227,20 @@ class CourseTestCase(ProceduralCourseTestMixin, ModuleStoreTestCase):
         public_vertical = get_and_verify_publish_state('vertical', self.PUBLISHED_VERTICAL, True)
 
         # verify that we have the draft html
-        draft_html = self.store.get_item(course_id.make_usage_key('html', self.DRAFT_HTML))
-        self.assertTrue(getattr(draft_html, 'is_draft', False))
+        html = self.store.get_item(course_id.make_usage_key('html', self.DRAFT_HTML))
 
         # verify that we have the draft video
-        draft_video = self.store.get_item(course_id.make_usage_key('video', self.DRAFT_VIDEO))
-        self.assertTrue(getattr(draft_video, 'is_draft', False))
+        video = self.store.get_item(course_id.make_usage_key('video', self.DRAFT_VIDEO))
 
         # verify verticals are children of sequential
         for vert in [vertical, private_vertical, public_vertical]:
             self.assertIn(vert.location, sequential.children)
 
         # verify draft html is the child of the public vertical
-        self.assertIn(draft_html.location, public_vertical.children)
+        self.assertIn(html.location, public_vertical.children)
 
         # verify draft video is the child of the public vertical
-        self.assertIn(draft_video.location, public_vertical.children)
+        self.assertIn(video.location, public_vertical.children)
 
         # verify textbook exists
         course = self.store.get_course(course_id)

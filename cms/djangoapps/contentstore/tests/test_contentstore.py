@@ -212,7 +212,7 @@ class ImportRequiredTestCases(ContentStoreTestCase):
         all_thumbnails = content_store.get_all_content_thumbnails_for_course(course.id)
         self.assertGreater(len(all_thumbnails), 0)
 
-        location = AssetKey.from_string('/c4x/edX/toy/asset/just_a_test.jpg')
+        location = AssetKey.from_string('asset-v1:edX+toy+2012_Fall+type@asset+block@just_a_test.jpg')
         content = content_store.find(location)
         self.assertIsNotNone(content)
 
@@ -282,7 +282,7 @@ class ImportRequiredTestCases(ContentStoreTestCase):
         )
 
         # first check a static asset link
-        course_key = self.store.make_course_key('edX', 'toy', 'run')
+        course_key = self.store.make_course_key('edX', 'toy', '2012_Fall')
         html_module_location = course_key.make_usage_key('html', 'nonportable')
         html_module = self.store.get_item(html_module_location)
         self.assertIn('/static/foo.jpg', html_module.data)
@@ -325,16 +325,6 @@ class ImportRequiredTestCases(ContentStoreTestCase):
         # check for about content
         self.verify_content_existence(self.store, root_dir, course_id, 'about', 'about', '.html')
 
-        # assert that there is an html and video directory in drafts:
-        draft_dir = OSFS(root_dir / 'test_export/drafts')
-        self.assertTrue(draft_dir.exists('html'))
-        self.assertTrue(draft_dir.exists('video'))
-        # and assert that they contain the created modules
-        self.assertIn(self.DRAFT_HTML + ".xml", draft_dir.listdir('html'))
-        self.assertIn(self.DRAFT_VIDEO + ".xml", draft_dir.listdir('video'))
-        # and assert the child of the orphaned draft wasn't exported
-        self.assertNotIn(self.ORPHAN_DRAFT_HTML + ".xml", draft_dir.listdir('html'))
-
         # check for grading_policy.json
         filesystem = OSFS(root_dir / 'test_export/policies/2012_Fall')
         self.assertTrue(filesystem.exists('grading_policy.json'))
@@ -371,12 +361,8 @@ class ImportRequiredTestCases(ContentStoreTestCase):
         """Imports the course in root_dir into the given course_id and verifies its content"""
         # reimport
         import_course_from_xml(
-            self.store,
-            self.user.id,
-            root_dir,
-            ['test_export'],
-            static_content_store=content_store,
-            target_id=course_id,
+            self.store, self.user.id, root_dir, ['test_export'], static_content_store=content_store, target_id=course_id,
+            create_if_not_present=True
         )
 
         # verify content of the course
@@ -551,17 +537,15 @@ class ImportRequiredTestCases(ContentStoreTestCase):
 
         import_course_from_xml(
             self.store, self.user.id, root_dir, ['test_export_no_content_store'],
-            static_content_store=None,
+            static_content_store=None, create_if_not_present=True,
             target_id=course_id
         )
 
         # Verify reimported course
-
         items = self.store.get_items(
             course_id,
             qualifiers={
-                'category': 'sequential',
-                'name': 'vertical_sequential',
+                'name': 'vertical_sequential'
             }
         )
         self.assertEqual(len(items), 1)
@@ -724,29 +708,6 @@ class MiscCourseTests(ContentStoreTestCase):
         # Remove tempdir
         shutil.rmtree(root_dir)
 
-    @mock.patch(
-        'lms.djangoapps.ccx.modulestore.CCXModulestoreWrapper.get_item',
-        mock.Mock(return_value=mock.Mock(children=[]))
-    )
-    def test_export_with_orphan_vertical(self):
-        """
-        Tests that, export does not fail when a parent xblock does not have draft child xblock
-        information but the draft child xblock has parent information.
-        """
-        # Make an existing unit a draft
-        self.store.convert_to_draft(self.problem.location, self.user.id)
-        root_dir = path(mkdtemp_clean())
-        export_course_to_xml(self.store, None, self.course.id, root_dir, 'test_export')
-
-        # Verify that problem is exported in the drafts. This is expected because we are
-        # mocking get_item to for drafts. Expect no draft is exported.
-        # Specifically get_item is used in `xmodule.modulestore.xml_exporter._export_drafts`
-        export_draft_dir = OSFS(root_dir / 'test_export/drafts')
-        self.assertEqual(len(export_draft_dir.listdir('/')), 0)
-
-        # Remove tempdir
-        shutil.rmtree(root_dir)
-
     def test_assets_overwrite(self):
         """ Tests that assets will similar 'displayname' will be overwritten during export """
         content_store = contentstore()
@@ -788,7 +749,7 @@ class MiscCourseTests(ContentStoreTestCase):
 
     def test_malformed_edit_unit_request(self):
         # just pick one vertical
-        usage_key = self.course.id.make_usage_key('vertical', None)
+        usage_key = self.course.id.make_usage_key('vertical', 'test_vertical')
 
         resp = self.client.get_html(get_url('container_handler', usage_key))
         self.assertEqual(resp.status_code, 400)
@@ -803,31 +764,6 @@ class MiscCourseTests(ContentStoreTestCase):
             cnt = cnt + self._get_draft_counts(child)
 
         return cnt
-
-    def test_get_items(self):
-        """
-        This verifies a bug we had where the None setting in get_items() meant 'wildcard'
-        Unfortunately, None = published for the revision field, so get_items() would return
-        both draft and non-draft copies.
-        """
-        self.store.convert_to_draft(self.problem.location, self.user.id)
-
-        # Query get_items() and find the html item. This should just return back a single item (not 2).
-        direct_store_items = self.store.get_items(
-            self.course.id, revision=ModuleStoreEnum.RevisionOption.published_only
-        )
-        items_from_direct_store = [item for item in direct_store_items if item.location == self.problem.location]
-        self.assertEqual(len(items_from_direct_store), 1)
-        self.assertFalse(getattr(items_from_direct_store[0], 'is_draft', False))
-
-        # Fetch from the draft store.
-        draft_store_items = self.store.get_items(
-            self.course.id, revision=ModuleStoreEnum.RevisionOption.draft_only
-        )
-        items_from_draft_store = [item for item in draft_store_items if item.location == self.problem.location]
-        self.assertEqual(len(items_from_draft_store), 1)
-        # TODO the below won't work for split mongo
-        self.assertTrue(getattr(items_from_draft_store[0], 'is_draft', False))
 
     def test_draft_metadata(self):
         """
@@ -892,25 +828,6 @@ class MiscCourseTests(ContentStoreTestCase):
 
         self.assertIn('graceperiod', own_metadata(problem))
         self.assertEqual(problem.graceperiod, new_graceperiod)
-
-    def test_get_depth_with_drafts(self):
-        # make sure no draft items have been returned
-        num_drafts = self._get_draft_counts(self.course)
-        self.assertEqual(num_drafts, 0)
-
-        # put into draft
-        self.store.convert_to_draft(self.problem.location, self.user.id)
-
-        # make sure we can query that item and verify that it is a draft
-        draft_problem = self.store.get_item(self.problem.location)
-        self.assertTrue(getattr(draft_problem, 'is_draft', False))
-
-        # now requery with depth
-        course = self.store.get_course(self.course.id, depth=None)
-
-        # make sure just one draft item have been returned
-        num_drafts = self._get_draft_counts(course)
-        self.assertEqual(num_drafts, 1)
 
     @mock.patch('xmodule.course_module.requests.get')
     def test_import_textbook_as_content_element(self, mock_get):
@@ -1024,20 +941,6 @@ class MiscCourseTests(ContentStoreTestCase):
         self.assertEqual(len(all_assets), 0)
         self.assertEqual(count, 0)
 
-    def test_illegal_draft_crud_ops(self):
-        # this test presumes old mongo and split_draft not full split
-        with self.assertRaises(InvalidVersionError):
-            self.store.convert_to_draft(self.chapter_loc, self.user.id)
-
-        chapter = self.store.get_item(self.chapter_loc)
-        chapter.data = 'chapter data'
-        self.store.update_item(chapter, self.user.id)
-        newobject = self.store.get_item(self.chapter_loc)
-        self.assertFalse(getattr(newobject, 'is_draft', False))
-
-        with self.assertRaises(InvalidVersionError):
-            self.store.unpublish(self.chapter_loc, self.user.id)
-
     def test_bad_contentstore_request(self):
         """
         Test that user get proper responses for urls with invalid url or
@@ -1063,36 +966,6 @@ class MiscCourseTests(ContentStoreTestCase):
         resp = self.client.get_html('/accessibility')
         self.assertEqual(resp.status_code, 404)
 
-    def test_delete_course(self):
-        """
-        This test creates a course, makes a draft item, and deletes the course. This will also assert that the
-        draft content is also deleted
-        """
-        # add an asset
-        asset_key = self.course.id.make_asset_key('asset', 'sample_static.html')
-        content = StaticContent(
-            asset_key, "Fake asset", "application/text", b"test",
-        )
-        contentstore().save(content)
-        assets, count = contentstore().get_all_content_for_course(self.course.id)
-        self.assertGreater(len(assets), 0)
-        self.assertGreater(count, 0)
-
-        self.store.convert_to_draft(self.vert_loc, self.user.id)
-
-        # delete the course
-        self.store.delete_course(self.course.id, self.user.id)
-
-        # assert that there's absolutely no non-draft modules in the course
-        # this should also include all draft items
-        items = self.store.get_items(self.course.id)
-        self.assertEqual(len(items), 0)
-
-        # assert that all content in the asset library is also deleted
-        assets, count = contentstore().get_all_content_for_course(self.course.id)
-        self.assertEqual(len(assets), 0)
-        self.assertEqual(count, 0)
-
     def test_course_handouts_rewrites(self):
         """
         Test that the xblock_handler rewrites static handout links
@@ -1105,36 +978,15 @@ class MiscCourseTests(ContentStoreTestCase):
 
         # get module info (json)
         resp = self.client.get(get_url('xblock_handler', handouts.location))
-
         # make sure we got a successful response
         self.assertEqual(resp.status_code, 200)
         # check that /static/ has been converted to the full path
         # note, we know the link it should be because that's what in the 'toy' course in the test data
-        asset_key = self.course.id.make_asset_key('asset', 'handouts_sample_handout.txt')
-        self.assertContains(resp, str(asset_key))
-
-    def test_prefetch_children(self):
-        # make sure we haven't done too many round trips to DB:
-        # 1) the course,
-        # 2 & 3) for the chapters and sequentials
-        # Because we're querying from the top of the tree, we cache information needed for inheritance,
-        # so we don't need to make an extra query to compute it.
-        # set the branch to 'publish' in order to prevent extra lookups of draft versions
-        with self.store.branch_setting(ModuleStoreEnum.Branch.published_only, self.course.id):
-            with check_mongo_calls(3):
-                course = self.store.get_course(self.course.id, depth=2)
-
-            # make sure we pre-fetched a known sequential which should be at depth=2
-            self.assertIn(self.seq_loc, course.system.module_data)
-
-            # make sure we don't have a specific vertical which should be at depth=3
-            self.assertNotIn(self.vert_loc, course.system.module_data)
-
-        # Now, test with the branch set to draft. No extra round trips b/c it doesn't go deep enough to get
-        # beyond direct only categories
-        with self.store.branch_setting(ModuleStoreEnum.Branch.draft_preferred, self.course.id):
-            with check_mongo_calls(3):
-                self.store.get_course(self.course.id, depth=2)
+        asset_key = str(self.course.id.make_asset_key('asset', 'handouts_sample_handout.txt'))
+        # replase last `@` to `/`
+        index = asset_key.rfind('@')
+        expected_url = f'{asset_key[:index]}/{asset_key[index+1:]}'
+        self.assertContains(resp, expected_url)
 
     def _check_verticals(self, locations):
         """ Test getting the editing HTML for each vertical. """
@@ -1348,14 +1200,6 @@ class ContentStoreTest(ContentStoreTestCase):
             # the user will be enrolled. In the other cases, initially_enrolled will be False.
             self.assertEqual(initially_enrolled, CourseEnrollment.is_enrolled(self.user, course_id))
 
-    def test_create_course_duplicate_number(self):
-        """Test new course creation - error path"""
-        self.client.ajax_post('/course/', self.course_data)
-        self.course_data['display_name'] = 'Robot Super Course Two'
-        self.course_data['run'] = '2013_Summer'
-
-        self.assert_course_creation_failed(self.duplicate_course_error)
-
     def test_create_course_case_change(self):
         """Test new course creation - error path due to case insensitive name equality"""
         self.course_data['number'] = '99x'
@@ -1510,7 +1354,9 @@ class ContentStoreTest(ContentStoreTestCase):
 
         self.assertEqual(resp.status_code, 200)
         data = parse_json(resp)
-        retarget = str(course.id.make_usage_key('chapter', 'REPLACE')).replace('REPLACE', r'([0-9]|[a-f]){3,}')
+        retarget = str(
+            course.id.make_usage_key('chapter', 'REPLACE')
+        ).replace('REPLACE', r'([0-9]|[a-f]){3,}').replace('+', r'\+')
         self.assertRegex(data['locator'], retarget)
 
     def test_capa_module(self):
@@ -1620,7 +1466,7 @@ class ContentStoreTest(ContentStoreTestCase):
         self.assertEqual(course_module.pdf_textbooks[0]["chapters"][1]["url"], '/static/Chapter2.pdf')
 
     def test_import_into_new_course_id_wiki_slug_renamespacing(self):
-        # If reimporting into the same course do not change the wiki_slug.
+        # If reimporting into the same course change the wiki_slug.
         target_id = self.store.make_course_key('edX', 'toy', '2012_Fall')
         course_data = {
             'org': target_id.org,
@@ -1632,13 +1478,14 @@ class ContentStoreTest(ContentStoreTestCase):
         course_module = self.store.get_course(target_id)
         course_module.wiki_slug = 'toy'
         course_module.save()
+        self.assertEqual(course_module.wiki_slug, 'toy')
 
         # Import a course with wiki_slug == location.course
         import_course_from_xml(self.store, self.user.id, TEST_DATA_DIR, ['toy'], target_id=target_id)
         course_module = self.store.get_course(target_id)
-        self.assertEqual(course_module.wiki_slug, 'toy')
+        self.assertEqual(course_module.wiki_slug, 'edX.toy.2012_Fall')
 
-        # But change the wiki_slug if it is a different course.
+        # Change the wiki_slug if it is a different course.
         target_id = self.store.make_course_key('MITx', '111', '2013_Spring')
         course_data = {
             'org': target_id.org,
@@ -1662,7 +1509,7 @@ class ContentStoreTest(ContentStoreTestCase):
         import_course_from_xml(self.store, self.user.id, TEST_DATA_DIR, ['simple'], create_if_not_present=True)
         did_load_item = False
         try:
-            course_key = self.store.make_course_key('edX', 'simple', 'problem')
+            course_key = self.store.make_course_key('edX', 'simple', '2012_Fall')
             usage_key = course_key.make_usage_key('problem', 'ps01-simple')
             self.store.get_item(usage_key)
             did_load_item = True
