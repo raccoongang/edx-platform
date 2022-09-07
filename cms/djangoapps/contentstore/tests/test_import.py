@@ -5,6 +5,7 @@ Tests for import_course_from_xml using the mongo modulestore.
 
 
 import copy
+from unittest import skip
 from unittest.mock import patch
 from uuid import uuid4
 
@@ -178,11 +179,11 @@ class ContentStoreImportTest(ModuleStoreTestCase):
         __, __, course = self.load_test_import_course(create_if_not_present=True)
         self.load_test_import_course(target_id=course.id)
 
+    @skip("OldMongo Deprecation")
     def test_rewrite_reference_list(self):
-        # FIXME
         # This test fails with split modulestore (the HTML component is not in "different_course_id" namespace).
         # More investigation needs to be done.
-        module_store = modulestore()._get_modulestore_by_type(ModuleStoreEnum.Type.mongo)
+        module_store = modulestore()
         target_id = module_store.make_course_key('testX', 'conditional_copy', 'copy_run')
         import_course_from_xml(
             module_store,

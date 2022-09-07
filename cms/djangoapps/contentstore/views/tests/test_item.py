@@ -4,6 +4,7 @@
 import json
 import re
 from datetime import datetime, timedelta
+from unittest import skip
 from unittest.mock import Mock, PropertyMock, patch
 
 import ddt
@@ -92,13 +93,11 @@ class ItemTest(CourseTestCase):
         self.course_key = self.course.id
         self.usage_key = self.course.location
 
-    def get_item_from_modulestore(self, usage_key, verify_is_draft=False):
+    def get_item_from_modulestore(self, usage_key):
         """
         Get the item referenced by the UsageKey from the modulestore
         """
         item = self.store.get_item(usage_key)
-        if verify_is_draft:
-            self.assertTrue(getattr(item, 'is_draft', False))
         return item
 
     def response_usage_key(self, response):
@@ -167,6 +166,7 @@ class GetItemTest(ItemTest):
             self.assertContains(resp, content_contains, status_code=expected_code)
         return resp
 
+    @skip("OldMongo Deprecation")
     @ddt.data(
         (1, 17, 15, 16, 12),
         (2, 17, 15, 16, 12),
@@ -185,6 +185,7 @@ class GetItemTest(ItemTest):
         with check_mongo_calls(problem_queries):
             self.client.get(reverse_usage_url('xblock_handler', self.populated_usage_keys['problem'][-1]))
 
+    @skip("OldMongo Deprecation")
     @ddt.data(
         (1, 30),
         (2, 32),
@@ -531,7 +532,7 @@ class TestCreateItem(ItemTest):
             boilerplate=template_id
         )
         prob_usage_key = self.response_usage_key(resp)
-        problem = self.get_item_from_modulestore(prob_usage_key, verify_is_draft=True)
+        problem = self.get_item_from_modulestore(prob_usage_key)
         # check against the template
         template = ProblemBlock.get_template(template_id)
         self.assertEqual(problem.data, template['data'])
@@ -699,7 +700,7 @@ class TestDuplicateItem(ItemTest, DuplicateHelper):
         self.html_usage_key = self.response_usage_key(resp)
 
         # Create a second sequential just (testing children of children)
-        self.create_xblock(parent_usage_key=self.chapter_usage_key, category='sequential2')
+        self.create_xblock(parent_usage_key=self.chapter_usage_key, category='sequential')
 
     def test_duplicate_equality(self):
         """
@@ -843,7 +844,7 @@ class TestMoveItem(ItemTest):
         Arguments:
             partition_id (int): User partition id.
         """
-        split_test = self.get_item_from_modulestore(self.split_test_usage_key, verify_is_draft=True)
+        split_test = self.get_item_from_modulestore(self.split_test_usage_key)
 
         # Initially, no user_partition_id is set, and the split_test has no children.
         self.assertEqual(split_test.user_partition_id, -1)
@@ -854,7 +855,7 @@ class TestMoveItem(ItemTest):
             reverse_usage_url("xblock_handler", self.split_test_usage_key),
             data={'metadata': {'user_partition_id': str(partition_id)}}
         )
-        split_test = self.get_item_from_modulestore(self.split_test_usage_key, verify_is_draft=True)
+        split_test = self.get_item_from_modulestore(self.split_test_usage_key)
         self.assertEqual(split_test.user_partition_id, partition_id)
         self.assertEqual(len(split_test.children), len(self.course.user_partitions[partition_id].groups))
         return split_test
@@ -1129,7 +1130,7 @@ class TestMoveItem(ItemTest):
             reverse_usage_url("xblock_handler", child_split_test_usage_key),
             data={'metadata': {'user_partition_id': str(0)}}
         )
-        child_split_test = self.get_item_from_modulestore(self.split_test_usage_key, verify_is_draft=True)
+        child_split_test = self.get_item_from_modulestore(self.split_test_usage_key)
 
         # Try to move content experiment further down the level to a child group A nested inside main group A.
         response = self._move_component(self.split_test_usage_key, child_split_test.children[0])
@@ -1184,6 +1185,7 @@ class TestMoveItem(ItemTest):
         self.assertEqual(message.text, expected_message)
         self.assertEqual(message.type, expected_message_type)
 
+    @skip("OldMongo Deprecation")
     def test_move_component_nonsensical_access_restriction_validation(self):
         """
         Test that moving a component with non-contradicting access
@@ -1433,26 +1435,26 @@ class TestEditItem(TestEditItemSetup):
             self.problem_update_url,
             data={'metadata': {'rerandomize': 'onreset'}}
         )
-        problem = self.get_item_from_modulestore(self.problem_usage_key, verify_is_draft=True)
+        problem = self.get_item_from_modulestore(self.problem_usage_key)
         self.assertEqual(problem.rerandomize, 'onreset')
         self.client.ajax_post(
             self.problem_update_url,
             data={'metadata': {'rerandomize': None}}
         )
-        problem = self.get_item_from_modulestore(self.problem_usage_key, verify_is_draft=True)
+        problem = self.get_item_from_modulestore(self.problem_usage_key)
         self.assertEqual(problem.rerandomize, 'never')
 
     def test_null_field(self):
         """
         Sending null in for a field 'deletes' it
         """
-        problem = self.get_item_from_modulestore(self.problem_usage_key, verify_is_draft=True)
+        problem = self.get_item_from_modulestore(self.problem_usage_key)
         self.assertIsNotNone(problem.markdown)
         self.client.ajax_post(
             self.problem_update_url,
             data={'nullout': ['markdown']}
         )
-        problem = self.get_item_from_modulestore(self.problem_usage_key, verify_is_draft=True)
+        problem = self.get_item_from_modulestore(self.problem_usage_key)
         self.assertIsNone(problem.markdown)
 
     def test_date_fields(self):
@@ -1513,7 +1515,7 @@ class TestEditItem(TestEditItemSetup):
                 }
             }
         )
-        problem = self.get_item_from_modulestore(self.problem_usage_key, verify_is_draft=True)
+        problem = self.get_item_from_modulestore(self.problem_usage_key)
         self.assertEqual(problem.display_name, new_display_name)
         self.assertEqual(problem.max_attempts, new_max_attempts)
 
@@ -1710,7 +1712,7 @@ class TestEditItem(TestEditItemSetup):
             }
         )
         self.assertFalse(self._is_location_published(self.problem_usage_key))
-        draft = self.get_item_from_modulestore(self.problem_usage_key, verify_is_draft=True)
+        draft = self.get_item_from_modulestore(self.problem_usage_key)
         self.assertEqual(draft.display_name, new_display_name)
 
         # Publish the item
@@ -1768,7 +1770,7 @@ class TestEditItem(TestEditItemSetup):
             self.problem_update_url,
             data={'metadata': {'due': '2077-10-10T04:00Z'}}
         )
-        updated_draft = self.get_item_from_modulestore(self.problem_usage_key, verify_is_draft=True)
+        updated_draft = self.get_item_from_modulestore(self.problem_usage_key)
         self.assertEqual(updated_draft.due, datetime(2077, 10, 10, 4, 0, tzinfo=UTC))
         self.assertIsNone(published.due)
         # Fetch the published version again to make sure the due date is still unset.
@@ -1810,7 +1812,7 @@ class TestEditItem(TestEditItemSetup):
         )
 
         # Both published and draft content should be different
-        draft = self.get_item_from_modulestore(self.problem_usage_key, verify_is_draft=True)
+        draft = self.get_item_from_modulestore(self.problem_usage_key)
         self.assertNotEqual(draft.data, published.data)
 
         # Get problem by 'xblock_handler'
@@ -1824,12 +1826,13 @@ class TestEditItem(TestEditItemSetup):
         self.assertEqual(resp.status_code, 200)
 
         # Both published and draft content should still be different
-        draft = self.get_item_from_modulestore(self.problem_usage_key, verify_is_draft=True)
+        draft = self.get_item_from_modulestore(self.problem_usage_key)
         self.assertNotEqual(draft.data, published.data)
         # Fetch the published version again to make sure the data is correct.
         published = modulestore().get_item(published.location, revision=ModuleStoreEnum.RevisionOption.published_only)
         self.assertNotEqual(draft.data, published.data)
 
+    @skip("OldMongo Deprecation")
     def test_publish_states_of_nested_xblocks(self):
         """ Test publishing of a unit page containing a nested xblock  """
 
@@ -1966,7 +1969,7 @@ class TestEditSplitModule(ItemTest):
         )
 
         # Verify the partition_id was saved.
-        split_test = self.get_item_from_modulestore(self.split_test_usage_key, verify_is_draft=True)
+        split_test = self.get_item_from_modulestore(self.split_test_usage_key)
         self.assertEqual(partition_id, split_test.user_partition_id)
         return split_test
 
@@ -1974,7 +1977,7 @@ class TestEditSplitModule(ItemTest):
         """
         Verifies the number of children of the split_test instance.
         """
-        split_test = self.get_item_from_modulestore(self.split_test_usage_key, True)
+        split_test = self.get_item_from_modulestore(self.split_test_usage_key)
         self.assertEqual(expected_number, len(split_test.children))
         return split_test
 
@@ -1983,7 +1986,7 @@ class TestEditSplitModule(ItemTest):
         Test that verticals are created for the configuration groups when
         a spit test module is edited.
         """
-        split_test = self.get_item_from_modulestore(self.split_test_usage_key, verify_is_draft=True)
+        split_test = self.get_item_from_modulestore(self.split_test_usage_key)
         # Initially, no user_partition_id is set, and the split_test has no children.
         self.assertEqual(-1, split_test.user_partition_id)
         self.assertEqual(0, len(split_test.children))
@@ -1993,8 +1996,8 @@ class TestEditSplitModule(ItemTest):
 
         # Verify that child verticals have been set to match the groups
         self.assertEqual(2, len(split_test.children))
-        vertical_0 = self.get_item_from_modulestore(split_test.children[0], verify_is_draft=True)
-        vertical_1 = self.get_item_from_modulestore(split_test.children[1], verify_is_draft=True)
+        vertical_0 = self.get_item_from_modulestore(split_test.children[0])
+        vertical_1 = self.get_item_from_modulestore(split_test.children[1])
         self.assertEqual("vertical", vertical_0.category)
         self.assertEqual("vertical", vertical_1.category)
         self.assertEqual("Group ID " + str(MINIMUM_STATIC_PARTITION_ID + 1), vertical_0.display_name)
@@ -2009,7 +2012,7 @@ class TestEditSplitModule(ItemTest):
         """
         Test that concise outline for split test component gives display name as group name.
         """
-        split_test = self.get_item_from_modulestore(self.split_test_usage_key, verify_is_draft=True)
+        split_test = self.get_item_from_modulestore(self.split_test_usage_key)
         # Initially, no user_partition_id is set, and the split_test has no children.
         self.assertEqual(split_test.user_partition_id, -1)
         self.assertEqual(len(split_test.children), 0)
@@ -2047,9 +2050,9 @@ class TestEditSplitModule(ItemTest):
         self.assertEqual(5, len(split_test.children))
         self.assertEqual(initial_vertical_0_location, split_test.children[0])
         self.assertEqual(initial_vertical_1_location, split_test.children[1])
-        vertical_0 = self.get_item_from_modulestore(split_test.children[2], verify_is_draft=True)
-        vertical_1 = self.get_item_from_modulestore(split_test.children[3], verify_is_draft=True)
-        vertical_2 = self.get_item_from_modulestore(split_test.children[4], verify_is_draft=True)
+        vertical_0 = self.get_item_from_modulestore(split_test.children[2])
+        vertical_1 = self.get_item_from_modulestore(split_test.children[3])
+        vertical_2 = self.get_item_from_modulestore(split_test.children[4])
 
         # Verify that the group_id_to child mapping is correct.
         self.assertEqual(3, len(split_test.group_id_to_child))
@@ -2835,6 +2838,7 @@ class TestXBlockInfo(ItemTest):
             self.assertIsNone(xblock_info.get('child_info', None))
 
 
+@skip("OldMongo Deprecation")
 @patch.dict('django.conf.settings.FEATURES', {'ENABLE_SPECIAL_EXAMS': True})
 @ddt.ddt
 class TestSpecialExamXBlockInfo(ItemTest):
@@ -3238,6 +3242,7 @@ class TestXBlockPublishingInfo(ItemTest):
         self._verify_visibility_state(xblock_info, VisibilityState.needs_attention, path=self.FIRST_UNIT_PATH)
         self._verify_visibility_state(xblock_info, VisibilityState.staff_only, path=self.SECOND_UNIT_PATH)
 
+    @skip("OldMongo Deprecation")
     def test_partially_released_section(self):
         chapter = self._create_child(self.course, 'chapter', "Test Chapter")
         released_sequential = self._create_child(chapter, 'sequential', "Released Sequential")

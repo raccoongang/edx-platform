@@ -5,6 +5,7 @@ Group Configuration Tests.
 
 import json
 from operator import itemgetter
+from unittest import skip
 from unittest.mock import patch
 
 import ddt
@@ -64,9 +65,9 @@ class HelperMethods:
             parent_location=sequential.location,
             display_name=f'Test Unit {name_suffix}'
         )
-        c0_url = self.course.id.make_usage_key("vertical", "split_test_cond0")
-        c1_url = self.course.id.make_usage_key("vertical", "split_test_cond1")
-        c2_url = self.course.id.make_usage_key("vertical", "split_test_cond2")
+        c0_url = self.course.id.make_usage_key("vertical", f"split_test_cond0_{name_suffix}")
+        c1_url = self.course.id.make_usage_key("vertical", f"split_test_cond1_{name_suffix}")
+        c2_url = self.course.id.make_usage_key("vertical", f"split_test_cond2_{name_suffix}")
         split_test = ItemFactory.create(
             category='split_test',
             parent_location=vertical.location,
@@ -792,6 +793,7 @@ class GroupConfigurationsUsageInfoTestCase(CourseTestCase, HelperMethods):
         # Assert that actual content group information is same as expected one.
         self.assertEqual(actual, expected)
 
+    @skip("OldMongo Deprecation")
     def test_can_use_one_content_group_in_multiple_problems(self):
         """
         Test if multiple problems are present in usage info when they use same
@@ -839,6 +841,7 @@ class GroupConfigurationsUsageInfoTestCase(CourseTestCase, HelperMethods):
         }]
         self.assertEqual(actual, expected)
 
+    @skip("OldMongo Deprecation")
     def test_can_get_correct_usage_info_for_split_test(self):
         """
         When a split test is created and content group access is set for a problem within a group,
@@ -1051,6 +1054,7 @@ class GroupConfigurationsUsageInfoTestCase(CourseTestCase, HelperMethods):
         }]
         self.assertEqual(actual, expected)
 
+    @skip("OldMongo Deprecation")
     def test_can_handle_without_parent(self):
         """
         Test if it possible to handle case when split_test has no parent.

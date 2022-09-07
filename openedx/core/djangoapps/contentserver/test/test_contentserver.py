@@ -67,6 +67,7 @@ def get_old_style_versioned_asset_url(asset_path):
     return asset_path
 
 
+@unittest.skip('OldMongo Deprecation')
 @ddt.ddt
 @override_settings(CONTENTSTORE=TEST_DATA_CONTENTSTORE)
 class ContentStoreToyCourseTest(SharedModuleStoreTestCase):

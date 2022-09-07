@@ -2,6 +2,7 @@
 Integration tests for gated content.
 """
 
+from unittest import skip
 
 import ddt
 from completion.waffle import ENABLE_COMPLETION_TRACKING_SWITCH
@@ -22,6 +23,7 @@ from openedx.core.djangolib.testing.utils import get_mock_request
 from openedx.core.lib.gating import api as gating_api
 
 
+@skip("OldMongo Deprecation")
 @ddt.ddt
 class TestGatedContent(MilestonesTestCaseMixin, SharedModuleStoreTestCase):
     """

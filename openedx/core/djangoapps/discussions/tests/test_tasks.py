@@ -1,6 +1,7 @@
 """
 Tests for discussions tasks.
 """
+from unittest import skip
 import ddt
 import mock
 from edx_toggles.toggles.testutils import override_waffle_flag
@@ -89,6 +90,7 @@ class UpdateDiscussionsSettingsFromCourseTestCase(ModuleStoreTestCase):
         self.course.discussions_settings.update(settings)
         self.store.update_item(self.course, self.user.id)
 
+    @skip("OldMongo Deprecation")
     def test_default(self):
         """
         Test that the course defaults.
@@ -101,9 +103,10 @@ class UpdateDiscussionsSettingsFromCourseTestCase(ModuleStoreTestCase):
         assert config_data.plugin_configuration == {}
         assert {context.title for context in config_data.contexts} == {"General", "Unit", "Discussable Unit"}
 
-    def test_topics_contexts(self):
+    @skip("OldMongo Deprecation")
+    def test_general_topics(self):
         """
-        Test the handling of topics.
+        Test the handling of course general topics.
         """
         self.update_course_field(discussion_topics={
             "General": {"id": "general-topic"},
@@ -130,6 +133,7 @@ class UpdateDiscussionsSettingsFromCourseTestCase(ModuleStoreTestCase):
             context={'section': 'Section', 'subsection': 'Sequence', 'unit': 'Unit'}
         ) in config_data.contexts
 
+    @skip("OldMongo Deprecation")
     @ddt.data(
         ({}, 3, {"Unit", "Discussable Unit"},
          {"Graded Unit", "Non-Discussable Unit", "Discussable Graded Unit", "Non-Discussable Graded Unit"}),

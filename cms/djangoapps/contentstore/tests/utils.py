@@ -10,7 +10,7 @@ from unittest.mock import Mock
 from django.conf import settings
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
 from django.test.client import Client
-from opaque_keys.edx.keys import AssetKey, CourseKey
+from opaque_keys.edx.keys import AssetKey
 from xmodule.contentstore.django import contentstore
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.inheritance import own_metadata

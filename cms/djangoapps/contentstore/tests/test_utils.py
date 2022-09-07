@@ -1,7 +1,7 @@
 """ Tests for utils. """
 import collections
 from datetime import datetime, timedelta
-from unittest import mock
+from unittest import mock, skip
 from unittest.mock import Mock, patch
 from uuid import uuid4
 
@@ -411,6 +411,7 @@ class GroupVisibilityTest(CourseTestCase):
 
         verify_all_components_visible_to_all()
 
+    @skip("OldMongo Deprecation")
     def test_sequential_and_problem_have_group_access(self):
         """ Tests when group_access is set on a few different components. """
         self.set_group_access(self.sequential, {1: [0]})

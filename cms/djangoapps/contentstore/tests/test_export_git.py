@@ -7,6 +7,7 @@ import copy
 import os
 import shutil
 import subprocess
+from unittest import skip
 from uuid import uuid4
 
 from django.conf import settings
@@ -97,6 +98,7 @@ class TestExportGit(CourseTestCase):
         response = self.client.get(f'{self.test_url}?action=push')
         self.assertNotContains(response, 'django.utils.functional.__proxy__')
 
+    @skip("OldMongo Deprecation")
     def test_course_export_success(self):
         """
         Test successful course export response.
@@ -106,6 +108,7 @@ class TestExportGit(CourseTestCase):
         response = self.client.get(f'{self.test_url}?action=push')
         self.assertContains(response, 'Export Succeeded')
 
+    @skip("OldMongo Deprecation")
     def test_repo_with_dots(self):
         """
         Regression test for a bad directory pathing of repo's that have dots.
@@ -114,6 +117,7 @@ class TestExportGit(CourseTestCase):
         response = self.client.get(f'{self.test_url}?action=push')
         self.assertContains(response, 'Export Succeeded')
 
+    @skip("OldMongo Deprecation")
     def test_dirty_repo(self):
         """
         Add additional items not in the repo and make sure they aren't

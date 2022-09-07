@@ -7,7 +7,7 @@ import copy
 import datetime
 import json
 import unittest
-from unittest import mock
+from unittest import mock, skip
 from unittest.mock import Mock, patch
 
 import ddt
@@ -910,6 +910,7 @@ class CourseGradingTest(CourseTestCase):
         section = sections[0]  # just take the first one
         return reverse_usage_url('xblock_handler', section.location)
 
+    @skip("OldMongo Deprecation")
     def test_set_get_section_grader_ajax(self):
         """
         Test setting and getting section grades via the grade as url

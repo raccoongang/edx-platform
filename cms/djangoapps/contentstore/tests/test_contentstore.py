@@ -7,7 +7,7 @@ from datetime import timedelta
 from functools import wraps
 from json import loads
 from textwrap import dedent
-from unittest import SkipTest, mock
+from unittest import SkipTest, mock, skip
 from uuid import uuid4
 
 import ddt
@@ -1801,6 +1801,7 @@ class ContentStoreTest(ContentStoreTestCase):
         self.assertEqual(response.status_code, 404)
 
 
+@skip("OldMongo Deprecation")
 class MetadataSaveTestCase(ContentStoreTestCase):
     """Test that metadata is correctly cached and decached."""
 
@@ -2142,6 +2143,7 @@ class ContentLicenseTest(ContentStoreTestCase):
     Tests around content licenses
     """
 
+    @skip("OldMongo Deprecation")
     def test_course_license_export(self):
         content_store = contentstore()
         root_dir = path(mkdtemp_clean())

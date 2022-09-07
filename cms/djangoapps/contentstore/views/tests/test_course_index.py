@@ -96,6 +96,7 @@ class TestCourseIndex(CourseTestCase):
         index_response = self.client.get(index_url, {}, HTTP_ACCEPT='text/html')
         _assert_library_tab_present(index_response)
 
+    @skip("OldMongo Deprecation")
     def test_is_staff_access(self):
         """
         Test that people with is_staff see the courses and can navigate into them
@@ -115,6 +116,7 @@ class TestCourseIndex(CourseTestCase):
         else:
             self.assertEqual(response.status_code, 403)
 
+    @skip("OldMongo Deprecation")
     def test_course_staff_access(self):
         """
         Make and register course_staff and ensure they can access the courses
@@ -584,6 +586,7 @@ class TestCourseOutline(CourseTestCase):
             reverse_course_url('advanced_settings_handler', course_id)
         )
 
+    @skip("OldMongo Deprecation")
     @ddt.data(
         [{'publish': True}, ['notes']],
         [{'publish': False}, ['notes']],
@@ -604,6 +607,7 @@ class TestCourseOutline(CourseTestCase):
             block_types
         )
 
+    @skip("OldMongo Deprecation")
     @ddt.data(
         (["a", "b", "c"], ["a", "b", "c"]),
         (["a", "b", "c"], ["a", "b", "d"]),
@@ -835,6 +839,7 @@ class TestCourseReIndex(CourseTestCase):
         with self.assertRaises(SearchIndexingError):
             reindex_course_and_check_access(self.course.id, self.user)
 
+    @skip("OldMongo Deprecation")
     @mock.patch('xmodule.modulestore.mongo.base.MongoModuleStore.get_course')
     def test_reindex_no_item(self, mock_get_course):
         """
@@ -923,6 +928,7 @@ class TestCourseReIndex(CourseTestCase):
         with self.assertRaises(SearchIndexingError):
             CoursewareSearchIndexer.do_course_reindex(modulestore(), self.course.id)
 
+    @skip("OldMongo Deprecation")
     @mock.patch('xmodule.seq_module.SequenceBlock.index_dictionary')
     def test_indexing_seq_error_responses(self, mock_index_dictionary):
         """
@@ -945,7 +951,8 @@ class TestCourseReIndex(CourseTestCase):
         with self.assertRaises(SearchIndexingError):
             CoursewareSearchIndexer.do_course_reindex(modulestore(), self.course.id)
 
-    @mock.patch('xmodule.modulestore.mongo.base.MongoModuleStore.get_course')
+    @skip("OldMongo Deprecation")
+    @mock.patch('xmodule.modulestore.split_mongo.split.SplitMongoModuleStore.get_course')
     def test_indexing_no_item(self, mock_get_course):
         """
         Test system logs an error if no item found.
