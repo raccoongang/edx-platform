@@ -13,6 +13,7 @@ import tempfile
 from collections import OrderedDict
 from contextlib import ExitStack, contextmanager
 from datetime import datetime, timedelta
+from unittest import skip
 from unittest.mock import ANY, MagicMock, Mock, patch
 
 import ddt
@@ -463,6 +464,7 @@ class TestTeamGradeReport(InstructorGradeReportTestCase):
 
 
 # pylint: disable=protected-access
+@skip("OldMongo Deprecation")
 @ddt.ddt
 class TestProblemResponsesReport(TestReportMixin, InstructorTaskModuleTestCase):
     """
@@ -786,6 +788,7 @@ class TestProblemResponsesReport(TestReportMixin, InstructorTaskModuleTestCase):
         assert result.get('report_name') == file_name
 
 
+@skip("OldMongo Deprecation")
 @ddt.ddt
 class TestProblemGradeReport(TestReportMixin, InstructorTaskModuleTestCase):
     """
@@ -932,6 +935,7 @@ class TestProblemGradeReport(TestReportMixin, InstructorTaskModuleTestCase):
         ])
 
 
+@skip("OldMongo Deprecation")
 class TestProblemReportSplitTestContent(TestReportMixin, TestConditionalContent, InstructorTaskModuleTestCase):
     """
     Test the problem report on a course that has split tests.
@@ -1064,6 +1068,7 @@ class TestProblemReportSplitTestContent(TestReportMixin, TestConditionalContent,
         assert self.get_csv_row_with_headers() == header_row
 
 
+@skip("OldMongo Deprecation")
 class TestProblemReportCohortedContent(TestReportMixin, ContentGroupTestCase, InstructorTaskModuleTestCase):
     """
     Test the problem report on a course that has cohorted content.
@@ -1709,6 +1714,7 @@ class TestCohortStudents(TestReportMixin, InstructorTaskCourseTestCase):
         )
 
 
+@skip("OldMongo Deprecation")
 @ddt.ddt
 @patch('lms.djangoapps.instructor_task.tasks_helper.misc.DefaultStorage', new=MockDefaultStorage)
 class TestGradeReport(TestReportMixin, InstructorTaskModuleTestCase):

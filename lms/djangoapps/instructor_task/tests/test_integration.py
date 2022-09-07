@@ -11,6 +11,7 @@ import json
 import logging
 import textwrap
 from collections import namedtuple
+from unittest import skip
 from unittest.mock import patch
 
 import pytest
@@ -69,6 +70,7 @@ class TestIntegrationTask(InstructorTaskModuleTestCase):
         assert status['message'] == expected_message
 
 
+@skip("OldMongo Deprecation")
 @ddt.ddt
 @override_settings(RATELIMIT_ENABLE=False)
 class TestRescoringTask(TestIntegrationTask):
@@ -569,6 +571,7 @@ class TestDeleteProblemTask(TestIntegrationTask):
         assert instructor_task.task_state == SUCCESS
 
 
+@skip("OldMongo Deprecation")
 class TestGradeReportConditionalContent(TestReportMixin, TestConditionalContent, TestIntegrationTask):
     """
     Test grade report in cases where there are problems contained within split tests.

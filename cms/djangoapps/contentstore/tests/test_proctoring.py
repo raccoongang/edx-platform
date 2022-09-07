@@ -4,6 +4,7 @@ Tests for the edx_proctoring integration into Studio
 
 
 from datetime import datetime, timedelta
+from unittest import skip
 from unittest.mock import patch
 
 import ddt
@@ -18,6 +19,7 @@ from cms.djangoapps.contentstore.signals.handlers import listen_for_course_publi
 from common.djangoapps.student.tests.factories import UserFactory
 
 
+@skip("OldMongo Deprecation")
 @ddt.ddt
 @patch.dict('django.conf.settings.FEATURES', {'ENABLE_SPECIAL_EXAMS': True})
 class TestProctoredExams(ModuleStoreTestCase):

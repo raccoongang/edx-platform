@@ -55,6 +55,7 @@ class FakeTranslations(ModuleI18nService):
         return _translation
 
 
+@skip("OldMongo Deprecation")
 class TestModuleI18nService(ModuleStoreTestCase):
     """ Test ModuleI18nService """
     MODULESTORE = TEST_DATA_SPLIT_MODULESTORE

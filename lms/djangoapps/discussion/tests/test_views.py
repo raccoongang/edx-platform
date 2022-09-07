@@ -5,6 +5,7 @@ import itertools
 import json
 import logging
 from datetime import datetime
+from unittest import skip
 from unittest.mock import ANY, Mock, call, patch
 
 import ddt
@@ -1934,6 +1935,7 @@ class DividedDiscussionsTestCase(CohortViewsTestCase):  # lint-amnesty, pylint: 
         return divided_inline_discussions, divided_course_wide_discussions
 
 
+@skip("OldMongo Deprecation")
 class CourseDiscussionTopicsTestCase(DividedDiscussionsTestCase):
     """
     Tests the `divide_discussion_topics` view.
@@ -2093,6 +2095,7 @@ class CourseDiscussionsHandlerTestCase(DividedDiscussionsTestCase):
 
         assert response == expected_response
 
+    @skip("OldMongo Deprecation")
     def test_get_settings(self):
         """
         Verify that course_discussions_settings_handler is working for HTTP GET.

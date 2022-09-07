@@ -5,7 +5,7 @@ Unit tests for ProgramEnrollment views.
 import json
 from collections import OrderedDict, defaultdict
 from datetime import datetime, timedelta
-from unittest import mock
+from unittest import mock, skip
 from uuid import UUID, uuid4
 
 import ddt
@@ -1884,6 +1884,7 @@ class ProgramCourseEnrollmentOverviewGetTests(
         assert status.HTTP_200_OK == response_status_code
         assert [] == response_course_runs[0]['due_dates']
 
+    @skip("OldMongo Deprecation")
     @ddt.data(
         ('2018-12-01', False),
         ('2019-01-01', True),

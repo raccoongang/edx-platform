@@ -3,6 +3,7 @@ Tests for xblock_utils.py
 """
 
 
+from unittest import skip
 import uuid
 from unittest.mock import patch
 
@@ -156,6 +157,7 @@ class TestXblockUtils(SharedModuleStoreTestCase):
             assert js_dependencies == expected_js_dependencies
 
 
+@skip("OldMongo Deprecation")
 class TestXBlockAside(SharedModuleStoreTestCase):
     """Test the xblock aside function."""
     MODULESTORE = TEST_DATA_SPLIT_MODULESTORE

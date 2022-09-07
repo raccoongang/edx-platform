@@ -14,7 +14,7 @@ from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase  # lint-a
 from xmodule.modulestore.tests.factories import CourseFactory  # lint-amnesty, pylint: disable=wrong-import-order
 
 
-@skip("old mongo deprecated")
+@skip("OldMongo Deprecation")
 class ExportAllCourses(ModuleStoreTestCase):
     """
     Tests exporting all courses.

@@ -3,6 +3,7 @@ Test audit user's access to various content based on content-gating features.
 """
 import os
 from datetime import datetime, timedelta
+from unittest import skip
 from unittest.mock import patch, Mock
 
 import ddt
@@ -1190,6 +1191,7 @@ class TestContentTypeGatingService(ModuleStoreTestCase):
             self.user, blocks_dict['not_graded_1'], course['course'].id
         ) is None
 
+    @skip("OldMongo Deprecation")
     @patch.object(ContentTypeGatingService, '_get_user', return_value=UserFactory.build())
     def test_check_children_for_content_type_gating_paywall(self, mocked_user):  # pylint: disable=unused-argument
         ''' Verify that the method returns a content type gate when appropriate '''

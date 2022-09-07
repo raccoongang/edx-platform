@@ -3,6 +3,7 @@ Unit tests for checking default forum role "Student" of a user when he creates a
 after deleting it creates same course again
 """
 
+from unittest import skip
 from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE, ModuleStoreTestCase
 
 from cms.djangoapps.contentstore.tests.utils import AjaxEnabledTestClient
@@ -92,6 +93,7 @@ class TestUsersDefaultRole(ModuleStoreTestCase):
         # check that user has his default "Student" forum role for this course
         self.assertTrue(self.user.roles.filter(name="Student", course_id=self.course_key))
 
+    @skip("OldMongo Deprecation")
     def test_user_role_on_course_recreate_with_change_name_case(self):
         """
         Test that creating same course again with different name case after deleting it gives user

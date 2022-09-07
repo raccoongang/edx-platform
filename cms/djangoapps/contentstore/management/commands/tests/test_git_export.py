@@ -128,6 +128,7 @@ class TestGitExport(CourseTestCase):
                 course_key,
                 'https://user:blah@example.com/r.git')
 
+    @unittest.skip("OldMongo Deprecation")
     @unittest.skipIf(os.environ.get('GIT_CONFIG') or
                      os.environ.get('GIT_AUTHOR_EMAIL') or
                      os.environ.get('GIT_AUTHOR_NAME') or

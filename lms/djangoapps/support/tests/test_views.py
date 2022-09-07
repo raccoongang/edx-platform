@@ -6,6 +6,7 @@ import itertools
 import json
 import re
 from datetime import datetime, timedelta
+from unittest import skip
 from unittest.mock import patch
 from urllib.parse import quote
 from uuid import UUID, uuid4
@@ -272,6 +273,7 @@ class SupportViewCertificatesTests(SupportViewTestCase):
         response = self.client.get(url)
         self.assertContains(response, "userFilter: 'student@example.com'")
 
+    @skip("OldMongo Deprecation")
     def test_certificates_along_with_course_filter(self):
         # Check that an initial filter is passed to the JavaScript client.
         url = reverse("support:certificates") + "?user=student@example.com&course_id=" + quote(str(self.course.id))
@@ -1930,6 +1932,7 @@ class TestOnboardingView(SupportViewTestCase, ProctoredExamTestCase):
         self.assertEqual(response_data['verified_in'], None)
         self.assertEqual(response_data['current_status'], None)
 
+    @skip("OldMongo Deprecation")
     def test_no_verified_attempts(self):
         """
         Test that if there are no verified attempts, the most recent status is returned
@@ -1962,6 +1965,7 @@ class TestOnboardingView(SupportViewTestCase, ProctoredExamTestCase):
             ProctoredExamStudentAttemptStatus.created
         )
 
+    @skip("OldMongo Deprecation")
     def test_get_verified_attempt(self):
         """
         Test that if there is at least one verified attempt, the status returned is always verified
@@ -2000,6 +2004,7 @@ class TestOnboardingView(SupportViewTestCase, ProctoredExamTestCase):
             ProctoredExamStudentAttemptStatus.verified
         )
 
+    @skip("OldMongo Deprecation")
     def test_verified_in_another_course(self):
         """
         Test that, if there is at least one verified attempt in any course for a given user,

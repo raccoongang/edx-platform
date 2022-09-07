@@ -6,7 +6,7 @@ Unit tests for the asset upload endpoint.
 import json
 from datetime import datetime
 from io import BytesIO
-from unittest import mock
+from unittest import mock, skip
 from unittest.mock import patch
 
 from ddt import data, ddt
@@ -73,6 +73,7 @@ class AssetsTestCase(CourseTestCase):
         return sample_asset
 
 
+@skip("OldMongo Deprecation")
 class BasicAssetsTestCase(AssetsTestCase):
     """
     Test getting assets via html w/o additional args
@@ -439,6 +440,7 @@ class AssetToJsonTestCase(AssetsTestCase):
         self.assertIsNone(output["thumbnail"])
 
 
+@skip("OldMongo Deprecation")
 class LockAssetTestCase(AssetsTestCase):
     """
     Unit test for locking and unlocking an asset.
@@ -499,6 +501,7 @@ class LockAssetTestCase(AssetsTestCase):
         verify_asset_locked_state(False)
 
 
+@skip("OldMongo Deprecation")
 class DeleteAssetTestCase(AssetsTestCase):
     """
     Unit test for removing an asset.

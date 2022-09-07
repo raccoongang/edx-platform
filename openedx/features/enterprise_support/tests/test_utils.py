@@ -4,7 +4,7 @@ Test the enterprise support utils.
 
 import json
 import uuid
-from unittest import mock
+from unittest import mock, skip
 
 import ddt
 from completion.models import BlockCompletion
@@ -463,6 +463,7 @@ class TestEnterpriseUtils(TestCase):
         generic_name = get_enterprise_learner_generic_name(request)
         assert '' == generic_name
 
+    @skip("OldMongo Deprecation")
     def test_is_enterprise_learner(self):
         with mock.patch(
             'django.core.cache.cache.set'

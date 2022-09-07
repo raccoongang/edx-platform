@@ -7,7 +7,7 @@ from datetime import timedelta
 from functools import wraps
 from json import loads
 from textwrap import dedent
-from unittest import SkipTest, mock
+from unittest import SkipTest, mock, skip
 from uuid import uuid4
 
 import ddt
@@ -29,12 +29,11 @@ from xmodule.contentstore.content import StaticContent
 from xmodule.contentstore.django import contentstore
 from xmodule.contentstore.utils import empty_asset_trashcan, restore_asset_from_trashcan
 from xmodule.course_module import CourseBlock, Textbook
-from xmodule.exceptions import InvalidVersionError
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError
 from xmodule.modulestore.inheritance import own_metadata
-from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory, check_mongo_calls
+from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 from xmodule.modulestore.xml_exporter import export_course_to_xml
 from xmodule.modulestore.xml_importer import import_course_from_xml, perform_xlint
 from xmodule.seq_module import SequenceBlock
@@ -361,7 +360,8 @@ class ImportRequiredTestCases(ContentStoreTestCase):
         """Imports the course in root_dir into the given course_id and verifies its content"""
         # reimport
         import_course_from_xml(
-            self.store, self.user.id, root_dir, ['test_export'], static_content_store=content_store, target_id=course_id,
+            self.store, self.user.id, root_dir, ['test_export'],
+            static_content_store=content_store, target_id=course_id,
             create_if_not_present=True
         )
 
@@ -1648,6 +1648,7 @@ class ContentStoreTest(ContentStoreTestCase):
         self.assertEqual(response.status_code, 404)
 
 
+@skip("OldMongo Deprecation")
 class MetadataSaveTestCase(ContentStoreTestCase):
     """Test that metadata is correctly cached and decached."""
 
@@ -1989,6 +1990,7 @@ class ContentLicenseTest(ContentStoreTestCase):
     Tests around content licenses
     """
 
+    @skip("OldMongo Deprecation")
     def test_course_license_export(self):
         content_store = contentstore()
         root_dir = path(mkdtemp_clean())

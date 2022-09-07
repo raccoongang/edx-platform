@@ -3,6 +3,7 @@ Tests for the LTI outcome service handlers, both in outcomes.py and in tasks.py
 """
 
 
+from unittest import skip
 from unittest.mock import ANY, MagicMock, patch
 
 from django.test import TestCase
@@ -293,6 +294,7 @@ class XmlHandlingTest(TestCase):
         assert not outcomes.check_replace_result_response(response)
 
 
+@skip("OldMongo Deprecation")
 class TestAssignmentsForProblem(ModuleStoreTestCase):
     """
     Test cases for the assignments_for_problem method in outcomes.py

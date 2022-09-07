@@ -7,7 +7,6 @@ from django.conf import settings
 from xblock.core import XBlock
 from xblock.fields import String
 
-from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.mongo.draft import as_draft
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
@@ -41,14 +40,6 @@ class XBlockImportTest(ModuleStoreTestCase):
             'set by xml'
         )
 
-    @XBlock.register_temp_plugin(StubXBlock)
-    def test_import_draft(self):
-        self._assert_import(
-            'pure_xblock_draft',
-            'set by xml',
-            has_draft=True
-        )
-
     def _assert_import(self, course_dir, expected_field_val, has_draft=False):
         """
         Import a course from XML, then verify that the XBlock was loaded
@@ -66,7 +57,7 @@ class XBlockImportTest(ModuleStoreTestCase):
         """
         # It is necessary to use the "old mongo" modulestore because split doesn't work
         # with the "has_draft" logic below.
-        store = modulestore()._get_modulestore_by_type(ModuleStoreEnum.Type.mongo)  # pylint: disable=protected-access
+        store = modulestore()
         courses = import_course_from_xml(
             store, self.user.id, TEST_DATA_DIR, [course_dir], create_if_not_present=True
         )

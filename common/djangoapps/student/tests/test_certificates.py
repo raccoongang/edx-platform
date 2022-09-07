@@ -76,6 +76,7 @@ class CertificateDisplayTestBase(SharedModuleStoreTestCase):
         )
 
 
+@unittest.skip("OldMongo Deprecation")
 @ddt.ddt
 @unittest.skipUnless(settings.ROOT_URLCONF == 'lms.urls', 'Test only valid in lms')
 class CertificateDashboardMessageDisplayTest(CertificateDisplayTestBase):

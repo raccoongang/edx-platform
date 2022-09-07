@@ -4,10 +4,11 @@ or with filename which starts with "._")
 """
 
 
+from unittest import skip
+
 from django.conf import settings
 from django.core.management import call_command
 from opaque_keys.edx.keys import CourseKey
-from unittest import skip
 
 from xmodule.contentstore.content import XASSET_LOCATION_TAG
 from xmodule.contentstore.django import contentstore
@@ -21,7 +22,7 @@ from xmodule.modulestore.xml_importer import import_course_from_xml
 TEST_DATA_DIR = settings.COMMON_TEST_DATA_ROOT
 
 
-@skip("old mongo deprecated")
+@skip("OldMongo Deprecation")
 class ExportAllCourses(ModuleStoreTestCase):
     """
     Tests assets cleanup for all courses.

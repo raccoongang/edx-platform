@@ -1,5 +1,6 @@
 # lint-amnesty, pylint: disable=missing-module-docstring
 from datetime import timedelta
+from unittest import skip
 from unittest.mock import patch  # lint-amnesty, pylint: disable=wrong-import-order
 
 from edx_toggles.toggles.testutils import override_waffle_flag
@@ -27,6 +28,7 @@ class SelfPacedDueDatesTests(ModuleStoreTestCase):  # lint-amnesty, pylint: disa
         for i in range(4):
             ItemFactory(parent=self.course, category="sequential", display_name=f"Section {i}")
 
+    @skip("OldMongo Deprecation")
     def test_basic_spacing(self):
         expected_sections = [
             (0, 'Section 0', timedelta(days=7)),
@@ -39,6 +41,7 @@ class SelfPacedDueDatesTests(ModuleStoreTestCase):  # lint-amnesty, pylint: disa
 
         assert actual == expected_sections
 
+    @skip("OldMongo Deprecation")
     def test_hidden_sections(self):
         for _ in range(2):
             ItemFactory(parent=self.course, category="sequential", visible_to_staff_only=True)
@@ -53,6 +56,7 @@ class SelfPacedDueDatesTests(ModuleStoreTestCase):  # lint-amnesty, pylint: disa
 
         assert actual == expected_sections
 
+    @skip("OldMongo Deprecation")
     def test_dates_for_ungraded_assignments(self):
         """
         _has_assignment_blocks should return true if the argument block
@@ -157,6 +161,7 @@ class SelfPacedDueDatesTests(ModuleStoreTestCase):  # lint-amnesty, pylint: disa
             sequence = self.store.get_item(sequence.location)
             self.assertCountEqual(_gather_graded_items(sequence, 5), expected_graded_items)
 
+    @skip("OldMongo Deprecation")
     def test_get_custom_pacing_children(self):
         """
         _get_custom_pacing_items should return a list of (block item location, field metadata dictionary)
@@ -288,6 +293,7 @@ class SelfPacedCustomDueDateTests(ModuleStoreTestCase):
         with patch.object(utils, 'get_expected_duration', return_value=timedelta(weeks=6)):
             self.assertCountEqual(extract_dates_from_course(course), expected_dates)
 
+    @skip("OldMongo Deprecation")
     @override_waffle_flag(CUSTOM_RELATIVE_DATES, active=True)
     def test_extract_dates_from_course_custom_and_default_pls_multiple_subsections_graded(self):
         """
@@ -326,6 +332,7 @@ class SelfPacedCustomDueDateTests(ModuleStoreTestCase):
         with patch.object(utils, 'get_expected_duration', return_value=timedelta(weeks=8)):
             self.assertCountEqual(extract_dates_from_course(course), expected_dates)
 
+    @skip("OldMongo Deprecation")
     @override_waffle_flag(CUSTOM_RELATIVE_DATES, active=True)
     def test_extract_dates_from_course_all_subsections(self):
         """

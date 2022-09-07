@@ -6,7 +6,7 @@ Tests for views/tools.py.
 import datetime
 import json
 import unittest
-from unittest import mock
+from unittest import mock, skip
 
 import pytest
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
@@ -97,6 +97,7 @@ class TestParseDatetime(unittest.TestCase):
             tools.parse_datetime('foo')
 
 
+@skip("OldMongo Deprecation")
 class TestFindUnit(SharedModuleStoreTestCase):
     """
     Test the find_unit function.
@@ -128,6 +129,7 @@ class TestFindUnit(SharedModuleStoreTestCase):
             tools.find_unit(self.course, url)
 
 
+@skip("OldMongo Deprecation")
 class TestGetUnitsWithDueDate(ModuleStoreTestCase):
     """
     Test the get_units_with_due_date function.
@@ -241,6 +243,7 @@ class TestSetDueDateExtension(ModuleStoreTestCase):
             block._field_data._load_dates(self.course.id, self.user, use_cached=False)  # pylint: disable=protected-access
             block.fields['due']._del_cached_value(block)  # pylint: disable=protected-access
 
+    @skip("OldMongo Deprecation")
     def test_set_due_date_extension(self):
         # First, extend the leaf assignment date
         extended_hw = datetime.datetime(2013, 10, 25, 0, 0, tzinfo=UTC)
@@ -285,6 +288,7 @@ class TestSetDueDateExtension(ModuleStoreTestCase):
             tools.set_due_date_extension(self.course, self.week3, user, extended)
 
 
+@skip("OldMongo Deprecation")
 class TestDataDumps(ModuleStoreTestCase):
     """
     Test data dumps for reporting.
