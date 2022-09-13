@@ -49,8 +49,6 @@ class StaticContentServer(MiddlewareMixin):
     def is_asset_request(self, request):
         """Determines whether the given request is an asset request"""
         return (
-            request.path.startswith('/' + XASSET_LOCATION_TAG + '/')
-            or
             request.path.startswith('/' + AssetLocator.CANONICAL_NAMESPACE)
             or
             StaticContent.is_versioned_asset_path(request.path)
@@ -60,6 +58,11 @@ class StaticContentServer(MiddlewareMixin):
     def process_request(self, request):
         """Process the given request"""
         asset_path = request.path
+
+        # Return HttpResponseBadRequest if asset_path start with '/c4x/'
+        if asset_path.startswith('/' + XASSET_LOCATION_TAG + '/'):
+            log.warning(f'Old Mongo static assets deprecated: {asset_path}')
+            return HttpResponseBadRequest()
 
         if self.is_asset_request(request):  # lint-amnesty, pylint: disable=too-many-nested-blocks
             # Make sure we can convert this request into a location.
