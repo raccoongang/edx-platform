@@ -946,17 +946,14 @@ class MiscCourseTests(ContentStoreTestCase):
         Test that user get proper responses for urls with invalid url or
         asset/course key
         """
-        resp = self.client.get_html('/c4x/CDX/123123/asset/&invalid.png')
+        resp = self.client.get_html('/asset-v1:CDX+123123+2012_Fall+type@asset+block@&invalid.png')
         self.assertEqual(resp.status_code, 400)
 
-        resp = self.client.get_html('/c4x/CDX/123123/asset/invalid.png')
+        resp = self.client.get_html('/asset-v1:CDX+123123+2012_Fall+type@asset+block@invalid.png')
         self.assertEqual(resp.status_code, 404)
 
-        # Now test that 404 response is returned when user tries to access
-        # asset of some invalid course from split ModuleStore
-        with self.store.default_store(ModuleStoreEnum.Type.split):
-            resp = self.client.get_html('/c4x/InvalidOrg/InvalidCourse/asset/invalid.png')
-            self.assertEqual(resp.status_code, 404)
+        resp = self.client.get_html('/c4x/InvalidOrg/InvalidCourse/asset/invalid.png')
+        self.assertEqual(resp.status_code, 400)
 
     @override_waffle_switch(waffle.ENABLE_ACCESSIBILITY_POLICY_PAGE, active=False)
     def test_disabled_accessibility_page(self):
