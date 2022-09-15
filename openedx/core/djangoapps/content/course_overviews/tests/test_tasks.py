@@ -12,9 +12,9 @@ from ..tasks import enqueue_async_course_overview_update_tasks
 class BatchedAsyncCourseOverviewUpdateTests(ModuleStoreTestCase):  # lint-amnesty, pylint: disable=missing-class-docstring
     def setUp(self):
         super().setUp()
-        self.course_1 = CourseFactory.create(default_store=ModuleStoreEnum.Type.mongo)
-        self.course_2 = CourseFactory.create(default_store=ModuleStoreEnum.Type.mongo)
-        self.course_3 = CourseFactory.create(default_store=ModuleStoreEnum.Type.mongo)
+        self.course_1 = CourseFactory.create()
+        self.course_2 = CourseFactory.create()
+        self.course_3 = CourseFactory.create()
 
     @mock.patch('openedx.core.djangoapps.content.course_overviews.models.CourseOverview.update_select_courses')
     def test_enqueue_all_courses_in_single_batch(self, mock_update_courses):
