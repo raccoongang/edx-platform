@@ -1016,33 +1016,6 @@ class MongoModuleStore(ModuleStoreDraftAndPublished, ModuleStoreWriteBase, Mongo
         Returns a list of course descriptors. This accepts an optional parameter of 'org' which
         will apply an efficient filter to only get courses with the specified ORG
         '''
-
-        course_org_filter = kwargs.get('org')
-
-        if course_org_filter:
-            course_records = self.collection.find({'_id.category': 'course', '_id.org': course_org_filter})
-        else:
-            course_records = self.collection.find({'_id.category': 'course'})
-
-        base_list = sum(
-            [
-                self._load_items(
-                    CourseKey.from_string('/'.join(
-                        [course['_id']['org'], course['_id']['course'], course['_id']['name']]
-                    )),
-                    [course]
-                )
-                for course
-                # I tried to add '$and': [{'_id.org': {'$ne': 'edx'}}, {'_id.course': {'$ne': 'templates'}}]
-                # but it didn't do the right thing (it filtered all edx and all templates out)
-                in course_records
-                if not (  # TODO kill this
-                    course['_id']['org'] == 'edx' and
-                    course['_id']['course'] == 'templates'
-                )
-            ],
-            []
-        )
         return []
 
     @autoretry_read()
