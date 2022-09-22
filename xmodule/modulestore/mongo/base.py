@@ -44,7 +44,7 @@ from xmodule.modulestore import BulkOperationsMixin, BulkOpsRecord, ModuleStoreE
 from xmodule.modulestore.draft_and_published import DIRECT_ONLY_CATEGORIES, ModuleStoreDraftAndPublished
 from xmodule.modulestore.edit_info import EditInfoRuntimeMixin
 from xmodule.modulestore.exceptions import DuplicateCourseError, ItemNotFoundError, ReferentialIntegrityError
-from xmodule.modulestore.inheritance import InheritanceKeyValueStore, InheritanceMixin
+from xmodule.modulestore.inheritance import InheritanceKeyValueStore, InheritanceMixin, inherit_metadata
 from xmodule.modulestore.store_utilities import DETACHED_XBLOCK_TYPES
 from xmodule.modulestore.xml import CourseLocationManager
 from xmodule.mongo_utils import connect_to_mongodb, create_collection_index
@@ -270,6 +270,10 @@ class CachingDescriptorSystem(MakoDescriptorSystem, EditInfoRuntimeMixin):  # li
                 field_data = KvsFieldData(kvs)
                 scope_ids = ScopeIds(None, category, location, location)
                 module = self.construct_xblock_from_class(class_, scope_ids, field_data, for_parent=for_parent)
+
+                non_draft_loc = as_published(location)
+                metadata_to_inherit = self.modulestore._compute_metadata_inheritance_tree(self.course_id).get(str(non_draft_loc), {})
+                inherit_metadata(module, metadata_to_inherit)
 
                 module._edit_info = json_data.get('edit_info')
 
