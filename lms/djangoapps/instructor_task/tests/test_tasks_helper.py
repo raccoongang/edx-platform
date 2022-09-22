@@ -370,7 +370,7 @@ class TestInstructorGradeReport(InstructorGradeReportTestCase):
         self._verify_cell_data_for_user(verified_user.username, course.id, 'Certificate Eligible', 'Y', num_rows=2)
 
     @ddt.data(
-        (ModuleStoreEnum.Type.mongo, 3, 47),
+        (ModuleStoreEnum.Type.mongo, 6, 47),
         (ModuleStoreEnum.Type.split, 2, 48),
     )
     @ddt.unpack

@@ -168,9 +168,9 @@ class GetItemTest(ItemTest):
         return resp
 
     @ddt.data(
-        (1, 17, 15, 16, 12),
-        (2, 17, 15, 16, 12),
-        (3, 17, 15, 16, 12),
+        (1, 25, 23, 26, 20),
+        (2, 51, 49, 52, 46),
+        (3, 141, 139, 142, 136),
     )
     @ddt.unpack
     def test_get_query_count(self, branching_factor, chapter_queries, section_queries, unit_queries, problem_queries):
@@ -186,9 +186,9 @@ class GetItemTest(ItemTest):
             self.client.get(reverse_usage_url('xblock_handler', self.populated_usage_keys['problem'][-1]))
 
     @ddt.data(
-        (1, 30),
-        (2, 32),
-        (3, 34),
+        (1, 52),
+        (2, 82),
+        (3, 176),
     )
     @ddt.unpack
     def test_container_get_query_count(self, branching_factor, unit_queries,):
@@ -2565,7 +2565,7 @@ class TestXBlockInfo(ItemTest):
 
     @ddt.data(
         (ModuleStoreEnum.Type.split, 3, 3),
-        (ModuleStoreEnum.Type.mongo, 5, 7),
+        (ModuleStoreEnum.Type.mongo, 8, 12),
     )
     @ddt.unpack
     def test_xblock_outline_handler_mongo_calls(self, store_type, chapter_queries, chapter_queries_1):

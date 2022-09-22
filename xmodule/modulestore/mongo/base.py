@@ -40,7 +40,7 @@ from xmodule.error_module import ErrorBlock
 from xmodule.errortracker import exc_info_to_str, null_error_tracker
 from xmodule.exceptions import HeartbeatFailure
 from xmodule.mako_module import MakoDescriptorSystem
-from xmodule.modulestore import BulkOperationsMixin, BulkOpsRecord, ModuleStoreEnum, ModuleStoreWriteBase
+from xmodule.modulestore import BulkOperationsMixin, ModuleStoreEnum, ModuleStoreWriteBase
 from xmodule.modulestore.draft_and_published import DIRECT_ONLY_CATEGORIES, ModuleStoreDraftAndPublished
 from xmodule.modulestore.edit_info import EditInfoRuntimeMixin
 from xmodule.modulestore.exceptions import DuplicateCourseError, ItemNotFoundError, ReferentialIntegrityError
@@ -272,8 +272,8 @@ class CachingDescriptorSystem(MakoDescriptorSystem, EditInfoRuntimeMixin):  # li
                 module = self.construct_xblock_from_class(class_, scope_ids, field_data, for_parent=for_parent)
 
                 non_draft_loc = as_published(location)
-                metadata_to_inherit = self.modulestore._compute_metadata_inheritance_tree(self.course_id).get(str(non_draft_loc), {})
-                inherit_metadata(module, metadata_to_inherit)
+                metadata_inheritance_tree = self.modulestore._compute_metadata_inheritance_tree(self.course_id)
+                inherit_metadata(module, metadata_inheritance_tree.get(str(non_draft_loc), {}))
 
                 module._edit_info = json_data.get('edit_info')
 
@@ -431,38 +431,16 @@ def as_published(location):
     return location.replace(revision=MongoRevisionKey.published)
 
 
-class MongoBulkOpsRecord(BulkOpsRecord):
-    """
-    Tracks whether there've been any writes per course and disables inheritance generation
-    """
-    def __init__(self):
-        super().__init__()
-        self.dirty = False
-
-
 class MongoBulkOpsMixin(BulkOperationsMixin):
     """
     Mongo bulk operation support
     """
-    _bulk_ops_record_type = MongoBulkOpsRecord
-
-    def _start_outermost_bulk_operation(self, bulk_ops_record, course_key, ignore_case=False):
-        """
-        Prevent updating the meta-data inheritance cache for the given course
-        """
-        # ensure it starts clean
-        bulk_ops_record.dirty = False
 
     def _end_outermost_bulk_operation(self, bulk_ops_record, structure_key):
         """
-        Restart updating the meta-data inheritance cache for the given course or library.
-        Refresh the meta-data inheritance cache now since it was temporarily disabled.
+        The outermost nested bulk_operation call: do the actual end of the bulk operation.
         """
-        dirty = False
-        if bulk_ops_record.dirty:
-            dirty = True
-            bulk_ops_record.dirty = False  # brand spanking clean now
-        return dirty
+        return True
 
     def _is_in_bulk_operation(self, course_id, ignore_case=False):  # lint-amnesty, pylint: disable=arguments-differ
         """
