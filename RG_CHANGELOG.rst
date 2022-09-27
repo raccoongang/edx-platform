@@ -3,36 +3,43 @@ RG Changelog
 
 All notable changes to this project will be documented in this file.
 
-The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_, and this project adheres to customized Semantic Versioning e.g.: `nutmeg-rg.v1`
+The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`_, and this project adheres to customized Semantic Versioning e.g.: `nutmeg-rg.1`
 
 [Unreleased]
-~~~~~~~~~~~~
+************
+
+[nutmeg-rg.1] 2022-09-30 (Nutmeg RG release)
+********************************************
+
 Changed
--------
-- RG-LMS gitlab MR template renamed to the Default template, some minor
+=======
+
+* RG-LMS gitlab MR template renamed to the Default template, some minor
   changes to the template were also added.
 
-- Remove RG-specific settings that were moved to deployment `RGOeX-1713 <https://youtrack.raccoongang.com/issue/RGOeX-1713>`_
+* Remove RG-specific settings that were moved to deployment `RGOeX-1713 <https://youtrack.raccoongang.com/issue/RGOeX-1713>`_
 
-  - This reverts changes from the `RGOeX-687 <https://youtrack.raccoongang.com/issue/RGOeX-687>`_
+  * This reverts changes from the `RGOeX-687 <https://youtrack.raccoongang.com/issue/RGOeX-687>`_
 
 Added
------
+=====
 
-- Add modified favicon redirect view to be able to use the themed version `RGOeX-771 <https://youtrack.raccoongang.com/issue/RGOeX-771>`_ `RGOeX-1564 <https://youtrack.raccoongang.com/issue/RGOeX-1564>`_
+* Add modified favicon redirect view to be able to use the themed version `RGOeX-771 <https://youtrack.raccoongang.com/issue/RGOeX-771>`_ `RGOeX-1564 <https://youtrack.raccoongang.com/issue/RGOeX-1564>`_
 
-  - This requires modifications in nginx configurations because favicon url was redifined there for some reason
+  * This requires modifications in nginx configurations because favicon url was redifined there for some reason
 
-- Add ability to notify Credentials about received honor course certificate `RGOeX-1413 <https://youtrack.raccoongang.com/issue/RGOeX-1413>`_
+* Add ability to notify Credentials about received honor course certificate `RGOeX-1413 <https://youtrack.raccoongang.com/issue/RGOeX-1413>`_
 
-  - Added the new WaffleFlag `course_modes.extend_certificate_relevant_modes_with_honor`
-  - The new WaffleFlag is disabled by default
-  - Use case for enabling the WaffleFlag - usage of programs that include honor courses
+  * Added the new WaffleFlag `course_modes.extend_certificate_relevant_modes_with_honor`
+  * The new WaffleFlag is disabled by default
+  * Use case for enabling the WaffleFlag - usage of programs that include honor courses
 
 Fixes
------
+=====
 
-- Fix error for the CMS logistration `RGOeX-1597 <https://youtrack.raccoongang.com/issue/RGOeX-1597>`_
+* Fix error for the CMS logistration `RGOeX-1597 <https://youtrack.raccoongang.com/issue/RGOeX-1597>`_
+
+* Fix empty signature added after every certificate saving `RGOeX-1659 <https://youtrack.raccoongang.com/issue/RGOeX-1659>`_
 
 
 [Maple Release] - 2022-04-29
