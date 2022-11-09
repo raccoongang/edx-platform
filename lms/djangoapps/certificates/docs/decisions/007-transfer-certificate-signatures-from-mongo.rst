@@ -1,40 +1,48 @@
-
-Transfer certificate signatures from Mongo to Credentials
-#########################################################
+Transfer certificate signatures to Credentials IDA
+==================================================
 
 Status
-******
+------
 Proposed
 
 Context
-*******
-As a part of `Old Mongo Deprecation work <https://github.com/openedx/public-engineering/issues/62>`_
-we are planning to remove the support for c4x assets. After removing support for c4x assets in
-StaticContentServer middleware, the certificate signatories for courses with deprecated IDs won't
-be available because those signatures are stored in course assets.
+-------
+As a part of `Old Mongo Deprecation`_ work, we are planning to remove the support for c4x assets.
+After removing the support for c4x assets from the ``StaticContentServer`` middleware, 
+the certificate signatures for ``Draft (Old) Mongo`` courses with deprecated IDs will become
+unavailable.
 
+.. _`Old Mongo Deprecation`: https://github.com/openedx/public-engineering/issues/62
 
 Decision
-********
-To keep access to the certificate signatures will be used external signatures from credentials on WEB/PDF
-certificate rendering.
+--------
+We will transfer and store certificate signatures in `Credentials`_ IDA and then use them to render HTML
+certificates for ``Draft (Old) Mongo`` courses that have deprecated IDs.
 
-* credentials API must be extended to provide endpoints for adding and retrieving signatures
+In order to transfer the signatures for ``Draft (Old) Mongo`` and ``Split Mongo`` courses,
+it is necessary to complete the next tasks.
 
-  * `CourseCertificateViewSet` API should provide a possibility to optionaly update or create signatures for the course certificate.
+* Extend credentials API to provide an option for adding and retrieving signatures.
 
-* add a new `OpenEdxPublicSignal` that is emitted from Studio whenever certificate-related data is changed (e.g. certificate image upload, course import). The signature image can be exposed as a URL.
+  * ``CourseCertificateViewSet`` API should provide a possibility to optionally update
+    or create signatures for the course certificate.
+  
+  * ``CourseCertificateViewSet`` API should provide a list of signatures configured for a course certificate.
 
-  1. create UserCredential
-  2. transfer certificate
-  3. upload signature img and transfer signature data
+* Add a new ``OpenEdxPublicSignal`` that is emitted from Studio whenever certificate-related data is changed
+  (e.g., certificate image upload, course import). The signature image can be exposed as a URL.
 
-* added management command to copy signatures from Mongo to Credentials
-* update certificate views for getting signatures from Credentials
-* signal receiver will copy the signature image to Credentials Signature model
+* Create a signal receiver function, that will copy the certificate configuration including signatures images
+  to ``CourseCertificate`` model in Credentials using ``CourseCertificateViewSet`` API.
 
-Mongo certificate structure:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* Add a new management command to copy course certificates configurations,
+  including signatures configuration and assets, from MongoDB to Credentials.
+
+* Update render certificate views to get signatures from Credentials
+  ``CourseCertificateViewSet`` for ``Draft (Old) Mongo`` courses only.
+
+Example of the certificate configuration stored in MongoDB:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. code-block:: json
 
   {
@@ -65,8 +73,6 @@ Mongo certificate structure:
 
 Credentials CourseCertificate model:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CourseCertificate fields:
-
 * site
 * is_active
 * signatories
@@ -85,19 +91,29 @@ CourseCertificate fields:
 * certificate_type
 * user_credentials
 
+.. _Credentials: https://github.com/openedx/credentials
 
 Consequences
-************
-* After updating course or course certificate - signatures for that course will be saved in CourseCertificate from credentials.
+------------
+* After implementing the new ``OpenEdxPublicSignal`` signal receiver,
+  every time the course or course certificate is updated,
+  certificate configuration including signatures configuration for
+  that course will be saved in ``CourseCertificate`` model in Credentials.
+* During the certificate rendering, the certificate configuration fetched from MongoDB
+  will be merged with signatures configuration retrieved from Credentials. 
+* After transferring course certificates configurations from MongoDB to Credentials,
+  it would be easier to migrate certificates management from edx-platform to Credentials IDA. 
 
 
 Alternatives Considered
-***********************
-No alternatives were considered.
+-----------------------
+* `BD-11 Credentials Infrastructure + syncing`_ – suggests migrating course certificates
+  configuration to credentials and migrate course certificates frontend to MFEs.
 
+.. _`BD-11 Credentials Infrastructure + syncing`: https://github.com/openedx/credentials/issues/1734
 
 References
-***************
+---------------
 - `Migrate signature assets from MongoDB GridFS to the Credentials IDA <https://github.com/openedx/credentials/issues/1765>`_
 - `[DEPR]: DraftModuleStore (Old Mongo Modulestore) <https://github.com/openedx/public-engineering/issues/62>`_
 - `Remove the ability to read and write static assets to Old Mongo <https://github.com/openedx/public-engineering/issues/77>`_
