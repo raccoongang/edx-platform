@@ -6,7 +6,7 @@ Tests for views/tools.py.
 import datetime
 import json
 import unittest
-from unittest import mock
+from unittest import mock, skip
 
 import pytest
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
@@ -19,7 +19,7 @@ from opaque_keys.edx.keys import CourseKey
 from pytz import UTC
 from xmodule.fields import Date
 from xmodule.modulestore.tests.django_utils import (
-    TEST_DATA_MONGO_AMNESTY_MODULESTORE, ModuleStoreTestCase, SharedModuleStoreTestCase,
+    TEST_DATA_SPLIT_MODULESTORE, ModuleStoreTestCase, SharedModuleStoreTestCase,
 )
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 
@@ -102,15 +102,18 @@ class TestFindUnit(SharedModuleStoreTestCase):
     """
     Test the find_unit function.
     """
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.course = CourseFactory.create()
-        with cls.store.bulk_operations(cls.course.id, emit_signals=False):
-            week1 = ItemFactory.create(parent=cls.course)
-            cls.homework = ItemFactory.create(parent=week1)
+        course = CourseFactory.create()
+        with cls.store.bulk_operations(course.id, emit_signals=False):
+            cls.week1 = ItemFactory.create(parent=course)
+            cls.homework = ItemFactory.create(parent=cls.week1)
+
+        # get updated course
+        cls.course = cls.store.get_item(course.location)
 
     def test_find_unit_success(self):
         """
@@ -133,7 +136,7 @@ class TestGetUnitsWithDueDate(ModuleStoreTestCase):
     """
     Test the get_units_with_due_date function.
     """
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     def setUp(self):
         """
@@ -153,7 +156,8 @@ class TestGetUnitsWithDueDate(ModuleStoreTestCase):
             (child.location, {'due': due}),
         ])
 
-        self.course = course
+        # get updated course
+        self.course = self.store.get_item(course.location)
         self.week1 = week1
         self.week2 = week2
 
@@ -200,7 +204,7 @@ class TestSetDueDateExtension(ModuleStoreTestCase):
     """
     Test the set_due_date_extensions function.
     """
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     def setUp(self):
         """
@@ -219,7 +223,8 @@ class TestSetDueDateExtension(ModuleStoreTestCase):
 
         user = UserFactory.create()
 
-        self.course = course
+        # get updated course
+        self.course = self.store.get_item(course.location)
         self.week1 = week1
         self.homework = homework
         self.assignment = assignment
@@ -242,6 +247,7 @@ class TestSetDueDateExtension(ModuleStoreTestCase):
             block._field_data._load_dates(self.course.id, self.user, use_cached=False)  # pylint: disable=protected-access
             block.fields['due']._del_cached_value(block)  # pylint: disable=protected-access
 
+    @skip("OldMongo Deprecation")
     def test_set_due_date_extension(self):
         # First, extend the leaf assignment date
         extended_hw = datetime.datetime(2013, 10, 25, 0, 0, tzinfo=UTC)
@@ -293,8 +299,8 @@ class TestSetDueDateExtension(ModuleStoreTestCase):
         extended_hw = datetime.datetime(2013, 10, 25, 0, 0, tzinfo=UTC)
         tools.set_due_date_extension(self.course, self.assignment, self.user, extended_hw)
 
-        assert mock_method.call_count == 2
-        mock_method.assert_called_with(self.course.id, user=self.user, published_version=None, use_cached=False)
+        assert mock_method.call_count == 3
+        mock_method.assert_called_with(self.course.id, user=self.user, use_cached=False)
 
     @patch('edx_when.api.get_dates_for_course', wraps=get_dates_for_course)
     def test_set_due_date_extension_cache_invalidation_with_version(self, mock_method: MagicMock):
@@ -315,7 +321,7 @@ class TestDataDumps(ModuleStoreTestCase):
     """
     Test data dumps for reporting.
     """
-    MODULESTORE = TEST_DATA_MONGO_AMNESTY_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     def setUp(self):
         """
@@ -335,7 +341,8 @@ class TestDataDumps(ModuleStoreTestCase):
 
         user1 = UserFactory.create()
         user2 = UserFactory.create()
-        self.course = course
+        # get updated course
+        self.course = self.store.get_item(course.location)
         self.week1 = week1
         self.homework = homework
         self.week2 = week2
