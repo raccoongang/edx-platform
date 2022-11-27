@@ -6,10 +6,8 @@ import logging
 from datetime import datetime
 from functools import partial, wraps
 from typing import BinaryIO, Dict, Iterator, List, Optional, Tuple, Union
-from urllib.parse import urljoin  # pylint: disable=import-error
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db import transaction
 from django.dispatch import receiver
@@ -41,7 +39,12 @@ from common.djangoapps.util.module_utils import yield_dynamic_descriptor_descend
 from lms.djangoapps.grades.api import task_compute_all_grades_for_course
 from openedx.core.djangoapps.content.learning_sequences.api import key_supports_outlines
 from openedx.core.djangoapps.discussions.tasks import update_discussions_settings_from_course_task
-from openedx.core.djangoapps.credentials.utils import get_credentials_api_base_url, get_credentials_api_client
+from openedx.core.djangoapps.credentials.utils import (
+    get_credentials_api_base_url,
+    get_credentials_api_client,
+    delete_course_certificate_configuration,
+    send_course_certificate_configuration,
+)
 from openedx.core.djangoapps.olx_rest_api.adapters import get_asset_content_from_path
 from openedx.core.lib.gating import api as gating_api
 from xmodule.modulestore import ModuleStoreEnum
@@ -247,23 +250,10 @@ def listen_for_course_certificate_config_changed(sender, signal, **kwargs):
     """
     certificate_config = kwargs['certificate_config']
     files_to_upload = dict(get_certificate_signature_assets(certificate_config))
-    try:
-        credentials_client = get_credentials_api_client(
-            User.objects.get(username=settings.CREDENTIALS_SERVICE_USERNAME),
-        )
-        credentials_api_base_url = get_credentials_api_base_url()
-        api_url = urljoin(f'{credentials_api_base_url}/', 'course_certificates/')
-        payload = attr.asdict(certificate_config)
-        payload['course_key'] = str(payload.pop('course_key'))
-        response = credentials_client.post(
-            api_url,
-            files=files_to_upload,
-            json=payload
-        )
-        response.raise_for_status()
-        log.info(f'Course certificate config sent for course {certificate_config.course_key} to Credentials.')
-    except Exception:  # lint-amnesty, pylint: disable=W0703
-        log.exception(f'Failed to send course certificate config for course {certificate_config.course_key}.')
+    certificate_config_data = attr.asdict(certificate_config)
+    course_key = certificate_config_data.pop('course_key')
+    certificate_config_data['course_key'] = str(course_key)
+    send_course_certificate_configuration(course_key, certificate_config_data, files_to_upload)
 
 
 @receiver(COURSE_CERTIFICATE_CONFIG_DELETED)
@@ -271,23 +261,10 @@ def listen_for_course_certificate_config_deleted(sender, signal, **kwargs):
     """
     Send course certificate config data onto the Credentials service to delete one.
     """
-    certificate_config = kwargs['certificate_config']
-    try:
-        credentials_client = get_credentials_api_client(
-            User.objects.get(username=settings.CREDENTIALS_SERVICE_USERNAME),
-        )
-        credentials_api_base_url = get_credentials_api_base_url()
-        api_url = urljoin(f'{credentials_api_base_url}/', 'course_certificates/')
-        payload = attr.asdict(certificate_config)
-        payload['course_key'] = str(payload.pop('course_key'))
-        response = credentials_client.delete(
-            api_url,
-            json=payload
-        )
-        response.raise_for_status()
-        log.info(f'Course certificate config is deleted for course {certificate_config.course_key} from Credentials.')
-    except Exception:  # lint-amnesty, pylint: disable=W0703
-        log.exception(f'Failed to delete certificate config for course {certificate_config.course_key}.')
+    certificate_config = attr.asdict(kwargs['certificate_config'])
+    course_key = certificate_config.pop('course_key')
+    certificate_config['course_key'] = str(course_key)
+    delete_course_certificate_configuration(course_key, certificate_config)
 
 
 @receiver(SignalHandler.course_deleted)
