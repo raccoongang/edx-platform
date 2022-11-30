@@ -67,7 +67,7 @@ class Command(BaseCommand):
 
         return result
 
-    def get_mongo_courses(self):
+    def get_mongo_courses(self) -> Iterator[CourseKey]:
         """
         Return objects for any mongo(old approach) modulestore backend course that has a certificate configuration.
         """
@@ -87,7 +87,7 @@ class Command(BaseCommand):
                 course['_id']['name'],
             )
 
-    def get_split_courses(self):
+    def get_split_courses(self) -> Iterator[CourseKey]:
         """
         Return objects for any split modulestore backend course that has a certificate configuration.
         """
