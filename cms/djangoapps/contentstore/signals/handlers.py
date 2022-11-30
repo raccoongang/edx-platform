@@ -89,8 +89,9 @@ def get_certificate_signature_assets(certificate_config: CertificateConfigData) 
     """
     Get certificates' signatures from asset content storage.
     """
+    course_key = CourseKey.from_string(certificate_config.course_id)
     for signatory in certificate_config.signatories:
-        if content := get_asset_content_from_path(certificate_config.course_key, signatory.image):
+        if content := get_asset_content_from_path(course_key, signatory.image):
             yield signatory.image, content.data
 
 
@@ -126,8 +127,8 @@ def create_catalog_data_for_signal(course_key: CourseKey) -> Optional[CourseCata
         )
 
 
-def create_course_certificate_config_data_for_signal(
-    course_key: CourseKey,
+def create_course_certificate_config_data(
+    course_id: str,
     certificate_type: str,
     certificate_data: Dict[str, Union[str, List[str]]]
 ) -> CourseCatalogData:
@@ -143,7 +144,7 @@ def create_course_certificate_config_data_for_signal(
     ) for item in certificate_data['signatories']]
 
     return CertificateConfigData(
-        course_key=course_key,
+        course_id=course_id,
         title=certificate_data['name'],
         is_active=certificate_data['is_active'],
         signatories=signatories,
@@ -162,7 +163,7 @@ def emit_catalog_info_changed_signal(course_key: CourseKey):
 
 
 def _emit_course_certificate_config_signal(
-    course_key: CourseKey,
+    course_id: str,
     certificate_data: Dict[str, Union[str, List[str]]],
     course_certificate_config_signal: OpenEdxPublicSignal
 ):
@@ -170,11 +171,10 @@ def _emit_course_certificate_config_signal(
     Given the key of a recently changed course certificate config,
     send course certificate config data to course-certificate-config-changed signal.
     """
-    course_modes = CourseMode.objects.filter(course_id=course_key, mode_slug__in=CourseMode.CERTIFICATE_RELEVANT_MODES)
+    course_modes = CourseMode.objects.filter(course_id=course_id, mode_slug__in=CourseMode.CERTIFICATE_RELEVANT_MODES)
     for mode in course_modes:
-        certificate_config = create_course_certificate_config_data_for_signal(course_key, mode.slug, certificate_data)
-        if certificate_config is not None:
-            course_certificate_config_signal.send_event(certificate_config=certificate_config)
+        certificate_config = create_course_certificate_config_data(course_id, mode.slug, certificate_data)
+        course_certificate_config_signal.send_event(certificate_config=certificate_config)
 
 
 emit_course_certificate_config_changed_signal = partial(
@@ -251,9 +251,8 @@ def listen_for_course_certificate_config_changed(sender, signal, **kwargs):
     certificate_config = kwargs['certificate_config']
     files_to_upload = dict(get_certificate_signature_assets(certificate_config))
     certificate_config_data = attr.asdict(certificate_config)
-    course_key = certificate_config_data.pop('course_key')
-    certificate_config_data['course_key'] = str(course_key)
-    send_course_certificate_configuration(course_key, certificate_config_data, files_to_upload)
+    course_id = certificate_config_data.get('course_id')
+    send_course_certificate_configuration(course_id, certificate_config_data, files_to_upload)
 
 
 @receiver(COURSE_CERTIFICATE_CONFIG_DELETED)
@@ -262,9 +261,8 @@ def listen_for_course_certificate_config_deleted(sender, signal, **kwargs):
     Send course certificate config data onto the Credentials service to delete one.
     """
     certificate_config = attr.asdict(kwargs['certificate_config'])
-    course_key = certificate_config.pop('course_key')
-    certificate_config['course_key'] = str(course_key)
-    delete_course_certificate_configuration(course_key, certificate_config)
+    course_id = certificate_config.get('course_id')
+    delete_course_certificate_configuration(course_id, certificate_config)
 
 
 @receiver(SignalHandler.course_deleted)

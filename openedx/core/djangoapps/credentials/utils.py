@@ -122,7 +122,7 @@ def get_credentials(user, program_uuid=None, credential_type=None):
     )
 
 
-def send_course_certificate_configuration(course_key: CourseKey, config_data: dict, signature_assets):
+def send_course_certificate_configuration(course_id: str, config_data: dict, signature_assets):
     try:
         credentials_client = get_credentials_api_client(
             User.objects.get(username=settings.CREDENTIALS_SERVICE_USERNAME),
@@ -135,14 +135,15 @@ def send_course_certificate_configuration(course_key: CourseKey, config_data: di
             json=config_data
         )
         response.raise_for_status()
-        log.info(f'Course certificate config sent for course {course_key} to Credentials.')
+        log.info(f'Course certificate config sent for course {course_id} to Credentials.')
     except Exception:  # lint-amnesty, pylint: disable=W0703
-        log.exception(f'Failed to send course certificate config for course {course_key} to Credentials.')
+        log.exception(f'Failed to send course certificate config for course {course_id} to Credentials.')
+        raise
     else:
         return response
 
 
-def delete_course_certificate_configuration(course_key: CourseKey, config_data: dict):
+def delete_course_certificate_configuration(course_id: str, config_data: dict):
     try:
         credentials_client = get_credentials_api_client(
             User.objects.get(username=settings.CREDENTIALS_SERVICE_USERNAME),
@@ -154,8 +155,9 @@ def delete_course_certificate_configuration(course_key: CourseKey, config_data: 
             json=config_data
         )
         response.raise_for_status()
-        log.info(f'Course certificate config is deleted for course {course_key} from Credentials.')
+        log.info(f'Course certificate config is deleted for course {course_id} from Credentials.')
     except Exception:  # lint-amnesty, pylint: disable=W0703
-        log.exception(f'Failed to delete certificate config for course {course_key} from Credentials.')
+        log.exception(f'Failed to delete certificate config for course {course_id} from Credentials.')
+        raise
     else:
         return response
