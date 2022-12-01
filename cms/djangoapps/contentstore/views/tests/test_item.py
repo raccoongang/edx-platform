@@ -4,7 +4,6 @@
 import json
 import re
 from datetime import datetime, timedelta
-from unittest import skip
 from unittest.mock import Mock, PropertyMock, patch
 
 import ddt
@@ -87,6 +86,9 @@ class AsideTest(XBlockAside):
 
 class ItemTest(CourseTestCase):
     """ Base test class for create, save, and delete """
+
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
+
     def setUp(self):
         super().setUp()
 
@@ -1296,8 +1298,6 @@ class TestDuplicateItemWithAsides(ItemTest, DuplicateHelper):
     """
     Test the duplicate method for blocks with asides.
     """
-    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
-
     def setUp(self):
         """ Creates the test course structure and a few components to 'duplicate'. """
         super().setUp()
@@ -2817,7 +2817,6 @@ class TestXBlockInfo(ItemTest):
             self.assertIsNone(xblock_info.get('child_info', None))
 
 
-@skip("OldMongo Deprecation")
 @patch.dict('django.conf.settings.FEATURES', {'ENABLE_SPECIAL_EXAMS': True})
 @ddt.ddt
 class TestSpecialExamXBlockInfo(ItemTest):
@@ -2844,9 +2843,11 @@ class TestSpecialExamXBlockInfo(ItemTest):
             parent_location=self.course.location, category='chapter', display_name="Week 1", user_id=user_id,
             highlights=['highlight'],
         )
+        # get updated course
+        self.course = self.store.get_item(self.course.location)
         self.course.enable_proctored_exams = True
         self.course.save()
-        self.store.update_item(self.course, self.user.id)
+        self.course = self.store.update_item(self.course, self.user.id)
 
     def test_proctoring_is_enabled_for_course(self):
         course = modulestore().get_item(self.course.location)
@@ -2872,7 +2873,7 @@ class TestSpecialExamXBlockInfo(ItemTest):
             category='sequential',
             display_name="Test Lesson 1",
             user_id=self.user.id,
-            is_proctored_exam=True,
+            is_proctored_enabled=True,
             is_time_limited=True,
             default_time_limit_minutes=100,
             is_onboarding_exam=False,
@@ -2914,7 +2915,7 @@ class TestSpecialExamXBlockInfo(ItemTest):
             category='sequential',
             display_name="Test Lesson 1",
             user_id=self.user.id,
-            is_proctored_exam=False,
+            is_proctored_enabled=False,
             is_time_limited=False,
             is_onboarding_exam=False,
         )
@@ -2942,7 +2943,7 @@ class TestSpecialExamXBlockInfo(ItemTest):
             category='sequential',
             display_name="Test Lesson 1",
             user_id=self.user.id,
-            is_proctored_exam=False,
+            is_proctored_enabled=False,
             is_time_limited=False,
             is_onboarding_exam=False,
         )

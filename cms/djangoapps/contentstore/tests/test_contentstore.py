@@ -36,7 +36,7 @@ from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError
 from xmodule.modulestore.inheritance import own_metadata
 from xmodule.modulestore.split_mongo import BlockKey
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_MODULESTORE
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory, check_mongo_calls
 from xmodule.modulestore.xml_exporter import export_course_to_xml
 from xmodule.modulestore.xml_importer import import_course_from_xml, perform_xlint
@@ -86,7 +86,7 @@ class ContentStoreTestCase(CourseTestCase):
     """
     Base class for Content Store Test Cases
     """
-    MODULESTORE = TEST_DATA_MONGO_MODULESTORE
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
 
 class ImportRequiredTestCases(ContentStoreTestCase):
@@ -277,7 +277,6 @@ class ImportRequiredTestCases(ContentStoreTestCase):
             on_disk = loads(grading_policy.read())
             self.assertEqual(on_disk, course_updates.items)
 
-    @skip("OldMongo Deprecation")
     def test_rewrite_nonportable_links_on_import(self):
         content_store = contentstore()
 
@@ -287,7 +286,7 @@ class ImportRequiredTestCases(ContentStoreTestCase):
         )
 
         # first check a static asset link
-        course_key = self.store.make_course_key('edX', 'toy', 'run')
+        course_key = self.store.make_course_key('edX', 'toy', '2012_Fall')
         html_module_location = course_key.make_usage_key('html', 'nonportable')
         html_module = self.store.get_item(html_module_location)
         self.assertIn('/static/foo.jpg', html_module.data)
@@ -538,7 +537,6 @@ class ImportRequiredTestCases(ContentStoreTestCase):
         html_module = self.store.get_item(course_id.make_usage_key('html', 'just_img'))
         self.assertIn('<img src="/static/foo_bar.jpg" />', html_module.data)
 
-    @skip("OldMongo Deprecation")
     def test_export_course_without_content_store(self):
         # Create toy course
 
@@ -559,7 +557,8 @@ class ImportRequiredTestCases(ContentStoreTestCase):
         import_course_from_xml(
             self.store, self.user.id, root_dir, ['test_export_no_content_store'],
             static_content_store=None,
-            target_id=course_id
+            target_id=course_id,
+            create_if_not_present=True
         )
 
         # Verify reimported course
@@ -567,7 +566,6 @@ class ImportRequiredTestCases(ContentStoreTestCase):
         items = self.store.get_items(
             course_id,
             qualifiers={
-                'category': 'sequential',
                 'name': 'vertical_sequential',
             }
         )
@@ -813,6 +811,7 @@ class MiscCourseTests(ContentStoreTestCase):
 
         return cnt
 
+    @skip("OldMongo Deprecation")
     def test_get_items(self):
         """
         This verifies a bug we had where the None setting in get_items() meant 'wildcard'
@@ -902,6 +901,7 @@ class MiscCourseTests(ContentStoreTestCase):
         self.assertIn('graceperiod', own_metadata(problem))
         self.assertEqual(problem.graceperiod, new_graceperiod)
 
+    @skip("OldMongo Deprecation")
     def test_get_depth_with_drafts(self):
         # make sure no draft items have been returned
         num_drafts = self._get_draft_counts(self.course)
@@ -1067,6 +1067,7 @@ class MiscCourseTests(ContentStoreTestCase):
         resp = self.client.get_html('/accessibility')
         self.assertEqual(resp.status_code, 404)
 
+    @skip("OldMongo Deprecation")
     def test_delete_course(self):
         """
         This test creates a course, makes a draft item, and deletes the course. This will also assert that the
@@ -1353,14 +1354,13 @@ class ContentStoreTest(ContentStoreTestCase):
             # the user will be enrolled. In the other cases, initially_enrolled will be False.
             self.assertEqual(initially_enrolled, CourseEnrollment.is_enrolled(self.user, course_id))
 
-    @skip("OldMongo Deprecation")
     def test_create_course_duplicate_number(self):
         """Test new course creation - error path"""
         self.client.ajax_post('/course/', self.course_data)
         self.course_data['display_name'] = 'Robot Super Course Two'
         self.course_data['run'] = '2013_Summer'
 
-        self.assert_course_creation_failed(self.duplicate_course_error)
+        self.assert_created_course()
 
     def test_create_course_case_change(self):
         """Test new course creation - error path due to case insensitive name equality"""
@@ -1809,7 +1809,6 @@ class ContentStoreTest(ContentStoreTestCase):
         self.assertEqual(response.status_code, 404)
 
 
-@skip("OldMongo Deprecation")
 class MetadataSaveTestCase(ContentStoreTestCase):
     """Test that metadata is correctly cached and decached."""
 
@@ -1828,9 +1827,11 @@ class MetadataSaveTestCase(ContentStoreTestCase):
             <track src="http://www.example.com/track"/>
         </video>
         """
+        video_data = VideoBlock.parse_video_xml(video_sample_xml)
+        video_data.pop('source')
         self.video_descriptor = ItemFactory.create(
             parent_location=course.location, category='video',
-            **VideoBlock.parse_video_xml(video_sample_xml)
+            **video_data
         )
 
     def test_metadata_not_persistence(self):
@@ -2225,10 +2226,6 @@ def _create_course(test, course_key, course_data):
     """
     Creates a course via an AJAX request and verifies the URL returned in the response.
     """
-    # course_handler raise 404 for old mongo course
-    if course_key.deprecated:
-        raise SkipTest('OldMongo Deprecation')
-
     course_url = get_url('course_handler', course_key, 'course_key_string')
     response = test.client.ajax_post(course_url, course_data)
     test.assertEqual(response.status_code, 200)
