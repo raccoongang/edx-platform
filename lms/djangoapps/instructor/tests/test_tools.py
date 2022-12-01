@@ -6,7 +6,7 @@ Tests for views/tools.py.
 import datetime
 import json
 import unittest
-from unittest import mock, skip
+from unittest import mock
 
 import pytest
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
@@ -225,8 +225,8 @@ class TestSetDueDateExtension(ModuleStoreTestCase):
 
         # get updated course
         self.course = self.store.get_item(course.location)
-        self.week1 = week1
-        self.homework = homework
+        self.week1 = self.store.get_item(week1.location)
+        self.homework = self.store.get_item(homework.location)
         self.assignment = assignment
         self.week2 = week2
         self.week3 = week3
@@ -234,7 +234,7 @@ class TestSetDueDateExtension(ModuleStoreTestCase):
 
         CourseEnrollmentFactory.create(user=self.user, course_id=self.course.id)
 
-        inject_field_data((course, week1, week2, week3, homework, assignment), course, user)
+        inject_field_data((course, self.week1, self.week2, self.week3, self.homework, self.assignment), course, user)
 
     def _clear_field_data_cache(self):
         """
@@ -247,7 +247,6 @@ class TestSetDueDateExtension(ModuleStoreTestCase):
             block._field_data._load_dates(self.course.id, self.user, use_cached=False)  # pylint: disable=protected-access
             block.fields['due']._del_cached_value(block)  # pylint: disable=protected-access
 
-    @skip("OldMongo Deprecation")
     def test_set_due_date_extension(self):
         # First, extend the leaf assignment date
         extended_hw = datetime.datetime(2013, 10, 25, 0, 0, tzinfo=UTC)
