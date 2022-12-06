@@ -23,7 +23,7 @@ from openedx_events.content_authoring.signals import (
     COURSE_CERTIFICATE_CONFIG_CHANGED,
 )
 import cms.djangoapps.contentstore.signals.handlers as sh
-from cms.djangoapps.contentstore.tests.utils import HelperMethods, CERTIFICATE_JSON_WITH_SIGNATORIES
+from cms.djangoapps.contentstore.tests.utils import CERTIFICATE_JSON_WITH_SIGNATORIES
 from common.djangoapps.course_modes.tests.factories import CourseModeFactory
 from common.djangoapps.student.tests.factories import UserFactory
 from xmodule.modulestore.django import SignalHandler
