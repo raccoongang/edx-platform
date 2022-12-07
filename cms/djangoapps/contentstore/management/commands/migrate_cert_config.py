@@ -37,6 +37,19 @@ class FakedRequest:
 
 
 class Command(BaseCommand):
+    """
+    Management command to transfer course certificate configuration from modulestore to Credentials IDA.
+
+    Examples:
+
+        ./manage.py migrate_cert_config <course_id_1> <course_id_2> - transfer courses with provided keys
+        ./manage.py migrate_cert_config --all - transfer all available courses
+        ./manage.py migrate_cert_config --draft - transfer all mongo(old approach) modulestore available courses
+        ./manage.py migrate_cert_config --draft - transfer all split(new approach) modulestore available courses
+        ./manage.py migrate_cert_config --all --delete-after - transfer all available courses
+        and delete course certificate configuration, signature assets from modulestore after successfull transfer.
+    """
+
     help = 'Allows manual transfer course certificate configuration from modulestore to Credentials IDA.'
 
     def add_arguments(self, parser):
