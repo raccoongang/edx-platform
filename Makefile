@@ -151,10 +151,10 @@ check-types: ## run static type-checking tests
 	mypy
 
 docker_build:
-	docker build . -f Dockerfile --target lms     -t openedx/lms
-	docker build . -f Dockerfile --target lms-dev -t openedx/lms-dev
-	docker build . -f Dockerfile --target cms     -t openedx/cms
-	docker build . -f Dockerfile --target cms-dev -t openedx/cms-dev
+	DOCKER_BUILDKIT=1 docker build . --build-arg SERVICE_VARIANT=lms --build-arg SERVICE_PORT=8000 --target development -t openedx/lms-dev
+	DOCKER_BUILDKIT=1 docker build . --build-arg SERVICE_VARIANT=lms --build-arg SERVICE_PORT=8000 --target production -t openedx/lms
+	DOCKER_BUILDKIT=1 docker build . --build-arg SERVICE_VARIANT=cms --build-arg SERVICE_PORT=8010 --target development -t openedx/cms-dev
+	DOCKER_BUILDKIT=1 docker build . --build-arg SERVICE_VARIANT=cms --build-arg SERVICE_PORT=8010 --target production -t openedx/cms
 
 docker_tag: docker_build
 	docker tag openedx/lms     openedx/lms:${GITHUB_SHA}
@@ -174,6 +174,9 @@ docker_push: docker_tag docker_auth ## push to docker hub
 	docker push "openedx/cms:${GITHUB_SHA}"
 	docker push "openedx/cms-dev:latest"
 	docker push "openedx/cms-dev:${GITHUB_SHA}"
+
+lint-imports:
+	lint-imports
 
 # WARNING (EXPERIMENTAL):
 # This installs the Ubuntu requirements necessary to make `pip install` and some other basic
