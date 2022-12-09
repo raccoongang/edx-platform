@@ -6,7 +6,7 @@ from urllib.parse import urljoin
 import logging
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
 from django.urls import reverse
 from eventtracking import tracker
 from opaque_keys.edx.keys import CourseKey
@@ -266,7 +266,7 @@ def get_certificate_configuration_from_credentials(course_id, mode):
 
     try:
         response = credentials_client.get(api_url)
-    except Exception:
+    except Exception:   # pylint: disable=broad-except
         log.warning(
             'There is no certificate configuration in credentials for a course [%s] with a mod [%s]',
             course_id,
