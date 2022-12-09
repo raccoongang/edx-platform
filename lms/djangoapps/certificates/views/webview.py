@@ -20,6 +20,7 @@ from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from openedx_filters.learning.filters import CertificateRenderStarted
 from organizations import api as organizations_api
+from rest_framework import status
 from edx_django_utils.plugins import pluggable_override
 
 from common.djangoapps.edxmako.shortcuts import render_to_response
@@ -48,7 +49,8 @@ from lms.djangoapps.certificates.permissions import PREVIEW_CERTIFICATES
 from lms.djangoapps.certificates.utils import (
     emit_certificate_event,
     get_certificate_url,
-    get_preferred_certificate_name
+    get_preferred_certificate_name,
+    get_certificate_configuration_from_credentials,
 )
 from openedx.core.djangoapps.catalog.api import get_course_run_details
 from openedx.core.djangoapps.content.course_overviews.api import get_course_overview_or_none
@@ -575,6 +577,13 @@ def render_html_view(request, course_id, certificate=None):  # pylint: disable=t
         )
         return _render_invalid_certificate(request, course_id, platform_name, configuration)
 
+    if course_key.deprecated:
+        active_configuration = _populate_certificate_configuration_from_credentials(
+            configuration=active_configuration,
+            course=course,
+            mode=preview_mode or user_certificate.mode,
+        )
+
     # Get data from Discovery service that will be necessary for rendering this Certificate.
     catalog_data = _get_catalog_data_for_course(course_key)
 
@@ -667,6 +676,29 @@ def render_html_view(request, course_id, certificate=None):  # pylint: disable=t
 
         # Render the certificate
         return response
+
+
+def _populate_certificate_configuration_from_credentials(configuration, course, mode):
+    """
+    Populates certificate configuration from credentials service.
+
+    If config not found in credentials returns received.
+    """
+    response = get_certificate_configuration_from_credentials(course.id, mode)
+    if response and response.status_code == status.HTTP_200_OK:
+        data = response.json()
+
+        configuration['course_title'] = data.get('title') or configuration['course_title']
+        configuration['is_active'] = data.get('is_active') or configuration['is_active']
+
+        if signatories := data.get('signatories', []):
+            for signatory in signatories:
+                signatory['signature_image_path'] = signatory.pop('image') or ''
+                signatory['organization'] = signatory.pop('organization_name_override') or course.org
+
+            configuration['signatories'] = signatories
+
+    return configuration
 
 
 def _get_catalog_data_for_course(course_key):

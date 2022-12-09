@@ -2,9 +2,11 @@
 Certificates utilities
 """
 from datetime import datetime
+from urllib.parse import urljoin
 import logging
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.urls import reverse
 from eventtracking import tracker
 from opaque_keys.edx.keys import CourseKey
@@ -14,6 +16,7 @@ from common.djangoapps.student import models_api as student_api
 from lms.djangoapps.certificates.data import CertificateStatuses
 from lms.djangoapps.certificates.models import GeneratedCertificate
 from openedx.core.djangoapps.content.course_overviews.api import get_course_overview_or_none
+from openedx.core.djangoapps.credentials.utils import get_credentials_api_base_url, get_credentials_api_client
 from openedx.features.name_affirmation_api.utils import get_name_affirmation_service
 from xmodule.data import CertificatesDisplayBehaviors  # lint-amnesty, pylint: disable=wrong-import-order
 
@@ -250,3 +253,24 @@ def get_preferred_certificate_name(user):
         name_to_use = ''
 
     return name_to_use
+
+
+def get_certificate_configuration_from_credentials(course_id, mode):
+    """
+    Makes a request to the credentials service to get the certificate configuration.
+    """
+    credentials_client = get_credentials_api_client(User.objects.get(username=settings.CREDENTIALS_SERVICE_USERNAME))
+    course_certificates_api_url = urljoin(f'{get_credentials_api_base_url()}/', 'course_certificates/')
+    api_url = urljoin(course_certificates_api_url, f'?course_id={course_id}&certificate_type={mode}')
+    response = None
+
+    try:
+        response = credentials_client.get(api_url)
+    except Exception:
+        log.warning(
+            'There is no certificate configuration in credentials for a course [%s] with a mod [%s]',
+            course_id,
+            mode
+        )
+
+    return response
