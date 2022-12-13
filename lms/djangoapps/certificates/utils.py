@@ -2,6 +2,7 @@
 Certificates utilities
 """
 from datetime import datetime
+from typing import Optional
 from urllib.parse import urljoin
 import logging
 
@@ -11,6 +12,7 @@ from django.urls import reverse
 from eventtracking import tracker
 from opaque_keys.edx.keys import CourseKey
 from pytz import utc
+from requests.models import Response
 
 from common.djangoapps.student import models_api as student_api
 from lms.djangoapps.certificates.data import CertificateStatuses
@@ -255,16 +257,17 @@ def get_preferred_certificate_name(user):
     return name_to_use
 
 
-def get_certificate_configuration_from_credentials(course_id, mode):
+def get_certificate_configuration_from_credentials(course_id: CourseKey, mode: str) -> Optional[Response]:
     """
-    Makes a request to the credentials service to get the certificate configuration.
+    Makes a request to the credentials service to get a certificate configuration of the course.
     """
-    credentials_client = get_credentials_api_client(User.objects.get(username=settings.CREDENTIALS_SERVICE_USERNAME))
     course_certificates_api_url = urljoin(f'{get_credentials_api_base_url()}/', 'course_certificates/')
     api_url = urljoin(course_certificates_api_url, f'?course_id={course_id}&certificate_type={mode}')
-    response = None
 
     try:
+        credentials_client = get_credentials_api_client(
+            User.objects.get(username=settings.CREDENTIALS_SERVICE_USERNAME)
+        )
         response = credentials_client.get(api_url)
     except Exception:   # pylint: disable=broad-except
         log.warning(
@@ -272,5 +275,5 @@ def get_certificate_configuration_from_credentials(course_id, mode):
             course_id,
             mode
         )
-
-    return response
+    else:
+        return response

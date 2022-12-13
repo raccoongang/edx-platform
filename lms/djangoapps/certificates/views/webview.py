@@ -4,6 +4,7 @@ Certificate HTML webview.
 
 
 import logging
+from typing import Dict, List, Union
 import urllib
 from datetime import datetime
 from uuid import uuid4
@@ -48,9 +49,9 @@ from lms.djangoapps.certificates.models import (
 from lms.djangoapps.certificates.permissions import PREVIEW_CERTIFICATES
 from lms.djangoapps.certificates.utils import (
     emit_certificate_event,
-    get_certificate_url,
-    get_preferred_certificate_name,
     get_certificate_configuration_from_credentials,
+    get_certificate_url,
+    get_preferred_certificate_name
 )
 from openedx.core.djangoapps.catalog.api import get_course_run_details
 from openedx.core.djangoapps.content.course_overviews.api import get_course_overview_or_none
@@ -578,7 +579,7 @@ def render_html_view(request, course_id, certificate=None):  # pylint: disable=t
         return _render_invalid_certificate(request, course_id, platform_name, configuration)
 
     if course_key.deprecated:
-        active_configuration = _populate_certificate_configuration_from_credentials(
+        active_configuration = _update_certificate_configuration_from_credentials(
             configuration=active_configuration,
             course=course,
             mode=preview_mode or user_certificate.mode,
@@ -678,23 +679,31 @@ def render_html_view(request, course_id, certificate=None):  # pylint: disable=t
         return response
 
 
-def _populate_certificate_configuration_from_credentials(configuration, course, mode):
+def _update_certificate_configuration_from_credentials(
+    configuration: Dict[str, Union[str, List[Dict[str, str]]]],
+    course: 'CourseBlockWithMixins', mode: str
+) -> Dict[str, Union[str, List[Dict[str, str]]]]:
     """
     Populates certificate configuration from credentials service.
 
-    If config not found in credentials returns received.
+    If config not found in credentials returns configuration without changes.
     """
-    response = get_certificate_configuration_from_credentials(course.id, mode)
-    if response and response.status_code == status.HTTP_200_OK:
+    try:
+        response = get_certificate_configuration_from_credentials(course.id, mode)
+        response.raise_for_status()
+    except Exception as err:   # pylint: disable=broad-except
+        log.warning(f'Failed to get course certificate config for course {course.id} from Credentials. {err}')
+    else:
         data = response.json()
 
-        configuration['course_title'] = data.get('title') or configuration['course_title']
-        configuration['is_active'] = data.get('is_active') or configuration['is_active']
+        if title := data.get('title'):
+            configuration['course_title'] = title
+        if is_active := data.get('is_active'):
+            configuration['is_active'] = is_active
 
         if signatories := data.get('signatories', []):
             for signatory in signatories:
                 signatory['signature_image_path'] = signatory.pop('image') or ''
-                signatory['organization'] = signatory.pop('organization_name_override') or course.org
 
             configuration['signatories'] = signatories
 
