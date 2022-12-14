@@ -3,7 +3,6 @@ Certificates utilities
 """
 from datetime import datetime
 from typing import Optional
-from urllib.parse import urljoin
 import logging
 
 from django.conf import settings
@@ -18,7 +17,9 @@ from common.djangoapps.student import models_api as student_api
 from lms.djangoapps.certificates.data import CertificateStatuses
 from lms.djangoapps.certificates.models import GeneratedCertificate
 from openedx.core.djangoapps.content.course_overviews.api import get_course_overview_or_none
+from openedx.core.djangoapps.credentials.models import CredentialsApiConfig
 from openedx.core.djangoapps.credentials.utils import get_credentials_api_base_url, get_credentials_api_client
+from openedx.core.lib.edx_api_utils import get_api_data
 from openedx.features.name_affirmation_api.utils import get_name_affirmation_service
 from xmodule.data import CertificatesDisplayBehaviors  # lint-amnesty, pylint: disable=wrong-import-order
 
@@ -257,23 +258,22 @@ def get_preferred_certificate_name(user):
     return name_to_use
 
 
-def get_certificate_configuration_from_credentials(course_id: CourseKey, mode: str) -> Optional[Response]:
+def get_certificate_configuration_from_credentials(course_id: str, mode: str) -> Optional[Response]:
     """
     Makes a request to the credentials service to get a certificate configuration of the course.
     """
-    course_certificates_api_url = urljoin(f'{get_credentials_api_base_url()}/', 'course_certificates/')
-    api_url = urljoin(course_certificates_api_url, f'?course_id={course_id}&certificate_type={mode}')
-
     try:
         credentials_client = get_credentials_api_client(
             User.objects.get(username=settings.CREDENTIALS_SERVICE_USERNAME)
         )
-        response = credentials_client.get(api_url)
-    except Exception:   # pylint: disable=broad-except
-        log.warning(
-            'There is no certificate configuration in credentials for a course [%s] with a mod [%s]',
-            course_id,
-            mode
-        )
+    except User.DoesNotExist:
+        log.warning(f'Credentials service user [{settings.CREDENTIALS_SERVICE_USERNAME}] does not exist')
     else:
-        return response
+        return get_api_data(
+            api_config=CredentialsApiConfig,
+            resource='course_certificates',
+            api_client=credentials_client,
+            base_api_url=get_credentials_api_base_url(),
+            querystring={'course_id': course_id, 'certificate_type': mode},
+            traverse_pagination=False,
+        )

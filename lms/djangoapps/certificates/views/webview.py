@@ -21,7 +21,6 @@ from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from openedx_filters.learning.filters import CertificateRenderStarted
 from organizations import api as organizations_api
-from rest_framework import status
 from edx_django_utils.plugins import pluggable_override
 
 from common.djangoapps.edxmako.shortcuts import render_to_response
@@ -581,7 +580,7 @@ def render_html_view(request, course_id, certificate=None):  # pylint: disable=t
     if course_key.deprecated:
         active_configuration = _update_certificate_configuration_from_credentials(
             configuration=active_configuration,
-            course=course,
+            course_id=str(course.id),
             mode=preview_mode or user_certificate.mode,
         )
 
@@ -681,32 +680,24 @@ def render_html_view(request, course_id, certificate=None):  # pylint: disable=t
 
 def _update_certificate_configuration_from_credentials(
     configuration: Dict[str, Union[str, List[Dict[str, str]]]],
-    course: 'CourseBlockWithMixins', mode: str
+    course_id: str,
+    mode: str
 ) -> Dict[str, Union[str, List[Dict[str, str]]]]:
     """
     Populates certificate configuration from credentials service.
 
     If config not found in credentials returns configuration without changes.
     """
-    try:
-        response = get_certificate_configuration_from_credentials(course.id, mode)
-        response.raise_for_status()
-    except Exception as err:   # pylint: disable=broad-except
-        log.warning(f'Failed to get course certificate config for course {course.id} from Credentials. {err}')
-    else:
-        data = response.json()
-
-        if title := data.get('title'):
+    credentials_certificate_conf = get_certificate_configuration_from_credentials(course_id, mode)
+    if credentials_certificate_conf:
+        if title := credentials_certificate_conf.get('title'):
             configuration['course_title'] = title
-        if is_active := data.get('is_active'):
+        if is_active := credentials_certificate_conf.get('is_active'):
             configuration['is_active'] = is_active
-
-        if signatories := data.get('signatories', []):
+        if signatories := credentials_certificate_conf.get('signatories', []):
             for signatory in signatories:
                 signatory['signature_image_path'] = signatory.pop('image') or ''
-
             configuration['signatories'] = signatories
-
     return configuration
 
 
