@@ -262,18 +262,12 @@ def get_certificate_configuration_from_credentials(course_id: str, mode: str) ->
     """
     Makes a request to the credentials service to get a certificate configuration of the course.
     """
-    try:
-        credentials_client = get_credentials_api_client(
-            User.objects.get(username=settings.CREDENTIALS_SERVICE_USERNAME)
-        )
-    except User.DoesNotExist:
-        log.warning(f'Credentials service user [{settings.CREDENTIALS_SERVICE_USERNAME}] does not exist')
-    else:
-        return get_api_data(
-            api_config=CredentialsApiConfig,
-            resource='course_certificates',
-            api_client=credentials_client,
-            base_api_url=get_credentials_api_base_url(),
-            querystring={'course_id': course_id, 'certificate_type': mode},
-            traverse_pagination=False,
-        )
+    credentials_client = get_credentials_api_client(User.objects.get(username=settings.CREDENTIALS_SERVICE_USERNAME))
+    return get_api_data(
+        api_config=CredentialsApiConfig,
+        resource='course_certificates',
+        api_client=credentials_client,
+        base_api_url=get_credentials_api_base_url(),
+        querystring={'course_id': course_id, 'certificate_type': mode},
+        traverse_pagination=False,
+    )
