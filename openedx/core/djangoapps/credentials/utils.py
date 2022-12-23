@@ -129,11 +129,14 @@ def send_course_certificate_configuration(course_id: str, config_data: dict, sig
         )
         credentials_api_base_url = get_credentials_api_base_url()
         api_url = urljoin(f'{credentials_api_base_url}/', 'course_certificates/')
+        log.info('SEND COURSE DATA')
+        log.info(config_data)
         response = credentials_client.post(
             api_url,
             files=signature_assets,
             data=config_data
         )
+        log.info(response.text)
         response.raise_for_status()
         log.info(f'Course certificate config sent for course {course_id} to Credentials.')
     except Exception:  # lint-amnesty, pylint: disable=W0703
@@ -152,7 +155,7 @@ def delete_course_certificate_configuration(course_id: str, config_data: dict):
         api_url = urljoin(f'{credentials_api_base_url}/', 'course_certificates/')
         response = credentials_client.delete(
             api_url,
-            json=config_data
+            data=config_data
         )
         response.raise_for_status()
         log.info(f'Course certificate config is deleted for course {course_id} from Credentials.')
