@@ -759,7 +759,7 @@ openedx-calc==3.0.1
 openedx-django-wiki==1.1.4
     # via -r requirements/edx/base.in
 # openedx-events==3.2.0
--e git+https://github.com/raccoongang/openedx-events.git@v3.2.0#egg=openedx_events==3.2.0
+-e git+https://github.com/raccoongang/openedx-events.git@v3.2.1#egg=openedx_events==3.2.1
     # via
     #   -r requirements/edx/base.in
     #   edx-event-bus-kafka
