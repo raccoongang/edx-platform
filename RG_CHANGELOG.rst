@@ -8,6 +8,13 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`
 [Unreleased]
 ************
 
+Fixes
+=====
+
+* Fix for the course overview editing field in the Studio
+* Course search used wrong import, so search results were empty on the Discover New page.
+  Fixed import, removed duplicated exclude_dictionary values
+
 [nutmeg-rg.1] 2022-09-30 (Nutmeg RG release)
 ********************************************
 
