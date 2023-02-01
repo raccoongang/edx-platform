@@ -36,9 +36,8 @@ from lxml import etree
 from path import Path as path
 from xmodule.contentstore.content import StaticContent
 from xmodule.exceptions import NotFoundError
-from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.inheritance import own_metadata
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MONGO_MODULESTORE, TEST_DATA_SPLIT_MODULESTORE
+from xmodule.modulestore.tests.django_utils import TEST_DATA_SPLIT_MODULESTORE
 # noinspection PyUnresolvedReferences
 from xmodule.tests.helpers import override_descriptor_system  # pylint: disable=unused-import
 from xmodule.tests.test_import import DummySystem
@@ -57,11 +56,6 @@ from openedx.core.djangolib.testing.utils import CacheIsolationTestCase
 
 from .test_video_handlers import BaseTestVideoXBlock, TestVideo
 from .test_video_xml import SOURCE_XML, PUBLIC_SOURCE_XML
-
-MODULESTORES = {
-    ModuleStoreEnum.Type.mongo: TEST_DATA_MONGO_MODULESTORE,
-    ModuleStoreEnum.Type.split: TEST_DATA_SPLIT_MODULESTORE,
-}
 
 TRANSCRIPT_FILE_SRT_DATA = """
 1
@@ -318,7 +312,7 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
         # lint-amnesty, pylint: disable=redefined-outer-name
         SOURCE_XML = """
             <video show_captions="true"
-            display_name="A Name"
+            display_name="{name}"
                 sub="{sub}" download_track="{download_track}"
             start_time="3603.0" end_time="3610.0" download_video="true"
             >
@@ -331,6 +325,7 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
 
         cases = [
             {
+                'name': 'video 1',
                 'download_track': 'true',
                 'track': '<track src="http://www.example.com/track"/>',
                 'sub': 'a_sub_file.srt.sjson',
@@ -338,6 +333,7 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
                 'transcripts': '',
             },
             {
+                'name': 'video 2',
                 'download_track': 'true',
                 'track': '',
                 'sub': 'a_sub_file.srt.sjson',
@@ -345,6 +341,7 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
                 'transcripts': '',
             },
             {
+                'name': 'video 3',
                 'download_track': 'true',
                 'track': '',
                 'sub': '',
@@ -352,6 +349,7 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
                 'transcripts': '',
             },
             {
+                'name': 'video 4',
                 'download_track': 'false',
                 'track': '<track src="http://www.example.com/track"/>',
                 'sub': 'a_sub_file.srt.sjson',
@@ -359,6 +357,7 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
                 'transcripts': '',
             },
             {
+                'name': 'video 5',
                 'download_track': 'true',
                 'track': '',
                 'sub': '',
@@ -401,6 +400,7 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
                 track=data['track'],
                 sub=data['sub'],
                 transcripts=data['transcripts'],
+                name=data['name'],
             )
 
             self.initialize_block(data=DATA)
@@ -416,6 +416,7 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
                 'saveStateUrl': self.block.ajax_url + '/save_user_state',
             })
             expected_context.update({
+                'display_name': data['name'],
                 'transcript_download_format': (
                     None if self.block.track and self.block.download_track else 'srt'
                 ),
@@ -434,7 +435,7 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
         # lint-amnesty, pylint: disable=invalid-name, redefined-outer-name
         SOURCE_XML = """
             <video show_captions="true"
-            display_name="A Name"
+            display_name="{name}"
             sub="a_sub_file.srt.sjson" source="{source}"
             download_video="{download_video}"
             start_time="3603.0" end_time="3610.0"
@@ -445,6 +446,7 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
         cases = [
             # self.download_video == True
             {
+                'name': 'video 1',
                 'download_video': 'true',
                 'source': 'example_source.mp4',
                 'sources': """
@@ -457,6 +459,7 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
                 },
             },
             {
+                'name': 'video 2',
                 'download_video': 'true',
                 'source': '',
                 'sources': """
@@ -469,6 +472,7 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
                 },
             },
             {
+                'name': 'video 3',
                 'download_video': 'true',
                 'source': '',
                 'sources': [],
@@ -477,6 +481,7 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
 
             # self.download_video == False
             {
+                'name': 'video 4',
                 'download_video': 'false',
                 'source': 'example_source.mp4',
                 'sources': """
@@ -518,7 +523,8 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
             DATA = SOURCE_XML.format(  # lint-amnesty, pylint: disable=invalid-name
                 download_video=data['download_video'],
                 source=data['source'],
-                sources=data['sources']
+                sources=data['sources'],
+                name=data['name'],
             )
             self.initialize_block(data=DATA)
             context = self.block.render(STUDENT_VIEW).content
@@ -532,6 +538,7 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
                 'sources': data['result'].get('sources', []),
             })
             expected_context.update({
+                'display_name': data['name'],
                 'id': self.block.location.html_id(),
                 'download_video_link': data['result'].get('download_video_link'),
                 'metadata': json.dumps(expected_context['metadata'])
@@ -549,7 +556,7 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
         # lint-amnesty, pylint: disable=redefined-outer-name
         SOURCE_XML = """
             <video show_captions="true"
-            display_name="A Name"
+            display_name="{name}"
             sub="a_sub_file.srt.sjson" source="{source}"
             download_video="{download_video}"
             start_time="3603.0" end_time="3610.0"
@@ -559,6 +566,7 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
             </video>
         """
         no_video_data = {
+            'name': 'video 1',
             'download_video': 'true',
             'source': 'example_source.mp4',
             'sources': """
@@ -575,7 +583,8 @@ class TestGetHtmlMethod(BaseTestVideoXBlock):
             download_video=no_video_data['download_video'],
             source=no_video_data['source'],
             sources=no_video_data['sources'],
-            edx_video_id=no_video_data['edx_video_id']
+            edx_video_id=no_video_data['edx_video_id'],
+            name=no_video_data['name'],
         )
         self.initialize_block(data=DATA)
 
@@ -1366,6 +1375,7 @@ class TestEditorSavedMethod(BaseTestVideoXBlock):
     CATEGORY = "video"
     DATA = SOURCE_XML
     METADATA = {}
+    MODULESTORE = TEST_DATA_SPLIT_MODULESTORE
 
     def setUp(self):
         super().setUp()
@@ -1379,14 +1389,12 @@ class TestEditorSavedMethod(BaseTestVideoXBlock):
         self.test_dir = path(__file__).abspath().dirname().dirname().dirname().dirname().dirname()
         self.file_path = self.test_dir + '/common/test/data/uploads/' + self.file_name
 
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
-    def test_editor_saved_when_html5_sub_not_exist(self, default_store):
+    def test_editor_saved_when_html5_sub_not_exist(self):
         """
         When there is youtube_sub exist but no html5_sub present for
         html5_sources, editor_saved function will generate new html5_sub
         for video.
         """
-        self.MODULESTORE = MODULESTORES[default_store]  # pylint: disable=invalid-name
         self.initialize_block(metadata=self.metadata)
         item = self.store.get_item(self.block.location)
         with open(self.file_path, "rb") as myfile:  # lint-amnesty, pylint: disable=bad-option-value, open-builtin
@@ -1400,13 +1408,11 @@ class TestEditorSavedMethod(BaseTestVideoXBlock):
         item.editor_saved(self.user, old_metadata, None)
         assert isinstance(Transcript.get_asset(item.location, 'subs_3_yD_cEKoCk.srt.sjson'), StaticContent)
 
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
-    def test_editor_saved_when_youtube_and_html5_subs_exist(self, default_store):
+    def test_editor_saved_when_youtube_and_html5_subs_exist(self):
         """
         When both youtube_sub and html5_sub already exist then no new
         sub will be generated by editor_saved function.
         """
-        self.MODULESTORE = MODULESTORES[default_store]
         self.initialize_block(metadata=self.metadata)
         item = self.store.get_item(self.block.location)
         with open(self.file_path, "rb") as myfile:  # lint-amnesty, pylint: disable=bad-option-value, open-builtin
@@ -1421,12 +1427,10 @@ class TestEditorSavedMethod(BaseTestVideoXBlock):
             item.editor_saved(self.user, old_metadata, None)
             assert not manage_video_subtitles_save.called
 
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
-    def test_editor_saved_with_unstripped_video_id(self, default_store):
+    def test_editor_saved_with_unstripped_video_id(self):
         """
         Verify editor saved when video id contains spaces/tabs.
         """
-        self.MODULESTORE = MODULESTORES[default_store]
         stripped_video_id = str(uuid4())
         unstripped_video_id = '{video_id}{tabs}'.format(video_id=stripped_video_id, tabs='\t\t\t')
         self.metadata.update({
@@ -1442,14 +1446,12 @@ class TestEditorSavedMethod(BaseTestVideoXBlock):
         item.editor_saved(self.user, old_metadata, None)
         assert item.edx_video_id == stripped_video_id
 
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
     @patch('xmodule.video_block.video_block.edxval_api.get_url_for_profile', Mock(return_value='test_yt_id'))
-    def test_editor_saved_with_yt_val_profile(self, default_store):
+    def test_editor_saved_with_yt_val_profile(self):
         """
         Verify editor saved overrides `youtube_id_1_0` when a youtube val profile is there
         for a given `edx_video_id`.
         """
-        self.MODULESTORE = MODULESTORES[default_store]
         self.initialize_block(metadata=self.metadata)
         item = self.store.get_item(self.block.location)
         assert item.youtube_id_1_0 == '3_yD_cEKoCk'
@@ -1586,7 +1588,7 @@ class TestVideoBlockStudentViewJson(BaseTestVideoXBlock, CacheIsolationTestCase)
         self.verify_result_with_fallback_and_youtube(result)
 
     def test_no_edx_video_id_and_no_fallback(self):
-        video_declaration = f"<video display_name='Test Video' youtube_id_1_0=\'{self.TEST_YOUTUBE_ID}\'>"
+        video_declaration = f"<video display_name='Test Video 2' youtube_id_1_0=\'{self.TEST_YOUTUBE_ID}\'>"
         # the video has no source listed, only a youtube link, so no fallback url will be provided
         sample_xml = ''.join([
             video_declaration,
