@@ -78,14 +78,14 @@
                 );
             },
 
-            escapeAndShowMessage: function(message) {
-                $(this.message_div + '>p').remove();
-                // xss-lint: disable=javascript-jquery-append
-                $(this.message_div).removeClass('hidden').append(HtmlUtils.joinHtml(
-                    HtmlUtils.HTML('<p>'),
-                    _.escape(message),
-                    HtmlUtils.HTML('</p>')
-                ))
+                escapeAndShowMessage: function(message) {
+                    $(this.message_div + '>p').remove();
+                    // xss-lint: disable=javascript-jquery-append
+                    $(this.message_div).removeClass('hidden').append(HtmlUtils.joinHtml(
+                        HtmlUtils.HTML('<p>'),
+                        _.escape(message),
+                        HtmlUtils.HTML('</p>')
+                    ).toString())
                     .focus();
                 $(this.message_div).fadeOut(6000, 'linear');
             },

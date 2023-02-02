@@ -8,6 +8,16 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`
 [Unreleased]
 ************
 
+Fixes
+=====
+
+* Certificate exception message visibility fix `RGOeX-25142 https://youtrack.raccoongang.com/issue/RGOeX-25142`_
+
+  * This commit should be skipped when we start the sync process with the Palm branch if the `master PR <https://github.com/openedx/edx-platform/pull/31668>`_ will be merged by then
+
+* Course search used wrong import, so search results were empty on the Discover New page.
+  Fixed import, removed duplicated exclude_dictionary values
+
 [nutmeg-rg.1] 2022-09-30 (Nutmeg RG release)
 ********************************************
 
