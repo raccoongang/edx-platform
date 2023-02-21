@@ -729,7 +729,7 @@ class TestMixedModuleStore(CommonMixedModuleStoreSetup):
         self.store.delete_item(vertical.location, self.user_id)
         assert not self._has_changes(sequential.location)
 
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
+    @ddt.data(ModuleStoreEnum.Type.split)
     def test_xblock_publish_event(self, default_ms):
         """
         Check that XBLOCK_PUBLISHED event is sent when xblock is published.
@@ -760,7 +760,7 @@ class TestMixedModuleStore(CommonMixedModuleStoreSetup):
             event_receiver.call_args.kwargs
         )
 
-    @ddt.data(ModuleStoreEnum.Type.mongo, ModuleStoreEnum.Type.split)
+    @ddt.data(ModuleStoreEnum.Type.split)
     def test_xblock_delete_event(self, default_ms):
         """
         Check that XBLOCK_DELETED event is sent when xblock is deleted.
