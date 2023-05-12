@@ -8,6 +8,12 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`
 [Unreleased]
 ************
 
+Added
+=====
+
+* Palm version of the course search behaviour changes `RGOeX-25871 https://youtrack.raccoongang.com/issue/RGOeX-25871`_.
+Excluded courses with the "about" or "none" visibility from the course discovery search results.
+
 [olive-rg.1] 2023-03-30 (Olive RG release)
 ******************************************
 
