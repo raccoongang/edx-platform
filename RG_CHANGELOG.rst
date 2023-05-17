@@ -11,6 +11,8 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`
 Added
 =====
 
+* Restored the WYSIWYG editor feature for the course overview field on the Studio's Schedule and Details page
+`RGOeX-25874 https://youtrack.raccoongang.com/issue/RGOeX-25874`_
 * Palm version of the course search behaviour changes `RGOeX-25871 https://youtrack.raccoongang.com/issue/RGOeX-25871`_.
 Excluded courses with the "about" or "none" visibility from the course discovery search results.
 

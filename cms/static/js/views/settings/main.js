@@ -1,7 +1,7 @@
 define(['js/views/validation', 'codemirror', 'underscore', 'jquery', 'jquery.ui', 'js/utils/date_utils',
     'js/models/uploads', 'js/views/uploads', 'js/views/license', 'js/models/license',
     'common/js/components/views/feedback_notification', 'jquery.timepicker', 'date', 'gettext',
-    'js/views/learning_info', 'js/views/instructor_info', 'edx-ui-toolkit/js/utils/string-utils'],
+    'js/views/learning_info', 'js/views/instructor_info', 'edx-ui-toolkit/js/utils/string-utils', 'tinymce'],
 function(ValidatingView, CodeMirror, _, $, ui, DateUtils, FileUploadModel,
     FileUploadDialog, LicenseView, LicenseModel, NotificationView,
     timepicker, date, gettext, LearningInfoView, InstructorInfoView, StringUtils) {
@@ -15,7 +15,6 @@ function(ValidatingView, CodeMirror, _, $, ui, DateUtils, FileUploadModel,
             'change textarea': 'updateModel',
             'change select': 'updateModel',
             'click .remove-course-introduction-video': 'removeVideo',
-            'focus #course-overview': 'codeMirrorize',
             'focus #course-about-sidebar-html': 'codeMirrorize',
             'mouseover .timezone': 'updateTime',
             // would love to move to a general superclass, but event hashes don't inherit in backbone :-(
@@ -88,7 +87,7 @@ function(ValidatingView, CodeMirror, _, $, ui, DateUtils, FileUploadModel,
             DateUtils.setupDatePicker('upgrade_deadline', this);
 
             this.$el.find('#' + this.fieldToSelectorMap.overview).val(this.model.get('overview'));
-            this.codeMirrorize(null, $('#course-overview')[0]);
+            this.tinymceInit('#' + this.fieldToSelectorMap.overview, 'overview');
 
             if (this.model.get('title') !== '') {
                 this.$el.find('#' + this.fieldToSelectorMap.title).val(this.model.get('title'));
@@ -407,12 +406,36 @@ function(ValidatingView, CodeMirror, _, $, ui, DateUtils, FileUploadModel,
                 certificateAvailableDateField.addClass("hidden");
             }
         },
+
+        tinymceInit: function (elem, model) {
+            var self = this;
+            var directionality = $('head').attr('dir');
+
+            tinymce.init({
+                selector: elem,
+                directionality : directionality,
+                theme: 'silver',
+                plugins: 'link image lists code table media textcolor',
+                toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright forecolor backcolor | blockquote link image | numlist bullist outdent indent',
+                setup: function (ed) {
+                ed.on('keyup change', function () {
+                    if (self.model.get(model) != ed.getContent()) {
+                    self.setAndValidate(model, ed.getContent())
+                    }
+                });
+                }
+            });
+        },
+
         revertView: function() {
         // Make sure that the CodeMirror instance has the correct
         // data from its corresponding textarea
             var self = this;
             this.model.fetch({
                 success: function() {
+                    // Sets the specified content to the editor instance and repaint
+                    tinymce.get('course-overview').setContent($('#' + self.fieldToSelectorMap.overview).val());
+                    tinymce.execCommand('mceRepaint');
                     self.render();
                     _.each(self.codeMirrors, function(mirror) {
                         var ele = mirror.getTextArea();
@@ -423,7 +446,8 @@ function(ValidatingView, CodeMirror, _, $, ui, DateUtils, FileUploadModel,
                     self.licenseView.render();
                 },
                 reset: true,
-                silent: true});
+                silent: true
+            });
         },
         setAndValidate: function(attr, value) {
         // If we call model.set() with {validate: true}, model fields
