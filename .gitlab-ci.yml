@@ -38,7 +38,7 @@ lint:
 
 commit_convention:
   stage: conventions
-  image: node:12
+  image: node:16
   needs: []
   cache:
     key: commitlint-node_modules

@@ -8,6 +8,11 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`
 [Unreleased]
 ************
 
+Fixes
+=====
+
+* Fix cleaned version of the thread's body in the preview_body `RGOeX-25633 <https://youtrack.raccoongang.com/issue/RGOeX-25633>`_
+
 Added
 =====
 
