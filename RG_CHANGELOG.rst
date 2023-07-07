@@ -8,6 +8,12 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`
 [Unreleased]
 ************
 
+Fixes
+=====
+
+* Hot fix validation error for "empty" Batch Enrollment and "empty" Batch Beta Tester Addition (deployment error related to ES6) `RGOeX-25965 <https://youtrack.raccoongang.com/issue/RGOeX-25965>`_
+* Fix validation error for "empty" Batch Enrollment and "empty" Batch Beta Tester Addition `RGOeX-25965 <https://youtrack.raccoongang.com/issue/RGOeX-25965>`_
+
 Added
 =====
 
