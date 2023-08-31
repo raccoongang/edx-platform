@@ -8568,6 +8568,10 @@ msgid "Create an Account."
 msgstr "Створити обліковий запис"
 
 #: lms/templates/student_account/login.underscore
+msgid "Create an account"
+msgstr "Створити акаунт"
+
+#: lms/templates/student_account/login.underscore
 msgid "Sign in to continue learning as {email}"
 msgstr ""
 
@@ -8668,8 +8672,25 @@ msgid "or create a new one here"
 msgstr "або створити новий тут"
 
 #: lms/templates/student_account/register.underscore
-msgid "Create an Account"
+msgid "Create a new account"
 msgstr "Створити обліковий запис"
+
+#: lms/templates/student_account/register.underscore
+msgid "Create your account"
+msgstr "Створити акаунт"
+
+#: lms/templates/student_account/register.underscore
+msgid "Required field"
+msgstr "Обов'язкове поле"
+
+#: lms/templates/student_account/register.underscore
+msgid "Already have an account?"
+msgstr "Вже маєте акаунт?"
+
+#: lms/templates/student_account/login.underscore
+#, python-format
+msgid "New to %(platformName)s?"
+msgstr "Вперше проходите %(platformName)s?"
 
 #: lms/templates/student_account/register.underscore
 msgid "Support education research by providing additional information"
