@@ -2499,7 +2499,18 @@ msgstr ""
 #: openedx/core/djangoapps/theming/templates/theming/theming-admin-fragment.html
 #: themes/stanford-style/lms/templates/register-shib.html
 msgid "Submit"
-msgstr "Надіслати"
+msgstr "Відповісти"
+
+#: lms/templates/dashboard/_dashboard_certificate_information.html
+msgid ""
+"Final course details are being wrapped up at this time. Your final standing "
+"will be available shortly."
+msgstr ""
+"Якщо у вас є питання щодо проходження тестування, зверніться до адміністратора"
+
+#: lms/templates/dashboard/_dashboard_certificate_information.html
+msgid "You are finished this course."
+msgstr "Ваше тестування завершено"
 
 #: common/lib/xmodule/xmodule/capa_base.py
 msgid "Submitting"
@@ -7797,8 +7808,8 @@ msgstr "Термін здачі завдання для цього слухач�
 #: lms/templates/signup_modal.html lms/templates/sysadmin_dashboard.html
 #: themes/stanford-style/lms/templates/register-form.html
 #: themes/stanford-style/lms/templates/register-shib.html
-msgid "Full Name"
-msgstr "Ім'я та прізвище"
+msgid "Full name"
+msgstr "Ім'я та Прізвище"
 
 #: lms/djangoapps/instructor/views/tools.py
 msgid "Extended Due Date"
@@ -11411,18 +11422,19 @@ msgstr "Це ім'я буде використано у кожному отри�
 #: lms/templates/signup_modal.html
 #: themes/stanford-style/lms/templates/register-form.html
 #: themes/stanford-style/lms/templates/register-shib.html
-msgid "Public Username"
-msgstr "Загальнодоступне ім’я користувача"
+msgid "Public username"
+msgstr "Придумайте логін для входу в систему"
 
 #. Translators: These instructions appear on the registration form,
 #. immediately
 #. below a field meant to hold the user's public username.
 #: openedx/core/djangoapps/user_api/api.py
 msgid ""
-"The name that will identify you in your courses. It cannot be changed later."
+"The name that will identify you in your courses - "
+"{bold_start}(cannot be changed later){bold_end}"
 msgstr ""
-"Ім'я, за яким Вас будуть ідентифікувати на курсах. Його неможливо змінити "
-"пізніше."
+"Логін має складатись з англійських букв без пробілів, цифр та знаків "
+"(не може бути змінений пізніше)"
 
 #. Translators: This label appears above a dropdown menu on the registration
 #. form used to select the user's highest completed level of education.
@@ -11454,7 +11466,7 @@ msgstr "Країна або регіон, де Ви проживаєте."
 #. in order to register a new account.
 #: openedx/core/djangoapps/user_api/api.py
 msgid "Terms of Service and Honor Code"
-msgstr "Умови надання послуг та Кодекс Честі"
+msgstr "Умовами надання послуг та Кодексом честі"
 
 #: openedx/core/djangoapps/user_api/api.py
 #, python-brace-format
@@ -11494,6 +11506,12 @@ msgid ""
 msgstr ""
 "Я погоджуюсь з  {platform_name} "
 "{tos_link_start}{terms_of_service}{tos_link_end}"
+
+msgid "I agree to the {platform_name} {terms_of_service}"
+msgstr "Я згоден з {terms_of_service} {platform_name}"
+
+msgid "Review the Terms of Service and Honor Code"
+msgstr "Переглянути Умови надання послуг та Кодекс Честі"
 
 #: openedx/core/djangoapps/user_api/config/waffle.py
 msgid "System maintenance in progress. Please try again later."
@@ -14144,11 +14162,11 @@ msgstr ""
 
 #: lms/templates/seq_module.html
 msgid "Previous"
-msgstr "Колишній"
+msgstr "Попереднє"
 
 #: lms/templates/seq_module.html
 msgid "Next"
-msgstr "Наступний"
+msgstr "Наступне"
 
 #: lms/templates/seq_module.html
 msgid "Sequence"
