@@ -1518,7 +1518,4 @@ def financial_assistance_form(request):
 
 
 def end_course(request):
-    response = generate_certificate_for_user(request)
-    if response.status_code == 200:
-        return redirect(reverse("dashboard"))
-    return response
+    return redirect(reverse("dashboard"))
