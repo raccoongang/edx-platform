@@ -10,6 +10,8 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`
 
 Changed
 =======
+
+* Overridden view for adding EdX Info Pages `RGOeX-26048 <https://youtrack.raccoongang.com/issue/RGOeX-26048>`_
 * Updated doc link for programms `RGOeX-26017 <https://youtrack.raccoongang.com/issue/RGOeX-26017>`_
 
 Fixes
