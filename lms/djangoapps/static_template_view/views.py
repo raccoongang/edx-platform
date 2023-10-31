@@ -16,6 +16,7 @@ from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.defaults import permission_denied
 from django_ratelimit.exceptions import Ratelimited
+from edx_django_utils.plugins import pluggable_override  # lint-amnesty, pylint: disable=import-error
 from mako.exceptions import TopLevelLookupException
 
 from common.djangoapps.edxmako.shortcuts import render_to_response, render_to_string
@@ -42,6 +43,7 @@ def index(request, template):
 
 @ensure_csrf_cookie
 @cache_if_anonymous()
+@pluggable_override('OVERRIDE_INFO_PAGES_RENDER')
 def render(request, template):
     """
     This view function renders the template sent without checking that it
