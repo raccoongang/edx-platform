@@ -529,7 +529,6 @@
   .public-video-share-cta {
     display: flex;
     padding: $baseline;
-    justify-content: flex-end;
     flex-direction: row;
     margin: 0 -12px;
     text-align: center;
@@ -547,6 +546,7 @@
       gap: 1em;
       width: 100%;
       justify-content: flex-end;
+      margin: 0 0 15px;
     }
 
     .btn-learn-more{
@@ -566,15 +566,15 @@
     .btn-go-to-course{
       @extend %btn-shims;
       color: #FFFFFF;
-      background: #D23228;
-      border-color: #D23228;
+      background: theme-color("primary");
+      border-color:theme-color("primary");
 
       &:hover,
       &:active,
       &:focus {
-        color: darken(#FFFFFF, 7%);
-        background: darken(#D23228, 7%);
-        border-color: darken(#D23228, 7%);
+        color: theme-color("primary");
+        background: theme-color("inverse");
+        border-color: theme-color("primary");
       }
     }
   }
