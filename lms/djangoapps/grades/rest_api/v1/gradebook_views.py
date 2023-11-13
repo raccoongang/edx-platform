@@ -13,6 +13,7 @@ from django.core.cache import cache
 from django.db.models import Case, Exists, F, OuterRef, Q, When
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from edx_django_utils.plugins import pluggable_override  # pylint: disable=import-error
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
 from rest_framework import status
@@ -670,6 +671,7 @@ class GradebookView(GradeViewMixin, PaginatedAPIView):
             serializer = StudentGradebookEntrySerializer(entries, many=True)
             return self.get_paginated_response(serializer.data, **users_counts)
 
+    @pluggable_override('OVERRIDE_GET_USER_COUNT')
     def _get_user_count(self, query_args, cache_time=3600, annotations=None):
         """
         Return the user count for the given query arguments to CourseEnrollment.

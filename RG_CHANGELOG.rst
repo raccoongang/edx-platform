@@ -14,6 +14,9 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`
 Changed
 =======
 
+* Overridden view for disable user count caching `RGOeX-26145 <https://youtrack.raccoongang.com/issue/RGOeX-26145>`_
+
+  * Should be dropped when upstream PR (`master <https://github.com/openedx/edx-platform/pull/33617>`_, `quince <https://github.com/openedx/edx-platform/pull/33618>`_) will be merged
 * Overridden view for adding EdX Info Pages `RGOeX-26048 <https://youtrack.raccoongang.com/issue/RGOeX-26048>`_
 * Updated doc link for programms `RGOeX-26017 <https://youtrack.raccoongang.com/issue/RGOeX-26017>`_
 
