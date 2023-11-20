@@ -23,6 +23,7 @@ from common.djangoapps.student.models import (
 )
 from common.djangoapps.util.model_utils import emit_settings_changed_event
 from common.djangoapps.util.password_policy_validators import validate_password
+from edx_django_utils.plugins import pluggable_override  # lint-amnesty, pylint: disable=import-error
 from lms.djangoapps.certificates.api import get_certificates_for_user
 from lms.djangoapps.certificates.data import CertificateStatuses
 
@@ -396,6 +397,7 @@ def _send_email_change_requests_if_needed(data, user):
             )
 
 
+@pluggable_override('OVERRIDE_GET_NAME_VALIDATION_ERROR')
 def get_name_validation_error(name):
     """Get the built-in validation error message for when
     the user's real name is invalid in some way (we wonder how).

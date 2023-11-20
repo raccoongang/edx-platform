@@ -14,6 +14,9 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`
 Changed
 =======
 
+* Overridden view for validate user full name length `RGOeX-26076 <https://youtrack.raccoongang.com/issue/RGOeX-26076>`_
+
+  * Should be dropped when upstream PR (`master#33501 <https://github.com/openedx/edx-platform/pull/33501>`_, `quince#33615 <https://github.com/openedx/edx-platform/pull/33615>`_) will be merged
 * Overridden view for disable user count caching `RGOeX-26145 <https://youtrack.raccoongang.com/issue/RGOeX-26145>`_
 
   * Should be dropped when upstream PR (`master <https://github.com/openedx/edx-platform/pull/33617>`_, `quince <https://github.com/openedx/edx-platform/pull/33618>`_) will be merged
