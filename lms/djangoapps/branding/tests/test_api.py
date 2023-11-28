@@ -7,6 +7,7 @@ from django.conf import settings
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.urls import reverse
+from edx_django_utils.plugins import pluggable_override  # lint-amnesty, pylint: disable=import-error
 
 from openedx.core.djangoapps.site_configuration.tests.test_util import with_site_configuration
 
@@ -83,6 +84,7 @@ class TestFooter(TestCase):
         "ENTERPRISE": "https://business.edx.org"
     })
     @override_settings(PLATFORM_NAME='\xe9dX')
+    @pluggable_override('OVERRIDE_BRANDING_TEST_GET_FOOTER')
     def test_get_footer(self):
         actual_footer = get_footer(is_secure=True)
         business_url = 'https://business.edx.org/?utm_campaign=edX.org+Referral&utm_source=edX.org&utm_medium=Footer'
