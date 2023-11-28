@@ -6,6 +6,7 @@ from completion import models
 from completion.test_utils import CompletionWaffleTestMixin
 from django.test import TestCase
 from django.test.utils import override_settings
+from edx_django_utils.plugins import pluggable_override  # lint-amnesty, pylint: disable=import-error
 
 from openedx.core.djangoapps.user_api.accounts.utils import retrieve_last_sitewide_block_completed
 from openedx.core.djangolib.testing.utils import skip_unless_lms
@@ -53,6 +54,7 @@ class UserAccountSettingsTest(TestCase):
     )
     @ddt.unpack
     @skip_unless_lms
+    @pluggable_override('OVERRIDE_TEST_SOCIAL_LINK_INPUT')
     def test_social_link_input(self, platform_name, link_input, formatted_link_expected, is_valid_expected):
         """
         Verify that social links are correctly validated and formatted.
