@@ -17,6 +17,7 @@ from django.http import HttpResponse
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.urls import reverse
+from edx_django_utils.plugins import pluggable_override  # lint-amnesty, pylint: disable=import-error
 from pytz import UTC
 from social_django.models import UserSocialAuth
 from common.djangoapps.student.models import (
@@ -182,6 +183,7 @@ class TestAccountApi(UserSettingsEventTestMixin, EmailTemplateTagMixin, CreateAc
         account_settings = get_account_settings(self.default_request)[0]
         assert account_settings['social_links'] == social_links
 
+    @pluggable_override('OVERRIDE_TEST_SET_MULTIPLE_SOCIAL_LINKS')
     def test_set_multiple_social_links(self):
         social_links = [
             dict(platform="facebook", social_link=f"https://www.facebook.com/{self.user.username}"),
@@ -191,6 +193,7 @@ class TestAccountApi(UserSettingsEventTestMixin, EmailTemplateTagMixin, CreateAc
         account_settings = get_account_settings(self.default_request)[0]
         assert account_settings['social_links'] == social_links
 
+    @pluggable_override('OVERRIDE_TEST_ADD_SOCIAL_LINKS')
     def test_add_social_links(self):
         original_social_links = [
             dict(platform="facebook", social_link=f"https://www.facebook.com/{self.user.username}")
@@ -207,6 +210,7 @@ class TestAccountApi(UserSettingsEventTestMixin, EmailTemplateTagMixin, CreateAc
         assert account_settings['social_links'] == \
             sorted((original_social_links + extra_social_links), key=(lambda s: s['platform']))
 
+    @pluggable_override('OVERRIDE_TEST_REPLACE_SOCIAL_LINKS')
     def test_replace_social_links(self):
         original_facebook_link = dict(platform="facebook", social_link="https://www.facebook.com/myself")
         original_twitter_link = dict(platform="twitter", social_link="https://www.twitter.com/myself")
@@ -218,6 +222,7 @@ class TestAccountApi(UserSettingsEventTestMixin, EmailTemplateTagMixin, CreateAc
         account_settings = get_account_settings(self.default_request)[0]
         assert account_settings['social_links'] == [modified_facebook_link, original_twitter_link]
 
+    @pluggable_override('OVERRIDE_TEST_REMOVE_SOCIAL_LINK')
     def test_remove_social_link(self):
         original_facebook_link = dict(platform="facebook", social_link="https://www.facebook.com/myself")
         original_twitter_link = dict(platform="twitter", social_link="https://www.twitter.com/myself")
