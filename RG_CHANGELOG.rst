@@ -8,6 +8,13 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`
 [Unreleased]
 ************
 
+[palm-rg.2] 2023-12-01
+**********************
+
+Sync:
+=====
+Update on upstream open-release/palm.4
+
 Changed
 =======
 
