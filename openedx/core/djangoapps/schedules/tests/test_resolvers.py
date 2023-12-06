@@ -12,6 +12,7 @@ import pytz
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
+from edx_django_utils.plugins import pluggable_override  # lint-amnesty, pylint: disable=import-error
 from edx_toggles.toggles.testutils import override_waffle_switch
 from testfixtures import LogCapture
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
@@ -162,6 +163,7 @@ class TestCourseUpdateResolver(SchedulesResolverTestMixin, ModuleStoreTestCase):
 
     @override_settings(CONTACT_MAILING_ADDRESS='123 Sesame Street')
     @override_settings(LOGO_URL_PNG='https://www.logo.png')
+    @pluggable_override('OVERRIDE_TEST_UPDATE_RESOLVER')
     def test_schedule_context(self):
         resolver = self.create_resolver()
         schedules = list(resolver.schedules_for_bin())
@@ -271,6 +273,7 @@ class TestCourseNextSectionUpdateResolver(SchedulesResolverTestMixin, ModuleStor
 
     @override_settings(CONTACT_MAILING_ADDRESS='123 Sesame Street')
     @override_settings(LOGO_URL_PNG='https://www.logo.png')
+    @pluggable_override('OVERRIDE_TEST_NEXT_SECTION_RESOLVER')
     def test_schedule_context(self):
         resolver = self.create_resolver()
         # using this to make sure the select_related stays intact
