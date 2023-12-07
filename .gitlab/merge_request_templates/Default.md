@@ -1,27 +1,35 @@
-**Description:**
+## Description:
 
 A few sentences describing the overall goals of `merge request`.
 
-**Youtrack:**
+## Definition of Readiness (DoR):
+Use the DRAFT status if there any blockers.
+List any blockers for the review/merge here.
+
+- [ ] 
+
+## Youtrack:
 
 https://youtrack.raccoongang.com/issue/XXXXX
 
-**Configuration instructions:**
+## Configuration instructions:
 
 List any non-trivial configuration instructions (if any).
 
-**Reviewers:**
+## Reviewers:
 - [ ] @idegtiarov
 - [ ] @dyudyunov
+- [ ] @alipov_dmytro
 
 
-**Related Confluence|Other documents:**
+## Related Confluence|Other documents:
 - < URL to Confluence document 1 >
 - < URL to Confluence document 2 >
 
-**Pre-Merge Checklist:**
+## Pre-Merge Checklist:
 
 - [ ] Demo status: OK
+- [ ] DoRs are closed
 - [ ] All related documentation is updated
   - [ ] Described your changes in RG_CHANGELOG.rst
   base changlog on https://keepachangelog.com/en/1.0.0/
@@ -32,5 +40,5 @@ List any non-trivial configuration instructions (if any).
 - [ ] Confirmed Gitlab reports all automated tests/checks are passing.
 - [ ] Approved by at least one additional reviewer.
 
-**Post merge:**
+## Post merge:
 - [ ] Delete the working branch (if not needed anymore)

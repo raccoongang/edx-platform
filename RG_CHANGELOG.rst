@@ -7,6 +7,10 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`
 
 [Unreleased]
 ************
+Changed
+=======
+
+* Update the MR template with DoR section `OX-3406 https://youtrack.raccoongang.com/issue/OX-3406`_
 
 [palm-rg.2] 2023-12-01
 **********************
