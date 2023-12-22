@@ -8,7 +8,13 @@ from logging import getLogger
 
 from django.dispatch import receiver
 from opaque_keys.edx.keys import LearningContextKey
-from openedx_events.learning.signals import EXAM_ATTEMPT_REJECTED, EXAM_ATTEMPT_VERIFIED
+from openedx_events.learning.data import UserCourseData, CourseData, UserData, UserPersonalData
+from openedx_events.learning.signals import (
+    EXAM_ATTEMPT_REJECTED,
+    EXAM_ATTEMPT_VERIFIED,
+    COURSE_GRADE_NOW_PASSED as COURSE_GRADE_NOW_PASSED_PUBLIC,
+    COURSE_GRADE_NOW_FAILED as COURSE_GRADE_NOW_FAILED_PUBLIC,
+)
 from submissions.models import score_reset, score_set
 from xblock.scorable import ScorableXBlockMixin, Score
 
@@ -281,9 +287,25 @@ def listen_for_passing_grade(sender, user, course_id, **kwargs):  # pylint: disa
     """
     Listen for a signal indicating that the user has passed a course run.
 
-    Emits an edx.course.grade.now_passed event
+    Emits an edx.course.grade.now_passed event.
+    Emits a public event org.openedx.learning.course.grade.now.passed.v1.
     """
     events.course_grade_now_passed(user, course_id)
+    # .. event_implemented_name: COURSE_GRADE_NOW_PASSED
+    COURSE_GRADE_NOW_PASSED_PUBLIC.send_event(
+        user_course_data=UserCourseData(
+            user=UserData(
+                pii=UserPersonalData(
+                    username=user.username, email=user.email, name=user.get_full_name()
+                ),
+                id=user.id,
+                is_active=user.is_active,
+            ),
+            course=CourseData(
+                course_key=course_id,
+            )
+        )
+    )
 
 
 @receiver(COURSE_GRADE_NOW_FAILED)
@@ -291,9 +313,25 @@ def listen_for_failing_grade(sender, user, course_id, **kwargs):  # pylint: disa
     """
     Listen for a signal indicating that the user has failed a course run.
 
-    Emits an edx.course.grade.now_failed event
+    Emits an edx.course.grade.now_failed event.
+    Emits a public event org.openedx.learning.course.grade.now.failed.v1.
     """
     events.course_grade_now_failed(user, course_id)
+    # .. event_implemented_name: COURSE_GRADE_NOW_FAILED
+    COURSE_GRADE_NOW_FAILED_PUBLIC.send_event(
+        user_course_data=UserCourseData(
+            user=UserData(
+                pii=UserPersonalData(
+                    username=user.username, email=user.email, name=user.get_full_name()
+                ),
+                id=user.id,
+                is_active=user.is_active,
+            ),
+            course=CourseData(
+                course_key=course_id,
+            )
+        )
+    )
 
 
 @receiver(COURSE_GRADE_PASSED_FIRST_TIME)
