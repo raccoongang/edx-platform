@@ -7,10 +7,13 @@ import logging
 from collections import defaultdict
 from contextlib import contextmanager
 from datetime import datetime, timezone
+from urllib.parse import quote_plus
 from uuid import uuid4
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.http import HttpResponseBadRequest
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import translation
 from django.utils.translation import gettext as _
@@ -1686,6 +1689,140 @@ def get_course_videos_context(course_block, pagination_conf, course_key=None):
         # Cached state for transcript providers' credentials (org-specific)
         course_video_context['transcript_credentials'] = get_transcript_credentials_state_for_org(course.id.org)
     return course_video_context
+
+
+def get_container_handler_context(request, usage_key):
+    """
+    Utils is used to get context for container xblock requests.
+    It is used for both DRF and django views.
+    """
+
+    from cms.djangoapps.contentstore.views.component import (
+        _get_item_in_course,
+        get_component_templates,
+        get_unit_tags,
+        CONTAINER_TEMPLATES,
+        LIBRARY_BLOCK_TYPES,
+    )
+    from cms.djangoapps.contentstore.helpers import get_parent_xblock, is_unit
+    from cms.djangoapps.contentstore.xblock_storage_handlers.view_handlers import (
+        add_container_page_publishing_info,
+        create_xblock_info,
+    )
+    from openedx.core.djangoapps.content_staging import api as content_staging_api
+
+    try:
+        course, xblock, lms_link, preview_lms_link = _get_item_in_course(request, usage_key)
+    except ItemNotFoundError:
+        return HttpResponseBadRequest()
+
+    component_templates = get_component_templates(course)
+    ancestor_xblocks = []
+    parent = get_parent_xblock(xblock)
+    action = request.GET.get('action', 'view')
+
+    is_unit_page = is_unit(xblock)
+    unit = xblock if is_unit_page else None
+
+    if is_unit_page and use_new_unit_page(course.id):
+        return redirect(get_unit_url(course.id, unit.location))
+
+    is_first = True
+    block = xblock
+
+    # Build the breadcrumbs and find the ``Unit`` ancestor
+    # if it is not the immediate parent.
+    while parent:
+
+        if unit is None and is_unit(block):
+            unit = block
+
+        # add all to nav except current xblock page
+        if xblock != block:
+            current_block = {
+                'title': block.display_name_with_default,
+                'children': parent.get_children(),
+                'is_last': is_first
+            }
+            is_first = False
+            ancestor_xblocks.append(current_block)
+
+        block = parent
+        parent = get_parent_xblock(parent)
+
+    ancestor_xblocks.reverse()
+
+    if unit is None:
+        raise ValueError("Could not determine unit page")
+
+    subsection = get_parent_xblock(unit)
+    if subsection is None:
+        raise ValueError(f"Could not determine parent subsection from unit {unit.location}")
+
+    section = get_parent_xblock(subsection)
+    if section is None:
+        raise ValueError(f"Could not determine ancestor section from unit {unit.location}")
+
+    # for the sequence navigator
+    prev_url, next_url = get_sibling_urls(subsection, unit.location)
+    # these are quoted here because they'll end up in a query string on the page,
+    # and quoting with mako will trigger the xss linter...
+    prev_url = quote_plus(prev_url) if prev_url else None
+    next_url = quote_plus(next_url) if next_url else None
+
+    show_unit_tags = use_tagging_taxonomy_list_page()
+    unit_tags = None
+    if show_unit_tags and is_unit_page:
+        unit_tags = get_unit_tags(usage_key)
+
+    # Fetch the XBlock info for use by the container page. Note that it includes information
+    # about the block's ancestors and siblings for use by the Unit Outline.
+    xblock_info = create_xblock_info(xblock, include_ancestor_info=is_unit_page, tags=unit_tags)
+
+    if is_unit_page:
+        add_container_page_publishing_info(xblock, xblock_info)
+
+    # need to figure out where this item is in the list of children as the
+    # preview will need this
+    index = 1
+    for child in subsection.get_children():
+        if child.location == unit.location:
+            break
+        index += 1
+
+    # Get the status of the user's clipboard so they can paste components if they have something to paste
+    user_clipboard = content_staging_api.get_user_clipboard_json(request.user.id, request)
+    library_block_types = [problem_type['component'] for problem_type in LIBRARY_BLOCK_TYPES]
+    is_library_xblock = xblock.location.block_type in library_block_types
+
+    context = {
+        'language_code': request.LANGUAGE_CODE,
+        'context_course': course,  # Needed only for display of menus at top of page.
+        'action': action,
+        'xblock': xblock,
+        'xblock_locator': xblock.location,
+        'unit': unit,
+        'is_unit_page': is_unit_page,
+        'is_collapsible': is_library_xblock,
+        'subsection': subsection,
+        'section': section,
+        'position': index,
+        'prev_url': prev_url,
+        'next_url': next_url,
+        'new_unit_category': 'vertical',
+        'outline_url': '{url}?format=concise'.format(url=reverse_course_url('course_handler', course.id)),
+        'ancestor_xblocks': ancestor_xblocks,
+        'component_templates': component_templates,
+        'xblock_info': xblock_info,
+        'draft_preview_link': preview_lms_link,
+        'published_preview_link': lms_link,
+        'templates': CONTAINER_TEMPLATES,
+        'show_unit_tags': show_unit_tags,
+        # Status of the user's clipboard, exactly as would be returned from the "GET clipboard" REST API.
+        'user_clipboard': user_clipboard,
+        'is_fullwidth_content': is_library_xblock,
+    }
+    return context
 
 
 class StudioPermissionsService:
