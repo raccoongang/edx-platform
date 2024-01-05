@@ -1752,12 +1752,16 @@ def get_container_handler_context(request, usage_key):
 
     ancestor_xblocks.reverse()
 
-    assert unit is not None, "Could not determine unit page"
+    if unit is None:
+      raise ValueError("Could not determine unit page")
+
     subsection = get_parent_xblock(unit)
-    assert subsection is not None, "Could not determine parent subsection from unit " + str(
-        unit.location)
+    if subsection is None:
+        raise ValueError(f"Could not determine parent subsection from unit {unit.location}")
+
     section = get_parent_xblock(subsection)
-    assert section is not None, "Could not determine ancestor section from unit " + str(unit.location)
+    if section is None:
+        raise ValueError(f"Could not determine ancestor section from unit {unit.location}")
 
     # for the sequence navigator
     prev_url, next_url = get_sibling_urls(subsection, unit.location)
