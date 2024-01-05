@@ -1753,7 +1753,7 @@ def get_container_handler_context(request, usage_key):
     ancestor_xblocks.reverse()
 
     if unit is None:
-      raise ValueError("Could not determine unit page")
+        raise ValueError("Could not determine unit page")
 
     subsection = get_parent_xblock(unit)
     if subsection is None:
