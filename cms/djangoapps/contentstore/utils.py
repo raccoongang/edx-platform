@@ -1785,7 +1785,7 @@ def _get_course_index_context(request, course_key, course_block):
     return course_index_context
 
 
-def get_container_handler_context(request, usage_key, course, xblock):
+def get_container_handler_context(request, usage_key, course, xblock):  # pylint: disable=too-many-statements
     """
     Utils is used to get context for container xblock requests.
     It is used for both DRF and django views.
