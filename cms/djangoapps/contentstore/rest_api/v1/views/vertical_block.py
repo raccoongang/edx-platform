@@ -1,7 +1,7 @@
 """ API Views for unit page """
 
 import edx_api_doc_tools as apidocs
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import UsageKey
 from rest_framework.request import Request
@@ -9,9 +9,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from cms.djangoapps.contentstore.utils import get_container_handler_context
+from cms.djangoapps.contentstore.views.component import _get_item_in_course
 from cms.djangoapps.contentstore.rest_api.v1.serializers import ContainerHandlerSerializer
 from openedx.core.lib.api.view_utils import view_auth_classes
-from xmodule.modulestore.django import modulestore
+from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disable=wrong-import-order
+from xmodule.modulestore.exceptions import ItemNotFoundError  # lint-amnesty, pylint: disable=wrong-import-order
 
 
 @view_auth_classes(is_authenticated=True)
@@ -127,6 +129,15 @@ class ContainerHandlerView(APIView):
         usage_key = self.get_object(usage_key_string)
         course_key = usage_key.course_key
         with modulestore().bulk_operations(course_key):
-            context = get_container_handler_context(request, usage_key)
+            try:
+                course, xblock, lms_link, preview_lms_link = _get_item_in_course(request, usage_key)
+            except ItemNotFoundError:
+                return HttpResponseBadRequest()
+
+            context = get_container_handler_context(request, usage_key, course, xblock)
+            context.update({
+                'draft_preview_link': preview_lms_link,
+                'published_preview_link': lms_link,
+            })
             serializer = ContainerHandlerSerializer(context)
             return Response(serializer.data)
