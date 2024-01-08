@@ -9,6 +9,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponseBadRequest
+from django.shortcuts import redirect
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET
 from opaque_keys import InvalidKeyError
@@ -23,12 +24,14 @@ from common.djangoapps.edxmako.shortcuts import render_to_response
 from common.djangoapps.student.auth import has_course_author_access
 from common.djangoapps.xblock_django.api import authorable_xblocks, disabled_xblocks
 from common.djangoapps.xblock_django.models import XBlockStudioConfigurationFlag
-from cms.djangoapps.contentstore.toggles import use_new_problem_editor
+from cms.djangoapps.contentstore.helpers import is_unit
+from cms.djangoapps.contentstore.toggles import use_new_problem_editor, use_new_unit_page
+from cms.djangoapps.contentstore.xblock_storage_handlers.view_handlers import load_services_for_studio
 from openedx.core.lib.xblock_utils import get_aside_from_xblock, is_xblock_aside
 from openedx.core.djangoapps.discussions.models import DiscussionsConfiguration
 from openedx.core.djangoapps.content_tagging.api import get_content_tags
 from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disable=wrong-import-order
-from cms.djangoapps.contentstore.xblock_storage_handlers.view_handlers import load_services_for_studio
+from xmodule.modulestore.exceptions import ItemNotFoundError  # lint-amnesty, pylint: disable=wrong-import-order
 
 __all__ = [
     'container_handler',
@@ -108,7 +111,7 @@ def container_handler(request, usage_key_string):  # pylint: disable=too-many-st
         json: not currently supported
     """
 
-    from ..utils import get_container_handler_context
+    from ..utils import get_container_handler_context, get_unit_url
 
     if 'text/html' in request.META.get('HTTP_ACCEPT', 'text/html'):
 
@@ -117,7 +120,23 @@ def container_handler(request, usage_key_string):  # pylint: disable=too-many-st
         except InvalidKeyError:  # Raise Http404 on invalid 'usage_key_string'
             raise Http404  # lint-amnesty, pylint: disable=raise-missing-from
         with modulestore().bulk_operations(usage_key.course_key):
-            container_handler_context = get_container_handler_context(request, usage_key)
+            try:
+                course, xblock, lms_link, preview_lms_link = _get_item_in_course(request, usage_key)
+            except ItemNotFoundError:
+                return HttpResponseBadRequest()
+
+            is_unit_page = is_unit(xblock)
+            unit = xblock if is_unit_page else None
+
+            if is_unit_page and use_new_unit_page(course.id):
+                return redirect(get_unit_url(course.id, unit.location))
+
+
+            container_handler_context = get_container_handler_context(request, usage_key, course, xblock)
+            container_handler_context.update({
+                'draft_preview_link': preview_lms_link,
+                'published_preview_link': lms_link,
+            })
             return render_to_response('container.html', container_handler_context)
     else:
         return HttpResponseBadRequest("Only supports HTML requests")
