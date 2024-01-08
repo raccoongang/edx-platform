@@ -12,8 +12,6 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.http import HttpResponseBadRequest
-from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import translation
 from django.utils.translation import gettext as _
@@ -1691,14 +1689,13 @@ def get_course_videos_context(course_block, pagination_conf, course_key=None):
     return course_video_context
 
 
-def get_container_handler_context(request, usage_key):
+def get_container_handler_context(request, usage_key, course, xblock):
     """
     Utils is used to get context for container xblock requests.
     It is used for both DRF and django views.
     """
 
     from cms.djangoapps.contentstore.views.component import (
-        _get_item_in_course,
         get_component_templates,
         get_unit_tags,
         CONTAINER_TEMPLATES,
@@ -1711,11 +1708,6 @@ def get_container_handler_context(request, usage_key):
     )
     from openedx.core.djangoapps.content_staging import api as content_staging_api
 
-    try:
-        course, xblock, lms_link, preview_lms_link = _get_item_in_course(request, usage_key)
-    except ItemNotFoundError:
-        return HttpResponseBadRequest()
-
     component_templates = get_component_templates(course)
     ancestor_xblocks = []
     parent = get_parent_xblock(xblock)
@@ -1723,9 +1715,6 @@ def get_container_handler_context(request, usage_key):
 
     is_unit_page = is_unit(xblock)
     unit = xblock if is_unit_page else None
-
-    if is_unit_page and use_new_unit_page(course.id):
-        return redirect(get_unit_url(course.id, unit.location))
 
     is_first = True
     block = xblock
@@ -1814,8 +1803,6 @@ def get_container_handler_context(request, usage_key):
         'ancestor_xblocks': ancestor_xblocks,
         'component_templates': component_templates,
         'xblock_info': xblock_info,
-        'draft_preview_link': preview_lms_link,
-        'published_preview_link': lms_link,
         'templates': CONTAINER_TEMPLATES,
         'show_unit_tags': show_unit_tags,
         # Status of the user's clipboard, exactly as would be returned from the "GET clipboard" REST API.
