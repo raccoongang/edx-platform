@@ -60,18 +60,18 @@ class CourseTextbooksView(DeveloperErrorViewMixin, APIView):
         {
             "textbooks": [
                 {
-                "tab_title": "Textbook Name",
-                "chapters": [
-                    {
-                        "title": "Chapter 1",
-                        "url": "/static/Present_Perfect.pdf"
-                    },
-                    {
-                        "title": "Chapter 2",
-                        "url": "/static/Lear.pdf"
-                    }
-                ],
-                "id": "Textbook_Name"
+                    "tab_title": "Textbook Name",
+                    "chapters": [
+                        {
+                            "title": "Chapter 1",
+                            "url": "/static/Present_Perfect.pdf"
+                        },
+                        {
+                            "title": "Chapter 2",
+                            "url": "/static/Lear.pdf"
+                        }
+                    ],
+                    "id": "Textbook_Name"
                 }
             ]
         }
