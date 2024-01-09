@@ -37,7 +37,6 @@ from eventtracking import tracker
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import AssetKey, CourseKey
 
-from common.djangoapps.course_modes.models import CourseMode
 from common.djangoapps.edxmako.shortcuts import render_to_response
 from common.djangoapps.student.auth import has_studio_write_access
 from common.djangoapps.student.roles import GlobalStaff
@@ -48,9 +47,8 @@ from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disa
 
 from ..exceptions import AssetNotFoundException
 from ..utils import (
-    get_lms_link_for_certificate_web_view,
-    get_proctored_exam_settings_url,
-    reverse_course_url
+    get_certificates_context,
+    reverse_course_url,
 )
 from .assets import delete_asset
 
@@ -393,43 +391,8 @@ def certificates_list_handler(request, course_key_string):
             return JsonResponse({"error": msg}, status=403)
 
         if 'text/html' in request.META.get('HTTP_ACCEPT', 'text/html'):
-            certificate_url = reverse_course_url('certificates_list_handler', course_key)
-            course_outline_url = reverse_course_url('course_handler', course_key)
-            upload_asset_url = reverse_course_url('assets_handler', course_key)
-            activation_handler_url = reverse_course_url(
-                handler_name='certificate_activation_handler',
-                course_key=course_key
-            )
-            course_modes = [
-                mode.slug for mode in CourseMode.modes_for_course(
-                    course_id=course.id, include_expired=True
-                ) if mode.slug != 'audit'
-            ]
-
-            has_certificate_modes = len(course_modes) > 0
-
-            if has_certificate_modes:
-                certificate_web_view_url = get_lms_link_for_certificate_web_view(
-                    course_key=course_key,
-                    mode=course_modes[0]  # CourseMode.modes_for_course returns default mode if doesn't find anyone.
-                )
-            else:
-                certificate_web_view_url = None
-            is_active, certificates = CertificateManager.is_activated(course)
-            return render_to_response('certificates.html', {
-                'context_course': course,
-                'certificate_url': certificate_url,
-                'course_outline_url': course_outline_url,
-                'upload_asset_url': upload_asset_url,
-                'certificates': certificates,
-                'has_certificate_modes': has_certificate_modes,
-                'course_modes': course_modes,
-                'certificate_web_view_url': certificate_web_view_url,
-                'is_active': is_active,
-                'is_global_staff': GlobalStaff().has_user(request.user),
-                'certificate_activation_handler_url': activation_handler_url,
-                'mfe_proctored_exam_settings_url': get_proctored_exam_settings_url(course.id),
-            })
+            certificates_context = get_certificates_context(course, request.user)
+            return render_to_response('certificates.html', certificates_context)
         elif "application/json" in request.META.get('HTTP_ACCEPT'):
             # Retrieve the list of certificates for the specified course
             if request.method == 'GET':
