@@ -158,10 +158,12 @@ class ContainerVerticalViewTest(BaseXBlockContainer):
             {
                 "name": self.html_unit_first.display_name_with_default,
                 "block_id": str(self.html_unit_first.location),
+                "block_type": self.html_unit_first.location.block_type,
             },
             {
                 "name": self.html_unit_second.display_name_with_default,
                 "block_id": str(self.html_unit_second.location),
+                "block_type": self.html_unit_second.location.block_type,
             },
         ]
         self.assertEqual(response.data["children"], expected_response)
