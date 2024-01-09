@@ -5,6 +5,8 @@ from django.urls import re_path, path
 from openedx.core.constants import COURSE_ID_PATTERN
 
 from .views import (
+    ContainerHandlerView,
+    CourseCertificatesView,
     CourseDetailsView,
     CourseTeamView,
     CourseIndexView,
@@ -100,6 +102,11 @@ urlpatterns = [
         fr'^course_rerun/{COURSE_ID_PATTERN}$',
         CourseRerunView.as_view(),
         name="course_rerun"
+    ),
+    re_path(
+        fr'^certificates/{COURSE_ID_PATTERN}$',
+        CourseCertificatesView.as_view(),
+        name="certificates"
     ),
     re_path(
         fr'^container_handler/{settings.USAGE_KEY_PATTERN}$',
