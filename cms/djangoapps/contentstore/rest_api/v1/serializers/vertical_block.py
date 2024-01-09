@@ -99,6 +99,7 @@ class ChildVerticalContainerSerializer(serializers.Serializer):
 
     name = serializers.CharField(source="display_name_with_default")
     block_id = serializers.CharField(source="location")
+    block_type = serializers.CharField(source="location.block_type")
 
 
 class VerticalContainerSerializer(serializers.Serializer):

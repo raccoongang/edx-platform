@@ -179,16 +179,19 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
             "children": [
                 {
                     "name": "Drag and Drop",
-                    "block_id": "block-v1:org+101+101+type@drag-and-drop-v2+block@7599275ace6b46f5a482078a2954ca16"
+                    "block_id": "block-v1:org+101+101+type@drag-and-drop-v2+block@7599275ace6b46f5a482078a2954ca16",
+                    "block_type": "drag-and-drop-v2"
                 },
                 {
                     "name": "Video",
-                    "block_id": "block-v1:org+101+101+type@video+block@0e3d39b12d7c4345981bda6b3511a9bf"
+                    "block_id": "block-v1:org+101+101+type@video+block@0e3d39b12d7c4345981bda6b3511a9bf",
+                    "block_type": "video"
                 },
                 {
                     "name": "Text",
-                    "block_id": "block-v1:org+101+101+type@html+block@3e3fa1f88adb4a108cd14e9002143690"
-                }
+                    "block_id": "block-v1:org+101+101+type@html+block@3e3fa1f88adb4a108cd14e9002143690",
+                    "block_type": "html"
+                },
             ],
             "is_published": false
         }
