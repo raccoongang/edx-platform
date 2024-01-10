@@ -9,6 +9,7 @@ from .views import (
     CourseCertificatesView,
     CourseDetailsView,
     CourseTeamView,
+    CourseTextbooksView,
     CourseIndexView,
     CourseGradingView,
     CourseRerunView,
@@ -107,6 +108,11 @@ urlpatterns = [
         fr'^certificates/{COURSE_ID_PATTERN}$',
         CourseCertificatesView.as_view(),
         name="certificates"
+    ),
+    re_path(
+        fr'^textbooks/{COURSE_ID_PATTERN}$',
+        CourseTextbooksView.as_view(),
+        name="textbooks"
     ),
     re_path(
         fr'^container_handler/{settings.USAGE_KEY_PATTERN}$',

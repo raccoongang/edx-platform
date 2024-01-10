@@ -109,6 +109,7 @@ from ..utils import (
     get_grading_url,
     get_schedule_details_url,
     get_course_rerun_context,
+    get_textbooks_context,
     initialize_permissions,
     remove_all_instructors,
     reverse_course_url,
@@ -1347,14 +1348,8 @@ def textbooks_list_handler(request, course_key_string):
 
         if "application/json" not in request.META.get('HTTP_ACCEPT', 'text/html'):
             # return HTML page
-            upload_asset_url = reverse_course_url('assets_handler', course_key)
-            textbook_url = reverse_course_url('textbooks_list_handler', course_key)
-            return render_to_response('textbooks.html', {
-                'context_course': course,
-                'textbooks': course.pdf_textbooks,
-                'upload_asset_url': upload_asset_url,
-                'textbook_url': textbook_url,
-            })
+            textbooks_context = get_textbooks_context(course)
+            return render_to_response('textbooks.html', textbooks_context)
 
         # from here on down, we know the client has requested JSON
         if request.method == 'GET':
