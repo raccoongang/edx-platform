@@ -159,11 +159,25 @@ class ContainerVerticalViewTest(BaseXBlockContainer):
                 "name": self.html_unit_first.display_name_with_default,
                 "block_id": str(self.html_unit_first.location),
                 "block_type": self.html_unit_first.location.block_type,
+                "actions": {
+                    "can_copy": True,
+                    "can_duplicate": True,
+                    "can_move": True,
+                    "can_manage_access": True,
+                    "can_delete": True
+                }
             },
             {
                 "name": self.html_unit_second.display_name_with_default,
                 "block_id": str(self.html_unit_second.location),
                 "block_type": self.html_unit_second.location.block_type,
+                "actions": {
+                    "can_copy": True,
+                    "can_duplicate": True,
+                    "can_move": True,
+                    "can_manage_access": True,
+                    "can_delete": True
+                }
             },
         ]
         self.assertEqual(response.data["children"], expected_response)
