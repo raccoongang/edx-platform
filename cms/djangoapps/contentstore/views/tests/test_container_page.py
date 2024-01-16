@@ -14,10 +14,12 @@ from pytz import UTC
 from urllib.parse import quote
 
 import cms.djangoapps.contentstore.views.component as views
+from common.djangoapps.xblock_django.user_service import DjangoXBlockUserService
 from cms.djangoapps.contentstore.tests.test_libraries import LibraryTestCase
 from xmodule.modulestore import ModuleStoreEnum  # lint-amnesty, pylint: disable=wrong-import-order
 from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disable=wrong-import-order
 from xmodule.modulestore.tests.factories import CourseFactory, BlockFactory  # lint-amnesty, pylint: disable=wrong-import-order
+from xmodule.partitions.partitions import ENROLLMENT_TRACK_PARTITION_ID
 
 from .utils import StudioPageTestCase
 
@@ -34,10 +36,14 @@ class ContainerPageTestCase(StudioPageTestCase, LibraryTestCase):
         super().setUp()
         self.vertical = self._create_block(self.sequential, 'vertical', 'Unit')
         self.html = self._create_block(self.vertical, "html", "HTML")
-        self.child_container = self._create_block(self.vertical, 'split_test', 'Split Test')
+        self.child_container = self._create_block(
+            self.vertical, 'split_test', 'Split Test', user_partition_id=ENROLLMENT_TRACK_PARTITION_ID
+        )
         self.child_vertical = self._create_block(self.child_container, 'vertical', 'Child Vertical')
         self.video = self._create_block(self.child_vertical, "video", "My Video")
         self.store = modulestore()
+        user_service = DjangoXBlockUserService(self.user)
+        self.child_container.runtime._services['user'] = user_service  # pylint: disable=protected-access
 
         past = datetime.datetime(1970, 1, 1, tzinfo=UTC)
         future = datetime.datetime.now(UTC) + datetime.timedelta(days=1)
