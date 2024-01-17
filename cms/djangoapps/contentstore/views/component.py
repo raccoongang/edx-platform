@@ -26,6 +26,7 @@ from common.djangoapps.xblock_django.api import authorable_xblocks, disabled_xbl
 from common.djangoapps.xblock_django.models import XBlockStudioConfigurationFlag
 from cms.djangoapps.contentstore.helpers import is_unit
 from cms.djangoapps.contentstore.toggles import use_new_problem_editor, use_new_unit_page
+from cms.djangoapps.contentstore.xblock_storage_handlers.view_handlers import load_services_for_studio
 from openedx.core.lib.xblock_utils import get_aside_from_xblock, is_xblock_aside
 from openedx.core.djangoapps.discussions.models import DiscussionsConfiguration
 from openedx.core.djangoapps.content_tagging.api import get_content_tags
@@ -144,6 +145,9 @@ def get_component_templates(courselike, library=False):  # lint-amnesty, pylint:
     """
     Returns the applicable component templates that can be used by the specified course or library.
     """
+
+    from ..helpers import xblock_type_display_name
+
     def create_template_dict(name, category, support_level, boilerplate_name=None, tab="common", hinted=False):
         """
         Creates a component template dict.
@@ -447,6 +451,9 @@ def _get_item_in_course(request, usage_key):
 
     Verifies that the caller has permission to access this item.
     """
+
+    from ..utils import get_lms_link_for_item
+
     # usage_key's course_key may have an empty run property
     usage_key = usage_key.replace(course_key=modulestore().fill_in_run(usage_key.course_key))
 

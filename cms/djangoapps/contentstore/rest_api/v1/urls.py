@@ -1,5 +1,6 @@
 """ Contenstore API v1 URLs. """
 
+from django.conf import settings
 from django.urls import re_path, path
 
 from openedx.core.constants import COURSE_ID_PATTERN
