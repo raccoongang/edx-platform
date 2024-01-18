@@ -30,6 +30,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
@@ -46,8 +47,10 @@ from xmodule.modulestore import EdxJSONEncoder  # lint-amnesty, pylint: disable=
 from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disable=wrong-import-order
 
 from ..exceptions import AssetNotFoundException
+from ..toggles import use_new_certificates_page
 from ..utils import (
     get_certificates_context,
+    get_certificates_url,
     reverse_course_url,
 )
 from .assets import delete_asset
@@ -391,6 +394,8 @@ def certificates_list_handler(request, course_key_string):
             return JsonResponse({"error": msg}, status=403)
 
         if 'text/html' in request.META.get('HTTP_ACCEPT', 'text/html'):
+            if use_new_certificates_page(course_key):
+                return redirect(get_certificates_url(course_key))
             certificates_context = get_certificates_context(course, request.user)
             return render_to_response('certificates.html', certificates_context)
         elif "application/json" in request.META.get('HTTP_ACCEPT'):
