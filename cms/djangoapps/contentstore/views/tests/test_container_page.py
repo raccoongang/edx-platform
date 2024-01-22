@@ -19,12 +19,13 @@ from cms.djangoapps.contentstore.tests.test_libraries import LibraryTestCase
 from xmodule.modulestore import ModuleStoreEnum  # lint-amnesty, pylint: disable=wrong-import-order
 from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disable=wrong-import-order
 from xmodule.modulestore.tests.factories import CourseFactory, BlockFactory  # lint-amnesty, pylint: disable=wrong-import-order
-from xmodule.partitions.partitions import ENROLLMENT_TRACK_PARTITION_ID
+from xmodule.partitions.partitions import ENROLLMENT_TRACK_PARTITION_ID, UserPartition
+from xmodule.partitions.tests.test_partitions import PartitionTestCase
 
 from .utils import StudioPageTestCase
 
 
-class ContainerPageTestCase(StudioPageTestCase, LibraryTestCase):
+class ContainerPageTestCase(StudioPageTestCase, LibraryTestCase, PartitionTestCase):
     """
     Unit tests for the container page.
     """
@@ -36,8 +37,18 @@ class ContainerPageTestCase(StudioPageTestCase, LibraryTestCase):
         super().setUp()
         self.vertical = self._create_block(self.sequential, 'vertical', 'Unit')
         self.html = self._create_block(self.vertical, "html", "HTML")
+        self.user_partition = UserPartition(
+            ENROLLMENT_TRACK_PARTITION_ID,
+            self.TEST_NAME,
+            self.TEST_DESCRIPTION,
+            self.TEST_GROUPS
+        )
         self.child_container = self._create_block(
-            self.vertical, 'split_test', 'Split Test', user_partition_id=ENROLLMENT_TRACK_PARTITION_ID
+            self.vertical,
+            'split_test',
+            'Split Test',
+            user_partition_id=ENROLLMENT_TRACK_PARTITION_ID,
+            user_partitions=[self.user_partition]
         )
         self.child_vertical = self._create_block(self.child_container, 'vertical', 'Child Vertical')
         self.video = self._create_block(self.child_vertical, "video", "My Video")
