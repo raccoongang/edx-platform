@@ -1047,7 +1047,7 @@ FEATURES = {
     # .. toggle_use_cases: opt_in
     # .. toggle_creation_date: 2023-10-10
     # .. toggle_tickets: https://github.com/openedx/openedx-events/issues/210
-    'SEND_LEARNING_CERTIFICATE_LIFECYCLE_EVENTS_TO_BUS': False
+    'SEND_LEARNING_CERTIFICATE_LIFECYCLE_EVENTS_TO_BUS': False,
 }
 
 # Specifies extra XBlock fields that should available when requested via the Course Blocks API
@@ -5446,6 +5446,14 @@ EVENT_BUS_PRODUCER_CONFIG = {
     'org.openedx.content_authoring.xblock.duplicated.v1': {
         'course-authoring-xblock-lifecycle':
             {'event_key_field': 'xblock_info.usage_key', 'enabled': False},
+    },
+    'org.openedx.learning.course.grade.now.passed.v1': {
+        'learning-grade-lifecycle':
+            {'event_key_field': 'user_course_data.course.course_key', 'enabled': True},
+    },
+    'org.openedx.learning.course.grade.now.failed.v1': {
+        'learning-grade-lifecycle':
+            {'event_key_field': 'user_course_data.course.course_key', 'enabled': True},
     },
 }
 derived_collection_entry('EVENT_BUS_PRODUCER_CONFIG', 'org.openedx.learning.certificate.created.v1',
