@@ -61,6 +61,32 @@ class CourseGroupConfigurationsView(DeveloperErrorViewMixin, APIView):
             "all_group_configurations": [
                 {
                     "active": true,
+                    "description": "Partition for segmenting users by enrollment track",
+                    "groups": [
+                        {
+                            "id": 2,
+                            "name": "Enroll",
+                            "usage": [
+                                {
+                                    "label": "Subsection / Unit",
+                                    "url": "/container/block-v1:org+101+101+type@vertical+block@08772238547242848cef9"
+                                }
+                            ],
+                            "version": 1
+                        }
+                    ],
+                    "id": 50,
+                    "usage": null,
+                    "name": "Enrollment Track Groups",
+                    "parameters": {
+                        "course_id": "course-v1:org+101+101"
+                    },
+                    "read_only": true,
+                    "scheme": "enrollment_track",
+                    "version": 3
+                },
+                {
+                    "active": true,
                     "description": "The groups in this configuration can be mapped to cohorts in the Instructor.",
                     "groups": [
                         {
@@ -78,10 +104,38 @@ class CourseGroupConfigurationsView(DeveloperErrorViewMixin, APIView):
                     "version": 3
                 }
             ],
-            "experiment_group_configurations": null,
+            "experiment_group_configurations": [
+                {
+                    "active": true,
+                    "description": "desc",
+                    "groups": [
+                        {
+                            "id": 276408623,
+                            "name": "Group A",
+                            "usage": null,
+                            "version": 1
+                        },
+                        ...
+                    ],
+                    "id": 875961582,
+                    "usage": [
+                        {
+                            "label": "Unit / Content Experiment",
+                            "url": "/container/block-v1:org+101+101+type@split_test+block@90ccbbad0dac48b18c5c80",
+                            "validation": null
+                        },
+                        ...
+                    ],
+                    "name": "Experiment Group Configurations 5",
+                    "parameters": {},
+                    "scheme": "random",
+                    "version": 3
+                },
+                ...
+            ],
             "mfe_proctored_exam_settings_url": "",
-            "should_show_enrollment_track": false,
-            "should_show_experiment_groups": false
+            "should_show_enrollment_track": true,
+            "should_show_experiment_groups": true,
         }
         ```
         """
