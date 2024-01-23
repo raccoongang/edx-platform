@@ -100,6 +100,23 @@ class ChildVerticalContainerSerializer(serializers.Serializer):
     name = serializers.CharField(source="display_name_with_default")
     block_id = serializers.CharField(source="location")
     block_type = serializers.CharField(source="location.block_type")
+    actions = serializers.SerializerMethodField()
+
+    def get_actions(self, obj):  # pylint: disable=unused-argument
+        """
+        Method to get actions for each child xlock of the unit.
+        """
+
+        # temporary decision defining the default value 'True' for each xblock.
+        actions = {
+            "can_copy": True,
+            "can_duplicate": True,
+            "can_move": True,
+            "can_manage_access": True,
+            "can_delete": True,
+        }
+
+        return actions
 
 
 class VerticalContainerSerializer(serializers.Serializer):
