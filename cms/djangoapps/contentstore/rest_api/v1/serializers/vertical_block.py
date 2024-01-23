@@ -113,6 +113,11 @@ class ChildVerticalContainerSerializer(serializers.Serializer):
 
         can_manage_tags = use_tagging_taxonomy_list_page()
         actions = {
+            "can_copy": True,
+            "can_duplicate": True,
+            "can_move": True,
+            "can_manage_access": True,
+            "can_delete": True,
             "can_manage_tags": can_manage_tags,
         }
 

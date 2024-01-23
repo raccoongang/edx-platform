@@ -193,6 +193,11 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
                     "user_partition_info": {},
                     "user_partitions": {}
                     "actions": {
+                        "can_copy": true,
+                        "can_duplicate": true,
+                        "can_move": true,
+                        "can_manage_access": true,
+                        "can_delete": true
                         "can_manage_tags": true,
                     }
                 },
@@ -203,6 +208,11 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
                     "user_partition_info": {},
                     "user_partitions": {}
                     "actions": {
+                        "can_copy": true,
+                        "can_duplicate": true,
+                        "can_move": true,
+                        "can_manage_access": true,
+                        "can_delete": true
                         "can_manage_tags": true,
                     }
                 },
@@ -213,6 +223,11 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
                     "user_partition_info": {},
                     "user_partitions": {},
                     "actions": {
+                        "can_copy": true,
+                        "can_duplicate": true,
+                        "can_move": true,
+                        "can_manage_access": true,
+                        "can_delete": true
                         "can_manage_tags": true,
                     }
                 },
