@@ -1091,7 +1091,7 @@ def create_xblock_info(  # lint-amnesty, pylint: disable=too-many-statements
                 "group_access": xblock.group_access,
                 "user_partitions": user_partitions,
                 "show_correctness": xblock.show_correctness,
-                "xblock_type": get_icon(xblock),
+                "xblock_type": get_icon(xblock) if is_xblock_unit else None,
             }
         )
 
