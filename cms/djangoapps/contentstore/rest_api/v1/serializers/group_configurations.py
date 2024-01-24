@@ -12,6 +12,7 @@ class GroupConfigurationUsageSerializer(serializers.Serializer):
 
     label = serializers.CharField()
     url = serializers.CharField()
+    validation = serializers.DictField(required=False)
 
 
 class GroupConfigurationGroupSerializer(serializers.Serializer):
@@ -21,7 +22,7 @@ class GroupConfigurationGroupSerializer(serializers.Serializer):
 
     id = serializers.IntegerField()
     name = serializers.CharField()
-    usage = GroupConfigurationUsageSerializer(allow_null=True, many=True)
+    usage = GroupConfigurationUsageSerializer(required=False, allow_null=True, many=True)
     version = serializers.IntegerField()
 
 
@@ -34,6 +35,7 @@ class GroupConfigurationItemSerializer(serializers.Serializer):
     description = serializers.CharField()
     groups = GroupConfigurationGroupSerializer(allow_null=True, many=True)
     id = serializers.IntegerField()
+    usage = GroupConfigurationUsageSerializer(required=False, allow_null=True, many=True)
     name = serializers.CharField()
     parameters = serializers.DictField()
     read_only = serializers.BooleanField(required=False)
