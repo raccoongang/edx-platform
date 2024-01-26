@@ -632,29 +632,18 @@ def ancestor_has_staff_lock(xblock, parent_xblock=None):
     return parent_xblock.visible_to_staff_only
 
 
-def get_sequence_usage_keys(course_structure):
+def get_sequence_usage_keys(course):
     """
-    Recursively searches through a nested course_structure,
-    extracting and returning a list of usage_keys where the 'category'
-    key is set to 'sequential'
+    Extracts a list of 'subsections' usage_keys
     """
-    ids = []
+    course_sequence_ids = []
+    sections = course.get_children()
+    for section in sections:
+        subsections = section.get_children()
+        for subsection in subsections:
+            course_sequence_ids.append(str(subsection.location))
 
-    def check_category_and_children(child_info):
-        if child_info.get('category') == 'sequential':
-            ids.extend([c.get('id') for c in child_info.get('children', [])])
-            return
-
-        # Recursively check children if they exist
-        for child in child_info.get('children', []):
-            if 'child_info' in child:
-                check_category_and_children(child['child_info'])
-
-    if 'child_info' in course_structure:
-        check_category_and_children(course_structure['child_info'])
-
-    return ids
-
+    return course_sequence_ids
 
 
 def reverse_url(handler_name, key_name=None, key_value=None, kwargs=None):
@@ -1872,10 +1861,8 @@ def get_container_handler_context(request, usage_key, course, xblock):  # pylint
         create_xblock_info,
     )
     from openedx.core.djangoapps.content_staging import api as content_staging_api
-    from cms.djangoapps.contentstore.views.course import _course_outline_json
 
-    course_structure = _course_outline_json(request, course)
-    sequence_ids = get_sequence_usage_keys(course_structure)
+    course_sequence_ids = get_sequence_usage_keys(course)
     component_templates = get_component_templates(course)
     ancestor_xblocks = []
     parent = get_parent_xblock(xblock)
@@ -1976,7 +1963,7 @@ def get_container_handler_context(request, usage_key, course, xblock):  # pylint
         # Status of the user's clipboard, exactly as would be returned from the "GET clipboard" REST API.
         'user_clipboard': user_clipboard,
         'is_fullwidth_content': is_library_xblock,
-        'sequence_ids': sequence_ids,
+        'course_sequence_ids': course_sequence_ids,
     }
     return context
 

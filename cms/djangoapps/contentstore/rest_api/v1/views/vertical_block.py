@@ -117,7 +117,7 @@ class ContainerHandlerView(APIView, ContainerHandlerMixin):
             "assets_url": "/assets/course-v1:edX+DemoX+Demo_Course/",
             "unit_block_id": "d6cee45205a449369d7ef8f159b22bdf",
             "subsection_location": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@graded_simulations"
-            "sequence_ids": [
+            "course_sequence_ids": [
                 "block-v1:edX+DemoX+Demo_Course+type@sequential+block@graded_simulations",
                 "block-v1:edX+DemoX+Demo_Course+type@sequential+block@something_else",
                 ...
