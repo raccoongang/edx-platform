@@ -636,14 +636,9 @@ def get_sequence_usage_keys(course):
     """
     Extracts a list of 'subsections' usage_keys
     """
-    course_sequence_ids = []
-    sections = course.get_children()
-    for section in sections:
-        subsections = section.get_children()
-        for subsection in subsections:
-            course_sequence_ids.append(str(subsection.location))
-
-    return course_sequence_ids
+    return [str(subsection.location)
+            for section in course.get_children()
+            for subsection in section.get_children()]
 
 
 def reverse_url(handler_name, key_name=None, key_value=None, kwargs=None):
