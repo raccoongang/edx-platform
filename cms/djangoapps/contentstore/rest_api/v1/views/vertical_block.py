@@ -6,7 +6,11 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from cms.djangoapps.contentstore.utils import get_container_handler_context
+from cms.djangoapps.contentstore.utils import (
+    get_container_handler_context,
+    get_user_partition_info,
+    get_visibility_partition_info,
+)
 from cms.djangoapps.contentstore.views.component import _get_item_in_course
 from cms.djangoapps.contentstore.xblock_storage_handlers.view_handlers import get_xblock
 from cms.djangoapps.contentstore.rest_api.v1.serializers import (
@@ -225,11 +229,19 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
         """
         usage_key = self.get_object(usage_key_string)
         current_xblock = get_xblock(usage_key, request.user)
+        # load course once to reuse it for user_partitions query
+        course = modulestore().get_course(current_xblock.location.course_key)
 
         with modulestore().bulk_operations(usage_key.course_key):
-            children = [
-                modulestore().get_item(child) for child in current_xblock.children
-            ]
+            children = []
+            for child in current_xblock.children:
+                child_info = modulestore().get_item(child)
+                user_partition_info = get_visibility_partition_info(child_info, course=course)
+                user_partitions = get_user_partition_info(child_info, course=course)
+                setattr(child_info, 'user_partition_info', user_partition_info)
+                setattr(child_info, 'user_partitions', user_partitions)
+                children.append(child_info)
+
             is_published = not modulestore().has_changes(current_xblock)
             container_data = {"children": children, "is_published": is_published}
             serializer = VerticalContainerSerializer(container_data)

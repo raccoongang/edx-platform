@@ -102,6 +102,8 @@ class ChildVerticalContainerSerializer(serializers.Serializer):
     block_id = serializers.CharField(source="location")
     block_type = serializers.CharField(source="location.block_type")
     actions = serializers.SerializerMethodField()
+    user_partition_info = serializers.DictField()
+    user_partitions = serializers.ListField()
 
     def get_actions(self, obj):  # pylint: disable=unused-argument
         """
