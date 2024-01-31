@@ -47,3 +47,6 @@ class CourseCertificatesSerializer(serializers.Serializer):
     mfe_proctored_exam_settings_url = serializers.CharField(
         required=False, allow_null=True, allow_blank=True
     )
+    course_number = serializers.CharField(source="context_course.number")
+    course_title = serializers.CharField(source="context_course.display_name_with_default")
+    course_number_override = serializers.CharField(source="context_course.display_coursenumber")
