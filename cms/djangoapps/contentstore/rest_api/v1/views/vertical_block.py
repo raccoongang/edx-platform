@@ -229,18 +229,22 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
         """
         usage_key = self.get_object(usage_key_string)
         current_xblock = get_xblock(usage_key, request.user)
-        # load course once to reuse it for user_partitions query
-        course = modulestore().get_course(current_xblock.location.course_key)
 
         with modulestore().bulk_operations(usage_key.course_key):
+            # load course once to reuse it for user_partitions query
+            course = modulestore().get_course(current_xblock.location.course_key)
             children = []
             for child in current_xblock.children:
                 child_info = modulestore().get_item(child)
                 user_partition_info = get_visibility_partition_info(child_info, course=course)
                 user_partitions = get_user_partition_info(child_info, course=course)
-                setattr(child_info, 'user_partition_info', user_partition_info)
-                setattr(child_info, 'user_partitions', user_partitions)
-                children.append(child_info)
+                children.append({
+                    "name": child_info.display_name_with_default,
+                    "block_id": child_info.location,
+                    "block_type": child_info.location.block_type,
+                    "user_partition_info": user_partition_info,
+                    "user_partitions": user_partitions,
+                })
 
             is_published = not modulestore().has_changes(current_xblock)
             container_data = {"children": children, "is_published": is_published}
