@@ -88,6 +88,11 @@ log = logging.getLogger(__name__)
 
 CREATE_IF_NOT_FOUND = ["course_info"]
 
+# List of categories to check for presence in the children of the XBlock.
+# This list is used to determine if all of the specified categories are absent
+# in the categories of the children XBlock instances otherwise icon class variable will be set to `None`.
+CATEGORIES_WITH_ABSENT_ICON = ["split_test"]
+
 # Useful constants for defining predicates
 NEVER = lambda x: False
 ALWAYS = lambda x: True
@@ -1063,6 +1068,10 @@ def create_xblock_info(  # lint-amnesty, pylint: disable=too-many-statements
         )
     else:
         user_partitions = get_user_partition_info(xblock, course=course)
+        all_excluded_categories_absent = all(
+            category not in [child.category for child in xblock.get_children()]
+            for category in CATEGORIES_WITH_ABSENT_ICON
+        )
         xblock_info.update(
             {
                 "edited_on": get_default_time_display(xblock.subtree_edited_on)
@@ -1090,7 +1099,7 @@ def create_xblock_info(  # lint-amnesty, pylint: disable=too-many-statements
                 "group_access": xblock.group_access,
                 "user_partitions": user_partitions,
                 "show_correctness": xblock.show_correctness,
-                "xblock_type": get_icon(xblock) if is_xblock_unit else None,
+                "xblock_type": get_icon(xblock) if is_xblock_unit and all_excluded_categories_absent else None,
             }
         )
 
