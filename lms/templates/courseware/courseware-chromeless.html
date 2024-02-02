@@ -59,6 +59,12 @@ ${static.get_page_title_breadcrumbs(course_name())}
   var $$course_id = "${course.id | n, js_escaped_string}";
 </script>
 
+% if block:
+<script type="text/javascript">
+  var $$xBlockLocation = "${block.location | n, js_escaped_string}";
+</script>
+% endif
+
 </%block>
 
 <%block name="js_extra">
@@ -183,6 +189,7 @@ ${HTML(fragment.foot_html())}
 
         window.parent.postMessage({
             type: 'plugin.resize',
+            location: $$xBlockLocation || '',
             payload: {
               width: newWidth,
               height: newHeight,
