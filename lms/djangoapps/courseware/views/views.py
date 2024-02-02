@@ -1541,6 +1541,7 @@ def render_xblock(request, usage_key_string, check_if_enrolled=True, disable_sta
     set_custom_attribute('block_type', usage_key.block_type)
 
     requested_view = request.GET.get('view', 'student_view')
+    is_authoring_mfe = request.GET.get('is_authoring_mfe')
     if requested_view != 'student_view' and requested_view != 'public_view':  # lint-amnesty, pylint: disable=consider-using-in
         return HttpResponseBadRequest(
             f"Rendering of the xblock view '{bleach.clean(requested_view, strip=True)}' is not supported."
@@ -1656,7 +1657,7 @@ def render_xblock(request, usage_key_string, check_if_enrolled=True, disable_sta
             'web_app_course_url': get_learning_mfe_home_url(course_key=course.id, url_fragment='home'),
             'on_courseware_page': True,
             'verified_upgrade_link': verified_upgrade_deadline_link(request.user, course=course),
-            'is_learning_mfe': is_learning_mfe,
+            'is_learning_mfe': is_authoring_mfe or is_learning_mfe,
             'is_mobile_app': is_mobile_app,
             'render_course_wide_assets': True,
 
