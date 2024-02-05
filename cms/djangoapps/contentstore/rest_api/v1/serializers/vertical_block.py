@@ -98,10 +98,12 @@ class ChildVerticalContainerSerializer(serializers.Serializer):
     Serializer for representing a xblock child of vertical container.
     """
 
-    name = serializers.CharField(source="display_name_with_default")
-    block_id = serializers.CharField(source="location")
-    block_type = serializers.CharField(source="location.block_type")
+    name = serializers.CharField()
+    block_id = serializers.CharField()
+    block_type = serializers.CharField()
     actions = serializers.SerializerMethodField()
+    user_partition_info = serializers.DictField()
+    user_partitions = serializers.ListField()
 
     def get_actions(self, obj):  # pylint: disable=unused-argument
         """
