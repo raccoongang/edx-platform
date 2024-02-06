@@ -195,7 +195,8 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
                         "can_duplicate": true,
                         "can_move": true,
                         "can_manage_access": true,
-                        "can_delete": true
+                        "can_delete": true,
+                        "can_manage_tags": true,
                     }
                 },
                 {
@@ -207,7 +208,8 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
                         "can_duplicate": true,
                         "can_move": true,
                         "can_manage_access": true,
-                        "can_delete": true
+                        "can_delete": true,
+                        "can_manage_tags": true,
                     }
                 },
                 {
@@ -219,7 +221,8 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
                         "can_duplicate": true,
                         "can_move": true,
                         "can_manage_access": true,
-                        "can_delete": true
+                        "can_delete": true,
+                        "can_manage_tags": true,
                     }
                 },
             ],
