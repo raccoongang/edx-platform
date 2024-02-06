@@ -232,7 +232,8 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
                     }
                 },
             ],
-            "is_published": false
+            "is_published": false,
+            "can_paste_component": true,
         }
         ```
         """
@@ -256,6 +257,10 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
                 })
 
             is_published = not modulestore().has_changes(current_xblock)
-            container_data = {"children": children, "is_published": is_published}
+            container_data = {
+                "children": children,
+                "is_published": is_published,
+                "can_paste_component": True,
+            }
             serializer = VerticalContainerSerializer(container_data)
             return Response(serializer.data)
