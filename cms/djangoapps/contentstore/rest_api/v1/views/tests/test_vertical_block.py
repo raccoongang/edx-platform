@@ -194,7 +194,10 @@ class ContainerVerticalViewTest(BaseXBlockContainer):
                     "can_move": True,
                     "can_manage_access": True,
                     "can_delete": True
-                }
+                    "can_manage_tags": True,
+                },
+                "user_partition_info": expected_user_partition_info,
+                "user_partitions": expected_user_partitions
             },
             {
                 "name": self.html_unit_second.display_name_with_default,
@@ -208,8 +211,11 @@ class ContainerVerticalViewTest(BaseXBlockContainer):
                     "can_duplicate": True,
                     "can_move": True,
                     "can_manage_access": True,
-                    "can_delete": True
-                }
+                    "can_delete": True,
+                    "can_manage_tags": True,
+                },
+                "user_partition_info": expected_user_partition_info,
+                "user_partitions": expected_user_partitions,
             },
         ]
         self.assertEqual(response.data["children"], expected_response)
