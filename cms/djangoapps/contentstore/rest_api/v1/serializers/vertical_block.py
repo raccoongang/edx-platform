@@ -112,6 +112,8 @@ class ChildVerticalContainerSerializer(serializers.Serializer):
         """
 
         can_manage_tags = use_tagging_taxonomy_list_page()
+
+        # temporary decision defining the default value 'True' for each xblock.
         actions = {
             "can_manage_tags": can_manage_tags,
         }
