@@ -815,7 +815,7 @@ def _get_usage_key_for_course(course_key, usage_id) -> UsageKey:
         raise Http404("Invalid location") from exc
 
 
-def _get_block_by_usage_key(usage_key, request=None):
+def _get_block_by_usage_key(usage_key):
     """
     Gets a block instance based on a mapped-to-course usage_key
 
@@ -831,27 +831,21 @@ def _get_block_by_usage_key(usage_key, request=None):
             usage_key
         )
 
-        if request is None:
-            # No request provided, cannot proceed
+        # Try getting the draft version if the published version for usage_key is not found
+        is_draft_attempt_successful = False
+        try:
+            block = modulestore().get_item(usage_key, revision=ModuleStoreEnum.RevisionOption.draft_only)
+            block_orig_usage_key, block_orig_version = modulestore().get_block_original_usage(usage_key)
+            is_draft_attempt_successful = True
+        except ItemNotFoundError:
+            log.warning(
+                "Invalid draft location for course id %s: %s",
+                usage_key.course_key,
+                usage_key
+            )
             raise Http404 from exc
 
-        referer = request.META.get('HTTP_REFERER')
-        authoring_mfe_query_key = 'is_authoring_mfe'
-        authoring_mfe_matches = [settings.COURSE_AUTHORING_MICROFRONTEND_URL, authoring_mfe_query_key]
-        is_fetched_from_authoring_mfe = referer and any(match in referer for match in authoring_mfe_matches)
-
-        if is_fetched_from_authoring_mfe:
-            try:
-                block = modulestore().get_item(usage_key, revision=ModuleStoreEnum.RevisionOption.draft_only)
-                block_orig_usage_key, block_orig_version = modulestore().get_block_original_usage(usage_key)
-            except ItemNotFoundError:
-                log.warning(
-                    "Invalid draft location for course id %s: %s",
-                    usage_key.course_key,
-                    usage_key
-                )
-                raise Http404 from exc
-        else:
+        if not is_draft_attempt_successful:
             raise Http404 from exc
 
     tracking_context = {
@@ -879,7 +873,7 @@ def get_block_by_usage_id(request, course_id, usage_id, disable_staff_debug_info
     """
     course_key = CourseKey.from_string(course_id)
     usage_key = _get_usage_key_for_course(course_key, usage_id)
-    block, tracking_context = _get_block_by_usage_key(usage_key, request)
+    block, tracking_context = _get_block_by_usage_key(usage_key)
 
     _, user = setup_masquerade(request, course_key, has_access(request.user, 'staff', block, course_key))
     field_data_cache = FieldDataCache.cache_for_block_descendents(
@@ -947,7 +941,7 @@ def _invoke_xblock_handler(request, course_id, usage_id, handler, suffix, course
         # At the time of writing, this is only used by one handler. If this usage grows, we may want to re-evaluate
         # how we do this to something more elegant. If you are the author of a third party block that decides it wants
         # to set this too, please let us know so we can consider making this easier / better-documented.
-        block, _ = _get_block_by_usage_key(block_usage_key, request)
+        block, _ = _get_block_by_usage_key(block_usage_key)
         handler_method = getattr(block, handler, False)
         will_recheck_access = handler_method and getattr(handler_method, 'will_recheck_access', False)
 
