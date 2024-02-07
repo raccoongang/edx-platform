@@ -290,9 +290,6 @@ ORA_MICROFRONTEND_URL = 'http://localhost:1992'
 ########################## LEARNER HOME APP ##############################
 LEARNER_HOME_MICROFRONTEND_URL = 'http://localhost:1996'
 
-################### FRONTEND APPLICATION COURSE AUTHORING ###################
-COURSE_AUTHORING_MICROFRONTEND_URL = 'http://localhost:2001'
-
 ###################### Cross-domain requests ######################
 FEATURES['ENABLE_CORS_HEADERS'] = True
 CORS_ALLOW_CREDENTIALS = True

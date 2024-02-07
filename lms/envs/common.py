@@ -5049,8 +5049,6 @@ HIBP_LOGIN_BLOCK_PASSWORD_FREQUENCY_THRESHOLD = 5
 # .. toggle_tickets: https://openedx.atlassian.net/browse/VAN-838
 ENABLE_DYNAMIC_REGISTRATION_FIELDS = False
 
-COURSE_AUTHORING_MICROFRONTEND_URL = None
-
 ############## Settings for EmailChangeMiddleware ###############
 
 # .. toggle_name: ENFORCE_SESSION_EMAIL_MATCH
