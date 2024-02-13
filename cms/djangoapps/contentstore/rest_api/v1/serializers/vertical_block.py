@@ -12,6 +12,15 @@ from cms.djangoapps.contentstore.helpers import (
 )
 
 
+class MessageValidation(serializers.Serializer):
+    """
+    Serializer for representing XBlock error.
+    """
+
+    text = serializers.CharField()
+    type = serializers.CharField()
+
+
 class ChildAncestorSerializer(serializers.Serializer):
     """
     Serializer for representing child blocks in the ancestor XBlock.
@@ -105,6 +114,8 @@ class ChildVerticalContainerSerializer(serializers.Serializer):
     actions = serializers.SerializerMethodField()
     user_partition_info = serializers.DictField()
     user_partitions = serializers.ListField()
+    has_validation_error = serializers.BooleanField()
+    validation_errors = MessageValidation(many=True)
 
     def get_actions(self, obj):  # pylint: disable=unused-argument
         """
