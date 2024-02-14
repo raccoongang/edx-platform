@@ -2140,3 +2140,21 @@ def track_course_update_event(course_key, user, event_data=None):
     context = contexts.course_context_from_course_id(course_key)
     with tracker.get_tracker().context(event_name, context):
         tracker.emit(event_name, event_data)
+
+
+def get_validation_messages(xblock):
+    """
+    Retrieves validation messages for a given xblock.
+
+    Args:
+        xblock: The xblock object to validate.
+
+    Returns:
+        tuple:
+            - validation_errors (list): A list of validation error messages.
+            - has_validation_error (bool): True if there are validation errors, False otherwise.
+    """
+    validation_json = xblock.validate().to_json()
+    validation_errors = validation_json['messages']
+    has_validation_error = bool(validation_errors)
+    return validation_errors, has_validation_error
