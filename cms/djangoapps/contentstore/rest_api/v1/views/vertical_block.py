@@ -10,6 +10,7 @@ from cms.djangoapps.contentstore.utils import (
     get_container_handler_context,
     get_user_partition_info,
     get_visibility_partition_info,
+    get_validation_messages,
 )
 from cms.djangoapps.contentstore.views.component import _get_item_in_course
 from cms.djangoapps.contentstore.xblock_storage_handlers.view_handlers import get_xblock
@@ -187,19 +188,6 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
         {
             "children": [
                 {
-                    "name": "Drag and Drop",
-                    "block_id": "block-v1:org+101+101+type@drag-and-drop-v2+block@7599275ace6b46f5a482078a2954ca16",
-                    "block_type": "drag-and-drop-v2",
-                    "actions": {
-                        "can_copy": true,
-                        "can_duplicate": true,
-                        "can_move": true,
-                        "can_manage_access": true,
-                        "can_delete": true,
-                        "can_manage_tags": true,
-                    }
-                },
-                {
                     "name": "Video",
                     "block_id": "block-v1:org+101+101+type@video+block@0e3d39b12d7c4345981bda6b3511a9bf",
                     "block_type": "video",
@@ -211,6 +199,8 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
                         "can_delete": true,
                         "can_manage_tags": true,
                     }
+                    "has_validation_error": false,
+                    "validation_errors": [],
                 },
                 {
                     "name": "Text",
@@ -223,7 +213,14 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
                         "can_manage_access": true,
                         "can_delete": true,
                         "can_manage_tags": true,
-                    }
+                    },
+                    "has_validation_error": true,
+                    "validation_errors": [
+                        {
+                            "text": "This component's access settings contradict its parent's access settings.",
+                            "type": "error"
+                        }
+                    ]
                 },
             ],
             "is_published": false,
@@ -242,12 +239,16 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
                 child_info = modulestore().get_item(child)
                 user_partition_info = get_visibility_partition_info(child_info, course=course)
                 user_partitions = get_user_partition_info(child_info, course=course)
+                validation_errors, has_validation_error = get_validation_messages(child_info)
+
                 children.append({
                     "name": child_info.display_name_with_default,
                     "block_id": child_info.location,
                     "block_type": child_info.location.block_type,
                     "user_partition_info": user_partition_info,
                     "user_partitions": user_partitions,
+                    "has_validation_error": has_validation_error,
+                    "validation_errors": validation_errors,
                 })
 
             is_published = not modulestore().has_changes(current_xblock)
