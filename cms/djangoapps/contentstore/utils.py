@@ -2234,3 +2234,21 @@ def send_course_update_notification(course_key, content, user):
         audience_filters={},
     )
     COURSE_NOTIFICATION_REQUESTED.send_event(course_notification_data=notification_data)
+
+
+def get_validation_messages(xblock):
+    """
+    Retrieves validation messages for a given xblock.
+
+    Args:
+        xblock: The xblock object to validate.
+
+    Returns:
+        tuple:
+            - validation_errors (list): A list of validation error messages.
+            - has_validation_error (bool): True if there are validation errors, False otherwise.
+    """
+    validation_json = xblock.validate().to_json()
+    validation_errors = validation_json['messages']
+    has_validation_error = bool(validation_errors)
+    return validation_errors, has_validation_error

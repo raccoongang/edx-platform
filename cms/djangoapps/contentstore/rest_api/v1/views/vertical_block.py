@@ -10,6 +10,7 @@ from cms.djangoapps.contentstore.utils import (
     get_container_handler_context,
     get_user_partition_info,
     get_visibility_partition_info,
+    get_validation_messages,
 )
 from cms.djangoapps.contentstore.views.component import _get_item_in_course
 from cms.djangoapps.contentstore.xblock_storage_handlers.view_handlers import get_xblock
@@ -215,6 +216,8 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
                         "can_delete": true,
                         "can_manage_tags": true,
                     }
+                    "has_validation_error": false,
+                    "validation_errors": [],
                 },
                 {
                     "name": "Text",
@@ -229,7 +232,14 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
                         "can_manage_access": true,
                         "can_delete": true
                         "can_manage_tags": true,
-                    }
+                    },
+                    "has_validation_error": true,
+                    "validation_errors": [
+                        {
+                            "text": "This component's access settings contradict its parent's access settings.",
+                            "type": "error"
+                        }
+                    ]
                 },
             ],
             "is_published": false,
@@ -248,12 +258,16 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
                 child_info = modulestore().get_item(child)
                 user_partition_info = get_visibility_partition_info(child_info, course=course)
                 user_partitions = get_user_partition_info(child_info, course=course)
+                validation_errors, has_validation_error = get_validation_messages(child_info)
+
                 children.append({
                     "name": child_info.display_name_with_default,
                     "block_id": child_info.location,
                     "block_type": child_info.location.block_type,
                     "user_partition_info": user_partition_info,
                     "user_partitions": user_partitions,
+                    "has_validation_error": has_validation_error,
+                    "validation_errors": validation_errors,
                 })
 
             is_published = not modulestore().has_changes(current_xblock)
