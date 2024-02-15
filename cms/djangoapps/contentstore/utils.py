@@ -2236,7 +2236,7 @@ def send_course_update_notification(course_key, content, user):
     COURSE_NOTIFICATION_REQUESTED.send_event(course_notification_data=notification_data)
 
 
-def get_validation_messages(xblock):
+def get_xblock_validation_messages(xblock):
     """
     Retrieves validation messages for a given xblock.
 
@@ -2244,11 +2244,50 @@ def get_validation_messages(xblock):
         xblock: The xblock object to validate.
 
     Returns:
-        tuple:
-            - validation_errors (list): A list of validation error messages.
-            - has_validation_error (bool): True if there are validation errors, False otherwise.
+        list: A list of validation error messages.
     """
     validation_json = xblock.validate().to_json()
-    validation_errors = validation_json['messages']
-    has_validation_error = bool(validation_errors)
-    return validation_errors, has_validation_error
+    return validation_json['messages']
+
+
+def get_xblock_render_error(request, xblock):
+    """
+    Checks if there are any rendering errors for a given block and return these.
+
+    Args:
+        request: WSGI request object
+        xblock: The xblock object to rendering.
+
+    Returns:
+        str: Error message which happened while rendering of xblock.
+    """
+    from cms.djangoapps.contentstore.views.preview import _load_preview_block
+    from xmodule.studio_editable import has_author_view
+    from xmodule.x_module import AUTHOR_VIEW, STUDENT_VIEW
+
+    def get_xblock_render_context(request, block):
+        """
+        Return a dict of the data needs for render of each block.
+        """
+        can_edit = has_studio_write_access(request.user, block.usage_key.course_key)
+
+        return {
+            "is_unit_page": False,
+            "can_edit": can_edit,
+            "root_xblock": xblock,
+            "reorderable_items": set(),
+            "paging": None,
+            "force_render": None,
+            "item_url": "/container/{block.location}",
+            "tags_count_map": {},
+        }
+
+    try:
+        block = _load_preview_block(request, xblock)
+        preview_view = AUTHOR_VIEW if has_author_view(block) else STUDENT_VIEW
+        render_context = get_xblock_render_context(request, block)
+        block.render(preview_view, render_context)
+    except Exception as exc:  # pylint: disable=broad-except
+        return str(exc)
+
+    return ""
