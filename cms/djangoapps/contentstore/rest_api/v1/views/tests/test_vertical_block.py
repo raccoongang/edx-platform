@@ -203,8 +203,8 @@ class ContainerVerticalViewTest(BaseXBlockContainer):
                 },
                 "user_partition_info": expected_user_partition_info,
                 "user_partitions": expected_user_partitions,
-                "has_validation_error": False,
-                "validation_errors": [],
+                "validation_messages": [],
+                "render_error": "",
             },
             {
                 "name": self.html_unit_second.display_name_with_default,
@@ -220,8 +220,8 @@ class ContainerVerticalViewTest(BaseXBlockContainer):
                 },
                 "user_partition_info": expected_user_partition_info,
                 "user_partitions": expected_user_partitions,
-                "has_validation_error": False,
-                "validation_errors": [],
+                "validation_messages": [],
+                "render_error": "",
             },
         ]
         self.assertEqual(response.data["children"], expected_response)
@@ -280,13 +280,8 @@ class ContainerVerticalViewTest(BaseXBlockContainer):
         response = self.client.get(url)
         children_response = response.data["children"]
 
-        # Check for an error in html_unit_first xblock
-        self.assertTrue(children_response[0]["has_validation_error"])
+        # Verify that html_unit_first access settings contradict its parent's access settings.
+        self.assertEqual(children_response[0]["validation_messages"][0]["type"], ValidationMessage.ERROR)
 
-        # Verify that html access settings contradict its parent's access settings.
-        validation = html_unit_first.validate()
-        self.assertEqual(len(validation.messages), 1)
-        self.assertEqual(validation.to_json()['messages'][0]['type'], ValidationMessage.ERROR)
-
-        # Check for an error in html_unit_second xblock
-        self.assertFalse(children_response[1]["has_validation_error"])
+        # Verify that html_unit_second has no validation messages.
+        self.assertFalse(children_response[1]["validation_messages"])

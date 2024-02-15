@@ -114,8 +114,8 @@ class ChildVerticalContainerSerializer(serializers.Serializer):
     actions = serializers.SerializerMethodField()
     user_partition_info = serializers.DictField()
     user_partitions = serializers.ListField()
-    has_validation_error = serializers.BooleanField()
-    validation_errors = MessageValidation(many=True)
+    validation_messages = MessageValidation(many=True)
+    render_error = serializers.CharField()
 
     def get_actions(self, obj):  # pylint: disable=unused-argument
         """
