@@ -17,7 +17,7 @@ class MessageValidation(serializers.Serializer):
     Serializer for representing XBlock error.
     """
 
-text = serializers.CharField()
+    text = serializers.CharField()
     type = serializers.CharField()
 
 
@@ -114,8 +114,8 @@ class ChildVerticalContainerSerializer(serializers.Serializer):
     user_partition_info = serializers.DictField()
     user_partitions = serializers.ListField()
     actions = serializers.SerializerMethodField()
-    has_validation_error = serializers.BooleanField()
-    validation_errors = MessageValidation(many=True)
+    validation_messages = MessageValidation(many=True)
+    render_error = serializers.CharField()
 
     def get_actions(self, obj):  # pylint: disable=unused-argument
         """
