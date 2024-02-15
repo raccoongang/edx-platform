@@ -10,8 +10,8 @@ from cms.djangoapps.contentstore.utils import (
     get_container_handler_context,
     get_user_partition_info,
     get_visibility_partition_info,
-    get_validation_messages,
-    get_render_error,
+    get_xblock_validation_messages,
+    get_xblock_render_error,
 )
 from cms.djangoapps.contentstore.views.component import _get_item_in_course
 from cms.djangoapps.contentstore.xblock_storage_handlers.view_handlers import get_xblock
@@ -240,8 +240,8 @@ class VerticalContainerView(APIView, ContainerHandlerMixin):
                 child_info = modulestore().get_item(child)
                 user_partition_info = get_visibility_partition_info(child_info, course=course)
                 user_partitions = get_user_partition_info(child_info, course=course)
-                validation_messages = get_validation_messages(child_info)
-                render_error = get_render_error(request, child_info)
+                validation_messages = get_xblock_validation_messages(child_info)
+                render_error = get_xblock_render_error(request, child_info)
 
                 children.append({
                     "name": child_info.display_name_with_default,

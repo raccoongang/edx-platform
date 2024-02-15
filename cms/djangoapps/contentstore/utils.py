@@ -2141,7 +2141,7 @@ def track_course_update_event(course_key, user, event_data=None):
         tracker.emit(event_name, event_data)
 
 
-def get_validation_messages(xblock):
+def get_xblock_validation_messages(xblock):
     """
     Retrieves validation messages for a given xblock.
 
@@ -2155,7 +2155,7 @@ def get_validation_messages(xblock):
     return validation_json['messages']
 
 
-def get_render_error(request, xblock):
+def get_xblock_render_error(request, xblock):
     """
     Checks if there are any rendering errors for a given block and return these.
 
@@ -2170,7 +2170,7 @@ def get_render_error(request, xblock):
     from xmodule.studio_editable import has_author_view
     from xmodule.x_module import AUTHOR_VIEW, STUDENT_VIEW
 
-    def get_render_context(request, block):
+    def get_xblock_render_context(request, block):
         """
         Return a dict of the data needs for render of each block.
         """
@@ -2187,13 +2187,12 @@ def get_render_error(request, xblock):
             "tags_count_map": {},
         }
 
-    render_error = ""
     try:
         block = _load_preview_block(request, xblock)
         preview_view = AUTHOR_VIEW if has_author_view(block) else STUDENT_VIEW
-        render_context = get_render_context(request, block)
+        render_context = get_xblock_render_context(request, block)
         block.render(preview_view, render_context)
     except Exception as exc:  # pylint: disable=broad-except
-        render_error = str(exc)
+        return str(exc)
 
-    return render_error
+    return ""
