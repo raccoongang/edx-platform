@@ -295,8 +295,8 @@ class TestBlocksInfoInCourseView(TestBlocksInCourseView):  # lint-amnesty, pylin
 
         self.request.user = request_user
 
-        if expected_username:
-            mock_user = UserFactory(username=expected_username)
+        if expected_username == "student_user":
+            mock_user = self.student_user
             mock_get.return_value = mock_user
         else:
             mock_get.side_effect = User.DoesNotExist()
