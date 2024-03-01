@@ -5,10 +5,20 @@ API Serializers for unit page
 from django.urls import reverse
 from rest_framework import serializers
 
+from cms.djangoapps.contentstore.toggles import use_tagging_taxonomy_list_page
 from cms.djangoapps.contentstore.helpers import (
     xblock_studio_url,
     xblock_type_display_name,
 )
+
+
+class MessageValidation(serializers.Serializer):
+    """
+    Serializer for representing XBlock error.
+    """
+
+    text = serializers.CharField()
+    type = serializers.CharField()
 
 
 class ChildAncestorSerializer(serializers.Serializer):
@@ -78,6 +88,7 @@ class ContainerHandlerSerializer(serializers.Serializer):
     assets_url = serializers.SerializerMethodField()
     unit_block_id = serializers.CharField(source="unit.location.block_id")
     subsection_location = serializers.CharField(source="subsection.location")
+    course_sequence_ids = serializers.ListField(child=serializers.CharField())
 
     def get_assets_url(self, obj):
         """
@@ -90,3 +101,46 @@ class ContainerHandlerSerializer(serializers.Serializer):
                 "assets_handler", kwargs={"course_key_string": context_course.id}
             )
         return None
+
+
+class ChildVerticalContainerSerializer(serializers.Serializer):
+    """
+    Serializer for representing a xblock child of vertical container.
+    """
+
+    name = serializers.CharField()
+    block_id = serializers.CharField()
+    block_type = serializers.CharField()
+    actions = serializers.SerializerMethodField()
+    user_partition_info = serializers.DictField()
+    user_partitions = serializers.ListField()
+    validation_messages = MessageValidation(many=True)
+    render_error = serializers.CharField()
+
+    def get_actions(self, obj):  # pylint: disable=unused-argument
+        """
+        Method to get actions for each child xlock of the unit.
+        """
+
+        can_manage_tags = use_tagging_taxonomy_list_page()
+        # temporary decision defining the default value 'True' for each xblock.
+        actions = {
+            "can_copy": True,
+            "can_duplicate": True,
+            "can_move": True,
+            "can_manage_access": True,
+            "can_delete": True,
+            "can_manage_tags": can_manage_tags,
+        }
+
+        return actions
+
+
+class VerticalContainerSerializer(serializers.Serializer):
+    """
+    Serializer for representing a vertical container with state and children.
+    """
+
+    children = ChildVerticalContainerSerializer(many=True)
+    is_published = serializers.BooleanField()
+    can_paste_component = serializers.BooleanField()

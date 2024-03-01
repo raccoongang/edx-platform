@@ -96,6 +96,8 @@ from common.djangoapps.util.json_request import JsonResponse
 from common.djangoapps.edxmako.services import MakoService
 from common.djangoapps.xblock_django.user_service import DjangoXBlockUserService
 from openedx.core.lib.cache_utils import CacheService
+from xmodule.modulestore import ModuleStoreEnum  # lint-amnesty, pylint: disable=wrong-import-order
+
 
 if TYPE_CHECKING:
     from rest_framework.request import Request
@@ -828,7 +830,23 @@ def _get_block_by_usage_key(usage_key):
             usage_key.course_key,
             usage_key
         )
-        raise Http404 from exc
+
+        # Try getting the draft version if the published version for usage_key is not found
+        is_draft_attempt_successful = False
+        try:
+            block = modulestore().get_item(usage_key, revision=ModuleStoreEnum.RevisionOption.draft_only)
+            block_orig_usage_key, block_orig_version = modulestore().get_block_original_usage(usage_key)
+            is_draft_attempt_successful = True
+        except ItemNotFoundError:
+            log.warning(
+                "Invalid draft location for course id %s: %s",
+                usage_key.course_key,
+                usage_key
+            )
+            raise Http404 from exc
+
+        if not is_draft_attempt_successful:
+            raise Http404 from exc
 
     tracking_context = {
         'module': {

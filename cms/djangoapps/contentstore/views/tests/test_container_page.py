@@ -34,7 +34,11 @@ class ContainerPageTestCase(StudioPageTestCase, LibraryTestCase):
         super().setUp()
         self.vertical = self._create_block(self.sequential, 'vertical', 'Unit')
         self.html = self._create_block(self.vertical, "html", "HTML")
-        self.child_container = self._create_block(self.vertical, 'split_test', 'Split Test')
+        self.child_container = self._create_block(
+            self.vertical,
+            'split_test',
+            'Split Test',
+        )
         self.child_vertical = self._create_block(self.child_container, 'vertical', 'Child Vertical')
         self.video = self._create_block(self.child_vertical, "video", "My Video")
         self.store = modulestore()
