@@ -15,6 +15,7 @@ from lxml import etree
 from web_fragments.fragment import Fragment
 from webob import Response
 from xblock.core import XBlock
+from xblock.exceptions import NoSuchServiceError
 from xblock.fields import Integer, ReferenceValueDict, Scope, String
 from xmodule.mako_block import MakoTemplateBlockBase
 from xmodule.modulestore.inheritance import UserPartitionList
@@ -172,10 +173,14 @@ class SplitTestBlock(  # lint-amnesty, pylint: disable=abstract-method
     def child(self):
         """
         Return the user bound child block for the partition or None.
+
+        We are using try/except block here because we ran into issues with
+        CachingDescriptorSystem has no attribute when we get an icon for the split_test xblock.
         """
-        if self.child_block is not None:
+        try:
             return self.runtime.get_block_for_descriptor(self.child_block)
-        else:
+        except AttributeError:
+            log.warning("Error while getting block for descriptor")
             return None
 
     def get_child_block_by_location(self, location):
@@ -212,8 +217,16 @@ class SplitTestBlock(  # lint-amnesty, pylint: disable=abstract-method
     def get_child_blocks(self):
         """
         For grading--return just the chosen child.
+
+        We are using try/except block here because we ran into issues with
+        User service being undefined when we get an icon for the split_test xblock.
         """
-        group_id = self.get_group_id()
+        try:
+            group_id = self.get_group_id()
+        except NoSuchServiceError:
+            log.warning("Error while getting user service in runtime")
+            return []
+
         if group_id is None:
             return []
 
