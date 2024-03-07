@@ -5448,11 +5448,11 @@ EVENT_BUS_PRODUCER_CONFIG = {
             {'event_key_field': 'xblock_info.usage_key', 'enabled': False},
     },
     'org.openedx.learning.course.grade.now.passed.v1': {
-        'learning-grade-lifecycle':
+        'learning-badge-lifecycle':
             {'event_key_field': 'user_course_data.course.course_key', 'enabled': True},
     },
     'org.openedx.learning.course.grade.now.failed.v1': {
-        'learning-grade-lifecycle':
+        'learning-badge-lifecycle':
             {'event_key_field': 'user_course_data.course.course_key', 'enabled': True},
     },
 }
