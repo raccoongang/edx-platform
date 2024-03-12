@@ -79,6 +79,7 @@ from lms.djangoapps.courseware.tests.helpers import MasqueradeMixin, get_expirat
 from lms.djangoapps.courseware.testutils import RenderXBlockTestMixin
 from lms.djangoapps.courseware.toggles import (
     COURSEWARE_MICROFRONTEND_SEARCH_ENABLED,
+    COURSEWARE_MICROFRONTEND_SIDEBAR_DISABLED,
     COURSEWARE_OPTIMIZED_RENDER_XBLOCK,
 )
 from lms.djangoapps.courseware.user_state_client import DjangoXBlockUserStateClient
@@ -3779,3 +3780,39 @@ class TestCoursewareMFESearchAPI(SharedModuleStoreTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(body, {'enabled': False})
+
+
+class TestCoursewareMFESidebarEnabledAPI(SharedModuleStoreTestCase):
+    """
+    Tests the endpoint to fetch the Courseware Sidebar waffle flag status.
+    """
+
+    def setUp(self):
+        super().setUp()
+
+        self.course = CourseFactory.create()
+
+        self.client = APIClient()
+        self.apiUrl = reverse('courseware_sidebar_enabled_view', kwargs={'course_id': str(self.course.id)})
+
+    @override_waffle_flag(COURSEWARE_MICROFRONTEND_SIDEBAR_DISABLED, active=True)
+    def test_courseware_mfe_sidebar_disabled(self):
+        """
+        Getter to check if user is allowed to show the Courseware navigation sidebar.
+        """
+        response = self.client.get(self.apiUrl, content_type='application/json')
+        body = json.loads(response.content.decode('utf-8'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body, {'enabled': False})
+
+    @override_waffle_flag(COURSEWARE_MICROFRONTEND_SIDEBAR_DISABLED, active=False)
+    def test_is_mfe_search_sidebar_enabled(self):
+        """
+        Getter to check if user is allowed to show the Courseware navigation sidebar.
+        """
+        response = self.client.get(self.apiUrl, content_type='application/json')
+        body = json.loads(response.content.decode('utf-8'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body, {'enabled': True})
