@@ -28,6 +28,7 @@ from lms.djangoapps.course_goals.api import (
 )
 from lms.djangoapps.course_goals.models import CourseGoal
 from lms.djangoapps.course_home_api.outline.serializers import (
+    CourseBlockSerializer,
     OutlineTabSerializer,
 )
 from lms.djangoapps.course_home_api.utils import get_course_or_403
@@ -373,6 +374,93 @@ class OutlineTabView(RetrieveAPIView):
         response = super().finalize_response(request, response, *args, **kwargs)
         # Adding this header should be moved to global middleware, not just this endpoint
         return expose_header('Date', response)
+
+
+class CourseSidebarBlocksView(RetrieveAPIView):
+    """
+    **Use Cases**
+        Request details for the sidebar navigation of the course.
+    **Example Requests**
+        GET api/course_home/v1/sidebar/{course_key}
+    **Response Values**
+        For a good 200 response, the response will include:
+        blocks: List of serialized Course Block objects. Each serialization has the following fields:
+            id: (str) The usage ID of the block.
+            type: (str) The type of block. Possible values the names of any
+                XBlock type in the system, including custom blocks. Examples are
+                course, chapter, sequential, vertical, html, problem, video, and
+                discussion.
+            display_name: (str) The display name of the block.
+            lms_web_url: (str) The URL to the navigational container of the
+                xBlock on the web LMS.
+            children: (list) If the block has child blocks, a list of IDs of
+                the child blocks.
+            resume_block: (bool) Whether the block is the resume block
+            has_scheduled_content: (bool) Whether the block has more content scheduled for the future
+    **Returns**
+        * 200 on success.
+        * 403 if the user does not currently have access to the course and should be redirected.
+        * 404 if the course is not available or cannot be seen.
+    """
+
+    authentication_classes = (
+        JwtAuthentication,
+        BearerAuthenticationAllowInactiveUser,
+        SessionAuthenticationAllowInactiveUser,
+    )
+
+    serializer_class = CourseBlockSerializer
+
+    def get(self, request, *args, **kwargs):
+        """
+        Get the visible course blocks (from course to vertical types) for the given course.
+        """
+        course_key_string = kwargs.get('course_key_string')
+        course_key = CourseKey.from_string(course_key_string)
+        course = get_course_or_403(request.user, 'load', course_key, check_if_enrolled=False)
+
+        masquerade_object, request.user = setup_masquerade(
+            request,
+            course_key,
+            staff_access=has_access(request.user, 'staff', course_key),
+            reset_masquerade_data=True,
+        )
+
+        user_is_masquerading = is_masquerading(request.user, course_key, course_masquerade=masquerade_object)
+
+        enrollment = CourseEnrollment.get_enrollment(request.user, course_key)
+        allow_anonymous = COURSE_ENABLE_UNENROLLED_ACCESS_FLAG.is_enabled(course_key)
+        allow_public = allow_anonymous and course.course_visibility == COURSE_VISIBILITY_PUBLIC
+        allow_public_outline = allow_anonymous and course.course_visibility == COURSE_VISIBILITY_PUBLIC_OUTLINE
+        course_blocks = None
+
+        is_staff = bool(has_access(request.user, 'staff', course_key))
+        if getattr(enrollment, 'is_active', False) or is_staff:
+            course_blocks = get_course_outline_block_tree(request, course_key_string, request.user)
+        elif allow_public_outline or allow_public or user_is_masquerading:
+            course_blocks = get_course_outline_block_tree(request, course_key_string, None)
+
+        if course_blocks:
+            user_course_outline = get_user_course_outline(course_key, request.user, datetime.now(tz=timezone.utc))
+            available_section_ids = {str(section.usage_key) for section in user_course_outline.sections}
+            available_sequence_ids = {str(usage_key) for usage_key in user_course_outline.sequences}
+
+            course_blocks['children'] = [
+                chapter_data for chapter_data in course_blocks.get('children', [])
+                if chapter_data['id'] in available_section_ids
+            ]
+
+            for chapter_data in course_blocks['children']:
+                chapter_data['children'] = [
+                    seq_data for seq_data in chapter_data['children']
+                    if (seq_data['id'] in available_sequence_ids or seq_data['type'] != 'sequential')
+                ] if 'children' in chapter_data else []
+
+        context = self.get_serializer_context()
+        context['include_vertical'] = True
+        serializer = self.get_serializer_class()(course_blocks, context=context)
+
+        return Response(serializer.data)
 
 
 @api_view(['POST'])
