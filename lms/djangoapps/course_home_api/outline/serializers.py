@@ -19,7 +19,8 @@ class CourseBlockSerializer(serializers.Serializer):
     def get_blocks(self, block):  # pylint: disable=missing-function-docstring
         block_key = block['id']
         block_type = block['type']
-        children = block.get('children', []) if block_type != 'sequential' else []  # Don't descend past sequential
+        last_parent_block_type = 'vertical' if self.context.get('include_vertical') else 'sequential'
+        children = block.get('children', []) if block_type != last_parent_block_type else []
         description = block.get('format')
         display_name = block['display_name']
         enable_links = self.context.get('enable_links')
