@@ -7,6 +7,14 @@ The format is based on `Keep a Changelog <https://keepachangelog.com/en/1.0.0/>`
 
 [Unreleased]
 ************
+
+Fixes
+=====
+
+* Fix for teacher images margin on the course about page `RGOeX-26436 <https://youtrack.raccoongang.com/issue/RGOeX-26436>`_
+  
+  * This is temporary fix and it should be deleted when this MR's will be merged - https://github.com/openedx/edx-platform/pull/34357 and https://github.com/openedx/edx-platform/pull/34358
+
 Changed
 =======
 
