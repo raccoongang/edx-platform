@@ -36,6 +36,9 @@ class CourseBlockSerializer(serializers.Serializer):
         if graded and scored:
             icon = 'fa-pencil-square-o'
 
+        if block_type == 'vertical':
+            icon = self.get_vertical_icon_class(block)
+
         if 'special_exam_info' in block:
             description = block['special_exam_info'].get('short_description')
             icon = block['special_exam_info'].get('suggested_icon', 'fa-pencil-square-o')
@@ -61,6 +64,20 @@ class CourseBlockSerializer(serializers.Serializer):
         for child in children:
             serialized.update(self.get_blocks(child))
         return serialized
+
+    @staticmethod
+    def get_vertical_icon_class(block):
+        """
+        Get the icon class for a vertical block based on its children.
+        """
+        children = block.get('children', [])
+        child_classes = {child.get('type') for child in children}
+        new_class = 'other'
+        icon_call_priority = ['video', 'problem']
+        for higher_class in icon_call_priority:
+            if higher_class in child_classes:
+                new_class = higher_class
+        return new_class
 
 
 class CourseGoalsSerializer(serializers.Serializer):
