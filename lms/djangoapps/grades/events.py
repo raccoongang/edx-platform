@@ -6,6 +6,11 @@ from logging import getLogger
 from crum import get_current_user
 from django.conf import settings
 from eventtracking import tracker
+from openedx_events.learning.data import UserCourseData, CourseData, UserData, UserPersonalData
+from openedx_events.learning.signals import (
+    COURSE_GRADE_NOW_PASSED as COURSE_GRADE_NOW_PASSED_PUBLIC,
+    COURSE_GRADE_NOW_FAILED as COURSE_GRADE_NOW_FAILED_PUBLIC,
+)
 
 from common.djangoapps.course_modes.models import CourseMode
 from common.djangoapps.student.models import CourseEnrollment
@@ -190,6 +195,24 @@ def course_grade_now_passed(user, course_id):
             }
         )
 
+    # produce to event bus
+    COURSE_GRADE_NOW_PASSED_PUBLIC.send_event(
+        user_course_data=UserCourseData(
+            user=UserData(
+                pii=UserPersonalData(
+                    username=user.username,
+                    email=user.email,
+                    name=user.get_full_name(),
+                ),
+                id=user.id,
+                is_active=user.is_active,
+            ),
+            course=CourseData(
+                course_key=course_id,
+            ),
+        )
+    )
+
 
 def course_grade_now_failed(user, course_id):
     """
@@ -208,6 +231,24 @@ def course_grade_now_failed(user, course_id):
                 'event_transaction_type': str(get_event_transaction_type())
             }
         )
+
+    # produce to event bus
+    COURSE_GRADE_NOW_FAILED_PUBLIC.send_event(
+        user_course_data=UserCourseData(
+            user=UserData(
+                pii=UserPersonalData(
+                    username=user.username,
+                    email=user.email,
+                    name=user.get_full_name(),
+                ),
+                id=user.id,
+                is_active=user.is_active,
+            ),
+            course=CourseData(
+                course_key=course_id,
+            ),
+        )
+    )
 
 
 def fire_segment_event_on_course_grade_passed_first_time(user_id, course_locator):

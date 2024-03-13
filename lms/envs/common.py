@@ -5418,6 +5418,13 @@ SIMPLE_HISTORY_DATE_INDEX = False
 def _should_send_certificate_events(settings):
     return settings.FEATURES['SEND_LEARNING_CERTIFICATE_LIFECYCLE_EVENTS_TO_BUS']
 
+
+#### Event bus ####
+EVENT_BUS_PRODUCER = "edx_event_bus_redis.create_producer"
+EVENT_BUS_CONSUMER = "edx_event_bus_redis.RedisEventConsumer"
+EVENT_BUS_REDIS_CONNECTION_URL = "redis://:password@edx.devstack.redis:6379/"
+EVENT_BUS_TOPIC_PREFIX = "dev"
+
 #### Event bus producing ####
 # .. setting_name: EVENT_BUS_PRODUCER_CONFIG
 # .. setting_default: all events disabled
@@ -5491,11 +5498,36 @@ EVENT_BUS_PRODUCER_CONFIG = {
         'course-authoring-xblock-lifecycle':
             {'event_key_field': 'xblock_info.usage_key', 'enabled': False},
     },
+    "org.openedx.learning.course.grade.now.passed.v1": {
+        "learning-badges-lifecycle": {
+            "event_key_field": "user_course_data.course.course_key",
+            "enabled": True,
+        },
+    },
+    "org.openedx.learning.course.grade.now.failed.v1": {
+        "learning-badges-lifecycle": {
+            "event_key_field": "user_course_data.course.course_key",
+            "enabled": True,
+        },
+    },
 }
 derived_collection_entry('EVENT_BUS_PRODUCER_CONFIG', 'org.openedx.learning.certificate.created.v1',
                          'learning-certificate-lifecycle', 'enabled')
 derived_collection_entry('EVENT_BUS_PRODUCER_CONFIG', 'org.openedx.learning.certificate.revoked.v1',
                          'learning-certificate-lifecycle', 'enabled')
+
+# If the consumer encounters this many consecutive errors, exit with an error. This is intended to be used in a context where a management system (such as Kubernetes) will relaunch the consumer automatically.
+#EVENT_BUS_REDIS_CONSUMER_CONSECUTIVE_ERRORS_LIMIT (defaults to None)
+
+# How long the consumer should wait for new entries in a stream.
+# As we are running the consumer in a while True loop, changing this setting doesn't make much difference
+# expect for changing number of monitoring messages while waiting for new events.
+# https://redis.io/commands/xread/#blocking-for-data
+#EVENT_BUS_REDIS_CONSUMER_POLL_TIMEOUT (defaults to 60 seconds)
+
+# Limits stream size to approximately this number
+#EVENT_BUS_REDIS_STREAM_MAX_LEN (defaults to 10_000)
+
 BEAMER_PRODUCT_ID = ""
 
 #### Survey Report ####
