@@ -67,6 +67,9 @@ class CourseBlockSerializer(serializers.Serializer):
 
     @staticmethod
     def get_vertical_icon_class(block):
+        """
+        Get the icon class for a vertical block based on its children.
+        """
         children = block.get('children', [])
         child_classes = {child.get('type') for child in children}
         new_class = 'other'
