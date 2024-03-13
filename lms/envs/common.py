@@ -3253,6 +3253,9 @@ INSTALLED_APPS = [
 
     # MFE API
     'lms.djangoapps.mfe_config_api',
+
+    # Notifications
+    'openedx_events',
 ]
 
 ######################### CSRF #########################################
@@ -5256,3 +5259,46 @@ URLS_2U_LOBS = {
     'bachelors_degree': 'https://www.edx.org/bachelors',
     'boot_camps': 'https://www.edx.org/boot-camps',
 }
+
+#### Event bus ####
+EVENT_BUS_PRODUCER = "edx_event_bus_redis.create_producer"
+EVENT_BUS_CONSUMER = "edx_event_bus_redis.RedisEventConsumer"
+EVENT_BUS_REDIS_CONNECTION_URL = "redis://:password@edx.devstack.redis:6379/"
+EVENT_BUS_TOPIC_PREFIX = "dev"
+
+# .. setting_name: EVENT_BUS_PRODUCER_CONFIG
+# .. setting_default: all events disabled
+# .. setting_description: Dictionary of event_types mapped to dictionaries of topic to topic-related configuration.
+#    Each topic configuration dictionary contains
+#    * `enabled`: a toggle denoting whether the event will be published to the topic. These should be annotated
+#       according to
+#       https://edx.readthedocs.io/projects/edx-toggles/en/latest/how_to/documenting_new_feature_toggles.html
+#    * `event_key_field` which is a period-delimited string path to event data field to use as event key.
+#    Note: The topic names should not include environment prefix as it will be dynamically added based on
+#    EVENT_BUS_TOPIC_PREFIX setting.
+EVENT_BUS_PRODUCER_CONFIG = {
+    "org.openedx.learning.course.grade.now.passed.v1": {
+        "learning-badges-lifecycle": {
+            "event_key_field": "user_course_data.course.course_key",
+            "enabled": True,
+        },
+    },
+    "org.openedx.learning.course.grade.now.failed.v1": {
+        "learning-badges-lifecycle": {
+            "event_key_field": "user_course_data.course.course_key",
+            "enabled": True,
+        },
+    },
+}
+
+# If the consumer encounters this many consecutive errors, exit with an error. This is intended to be used in a context where a management system (such as Kubernetes) will relaunch the consumer automatically.
+#EVENT_BUS_REDIS_CONSUMER_CONSECUTIVE_ERRORS_LIMIT (defaults to None)
+
+# How long the consumer should wait for new entries in a stream.
+# As we are running the consumer in a while True loop, changing this setting doesn't make much difference
+# expect for changing number of monitoring messages while waiting for new events.
+# https://redis.io/commands/xread/#blocking-for-data
+#EVENT_BUS_REDIS_CONSUMER_POLL_TIMEOUT (defaults to 60 seconds)
+
+# Limits stream size to approximately this number
+#EVENT_BUS_REDIS_STREAM_MAX_LEN (defaults to 10_000)
