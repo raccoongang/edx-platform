@@ -81,7 +81,7 @@ COURSEWARE_MICROFRONTEND_SIDEBAR_DISABLED = CourseWaffleFlag(
     f'{WAFFLE_FLAG_NAMESPACE}.disable_navigation_sidebar', __name__
 )
 
-# .. toggle_name: courseware.disable_default_open_discussion_sidebar
+# .. toggle_name: courseware.disable_default_opening_discussion_sidebar
 # .. toggle_implementation: WaffleFlag
 # .. toggle_default: False
 # .. toggle_description: Disable opening the discussion sidebar by default on Learning MFE.
@@ -91,7 +91,7 @@ COURSEWARE_MICROFRONTEND_SIDEBAR_DISABLED = CourseWaffleFlag(
 # .. toggle_tickets: AXIMST-629
 # .. toggle_warning: None.
 COURSEWARE_MICROFRONTEND_DISCUSSION_SIDEBAR_OPEN_DISABLED = CourseWaffleFlag(
-    f'{WAFFLE_FLAG_NAMESPACE}.disable_default_open_discussion_sidebar', __name__
+    f'{WAFFLE_FLAG_NAMESPACE}.disable_default_opening_discussion_sidebar', __name__
 )
 
 # .. toggle_name: courseware.mfe_progress_milestones_streak_discount_enabled
@@ -221,8 +221,8 @@ def courseware_mfe_sidebar_is_disabled(course_key=None):
     return COURSEWARE_MICROFRONTEND_SIDEBAR_DISABLED.is_enabled(course_key)
 
 
-def courseware_mfe_discussion_sidebar_open_is_disabled(course_key=None):
+def courseware_mfe_discussion_sidebar_opening_is_disabled(course_key=None):
     """
-    Return whether the courseware.disable_default_open_discussion_sidebar flag is on.
+    Return whether the courseware.disable_default_opening_discussion_sidebar flag is on.
     """
     return COURSEWARE_MICROFRONTEND_DISCUSSION_SIDEBAR_OPEN_DISABLED.is_enabled(course_key)
