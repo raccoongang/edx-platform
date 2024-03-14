@@ -68,6 +68,32 @@ COURSEWARE_MICROFRONTEND_SEARCH_ENABLED = CourseWaffleFlag(
     f'{WAFFLE_FLAG_NAMESPACE}.mfe_courseware_search', __name__
 )
 
+# .. toggle_name: courseware.disable_navigation_sidebar
+# .. toggle_implementation: WaffleFlag
+# .. toggle_default: False
+# .. toggle_description: Disable navi sidebar on Learning MFE
+# .. toggle_use_cases: temporary
+# .. toggle_creation_date: 2024-03-07
+# .. toggle_target_removal_date: None
+# .. toggle_tickets: AXIMST-611
+# .. toggle_warning: None.
+COURSEWARE_MICROFRONTEND_SIDEBAR_DISABLED = CourseWaffleFlag(
+    f'{WAFFLE_FLAG_NAMESPACE}.disable_navigation_sidebar', __name__
+)
+
+# .. toggle_name: courseware.disable_default_opening_discussion_sidebar
+# .. toggle_implementation: WaffleFlag
+# .. toggle_default: False
+# .. toggle_description: Disable opening the discussion sidebar by default on Learning MFE.
+# .. toggle_use_cases: temporary
+# .. toggle_creation_date: 2024-03-13
+# .. toggle_target_removal_date: None
+# .. toggle_tickets: AXIMST-629
+# .. toggle_warning: None.
+COURSEWARE_MICROFRONTEND_DISCUSSION_SIDEBAR_OPEN_DISABLED = CourseWaffleFlag(
+    f'{WAFFLE_FLAG_NAMESPACE}.disable_default_opening_discussion_sidebar', __name__
+)
+
 # .. toggle_name: courseware.mfe_progress_milestones_streak_discount_enabled
 # .. toggle_implementation: CourseWaffleFlag
 # .. toggle_default: False
@@ -170,3 +196,17 @@ def courseware_mfe_search_is_enabled(course_key=None):
     Return whether the courseware.mfe_courseware_search flag is on.
     """
     return COURSEWARE_MICROFRONTEND_SEARCH_ENABLED.is_enabled(course_key)
+
+
+def courseware_mfe_sidebar_is_disabled(course_key=None):
+    """
+    Return whether the courseware.disable_navigation_sidebar flag is on.
+    """
+    return COURSEWARE_MICROFRONTEND_SIDEBAR_DISABLED.is_enabled(course_key)
+
+
+def courseware_mfe_discussion_sidebar_opening_is_disabled(course_key=None):
+    """
+    Return whether the courseware.disable_default_opening_discussion_sidebar flag is on.
+    """
+    return COURSEWARE_MICROFRONTEND_DISCUSSION_SIDEBAR_OPEN_DISABLED.is_enabled(course_key)
