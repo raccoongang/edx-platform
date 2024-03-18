@@ -556,19 +556,19 @@ class TestUserEnrollmentApi(UrlResetMixin, MobileAPITestCase, MobileAuthUserTest
         for course in courses:
             self.enroll(course.id)
         expected_result = {
-                "configs": {
-                    "iap_configs": {}
-                },
-                "enrollments": {
-                    "next": None,
-                    "previous": None,
-                    "count": 0,
-                    "num_pages": 1,
-                    "current_page": 1,
-                    "start": 0,
-                    "results": []
-                }
+            "configs": {
+                "iap_configs": {}
+            },
+            "enrollments": {
+                "next": None,
+                "previous": None,
+                "count": 0,
+                "num_pages": 1,
+                "current_page": 1,
+                "start": 0,
+                "results": []
             }
+        }
 
         response = self.api_response(api_version=API_V4)
 
