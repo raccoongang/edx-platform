@@ -434,7 +434,10 @@ class UserCourseEnrollmentsList(generics.ListAPIView):
         if not latest_progress:
             return latest_enrollment
 
-        enrollment_with_latest_progress = self.queryset.filter(course_id=latest_progress.course_id).first()
+        enrollment_with_latest_progress = self.queryset.filter(
+            course_id=latest_progress.course_id,
+            user__username=self.kwargs['username'],
+        ).first()
 
         if latest_enrollment.created > latest_progress.modified:
             return latest_enrollment
