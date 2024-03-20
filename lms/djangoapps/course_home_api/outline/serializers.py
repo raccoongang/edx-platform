@@ -43,6 +43,9 @@ class CourseBlockSerializer(serializers.Serializer):
             description = block['special_exam_info'].get('short_description')
             icon = block['special_exam_info'].get('suggested_icon', 'fa-pencil-square-o')
 
+        if self.context.get('display_block_prerequisite_icon', False) and block.get('accessible') is False:
+            icon = 'lock'
+
         serialized = {
             block_key: {
                 'children': [child['id'] for child in children],
@@ -61,6 +64,9 @@ class CourseBlockSerializer(serializers.Serializer):
                 'hide_from_toc': block.get('hide_from_toc'),
             },
         }
+        if 'special_exam_info' in self.context.get('extra_fields', []) and block.get('special_exam_info'):
+            serialized[block_key]['special_exam_info'] = block.get('special_exam_info').get('short_description')
+
         for child in children:
             serialized.update(self.get_blocks(child))
         return serialized

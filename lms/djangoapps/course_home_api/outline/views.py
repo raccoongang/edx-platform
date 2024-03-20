@@ -455,9 +455,17 @@ class CourseSidebarBlocksView(RetrieveAPIView):
                     seq_data for seq_data in chapter_data['children']
                     if (seq_data['id'] in available_sequence_ids or seq_data['type'] != 'sequential')
                 ] if 'children' in chapter_data else []
+                accessible_sequence_ids = {str(usage_key) for usage_key in user_course_outline.accessible_sequences}
+                for sequence_data in chapter_data['children']:
+                    sequence_data['accessible'] = sequence_data['id'] in accessible_sequence_ids
 
         context = self.get_serializer_context()
-        context['include_vertical'] = True
+        context.update({
+            'include_vertical': True,
+            'extra_fields': ['special_exam_info',],
+            'display_block_prerequisite_icon': True,
+        })
+
         serializer = self.get_serializer_class()(course_blocks, context=context)
 
         return Response(serializer.data)
