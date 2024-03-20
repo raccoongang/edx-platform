@@ -568,7 +568,8 @@ class SidebarBlocksTestViews(BaseCourseHomeTests):
         assert response.status_code == 404
 
     @patch.dict('django.conf.settings.FEATURES', {'ENABLE_SPECIAL_EXAMS': True})
-    def test_proctored_exam(self):
+    @patch('lms.djangoapps.course_api.blocks.transformers.milestones.get_attempt_status_summary')
+    def test_proctored_exam(self, mock_summary):
         """
         Test that the API returns the correct data for a proctored exam.
         """
@@ -596,6 +597,10 @@ class SidebarBlocksTestViews(BaseCourseHomeTests):
         sequence.is_proctored_exam = True
         update_outline_from_modulestore(course.id)
         CourseEnrollment.enroll(self.user, course.id)
+        mock_summary.return_value = {
+            'short_description': 'My Exam',
+            'suggested_icon': 'fa-foo-bar',
+        }
 
         url = reverse('course-home:course-sidebar-blocks', args=[course.id])
         response = self.client.get(url)
@@ -604,6 +609,7 @@ class SidebarBlocksTestViews(BaseCourseHomeTests):
         exam_data = response.data['blocks'][str(sequence.location)]
         assert not exam_data['complete']
         assert exam_data['display_name'] == 'Test Proctored Exam'
+        assert exam_data['special_exam_info'] == 'My Exam'
         assert exam_data['due'] is not None
 
     def test_assignment(self):
@@ -618,12 +624,12 @@ class SidebarBlocksTestViews(BaseCourseHomeTests):
 
         exam_data = response.data['blocks'][str(self.sequential.location)]
         assert exam_data['display_name'] == 'Test (1 Question)'
-        assert exam_data['icon'] == 'fa-pencil-square-o'
+        assert exam_data['icon'] == 'lock'
         assert str(self.vertical.location) in exam_data['children']
 
         ungraded_data = response.data['blocks'][str(self.ungraded_sequential.location)]
         assert ungraded_data['display_name'] == 'Ungraded'
-        assert ungraded_data['icon'] is None
+        assert ungraded_data['icon'] == 'lock'
         assert str(self.ungraded_vertical.location) in ungraded_data['children']
 
     @override_waffle_flag(COURSE_ENABLE_UNENROLLED_ACCESS_FLAG, active=True)
