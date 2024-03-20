@@ -192,9 +192,11 @@ class ThemeManifestFilesMixin(ManifestFilesMixin):
             This requires figuring out which files the matched URL resolves
             to and calling the url() method of the storage.
             """
-            matches = matchobj.groupdict()
-            matched = matches["matched"]
-            url = matches["url"]
+            matched, url = matchobj.groups()
+            #matches = matchobj.groupdict()
+            # matched = matches["matched"]
+            # url = matches["url"]
+
 
             # Ignore absolute/protocol-relative and data-uri URLs.
             if re.match(r"^[a-z]+:", url):
