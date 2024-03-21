@@ -478,9 +478,7 @@ class CourseSidebarBlocksView(RetrieveAPIView):
         if cached:
             # If the data was cached, we need to mark the blocks as complete or not complete.
             course_blocks = self.mark_complete_recursive(course_blocks)
-        # accessible_sequence_ids = {str(usage_key) for usage_key in user_course_outline.accessible_sequences}
-        # for sequence_data in chapter_data['children']:
-        #     sequence_data['accessible'] = sequence_data['id'] in accessible_sequence_ids
+
         context = self.get_serializer_context()
         context.update({
             'include_vertical': True,
@@ -506,6 +504,9 @@ class CourseSidebarBlocksView(RetrieveAPIView):
                     user_course_outline,
                     section_data.get('children', [])
                 )
+                accessible_sequence_ids = {str(usage_key) for usage_key in user_course_outline.accessible_sequences}
+                for sequence_data in section_data['children']:
+                    sequence_data['accessible'] = sequence_data['id'] in accessible_sequence_ids
 
         return course_blocks
 
@@ -514,8 +515,7 @@ class CourseSidebarBlocksView(RetrieveAPIView):
         Mark blocks as complete or not complete based on the completions_dict.
         """
         if 'children' in block:
-            for i, child in enumerate(block['children']):
-                block['children'][i] = self.mark_complete_recursive(child)
+            block['children'] = [self.mark_complete_recursive(child) for child in block['children']]
             block['complete'] = all(child['complete'] for child in block['children'] if child['type'] != 'discussion')
         else:
             block['complete'] = self.completions_dict.get(block['id'], False)
@@ -536,9 +536,8 @@ class CourseSidebarBlocksView(RetrieveAPIView):
         """
         Filter out sequences that are not available to the user.
         """
-        available_sequence_ids = set(map(lambda sequence: str(sequence), user_course_outline.sequences))
+        available_sequence_ids = set(map(str, user_course_outline.sequences))
 
-        # pylint: disable=unnecessary-lambda
         return list(filter(
             lambda seq_data: seq_data['id'] in available_sequence_ids or seq_data['type'] != 'sequential',
             course_sequences
@@ -554,7 +553,7 @@ class CourseSidebarBlocksView(RetrieveAPIView):
         """
         course_key_string = self.kwargs.get('course_key_string')
         course_key = CourseKey.from_string(course_key_string)
-        completions = BlockCompletion.objects.filter(user=self.request.user,context_key=course_key).values_list(
+        completions = BlockCompletion.objects.filter(user=self.request.user, context_key=course_key).values_list(
             'block_key',
             'completion',
         )
