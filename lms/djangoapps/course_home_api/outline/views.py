@@ -485,6 +485,9 @@ class CourseSidebarBlocksView(RetrieveAPIView):
         return Response(serializer.data)
 
     def filter_unavailable_blocks(self, course_blocks, course_key):
+        """
+        Filter out sections and subsections that are not available to the current user.
+        """
         if course_blocks:
             user_course_outline = get_user_course_outline(course_key, self.request.user, datetime.now(tz=timezone.utc))
             course_sections = course_blocks.get('children', [])
@@ -526,6 +529,8 @@ class CourseSidebarBlocksView(RetrieveAPIView):
         Filter out sequences that are not available to the user.
         """
         available_sequence_ids = set(map(lambda sequence: str(sequence), user_course_outline.sequences))
+
+        # pylint: disable=unnecessary-lambda
         return list(filter(
             lambda seq_data: seq_data['id'] in available_sequence_ids or seq_data['type'] != 'sequential',
             course_sequences
