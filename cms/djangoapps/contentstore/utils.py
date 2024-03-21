@@ -11,6 +11,7 @@ from urllib.parse import quote_plus
 from uuid import uuid4
 
 from django.conf import settings
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils import translation
@@ -2197,3 +2198,13 @@ def get_xblock_render_error(request, xblock):
         return str(exc)
 
     return ""
+
+
+def drop_course_sidebar_blocks_cache(course_id: str):
+    """
+    Drop the course sidebar blocks cache for the given course.
+    """
+    cache_key_prefix = f"course_sidebar_blocks_{course_id}"
+    all_cache_keys = cache.keys('*')
+    for cache_key in filter(lambda key: key.startswith(cache_key_prefix), all_cache_keys):
+        cache.delete(cache_key)
