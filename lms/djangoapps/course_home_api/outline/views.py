@@ -516,7 +516,7 @@ class CourseSidebarBlocksView(RetrieveAPIView):
         if 'children' in block:
             for i, child in enumerate(block['children']):
                 block['children'][i] = self.mark_complete_recursive(child)
-            block['complete'] = all(child['complete'] for child in block['children'])
+            block['complete'] = all(child['complete'] for child in block['children'] if child['type'] != 'discussion')
         else:
             block['complete'] = self.completions_dict.get(block['id'], False)
         return block
