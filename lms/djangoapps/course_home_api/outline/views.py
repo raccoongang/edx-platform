@@ -462,7 +462,7 @@ class CourseSidebarBlocksView(RetrieveAPIView):
         context = self.get_serializer_context()
         context.update({
             'include_vertical': True,
-            'extra_fields': ['special_exam_info',],
+            'extra_fields': ['special_exam_info'],
             'enable_prerequisite_block_type': True,
         })
 
