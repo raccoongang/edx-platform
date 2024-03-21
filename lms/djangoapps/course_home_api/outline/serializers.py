@@ -43,8 +43,8 @@ class CourseBlockSerializer(serializers.Serializer):
             description = block['special_exam_info'].get('short_description')
             icon = block['special_exam_info'].get('suggested_icon', 'fa-pencil-square-o')
 
-        if self.context.get('display_block_prerequisite_icon', False) and block.get('accessible') is False:
-            icon = 'lock'
+        if self.context.get('enable_prerequisite_block_type', False) and block.get('accessible') is False:
+            block_type = 'lock'
 
         serialized = {
             block_key: {

@@ -624,12 +624,12 @@ class SidebarBlocksTestViews(BaseCourseHomeTests):
 
         exam_data = response.data['blocks'][str(self.sequential.location)]
         assert exam_data['display_name'] == 'Test (1 Question)'
-        assert exam_data['icon'] == 'lock'
+        assert exam_data['icon'] == 'fa-pencil-square-o'
         assert str(self.vertical.location) in exam_data['children']
 
         ungraded_data = response.data['blocks'][str(self.ungraded_sequential.location)]
         assert ungraded_data['display_name'] == 'Ungraded'
-        assert ungraded_data['icon'] == 'lock'
+        assert ungraded_data['icon'] is None
         assert str(self.ungraded_vertical.location) in ungraded_data['children']
 
     @override_waffle_flag(COURSE_ENABLE_UNENROLLED_ACCESS_FLAG, active=True)
@@ -669,7 +669,7 @@ class SidebarBlocksTestViews(BaseCourseHomeTests):
         assert response.status_code == 200
 
         blocks = response.data['blocks']
-        seq_block_id = next(block_id for block_id, block in blocks.items() if block['type'] == 'sequential')
+        seq_block_id = next(block_id for block_id, block in blocks.items() if block['type'] in ('sequential', 'lock'))
 
         # With a course outline loaded, the same sequence is removed.
         new_learning_seq_outline = CourseOutlineData(
