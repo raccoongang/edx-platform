@@ -94,47 +94,7 @@ class CourseOverviewField(serializers.RelatedField):  # lint-amnesty, pylint: di
         }
 
 
-class CourseEnrollmentProgressMixin(serializers.Serializer):
-    """
-    Mixin for CourseEnrollment serializers to add progress information.
-    """
-
-    progress = serializers.SerializerMethodField()
-
-    BLOCK_STRUCTURE_CACHE_TIMEOUT = 60 * 60  # 1 hour
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.context.get('api_version') == 'v4':
-            self.progress = serializers.SerializerMethodField()
-            self.Meta.fields = list(self.Meta.fields)
-            self.Meta.fields.append('progress')
-
-    def get_progress(self, model: CourseEnrollment) -> Dict[str, int]:
-        """
-        Returns the progress of the user in the course.
-        """
-        assert isinstance(model, CourseEnrollment), f'Expected CourseEnrollment, got {type(model)}'
-        is_staff = bool(has_access(model.user, 'staff', model.course.id))
-
-        cache_key = f'course_block_structure_{str(model.course.id)}_{model.user.id}'
-        collected_block_structure = cache.get(cache_key)
-        if not collected_block_structure:
-            collected_block_structure = get_block_structure_manager(model.course.id).get_collected()
-            cache.set(cache_key, collected_block_structure, self.BLOCK_STRUCTURE_CACHE_TIMEOUT)
-
-        course_grade = CourseGradeFactory().read(model.user, collected_block_structure=collected_block_structure)
-
-        # recalculate course grade from visible grades (stored grade was calculated over all grades, visible or not)
-        course_grade.update(visible_grades_only=True, has_staff_access=is_staff)
-        subsection_grades = list(course_grade.subsection_grades.values())
-        return {
-            'num_points_earned': sum(map(lambda x: x.graded_total.earned if x.graded else 0, subsection_grades)),
-            'num_points_possible': sum(map(lambda x: x.graded_total.possible if x.graded else 0, subsection_grades)),
-        }
-
-
-class CourseEnrollmentSerializer(serializers.ModelSerializer, CourseEnrollmentProgressMixin):
+class CourseEnrollmentSerializer(serializers.ModelSerializer):
     """
     Serializes CourseEnrollment models
     """
@@ -197,7 +157,11 @@ class CourseEnrollmentSerializerModifiedForPrimary(CourseEnrollmentSerializer):
 
     Adds `course_status` field into serializer data.
     """
+
     course_status = serializers.SerializerMethodField()
+    progress = serializers.SerializerMethodField()
+
+    BLOCK_STRUCTURE_CACHE_TIMEOUT = 60 * 60  # 1 hour
 
     def get_course_status(self, model: CourseEnrollment) -> Optional[Dict[str, List[str]]]:
         """
@@ -256,6 +220,29 @@ class CourseEnrollmentSerializerModifiedForPrimary(CourseEnrollmentSerializer):
         path.reverse()
         return path, unit_name
 
+    def get_progress(self, model: CourseEnrollment) -> Dict[str, int]:
+        """
+        Returns the progress of the user in the course.
+        """
+        assert isinstance(model, CourseEnrollment), f'Expected CourseEnrollment, got {type(model)}'
+        is_staff = bool(has_access(model.user, 'staff', model.course.id))
+
+        cache_key = f'course_block_structure_{str(model.course.id)}_{model.user.id}'
+        collected_block_structure = cache.get(cache_key)
+        if not collected_block_structure:
+            collected_block_structure = get_block_structure_manager(model.course.id).get_collected()
+            cache.set(cache_key, collected_block_structure, self.BLOCK_STRUCTURE_CACHE_TIMEOUT)
+
+        course_grade = CourseGradeFactory().read(model.user, collected_block_structure=collected_block_structure)
+
+        # recalculate course grade from visible grades (stored grade was calculated over all grades, visible or not)
+        course_grade.update(visible_grades_only=True, has_staff_access=is_staff)
+        subsection_grades = list(course_grade.subsection_grades.values())
+        return {
+            'num_points_earned': sum(map(lambda x: x.graded_total.earned if x.graded else 0, subsection_grades)),
+            'num_points_possible': sum(map(lambda x: x.graded_total.possible if x.graded else 0, subsection_grades)),
+        }
+
     class Meta:
         model = CourseEnrollment
         fields = (
@@ -267,6 +254,7 @@ class CourseEnrollmentSerializerModifiedForPrimary(CourseEnrollmentSerializer):
             'certificate',
             'course_modes',
             'course_status',
+            'progress',
         )
         lookup_field = 'username'
 
