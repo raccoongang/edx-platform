@@ -68,6 +68,19 @@ COURSEWARE_MICROFRONTEND_SEARCH_ENABLED = CourseWaffleFlag(
     f'{WAFFLE_FLAG_NAMESPACE}.mfe_courseware_search', __name__
 )
 
+# .. toggle_name: courseware.navigation_sidebar_blocks_caching
+# .. toggle_implementation: WaffleFlag
+# .. toggle_default: False
+# .. toggle_description: Enable caching of navigation sidebar blocks on Learning MFE to improve performance.
+# .. toggle_use_cases: temporary
+# .. toggle_creation_date: 2024-03-21
+# .. toggle_target_removal_date: None
+# .. toggle_tickets: AXIMST-682
+# .. toggle_warning: None.
+COURSEWARE_MICROFRONTEND_NAVIGATION_SIDEBAR_BLOCKS_CACHING_ENABLED = CourseWaffleFlag(
+    f'{WAFFLE_FLAG_NAMESPACE}.navigation_sidebar_blocks_caching', __name__
+)
+
 # .. toggle_name: courseware.disable_navigation_sidebar
 # .. toggle_implementation: WaffleFlag
 # .. toggle_default: False
@@ -210,3 +223,10 @@ def courseware_mfe_discussion_sidebar_opening_is_disabled(course_key=None):
     Return whether the courseware.disable_default_opening_discussion_sidebar flag is on.
     """
     return COURSEWARE_MICROFRONTEND_DISCUSSION_SIDEBAR_OPEN_DISABLED.is_enabled(course_key)
+
+
+def courseware_mfe_navigation_sidebar_blocks_caching_is_enabled(course_key=None):
+    """
+    Return whether the courseware.navigation_sidebar_blocks_caching flag is on.
+    """
+    return COURSEWARE_MICROFRONTEND_NAVIGATION_SIDEBAR_BLOCKS_CACHING_ENABLED.is_enabled(course_key)
