@@ -2,9 +2,12 @@
 Outline Tab Views
 """
 from datetime import datetime, timezone
+from functools import cached_property
 
 from completion.exceptions import UnavailableCompletionData  # lint-amnesty, pylint: disable=wrong-import-order
+from completion.models import BlockCompletion
 from completion.utilities import get_key_to_last_completed_block  # lint-amnesty, pylint: disable=wrong-import-order
+from django.core.cache import cache
 from django.conf import settings  # lint-amnesty, pylint: disable=wrong-import-order
 from django.shortcuts import get_object_or_404  # lint-amnesty, pylint: disable=wrong-import-order
 from django.urls import reverse  # lint-amnesty, pylint: disable=wrong-import-order
@@ -37,11 +40,13 @@ from lms.djangoapps.courseware.context_processor import user_timezone_locale_pre
 from lms.djangoapps.courseware.courses import get_course_date_blocks, get_course_info_section
 from lms.djangoapps.courseware.date_summary import TodaysDate
 from lms.djangoapps.courseware.masquerade import is_masquerading, setup_masquerade
+from lms.djangoapps.courseware.toggles import courseware_mfe_navigation_sidebar_blocks_caching_is_enabled
 from lms.djangoapps.courseware.views.views import get_cert_data
 from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
 from lms.djangoapps.utils import OptimizelyClient
 from openedx.core.djangoapps.content.learning_sequences.api import get_user_course_outline
 from openedx.core.djangoapps.content.course_overviews.api import get_course_overview_or_404
+from openedx.core.djangoapps.course_groups.cohorts import get_cohort
 from openedx.core.lib.api.authentication import BearerAuthenticationAllowInactiveUser
 from openedx.features.course_duration_limits.access import get_access_expiration_data
 from openedx.features.course_experience import COURSE_ENABLE_UNENROLLED_ACCESS_FLAG, ENABLE_COURSE_GOALS
@@ -410,6 +415,11 @@ class CourseSidebarBlocksView(RetrieveAPIView):
     )
 
     serializer_class = CourseBlockSerializer
+    COURSE_BLOCKS_CACHE_KEY_TEMPLATE = (
+        'course_sidebar_blocks_{course_key_string}_{user_id}_{user_cohort_id}'
+        '_{allow_public}_{allow_public_outline}_{is_masquerading}'
+    )
+    COURSE_BLOCKS_CACHE_TIMEOUT = 60 * 60  # 1 hour
 
     def get(self, request, *args, **kwargs):
         """
@@ -418,46 +428,56 @@ class CourseSidebarBlocksView(RetrieveAPIView):
         course_key_string = kwargs.get('course_key_string')
         course_key = CourseKey.from_string(course_key_string)
         course = get_course_or_403(request.user, 'load', course_key, check_if_enrolled=False)
+        staff_access = has_access(request.user, 'staff', course_key)
 
         masquerade_object, request.user = setup_masquerade(
             request,
             course_key,
-            staff_access=has_access(request.user, 'staff', course_key),
+            staff_access=staff_access,
             reset_masquerade_data=True,
         )
 
         user_is_masquerading = is_masquerading(request.user, course_key, course_masquerade=masquerade_object)
 
-        enrollment = CourseEnrollment.get_enrollment(request.user, course_key)
         allow_anonymous = COURSE_ENABLE_UNENROLLED_ACCESS_FLAG.is_enabled(course_key)
         allow_public = allow_anonymous and course.course_visibility == COURSE_VISIBILITY_PUBLIC
         allow_public_outline = allow_anonymous and course.course_visibility == COURSE_VISIBILITY_PUBLIC_OUTLINE
-        course_blocks = None
+        enrollment = CourseEnrollment.get_enrollment(request.user, course_key)
 
-        is_staff = bool(has_access(request.user, 'staff', course_key))
-        if getattr(enrollment, 'is_active', False) or is_staff:
-            course_blocks = get_course_outline_block_tree(request, course_key_string, request.user)
-        elif allow_public_outline or allow_public or user_is_masquerading:
-            course_blocks = get_course_outline_block_tree(request, course_key_string, None)
+        try:
+            user_cohort = get_cohort(request.user, course_key)
+        except ValueError:
+            user_cohort = None
 
-        if course_blocks:
-            user_course_outline = get_user_course_outline(course_key, request.user, datetime.now(tz=timezone.utc))
-            available_section_ids = {str(section.usage_key) for section in user_course_outline.sections}
-            available_sequence_ids = {str(usage_key) for usage_key in user_course_outline.sequences}
+        cache_key = self.COURSE_BLOCKS_CACHE_KEY_TEMPLATE.format(
+            course_key_string=course_key_string,
+            user_id=request.user.id,
+            user_cohort_id=getattr(user_cohort, 'id', ''),
+            allow_public=allow_public,
+            allow_public_outline=allow_public_outline,
+            is_masquerading=user_is_masquerading,
+        )
+        if courseware_mfe_navigation_sidebar_blocks_caching_is_enabled():
+            course_blocks = cache.get(cache_key)
+            cached = course_blocks is not None
+        else:
+            cached = False
+            course_blocks = None
 
-            course_blocks['children'] = [
-                chapter_data for chapter_data in course_blocks.get('children', [])
-                if chapter_data['id'] in available_section_ids
-            ]
+        if not course_blocks:
+            if getattr(enrollment, 'is_active', False) or bool(staff_access):
+                course_blocks = get_course_outline_block_tree(request, course_key_string, request.user)
+            elif allow_public_outline or allow_public or user_is_masquerading:
+                course_blocks = get_course_outline_block_tree(request, course_key_string, None)
 
-            for chapter_data in course_blocks['children']:
-                chapter_data['children'] = [
-                    seq_data for seq_data in chapter_data['children']
-                    if (seq_data['id'] in available_sequence_ids or seq_data['type'] != 'sequential')
-                ] if 'children' in chapter_data else []
-                accessible_sequence_ids = {str(usage_key) for usage_key in user_course_outline.accessible_sequences}
-                for sequence_data in chapter_data['children']:
-                    sequence_data['accessible'] = sequence_data['id'] in accessible_sequence_ids
+            if courseware_mfe_navigation_sidebar_blocks_caching_is_enabled():
+                cache.set(cache_key, course_blocks, self.COURSE_BLOCKS_CACHE_TIMEOUT)
+
+        course_blocks = self.filter_unavailable_blocks(course_blocks, course_key)
+
+        if cached:
+            # If the data was cached, we need to mark the blocks as complete or not complete.
+            course_blocks = self.mark_complete_recursive(course_blocks)
 
         context = self.get_serializer_context()
         context.update({
@@ -469,6 +489,78 @@ class CourseSidebarBlocksView(RetrieveAPIView):
         serializer = self.get_serializer_class()(course_blocks, context=context)
 
         return Response(serializer.data)
+
+    def filter_unavailable_blocks(self, course_blocks, course_key):
+        """
+        Filter out sections and subsections that are not available to the current user.
+        """
+        if course_blocks:
+            user_course_outline = get_user_course_outline(course_key, self.request.user, datetime.now(tz=timezone.utc))
+            course_sections = course_blocks.get('children', [])
+            course_blocks['children'] = self.get_available_sections(user_course_outline, course_sections)
+
+            for section_data in course_sections:
+                section_data['children'] = self.get_available_sequences(
+                    user_course_outline,
+                    section_data.get('children', [])
+                )
+                accessible_sequence_ids = {str(usage_key) for usage_key in user_course_outline.accessible_sequences}
+                for sequence_data in section_data['children']:
+                    sequence_data['accessible'] = sequence_data['id'] in accessible_sequence_ids
+
+        return course_blocks
+
+    def mark_complete_recursive(self, block):
+        """
+        Mark blocks as complete or not complete based on the completions_dict.
+        """
+        if 'children' in block:
+            block['children'] = [self.mark_complete_recursive(child) for child in block['children']]
+            block['complete'] = all(child['complete'] for child in block['children'] if child['type'] != 'discussion')
+        else:
+            block['complete'] = self.completions_dict.get(block['id'], False)
+        return block
+
+    @staticmethod
+    def get_available_sections(user_course_outline, course_sections):
+        """
+        Filter out sections that are not available to the user.
+        """
+        available_section_ids = set(map(lambda section: str(section.usage_key), user_course_outline.sections))
+        return list(filter(
+            lambda section_data: section_data['id'] in available_section_ids, course_sections
+        ))
+
+    @staticmethod
+    def get_available_sequences(user_course_outline, course_sequences):
+        """
+        Filter out sequences that are not available to the user.
+        """
+        available_sequence_ids = set(map(str, user_course_outline.sequences))
+
+        return list(filter(
+            lambda seq_data: seq_data['id'] in available_sequence_ids or seq_data['type'] != 'sequential',
+            course_sequences
+        ))
+
+    @cached_property
+    def completions_dict(self):
+        """
+        Return a dictionary of block completions for the current user.
+
+        Dictionary keys are block keys and values are int values
+        representing the completion status of the block.
+        """
+        course_key_string = self.kwargs.get('course_key_string')
+        course_key = CourseKey.from_string(course_key_string)
+        completions = BlockCompletion.objects.filter(user=self.request.user, context_key=course_key).values_list(
+            'block_key',
+            'completion',
+        )
+        return {
+            str(block_key): completion
+            for block_key, completion in completions
+        }
 
 
 @api_view(['POST'])
