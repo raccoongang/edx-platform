@@ -325,7 +325,7 @@ class UserCourseEnrollmentsList(generics.ListAPIView):
           certified).
         * url: URL to the downloadable version of the certificate, if exists.
     """
-    queryset = CourseEnrollment.objects.all().select_related('course', 'user')
+
     lookup_field = 'username'
 
     # In Django Rest Framework v3, there is a default pagination
@@ -353,9 +353,16 @@ class UserCourseEnrollmentsList(generics.ListAPIView):
             return CourseEnrollmentSerializerv05
         return CourseEnrollmentSerializer
 
+    @cached_property
+    def queryset(self):
+        return CourseEnrollment.objects.all().select_related('course', 'user').filter(
+            user__username=self.kwargs['username'],
+            is_active=True
+        ).order_by('created').reverse()
+
     def get_queryset(self):
         api_version = self.kwargs.get('api_version')
-        mobile_available = self.mobile_available_enrollments
+        mobile_available = self.get_mobile_available_enrollments()
 
         not_duration_limited = (
             enrollment for enrollment in mobile_available
@@ -374,19 +381,14 @@ class UserCourseEnrollmentsList(generics.ListAPIView):
             # return all courses, with associated expiration
             return mobile_available
 
-    @cached_property
-    def mobile_available_enrollments(self) -> List[Optional[CourseEnrollment]]:
+    def get_mobile_available_enrollments(self) -> List[Optional[CourseEnrollment]]:
         """
         Gets list with `CourseEnrollment` for mobile available courses.
         """
-        enrollments = self.queryset.filter(
-            user__username=self.kwargs['username'],
-            is_active=True
-        ).order_by('created').reverse()
         org = self.request.query_params.get('org', None)
 
         same_org = (
-            enrollment for enrollment in enrollments
+            enrollment for enrollment in self.queryset
             if enrollment.course_overview and self.is_org(org, enrollment.course_overview.org)
         )
         mobile_available = (
@@ -421,7 +423,7 @@ class UserCourseEnrollmentsList(generics.ListAPIView):
         """
         Gets primary enrollment obj by latest enrollment or latest progress on the course.
         """
-        mobile_available = self.mobile_available_enrollments
+        mobile_available = self.get_mobile_available_enrollments()
         if not mobile_available:
             return None
 
