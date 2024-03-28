@@ -169,7 +169,6 @@ class CourseEnrollmentSerializerModifiedForPrimary(CourseEnrollmentSerializer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # import pdb; pdb.set_trace()
         self.course = modulestore().get_course(self.instance.course.id)
 
     def get_course_status(self, model: CourseEnrollment) -> Optional[Dict[str, List[str]]]:
