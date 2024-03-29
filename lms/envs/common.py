@@ -5498,15 +5498,15 @@ EVENT_BUS_PRODUCER_CONFIG = {
         'course-authoring-xblock-lifecycle':
             {'event_key_field': 'xblock_info.usage_key', 'enabled': False},
     },
-    "org.openedx.learning.course.grade.now.passed.v1": {
+    "org.openedx.learning.course.passing.status.v1": {
         "learning-badges-lifecycle": {
-            "event_key_field": "user_course_data.course.course_key",
+            "event_key_field": "course_passing_status.course.course_key",
             "enabled": True,
         },
     },
-    "org.openedx.learning.course.grade.now.failed.v1": {
+    "org.openedx.learning.ccx.course.passing.status.v1": {
         "learning-badges-lifecycle": {
-            "event_key_field": "user_course_data.course.course_key",
+            "event_key_field": "course_passing_status.course.course_key",
             "enabled": True,
         },
     },

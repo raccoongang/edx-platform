@@ -6,11 +6,8 @@ from logging import getLogger
 from crum import get_current_user
 from django.conf import settings
 from eventtracking import tracker
-from openedx_events.learning.data import UserCourseData, CourseData, UserData, UserPersonalData
-from openedx_events.learning.signals import (
-    COURSE_GRADE_NOW_PASSED as COURSE_GRADE_NOW_PASSED_PUBLIC,
-    COURSE_GRADE_NOW_FAILED as COURSE_GRADE_NOW_FAILED_PUBLIC,
-)
+from openedx_events.learning.data import CcxCoursePassingStatusData, CourseData, CoursePassingStatusData, UserData, UserPersonalData
+from openedx_events.learning.signals import CCX_COURSE_PASSING_STATUS_UPDATED, COURSE_PASSING_STATUS_UPDATED
 
 from common.djangoapps.course_modes.models import CourseMode
 from common.djangoapps.student.models import CourseEnrollment
@@ -196,8 +193,9 @@ def course_grade_now_passed(user, course_id):
         )
 
     # produce to event bus
-    COURSE_GRADE_NOW_PASSED_PUBLIC.send_event(
-        user_course_data=UserCourseData(
+    COURSE_PASSING_STATUS_UPDATED.send_event(
+        course_passing_status=CoursePassingStatusData(
+            status=CoursePassingStatusData.PASSING,
             user=UserData(
                 pii=UserPersonalData(
                     username=user.username,
@@ -210,6 +208,8 @@ def course_grade_now_passed(user, course_id):
             course=CourseData(
                 course_key=course_id,
             ),
+            update_timestamp=None,
+            grading_policy_hash=None,
         )
     )
 
@@ -233,8 +233,9 @@ def course_grade_now_failed(user, course_id):
         )
 
     # produce to event bus
-    COURSE_GRADE_NOW_FAILED_PUBLIC.send_event(
-        user_course_data=UserCourseData(
+    COURSE_PASSING_STATUS_UPDATED.send_event(
+        course_passing_status=CoursePassingStatusData(
+            status = CoursePassingStatusData.FAILING,
             user=UserData(
                 pii=UserPersonalData(
                     username=user.username,
@@ -247,6 +248,8 @@ def course_grade_now_failed(user, course_id):
             course=CourseData(
                 course_key=course_id,
             ),
+            update_timestamp=None,
+            grading_policy_hash=None,
         )
     )
 
