@@ -2298,4 +2298,6 @@ def drop_course_sidebar_blocks_cache(course_id: str):
     """
     Drop the course sidebar blocks cache for the given course.
     """
-    cache.delete_many(cache.iter_keys(f"course_sidebar_blocks_{course_id}*"))
+    cache_key_prefix = f"course_sidebar_blocks_{course_id}"
+    all_cache_keys = cache.keys('*') if hasattr(cache, 'keys') else []
+    cache.delete_many(filter(lambda key: key.startswith(cache_key_prefix), all_cache_keys))
