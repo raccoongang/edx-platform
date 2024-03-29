@@ -79,6 +79,7 @@ from lms.djangoapps.courseware.tests.helpers import MasqueradeMixin, get_expirat
 from lms.djangoapps.courseware.testutils import RenderXBlockTestMixin
 from lms.djangoapps.courseware.toggles import (
     COURSEWARE_MICROFRONTEND_DISCUSSION_SIDEBAR_OPEN_DISABLED,
+    COURSEWARE_MICROFRONTEND_SIDEBAR_DISABLED,
     COURSEWARE_MICROFRONTEND_SEARCH_ENABLED,
     COURSEWARE_MICROFRONTEND_SIDEBAR_DISABLED,
     COURSEWARE_OPTIMIZED_RENDER_XBLOCK,
