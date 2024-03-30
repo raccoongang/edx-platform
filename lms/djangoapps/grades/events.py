@@ -208,8 +208,6 @@ def course_grade_now_passed(user, course_id):
             course=CourseData(
                 course_key=course_id,
             ),
-            update_timestamp=None,
-            grading_policy_hash=None,
         )
     )
 
@@ -248,8 +246,6 @@ def course_grade_now_failed(user, course_id):
             course=CourseData(
                 course_key=course_id,
             ),
-            update_timestamp=None,
-            grading_policy_hash=None,
         )
     )
 
