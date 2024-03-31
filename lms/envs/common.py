@@ -5277,13 +5277,13 @@ EVENT_BUS_TOPIC_PREFIX = "dev"
 #    Note: The topic names should not include environment prefix as it will be dynamically added based on
 #    EVENT_BUS_TOPIC_PREFIX setting.
 EVENT_BUS_PRODUCER_CONFIG = {
-    "org.openedx.learning.course.passing.status.v1": {
+    "org.openedx.learning.course.passing.status.updated.v1": {
         "learning-badges-lifecycle": {
             "event_key_field": "course_passing_status.course.course_key",
             "enabled": True,
         },
     },
-    "org.openedx.learning.ccx.course.passing.status.v1": {
+    "org.openedx.learning.ccx.course.passing.status.updated.v1": {
         "learning-badges-lifecycle": {
             "event_key_field": "course_passing_status.course.course_key",
             "enabled": True,
