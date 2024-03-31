@@ -6,7 +6,14 @@ from logging import getLogger
 from crum import get_current_user
 from django.conf import settings
 from eventtracking import tracker
-from openedx_events.learning.data import CcxCoursePassingStatusData, CourseData, CoursePassingStatusData, UserData, UserPersonalData
+from openedx_events.learning.data import (
+    CcxCourseData,
+    CcxCoursePassingStatusData,
+    CourseData,
+    CoursePassingStatusData,
+    UserData,
+    UserPersonalData
+)
 from openedx_events.learning.signals import CCX_COURSE_PASSING_STATUS_UPDATED, COURSE_PASSING_STATUS_UPDATED
 
 from common.djangoapps.course_modes.models import CourseMode
@@ -193,23 +200,43 @@ def course_grade_now_passed(user, course_id):
         )
 
     # produce to event bus
-    COURSE_PASSING_STATUS_UPDATED.send_event(
-        course_passing_status=CoursePassingStatusData(
-            status=CoursePassingStatusData.PASSING,
-            user=UserData(
-                pii=UserPersonalData(
-                    username=user.username,
-                    email=user.email,
-                    name=user.get_full_name(),
+    if hasattr(course_id, 'ccx'):
+        CCX_COURSE_PASSING_STATUS_UPDATED.send_event(
+            course_passing_status=CcxCoursePassingStatusData(
+                status=CcxCoursePassingStatusData.PASSING,
+                user=UserData(
+                    pii=UserPersonalData(
+                        username=user.username,
+                        email=user.email,
+                        name=user.get_full_name(),
+                    ),
+                    id=user.id,
+                    is_active=user.is_active,
                 ),
-                id=user.id,
-                is_active=user.is_active,
-            ),
-            course=CourseData(
-                course_key=course_id,
-            ),
+                course=CcxCourseData(
+                    ccx_course_key=course_id,
+                    master_course_key=course_id.to_course_locator(),
+                ),
+            )
         )
-    )
+    else:
+        COURSE_PASSING_STATUS_UPDATED.send_event(
+            course_passing_status=CoursePassingStatusData(
+                status=CoursePassingStatusData.PASSING,
+                user=UserData(
+                    pii=UserPersonalData(
+                        username=user.username,
+                        email=user.email,
+                        name=user.get_full_name(),
+                    ),
+                    id=user.id,
+                    is_active=user.is_active,
+                ),
+                course=CourseData(
+                    course_key=course_id,
+                ),
+            )
+        )
 
 
 def course_grade_now_failed(user, course_id):
@@ -231,23 +258,43 @@ def course_grade_now_failed(user, course_id):
         )
 
     # produce to event bus
-    COURSE_PASSING_STATUS_UPDATED.send_event(
-        course_passing_status=CoursePassingStatusData(
-            status = CoursePassingStatusData.FAILING,
-            user=UserData(
-                pii=UserPersonalData(
-                    username=user.username,
-                    email=user.email,
-                    name=user.get_full_name(),
+    if hasattr(course_id, 'ccx'):
+        CCX_COURSE_PASSING_STATUS_UPDATED.send_event(
+            course_passing_status=CcxCoursePassingStatusData(
+                status=CcxCoursePassingStatusData.FAILING,
+                user=UserData(
+                    pii=UserPersonalData(
+                        username=user.username,
+                        email=user.email,
+                        name=user.get_full_name(),
+                    ),
+                    id=user.id,
+                    is_active=user.is_active,
                 ),
-                id=user.id,
-                is_active=user.is_active,
-            ),
-            course=CourseData(
-                course_key=course_id,
-            ),
+                course=CcxCourseData(
+                    ccx_course_key=course_id,
+                    master_course_key=course_id.to_course_locator(),
+                ),
+            )
         )
-    )
+    else:
+        COURSE_PASSING_STATUS_UPDATED.send_event(
+            course_passing_status=CoursePassingStatusData(
+                status = CoursePassingStatusData.FAILING,
+                user=UserData(
+                    pii=UserPersonalData(
+                        username=user.username,
+                        email=user.email,
+                        name=user.get_full_name(),
+                    ),
+                    id=user.id,
+                    is_active=user.is_active,
+                ),
+                course=CourseData(
+                    course_key=course_id,
+                ),
+            )
+        )
 
 
 def fire_segment_event_on_course_grade_passed_first_time(user_id, course_locator):
