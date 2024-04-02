@@ -15,10 +15,9 @@ from xmodule.modulestore.exceptions import ItemNotFoundError
 class HtmlBlockMobileApiMixin:
     FILE_NAME = 'content_html.zip'
 
-    def update_info_api(self):
+    def update_info_api(self, html_data):
         if not self.is_modified():
             return
-
         base_path = self._base_storage_path()
         self.remove_old_files(base_path)
 
@@ -40,7 +39,7 @@ class HtmlBlockMobileApiMixin:
             return str(soup)
 
         pattern = re.compile(r'/static/[\w\+@\-_\.]+')
-        data = pattern.sub(replace_static_links, self.data)
+        data = pattern.sub(replace_static_links, html_data)
         data = replace_iframe(data)
 
         default_storage.save(f'{base_path}index.html', ContentFile(data))
