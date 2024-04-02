@@ -267,8 +267,8 @@ class CourseEnrollmentSerializerModifiedForPrimary(CourseEnrollmentSerializer):
             if assignment.date < datetime.now(timezone):
                 past_assignment.append(assignment)
             else:
-                if not next_assignment:
-                    next_assignment = DateSummarySerializer(assignment).data
+                next_assignment = DateSummarySerializer(assignment).data
+                break
 
         return {
             'future_assignment': next_assignment,
