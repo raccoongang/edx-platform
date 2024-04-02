@@ -259,7 +259,7 @@ class CourseEnrollmentSerializerModifiedForPrimary(CourseEnrollmentSerializer):
             self.context.get('request'),
             include_past_dates=True
         )
-        next_assignment = {}
+        next_assignment = None
         past_assignment = []
 
         timezone = get_user_timezone_or_last_seen_timezone_or_utc(model.user)
