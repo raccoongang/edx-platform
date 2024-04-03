@@ -93,6 +93,11 @@ ${xblock.display_name_with_default} ${xblock_type_display_name(xblock)}
     <%static:css group='style-vendor'/>
     <%static:css group='style-vendor-tinymce-content'/>
     <%static:css group='style-vendor-tinymce-skin'/>
+    <style>
+        html body {
+            background: transparent;
+        }
+    </style>
 
     % if uses_bootstrap:
       <link rel="stylesheet" href="${static.url(self.attr.main_css)}" type="text/css" media="all" />
@@ -132,7 +137,7 @@ ${xblock.display_name_with_default} ${xblock_type_display_name(xblock)}
     </script>
   </head>
 
-  <body class="${static.dir_rtl()} <%block name='bodyclass'></%block> lang_${LANGUAGE_CODE}">
+  <body class="${static.dir_rtl()} <%block name='bodyclass'></%block> lang_${LANGUAGE_CODE} view-container">
     <%block name="view_notes"></%block>
 
     <a class="nav-skip" href="#main">${_("Skip to main content")}</a>
@@ -181,8 +186,40 @@ ${xblock.display_name_with_default} ${xblock_type_display_name(xblock)}
 </div>
 
 <script>
-$( document ).ready(function() {
-    setTimeout(() => $(".button-edit").trigger("click"), 300)
+$(document).ready(function () {
+    // Serves to initialize the rendering of a xblock edit modal window.
+    setTimeout(() => $('.button-edit').trigger('click'), 300);
+
+    /**
+     * Callback function for the MutationObserver to handle mutations
+     * and send information when the modal window close logic is triggered.
+     *
+     * @callback mutationCallback
+     * @param {MutationRecord[]} mutations - The list of mutations detected by the observer.
+     */
+    const xblockEditModalObserver = new MutationObserver((mutations) => {
+        const modalClassName = 'wrapper-modal-window-edit-xblock';
+        // The index of the current modal window in the removed nodes.
+        const currentModalIndex = 1;
+
+        // Filter mutations to find removed nodes that match the current modal class name.
+        const editModalRemovedNodes = mutations
+            .filter(({ removedNodes }) => {
+                return removedNodes.length > 0 && removedNodes[currentModalIndex].className.includes(modalClassName)
+            });
+
+        // If removed nodes match the current modal, post a message to close the edit modal.
+        if (editModalRemovedNodes.length > 0) {
+            window.parent.postMessage({ method: 'close_edit_modal', msg: 'Message from edit iframe modal' }, '*');
+        }
+    })
+
+    xblockEditModalObserver.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class']
+    });
 });
 </script>
 
