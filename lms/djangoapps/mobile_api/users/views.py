@@ -3,11 +3,13 @@ Views for user API
 """
 
 
+import datetime
 import logging
 from functools import cached_property
 from typing import List, Optional
 
 from completion.exceptions import UnavailableCompletionData
+from completion.models import BlockCompletion
 from completion.utilities import get_key_to_last_completed_block
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
 from django.contrib.auth.signals import user_logged_in
@@ -17,6 +19,7 @@ from django.utils import dateparse
 from django.utils.decorators import method_decorator
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import UsageKey
+import pytz
 from rest_framework import generics, views
 from rest_framework.decorators import api_view
 from rest_framework.permissions import SAFE_METHODS
@@ -502,3 +505,94 @@ class UserCourseEnrollmentsV4Pagination(DefaultPagination):
     """
     page_size = 5
     max_page_size = 50
+
+
+@mobile_view(is_user=True)
+class UserEnrollmentsStatus(views.APIView):
+    """
+    **Use Case**
+
+        Get information about user's enrolments status.
+
+        Returns active enrolment status if user was enrolled for the course
+        less than 30 days ago or has progressed in the course in the last 30 days.
+        Otherwise, the registration is considered inactive.
+
+    **Example Request**
+
+        GET /api/mobile/{api_version}/users/<user_name>/enrollments_status/
+
+    **Response Values**
+
+        If the request for information about the user's enrolments is successful, the
+        request returns an HTTP 200 "OK" response.
+
+        The HTTP 200 response has the following values.
+
+        * course_id (str): The course id associated with the user's enrollment.
+        * course_name (str): The course name associated with the user's enrollment.
+        * is_active (bool): User's course enrolment status.
+
+
+        The HTTP 200 response contains a list of dictionaries that contain info
+        about each user's enrolment status.
+
+    **Example Response**
+
+        ```json
+        [
+            {
+                "course_id": "course-v1:a+a+a",
+                "course_name": "a",
+                "is_active": true
+            },
+            {
+                "course_id": "course-v1:b+b+b",
+                "course_name": "b",
+                "is_active": true
+            },
+            {
+                "course_id": "course-v1:c+c+c",
+                "course_name": "c",
+                "is_active": false
+            },
+            ...
+        ]
+        ```
+    """
+    def get(self, request, *args, **kwargs) -> Response:
+        """
+        Gets user's enrollments status.
+        """
+        active_status_date = datetime.datetime.now(pytz.UTC) - datetime.timedelta(days=30)
+        user_enrollments = CourseEnrollment.objects.filter(
+            user__username=kwargs.get('username'),
+            is_active=True,
+        )
+        mobile_available = [
+            enrollment for enrollment in user_enrollments
+            if is_mobile_available_for_user(self.request.user, enrollment.course_overview)
+        ]
+        user_completions_last_month = BlockCompletion.objects.filter(
+            user__username=kwargs.get('username'),
+            created__gte=active_status_date
+        )
+        course_ids_where_user_has_completions = [
+            str(completion.block_key.course_key) for completion in user_completions_last_month
+        ]
+        enrollments_status = []
+
+        for user_enrollment in mobile_available:
+            course_id = str(user_enrollment.course_overview.id)
+            enrollments_status.append(
+                {
+                    'course_id': course_id,
+                    'course_name': user_enrollment.course_overview.display_name,
+                    'is_active': bool(
+                        course_id in course_ids_where_user_has_completions
+                        or user_enrollment.created > active_status_date
+                    )
+                }
+            )
+
+        return Response(enrollments_status)
