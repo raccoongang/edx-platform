@@ -1018,6 +1018,15 @@ FEATURES = {
     # .. toggle_target_removal_date: None
     # .. toggle_tickets: 'https://openedx.atlassian.net/browse/MST-1458'
     'ENABLE_CERTIFICATES_IDV_REQUIREMENT': False,
+
+    # .. toggle_name: FEATURES['BADGES_ENABLED']
+    # .. toggle_implementation: DjangoSetting
+    # .. toggle_default: False
+    # .. toggle_description: Set to True to enable badges functionality.
+    # .. toggle_use_cases: open_edx
+    # .. toggle_creation_date: 2024-04-02
+    # .. toggle_target_removal_date: None
+    'BADGES_ENABLED': False,
 }
 
 # Specifies extra XBlock fields that should available when requested via the Course Blocks API
@@ -5266,6 +5275,9 @@ EVENT_BUS_CONSUMER = "edx_event_bus_redis.RedisEventConsumer"
 EVENT_BUS_REDIS_CONNECTION_URL = "redis://:password@edx.devstack.redis:6379/"
 EVENT_BUS_TOPIC_PREFIX = "dev"
 
+def _should_send_learning_badge_events(settings):
+    return settings.FEATURES['BADGES_ENABLED']
+
 # .. setting_name: EVENT_BUS_PRODUCER_CONFIG
 # .. setting_default: all events disabled
 # .. setting_description: Dictionary of event_types mapped to dictionaries of topic to topic-related configuration.
@@ -5280,16 +5292,21 @@ EVENT_BUS_PRODUCER_CONFIG = {
     "org.openedx.learning.course.passing.status.updated.v1": {
         "learning-badges-lifecycle": {
             "event_key_field": "course_passing_status.course.course_key",
-            "enabled": True,
+            "enabled": _should_send_learning_badge_events,
         },
     },
     "org.openedx.learning.ccx.course.passing.status.updated.v1": {
         "learning-badges-lifecycle": {
             "event_key_field": "course_passing_status.course.course_key",
-            "enabled": True,
+            "enabled": _should_send_learning_badge_events,
         },
     },
 }
+
+derived_collection_entry('EVENT_BUS_PRODUCER_CONFIG', 'org.openedx.learning.course.passing.status.updated.v1',
+                         'learning-badges-lifecycle', 'enabled')
+derived_collection_entry('EVENT_BUS_PRODUCER_CONFIG', 'org.openedx.learning.ccx.course.passing.status.updated.v1',
+                         'learning-badges-lifecycle', 'enabled')
 
 # If the consumer encounters this many consecutive errors, exit with an error. This is intended to be used in a context where a management system (such as Kubernetes) will relaunch the consumer automatically.
 #EVENT_BUS_REDIS_CONSUMER_CONSECUTIVE_ERRORS_LIMIT (defaults to None)
