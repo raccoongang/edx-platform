@@ -8,6 +8,7 @@ import logging
 from functools import cached_property
 from typing import List, Optional
 
+import pytz
 from completion.exceptions import UnavailableCompletionData
 from completion.models import BlockCompletion
 from completion.utilities import get_key_to_last_completed_block
@@ -19,7 +20,6 @@ from django.utils import dateparse
 from django.utils.decorators import method_decorator
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import UsageKey
-import pytz
 from rest_framework import generics, views
 from rest_framework.decorators import api_view
 from rest_framework.permissions import SAFE_METHODS
