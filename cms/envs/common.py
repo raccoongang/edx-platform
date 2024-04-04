@@ -2831,12 +2831,17 @@ DISCUSSIONS_INCONTEXT_LEARNMORE_URL = ''
 # disable indexing on date field its coming django-simple-history.
 SIMPLE_HISTORY_DATE_INDEX = False
 
-#### Event bus producing ####
-
+#### Event bus ####
+EVENT_BUS_PRODUCER = "edx_event_bus_redis.create_producer"
+EVENT_BUS_CONSUMER = "edx_event_bus_redis.RedisEventConsumer"
+EVENT_BUS_REDIS_CONNECTION_URL = "redis://:password@edx.devstack.redis:6379/"
+EVENT_BUS_TOPIC_PREFIX = "dev"
 
 def _should_send_xblock_events(settings):
     return settings.FEATURES['ENABLE_SEND_XBLOCK_LIFECYCLE_EVENTS_OVER_BUS']
 
+def _should_send_learning_badge_events(settings):
+    return settings.FEATURES['BADGES_ENABLED']
 
 # .. setting_name: EVENT_BUS_PRODUCER_CONFIG
 # .. setting_default: all events disabled
@@ -2887,6 +2892,18 @@ EVENT_BUS_PRODUCER_CONFIG = {
         'learning-certificate-lifecycle':
             {'event_key_field': 'certificate.course.course_key', 'enabled': False},
     },
+    "org.openedx.learning.course.passing.status.updated.v1": {
+        "learning-badges-lifecycle": {
+            "event_key_field": "course_passing_status.course.course_key",
+            "enabled": _should_send_learning_badge_events,
+        },
+    },
+    "org.openedx.learning.ccx.course.passing.status.updated.v1": {
+        "learning-badges-lifecycle": {
+            "event_key_field": "course_passing_status.course.course_key",
+            "enabled": _should_send_learning_badge_events,
+        },
+    },
 }
 
 
@@ -2897,6 +2914,30 @@ derived_collection_entry('EVENT_BUS_PRODUCER_CONFIG', 'org.openedx.content_autho
 derived_collection_entry('EVENT_BUS_PRODUCER_CONFIG', 'org.openedx.content_authoring.xblock.deleted.v1',
                          'course-authoring-xblock-lifecycle', 'enabled')
 
+derived_collection_entry(
+    "EVENT_BUS_PRODUCER_CONFIG",
+    "org.openedx.learning.course.passing.status.updated.v1",
+    "learning-badges-lifecycle",
+    "enabled",
+)
+derived_collection_entry(
+    "EVENT_BUS_PRODUCER_CONFIG",
+    "org.openedx.learning.ccx.course.passing.status.updated.v1",
+    "learning-badges-lifecycle",
+    "enabled",
+)
+
+# If the consumer encounters this many consecutive errors, exit with an error. This is intended to be used in a context where a management system (such as Kubernetes) will relaunch the consumer automatically.
+#EVENT_BUS_REDIS_CONSUMER_CONSECUTIVE_ERRORS_LIMIT (defaults to None)
+
+# How long the consumer should wait for new entries in a stream.
+# As we are running the consumer in a while True loop, changing this setting doesn't make much difference
+# expect for changing number of monitoring messages while waiting for new events.
+# https://redis.io/commands/xread/#blocking-for-data
+#EVENT_BUS_REDIS_CONSUMER_POLL_TIMEOUT (defaults to 60 seconds)
+
+# Limits stream size to approximately this number
+#EVENT_BUS_REDIS_STREAM_MAX_LEN (defaults to 10_000)
 
 ################### Authoring API ######################
 
