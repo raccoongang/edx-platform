@@ -5303,10 +5303,18 @@ EVENT_BUS_PRODUCER_CONFIG = {
     },
 }
 
-derived_collection_entry('EVENT_BUS_PRODUCER_CONFIG', 'org.openedx.learning.course.passing.status.updated.v1',
-                         'learning-badges-lifecycle', 'enabled')
-derived_collection_entry('EVENT_BUS_PRODUCER_CONFIG', 'org.openedx.learning.ccx.course.passing.status.updated.v1',
-                         'learning-badges-lifecycle', 'enabled')
+derived_collection_entry(
+    "EVENT_BUS_PRODUCER_CONFIG",
+    "org.openedx.learning.course.passing.status.updated.v1",
+    "learning-badges-lifecycle",
+    "enabled",
+)
+derived_collection_entry(
+    "EVENT_BUS_PRODUCER_CONFIG",
+    "org.openedx.learning.ccx.course.passing.status.updated.v1",
+    "learning-badges-lifecycle",
+    "enabled",
+)
 
 # If the consumer encounters this many consecutive errors, exit with an error. This is intended to be used in a context where a management system (such as Kubernetes) will relaunch the consumer automatically.
 #EVENT_BUS_REDIS_CONSUMER_CONSECUTIVE_ERRORS_LIMIT (defaults to None)
