@@ -14,7 +14,7 @@ from opaque_keys.edx.keys import CourseKey
 from web_fragments.fragment import Fragment
 
 from cms.lib.xblock.authoring_mixin import VISIBILITY_VIEW
-from common.djangoapps.edxmako.shortcuts import render_to_string
+from common.djangoapps.edxmako.shortcuts import render_to_response, render_to_string
 from common.djangoapps.student.auth import (
     has_studio_read_access,
     has_studio_write_access,
@@ -299,14 +299,16 @@ def xblock_view_handler(request, usage_key_string, view_name):
     else:
         return HttpResponse(status=406)
 
-from common.djangoapps.edxmako.shortcuts import render_to_response
+
 @require_http_methods("GET")
 @login_required
-def partial_edit_view_xblock(request,usage_key_string):
+def partial_edit_view_xblock(request, usage_key_string):
+    """
+    The restful handler for requests for rendered xblock views.
+    """
     usage_key = usage_key_with_run(usage_key_string)
     if not has_studio_read_access(request.user, usage_key.course_key):
         raise PermissionDenied()
-
 
     store = modulestore()
     xblock = store.get_item(usage_key)
@@ -332,7 +334,6 @@ def partial_edit_view_xblock(request,usage_key_string):
         )
     )
 
-
     load_services_for_studio(xblock.runtime, request.user)
 
     # try:
@@ -354,8 +355,7 @@ def partial_edit_view_xblock(request,usage_key_string):
     # 'reorderable_container_child_preview' is only rendered for xblocks that
     # are being shown in a reorderable container, so the xblock is automatically
     # added to the list.
-    reorderable_items = set()
-
+    # reorderable_items = set()
 
     force_render = request.GET.get("force_render", None)
 
@@ -398,21 +398,9 @@ def partial_edit_view_xblock(request,usage_key_string):
         },
     )
 
+    from ..utils import get_container_handler_context  # pylint: disable=import-outside-toplevel
+    from .component import _get_item_in_course  # pylint: disable=import-outside-toplevel
 
-    fragment_content = studio_fragment.content
-    if isinstance(fragment_content, bytes):
-        fragment_content = studio_fragment.content.decode("utf-8")
-
-    context = {
-        "studio_fragment": studio_fragment,
-        "wrapper_fragment": wrapper_fragment,
-        "is_learning_mfe":True
-
-    }
-
-    from ..utils import get_container_handler_context
-    from .component import _get_item_in_course
-    # return render_to_response('courseware-chromeless.html', context)
     usage_key = usage_key_with_run(usage_key_string)
     with modulestore().bulk_operations(usage_key.course_key):
         course, xblock, lms_link, preview_lms_link = _get_item_in_course(request, usage_key)

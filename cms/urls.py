@@ -147,7 +147,7 @@ urlpatterns = oauth2_urlpatterns + [
     re_path(fr'^xblock/container/{settings.USAGE_KEY_PATTERN}$', contentstore_views.xblock_container_handler,
             name='xblock_container_handler'),
     re_path(fr'^xblock/{settings.USAGE_KEY_PATTERN}/editor$', partial_edit_view_xblock,
-                    name='xblock_editor_handler'),
+            name='xblock_editor_handler'),
     re_path(fr'^xblock/{settings.USAGE_KEY_PATTERN}/(?P<view_name>[^/]+)$', contentstore_views.xblock_view_handler,
             name='xblock_view_handler'),
     re_path(fr'^xblock/{settings.USAGE_KEY_PATTERN}?$', contentstore_views.xblock_handler,
