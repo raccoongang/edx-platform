@@ -4,7 +4,6 @@ Views for user API
 
 
 import logging
-from datetime import datetime
 from functools import cached_property
 from typing import List, Optional
 
@@ -358,6 +357,11 @@ class UserCourseEnrollmentsList(generics.ListAPIView):
 
     @cached_property
     def queryset(self):
+        """
+        Find and return the list of course enrollments for the user.
+
+        In v4 added filtering by statuses.
+        """
         api_version = self.kwargs.get('api_version')
         status = self.request.GET.get('status')
         username = self.kwargs['username']
@@ -367,7 +371,7 @@ class UserCourseEnrollmentsList(generics.ListAPIView):
             is_active=True
         ).order_by('-created')
 
-        if api_version == API_V4 and status in EnrollmentStatuses.values:
+        if api_version == API_V4 and status in EnrollmentStatuses.values():
             if status == EnrollmentStatuses.IN_PROGRESS.value:
                 queryset = queryset.in_progress(user_username=username, time_zone=self.user_timezone)
             elif status == EnrollmentStatuses.COMPLETED.value:
@@ -387,7 +391,7 @@ class UserCourseEnrollmentsList(generics.ListAPIView):
             if check_course_expired(self.request.user, enrollment.course) == ACCESS_GRANTED
         )
 
-        if api_version == API_V4 and status not in EnrollmentStatuses.values:
+        if api_version == API_V4 and status not in EnrollmentStatuses.values():
             primary_enrollment_obj = self.get_primary_enrollment_by_latest_enrollment_or_progress()
             if primary_enrollment_obj:
                 mobile_available.remove(primary_enrollment_obj)
@@ -426,8 +430,8 @@ class UserCourseEnrollmentsList(generics.ListAPIView):
                 'user_timezone': str(self.user_timezone),
                 'enrollments': response.data
             }
-            if api_version == API_V4 and status not in EnrollmentStatuses.values:
-                if status in EnrollmentStatuses.values:
+            if api_version == API_V4 and status not in EnrollmentStatuses.values():
+                if status in EnrollmentStatuses.values():
                     enrollment_data.update({'primary': None})
                 else:
                     primary_enrollment_obj = self.get_primary_enrollment_by_latest_enrollment_or_progress()

@@ -822,7 +822,6 @@ class TestUserEnrollmentApi(UrlResetMixin, MobileAPITestCase, MobileAuthUserTest
         self.assertEqual(enrollments['results'][0]['course']['id'], str(old_course.id))
         self.assertNotIn('primary', response.data)
 
-
     def test_user_enrollment_api_v4_expired_course_with_certificate(self):
         """
         Testing that the API returns a course with

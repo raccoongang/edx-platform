@@ -1,10 +1,12 @@
+"""
+Enums for mobile_api users app.
+"""
 from enum import Enum
-from django.utils.functional import classproperty
 
 
 class EnrollmentStatuses(Enum):
     """
-
+    Enum for enrollment statuses.
     """
 
     ALL = 'all'
@@ -12,8 +14,9 @@ class EnrollmentStatuses(Enum):
     COMPLETED = 'completed'
     EXPIRED = 'expired'
 
-    # values = [ALL, IN_PROGRESS, COMPLETED, EXPIRED]
-
-    @classproperty
+    @classmethod
     def values(cls):
+        """
+        Returns string representation of all enum values.
+        """
         return [e.value for e in cls]
