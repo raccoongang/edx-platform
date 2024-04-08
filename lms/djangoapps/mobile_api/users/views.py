@@ -6,7 +6,7 @@ Views for user API
 import datetime
 import logging
 from functools import cached_property
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import pytz
 from completion.exceptions import UnavailableCompletionData
@@ -565,23 +565,36 @@ class UserEnrollmentsStatus(views.APIView):
         Gets user's enrollments status.
         """
         active_status_date = datetime.datetime.now(pytz.UTC) - datetime.timedelta(days=30)
+        username = kwargs.get('username')
+        course_ids_where_user_has_completions = self._get_course_ids_where_user_has_completions(
+            username,
+            active_status_date,
+        )
+        enrollments_status = self._build_enrollments_status_dict(
+            username,
+            active_status_date,
+            course_ids_where_user_has_completions
+        )
+        return Response(enrollments_status)
+
+    def _build_enrollments_status_dict(
+        self,
+        username: str,
+        active_status_date: datetime,
+        course_ids: List[str],
+    ) -> List[Dict[str, bool]]:
+        """
+        Builds list with dictionaries with user's enrolments statuses.
+        """
         user_enrollments = CourseEnrollment.objects.filter(
-            user__username=kwargs.get('username'),
+            user__username=username,
             is_active=True,
         )
         mobile_available = [
             enrollment for enrollment in user_enrollments
             if is_mobile_available_for_user(self.request.user, enrollment.course_overview)
         ]
-        user_completions_last_month = BlockCompletion.objects.filter(
-            user__username=kwargs.get('username'),
-            created__gte=active_status_date
-        )
-        course_ids_where_user_has_completions = [
-            str(completion.block_key.course_key) for completion in user_completions_last_month
-        ]
         enrollments_status = []
-
         for user_enrollment in mobile_available:
             course_id = str(user_enrollment.course_overview.id)
             enrollments_status.append(
@@ -589,10 +602,23 @@ class UserEnrollmentsStatus(views.APIView):
                     'course_id': course_id,
                     'course_name': user_enrollment.course_overview.display_name,
                     'is_active': bool(
-                        course_id in course_ids_where_user_has_completions
+                        course_id in course_ids
                         or user_enrollment.created > active_status_date
                     )
                 }
             )
+        return enrollments_status
 
-        return Response(enrollments_status)
+    @staticmethod
+    def _get_course_ids_where_user_has_completions(
+        username: str,
+        active_status_date: datetime,
+    ) -> List[str]:
+        """
+        Gets course ids where user has completions.
+        """
+        user_completions_last_month = BlockCompletion.objects.filter(
+            user__username=username,
+            created__gte=active_status_date
+        )
+        return [str(completion.block_key.course_key) for completion in user_completions_last_month]
