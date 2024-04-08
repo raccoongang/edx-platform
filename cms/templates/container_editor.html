@@ -175,10 +175,6 @@ from openedx.core.djangolib.markup import HTML, Text
                             // Serves to initialize the rendering of a xblock edit modal window.
                             setTimeout(() => $('.button-edit').trigger('click'), 300);
 
-                            const iframeMessageHandler = (method, msg) => {
-                                return window.parent.postMessage({ method, msg }, '*');
-                            }
-
                             /**
                              * Callback function for the MutationObserver to handle mutations
                              * and send information when the modal window close logic is triggered.
@@ -188,41 +184,33 @@ from openedx.core.djangolib.markup import HTML, Text
                              */
                             const xblockEditModalObserver = new MutationObserver((mutations) => {
                                 const modalClassName = 'wrapper-modal-window-edit-xblock';
-                                // The index of the current modal window in the removed nodes.
-                                const currentModalIndex = 1;
 
-                                // Filter mutations to find removed nodes that match the current modal class name.
-                                const editModalRemovedNodes = mutations
+                                // When a modal window is opened while the template is rendering,
+                                // an element with class modalClassName is rendered,
+                                // the MutationObserver defines this process in removedNodes.
+                                const modalElementMutationRecords = mutations
                                     .filter(({ removedNodes }) => {
-                                        return removedNodes.length > 0 && removedNodes[currentModalIndex].className.includes(modalClassName)
+                                        const filteredModalClassName = Array.from(removedNodes).filter((node) =>
+                                            node.className && node.className.includes(modalClassName));
+
+                                        return filteredModalClassName.length > 0;
                                     });
 
-                                // If removed nodes match the current modal, post a message to close the edit modal.
-                                if (editModalRemovedNodes.length > 0) {
-                                    iframeMessageHandler('close_edit_modal', 'Sends a message when the modal window is closed');
+                                // If the element was present and deleted, close the modal window.
+                                if (modalElementMutationRecords.length > 0 && !$('.' + modalClassName).length) {
+                                    window.parent.postMessage({
+                                        method: 'close_edit_modal',
+                                        msg: 'Sends a message when the modal window is closed'
+                                    }, '*');
                                 }
-                            })
+                            });
 
-                            xblockEditModalObserver.observe(document.body, {
+                            xblockEditModalObserver.observe(document, {
                                 childList: true,
                                 subtree: true,
                                 attributes: true,
                                 attributeFilter: ['class']
                             });
-
-                            const originalAjax = $.ajax;
-                            // Notifies the parent element that a server error has occurred.
-                            $.ajax = function(options) {
-                                const errorHandler = options.error;
-                                options.error = function(xhr, textStatus, errorThrown) {
-                                    iframeMessageHandler('edit_modal-error', 'Sends a message in case of server error');
-
-                                    if (errorHandler) {
-                                        errorHandler(xhr, textStatus, errorThrown);
-                                    }
-                                };
-                                return originalAjax.call(this, options);
-                            };
                         });
                     </script>
                 </%block>
