@@ -38,10 +38,11 @@ from xmodule.x_module import (
     STUDIO_VIEW,
 )  # lint-amnesty, pylint: disable=wrong-import-order
 
-
 from ..helpers import (
     is_unit,
 )
+from ..utils import get_container_handler_context
+from .component import _get_item_in_course
 from .preview import get_preview_fragment
 
 from cms.djangoapps.contentstore.xblock_storage_handlers.view_handlers import (
@@ -302,7 +303,7 @@ def xblock_view_handler(request, usage_key_string, view_name):
 
 @require_http_methods("GET")
 @login_required
-def partial_edit_view_xblock(request, usage_key_string):
+def edit_view_xblock(request, usage_key_string):
     """
     The restful handler for requests for rendered xblock views.
     """
@@ -323,7 +324,6 @@ def partial_edit_view_xblock(request, usage_key_string):
             request_token=request_token(request),
         )
     )
-
     xblock.runtime.wrappers_asides.append(
         partial(
             wrap_xblock_aside,
@@ -333,53 +333,14 @@ def partial_edit_view_xblock(request, usage_key_string):
             extra_classes=["wrapper-comp-plugins"],
         )
     )
-
     load_services_for_studio(xblock.runtime, request.user)
-
-    # try:
-    studio_fragment = xblock.render("studio_view")
-    # catch exceptions indiscriminately, since after this point they escape the
-    # dungeon and surface as uneditable, unsaveable, and undeletable
-    # component-goblins.
-    # except Exception as exc:  # pylint: disable=broad-except
-    #     log.debug(
-    #         "Unable to render %s for %r", "STUDIO_VIEW", xblock, exc_info=True
-    #     )
-    #     fragment = Fragment(
-    #         render_to_string("html_error.html", {"message": str(exc)})
-    #     )
-
-    can_edit = has_studio_write_access(request.user, usage_key.course_key)
-
-    # Determine the items to be shown as reorderable. Note that the view
-    # 'reorderable_container_child_preview' is only rendered for xblocks that
-    # are being shown in a reorderable container, so the xblock is automatically
-    # added to the list.
-    # reorderable_items = set()
-
-    force_render = request.GET.get("force_render", None)
-
-    # Fetch tags of children components
-    tags_count_map = {}
-    if use_tagging_taxonomy_list_page():
-        tags_count_map = get_children_tags_count(xblock)
 
     # Set up the context to be passed to each XBlock's render method.
     context = request.GET.dict()
-    context.update(
-        {
-            # This setting disables the recursive wrapping of xblocks
-            "is_pages_view": True,
-            "is_unit_page": is_unit(xblock),
-            "can_edit": can_edit,
-            "root_xblock": None,
-            "reorderable_items": None,
-            "paging": None,
-            "force_render": force_render,
-            "item_url": "/container/{usage_key}",
-            "tags_count_map": tags_count_map,
-        }
-    )
+    context.update({
+        "is_unit_page": is_unit(xblock),
+        "can_edit": has_studio_write_access(request.user, usage_key.course_key),
+    })
     wrapper_fragment = get_preview_fragment(request, xblock, context)
 
     # Note that the container view recursively adds headers into the preview fragment,
@@ -398,17 +359,10 @@ def partial_edit_view_xblock(request, usage_key_string):
         },
     )
 
-    from ..utils import get_container_handler_context  # pylint: disable=import-outside-toplevel
-    from .component import _get_item_in_course  # pylint: disable=import-outside-toplevel
-
     usage_key = usage_key_with_run(usage_key_string)
-    with modulestore().bulk_operations(usage_key.course_key):
+    with store.bulk_operations(usage_key.course_key):
         course, xblock, lms_link, preview_lms_link = _get_item_in_course(request, usage_key)
-
         container_handler_context = get_container_handler_context(request, usage_key, course, xblock)
-        container_handler_context.update({
-            "studio_fragment": studio_fragment,
-        })
         return render_to_response('container_editor.html', container_handler_context)
 
 
