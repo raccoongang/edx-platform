@@ -305,61 +305,13 @@ def xblock_view_handler(request, usage_key_string, view_name):
 @login_required
 def edit_view_xblock(request, usage_key_string):
     """
-    The restful handler for requests for rendered xblock views.
+    The handler for rendered edit xblock view.
     """
     usage_key = usage_key_with_run(usage_key_string)
     if not has_studio_read_access(request.user, usage_key.course_key):
         raise PermissionDenied()
-
     store = modulestore()
-    xblock = store.get_item(usage_key)
 
-    # wrap the generated fragment in the xmodule_editor div so that the javascript
-    # can bind to it correctly
-    xblock.runtime.wrappers.append(
-        partial(
-            wrap_xblock,
-            "StudioRuntime",
-            usage_id_serializer=str,
-            request_token=request_token(request),
-        )
-    )
-    xblock.runtime.wrappers_asides.append(
-        partial(
-            wrap_xblock_aside,
-            "StudioRuntime",
-            usage_id_serializer=str,
-            request_token=request_token(request),
-            extra_classes=["wrapper-comp-plugins"],
-        )
-    )
-    load_services_for_studio(xblock.runtime, request.user)
-
-    # Set up the context to be passed to each XBlock's render method.
-    context = request.GET.dict()
-    context.update({
-        "is_unit_page": is_unit(xblock),
-        "can_edit": has_studio_write_access(request.user, usage_key.course_key),
-    })
-    wrapper_fragment = get_preview_fragment(request, xblock, context)
-
-    # Note that the container view recursively adds headers into the preview fragment,
-    # so only the "Pages" view requires that this extra wrapper be included.
-    display_label = xblock.display_name or xblock.scope_ids.block_type
-    if not xblock.display_name and xblock.scope_ids.block_type == "html":
-        display_label = _("Text")
-    wrapper_fragment.content = render_to_string(
-        "component.html",
-        {
-            "xblock_context": context,
-            "xblock": xblock,
-            "locator": usage_key,
-            "preview": wrapper_fragment.content,
-            "label": display_label,
-        },
-    )
-
-    usage_key = usage_key_with_run(usage_key_string)
     with store.bulk_operations(usage_key.course_key):
         course, xblock, lms_link, preview_lms_link = _get_item_in_course(request, usage_key)
         container_handler_context = get_container_handler_context(request, usage_key, course, xblock)
