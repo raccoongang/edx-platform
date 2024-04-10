@@ -579,6 +579,14 @@ FEATURES = {
     # .. toggle_creation_date: 2024-03-22
     # .. toggle_tickets: https://github.com/openedx/edx-platform/pull/33911
     'ENABLE_GRADING_METHOD_IN_PROBLEMS': False,
+
+    # .. toggle_name: FEATURES['BADGES_ENABLED']
+    # .. toggle_implementation: DjangoSetting
+    # .. toggle_default: False
+    # .. toggle_description: Set to True to enable the Badges feature.
+    # .. toggle_use_cases: open_edx
+    # .. toggle_creation_date: 2024-04-10
+    'BADGES_ENABLED': False,
 }
 
 # .. toggle_name: ENABLE_COPPA_COMPLIANCE
@@ -2927,7 +2935,10 @@ derived_collection_entry(
     "enabled",
 )
 
-# If the consumer encounters this many consecutive errors, exit with an error. This is intended to be used in a context where a management system (such as Kubernetes) will relaunch the consumer automatically.
+# If the consumer encounters this many consecutive errors, exit with an error.
+# This is intended to be used in a context where a management system (such as Kubernetes)
+# will relaunch the consumer automatically.
+
 #EVENT_BUS_REDIS_CONSUMER_CONSECUTIVE_ERRORS_LIMIT (defaults to None)
 
 # How long the consumer should wait for new entries in a stream.

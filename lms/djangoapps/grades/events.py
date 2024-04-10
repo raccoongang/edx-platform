@@ -280,7 +280,7 @@ def course_grade_now_failed(user, course_id):
     else:
         COURSE_PASSING_STATUS_UPDATED.send_event(
             course_passing_status=CoursePassingStatusData(
-                status = CoursePassingStatusData.FAILING,
+                status=CoursePassingStatusData.FAILING,
                 user=UserData(
                     pii=UserPersonalData(
                         username=user.username,
