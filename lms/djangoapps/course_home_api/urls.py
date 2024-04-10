@@ -9,7 +9,7 @@ from django.urls import re_path
 from lms.djangoapps.course_home_api.course_metadata.views import CourseHomeMetadataView
 from lms.djangoapps.course_home_api.dates.views import DatesTabView
 from lms.djangoapps.course_home_api.outline.views import (
-    CourseSidebarBlocksView,
+    CourseNavigationBlocksView,
     OutlineTabView,
     dismiss_welcome_message,
     save_course_goal,
@@ -49,9 +49,9 @@ urlpatterns += [
         name='outline-tab'
     ),
     re_path(
-        fr'sidebar/{settings.COURSE_KEY_PATTERN}',
-        CourseSidebarBlocksView.as_view(),
-        name='course-sidebar-blocks'
+        fr'navigation/{settings.COURSE_KEY_PATTERN}',
+        CourseNavigationBlocksView.as_view(),
+        name='course-navigation'
     ),
     re_path(
         r'dismiss_welcome_message',

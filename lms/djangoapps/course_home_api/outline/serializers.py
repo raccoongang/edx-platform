@@ -85,6 +85,8 @@ class CourseBlockSerializer(serializers.Serializer):
         for higher_class in icon_call_priority:
             if higher_class in child_classes:
                 new_class = higher_class
+        # if 'openassessment' in child_classes:
+        #     new_class = 'fa-pencil-square-o'
         return new_class
 
 

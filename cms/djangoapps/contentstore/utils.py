@@ -8,11 +8,10 @@ import re
 from collections import defaultdict
 from contextlib import contextmanager
 from datetime import datetime, timezone
-from urllib.parse import quote_plus, unquote
+from urllib.parse import quote_plus
 from uuid import uuid4
 
 from django.conf import settings
-from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils import translation
@@ -2235,94 +2234,3 @@ def send_course_update_notification(course_key, content, user):
         audience_filters={},
     )
     COURSE_NOTIFICATION_REQUESTED.send_event(course_notification_data=notification_data)
-
-
-def get_xblock_validation_messages(xblock):
-    """
-    Retrieves validation messages for a given xblock.
-
-    Args:
-        xblock: The xblock object to validate.
-
-    Returns:
-        list: A list of validation error messages.
-    """
-    validation_json = xblock.validate().to_json()
-    return validation_json['messages']
-
-
-def get_xblock_render_error(request, xblock):
-    """
-    Checks if there are any rendering errors for a given block and return these.
-
-    Args:
-        request: WSGI request object
-        xblock: The xblock object to rendering.
-
-    Returns:
-        str: Error message which happened while rendering of xblock.
-    """
-    from cms.djangoapps.contentstore.views.preview import _load_preview_block
-    from xmodule.studio_editable import has_author_view
-    from xmodule.x_module import AUTHOR_VIEW, STUDENT_VIEW
-
-    def get_xblock_render_context(request, block):
-        """
-        Return a dict of the data needs for render of each block.
-        """
-        can_edit = has_studio_write_access(request.user, block.usage_key.course_key)
-
-        return {
-            "is_unit_page": False,
-            "can_edit": can_edit,
-            "root_xblock": xblock,
-            "reorderable_items": set(),
-            "paging": None,
-            "force_render": None,
-            "item_url": "/container/{block.location}",
-            "tags_count_map": {},
-        }
-
-    try:
-        block = _load_preview_block(request, xblock)
-        preview_view = AUTHOR_VIEW if has_author_view(block) else STUDENT_VIEW
-        render_context = get_xblock_render_context(request, block)
-        block.render(preview_view, render_context)
-    except Exception as exc:  # pylint: disable=broad-except
-        return str(exc)
-
-    return ""
-
-
-def drop_course_sidebar_blocks_cache(course_id: str):
-    """
-    Drop the course sidebar blocks cache for the given course.
-    """
-    cache_key_prefix = f"course_sidebar_blocks_{course_id}"
-    cache_keys = get_cache_keys(cache_key_prefix)
-
-    cache.delete_many(cache_keys)
-
-
-def get_cache_keys(cache_key_prefix):
-    """
-    Get all cache keys for the given cache key prefix.
-
-    LocMemCache does not have a keys method, so we need to iterate over the cache
-    and manually filter out the keys that match the given prefix.
-    """
-    cache_backend = settings.CACHES['default']['BACKEND']
-    if cache_backend == 'django_redis.cache.RedisCache':
-        yield cache.iter_keys(f"{cache_key_prefix}*")
-    elif cache_backend == 'django.core.cache.backends.locmem.LocMemCache':
-        for key in cache._cache.keys():  # pylint: disable=protected-access
-            try:
-                decoded_key = unquote(key.split(':', 2)[-1], encoding='utf-8')
-            except IndexError:
-                continue
-
-            if decoded_key.startswith(cache_key_prefix):
-                yield decoded_key
-    else:
-        log.error(f"Unsupported cache backend: {cache_backend}")
-        yield

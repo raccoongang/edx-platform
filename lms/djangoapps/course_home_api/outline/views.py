@@ -381,7 +381,7 @@ class OutlineTabView(RetrieveAPIView):
         return expose_header('Date', response)
 
 
-class CourseSidebarBlocksView(RetrieveAPIView):
+class CourseNavigationBlocksView(RetrieveAPIView):
     """
     **Use Cases**
         Request details for the sidebar navigation of the course.
@@ -416,7 +416,7 @@ class CourseSidebarBlocksView(RetrieveAPIView):
 
     serializer_class = CourseBlockSerializer
     COURSE_BLOCKS_CACHE_KEY_TEMPLATE = (
-        'course_sidebar_blocks_{course_key_string}_{user_id}_{user_cohort_id}'
+        'course_sidebar_blocks_{course_key_string}_{course_version}_{user_id}_{user_cohort_id}'
         '_{allow_public}_{allow_public_outline}_{is_masquerading}'
     )
     COURSE_BLOCKS_CACHE_TIMEOUT = 60 * 60  # 1 hour
@@ -445,12 +445,13 @@ class CourseSidebarBlocksView(RetrieveAPIView):
         enrollment = CourseEnrollment.get_enrollment(request.user, course_key)
 
         try:
-            user_cohort = get_cohort(request.user, course_key)
+            user_cohort = get_cohort(request.user, course_key, use_cached=True)
         except ValueError:
             user_cohort = None
 
         cache_key = self.COURSE_BLOCKS_CACHE_KEY_TEMPLATE.format(
             course_key_string=course_key_string,
+            course_version=str(course.course_version),
             user_id=request.user.id,
             user_cohort_id=getattr(user_cohort, 'id', ''),
             allow_public=allow_public,
@@ -471,7 +472,7 @@ class CourseSidebarBlocksView(RetrieveAPIView):
             if courseware_mfe_navigation_sidebar_blocks_caching_is_enabled():
                 cache.set(cache_key, course_blocks, self.COURSE_BLOCKS_CACHE_TIMEOUT)
 
-        course_blocks = self.filter_unavailable_blocks(course_blocks, course_key)
+        course_blocks = self.filter_inaccessible_blocks(course_blocks, course_key)
         if course_blocks:
             course_blocks = self.mark_complete_recursive(course_blocks)
 
@@ -486,19 +487,19 @@ class CourseSidebarBlocksView(RetrieveAPIView):
 
         return Response(serializer.data)
 
-    def filter_unavailable_blocks(self, course_blocks, course_key):
+    def filter_inaccessible_blocks(self, course_blocks, course_key):
         """
-        Filter out sections and subsections that are not available to the current user.
+        Filter out sections and subsections that are not accessible to the current user.
         """
         if course_blocks:
             user_course_outline = get_user_course_outline(course_key, self.request.user, datetime.now(tz=timezone.utc))
             course_sections = course_blocks.get('children', [])
-            course_blocks['children'] = self.get_available_sections(user_course_outline, course_sections)
+            course_blocks['children'] = self.get_accessible_sections(user_course_outline, course_sections)
 
             for section_data in course_sections:
-                section_data['children'] = self.get_available_sequences(
+                section_data['children'] = self.get_accessible_sequences(
                     user_course_outline,
-                    section_data.get('children', ['completion'])
+                    section_data.get('children', [])
                 )
                 accessible_sequence_ids = {str(usage_key) for usage_key in user_course_outline.accessible_sequences}
                 for sequence_data in section_data['children']:
@@ -550,9 +551,9 @@ class CourseSidebarBlocksView(RetrieveAPIView):
         return [child for child in block.get('children', []) if child['type'] != 'discussion']
 
     @staticmethod
-    def get_available_sections(user_course_outline, course_sections):
+    def get_accessible_sections(user_course_outline, course_sections):
         """
-        Filter out sections that are not available to the user.
+        Filter out sections that are not accessible to the user.
         """
         available_section_ids = set(map(lambda section: str(section.usage_key), user_course_outline.sections))
         return list(filter(
@@ -560,9 +561,9 @@ class CourseSidebarBlocksView(RetrieveAPIView):
         ))
 
     @staticmethod
-    def get_available_sequences(user_course_outline, course_sequences):
+    def get_accessible_sequences(user_course_outline, course_sequences):
         """
-        Filter out sequences that are not available to the user.
+        Filter out sequences that are not accessible to the user.
         """
         available_sequence_ids = set(map(str, user_course_outline.sequences))
 
