@@ -2707,6 +2707,7 @@ EVENT_BUS_CONSUMER = "edx_event_bus_redis.RedisEventConsumer"
 EVENT_BUS_REDIS_CONNECTION_URL = "redis://:password@edx.devstack.redis:6379/"
 EVENT_BUS_TOPIC_PREFIX = "dev"
 
+
 def _should_send_learning_badge_events(settings):
     return settings.FEATURES['BADGES_ENABLED']
 
@@ -2748,7 +2749,7 @@ derived_collection_entry(
     "enabled",
 )
 
-# If the consumer encounters this many consecutive errors, exit with an error. 
+# If the consumer encounters this many consecutive errors, exit with an error.
 # This is intended to be used in a context where a management system (such as Kubernetes)
 # will relaunch the consumer automatically.
 
