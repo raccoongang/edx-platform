@@ -21,7 +21,6 @@ from cms.djangoapps.contentstore.courseware_index import (
     CoursewareSearchIndexer,
     LibrarySearchIndexer,
 )
-from cms.djangoapps.contentstore.utils import drop_course_sidebar_blocks_cache
 from common.djangoapps.track.event_transaction_utils import get_event_transaction_id, get_event_transaction_type
 from common.djangoapps.util.block_utils import yield_dynamic_block_descendants
 from lms.djangoapps.grades.api import task_compute_all_grades_for_course
@@ -142,7 +141,6 @@ def listen_for_course_publish(sender, course_key, **kwargs):  # pylint: disable=
     # register special exams asynchronously after the data is ready
     course_key_str = str(course_key)
     transaction.on_commit(lambda: update_special_exams_and_publish.delay(course_key_str))
-    drop_course_sidebar_blocks_cache(course_key_str)
 
     if key_supports_outlines(course_key):
         # Push the course outline to learning_sequences asynchronously.
