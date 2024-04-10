@@ -386,7 +386,7 @@ class CourseNavigationBlocksView(RetrieveAPIView):
     **Use Cases**
         Request details for the sidebar navigation of the course.
     **Example Requests**
-        GET api/course_home/v1/sidebar/{course_key}
+        GET api/course_home/v1/navigation/{course_key}
     **Response Values**
         For a good 200 response, the response will include:
         blocks: List of serialized Course Block objects. Each serialization has the following fields:
@@ -417,7 +417,7 @@ class CourseNavigationBlocksView(RetrieveAPIView):
     serializer_class = CourseBlockSerializer
     COURSE_BLOCKS_CACHE_KEY_TEMPLATE = (
         'course_sidebar_blocks_{course_key_string}_{course_version}_{user_id}_{user_cohort_id}'
-        '_{allow_public}_{allow_public_outline}_{is_masquerading}'
+        '_{enrollment_mode}_{allow_public}_{allow_public_outline}_{is_masquerading}'
     )
     COURSE_BLOCKS_CACHE_TIMEOUT = 60 * 60  # 1 hour
 
@@ -453,6 +453,7 @@ class CourseNavigationBlocksView(RetrieveAPIView):
             course_key_string=course_key_string,
             course_version=str(course.course_version),
             user_id=request.user.id,
+            enrollment_mode=getattr(enrollment, 'mode', ''),
             user_cohort_id=getattr(user_cohort, 'id', ''),
             allow_public=allow_public,
             allow_public_outline=allow_public_outline,
