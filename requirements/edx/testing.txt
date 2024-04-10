@@ -16,6 +16,8 @@
     # via -r requirements/edx/base.txt
 -e git+https://github.com/openedx/xblock-google-drive.git@2d176468e33c0713c911b563f8f65f7cf232f5b6#egg=xblock-google-drive
     # via -r requirements/edx/base.txt
+-e git+https://github.com/raccoongang/openedx-events.git@aci.main#egg=openedx_events
+    # via -r requirements/edx/base.txtß
 acid-xblock==0.2.1
     # via -r requirements/edx/base.txt
 aiohttp==3.8.3
@@ -942,11 +944,6 @@ openedx-django-pyfs==3.2.1
     # via
     #   -r requirements/edx/base.txt
     #   xblock
-openedx-events==0.13.0
-    # via
-    #   -c requirements/edx/../constraints.txt
-    #   -r requirements/edx/base.txt
-    #   edx-event-bus-kafka
 openedx-filters==0.8.0
     # via
     #   -r requirements/edx/base.txt
