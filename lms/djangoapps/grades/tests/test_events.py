@@ -111,7 +111,7 @@ class PersistentGradeEventsTest(SharedModuleStoreTestCase, OpenEdxEventsTestMixi
         )
 
 
-class CoursePassingStatusEventsTest(SharedModuleStoreTestCase, OpenEdxEventsTestMixin): # pylint: disable=missing-class-docstring
+class CoursePassingStatusEventsTest(SharedModuleStoreTestCase, OpenEdxEventsTestMixin):  # pylint: disable=missing-class-docstring
     ENABLED_OPENEDX_EVENTS = [
         "org.openedx.learning.course.passing.status.updated.v1",
     ]
@@ -169,7 +169,7 @@ class CoursePassingStatusEventsTest(SharedModuleStoreTestCase, OpenEdxEventsTest
         )
 
 
-class CCXCoursePassingStatusEventsTest( # pylint: disable=missing-class-docstring
+class CCXCoursePassingStatusEventsTest(  # pylint: disable=missing-class-docstring
     SharedModuleStoreTestCase, OpenEdxEventsTestMixin
 ):
     ENABLED_OPENEDX_EVENTS = [
