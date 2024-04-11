@@ -755,9 +755,9 @@ urlpatterns += [
         name='courseware_sidebar_enabled_view',
     ),
     re_path(
-        fr'^courses/{settings.COURSE_ID_PATTERN}/discussion-sidebar/enabled/$',
-        courseware_views.courseware_mfe_discussion_sidebar_opening_is_enabled,
-        name='discussion_sidebar_enabled_view',
+        fr'^courses/{settings.COURSE_ID_PATTERN}/show-default-right-sidebar/enabled/$',
+        courseware_views.courseware_mfe_show_default_right_sidebar_is_enabled,
+        name='show_default_right_sidebar_enabled_view',
     ),
 ]
 
