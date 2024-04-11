@@ -94,17 +94,20 @@ COURSEWARE_MICROFRONTEND_SIDEBAR_DISABLED = CourseWaffleFlag(
     f'{WAFFLE_FLAG_NAMESPACE}.disable_navigation_sidebar', __name__
 )
 
-# .. toggle_name: courseware.disable_default_opening_discussion_sidebar
+# .. toggle_name: courseware.show_default_right_sidebar
 # .. toggle_implementation: WaffleFlag
 # .. toggle_default: False
-# .. toggle_description: Disable opening the discussion sidebar by default on Learning MFE.
+# .. toggle_description: If waffle flag disabled
+# Discussions or Notifications sidebar shouldn't be displayed at all on Learning MFE.
+# If waffle flag enabled - Discussions opens always on the pages with discussions,
+# if user is in Audit and course has verified mode - show Notifications.
 # .. toggle_use_cases: temporary
-# .. toggle_creation_date: 2024-03-13
+# .. toggle_creation_date: 2024-04-11
 # .. toggle_target_removal_date: None
-# .. toggle_tickets: AXIMST-629
+# .. toggle_tickets: FC-0056
 # .. toggle_warning: None.
-COURSEWARE_MICROFRONTEND_DISCUSSION_SIDEBAR_OPEN_DISABLED = CourseWaffleFlag(
-    f'{WAFFLE_FLAG_NAMESPACE}.disable_default_opening_discussion_sidebar', __name__
+COURSEWARE_SHOW_DEFAULT_RIGHT_SIDEBAR = CourseWaffleFlag(
+    f'{WAFFLE_FLAG_NAMESPACE}.show_default_right_sidebar', __name__
 )
 
 # .. toggle_name: courseware.mfe_progress_milestones_streak_discount_enabled
@@ -218,11 +221,11 @@ def courseware_mfe_sidebar_is_disabled(course_key=None):
     return COURSEWARE_MICROFRONTEND_SIDEBAR_DISABLED.is_enabled(course_key)
 
 
-def courseware_mfe_discussion_sidebar_opening_is_disabled(course_key=None):
+def courseware_show_default_right_sidebar_is_enabled(course_key=None):
     """
-    Return whether the courseware.disable_default_opening_discussion_sidebar flag is on.
+    Return whether the courseware.show_default_right_sidebar flag is on.
     """
-    return COURSEWARE_MICROFRONTEND_DISCUSSION_SIDEBAR_OPEN_DISABLED.is_enabled(course_key)
+    return COURSEWARE_SHOW_DEFAULT_RIGHT_SIDEBAR.is_enabled(course_key)
 
 
 def courseware_mfe_navigation_sidebar_blocks_caching_is_enabled(course_key=None):

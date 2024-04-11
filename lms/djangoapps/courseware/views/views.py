@@ -88,9 +88,9 @@ from lms.djangoapps.courseware.models import BaseStudentModuleHistory, StudentMo
 from lms.djangoapps.courseware.permissions import MASQUERADE_AS_STUDENT, VIEW_COURSE_HOME, VIEW_COURSEWARE
 from lms.djangoapps.courseware.toggles import (
     course_is_invitation_only,
-    courseware_mfe_discussion_sidebar_opening_is_disabled,
     courseware_mfe_search_is_enabled,
     courseware_mfe_sidebar_is_disabled,
+    courseware_show_default_right_sidebar_is_enabled,
 )
 from lms.djangoapps.courseware.user_state_client import DjangoXBlockUserStateClient
 from lms.djangoapps.courseware.utils import (
@@ -2288,12 +2288,15 @@ def courseware_mfe_sidebar_enabled(request, course_id=None):
 
 
 @api_view(['GET'])
-def courseware_mfe_discussion_sidebar_opening_is_enabled(request, course_id=None):
+def courseware_mfe_show_default_right_sidebar_is_enabled(request, course_id=None):
     """
     Simple GET endpoint to expose whether the course may open discussion sidebar by default.
     """
-    course_key = CourseKey.from_string(course_id) if course_id else None
+    try:
+        course_key = CourseKey.from_string(course_id) if course_id else None
+    except InvalidKeyError:
+        return JsonResponse({"error": "Invalid course_id"})
 
     return JsonResponse({
-        "enabled": not courseware_mfe_discussion_sidebar_opening_is_disabled(course_key)
+        "enabled": courseware_show_default_right_sidebar_is_enabled(course_key)
     })
