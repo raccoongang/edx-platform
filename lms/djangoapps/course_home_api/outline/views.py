@@ -40,7 +40,7 @@ from lms.djangoapps.courseware.context_processor import user_timezone_locale_pre
 from lms.djangoapps.courseware.courses import get_course_date_blocks, get_course_info_section
 from lms.djangoapps.courseware.date_summary import TodaysDate
 from lms.djangoapps.courseware.masquerade import is_masquerading, setup_masquerade
-from lms.djangoapps.courseware.toggles import courseware_mfe_navigation_sidebar_blocks_caching_is_enabled
+from lms.djangoapps.courseware.toggles import courseware_disable_navigation_sidebar_blocks_caching
 from lms.djangoapps.courseware.views.views import get_cert_data
 from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
 from lms.djangoapps.utils import OptimizelyClient
@@ -459,10 +459,11 @@ class CourseNavigationBlocksView(RetrieveAPIView):
             allow_public_outline=allow_public_outline,
             is_masquerading=user_is_masquerading,
         )
-        if courseware_mfe_navigation_sidebar_blocks_caching_is_enabled():
-            course_blocks = cache.get(cache_key)
-        else:
+
+        if navigation_sidebar_caching_is_disabled := courseware_disable_navigation_sidebar_blocks_caching():
             course_blocks = None
+        else:
+            course_blocks = cache.get(cache_key)
 
         if not course_blocks:
             if getattr(enrollment, 'is_active', False) or bool(staff_access):
@@ -470,7 +471,7 @@ class CourseNavigationBlocksView(RetrieveAPIView):
             elif allow_public_outline or allow_public or user_is_masquerading:
                 course_blocks = get_course_outline_block_tree(request, course_key_string, None)
 
-            if courseware_mfe_navigation_sidebar_blocks_caching_is_enabled():
+            if not navigation_sidebar_caching_is_disabled:
                 cache.set(cache_key, course_blocks, self.COURSE_BLOCKS_CACHE_TIMEOUT)
 
         course_blocks = self.filter_inaccessible_blocks(course_blocks, course_key)
