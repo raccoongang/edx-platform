@@ -467,7 +467,7 @@ class SidebarBlocksTestViews(BaseCourseHomeTests):
 
     def setUp(self):
         super().setUp()
-        self.url = reverse('course-home:course-sidebar-blocks', args=[self.course.id])
+        self.url = reverse('course-home:course-navigation', args=[self.course.id])
 
     def update_course_and_overview(self):
         """
@@ -573,7 +573,7 @@ class SidebarBlocksTestViews(BaseCourseHomeTests):
         """
         Test that the API returns a 404 when the course is not found.
         """
-        url = reverse('course-home:course-sidebar-blocks', args=['course-v1:unknown+course+2T2020'])
+        url = reverse('course-home:course-navigation', args=['course-v1:unknown+course+2T2020'])
         response = self.client.get(url)
         assert response.status_code == 404
 
@@ -624,7 +624,7 @@ class SidebarBlocksTestViews(BaseCourseHomeTests):
             'suggested_icon': 'fa-foo-bar',
         }
 
-        url = reverse('course-home:course-sidebar-blocks', args=[course.id])
+        url = reverse('course-home:course-navigation', args=[course.id])
         response = self.client.get(url)
         assert response.status_code == 200
 
@@ -715,7 +715,7 @@ class SidebarBlocksTestViews(BaseCourseHomeTests):
         """
         self.add_blocks_to_course()
         CourseEnrollment.enroll(self.user, self.course.id)
-        url = reverse('course-home:course-sidebar-blocks', args=[self.course.id])
+        url = reverse('course-home:course-navigation', args=[self.course.id])
         response = self.client.get(url)
         assert response.status_code == 200
 
@@ -731,7 +731,7 @@ class SidebarBlocksTestViews(BaseCourseHomeTests):
         CourseEnrollment.enroll(self.user, self.course.id)
         self.create_completion(problem, int(problem_complete))
 
-        response = self.client.get(reverse('course-home:course-sidebar-blocks', args=[self.course.id]))
+        response = self.client.get(reverse('course-home:course-navigation', args=[self.course.id]))
 
         sequence_data = response.data['blocks'][str(self.sequential.location)]
         vertical_data = response.data['blocks'][str(self.vertical.location)]
@@ -750,7 +750,7 @@ class SidebarBlocksTestViews(BaseCourseHomeTests):
         CourseEnrollment.enroll(self.user, self.course.id)
         self.create_completion(completed_problem, 1)
         self.create_completion(uncompleted_problem, 0)
-        response = self.client.get(reverse('course-home:course-sidebar-blocks', args=[self.course.id]))
+        response = self.client.get(reverse('course-home:course-navigation', args=[self.course.id]))
 
         expected_sequence_completion_stat = {
             'completion': 0,
@@ -779,7 +779,7 @@ class SidebarBlocksTestViews(BaseCourseHomeTests):
         CourseEnrollment.enroll(self.user, self.course.id)
         self.create_completion(problem1, 1)
         self.create_completion(problem2, 1)
-        response = self.client.get(reverse('course-home:course-sidebar-blocks', args=[self.course.id]))
+        response = self.client.get(reverse('course-home:course-navigation', args=[self.course.id]))
 
         expected_sequence_completion_stat = {
             'completion': 1,
