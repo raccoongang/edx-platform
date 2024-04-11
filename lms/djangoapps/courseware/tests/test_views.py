@@ -78,10 +78,10 @@ from lms.djangoapps.courseware.tests.factories import StudentModuleFactory
 from lms.djangoapps.courseware.tests.helpers import MasqueradeMixin, get_expiration_banner_text, set_preview_mode
 from lms.djangoapps.courseware.testutils import RenderXBlockTestMixin
 from lms.djangoapps.courseware.toggles import (
-    COURSEWARE_MICROFRONTEND_DISCUSSION_SIDEBAR_OPEN_DISABLED,
     COURSEWARE_MICROFRONTEND_SIDEBAR_DISABLED,
     COURSEWARE_MICROFRONTEND_SEARCH_ENABLED,
     COURSEWARE_OPTIMIZED_RENDER_XBLOCK,
+    COURSEWARE_SHOW_DEFAULT_RIGHT_SIDEBAR,
 )
 from lms.djangoapps.courseware.user_state_client import DjangoXBlockUserStateClient
 from lms.djangoapps.courseware.views.views import (
@@ -3826,7 +3826,7 @@ class TestCoursewareMFESidebarEnabledAPI(SharedModuleStoreTestCase):
 
 class TestMFEDiscussionSidebarEnabledAPI(SharedModuleStoreTestCase):
     """
-    Tests the endpoint to fetch the Courseware Discussion Sidebar waffle flag status.
+    Tests the endpoint to fetch the Courseware Discussion/Notifications Sidebar waffle flag status.
     """
 
     def setUp(self):
@@ -3835,12 +3835,12 @@ class TestMFEDiscussionSidebarEnabledAPI(SharedModuleStoreTestCase):
         self.course = CourseFactory.create()
 
         self.client = APIClient()
-        self.apiUrl = reverse('discussion_sidebar_enabled_view', kwargs={'course_id': str(self.course.id)})
+        self.apiUrl = reverse('show_default_right_sidebar_enabled_view', kwargs={'course_id': str(self.course.id)})
 
-    @override_waffle_flag(COURSEWARE_MICROFRONTEND_DISCUSSION_SIDEBAR_OPEN_DISABLED, active=True)
-    def test_is_mfe_discussion_sidebar_opening_disabled(self):
+    @override_waffle_flag(COURSEWARE_SHOW_DEFAULT_RIGHT_SIDEBAR, active=False)
+    def test_is_mfe_show_default_right_sidebar_disabled(self):
         """
-        Getter to check if discussion sidebar shouldn't be opened by default.
+        Getter to check if right sidebar shouldn't be opened by default.
         """
         response = self.client.get(self.apiUrl, content_type='application/json')
         body = json.loads(response.content.decode('utf-8'))
@@ -3848,10 +3848,10 @@ class TestMFEDiscussionSidebarEnabledAPI(SharedModuleStoreTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(body, {'enabled': False})
 
-    @override_waffle_flag(COURSEWARE_MICROFRONTEND_DISCUSSION_SIDEBAR_OPEN_DISABLED, active=False)
-    def test_is_mfe_discussion_sidebar_opening_enabled(self):
+    @override_waffle_flag(COURSEWARE_SHOW_DEFAULT_RIGHT_SIDEBAR, active=True)
+    def test_is_mfe_show_default_right_sidebar_enabled(self):
         """
-        Getter to check if discussion sidebar should be opened by default.
+        Getter to check if right sidebar should be opened by default.
         """
         response = self.client.get(self.apiUrl, content_type='application/json')
         body = json.loads(response.content.decode('utf-8'))
