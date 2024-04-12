@@ -2734,6 +2734,18 @@ EVENT_BUS_PRODUCER_CONFIG = {
             "enabled": _should_send_learning_badge_events,
         },
     },
+    "org.openedx.learning.badge.awarded.v1": {
+        "learning-badges-lifecycle": {
+            "event_key_field": "badge.uuid",
+            "enabled": _should_send_learning_badge_events
+        },
+    },
+    "org.openedx.learning.badge.revoked.v1": {
+        "learning-badges-lifecycle": {
+            "event_key_field": "badge.uuid",
+            "enabled": _should_send_learning_badge_events
+        },
+    },
 }
 
 derived_collection_entry(
@@ -2745,6 +2757,18 @@ derived_collection_entry(
 derived_collection_entry(
     "EVENT_BUS_PRODUCER_CONFIG",
     "org.openedx.learning.ccx.course.passing.status.updated.v1",
+    "learning-badges-lifecycle",
+    "enabled",
+)
+derived_collection_entry(
+    "EVENT_BUS_PRODUCER_CONFIG",
+    "org.openedx.learning.badge.awarded.v1",
+    "learning-badges-lifecycle",
+    "enabled",
+)
+derived_collection_entry(
+    "EVENT_BUS_PRODUCER_CONFIG",
+    "org.openedx.learning.badge.revoked.v1",
     "learning-badges-lifecycle",
     "enabled",
 )
