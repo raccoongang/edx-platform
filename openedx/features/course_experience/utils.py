@@ -15,6 +15,17 @@ from xmodule.modulestore.django import modulestore  # lint-amnesty, pylint: disa
 
 
 @request_cached()
+def get_course_outline_block_tree_with_cache(request, course_id, user=None, allow_start_dates_in_future=False):
+    """
+    Returns the root block of the course outline, with children as blocks.
+
+    allow_start_dates_in_future (bool): When True, will allow blocks to be
+            returned that can bypass the StartDateTransformer's filter to show
+            blocks with start dates in the future.
+    """
+    return get_course_outline_block_tree(request, course_id, user, allow_start_dates_in_future)
+
+
 def get_course_outline_block_tree(request, course_id, user=None, allow_start_dates_in_future=False):  # lint-amnesty, pylint: disable=too-many-statements
     """
     Returns the root block of the course outline, with children as blocks.
