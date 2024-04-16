@@ -416,7 +416,7 @@ class CourseNavigationBlocksView(RetrieveAPIView):
 
     serializer_class = CourseBlockSerializer
     COURSE_BLOCKS_CACHE_KEY_TEMPLATE = (
-        'course_sidebar_blocks_{course_key_string}_{course_version}_{user_id}_{user_cohort_id}'
+        'course_sidebar_blocks_{course_key_string}_{course_edited_timestamp}_{user_id}_{user_cohort_id}'
         '_{enrollment_mode}_{allow_public}_{allow_public_outline}_{is_masquerading}'
     )
     COURSE_BLOCKS_CACHE_TIMEOUT = 60 * 60  # 1 hour
@@ -451,7 +451,7 @@ class CourseNavigationBlocksView(RetrieveAPIView):
 
         cache_key = self.COURSE_BLOCKS_CACHE_KEY_TEMPLATE.format(
             course_key_string=course_key_string,
-            course_version=str(course.course_version),
+            course_edited_timestamp=str(course.subtree_edited_on.timestamp()),
             user_id=request.user.id,
             enrollment_mode=getattr(enrollment, 'mode', ''),
             user_cohort_id=getattr(user_cohort, 'id', ''),
