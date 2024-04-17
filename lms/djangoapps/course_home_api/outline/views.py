@@ -56,7 +56,11 @@ from openedx.features.course_experience.course_updates import (
     get_current_update_for_user
 )
 from openedx.features.course_experience.url_helpers import get_learning_mfe_home_url
-from openedx.features.course_experience.utils import get_course_outline_block_tree, get_start_block
+from openedx.features.course_experience.utils import (
+    get_course_outline_block_tree,
+    get_course_outline_block_tree_with_cache,
+    get_start_block
+)
 from openedx.features.discounts.utils import generate_offer_data
 from xmodule.course_block import COURSE_VISIBILITY_PUBLIC, COURSE_VISIBILITY_PUBLIC_OUTLINE  # lint-amnesty, pylint: disable=wrong-import-order
 
@@ -243,7 +247,7 @@ class OutlineTabView(RetrieveAPIView):
         show_enrolled = is_enrolled or is_staff
         enable_proctored_exams = False
         if show_enrolled:
-            course_blocks = get_course_outline_block_tree(request, course_key_string, request.user)
+            course_blocks = get_course_outline_block_tree_with_cache(request, course_key_string, request.user)
             date_blocks = get_course_date_blocks(course, request.user, request, num_assignments=1)
             dates_widget['course_date_blocks'] = [block for block in date_blocks if not isinstance(block, TodaysDate)]
 
@@ -278,7 +282,7 @@ class OutlineTabView(RetrieveAPIView):
                 resume_course['url'] = start_block['lms_web_url']
 
         elif allow_public_outline or allow_public or user_is_masquerading:
-            course_blocks = get_course_outline_block_tree(request, course_key_string, None)
+            course_blocks = get_course_outline_block_tree_with_cache(request, course_key_string, None)
             if allow_public or user_is_masquerading:
                 handouts_html = get_course_info_section(request, request.user, course, 'handouts')
 
@@ -416,7 +420,7 @@ class CourseNavigationBlocksView(RetrieveAPIView):
 
     serializer_class = CourseBlockSerializer
     COURSE_BLOCKS_CACHE_KEY_TEMPLATE = (
-        'course_sidebar_blocks_{course_key_string}_{course_version}_{user_id}_{user_cohort_id}'
+        'course_sidebar_blocks_{course_key_string}_{course_edited_timestamp}_{user_id}_{user_cohort_id}'
         '_{enrollment_mode}_{allow_public}_{allow_public_outline}_{is_masquerading}'
     )
     COURSE_BLOCKS_CACHE_TIMEOUT = 60 * 60  # 1 hour
@@ -451,7 +455,7 @@ class CourseNavigationBlocksView(RetrieveAPIView):
 
         cache_key = self.COURSE_BLOCKS_CACHE_KEY_TEMPLATE.format(
             course_key_string=course_key_string,
-            course_version=str(course.course_version),
+            course_edited_timestamp=str(course.subtree_edited_on.timestamp()),
             user_id=request.user.id,
             enrollment_mode=getattr(enrollment, 'mode', ''),
             user_cohort_id=getattr(user_cohort, 'id', ''),
