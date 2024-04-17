@@ -68,7 +68,7 @@ COURSEWARE_MICROFRONTEND_SEARCH_ENABLED = CourseWaffleFlag(
     f'{WAFFLE_FLAG_NAMESPACE}.mfe_courseware_search', __name__
 )
 
-# .. toggle_name: courseware.navigation_sidebar_blocks_caching
+# .. toggle_name: courseware.disable_navigation_sidebar_blocks_caching
 # .. toggle_implementation: WaffleFlag
 # .. toggle_default: False
 # .. toggle_description: Disable caching of navigation sidebar blocks on Learning MFE.
