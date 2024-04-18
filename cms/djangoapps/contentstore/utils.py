@@ -8,10 +8,11 @@ import re
 from collections import defaultdict
 from contextlib import contextmanager
 from datetime import datetime, timezone
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, unquote
 from uuid import uuid4
 
 from django.conf import settings
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils import translation
@@ -2287,3 +2288,36 @@ def get_xblock_render_error(request, xblock):
         return str(exc)
 
     return ""
+
+
+def drop_course_sidebar_blocks_cache(course_id: str):
+    """
+    Drop the course sidebar blocks cache for the given course.
+    """
+    cache_key_prefix = f"course_sidebar_blocks_{course_id}"
+    cache_keys = get_cache_keys(cache_key_prefix)
+
+    cache.delete_many(cache_keys)
+
+
+def get_cache_keys(cache_key_prefix):
+    """
+    Get all cache keys for the given cache key prefix.
+    LocMemCache does not have a keys method, so we need to iterate over the cache
+    and manually filter out the keys that match the given prefix.
+    """
+    cache_backend = settings.CACHES['default']['BACKEND']
+    if cache_backend == 'django_redis.cache.RedisCache':
+        yield cache.iter_keys(f"{cache_key_prefix}*")
+    elif cache_backend == 'django.core.cache.backends.locmem.LocMemCache':
+        for key in cache._cache.keys():  # pylint: disable=protected-access
+            try:
+                decoded_key = unquote(key.split(':', 2)[-1], encoding='utf-8')
+            except IndexError:
+                continue
+
+            if decoded_key.startswith(cache_key_prefix):
+                yield decoded_key
+    else:
+        log.error(f"Unsupported cache backend: {cache_backend}")
+        yield
