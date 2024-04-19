@@ -257,7 +257,7 @@ class CourseEnrollmentSerializerModifiedForPrimary(CourseEnrollmentSerializer):
         """
         return self.calculate_progress(model)
 
-    def get_course_assignments(self, model: CourseEnrollment) -> Optional[Dict[str, List[Dict[str, str]]]]:
+    def get_course_assignments(self, model: CourseEnrollment) -> Dict[str, Optional[List[Dict[str, str]]]]:
         """
         Returns the future assignment data and past assignments data for the user in the course.
         """
@@ -267,7 +267,8 @@ class CourseEnrollmentSerializerModifiedForPrimary(CourseEnrollmentSerializer):
             self.context.get('request'),
             include_past_dates=True
         )
-        next_assignment = None
+        next_assignment_all = []
+        next_assignment = []
         past_assignment = []
 
         timezone = get_user_timezone_or_last_seen_timezone_or_utc(model.user)
@@ -275,11 +276,17 @@ class CourseEnrollmentSerializerModifiedForPrimary(CourseEnrollmentSerializer):
             if assignment.date < datetime.now(timezone):
                 past_assignment.append(assignment)
             else:
-                next_assignment = DateSummarySerializer(assignment).data
-                break
+                if not assignment.complete:
+                    next_assignment_all.append(assignment)
+
+        if next_assignment_all:
+            future_assignment_date = next_assignment_all[0].date.date()
+            next_assignment = [
+                assignment for assignment in next_assignment_all if assignment.date.date() == future_assignment_date
+            ]
 
         return {
-            'future_assignment': next_assignment,
+            'future_assignments': DateSummarySerializer(next_assignment, many=True).data,
             'past_assignments': DateSummarySerializer(past_assignment, many=True).data,
         }
 
