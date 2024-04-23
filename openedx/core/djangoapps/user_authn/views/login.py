@@ -222,6 +222,7 @@ def _log_and_raise_inactive_user_auth_error(unauthenticated_user):
     )
 
 
+@pluggable_override('OVERRIDE_REMOTE_AUTHN_AUTHENTICATE')
 def _authenticate_first_party(request, unauthenticated_user, third_party_auth_requested):
     """
     Use Django authentication on the given request, using rate limiting if configured
@@ -486,7 +487,6 @@ def enterprise_selection_page(request, user, next_url):
     return redirect_url
 
 
-@pluggable_override('REMOTE_AUTHN_LOGIN')
 @ensure_csrf_cookie
 @require_http_methods(['POST'])
 @ratelimit(
