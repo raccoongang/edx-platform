@@ -24,6 +24,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_http_methods
 from django_ratelimit.decorators import ratelimit
 from edx_django_utils.monitoring import set_custom_attribute
+from edx_django_utils.plugins import pluggable_override  # lint-amnesty, pylint: disable=import-error
 from openedx_events.learning.data import UserData, UserPersonalData
 from openedx_events.learning.signals import SESSION_LOGIN_COMPLETED
 from openedx_filters.learning.filters import StudentLoginRequested
@@ -485,6 +486,7 @@ def enterprise_selection_page(request, user, next_url):
     return redirect_url
 
 
+@pluggable_override('REMOTE_AUTHN_LOGIN')
 @ensure_csrf_cookie
 @require_http_methods(['POST'])
 @ratelimit(
