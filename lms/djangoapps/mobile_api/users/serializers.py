@@ -279,11 +279,13 @@ class CourseEnrollmentSerializerModifiedForPrimary(CourseEnrollmentSerializer):
                 if not assignment.complete:
                     next_assignment_all.append(assignment)
 
-        if next_assignment_all:
-            future_assignment_date = next_assignment_all[0].date.date()
-            next_assignment = [
-                assignment for assignment in next_assignment_all if assignment.date.date() == future_assignment_date
-            ]
+if future_assignments:
+        future_assignment_date = future_assignments[0].date.date()
+        next_assignments = [
+            assignment for assignment in future_assignments if assignment.date.date() == future_assignment_date
+        ]
+    else:
+        next_assignments = []
 
         return {
             'future_assignments': DateSummarySerializer(next_assignment, many=True).data,
