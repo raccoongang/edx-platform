@@ -36,4 +36,3 @@ class CoursePushNotificationOptout(Policy):
                 return PolicyResult(deny={ChannelType.PUSH})
 
         return PolicyResult(deny=frozenset())
-
