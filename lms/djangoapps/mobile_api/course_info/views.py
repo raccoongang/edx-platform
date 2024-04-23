@@ -20,11 +20,13 @@ from lms.djangoapps.certificates.api import certificate_downloadable_status
 from lms.djangoapps.courseware.courses import get_course_info_section_block
 from lms.djangoapps.course_goals.models import UserActivity
 from lms.djangoapps.course_api.blocks.views import BlocksInCourseView
+from lms.djangoapps.mobile_api.course_info.constants import BLOCK_STRUCTURE_CACHE_TIMEOUT
 from lms.djangoapps.mobile_api.course_info.serializers import (
     CourseInfoOverviewSerializer,
     CourseAccessSerializer,
     MobileCourseEnrollmentSerializer
 )
+from lms.djangoapps.mobile_api.course_info.utils import calculate_progress
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.lib.api.view_utils import view_auth_classes
 from openedx.core.lib.xblock_utils import get_course_update_items
@@ -378,5 +380,53 @@ class BlocksInfoInCourseView(BlocksInCourseView):
 
             course_data.update(CourseInfoOverviewSerializer(course_overview, context=course_info_context).data)
 
+            self._extend_sequential_info_with_assignment_progress(
+                requested_user,
+                course_id,
+                response.data['blocks'],
+            )
+
             response.data.update(course_data)
         return response
+
+    def _extend_sequential_info_with_assignment_progress(
+        self,
+        requested_user,
+        course_id,
+        blocks_info_data,
+    ):
+        """
+
+        """
+
+        subsection_grades = calculate_progress(requested_user, course_id, BLOCK_STRUCTURE_CACHE_TIMEOUT)
+        grades_with_locations = {str(grade.location): grade for grade in subsection_grades}
+
+        for block_id, block_info in blocks_info_data.items():
+            if block_info['type'] == 'sequential':
+                grade = grades_with_locations.get(block_id)
+                if grade:
+                    points_earned = (
+                        grade.graded_total.earned
+                        if grades_with_locations[block_id].graded
+                        else 0
+                    )
+                    points_possible = (
+                        grade.graded_total.possible
+                        if grades_with_locations[block_id].graded
+                        else 0
+                    )
+                    assignment_type = grade.format
+                else:
+                    points_earned, points_possible = 0, 0
+                    assignment_type = None
+
+                block_info.update(
+                    {
+                        'assignment_progress': {
+                            'assignment_type': assignment_type,
+                            'num_points_earned': points_earned,
+                            'num_points_possible': points_possible,
+                        }
+                    }
+                )
