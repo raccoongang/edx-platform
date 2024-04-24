@@ -1,3 +1,7 @@
+"""
+Common utils for the `course_info` API.
+"""
+
 from django.core.cache import cache
 
 from lms.djangoapps.courseware.access import has_access
