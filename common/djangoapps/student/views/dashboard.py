@@ -16,7 +16,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import ensure_csrf_cookie
 from edx_django_utils import monitoring as monitoring_utils
-from edx_django_utils.plugins import get_plugins_view_context
+from edx_django_utils.plugins import get_plugins_view_context, pluggable_override
 from edx_toggles.toggles import WaffleFlag
 from ipware.ip import get_client_ip
 from opaque_keys.edx.keys import CourseKey
@@ -502,6 +502,7 @@ def check_for_unacknowledged_notices(context):
 @login_required
 @ensure_csrf_cookie
 @add_maintenance_banner
+@pluggable_override('OVERRIDE_STUDENT_DASHBOARD')
 def student_dashboard(request):  # lint-amnesty, pylint: disable=too-many-statements
     """
     Provides the LMS dashboard view
