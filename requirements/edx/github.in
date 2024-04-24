@@ -92,4 +92,4 @@
 -e git+https://github.com/anupdhabarde/edx-proctoring-proctortrack.git@31c6c9923a51c903ae83760ecbbac191363aa2a2#egg=edx_proctoring_proctortrack
 
 -e git+https://github.com/raccoongang/edx-ace.git@25638469b0fd36cff13620fcad183dcc6350dd57#egg=edx_ace
--e git+https://github.com/jazzband/django-push-notifications.git@9e6b9af04422f442f4af27fa2d1fde14da707a2e#egg=django_push_notifications
+-e git+https://github.com/jazzband/django-push-notifications.git@906fe52058bad36b6af2bb292fdb9292ccaa94e5#egg=django_push_notifications
