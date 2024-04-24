@@ -3,7 +3,7 @@ Views for course info API
 """
 
 import logging
-from typing import Optional, Union
+from typing import Dict, Optional, Union
 
 import django
 from django.contrib.auth import get_user_model
@@ -359,6 +359,12 @@ class BlocksInfoInCourseView(BlocksInCourseView):
 
             course_info_context = {}
             if requested_user := self.get_requested_user(request.user, requested_username):
+                self._extend_sequential_info_with_assignment_progress(
+                    requested_user,
+                    course_key,
+                    response.data['blocks'],
+                )
+
                 course_info_context = {
                     'user': requested_user
                 }
@@ -380,25 +386,18 @@ class BlocksInfoInCourseView(BlocksInCourseView):
 
             course_data.update(CourseInfoOverviewSerializer(course_overview, context=course_info_context).data)
 
-            self._extend_sequential_info_with_assignment_progress(
-                requested_user,
-                course_id,
-                response.data['blocks'],
-            )
-
             response.data.update(course_data)
         return response
 
+    @staticmethod
     def _extend_sequential_info_with_assignment_progress(
-        self,
-        requested_user,
-        course_id,
-        blocks_info_data,
-    ):
+        requested_user: User,
+        course_id: CourseKey,
+        blocks_info_data: Dict[str, Dict],
+    ) -> None:
         """
-
+        Extends sequential xblock info with assignment's name and progress.
         """
-
         subsection_grades = calculate_progress(requested_user, course_id, BLOCK_STRUCTURE_CACHE_TIMEOUT)
         grades_with_locations = {str(grade.location): grade for grade in subsection_grades}
 
