@@ -267,29 +267,28 @@ class CourseEnrollmentSerializerModifiedForPrimary(CourseEnrollmentSerializer):
             self.context.get('request'),
             include_past_dates=True
         )
-        next_assignment_all = []
-        next_assignment = []
-        past_assignment = []
+        past_assignments = []
+        future_assignments = []
 
         timezone = get_user_timezone_or_last_seen_timezone_or_utc(model.user)
         for assignment in sorted(assignments, key=lambda x: x.date):
             if assignment.date < datetime.now(timezone):
-                past_assignment.append(assignment)
+                past_assignments.append(assignment)
             else:
                 if not assignment.complete:
-                    next_assignment_all.append(assignment)
+                    future_assignments.append(assignment)
 
-if future_assignments:
-        future_assignment_date = future_assignments[0].date.date()
-        next_assignments = [
-            assignment for assignment in future_assignments if assignment.date.date() == future_assignment_date
-        ]
-    else:
-        next_assignments = []
+        if future_assignments:
+            future_assignment_date = future_assignments[0].date.date()
+            next_assignments = [
+                assignment for assignment in future_assignments if assignment.date.date() == future_assignment_date
+            ]
+        else:
+            next_assignments = []
 
         return {
-            'future_assignments': DateSummarySerializer(next_assignment, many=True).data,
-            'past_assignments': DateSummarySerializer(past_assignment, many=True).data,
+            'future_assignments': DateSummarySerializer(next_assignments, many=True).data,
+            'past_assignments': DateSummarySerializer(past_assignments, many=True).data,
         }
 
     class Meta:
