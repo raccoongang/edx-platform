@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import GCMDeviceAuthorizedViewSet
+from .views import GCMDeviceViewSet
 
 
-CREATE_GCM_DEVICE = GCMDeviceAuthorizedViewSet.as_view({'post': 'create'})
+CREATE_GCM_DEVICE = GCMDeviceViewSet.as_view({'post': 'create'})
 
 
 urlpatterns = [

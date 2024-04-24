@@ -1,3 +1,7 @@
+from django.conf import settings
+from rest_framework import status
+from rest_framework.response import Response
+
 from edx_ace.push_notifications.views import GCMDeviceViewSet as GCMDeviceViewSetBase
 
 from ..decorators import mobile_view
@@ -8,6 +12,10 @@ class GCMDeviceViewSet(GCMDeviceViewSetBase):
     """
     **Use Case**
         This endpoint allows clients to register a device for push notifications.
+
+        If the device is already registered, the existing registration will be updated.
+        If setting PUSH_NOTIFICATIONS_SETTINGS is not configured, the endpoint will return a 501 error.
+
     **Example Request**
         POST /api/mobile/{version}/notifications/create-token/
         **POST Parameters**
@@ -35,5 +43,8 @@ class GCMDeviceViewSet(GCMDeviceViewSetBase):
         ```
     """
 
-    # Overriding the base class method to add the mobile_view decorator and API documentation.
-    pass
+    def create(self, request, *args, **kwargs):
+        if not getattr(settings, 'PUSH_NOTIFICATIONS_SETTINGS', None):
+            return Response('Push notifications are not configured.', status.HTTP_501_NOT_IMPLEMENTED)
+
+        return super().create(request, *args, **kwargs)
