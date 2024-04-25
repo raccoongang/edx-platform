@@ -20,6 +20,7 @@ from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_GET, require_http_methods
 from edx_django_utils.monitoring import function_trace
+from edx_django_utils.plugins import pluggable_override
 from opaque_keys.edx.keys import CourseKey
 from rest_framework import status
 from web_fragments.fragment import Fragment
@@ -211,6 +212,7 @@ def use_bulk_ops(view_func):
 
 @login_required
 @use_bulk_ops
+@pluggable_override('INLINE_DISCUSSIONS_API_OVERRIDE')
 def inline_discussion(request, course_key, discussion_id):
     """
     Renders JSON for DiscussionModules

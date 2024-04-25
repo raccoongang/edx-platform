@@ -33,17 +33,17 @@
         linkDefaultText = 'http://'; // The default text that appears in input
 
     // The text that appears on the dialog box when entering Images.
-    var imageDialogText = gettext('Insert Image (upload file or type URL)'),
+    var imageDialogText = gettext('Insert File (upload file or type URL)'),
         imageUrlHelpText = gettext("Type in a URL or use the \"Choose File\" button to upload a file from your machine. (e.g. 'http://example.com/img/clouds.jpg')"),  // eslint-disable-line max-len
-        imageDescriptionLabel = gettext('Image Description'),
+        imageDescriptionLabel = gettext('File Description'),
         imageDefaultText = 'http://', // The default text that appears in input
-        imageDescError = gettext('Please describe this image or agree that it has no contextual value by checking the checkbox.'),  // eslint-disable-line max-len
-        imageDescriptionHelpText = gettext("e.g. 'Sky with clouds'. The description is helpful for users who cannot see the image."),  // eslint-disable-line max-len
+        imageDescError = gettext('Please describe this file or agree that it has no contextual value by checking the checkbox.'),  // eslint-disable-line max-len
+        imageDescriptionHelpText = gettext("e.g. 'Forum Submission'."),  // eslint-disable-line max-len
         imageDescriptionHelpLink = {
             href: 'http://www.w3.org/TR/html5/embedded-content-0.html#alt',
             text: gettext('How to create useful text alternatives.')
         },
-        imageIsDecorativeLabel = gettext('This image is for decorative purposes only and does not require a description.');  // eslint-disable-line max-len
+        imageIsDecorativeLabel = gettext('');  // eslint-disable-line max-len
 
     // Text that is shared between both link and image dialog boxes.
     var defaultHelpHoverTitle = gettext('Markdown Editing Help'),
@@ -1144,6 +1144,7 @@
                     document.getElementById('file-upload').click();
                     return false;
                 };
+                document.getElementById('img-is-decorative').hidden = true;
                 document.getElementById('img-is-decorative').onchange = function() {
                     descInput.required = !descInput.required;
                 };
@@ -1454,7 +1455,7 @@
             }), -1);
             buttons.quote = makeButton('wmd-quote-button', gettext('Blockquote (Ctrl+Q)'), '-60px', bindCommand('doBlockquote'), -1);
             buttons.code = makeButton('wmd-code-button', gettext('Code Sample (Ctrl+K)'), '-80px', bindCommand('doCode'), -1);
-            buttons.image = makeButton('wmd-image-button', gettext('Image (Ctrl+G)'), '-100px', bindCommand(function(chunk, postProcessing) {
+            buttons.image = makeButton('wmd-image-button', gettext('File (Ctrl+G)'), '-100px', bindCommand(function(chunk, postProcessing) {
                 return this.doLinkOrImage(chunk, postProcessing, true, imageUploadHandler);
             }), -1);
             makeSpacer(2);
@@ -1727,15 +1728,11 @@
                     var linkDef = ' [999]: ' + properlyEncoded(link);
 
                     var num = that.addLinkDef(chunk, linkDef);
-                    chunk.startTag = isImage ? '![' : '[';
+                    chunk.startTag = '[';
                     chunk.endTag = '][' + num + ']';
 
                     if (!chunk.selection) {
-                        if (isImage) {
-                            chunk.selection = description || '';
-                        } else {
-                            chunk.selection = description || gettext('enter link description here');
-                        }
+                        chunk.selection = description || gettext('enter link description here');
                     }
                 }
                 postProcessing();
