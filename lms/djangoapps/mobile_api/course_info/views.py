@@ -405,20 +405,12 @@ class BlocksInfoInCourseView(BlocksInCourseView):
             if block_info['type'] == 'sequential':
                 grade = grades_with_locations.get(block_id)
                 if grade:
-                    points_earned = (
-                        grade.graded_total.earned
-                        if grades_with_locations[block_id].graded
-                        else 0
-                    )
-                    points_possible = (
-                        grade.graded_total.possible
-                        if grades_with_locations[block_id].graded
-                        else 0
-                    )
+                    graded_total = grade.graded_total if grade.graded else None
+                    points_earned = graded_total.earned if graded_total else 0
+                    points_possible = graded_total.possible if graded_total else 0
                     assignment_type = grade.format
                 else:
-                    points_earned, points_possible = 0, 0
-                    assignment_type = None
+                    points_earned, points_possible, assignment_type = 0, 0, None
 
                 block_info.update(
                     {
