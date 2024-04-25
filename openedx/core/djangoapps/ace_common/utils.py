@@ -1,6 +1,9 @@
 """
-Utility functions for edx ace.
+Utility functions for edx-ace.
 """
+import logging
+
+log = logging.getLogger(__name__)
 
 
 def setup_firebase_app(firebase_credentials, app_name='fcm-app'):
@@ -10,6 +13,7 @@ def setup_firebase_app(firebase_credentials, app_name='fcm-app'):
     try:
         import firebase_admin  # pylint: disable=import-outside-toplevel
     except ImportError:
+        log.error('Could not import firebase_admin package.')
         return
     if firebase_credentials:
         certificate = firebase_admin.credentials.Certificate(firebase_credentials)

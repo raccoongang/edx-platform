@@ -27,7 +27,7 @@ def plugin_settings(settings):  # lint-amnesty, pylint: disable=missing-function
     settings.FEATURES['test_django_plugin'] = True
     settings.FCM_APP_NAME = 'fcm-edx-platform'
 
-    if getattr(settings, 'FIREBASE_SETTING_UP', None) is None:
+    if getattr(settings, 'FIREBASE_SETUP_STATUS', None) is None:
         settings.ACE_CHANNEL_DEFAULT_PUSH = 'push_notification'
 
         # Note: To local development with Firebase, you must set FIREBASE_CREDENTIALS.
@@ -48,6 +48,6 @@ def plugin_settings(settings):  # lint-amnesty, pylint: disable=missing-function
                 },
                 'UPDATE_ON_DUPLICATE_REG_ID': True,
             }
-            settings.FIREBASE_SETTING_UP = True
+            settings.FIREBASE_SETUP_STATUS = True
         else:
-            settings.FIREBASE_SETTING_UP = False
+            settings.FIREBASE_SETUP_STATUS = False

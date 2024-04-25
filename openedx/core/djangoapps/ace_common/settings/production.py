@@ -44,6 +44,6 @@ def plugin_settings(settings):
             },
             'UPDATE_ON_DUPLICATE_REG_ID': True,
         }
-        settings.FIREBASE_SETTING_UP = True
+        settings.FIREBASE_SETUP_STATUS = True
     else:
-        settings.FIREBASE_SETTING_UP = False
+        settings.FIREBASE_SETUP_STATUS = False

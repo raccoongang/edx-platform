@@ -27,12 +27,16 @@ class CoursePushNotificationOptout(Policy):
 
         course_keys = [CourseKey.from_string(course_id) for course_id in course_ids]
         for course_key in course_keys:
-            course_notif_preference = CourseNotificationPreference.get_user_course_preference(
+            course_notification_preference = CourseNotificationPreference.get_user_course_preference(
                 message.recipient.lms_user_id,
                 course_key
             )
+            push_notification_preference = course_notification_preference.get_notification_type_config(
+                app_name,
+                notification_type
+            ).get('push', False)
 
-            if not course_notif_preference.get_notification_type_config(app_name, notification_type).get('push', False):
+            if not push_notification_preference:
                 return PolicyResult(deny={ChannelType.PUSH})
 
         return PolicyResult(deny=frozenset())
