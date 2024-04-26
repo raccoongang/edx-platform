@@ -19,10 +19,9 @@ class CoursePushNotificationOptout(Policy):
         :return:
         """
         course_ids = message.context.get('course_ids', [])
-        notification_type = message.context.get('notification_type', 'push')
         app_label = message.context.get('app_label')
 
-        if not app_label:
+        if not (app_label or message.context.get('send_push_notification', False)):
             return PolicyResult(deny={ChannelType.PUSH})
 
         course_keys = [CourseKey.from_string(course_id) for course_id in course_ids]
@@ -33,7 +32,7 @@ class CoursePushNotificationOptout(Policy):
             )
             push_notification_preference = course_notification_preference.get_notification_type_config(
                 app_label,
-                notification_type
+                notification_type='push',
             ).get('push', False)
 
             if not push_notification_preference:

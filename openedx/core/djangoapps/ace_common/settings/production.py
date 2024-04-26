@@ -30,20 +30,21 @@ def plugin_settings(settings):
     settings.FCM_APP_NAME = settings.ENV_TOKENS.get('FCM_APP_NAME', 'fcm-edx-platform')
     settings.FIREBASE_CREDENTIALS = settings.ENV_TOKENS.get('FIREBASE_CREDENTIALS', {})
 
-    if firebase_app := setup_firebase_app(settings.FIREBASE_CREDENTIALS, settings.FCM_APP_NAME):
-        settings.ACE_ENABLED_CHANNELS.append(settings.ACE_CHANNEL_DEFAULT_PUSH)
-        settings.ACE_ENABLED_POLICIES.append(settings.ACE_CHANNEL_DEFAULT_PUSH)
+    if getattr(settings, 'FIREBASE_SETUP_STATUS', None) is None:
+        if firebase_app := setup_firebase_app(settings.FIREBASE_CREDENTIALS, settings.FCM_APP_NAME):
+            settings.ACE_ENABLED_CHANNELS.append(settings.ACE_CHANNEL_DEFAULT_PUSH)
+            settings.ACE_ENABLED_POLICIES.append(settings.ACE_CHANNEL_DEFAULT_PUSH)
 
-        settings.PUSH_NOTIFICATIONS_SETTINGS = {
-            'CONFIG': 'push_notifications.conf.AppConfig',
-            'APPLICATIONS': {
-                settings.FCM_APP_NAME: {
-                    'PLATFORM': 'FCM',
-                    'FIREBASE_APP': firebase_app,
+            settings.PUSH_NOTIFICATIONS_SETTINGS = {
+                'CONFIG': 'push_notifications.conf.AppConfig',
+                'APPLICATIONS': {
+                    settings.FCM_APP_NAME: {
+                        'PLATFORM': 'FCM',
+                        'FIREBASE_APP': firebase_app,
+                    },
                 },
-            },
-            'UPDATE_ON_DUPLICATE_REG_ID': True,
-        }
-        settings.FIREBASE_SETUP_STATUS = True
-    else:
-        settings.FIREBASE_SETUP_STATUS = False
+                'UPDATE_ON_DUPLICATE_REG_ID': True,
+            }
+            settings.FIREBASE_SETUP_STATUS = True
+        else:
+            settings.FIREBASE_SETUP_STATUS = False
