@@ -91,5 +91,5 @@
 # https://github.com/openedx/edx-platform/issues/33431
 -e git+https://github.com/anupdhabarde/edx-proctoring-proctortrack.git@31c6c9923a51c903ae83760ecbbac191363aa2a2#egg=edx_proctoring_proctortrack
 
--e git+https://github.com/raccoongang/edx-ace.git@4a64a59e2000b863f3e89cba301942a05f930b74#egg=edx_ace
+-e git+https://github.com/raccoongang/edx-ace.git@mob-develop#egg=edx_ace
 -e git+https://github.com/jazzband/django-push-notifications.git@906fe52058bad36b6af2bb292fdb9292ccaa94e5#egg=django_push_notifications
