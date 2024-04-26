@@ -1,0 +1,8 @@
+{% load i18n %}
+
+{% block content %}
+{% blocktrans trimmed %}
+    {{ comment_username }} replied to <b>{{ thread_title }}</b>:
+{% endblocktrans %}
+{{ comment_body }}
+{% endblock %}
