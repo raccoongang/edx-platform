@@ -271,6 +271,7 @@ class TaskTestCase(ModuleStoreTestCase):  # lint-amnesty, pylint: disable=missin
                 expected_message_context.update({
                     'comment_author_id': self.comment_author.id,
                     'comment_body': comment['body'],
+                    'comment_body_text': comment.body_text,
                     'comment_created_at': ONE_HOUR_AGO,
                     'comment_id': comment['id'],
                     'comment_username': self.comment_author.username,
@@ -283,7 +284,12 @@ class TaskTestCase(ModuleStoreTestCase):  # lint-amnesty, pylint: disable=missin
                     'thread_commentable_id': thread['commentable_id'],
                     'post_link': f'https://{site.domain}{self.mock_permalink.return_value}',
                     'site': site,
-                    'site_id': site.id
+                    'site_id': site.id,
+                    'push_notification_extra_context': {
+                        'notification_type': 'forum_comment',
+                        'thread_id': thread['id'],
+                        'comment_id': comment['id'],
+                    },
                 })
                 expected_recipient = Recipient(self.thread_author.id, self.thread_author.email)
                 actual_message = self.mock_ace_send.call_args_list[0][0][0]
