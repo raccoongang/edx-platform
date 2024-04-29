@@ -218,6 +218,11 @@ def _build_message_context(context):  # lint-amnesty, pylint: disable=missing-fu
         'thread_username': thread_author.username,
         'comment_username': comment_author.username,
         'post_link': post_link,
+        'push_notification_extra_context': {
+            'notification_type': 'forum_comment',
+            'thread_id': context['thread_id'],
+            'comment_id': context['comment_id'],
+        },
         'comment_created_at': date.deserialize(context['comment_created_at']),
         'thread_created_at': date.deserialize(context['thread_created_at'])
     })
