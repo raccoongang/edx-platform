@@ -113,6 +113,7 @@ def create_message_context(comment, site):
         'course_id': str(thread.course_id),
         'comment_id': comment.id,
         'comment_body': comment.body,
+        'comment_body_text': comment.body_text,
         'comment_author_id': comment.user_id,
         'comment_created_at': comment.created_at,  # comment_client models dates are already serialized
         'thread_id': thread.id,
