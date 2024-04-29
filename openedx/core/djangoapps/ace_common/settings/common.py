@@ -1,11 +1,14 @@
 """
 Settings for ace_common app.
 """
+from openedx.core.djangoapps.ace_common.utils import setup_firebase_app
 
 ACE_ROUTING_KEY = 'edx.lms.core.default'
 
 
 def plugin_settings(settings):  # lint-amnesty, pylint: disable=missing-function-docstring, missing-module-docstring
+    if 'push_notifications' not in settings.INSTALLED_APPS:
+        settings.INSTALLED_APPS.append('push_notifications')
     settings.ACE_ENABLED_CHANNELS = [
         'django_email'
     ]
@@ -22,3 +25,29 @@ def plugin_settings(settings):  # lint-amnesty, pylint: disable=missing-function
     settings.ACE_ROUTING_KEY = ACE_ROUTING_KEY
 
     settings.FEATURES['test_django_plugin'] = True
+    settings.FCM_APP_NAME = 'fcm-edx-platform'
+
+    if getattr(settings, 'FIREBASE_SETUP_STATUS', None) is None:
+        settings.ACE_CHANNEL_DEFAULT_PUSH = 'push_notification'
+
+        # Note: To local development with Firebase, you must set FIREBASE_CREDENTIALS.
+        settings.FCM_APP_NAME = 'fcm-edx-platform'
+        settings.FIREBASE_CREDENTIALS = None
+
+        if firebase_app := setup_firebase_app(settings.FIREBASE_CREDENTIALS, settings.FCM_APP_NAME):
+            settings.ACE_ENABLED_CHANNELS.append(settings.ACE_CHANNEL_DEFAULT_PUSH)
+            settings.ACE_ENABLED_POLICIES.append(settings.ACE_CHANNEL_DEFAULT_PUSH)
+
+            settings.PUSH_NOTIFICATIONS_SETTINGS = {
+                'CONFIG': 'push_notifications.conf.AppConfig',
+                'APPLICATIONS': {
+                    settings.FCM_APP_NAME: {
+                        'PLATFORM': 'FCM',
+                        'FIREBASE_APP': firebase_app,
+                    },
+                },
+                'UPDATE_ON_DUPLICATE_REG_ID': True,
+            }
+            settings.FIREBASE_SETUP_STATUS = True
+        else:
+            settings.FIREBASE_SETUP_STATUS = False
