@@ -477,8 +477,12 @@ class CourseNavigationBlocksView(RetrieveAPIView):
             if not navigation_sidebar_caching_is_disabled:
                 cache.set(cache_key, course_blocks, self.COURSE_BLOCKS_CACHE_TIMEOUT)
 
-        course_blocks = self.filter_unavailable_blocks(course_blocks, course_key)
-        if course_blocks and cached:
+        course_blocks = self.filter_inaccessible_blocks(course_blocks, course_key)
+
+        if cached:
+            # Note: The course_blocks received from get_course_outline_block_tree already has completion data,
+            # but since the course_blocks can be cached, and this status can change quite often,
+            # we need to update it every time if the data has not been cached.
             course_blocks = self.mark_complete_recursive(course_blocks)
 
         context = self.get_serializer_context()
