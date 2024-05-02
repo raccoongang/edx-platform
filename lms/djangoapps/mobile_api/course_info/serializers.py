@@ -31,6 +31,7 @@ class CourseInfoOverviewSerializer(serializers.ModelSerializer):
     course_sharing_utm_parameters = serializers.SerializerMethodField()
     course_about = serializers.SerializerMethodField('get_course_about_url')
     course_modes = serializers.SerializerMethodField()
+    course_progress = serializers.SerializerMethodField()
 
     class Meta:
         model = CourseOverview
@@ -47,6 +48,7 @@ class CourseInfoOverviewSerializer(serializers.ModelSerializer):
             'course_sharing_utm_parameters',
             'course_about',
             'course_modes',
+            'course_progress',
         )
 
     @staticmethod
@@ -74,6 +76,30 @@ class CourseInfoOverviewSerializer(serializers.ModelSerializer):
             ModeSerializer(mode).data
             for mode in course_modes
         ]
+
+    def get_course_progress(self, obj):
+        """
+        """
+        from xmodule.modulestore.django import modulestore
+        from lms.djangoapps.courseware.courses import get_course_assignment_date_blocks
+
+        course = modulestore().get_course(obj.id)
+
+        assignments = get_course_assignment_date_blocks(
+            course,
+            self.context.get('user'),
+            self.context.get('request'),
+            include_past_dates=True
+        )
+
+        # import pdb
+        # pdb.set_trace()
+
+        course_progress = {
+            'assignments_passed': len([assignment for assignment in assignments if assignment.complete]),
+            'total_assignments_count': len(assignments),
+        }
+        return course_progress
 
 
 class MobileCourseEnrollmentSerializer(serializers.ModelSerializer):
