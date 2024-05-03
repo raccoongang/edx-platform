@@ -73,10 +73,8 @@ log = logging.getLogger(__name__)
 CREATE_IF_NOT_FOUND = ["course_info"]
 
 # Useful constants for defining predicates
-def NEVER(x):
-    return False
-def ALWAYS(x):
-    return True
+NEVER = lambda x: False
+ALWAYS = lambda x: True
 
 
 # Disable atomic requests so transactions made during the request commit immediately instead of waiting for the end of
