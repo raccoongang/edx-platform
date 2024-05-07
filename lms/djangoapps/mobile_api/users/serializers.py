@@ -105,8 +105,6 @@ class CourseEnrollmentSerializer(serializers.ModelSerializer):
     audit_access_expires = serializers.SerializerMethodField()
     course_modes = serializers.SerializerMethodField()
 
-    # BLOCK_STRUCTURE_CACHE_TIMEOUT = 60 * 60  # 1 hour
-
     def get_audit_access_expires(self, model):
         """
         Returns expiration date for a course audit expiration, if any or null
