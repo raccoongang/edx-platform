@@ -41,7 +41,7 @@ function($, _, Backbone, Feedback, AlertView, XBlockViewUtils, MoveXBlockUtils, 
                   }
                 }, '*');
                 window.parent.postMessage({
-                  method: 'close_edit_modal',
+                  method: 'close_modal',
                   msg: 'Sends a message when the modal window is closed'
                 }, '*');
 
