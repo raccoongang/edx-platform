@@ -2,7 +2,7 @@
 Course Info serializers
 """
 from rest_framework import serializers
-from typing import Union
+from typing import Dict, Union
 
 from common.djangoapps.course_modes.models import CourseMode
 from common.djangoapps.student.models import CourseEnrollment
@@ -13,9 +13,11 @@ from common.djangoapps.util.milestones_helpers import (
 from lms.djangoapps.courseware.access import has_access
 from lms.djangoapps.courseware.access import administrative_accesses_to_course_for_user
 from lms.djangoapps.courseware.access_utils import check_course_open_for_learner
+from lms.djangoapps.courseware.courses import get_course_assignment_date_blocks
 from lms.djangoapps.mobile_api.users.serializers import ModeSerializer
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.features.course_duration_limits.access import get_user_course_expiration_date
+from xmodule.modulestore.django import modulestore
 
 
 class CourseInfoOverviewSerializer(serializers.ModelSerializer):
@@ -31,6 +33,7 @@ class CourseInfoOverviewSerializer(serializers.ModelSerializer):
     course_sharing_utm_parameters = serializers.SerializerMethodField()
     course_about = serializers.SerializerMethodField('get_course_about_url')
     course_modes = serializers.SerializerMethodField()
+    course_progress = serializers.SerializerMethodField()
 
     class Meta:
         model = CourseOverview
@@ -47,7 +50,12 @@ class CourseInfoOverviewSerializer(serializers.ModelSerializer):
             'course_sharing_utm_parameters',
             'course_about',
             'course_modes',
+            'course_progress',
         )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.course = modulestore().get_course(self.instance.id)
 
     @staticmethod
     def get_media(obj):
@@ -74,6 +82,29 @@ class CourseInfoOverviewSerializer(serializers.ModelSerializer):
             ModeSerializer(mode).data
             for mode in course_modes
         ]
+
+    def get_course_progress(self, obj: 'CourseOverview') -> Dict[str, int]:  # noqa: F821
+        """
+        Gets course progress calculated by course assignments.
+        """
+        course_assignments = get_course_assignment_date_blocks(
+            self.course,
+            self.context.get('user'),
+            self.context.get('request'),
+            include_past_dates=True
+        )
+
+        total_assignments_count = 0
+        assignments_completed = 0
+
+        if course_assignments:
+            total_assignments_count = len(course_assignments)
+            assignments_completed = len([assignment for assignment in course_assignments if assignment.complete])
+
+        return {
+            'total_assignments_count': total_assignments_count,
+            'assignments_completed': assignments_completed,
+        }
 
 
 class MobileCourseEnrollmentSerializer(serializers.ModelSerializer):
