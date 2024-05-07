@@ -307,7 +307,9 @@ def xblock_view_handler(request, usage_key_string, view_name):
 @login_required
 def xblock_actions_view(request, usage_key_string, action_name):
     """
-    The handler for rendered edit xblock view.
+    Return rendered xblock action view.
+    The action name should be provided as an argument.
+    Valid options for action names are edit and move.
     """
     usage_key = usage_key_with_run(usage_key_string)
     if not has_studio_read_access(request.user, usage_key.course_key):
