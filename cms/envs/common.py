@@ -2712,6 +2712,7 @@ EVENT_BUS_TOPIC_PREFIX = "dev"
 def _should_send_learning_badge_events(settings):
     return settings.FEATURES['BADGES_ENABLED']
 
+
 # .. setting_name: EVENT_BUS_PRODUCER_CONFIG
 # .. setting_default: all events disabled
 # .. setting_description: Dictionary of event_types mapped to dictionaries of topic to topic-related configuration.
@@ -2731,7 +2732,7 @@ EVENT_BUS_PRODUCER_CONFIG = {
     },
     "org.openedx.learning.ccx.course.passing.status.updated.v1": {
         "learning-badges-lifecycle": {
-            "event_key_field": "course_passing_status.course.course_key",
+            "event_key_field": "course_passing_status.course.ccx_course_key",
             "enabled": _should_send_learning_badge_events,
         },
     },
