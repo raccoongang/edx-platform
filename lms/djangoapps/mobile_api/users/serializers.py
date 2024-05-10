@@ -18,7 +18,7 @@ from common.djangoapps.util.course import get_encoded_course_sharing_utm_params,
 from lms.djangoapps.certificates.api import certificate_downloadable_status
 from lms.djangoapps.courseware.access import has_access
 from lms.djangoapps.courseware.context_processor import get_user_timezone_or_last_seen_timezone_or_utc
-from lms.djangoapps.courseware.courses import get_course_assignment_date_blocks
+from lms.djangoapps.courseware.courses import get_course_assignment_date_blocks, get_course_assignments
 from lms.djangoapps.course_home_api.dates.serializers import DateSummarySerializer
 from lms.djangoapps.mobile_api.utils import API_V4
 from openedx.features.course_duration_limits.access import get_user_course_expiration_date
@@ -143,22 +143,18 @@ class CourseEnrollmentSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
 
         if 'course_progress' in self.context.get('requested_fields', []) and self.context.get('api_version') == API_V4:
-            course = modulestore().get_course(instance.course.id)
-            data['course_progress'] = self.calculate_progress(instance, course)
+            data['course_progress'] = self.calculate_progress(instance)
 
         return data
 
-    def calculate_progress(
-        self, model: CourseEnrollment, course: 'CourseBlockWithMixins'  # noqa: F821
-    ) -> Dict[str, int]:
+    def calculate_progress(self, model: CourseEnrollment) -> Dict[str, int]:
         """
         Calculate the progress of the user in the course.
         """
-        course_assignments = get_course_assignment_date_blocks(
-            course,
+        course_assignments = get_course_assignments(
+            model.course_id,
             model.user,
-            self.context.get('request'),
-            include_past_dates=True
+            include_without_due=True,
         )
 
         total_assignments_count = 0
@@ -254,7 +250,7 @@ class CourseEnrollmentSerializerModifiedForPrimary(CourseEnrollmentSerializer):
         """
         Returns the progress of the user in the course.
         """
-        return self.calculate_progress(model, self.course)
+        return self.calculate_progress(model)
 
     def get_course_assignments(self, model: CourseEnrollment) -> Dict[str, Optional[List[Dict[str, str]]]]:
         """

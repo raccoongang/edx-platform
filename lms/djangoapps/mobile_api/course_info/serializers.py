@@ -13,11 +13,10 @@ from common.djangoapps.util.milestones_helpers import (
 from lms.djangoapps.courseware.access import has_access
 from lms.djangoapps.courseware.access import administrative_accesses_to_course_for_user
 from lms.djangoapps.courseware.access_utils import check_course_open_for_learner
-from lms.djangoapps.courseware.courses import get_course_assignment_date_blocks
+from lms.djangoapps.courseware.courses import get_course_assignments
 from lms.djangoapps.mobile_api.users.serializers import ModeSerializer
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.features.course_duration_limits.access import get_user_course_expiration_date
-from xmodule.modulestore.django import modulestore
 
 
 class CourseInfoOverviewSerializer(serializers.ModelSerializer):
@@ -53,10 +52,6 @@ class CourseInfoOverviewSerializer(serializers.ModelSerializer):
             'course_progress',
         )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.course = modulestore().get_course(self.instance.id)
-
     @staticmethod
     def get_media(obj):
         """
@@ -83,15 +78,14 @@ class CourseInfoOverviewSerializer(serializers.ModelSerializer):
             for mode in course_modes
         ]
 
-    def get_course_progress(self, obj: 'CourseOverview') -> Dict[str, int]:  # noqa: F821
+    def get_course_progress(self, obj: 'CourseOverview') -> Dict[str, int]:  # noqa: F821  #here
         """
         Gets course progress calculated by course assignments.
         """
-        course_assignments = get_course_assignment_date_blocks(
-            self.course,
+        course_assignments = get_course_assignments(
+            obj.id,
             self.context.get('user'),
-            self.context.get('request'),
-            include_past_dates=True
+            include_without_due=True,
         )
 
         total_assignments_count = 0
