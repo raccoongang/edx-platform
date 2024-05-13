@@ -141,6 +141,13 @@ def enroll_email(course_id, student_email, auto_enroll=False, email_students=Fal
     """
     previous_state = EmailEnrollmentState(course_id, student_email)
     enrollment_obj = None
+    email_params.update({
+        'app_label': 'instructor',
+        'push_notification_extra_context': {
+            'notification_type': 'enroll',
+            'course_id': str(course_id),
+        },
+    })
     if previous_state.user and previous_state.user.is_active:
         # if the student is currently unenrolled, don't enroll them in their
         # previous mode
@@ -194,6 +201,13 @@ def unenroll_email(course_id, student_email, email_students=False, email_params=
         representing state before and after the action.
     """
     previous_state = EmailEnrollmentState(course_id, student_email)
+    email_params.update({
+        'app_label': 'instructor',
+        'push_notification_extra_context': {
+            'notification_type': 'unenroll',
+        },
+    })
+    import pdb;pdb.set_trace()
     if previous_state.enrollment:
         CourseEnrollment.unenroll_by_email(student_email, course_id)
         if email_students:
@@ -232,6 +246,10 @@ def send_beta_role_email(action, user, email_params):
         email_params['email_address'] = user.email
         email_params['user_id'] = user.id
         email_params['full_name'] = user.profile.name
+        email_params['app_label'] = 'instructor'
+        email_params['push_notification_extra_context'] = {
+            'notification_type': email_params['message_type'],
+        }
     else:
         raise ValueError(f"Unexpected action received '{action}' - expected 'add' or 'remove'")
     trying_to_add_inactive_user = not user.is_active and action == 'add'
