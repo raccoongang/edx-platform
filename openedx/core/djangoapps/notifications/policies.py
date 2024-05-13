@@ -21,7 +21,7 @@ class CoursePushNotificationOptout(Policy):
         course_ids = message.context.get('course_ids', [])
         app_label = message.context.get('app_label')
 
-        if not (app_label or message.context.get('push_notification_extra_context', False)):
+        if not (app_label or message.context.get('push_notification_extra_context', {})):
             return PolicyResult(deny={ChannelType.PUSH})
 
         course_keys = [CourseKey.from_string(course_id) for course_id in course_ids]

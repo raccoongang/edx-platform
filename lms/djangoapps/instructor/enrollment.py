@@ -141,13 +141,14 @@ def enroll_email(course_id, student_email, auto_enroll=False, email_students=Fal
     """
     previous_state = EmailEnrollmentState(course_id, student_email)
     enrollment_obj = None
-    email_params.update({
-        'app_label': 'instructor',
-        'push_notification_extra_context': {
-            'notification_type': 'enroll',
-            'course_id': str(course_id),
-        },
-    })
+    if email_params:
+        email_params.update({
+            'app_label': 'instructor',
+            'push_notification_extra_context': {
+                'notification_type': 'enroll',
+                'course_id': str(course_id),
+            },
+        })
     if previous_state.user and previous_state.user.is_active:
         # if the student is currently unenrolled, don't enroll them in their
         # previous mode
@@ -201,13 +202,13 @@ def unenroll_email(course_id, student_email, email_students=False, email_params=
         representing state before and after the action.
     """
     previous_state = EmailEnrollmentState(course_id, student_email)
-    email_params.update({
-        'app_label': 'instructor',
-        'push_notification_extra_context': {
-            'notification_type': 'unenroll',
-        },
-    })
-    import pdb;pdb.set_trace()
+    if email_params:
+        email_params.update({
+            'app_label': 'instructor',
+            'push_notification_extra_context': {
+                'notification_type': 'unenroll',
+            },
+        })
     if previous_state.enrollment:
         CourseEnrollment.unenroll_by_email(student_email, course_id)
         if email_students:
