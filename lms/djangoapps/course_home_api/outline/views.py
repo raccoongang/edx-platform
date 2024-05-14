@@ -463,9 +463,7 @@ class CourseNavigationBlocksView(RetrieveAPIView):
         )
         if navigation_sidebar_caching_is_disabled := courseware_disable_navigation_sidebar_blocks_caching():
             course_blocks = cache.get(cache_key)
-            cached = course_blocks is not None
         else:
-            cached = False
             course_blocks = None
 
         if not course_blocks:
@@ -477,9 +475,8 @@ class CourseNavigationBlocksView(RetrieveAPIView):
             if not navigation_sidebar_caching_is_disabled:
                 cache.set(cache_key, course_blocks, self.COURSE_BLOCKS_CACHE_TIMEOUT)
 
-        course_blocks = self.filter_unavailable_blocks(course_blocks, course_key)
-        if course_blocks and cached:
-            course_blocks = self.mark_complete_recursive(course_blocks)
+        course_blocks = self.filter_inaccessible_blocks(course_blocks, course_key)
+        course_blocks = self.mark_complete_recursive(course_blocks)
 
         context = self.get_serializer_context()
         context.update({
@@ -516,12 +513,13 @@ class CourseNavigationBlocksView(RetrieveAPIView):
         """
         Mark blocks as complete or not complete based on the completions_dict.
         """
+        if not block:
+            return block
+
         if 'children' in block:
-            block['children'] = [self.mark_complete_recursive(child) for child in block['children']]
+            block['children'] = [self.mark_complete_recursive(child) for child in block['children'] if child]
             completable_children = self.get_completable_children(block)
-            block['complete'] = all(
-                child['complete'] for child in block['children'] if child['type'] in self.completable_block_types
-            )
+            block['complete'] = all(child['complete'] for child in completable_children)
             block['completion_stat'] = self.get_block_completion_stat(block, completable_children)
         else:
             # If the block is a course, chapter, sequential, or vertical, without children,
@@ -537,9 +535,17 @@ class CourseNavigationBlocksView(RetrieveAPIView):
         Get the completion status of a block.
         """
         block_type = block['type']
+        completable_children_num = len(completable_children)
 
-        if block_type in ['course', 'chapter', 'sequential']:
+        if block_type in ['course', 'sequential']:
             completion = sum(child['complete'] for child in completable_children)
+        elif block_type == 'chapter':
+            # For sections, we have to count the status on the number of completed units
+            # and, accordingly, the number of units in it.
+            completion = sum(child['completion_stat']['completion'] for child in completable_children)
+            completable_children_num = sum(
+                child['completion_stat']['completable_children'] for child in completable_children
+            )
         elif block_type == 'vertical':
             completion = sum(child['completion_stat']['completion'] for child in completable_children)
         else:
@@ -547,15 +553,14 @@ class CourseNavigationBlocksView(RetrieveAPIView):
 
         return {
             'completion': completion,
-            'completable_children': len(completable_children),
+            'completable_children': completable_children_num,
         }
 
-    @staticmethod
-    def get_completable_children(block):
+    def get_completable_children(self, block):
         """
         Get the completable children of a block.
         """
-        return [child for child in block.get('children', []) if child['type'] != 'discussion']
+        return [child for child in block.get('children', []) if child['type'] in self.completable_block_types]
 
     @staticmethod
     def get_accessible_sections(user_course_outline, course_sections):
@@ -601,11 +606,17 @@ class CourseNavigationBlocksView(RetrieveAPIView):
     @cached_property
     def completable_block_types(self):
         """
-        Return a set of block types that are completable.
+        Returns a set of block types that can be marked as completed.
+
+        In addition to the lower-level x-blocks, it also includes blocks
+        that belong to XBlockCompletionMode.AGGREGATOR, because they can also be marked as complete.
         """
         return {
             block_type for (block_type, block_cls) in XBlock.load_classes()
-            if XBlockCompletionMode.get_mode(block_cls) == XBlockCompletionMode.COMPLETABLE
+            if XBlockCompletionMode.get_mode(block_cls) in (
+                XBlockCompletionMode.COMPLETABLE,
+                XBlockCompletionMode.AGGREGATOR
+            )
         }
 
 
