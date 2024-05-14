@@ -250,6 +250,7 @@ def send_beta_role_email(action, user, email_params):
         email_params['app_label'] = 'instructor'
         email_params['push_notification_extra_context'] = {
             'notification_type': email_params['message_type'],
+            'course_id': str(getattr(email_params.get('course'), 'id', '')),
         }
     else:
         raise ValueError(f"Unexpected action received '{action}' - expected 'add' or 'remove'")
