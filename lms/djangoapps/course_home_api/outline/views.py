@@ -513,8 +513,11 @@ class CourseNavigationBlocksView(RetrieveAPIView):
         """
         Mark blocks as complete or not complete based on the completions_dict.
         """
+        if not block:
+            return block
+
         if 'children' in block:
-            block['children'] = [self.mark_complete_recursive(child) for child in block['children']]
+            block['children'] = [self.mark_complete_recursive(child) for child in block['children'] if child]
             completable_children = self.get_completable_children(block)
             block['complete'] = all(child['complete'] for child in completable_children)
             block['completion_stat'] = self.get_block_completion_stat(block, completable_children)
