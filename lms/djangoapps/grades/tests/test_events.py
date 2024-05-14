@@ -111,7 +111,10 @@ class PersistentGradeEventsTest(SharedModuleStoreTestCase, OpenEdxEventsTestMixi
         )
 
 
-class CoursePassingStatusEventsTest(SharedModuleStoreTestCase, OpenEdxEventsTestMixin):  # pylint: disable=missing-class-docstring
+class CoursePassingStatusEventsTest(SharedModuleStoreTestCase, OpenEdxEventsTestMixin):
+    """
+    Tests for Open edX passing status update event.
+    """
     ENABLED_OPENEDX_EVENTS = [
         "org.openedx.learning.course.passing.status.updated.v1",
     ]
@@ -124,19 +127,22 @@ class CoursePassingStatusEventsTest(SharedModuleStoreTestCase, OpenEdxEventsTest
         super().setUpClass()
         cls.start_events_isolation()
 
-    def setUp(self):  # pylint: disable=arguments-differ
+    def setUp(self):
         super().setUp()
         self.course = CourseFactory.create()
         self.user = UserFactory.create()
         self.receiver_called = False
 
-    def _event_receiver_side_effect(self, **kwargs):  # pylint: disable=unused-argument
+    def _event_receiver_side_effect(self, **kwargs):
         """
         Used show that the Open edX Event was called by the Django signal handler.
         """
         self.receiver_called = True
 
     def test_course_passing_status_updated_emitted(self):
+        """
+        Test whether passing status updated event is sent after the grade is being updated for a user.
+        """
         event_receiver = mock.Mock(side_effect=self._event_receiver_side_effect)
         COURSE_PASSING_STATUS_UPDATED.connect(event_receiver)
         grade_factory = CourseGradeFactory()
@@ -169,9 +175,12 @@ class CoursePassingStatusEventsTest(SharedModuleStoreTestCase, OpenEdxEventsTest
         )
 
 
-class CCXCoursePassingStatusEventsTest(  # pylint: disable=missing-class-docstring
+class CCXCoursePassingStatusEventsTest(
     SharedModuleStoreTestCase, OpenEdxEventsTestMixin
 ):
+    """
+    Tests for Open edX passing status update event in a CCX course.
+    """
     ENABLED_OPENEDX_EVENTS = [
         "org.openedx.learning.ccx.course.passing.status.updated.v1",
     ]
@@ -184,7 +193,7 @@ class CCXCoursePassingStatusEventsTest(  # pylint: disable=missing-class-docstri
         super().setUpClass()
         cls.start_events_isolation()
 
-    def setUp(self):  # pylint: disable=arguments-differ
+    def setUp(self):
         super().setUp()
         self.course = CourseFactory.create()
         self.user = UserFactory.create()
@@ -197,13 +206,16 @@ class CCXCoursePassingStatusEventsTest(  # pylint: disable=missing-class-docstri
 
         self.receiver_called = False
 
-    def _event_receiver_side_effect(self, **kwargs):  # pylint: disable=unused-argument
+    def _event_receiver_side_effect(self, **kwargs):
         """
         Used show that the Open edX Event was called by the Django signal handler.
         """
         self.receiver_called = True
 
     def test_ccx_course_passing_status_updated_emitted(self):
+        """
+        Test whether passing status updated event is sent after the grade is being updated in CCX course.
+        """
         event_receiver = mock.Mock(side_effect=self._event_receiver_side_effect)
         CCX_COURSE_PASSING_STATUS_UPDATED.connect(event_receiver)
         grade_factory = CourseGradeFactory()
