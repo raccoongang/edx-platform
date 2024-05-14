@@ -2708,7 +2708,6 @@ EVENT_BUS_REDIS_CONNECTION_URL = "redis://:password@edx.devstack.redis:6379/"
 EVENT_BUS_TOPIC_PREFIX = "dev"
 
 
-
 def _should_send_learning_badge_events(settings):
     return settings.FEATURES['BADGES_ENABLED']
 
