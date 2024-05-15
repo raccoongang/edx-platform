@@ -51,6 +51,7 @@ from common.djangoapps.xblock_django.constants import (
     ATTR_KEY_USER_ID,
 )
 from openedx.core.djangolib.markup import HTML, Text
+from openedx.features._mobile_extensions.html_block.mobile_api_module import HtmlBlockMobileApiMixin
 from .capa.xqueue_interface import XQueueService
 
 from .fields import Date, ListScoreField, ScoreField, Timedelta
@@ -135,6 +136,7 @@ class Randomization(String):
 @XBlock.needs('replace_urls')
 @XBlock.wants('call_to_action')
 class ProblemBlock(
+    HtmlBlockMobileApiMixin,
     ScorableXBlockMixin,
     RawMixin,
     XmlMixin,
