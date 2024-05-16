@@ -33,8 +33,12 @@ class HtmlBlockMobileApiMixin:
         base_path = self._base_storage_path()
         self.remove_old_files(base_path)
 
+        # Replace MathJax URL
+        mathjax_pattern = re.compile(r'src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js[^"]*"')
+        data = mathjax_pattern.sub(self._replace_mathjax_link, html_data)
+
         pattern = re.compile(r'/static/[\w./-]+')
-        data = pattern.sub(self._replace_static_links, html_data)
+        data = pattern.sub(self._replace_static_links, data)
 
         # Parse the HTML with BeautifulSoup
         soup = BeautifulSoup(data, 'html.parser')
@@ -54,6 +58,9 @@ class HtmlBlockMobileApiMixin:
         self.save_asset_file(link, filename)
         return f'assets/{filename}'
 
+    def _replace_mathjax_link(self, match):
+        return 'src="/static/mathjax/MathJax.js"'
+
     def _replace_iframe(self, soup):
         for node in soup.find_all('iframe'):
             replacement = soup.new_tag('p')
@@ -64,7 +71,6 @@ class HtmlBlockMobileApiMixin:
             node.replace_with(replacement)
 
     def _add_js_bridge(self, soup):
-        import pdb; pdb.set_trace()
         script_tag = soup.new_tag('script')
         script_tag.string = """
         // Function to send messages to iOS
