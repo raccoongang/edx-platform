@@ -2,6 +2,7 @@
 Signal handlers related to discussions.
 """
 
+import six
 import logging
 
 from django.conf import settings
@@ -20,6 +21,7 @@ from lms.djangoapps.discussion.rest_api.tasks import (
     send_thread_created_notification,
     send_response_endorsed_notifications
 )
+from lms.djangoapps.mobile_api.offline_mode.tasks import generate_course_media
 from openedx.core.djangoapps.django_comment_common import signals
 from openedx.core.djangoapps.site_configuration.models import SiteConfiguration
 from openedx.core.djangoapps.theming.helpers import get_current_site
@@ -46,6 +48,8 @@ def update_discussions_on_course_publish(sender, course_key, **kwargs):  # pylin
         args=[context],
         countdown=settings.DISCUSSION_SETTINGS['COURSE_PUBLISH_TASK_DELAY'],
     )
+    # import pdb; pdb.set_trace()
+    generate_course_media(six.text_type(course_key))
 
 
 @receiver(signals.comment_created)
