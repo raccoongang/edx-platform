@@ -1,13 +1,16 @@
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from django.http import HttpRequest
 
 from xmodule.modulestore.django import modulestore
 
-from .utils.html_manipulation import manipulate_html
-from .utils.assets_management import save_asset_file, remove_old_files, base_storage_path
-from .utils.zip_management import create_zip_file
+from .html_manipulator import HtmlManipulator
+from .assets_management import save_asset_file, remove_old_files, base_storage_path
+from .zip_management import create_zip_file
 
+User = get_user_model()
 
 def is_modified(xblock):
     file_path = f'{base_storage_path(xblock)}content_html.zip'
@@ -19,6 +22,12 @@ def is_modified(xblock):
 
     return xblock.published_on > last_modified
 
+
+def generate_request_with_service_user():
+    user = User.objects.get(email='edx@example.com')
+    request = HttpRequest()
+    request.user = user
+    return request
 
 def enclosing_sequence_for_gating_checks(block):
     seq_tags = ['sequential']
@@ -49,8 +58,9 @@ def xblock_view_handler(request, xblock, check_if_enrolled=True, disable_staff_d
     )
     from openedx.core.lib.mobile_utils import is_request_from_mobile_app
     from openedx.features.course_experience.utils import dates_banner_should_display
+    from lms.djangoapps.courseware.access import has_access
     from lms.djangoapps.courseware.masquerade import is_masquerading_as_specific_student, setup_masquerade
-    from lms.djangoapps.courseware.views.views import get_optimization_flags_for_content
+    # from lms.djangoapps.courseware.views.views import get_optimization_flags_for_content
     from lms.djangoapps.edxnotes.helpers import is_feature_enabled
     from lms.djangoapps.courseware.date_summary import verified_upgrade_deadline_link
     from common.djangoapps.edxmako.shortcuts import marketing_link, render_to_response, render_to_string
@@ -79,11 +89,6 @@ def xblock_view_handler(request, xblock, check_if_enrolled=True, disable_staff_d
             staff_access,
         )
 
-        UserActivity.record_user_activity(
-            request.user, usage_key.course_key, request=request, only_if_mobile_app=True
-        )
-
-        recheck_access = request.GET.get('recheck_access') == '1'
         try:
             block, _ = get_block_by_usage_id(
                 request,
@@ -91,7 +96,7 @@ def xblock_view_handler(request, xblock, check_if_enrolled=True, disable_staff_d
                 str(usage_key),
                 disable_staff_debug_info=disable_staff_debug_info,
                 course=course,
-                will_recheck_access=recheck_access,
+                will_recheck_access=False,
             )
         except:
             return None
@@ -100,9 +105,9 @@ def xblock_view_handler(request, xblock, check_if_enrolled=True, disable_staff_d
         student_view_context['show_bookmark_button'] = request.GET.get('show_bookmark_button', '0') == '1'
         student_view_context['show_title'] = request.GET.get('show_title', '1') == '1'
 
-        is_learning_mfe = is_request_from_learning_mfe(request)
-        student_view_context['hide_access_error_blocks'] = is_learning_mfe and recheck_access
-        is_mobile_app = is_request_from_mobile_app(request)
+        # is_learning_mfe = is_request_from_learning_mfe(request)
+        student_view_context['hide_access_error_blocks'] = False
+        is_mobile_app = True
         student_view_context['is_mobile_app'] = is_mobile_app
 
         enable_completion_on_view_service = False
@@ -116,7 +121,7 @@ def xblock_view_handler(request, xblock, check_if_enrolled=True, disable_staff_d
 
         missed_deadlines, missed_gated_content = dates_banner_should_display(course_key, request.user)
         fragment = block.render('student_view', context=student_view_context)
-        optimization_flags = get_optimization_flags_for_content(block, fragment)
+        # optimization_flags = get_optimization_flags_for_content(block, fragment)
 
         context = {
             'fragment': fragment,
@@ -141,7 +146,7 @@ def xblock_view_handler(request, xblock, check_if_enrolled=True, disable_staff_d
             'is_mobile_app': is_mobile_app,
             'render_course_wide_assets': True,
 
-            **optimization_flags,
+            # **optimization_flags,
         }
         return render_to_string('courseware/courseware-chromeless.html', context)
 
@@ -152,8 +157,8 @@ def generate_offline_content(xblock, html_data):
 
     base_path = base_storage_path(xblock)
     remove_old_files(base_path)
+    html_manipulator = HtmlManipulator(xblock, html_data)
+    updated_html = html_manipulator.process_html()
 
-    manipulated_html = manipulate_html(html_data, lambda path, filename: save_asset_file(xblock, path, filename))
-
-    default_storage.save(f'{base_path}index.html', ContentFile(manipulated_html))
+    default_storage.save(f'{base_path}index.html', ContentFile(updated_html))
     create_zip_file(base_path, 'content_html.zip')

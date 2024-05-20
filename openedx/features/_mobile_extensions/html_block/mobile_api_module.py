@@ -114,9 +114,7 @@ class HtmlBlockMobileApiMixin:
         const originalAjax = $.ajax;
 
         $.ajax = function(options) {
-            sendMessageToiOS(options)
             sendMessageToiOS(JSON.stringify(options))
-            sendMessageToAndroid(options)
             sendMessageToAndroid(JSON.stringify(options))
             console.log(options, JSON.stringify(options))
 
