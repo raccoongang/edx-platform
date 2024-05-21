@@ -12,6 +12,13 @@ from .zip_management import create_zip_file
 
 User = get_user_model()
 
+OFFLINE_SUPPORTED_XBLOCKS = ['html', 'problem']
+
+
+def is_offline_supported(xblock):
+    return xblock.location.block_type in OFFLINE_SUPPORTED_XBLOCKS
+
+
 def is_modified(xblock):
     file_path = f'{base_storage_path(xblock)}content_html.zip'
 
@@ -28,19 +35,6 @@ def generate_request_with_service_user():
     request = HttpRequest()
     request.user = user
     return request
-
-def enclosing_sequence_for_gating_checks(block):
-    seq_tags = ['sequential']
-    if block.location.block_type in seq_tags:
-        return None
-
-    ancestor = block
-    while ancestor and ancestor.location.block_type not in seq_tags:
-        ancestor = ancestor.get_parent()  # Note: CourseBlock's parent is None
-
-    if ancestor:
-        return block.runtime.get_block(ancestor.location)
-    return None
 
 
 def xblock_view_handler(request, xblock, check_if_enrolled=True, disable_staff_debug_info=False):
@@ -60,7 +54,7 @@ def xblock_view_handler(request, xblock, check_if_enrolled=True, disable_staff_d
     from openedx.features.course_experience.utils import dates_banner_should_display
     from lms.djangoapps.courseware.access import has_access
     from lms.djangoapps.courseware.masquerade import is_masquerading_as_specific_student, setup_masquerade
-    # from lms.djangoapps.courseware.views.views import get_optimization_flags_for_content
+    from lms.djangoapps.courseware.views.views import get_optimization_flags_for_content
     from lms.djangoapps.edxnotes.helpers import is_feature_enabled
     from lms.djangoapps.courseware.date_summary import verified_upgrade_deadline_link
     from common.djangoapps.edxmako.shortcuts import marketing_link, render_to_response, render_to_string
@@ -121,7 +115,7 @@ def xblock_view_handler(request, xblock, check_if_enrolled=True, disable_staff_d
 
         missed_deadlines, missed_gated_content = dates_banner_should_display(course_key, request.user)
         fragment = block.render('student_view', context=student_view_context)
-        # optimization_flags = get_optimization_flags_for_content(block, fragment)
+        optimization_flags = get_optimization_flags_for_content(block, fragment)
 
         context = {
             'fragment': fragment,
@@ -145,8 +139,7 @@ def xblock_view_handler(request, xblock, check_if_enrolled=True, disable_staff_d
             'is_learning_mfe': is_learning_mfe,
             'is_mobile_app': is_mobile_app,
             'render_course_wide_assets': True,
-
-            # **optimization_flags,
+            **optimization_flags,
         }
         return render_to_string('courseware/courseware-chromeless.html', context)
 
