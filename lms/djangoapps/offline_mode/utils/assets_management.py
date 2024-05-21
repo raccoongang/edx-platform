@@ -11,6 +11,17 @@ from .file_management import get_static_file_path, read_static_file
 
 
 def save_asset_file(xblock, path, filename):
+    """
+    Saves an asset file to the default storage.
+
+    If the filename contains a '/', it reads the static file directly from the file system.
+    Otherwise, it fetches the asset from the AssetManager.
+
+    Args:
+        xblock (XBlock): The XBlock instance that provides context for the file.
+        path (str): The path where the asset is located.
+        filename (str): The name of the file to be saved.
+    """
     try:
         if '/' in filename:
             static_path = get_static_file_path(filename)
@@ -26,6 +37,12 @@ def save_asset_file(xblock, path, filename):
 
 
 def remove_old_files(base_path):
+    """
+    Removes old files from the specified base path and its 'assets/' subdirectory.
+
+    Args:
+        base_path (str): The base path from which to delete files.
+    """
     try:
         directories, files = default_storage.listdir(base_path)
     except OSError:
@@ -44,4 +61,16 @@ def remove_old_files(base_path):
 
 
 def base_storage_path(xblock):
+    """
+    Generates the base storage path for the given XBlock.
+
+    The path is constructed based on the XBlock's location, which includes the organization,
+    course, block type, and block ID.
+
+    Args:
+        xblock (XBlock): The XBlock instance for which to generate the storage path.
+
+    Returns:
+        str: The constructed base storage path.
+    """
     return '{loc.org}/{loc.course}/{loc.block_type}/{loc.block_id}/'.format(loc=xblock.location)
