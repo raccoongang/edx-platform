@@ -15,6 +15,11 @@ def setup_firebase_app(firebase_credentials, app_name='fcm-app'):
     except ImportError:
         log.error('Could not import firebase_admin package.')
         return
+
     if firebase_credentials:
-        certificate = firebase_admin.credentials.Certificate(firebase_credentials)
-        return firebase_admin.initialize_app(certificate, name=app_name)
+        try:
+            app = firebase_admin.get_app(app_name)
+        except ValueError:
+            certificate = firebase_admin.credentials.Certificate(firebase_credentials)
+            app = firebase_admin.initialize_app(certificate, name=app_name)
+        return app

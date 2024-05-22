@@ -32,8 +32,7 @@ def plugin_settings(settings):  # lint-amnesty, pylint: disable=missing-function
     settings.FCM_APP_NAME = 'fcm-edx-platform'
     settings.FIREBASE_CREDENTIALS = None
 
-    if not getattr(settings, 'FIREBASE_APP', None) and settings.FIREBASE_CREDENTIALS:
-        settings.FIREBASE_APP = setup_firebase_app(settings.FIREBASE_CREDENTIALS, settings.FCM_APP_NAME)
+    settings.FIREBASE_APP = setup_firebase_app(settings.FIREBASE_CREDENTIALS, settings.FCM_APP_NAME)
 
     if getattr(settings, 'FIREBASE_APP', None):
         settings.ACE_ENABLED_CHANNELS.append(settings.ACE_CHANNEL_DEFAULT_PUSH)
