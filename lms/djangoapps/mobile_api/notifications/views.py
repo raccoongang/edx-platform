@@ -7,7 +7,7 @@ from edx_ace.push_notifications.views import GCMDeviceViewSet as GCMDeviceViewSe
 from ..decorators import mobile_view
 
 
-@mobile_view(is_user=True)
+@mobile_view()
 class GCMDeviceViewSet(GCMDeviceViewSetBase):
     """
     **Use Case**
