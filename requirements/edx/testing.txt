@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
--e git+https://github.com/jazzband/django-push-notifications.git@906fe52058bad36b6af2bb292fdb9292ccaa94e5#egg=django_push_notifications
+-e git+https://github.com/jazzband/django-push-notifications.git@0f7918136b5e6a9aec83d6513aad5b0f12143a9f#egg=django_push_notifications
     # via -r requirements/edx/base.txt
 -e git+https://github.com/raccoongang/edx-ace.git@mob-develop#egg=edx_ace
     # via -r requirements/edx/base.txt
@@ -267,7 +267,7 @@ defusedxml==0.7.1
     #   ora2
     #   python3-openid
     #   social-auth-core
-diff-cover==9.0.0
+diff-cover==7.7.0
     # via -r requirements/edx/coverage.txt
 dill==0.3.8
     # via pylint
@@ -707,7 +707,7 @@ filelock==3.14.0
     #   snowflake-connector-python
     #   tox
     #   virtualenv
-firebase-admin==5.0.0
+firebase-admin==6.5.0
     # via
     #   -r requirements/edx/base.txt
     #   edx-ace
@@ -1240,6 +1240,7 @@ pyjwt[crypto]==2.8.0
     #   edx-drf-extensions
     #   edx-proctoring
     #   edx-rest-api-client
+    #   firebase-admin
     #   pylti1p3
     #   snowflake-connector-python
     #   social-auth-core
