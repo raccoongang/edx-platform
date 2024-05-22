@@ -1,5 +1,5 @@
 {% load i18n %}
 {% autoescape off %}
 {% blocktrans %}Dear student,{% endblocktrans %}
-{% blocktrans %}You have been invited to join {{ course_name }} at {{ site_name }} by a member of the course staff.{% endblocktrans %}
+{% blocktrans %}You have been invited to join {{ course_name }} at {{ site_name }}.{% endblocktrans %}
 {% endautoescape %}
