@@ -30,8 +30,9 @@ def plugin_settings(settings):
     settings.FCM_APP_NAME = settings.ENV_TOKENS.get('FCM_APP_NAME', 'fcm-edx-platform')
     settings.FIREBASE_CREDENTIALS = settings.ENV_TOKENS.get('FIREBASE_CREDENTIALS', {})
 
-    if getattr(settings, 'FIREBASE_SETUP_STATUS', None) is None:
-        if firebase_app := setup_firebase_app(settings.FIREBASE_CREDENTIALS, settings.FCM_APP_NAME):
+    if not getattr(settings, 'FIREBASE_APP', None) and settings.FIREBASE_CREDENTIALS:
+        settings.FIREBASE_APP = setup_firebase_app(settings.FIREBASE_CREDENTIALS, settings.FCM_APP_NAME)
+        if settings.FIREBASE_APP:
             settings.ACE_ENABLED_CHANNELS.append(settings.ACE_CHANNEL_DEFAULT_PUSH)
             settings.ACE_ENABLED_POLICIES.append(settings.ACE_CHANNEL_DEFAULT_PUSH)
 
@@ -40,11 +41,8 @@ def plugin_settings(settings):
                 'APPLICATIONS': {
                     settings.FCM_APP_NAME: {
                         'PLATFORM': 'FCM',
-                        'FIREBASE_APP': firebase_app,
+                        'FIREBASE_APP': settings.FIREBASE_APP,
                     },
                 },
                 'UPDATE_ON_DUPLICATE_REG_ID': True,
             }
-            settings.FIREBASE_SETUP_STATUS = True
-        else:
-            settings.FIREBASE_SETUP_STATUS = False
