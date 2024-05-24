@@ -1,4 +1,6 @@
+import shutil
 import os
+import logging
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
@@ -10,6 +12,9 @@ from xmodule.modulestore.exceptions import ItemNotFoundError
 from .file_management import get_static_file_path, read_static_file
 
 
+log = logging.getLogger(__name__)
+
+
 def save_asset_file(xblock, path, filename):
     """
     Saves an asset file to the default storage.
@@ -18,7 +23,7 @@ def save_asset_file(xblock, path, filename):
     Otherwise, it fetches the asset from the AssetManager.
 
     Args:
-        xblock (XBlock): The XBlock instance that provides context for the file.
+        xblock (XBlock): The XBlock instance
         path (str): The path where the asset is located.
         filename (str): The name of the file to be saved.
     """
@@ -36,28 +41,66 @@ def save_asset_file(xblock, path, filename):
         default_storage.save(f'{base_path}assets/{filename}', ContentFile(content))
 
 
-def remove_old_files(base_path):
+def remove_old_files(xblock):
     """
-    Removes old files from the specified base path and its 'assets/' subdirectory.
+    Removes the 'asset' directory, 'index.html', and 'offline_content.zip' files
+    in the specified base path directory.
 
     Args:
-        base_path (str): The base path from which to delete files.
+        (XBlock): The XBlock instance
     """
     try:
-        directories, files = default_storage.listdir(base_path)
-    except OSError:
-        pass
-    else:
-        for file_name in files:
-            default_storage.delete(base_path + file_name)
+        base_path = base_storage_path(xblock)
 
+        # Define the paths to the specific items to delete
+        asset_path = os.path.join(base_path, 'asset')
+        index_file_path = os.path.join(base_path, 'index.html')
+        offline_zip_path = os.path.join(base_path, 'offline_content.zip')
+
+        # Delete the 'asset' directory if it exists
+        if os.path.isdir(asset_path):
+            shutil.rmtree(asset_path)
+            log.info(f"Successfully deleted the directory: {asset_path}")
+
+        # Delete the 'index.html' file if it exists
+        if os.path.isfile(index_file_path):
+            os.remove(index_file_path)
+            log.info(f"Successfully deleted the file: {index_file_path}")
+
+        # Delete the 'offline_content.zip' file if it exists
+        if os.path.isfile(offline_zip_path):
+            os.remove(offline_zip_path)
+            log.info(f"Successfully deleted the file: {offline_zip_path}")
+
+    except Exception as e:
+        log.error(f"Error occurred while deleting the files or directory: {e}")
+
+
+def is_offline_content_present(xblock):
+    """
+    Checks whether 'offline_content.zip' file is present in the specified base path directory.
+
+    Args:
+        xblock (XBlock): The XBlock instance
+
+    Returns:
+        bool: True if the file is present, False otherwise
+    """
     try:
-        directories, files = default_storage.listdir(base_path + 'assets/')
-    except OSError:
-        pass
-    else:
-        for file_name in files:
-            default_storage.delete(base_path + 'assets/' + file_name)
+        base_path = base_storage_path(xblock)
+
+        # Define the path to the 'offline_content.zip' file
+        offline_zip_path = os.path.join(base_path, 'offline_content.zip')
+
+        # Check if the file exists
+        if os.path.isfile(offline_zip_path):
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        log.error(f"Error occurred while checking the file: {e}")
+        return False
 
 
 def base_storage_path(xblock):

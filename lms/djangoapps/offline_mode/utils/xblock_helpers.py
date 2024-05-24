@@ -1,7 +1,9 @@
+from django.urls import reverse, resolve
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from django.contrib.sessions.backends.db import SessionStore
 from django.http import HttpRequest
 
 from xmodule.modulestore.django import modulestore
@@ -34,7 +36,187 @@ def generate_request_with_service_user():
     user = User.objects.get(email='edx@example.com')
     request = HttpRequest()
     request.user = user
+    # Set up the session
+    session = SessionStore()
+    session.create()
+    request.session = session
+
     return request
+
+
+def cms_xblock_view_handler(usage_key_string, view_name):
+    # Generate the URL for the view
+    url = reverse('xblock_view_handler', kwargs={'usage_key_string': usage_key_string, 'view_name': view_name})
+
+    # Create a mock request object
+    request = generate_request_with_service_user()
+    request.method = 'GET'
+    request.META['HTTP_ACCEPT'] = 'application/json'
+
+    # Resolve the URL to get the view function
+    view_func, args, kwargs = resolve(url)
+
+    try:
+        # Call the view function with the request and resolved kwargs
+        response = view_func(request, *args, **kwargs)
+    except Exception as e:
+        return None
+
+    return response
+
+
+def get_xblock_view_response(request, usage_key_string, view_name):
+    from collections import OrderedDict
+    from functools import partial
+
+    from django.utils.translation import gettext as _
+    from web_fragments.fragment import Fragment
+
+    from cms.lib.xblock.authoring_mixin import VISIBILITY_VIEW
+    from common.djangoapps.edxmako.shortcuts import render_to_string
+    from common.djangoapps.student.auth import (
+        has_studio_read_access,
+        has_studio_write_access,
+    )
+    from openedx.core.lib.xblock_utils import (
+        hash_resource,
+        request_token,
+        wrap_xblock,
+        wrap_xblock_aside,
+    )
+    from xmodule.modulestore.django import modulestore
+    from cms.djangoapps.contentstore.toggles import use_tagging_taxonomy_list_page
+
+    from xmodule.x_module import (
+        AUTHOR_VIEW,
+        PREVIEW_VIEWS,
+        STUDENT_VIEW,
+        STUDIO_VIEW,
+    )
+
+    from cms.djangoapps.contentstore.helpers import is_unit
+    from cms.djangoapps.contentstore.views.preview import get_preview_fragment
+    from cms.djangoapps.contentstore.xblock_storage_handlers.xblock_helpers import (
+        usage_key_with_run,
+        get_children_tags_count,
+    )
+
+    usage_key = usage_key_with_run(usage_key_string)
+    if not has_studio_read_access(request.user, usage_key.course_key):
+        return None
+
+    accept_header = request.META.get("HTTP_ACCEPT", "application/json")
+
+    if "application/json" in accept_header:
+        store = modulestore()
+        xblock = store.get_item(usage_key)
+        container_views = [
+            "container_preview",
+            "reorderable_container_child_preview",
+            "container_child_preview",
+        ]
+
+        xblock.runtime.wrappers.append(
+            partial(
+                wrap_xblock,
+                "StudioRuntime",
+                usage_id_serializer=str,
+                request_token=request_token(request),
+            )
+        )
+
+        xblock.runtime.wrappers_asides.append(
+            partial(
+                wrap_xblock_aside,
+                "StudioRuntime",
+                usage_id_serializer=str,
+                request_token=request_token(request),
+                extra_classes=["wrapper-comp-plugins"],
+            )
+        )
+
+        if view_name in (STUDIO_VIEW, VISIBILITY_VIEW):
+            if view_name == STUDIO_VIEW:
+                load_services_for_studio(xblock.runtime, request.user)
+
+            try:
+                fragment = xblock.render(view_name)
+            except Exception as exc:
+                log.debug(
+                    "Unable to render %s for %r", view_name, xblock, exc_info=True
+                )
+                fragment = Fragment(
+                    render_to_string("html_error.html", {"message": str(exc)})
+                )
+
+        elif view_name in PREVIEW_VIEWS + container_views:
+            is_pages_view = view_name == STUDENT_VIEW
+            can_edit = has_studio_write_access(request.user, usage_key.course_key)
+
+            reorderable_items = set()
+            if view_name == "reorderable_container_child_preview":
+                reorderable_items.add(xblock.location)
+
+            paging = None
+            try:
+                if request.GET.get("enable_paging", "false") == "true":
+                    paging = {
+                        "page_number": int(request.GET.get("page_number", 0)),
+                        "page_size": int(request.GET.get("page_size", 0)),
+                    }
+            except ValueError:
+                return None
+
+            force_render = request.GET.get("force_render", None)
+
+            tags_count_map = {}
+            if use_tagging_taxonomy_list_page():
+                tags_count_map = get_children_tags_count(xblock)
+
+            context = request.GET.dict()
+            context.update(
+                {
+                    "is_pages_view": is_pages_view or view_name == AUTHOR_VIEW,
+                    "is_unit_page": is_unit(xblock),
+                    "can_edit": can_edit,
+                    "root_xblock": xblock if (view_name == "container_preview") else None,
+                    "reorderable_items": reorderable_items,
+                    "paging": paging,
+                    "force_render": force_render,
+                    "item_url": "/container/{usage_key}",
+                    "tags_count_map": tags_count_map,
+                }
+            )
+            fragment = get_preview_fragment(request, xblock, context)
+
+            display_label = xblock.display_name or xblock.scope_ids.block_type
+            if not xblock.display_name and xblock.scope_ids.block_type == "html":
+                display_label = _("Text")
+            if is_pages_view:
+                fragment.content = render_to_string(
+                    "component.html",
+                    {
+                        "xblock_context": context,
+                        "xblock": xblock,
+                        "locator": usage_key,
+                        "preview": fragment.content,
+                        "label": display_label,
+                    },
+                )
+        else:
+            return None
+
+        hashed_resources = OrderedDict()
+        for resource in fragment.resources:
+            hashed_resources[hash_resource(resource)] = resource._asdict()
+
+        fragment_content = fragment.content
+        if isinstance(fragment_content, bytes):
+            fragment_content = fragment.content.decode("utf-8")
+
+        return {"html": fragment_content, "resources": list(hashed_resources.items())}
+
+    return None
 
 
 def xblock_view_handler(request, xblock, check_if_enrolled=True, disable_staff_debug_info=False):
@@ -149,9 +331,9 @@ def generate_offline_content(xblock, html_data):
         return
 
     base_path = base_storage_path(xblock)
-    remove_old_files(base_path)
+    remove_old_files(xblock)
     html_manipulator = HtmlManipulator(xblock, html_data)
     updated_html = html_manipulator.process_html()
 
     default_storage.save(f'{base_path}index.html', ContentFile(updated_html))
-    create_zip_file(base_path, 'content_html.zip')
+    create_zip_file(base_path, 'offline_content.zip')
