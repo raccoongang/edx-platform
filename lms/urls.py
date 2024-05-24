@@ -222,6 +222,10 @@ if settings.FEATURES.get('ENABLE_MOBILE_REST_API'):
     ]
 
 urlpatterns += [
+    re_path(r'^api/offline_mode/', include('lms.djangoapps.offline_mode.urls')),
+]
+
+urlpatterns += [
     path('openassessment/fileupload/', include('openassessment.fileupload.urls')),
 ]
 
