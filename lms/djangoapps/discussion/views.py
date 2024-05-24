@@ -73,7 +73,7 @@ User = get_user_model()
 log = logging.getLogger("edx.discussions")
 
 THREADS_PER_PAGE = 20
-INLINE_THREADS_PER_PAGE = 20
+INLINE_THREADS_PER_PAGE = 2000
 PAGES_NEARBY_DELTA = 2
 
 BOOTSTRAP_DISCUSSION_CSS_PATH = 'css/discussion/lms-discussion-bootstrap.css'

@@ -521,8 +521,7 @@ class CohortHandler(DeveloperErrorViewMixin, APIPermissions):
             all_cohorts = cohorts.get_course_cohorts(course)
             paginator = NamespacedPageNumberPagination()
             paginator.max_page_size = MAX_PAGE_SIZE
-            page = paginator.paginate_queryset(all_cohorts, request)
-            response = [_get_cohort_representation(c, course) for c in page]
+            response = [_get_cohort_representation(c, course) for c in all_cohorts]
             return Response(response, status=status.HTTP_200_OK)
         else:
             cohort = cohorts.get_cohort_by_id(course_key, cohort_id)
