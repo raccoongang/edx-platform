@@ -515,6 +515,15 @@ def send_mail_to_student(student, param_dict, language=None):
     param_dict['platform_name'] = message_context["platform_name"]
     param_dict['contact_email'] = message_context["contact_email"]
 
+    # Get required context
+    site = theming_helpers.get_current_site()
+    message_context = get_base_template_context(site)
+    param_dict['logo_url'] = message_context["logo_url"]
+    param_dict['homepage_url'] = message_context["homepage_url"]
+    param_dict['dashboard_url'] = message_context["dashboard_url"]
+    param_dict['platform_name'] = message_context["platform_name"]
+    param_dict['contact_email'] = message_context["contact_email"]
+
     # see if there is an activation email template definition available as configuration,
     # if so, then render that
     message_type = param_dict['message_type']

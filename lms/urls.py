@@ -37,6 +37,7 @@ from lms.djangoapps.staticbook import views as staticbook_views
 from openedx.core.apidocs import api_info
 from openedx.core.djangoapps.auth_exchange.views import LoginWithAccessTokenView
 from openedx.core.djangoapps.catalog.models import CatalogIntegration
+from openedx.core.djangoapps.common_views.branding import FaviconRedirectView
 from openedx.core.djangoapps.common_views.xblock import xblock_resource
 from openedx.core.djangoapps.cors_csrf import views as cors_csrf_views
 from openedx.core.djangoapps.course_groups import views as course_groups_views
@@ -239,9 +240,8 @@ urlpatterns += [
 ]
 
 # Favicon
-favicon_path = configuration_helpers.get_value('favicon_path', settings.FAVICON_PATH)  # pylint: disable=invalid-name
 urlpatterns += [
-    re_path(r'^favicon\.ico$', RedirectView.as_view(url=settings.STATIC_URL + favicon_path, permanent=True)),
+    re_path(r'^favicon\.ico$', FaviconRedirectView.as_view()),
 ]
 
 # Multicourse wiki (Note: wiki urls must be above the courseware ones because of

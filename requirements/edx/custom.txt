@@ -1,0 +1,5 @@
+# RACCOONGANG
+sentry-sdk==0.19.5
+-e git+https://github.com/open-craft/xblock-pdf.git@v1.1.0#egg=xblock-pdf
+-e git+https://github.com/overhangio/openedx-scorm-xblock.git@master#egg=openedx-scorm-xblock
+# RACCOONGANG

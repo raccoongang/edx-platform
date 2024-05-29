@@ -19,6 +19,7 @@ from cms.djangoapps.contentstore import toggles
 from cms.djangoapps.contentstore import views as contentstore_views
 from cms.djangoapps.contentstore.views.organization import OrganizationListView
 from openedx.core.apidocs import api_info
+from openedx.core.djangoapps.common_views.branding import FaviconRedirectView
 from openedx.core.djangoapps.password_policy import compliance as password_policy_compliance
 from openedx.core.djangoapps.password_policy.forms import PasswordPolicyAwareAdminAuthForm
 from openedx.core import toggles as core_toggles
@@ -335,4 +336,8 @@ urlpatterns.extend(get_plugin_url_patterns(ProjectType.CMS))
 # Contentstore
 urlpatterns += [
     path('api/contentstore/', include('cms.djangoapps.contentstore.rest_api.urls'))
+]
+# Favicon
+urlpatterns += [
+    re_path(r'^favicon\.ico$', FaviconRedirectView.as_view()),
 ]

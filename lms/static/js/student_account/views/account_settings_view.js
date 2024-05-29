@@ -36,16 +36,18 @@
                         tabindex: 0,
                         selected: true,
                         expanded: true
-                    },
-                    {
+                    }
+                ];
+                if (view.options.enableAccountsTab){
+                    accountSettingsTabs.push({
                         name: 'accountsTabSections',
                         id: 'accounts-tab',
                         label: gettext('Linked Accounts'),
                         tabindex: -1,
                         selected: false,
                         expanded: false
-                    }
-                ];
+                    });
+                }
                 if (!view.options.disableOrderHistoryTab) {
                     accountSettingsTabs.push({
                         name: 'ordersTabSections',
