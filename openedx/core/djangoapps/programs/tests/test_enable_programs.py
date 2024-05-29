@@ -42,7 +42,7 @@ class TestEnablePrograms(TestCase):
                 return False
 
         if SiteConfiguration.objects.get(
-            site=self.site).site_values.get('COURSE_CATALOG_API_URL') != self.discovery_url:
+                site=self.site).site_values.get('COURSE_CATALOG_API_URL') != self.discovery_url:
             return False
 
         return True

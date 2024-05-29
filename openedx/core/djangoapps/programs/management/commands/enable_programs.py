@@ -42,8 +42,11 @@ class Command(BaseCommand):
     Set up programs configurations for the LMS.
 
     Example usage:
-        ./manage.py lms enable_programs --discovery-api-url=http://edx.devstack.discovery:18381/api/v1/ --settings=production  # pylint: disable=C0301
-        ./manage.py lms enable_programs --discovery-api-url=http://edx.devstack.discovery:18381/api/v1/ --service-username=discovery_worker --settings=production  # pylint: disable=C0301
+        ./manage.py lms enable_programs --discovery-api-url=http://edx.devstack.discovery:18381/api/v1/
+          --settings=production
+
+        ./manage.py lms enable_programs --discovery-api-url=http://edx.devstack.discovery:18381/api/v1/
+          --service-username=discovery_worker --settings=production
     """
     help = 'Create or update LMS configuration models to enable programs feature.'
 
