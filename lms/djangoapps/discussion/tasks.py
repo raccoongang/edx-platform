@@ -98,7 +98,7 @@ def send_ace_message(context):  # lint-amnesty, pylint: disable=missing-function
                 message_context
             )
             log.info('Sending forum comment notification with context %s', message_context)
-            if context['comment_author_id'] != context['thread_author_id']:
+            if _is_first_comment(context['comment_id'], context['thread_id']):
                 limit_to_channels = None
             else:
                 limit_to_channels = [ChannelType.PUSH]
@@ -263,7 +263,7 @@ def _build_message_context(context, notification_type='forum_comment'):  # lint-
         'post_link': post_link,
         'push_notification_extra_context': {
             'notification_type': notification_type,
-            'topic_id': context['thread_commentable_id'],
+            'topic_id': context.get('thread_commentable_id', ''),
             'thread_id': context['thread_id'],
             'comment_id': context['comment_id'],
         },
