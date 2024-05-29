@@ -19,7 +19,7 @@ class TestEnablePrograms(TestCase):
     Tests for the enable_programs management command
     """
     def setUp(self):
-        super(TestEnablePrograms, self).setUp()
+        super().setUp()
         self.command = enable_programs.Command()
         self.site = SiteFactory()
         self.discovery_url = 'https://fake-discovery.com/api/v1/'

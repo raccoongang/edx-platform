@@ -5,7 +5,6 @@ Context dictionary for templates that use the ace_common base template.
 from django.conf import settings
 from django.urls import NoReverseMatch, reverse
 
-from lms.djangoapps.branding.api import get_logo_url_for_email
 from common.djangoapps.edxmako.shortcuts import marketing_link
 from openedx.core.djangoapps.theming.helpers import get_config_value_from_site_or_settings
 
@@ -24,7 +23,7 @@ def get_base_template_context(site):
     theme_dir = settings.DEFAULT_SITE_THEME
 
     if site is not None and site.themes.first() is not None:
-        theme_dir = getattr(site.themes.first(), 'theme_dir_name')
+        theme_dir = site.themes.first().theme_dir_name
 
     if hasattr(site, 'configuration'):
         site_configuration_values = site.configuration.site_values

@@ -5,7 +5,7 @@ Tests for email template_context
 from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.test.utils import override_settings
-from mock import Mock, patch
+from mock import patch
 
 from openedx.core.djangoapps.ace_common.template_context import get_base_template_context
 from openedx.core.djangoapps.site_configuration.models import SiteConfiguration

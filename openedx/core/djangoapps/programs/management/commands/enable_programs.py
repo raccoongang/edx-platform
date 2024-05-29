@@ -1,3 +1,7 @@
+"""
+This management command enables the programs feature in the LMS by creating or updating the necessary configuration
+"""
+
 import logging
 
 from django.contrib.sites.models import Site
@@ -13,7 +17,7 @@ logger = logging.getLogger(__name__)
 CONFIG_MODEL_COMPARE_DEFAULT_IGNORE_FIELDS = ["id", "change_date", "changed_by"]
 
 
-def set_current_config(cls, args, fields_to_ignore=CONFIG_MODEL_COMPARE_DEFAULT_IGNORE_FIELDS):
+def set_current_config(cls, args, fields_to_ignore=None):
     """
     Check and update config if it isn't up to date with passed args.
 
@@ -21,6 +25,10 @@ def set_current_config(cls, args, fields_to_ignore=CONFIG_MODEL_COMPARE_DEFAULT_
         cls (ConfigurationModel): configuration model for wich checking is performed.
         args (dict): model fields values to compate with.
     """
+
+    if fields_to_ignore is None:
+        fields_to_ignore = CONFIG_MODEL_COMPARE_DEFAULT_IGNORE_FIELDS
+
     if not cls.equal_to_current(args, fields_to_ignore):
         logger.info('Updating {} with args: {}'.format(cls.__name__, args))
         config = cls(**args)
@@ -34,8 +42,8 @@ class Command(BaseCommand):
     Set up programs configurations for the LMS.
 
     Example usage:
-        ./manage.py lms enable_programs --discovery-api-url=http://edx.devstack.discovery:18381/api/v1/ --settings=production
-        ./manage.py lms enable_programs --discovery-api-url=http://edx.devstack.discovery:18381/api/v1/ --service-username=discovery_worker --settings=production
+        ./manage.py lms enable_programs --discovery-api-url=http://edx.devstack.discovery:18381/api/v1/ --settings=production  # pylint: disable=C0301
+        ./manage.py lms enable_programs --discovery-api-url=http://edx.devstack.discovery:18381/api/v1/ --service-username=discovery_worker --settings=production  # pylint: disable=C0301
     """
     help = 'Create or update LMS configuration models to enable programs feature.'
 
