@@ -19,7 +19,7 @@ from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 import openedx.core.djangoapps.django_comment_common.comment_client as cc
 from common.djangoapps.student.tests.factories import CourseEnrollmentFactory, UserFactory
 from lms.djangoapps.discussion.signals.handlers import ENABLE_FORUM_NOTIFICATIONS_FOR_SITE_KEY
-from lms.djangoapps.discussion.tasks import _should_send_message, _track_notification_sent
+from lms.djangoapps.discussion.tasks import _is_first_comment, _should_send_message, _track_notification_sent
 from openedx.core.djangoapps.ace_common.template_context import get_base_template_context
 from openedx.core.djangoapps.content.course_overviews.tests.factories import CourseOverviewFactory
 from openedx.core.djangoapps.django_comment_common.models import ForumsConfig
@@ -222,6 +222,8 @@ class TaskTestCase(ModuleStoreTestCase):  # lint-amnesty, pylint: disable=missin
 
         self.ace_send_patcher = mock.patch('edx_ace.ace.send')
         self.mock_ace_send = self.ace_send_patcher.start()
+        self.mock_message_patcher = mock.patch('lms.djangoapps.discussion.tasks.ResponseNotification')
+        self.mock_message = self.mock_message_patcher.start()
 
         thread_permalink = '/courses/discussion/dummy_discussion_id'
         self.permalink_patcher = mock.patch('lms.djangoapps.discussion.tasks.permalink', return_value=thread_permalink)
@@ -231,10 +233,12 @@ class TaskTestCase(ModuleStoreTestCase):  # lint-amnesty, pylint: disable=missin
         super().tearDown()
         self.request_patcher.stop()
         self.ace_send_patcher.stop()
+        self.mock_message_patcher.stop()
         self.permalink_patcher.stop()
 
     @ddt.data(True, False)
     def test_send_discussion_email_notification(self, user_subscribed):
+        self.mock_message_patcher.stop()
         if user_subscribed:
             non_matching_id = 'not-a-match'
             # with per_page left with a default value of 1, this ensures
@@ -286,7 +290,8 @@ class TaskTestCase(ModuleStoreTestCase):  # lint-amnesty, pylint: disable=missin
                     'site': site,
                     'site_id': site.id,
                     'push_notification_extra_context': {
-                        'notification_type': 'forum_comment',
+                        'notification_type': 'forum_response',
+                        'topic_id': thread['commentable_id'],
                         'thread_id': thread['id'],
                         'comment_id': comment['id'],
                     },
@@ -332,7 +337,12 @@ class TaskTestCase(ModuleStoreTestCase):  # lint-amnesty, pylint: disable=missin
             'comment_id': comment_dict['id'],
             'thread_id': thread['id'],
         })
-        assert actual_result is False
+        # from edx_ace.channel import ChannelType
+        # import pdb; pdb.set_trace()
+        should_email_send = _is_first_comment(comment_dict['id'], thread['id'])
+        assert should_email_send is False
+
+        # self.mock_ace_send.assert_called_once_with(self.mock_message, [ChannelType.PUSH])
         assert not self.mock_ace_send.called
 
     def test_subcomment_should_not_send_email(self):
