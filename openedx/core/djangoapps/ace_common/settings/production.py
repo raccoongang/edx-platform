@@ -33,7 +33,7 @@ def plugin_settings(settings):
     settings.FIREBASE_APP = setup_firebase_app(settings.FIREBASE_CREDENTIALS, settings.FCM_APP_NAME)
     if settings.FIREBASE_APP:
         settings.ACE_ENABLED_CHANNELS.append(settings.ACE_CHANNEL_DEFAULT_PUSH)
-        settings.ACE_ENABLED_POLICIES.append(settings.ACE_CHANNEL_DEFAULT_PUSH)
+        settings.ACE_ENABLED_POLICIES.append('bulk_push_notification_optout')
 
         settings.PUSH_NOTIFICATIONS_SETTINGS = {
             'CONFIG': 'push_notifications.conf.AppConfig',
