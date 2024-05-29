@@ -675,7 +675,7 @@ urlpatterns += [
 
     # Survey Report
     re_path(
-        fr'^survey_report/',
+        r'^survey_report/',
         include('openedx.features.survey_report.urls'),
     ),
 ]
@@ -1047,5 +1047,8 @@ urlpatterns += [
 
 # MFE API urls
 urlpatterns += [
-    path('api/mfe_config/v1', include(('lms.djangoapps.mfe_config_api.urls', 'lms.djangoapps.mfe_config_api'), namespace='mfe_config_api'))
+    path('api/mfe_config/v1', include((
+        'lms.djangoapps.mfe_config_api.urls',
+        'lms.djangoapps.mfe_config_api'
+    ), namespace='mfe_config_api'))
 ]

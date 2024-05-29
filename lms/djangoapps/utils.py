@@ -41,6 +41,8 @@ class OptimizelyClient:
 
     @classmethod
     def get_optimizely_client(cls):
+        """ Returns an Optimizely full stack client instance."""
+
         if not cls.optimizely_client:
             optimizely_sdk_key = settings.OPTIMIZELY_FULLSTACK_SDK_KEY
             if not optimizely_sdk_key:
