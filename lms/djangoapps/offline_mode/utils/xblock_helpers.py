@@ -14,7 +14,7 @@ from .zip_management import create_zip_file
 
 User = get_user_model()
 
-OFFLINE_SUPPORTED_XBLOCKS = ['html', 'problem']
+OFFLINE_SUPPORTED_XBLOCKS = ['html', 'problem']  # FIXME: move this to settings
 
 
 def is_offline_supported(xblock):
@@ -22,7 +22,7 @@ def is_offline_supported(xblock):
 
 
 def is_modified(xblock):
-    file_path = f'{base_storage_path(xblock)}content_html.zip'
+    file_path = f'{base_storage_path(xblock)}content_html.zip'  # FIXME: change filename, and change to os.path.join
 
     try:
         last_modified = default_storage.get_created_time(file_path)
@@ -33,7 +33,7 @@ def is_modified(xblock):
 
 
 def generate_request_with_service_user():
-    user = User.objects.get(email='edx@example.com')
+    user = User.objects.get(email='edx@example.com')  # FIXME: Change this to a valid user
     request = HttpRequest()
     request.user = user
     # Set up the session

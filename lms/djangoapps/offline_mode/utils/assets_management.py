@@ -38,7 +38,7 @@ def save_asset_file(xblock, path, filename):
         pass
     else:
         base_path = base_storage_path(xblock)
-        default_storage.save(f'{base_path}assets/{filename}', ContentFile(content))
+        default_storage.save(f'{base_path}assets/{filename}', ContentFile(content))  # FIXME: change to os.path.join
 
 
 def remove_old_files(xblock):
@@ -55,6 +55,7 @@ def remove_old_files(xblock):
         # Define the paths to the specific items to delete
         asset_path = os.path.join(base_path, 'asset')
         index_file_path = os.path.join(base_path, 'index.html')
+        # FIXME: change filename to block_id or move to constants
         offline_zip_path = os.path.join(base_path, 'offline_content.zip')
 
         # Delete the 'asset' directory if it exists
@@ -88,7 +89,7 @@ def is_offline_content_present(xblock):
     """
     try:
         base_path = base_storage_path(xblock)
-
+        # FIXME: change filename to block_id or move to constants
         # Define the path to the 'offline_content.zip' file
         offline_zip_path = os.path.join(base_path, 'offline_content.zip')
 
@@ -116,4 +117,5 @@ def base_storage_path(xblock):
     Returns:
         str: The constructed base storage path.
     """
+    # FIXME: change to os.path.join?
     return '{loc.org}/{loc.course}/{loc.block_type}/{loc.block_id}/'.format(loc=xblock.location)

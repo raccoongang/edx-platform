@@ -34,6 +34,7 @@ class HtmlBlockMobileApiMixin:
         self.remove_old_files(base_path)
 
         # Replace MathJax URL
+        # FIXME: version shouldn't be hardcoded
         mathjax_pattern = re.compile(r'src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js[^"]*"')
         data = mathjax_pattern.sub(self._replace_mathjax_link, html_data)
 
@@ -72,6 +73,7 @@ class HtmlBlockMobileApiMixin:
 
     def _add_js_bridge(self, soup):
         script_tag = soup.new_tag('script')
+        # FIXME: this script should be loaded from a file
         script_tag.string = """
         // Function to send messages to iOS
         function sendMessageToiOS(message) {
@@ -209,7 +211,7 @@ class HtmlBlockMobileApiMixin:
         html_data = default_storage.url(file_path)
 
         if not html_data.startswith('http'):
-            html_data = f'{settings.LMS_ROOT_URL}{html_data}'
+            html_data = f'{settings.LMS_ROOT_URL}{html_data}'  # FIXME: use os.path.join
 
         last_modified = default_storage.get_created_time(file_path)
         size = default_storage.size(file_path)

@@ -262,6 +262,7 @@ def _build_message_context(context, notification_type='forum_comment'):  # lint-
         'comment_username': comment_author.username,
         'post_link': post_link,
         'push_notification_extra_context': {
+            'course_id': str(context['course_id']),
             'notification_type': notification_type,
             'topic_id': context.get('thread_commentable_id', ''),
             'thread_id': context['thread_id'],

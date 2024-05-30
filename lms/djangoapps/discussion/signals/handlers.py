@@ -52,6 +52,7 @@ def update_discussions_on_course_publish(sender, course_key, **kwargs):  # pylin
     import pdb;
     pdb.set_trace()
     request = generate_request_with_service_user()
+    # FIXME: Change the block id to the actual block id
     result = get_xblock_view_response(request, 'block-v1:new+123+new+type@problem+block@f7693d5dde094f65a28485582125936d', 'student_view')
     print(result)
 

@@ -10,6 +10,7 @@ class HtmlManipulator:
         self.xblock = xblock
 
     def _replace_mathjax_link(self):
+        # FIXME: version shouldn't be hardcoded
         mathjax_pattern = re.compile(r'src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js[^"]*"')
         return mathjax_pattern.sub('src="/static/mathjax/MathJax.js"', self.html_data)
 
@@ -34,6 +35,7 @@ class HtmlManipulator:
 
     def _add_js_bridge(self, soup):
         script_tag = soup.new_tag('script')
+        # FIXME: this script should be loaded from a file
         script_tag.string = """
         // JS bridge script
         function sendMessageToiOS(message) {

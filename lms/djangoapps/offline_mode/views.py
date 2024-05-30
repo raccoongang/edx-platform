@@ -1,9 +1,22 @@
+import os
+from django.conf import settings
+from django.core.files.storage import default_storage
+
+from opaque_keys.edx.keys import CourseKey
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from lms.djangoapps.offline_mode.utils.assets_management import is_offline_content_present, save_asset_file
+from lms.djangoapps.offline_mode.utils.xblock_helpers import is_offline_supported
+from xmodule.modulestore.django import modulestore
+
+
+from .file_management import save_asset_file, remove_old_files, base_storage_path
 from .tasks import generate_course_media
 
 
 class OfflineXBlockStatusInfoView(APIView):
+    # FIXME: Add docstring
 
     def get(self, request, course_id):
         course_key = CourseKey.from_string(course_id)
@@ -21,7 +34,7 @@ class OfflineXBlockStatusInfoView(APIView):
 
             html_data = default_storage.url(offline_zip_path)
             if not html_data.startswith('http'):
-                html_data = f'{settings.LMS_ROOT_URL}{html_data}'
+                html_data = f'{settings.LMS_ROOT_URL}{html_data}'  # FIXME: use os.path.join
 
             last_modified = default_storage.get_created_time(offline_zip_path)
             size = default_storage.size(offline_zip_path)
