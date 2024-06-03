@@ -198,7 +198,7 @@ def _should_send_subcomment_message(context):
 
 
 def _comment_author_is_thread_author(context):
-    return context['comment_author_id'] == context['thread_author_id']
+    return context.get('comment_author_id', '') == context['thread_author_id']
 
 
 def _is_content_still_reported(context):
@@ -267,9 +267,9 @@ def _build_message_context(context, notification_type='forum_comment'):  # lint-
         'post_link': post_link,
         'push_notification_extra_context': {
             'course_id': str(context['course_id']),
-            'parent_id': str(context.get('comment_parent_id', '')),
+            'parent_id': str(context['comment_parent_id']),
             'notification_type': notification_type,
-            'topic_id': str(context.get('thread_commentable_id', '')),
+            'topic_id': str(context['thread_commentable_id']),
             'thread_id': context['thread_id'],
             'comment_id': context['comment_id'],
         },
