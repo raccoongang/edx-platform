@@ -1,7 +1,14 @@
+import os
 import re
+
 from bs4 import BeautifulSoup
 
-from .assets_management import save_asset_file
+from django.conf import settings
+
+from .assets_management import save_asset_file, save_mathjax_to_local_static
+from .constants import MATHJAX_CDN_URL, MATHJAX_STATIC_PATH
+
+RELATIVE_PATH_DIFF = '../../../../'
 
 
 class HtmlManipulator:
@@ -16,21 +23,37 @@ class HtmlManipulator:
         self.xblock = xblock
 
     def _replace_mathjax_link(self):
-        # FIXME: version shouldn't be hardcoded
-        mathjax_pattern = re.compile(r'src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js[^"]*"')
-        return mathjax_pattern.sub('src="/static/mathjax/MathJax.js"', self.html_data)
+        """
+        Replace MathJax CDN link with local path to MathJax.js file.
+        """
+        mathjax_pattern = re.compile(fr'src="{MATHJAX_CDN_URL}[^"]*"')
+        self.html_data = mathjax_pattern.sub(
+            f'src="{RELATIVE_PATH_DIFF}{MATHJAX_STATIC_PATH}"',
+            self.html_data
+        )
 
     def _replace_static_links(self):
-        pattern = re.compile(r'/static/[\w./-]+')
-        return pattern.sub(self._replace_link, self.html_data)
+        """
+        Replace static links with local links.
+        """
+        static_links_pattern = os.path.join(settings.STATIC_URL, '[\w./-]+')
+        pattern = re.compile(fr'{static_links_pattern}')
+        self.html_data = pattern.sub(self._replace_link, self.html_data)
 
     def _replace_link(self, match):
+        """
+        Returns the local path of the asset file.
+        """
         link = match.group()
-        filename = link.split('/static/')[-1]
+        filename = link.split(settings.STATIC_URL)[-1]
         save_asset_file(self.xblock, link, filename)
         return f'assets/{filename}'
 
-    def _replace_iframe(self, soup):
+    @staticmethod
+    def _replace_iframe(soup):
+        """
+        Replace iframe tags with anchor tags.
+        """
         for node in soup.find_all('iframe'):
             replacement = soup.new_tag('p')
             tag_a = soup.new_tag('a')
@@ -39,7 +62,13 @@ class HtmlManipulator:
             replacement.append(tag_a)
             node.replace_with(replacement)
 
-    def _add_js_bridge(self, soup):
+    @staticmethod
+    def _add_js_bridge(soup):
+        """
+        Add JS bridge script to the HTML content.
+        :param soup:
+        :return:
+        """
         script_tag = soup.new_tag('script')
         # FIXME: this script should be loaded from a file
         script_tag.string = """
@@ -83,8 +112,15 @@ class HtmlManipulator:
         return soup
 
     def process_html(self):
-        self._replace_mathjax_link()
+        """
+        Prepares HTML content for local use.
+
+        Changes links to static files to paths to pre-generated static files for offline use.
+        """
+        save_mathjax_to_local_static()
         self._replace_static_links()
+        self._replace_mathjax_link()
+
         soup = BeautifulSoup(self.html_data, 'html.parser')
         self._replace_iframe(soup)
         self._add_js_bridge(soup)

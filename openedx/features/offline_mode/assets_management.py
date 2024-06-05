@@ -1,6 +1,7 @@
 import shutil
-import os
 import logging
+import os
+import requests
 
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -11,7 +12,7 @@ from xmodule.contentstore.content import StaticContent
 from xmodule.exceptions import NotFoundError
 from xmodule.modulestore.exceptions import ItemNotFoundError
 
-# from .file_management import get_static_file_path, read_static_file
+from .constants import MATHJAX_CDN_URL, MATHJAX_STATIC_PATH
 
 
 log = logging.getLogger(__name__)
@@ -43,6 +44,8 @@ def save_asset_file(xblock, path, filename):
         path (str): The path where the asset is located.
         filename (str): The name of the file to be saved.
     """
+    if filename.endswith('djangojs.js'):
+        return
     try:
         if '/' in filename:
             static_path = get_static_file_path(filename)
@@ -140,11 +143,17 @@ def is_modified(xblock):
     :return:
     """
     file_path = os.path.join(base_storage_path(xblock), 'content_html.zip')
-    # file_path = f'{base_storage_path(xblock)}content_html.zip'  # FIXME: change filename, and change to os.path.join
-    #
+
     try:
         last_modified = default_storage.get_created_time(file_path)
     except OSError:
         return True
 
     return xblock.published_on > last_modified
+
+
+def save_mathjax_to_local_static():
+    if not default_storage.exists(MATHJAX_STATIC_PATH):
+        response = requests.get(MATHJAX_CDN_URL)
+        default_storage.save(MATHJAX_STATIC_PATH, ContentFile(response.content))
+        log.info(f"Successfully saved MathJax to {MATHJAX_STATIC_PATH}")
