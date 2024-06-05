@@ -1,3 +1,6 @@
+"""
+Module to prepare HTML content for offline use.
+"""
 import os
 import re
 
@@ -8,14 +11,16 @@ from django.conf import settings
 from .assets_management import save_asset_file, save_mathjax_to_local_static
 from .constants import MATHJAX_CDN_URL, MATHJAX_STATIC_PATH
 
+
+# Relative path difference between the HTML content and the shared static files.
 RELATIVE_PATH_DIFF = '../../../../'
 
 
 class HtmlManipulator:
     """
-    Class to manipulate the HTML content of an XBlock.
+    Class to prepare HTML content for offline use.
 
-
+    Changes links to static files to paths to pre-generated static files for offline use.
     """
 
     def __init__(self, xblock, html_data):
@@ -36,7 +41,7 @@ class HtmlManipulator:
         """
         Replace static links with local links.
         """
-        static_links_pattern = os.path.join(settings.STATIC_URL, '[\w./-]+')
+        static_links_pattern = os.path.join(settings.STATIC_URL, r'[\w./-]+')
         pattern = re.compile(fr'{static_links_pattern}')
         self.html_data = pattern.sub(self._replace_link, self.html_data)
 
@@ -70,41 +75,8 @@ class HtmlManipulator:
         :return:
         """
         script_tag = soup.new_tag('script')
-        # FIXME: this script should be loaded from a file
-        script_tag.string = """
-        // JS bridge script
-        function sendMessageToiOS(message) {
-            window?.webkit?.messageHandlers?.iOSBridge?.postMessage(message);
-        }
-        function sendMessageToAndroid(message) {
-            window?.AndroidBridge?.postMessage(message);
-        }
-        function receiveMessageFromiOS(message) {
-            console.log("Message received from iOS:", message);
-        }
-        function receiveMessageFromAndroid(message) {
-            console.log("Message received from Android:", message);
-        }
-        if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.iOSBridge) {
-            window.addEventListener("messageFromiOS", function(event) {
-                receiveMessageFromiOS(event.data);
-            });
-        }
-        if (window.AndroidBridge) {
-            window.addEventListener("messageFromAndroid", function(event) {
-                receiveMessageFromAndroid(event.data);
-            });
-        }
-        const originalAjax = $.ajax;
-        $.ajax = function(options) {
-            sendMessageToiOS(options);
-            sendMessageToiOS(JSON.stringify(options));
-            sendMessageToAndroid(options);
-            sendMessageToAndroid(JSON.stringify(options));
-            console.log(options, JSON.stringify(options));
-            return originalAjax.call(this, options);
-        };
-        """
+        with open('openedx/features/offline_mode/static/offline_mode/js/bridge.js', 'r') as file:
+            script_tag.string = file.read()
         if soup.body:
             soup.body.append(script_tag)
         else:

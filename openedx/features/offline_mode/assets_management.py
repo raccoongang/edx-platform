@@ -1,3 +1,6 @@
+"""
+This module contains utility functions for managing assets and files.
+"""
 import shutil
 import logging
 import os
@@ -12,7 +15,7 @@ from xmodule.contentstore.content import StaticContent
 from xmodule.exceptions import NotFoundError
 from xmodule.modulestore.exceptions import ItemNotFoundError
 
-from .constants import MATHJAX_CDN_URL, MATHJAX_STATIC_PATH
+from .constants import MATHJAX_CDN_URL, MATHJAX_STATIC_PATH, OFFLINE_CONTENT_ARCHIVE_NAME
 
 
 log = logging.getLogger(__name__)
@@ -37,6 +40,7 @@ def read_static_file(path):
 def save_asset_file(xblock, path, filename):
     """
     Saves an asset file to the default storage.
+
     If the filename contains a '/', it reads the static file directly from the file system.
     Otherwise, it fetches the asset from the AssetManager.
     Args:
@@ -44,8 +48,6 @@ def save_asset_file(xblock, path, filename):
         path (str): The path where the asset is located.
         filename (str): The name of the file to be saved.
     """
-    if filename.endswith('djangojs.js'):
-        return
     try:
         if '/' in filename:
             static_path = get_static_file_path(filename)
@@ -70,12 +72,9 @@ def remove_old_files(xblock):
     """
     try:
         base_path = base_storage_path(xblock)
-
-        # Define the paths to the specific items to delete
         asset_path = os.path.join(base_path, 'asset')
         index_file_path = os.path.join(base_path, 'index.html')
-        # FIXME: change filename to block_id or move to constants
-        offline_zip_path = os.path.join(base_path, 'offline_content.zip')
+        offline_zip_path = os.path.join(base_path, OFFLINE_CONTENT_ARCHIVE_NAME)
 
         # Delete the 'asset' directory if it exists
         if os.path.isdir(asset_path):
@@ -83,47 +82,37 @@ def remove_old_files(xblock):
             log.info(f"Successfully deleted the directory: {asset_path}")
 
         # Delete the 'index.html' file if it exists
-        if os.path.isfile(index_file_path):
+        if default_storage.exists(index_file_path):
             os.remove(index_file_path)
             log.info(f"Successfully deleted the file: {index_file_path}")
 
         # Delete the 'offline_content.zip' file if it exists
-        if os.path.isfile(offline_zip_path):
+        if default_storage.exists(offline_zip_path):
             os.remove(offline_zip_path)
             log.info(f"Successfully deleted the file: {offline_zip_path}")
 
-    except Exception as e:
+    except OSError as e:
         log.error(f"Error occurred while deleting the files or directory: {e}")
 
 
 def is_offline_content_present(xblock):
     """
     Checks whether 'offline_content.zip' file is present in the specified base path directory.
+
     Args:
         xblock (XBlock): The XBlock instance
     Returns:
         bool: True if the file is present, False otherwise
     """
-    try:
-        base_path = base_storage_path(xblock)
-        # FIXME: change filename to block_id or move to constants
-        # Define the path to the 'offline_content.zip' file
-        offline_zip_path = os.path.join(base_path, 'offline_content.zip')
-
-        # Check if the file exists
-        if os.path.isfile(offline_zip_path):
-            return True
-        else:
-            return False
-
-    except Exception as e:
-        log.error(f"Error occurred while checking the file: {e}")
-        return False
+    base_path = base_storage_path(xblock)
+    offline_zip_path = os.path.join(base_path, OFFLINE_CONTENT_ARCHIVE_NAME)
+    return default_storage.exists(offline_zip_path)
 
 
 def base_storage_path(xblock):
     """
     Generates the base storage path for the given XBlock.
+
     The path is constructed based on the XBlock's location, which includes the organization,
     course, block type, and block ID.
     Args:
@@ -131,7 +120,6 @@ def base_storage_path(xblock):
     Returns:
         str: The constructed base storage path.
     """
-    # FIXME: change to os.path.join?
     loc = xblock.location
     return f'{loc.org}/{loc.course}/{loc.block_type}/{loc.block_id}/'
 
@@ -139,8 +127,9 @@ def base_storage_path(xblock):
 def is_modified(xblock):
     """
     Check if the xblock has been modified since the last time the offline content was generated.
-    :param xblock:
-    :return:
+
+    Args:
+        xblock (XBlock): The XBlock instance to check.
     """
     file_path = os.path.join(base_storage_path(xblock), 'content_html.zip')
 
@@ -153,6 +142,12 @@ def is_modified(xblock):
 
 
 def save_mathjax_to_local_static():
+    """
+    Saves MathJax to the local static directory.
+
+    If MathJax is not already saved, it fetches MathJax from
+    the CDN and saves it to the local static directory.
+    """
     if not default_storage.exists(MATHJAX_STATIC_PATH):
         response = requests.get(MATHJAX_CDN_URL)
         default_storage.save(MATHJAX_STATIC_PATH, ContentFile(response.content))
