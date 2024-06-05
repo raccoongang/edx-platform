@@ -278,6 +278,7 @@ class TaskTestCase(ModuleStoreTestCase):  # lint-amnesty, pylint: disable=missin
                     'comment_body_text': comment.body_text,
                     'comment_created_at': ONE_HOUR_AGO,
                     'comment_id': comment['id'],
+                    'comment_parent_id': comment['parent_id'],
                     'comment_username': self.comment_author.username,
                     'course_id': self.course.id,
                     'thread_author_id': self.thread_author.id,
@@ -292,6 +293,8 @@ class TaskTestCase(ModuleStoreTestCase):  # lint-amnesty, pylint: disable=missin
                     'push_notification_extra_context': {
                         'notification_type': 'forum_response',
                         'topic_id': thread['commentable_id'],
+                        'course_id': comment['course_id'],
+                        'parent_id': str(comment['parent_id']),
                         'thread_id': thread['id'],
                         'comment_id': comment['id'],
                     },
