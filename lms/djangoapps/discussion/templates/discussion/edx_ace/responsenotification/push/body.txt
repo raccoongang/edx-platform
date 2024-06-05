@@ -1,3 +1,2 @@
 {% load i18n %}
-{% blocktrans trimmed %}{{ comment_username }} replied to {{ thread_title }}:{% endblocktrans %}
-{{ comment_body_text }}
+{% blocktrans trimmed %}{{ comment_username }} replied to {{ thread_title }}{% endblocktrans %}

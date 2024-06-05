@@ -183,18 +183,22 @@ def _should_send_message(context):
     cc_thread_author = cc.User(id=context['thread_author_id'], course_id=context['course_id'])
     return (
         _is_user_subscribed_to_thread(cc_thread_author, context['thread_id']) and
-        _is_not_subcomment(context['comment_id'])
+        _is_not_subcomment(context['comment_id']) and
+        not _comment_author_is_thread_author(context)
     )
 
 
 def _should_send_subcomment_message(context):
     cc_thread_author = cc.User(id=context['thread_author_id'], course_id=context['course_id'])
-    comment_author_is_thread_author = context['comment_author_id'] == context['thread_author_id']
     return (
         _is_user_subscribed_to_thread(cc_thread_author, context['thread_id']) and
         _is_subcomment(context['comment_id']) and
-        not comment_author_is_thread_author
+        not _comment_author_is_thread_author(context)
     )
+
+
+def _comment_author_is_thread_author(context):
+    return context.get('comment_author_id', '') == context['thread_author_id']
 
 
 def _is_content_still_reported(context):
@@ -262,8 +266,10 @@ def _build_message_context(context, notification_type='forum_comment'):  # lint-
         'comment_username': comment_author.username,
         'post_link': post_link,
         'push_notification_extra_context': {
+            'course_id': str(context['course_id']),
+            'parent_id': str(context['comment_parent_id']),
             'notification_type': notification_type,
-            'topic_id': context.get('thread_commentable_id', ''),
+            'topic_id': str(context['thread_commentable_id']),
             'thread_id': context['thread_id'],
             'comment_id': context['comment_id'],
         },
