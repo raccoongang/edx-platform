@@ -133,7 +133,7 @@ def is_modified(xblock):
     Args:
         xblock (XBlock): The XBlock instance to check.
     """
-    file_path = os.path.join(block_storage_path(xblock), 'content_html.zip')
+    file_path = os.path.join(block_storage_path(xblock), OFFLINE_CONTENT_ARCHIVE_NAME)
 
     try:
         last_modified = default_storage.get_created_time(file_path)
