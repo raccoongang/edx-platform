@@ -10,8 +10,7 @@ from django.core.files.storage import default_storage
 
 from zipfile import ZipFile
 
-
-from .assets_management import base_storage_path, remove_old_files, is_modified
+from .assets_management import block_storage_path, remove_old_files, is_modified
 from .constants import OFFLINE_CONTENT_ARCHIVE_NAME, OFFLINE_SUPPORTED_XBLOCKS
 from .html_manipulator import HtmlManipulator
 
@@ -31,13 +30,13 @@ def create_zip_file(base_path, file_name):
         Recursively adds files to the zip file.
         """
         try:
-            directories, files = default_storage.listdir(current_base_path)
+            directories, filenames = default_storage.listdir(current_base_path)
         except OSError:
             return
 
-        for file_name in files:
-            full_path = os.path.join(current_base_path, file_name)
-            zip_file.write(full_path, os.path.join(current_path_in_zip, file_name))
+        for filename in filenames:
+            full_path = os.path.join(current_base_path, filename)
+            zip_file.write(full_path, os.path.join(current_path_in_zip, filename))
 
         for directory in directories:
             add_files_to_zip(zip_file, os.path.join(current_base_path, directory),
@@ -58,7 +57,7 @@ def generate_offline_content(xblock, html_data):
     if not is_modified(xblock):
         return
 
-    base_path = base_storage_path(xblock)
+    base_path = block_storage_path(xblock)
     remove_old_files(xblock)
     html_manipulator = HtmlManipulator(xblock, html_data)
     updated_html = html_manipulator.process_html()

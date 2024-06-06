@@ -56,30 +56,31 @@ def save_asset_file(xblock, path, filename):
             asset_key = StaticContent.get_asset_key_from_path(xblock.location.course_key, path)
             content = AssetManager.find(asset_key).data
     except (ItemNotFoundError, NotFoundError):
-        pass
+        log.info(f"Asset not found: {filename}")
+
     else:
-        base_path = base_storage_path(xblock)
+        base_path = block_storage_path(xblock)
         file_path = os.path.join(base_path, 'assets', filename)
         default_storage.save(file_path, ContentFile(content))
 
 
 def remove_old_files(xblock):
     """
-    Removes the 'asset' directory, 'index.html', and 'offline_content.zip' files
+    Removes the 'assets' directory, 'index.html', and 'offline_content.zip' files
     in the specified base path directory.
     Args:
         (XBlock): The XBlock instance
     """
     try:
-        base_path = base_storage_path(xblock)
-        asset_path = os.path.join(base_path, 'asset')
+        base_path = block_storage_path(xblock)
+        assets_path = os.path.join(base_path, 'assets')
         index_file_path = os.path.join(base_path, 'index.html')
         offline_zip_path = os.path.join(base_path, OFFLINE_CONTENT_ARCHIVE_NAME)
 
-        # Delete the 'asset' directory if it exists
-        if os.path.isdir(asset_path):
-            shutil.rmtree(asset_path)
-            log.info(f"Successfully deleted the directory: {asset_path}")
+        # Delete the 'assets' directory if it exists
+        if os.path.isdir(assets_path):
+            shutil.rmtree(assets_path)
+            log.info(f"Successfully deleted the directory: {assets_path}")
 
         # Delete the 'index.html' file if it exists
         if default_storage.exists(index_file_path):
@@ -104,12 +105,12 @@ def is_offline_content_present(xblock):
     Returns:
         bool: True if the file is present, False otherwise
     """
-    base_path = base_storage_path(xblock)
+    base_path = block_storage_path(xblock)
     offline_zip_path = os.path.join(base_path, OFFLINE_CONTENT_ARCHIVE_NAME)
     return default_storage.exists(offline_zip_path)
 
 
-def base_storage_path(xblock):
+def block_storage_path(xblock=None, usage_key=None):
     """
     Generates the base storage path for the given XBlock.
 
@@ -117,11 +118,12 @@ def base_storage_path(xblock):
     course, block type, and block ID.
     Args:
         xblock (XBlock): The XBlock instance for which to generate the storage path.
+        usage_key (UsageKey): The UsageKey of the XBlock.
     Returns:
         str: The constructed base storage path.
     """
-    loc = xblock.location
-    return f'{loc.org}/{loc.course}/{loc.block_type}/{loc.block_id}/'
+    loc = usage_key or getattr(xblock, 'location', None)
+    return f'{loc.org}/{loc.course}/{loc.block_type}/{loc.block_id}/' if loc else ''
 
 
 def is_modified(xblock):
@@ -131,7 +133,7 @@ def is_modified(xblock):
     Args:
         xblock (XBlock): The XBlock instance to check.
     """
-    file_path = os.path.join(base_storage_path(xblock), 'content_html.zip')
+    file_path = os.path.join(block_storage_path(xblock), 'content_html.zip')
 
     try:
         last_modified = default_storage.get_created_time(file_path)
@@ -141,14 +143,15 @@ def is_modified(xblock):
     return xblock.published_on > last_modified
 
 
-def save_mathjax_to_local_static():
+def save_mathjax_to_xblock_assets(xblock):
     """
     Saves MathJax to the local static directory.
 
     If MathJax is not already saved, it fetches MathJax from
     the CDN and saves it to the local static directory.
     """
-    if not default_storage.exists(MATHJAX_STATIC_PATH):
+    file_path = os.path.join(block_storage_path(xblock), MATHJAX_STATIC_PATH)
+    if not default_storage.exists(file_path):
         response = requests.get(MATHJAX_CDN_URL)
-        default_storage.save(MATHJAX_STATIC_PATH, ContentFile(response.content))
-        log.info(f"Successfully saved MathJax to {MATHJAX_STATIC_PATH}")
+        default_storage.save(file_path, ContentFile(response.content))
+        log.info(f"Successfully saved MathJax to {file_path}")
