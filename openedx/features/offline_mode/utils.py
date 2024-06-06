@@ -11,7 +11,7 @@ from django.core.files.storage import default_storage
 from zipfile import ZipFile
 
 from .assets_management import block_storage_path, remove_old_files, is_modified
-from .constants import OFFLINE_CONTENT_ARCHIVE_NAME, OFFLINE_SUPPORTED_XBLOCKS
+from .constants import OFFLINE_SUPPORTED_XBLOCKS
 from .html_manipulator import HtmlManipulator
 
 User = get_user_model()
@@ -39,11 +39,15 @@ def create_zip_file(base_path, file_name):
             zip_file.write(full_path, os.path.join(current_path_in_zip, filename))
 
         for directory in directories:
-            add_files_to_zip(zip_file, os.path.join(current_base_path, directory),
-                             os.path.join(current_path_in_zip, directory))
+            add_files_to_zip(
+                zip_file,
+                os.path.join(current_base_path, directory),
+                os.path.join(current_path_in_zip, directory)
+            )
 
     add_files_to_zip(zf, default_storage.path(base_path + 'assets/'), 'assets')
     zf.close()
+    log.info(f'Offline content for {file_name} has been generated.')
 
 
 def generate_offline_content(xblock, html_data):
@@ -66,11 +70,4 @@ def generate_offline_content(xblock, html_data):
         os.path.join(base_path, 'index.html'),
         ContentFile(updated_html),
     )
-    create_zip_file(base_path, OFFLINE_CONTENT_ARCHIVE_NAME)
-
-
-def is_offline_supported_block(xblock):
-    """
-    Returns True if the block is supported for offline mode, False otherwise.
-    """
-    return xblock.location.block_type in OFFLINE_SUPPORTED_XBLOCKS
+    create_zip_file(base_path, f'{xblock.location.block_id}.zip')

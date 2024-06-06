@@ -15,7 +15,7 @@ from xmodule.contentstore.content import StaticContent
 from xmodule.exceptions import NotFoundError
 from xmodule.modulestore.exceptions import ItemNotFoundError
 
-from .constants import MATHJAX_CDN_URL, MATHJAX_STATIC_PATH, OFFLINE_CONTENT_ARCHIVE_NAME
+from .constants import MATHJAX_CDN_URL, MATHJAX_STATIC_PATH
 
 
 log = logging.getLogger(__name__)
@@ -48,6 +48,9 @@ def save_asset_file(xblock, path, filename):
         path (str): The path where the asset is located.
         filename (str): The name of the file to be saved.
     """
+    if filename.endswith('djangojs.js'):
+        return
+
     try:
         if '/' in filename:
             static_path = get_static_file_path(filename)
@@ -75,7 +78,7 @@ def remove_old_files(xblock):
         base_path = block_storage_path(xblock)
         assets_path = os.path.join(base_path, 'assets')
         index_file_path = os.path.join(base_path, 'index.html')
-        offline_zip_path = os.path.join(base_path, OFFLINE_CONTENT_ARCHIVE_NAME)
+        offline_zip_path = os.path.join(base_path, f'{xblock.location.block_id}.zip')
 
         # Delete the 'assets' directory if it exists
         if os.path.isdir(assets_path):
@@ -96,18 +99,20 @@ def remove_old_files(xblock):
         log.error(f"Error occurred while deleting the files or directory: {e}")
 
 
-def is_offline_content_present(xblock):
+def get_offline_block_content_path(xblock=None, usage_key=None):
     """
     Checks whether 'offline_content.zip' file is present in the specified base path directory.
 
     Args:
         xblock (XBlock): The XBlock instance
+        usage_key (UsageKey): The UsageKey of the XBlock
     Returns:
         bool: True if the file is present, False otherwise
     """
-    base_path = block_storage_path(xblock)
-    offline_zip_path = os.path.join(base_path, OFFLINE_CONTENT_ARCHIVE_NAME)
-    return default_storage.exists(offline_zip_path)
+    usage_key = usage_key or getattr(xblock, 'location', None)
+    base_path = block_storage_path(usage_key=usage_key)
+    offline_zip_path = os.path.join(base_path, f'{usage_key.block_id}.zip')
+    return offline_zip_path if default_storage.exists(offline_zip_path) else None
 
 
 def block_storage_path(xblock=None, usage_key=None):
@@ -123,7 +128,7 @@ def block_storage_path(xblock=None, usage_key=None):
         str: The constructed base storage path.
     """
     loc = usage_key or getattr(xblock, 'location', None)
-    return f'{loc.org}/{loc.course}/{loc.block_type}/{loc.block_id}/' if loc else ''
+    return f'{str(loc.course_key)}/{loc.block_id}/' if loc else ''
 
 
 def is_modified(xblock):
@@ -133,7 +138,7 @@ def is_modified(xblock):
     Args:
         xblock (XBlock): The XBlock instance to check.
     """
-    file_path = os.path.join(block_storage_path(xblock), OFFLINE_CONTENT_ARCHIVE_NAME)
+    file_path = os.path.join(block_storage_path(xblock), f'{xblock.location.block_id}.zip')
 
     try:
         last_modified = default_storage.get_created_time(file_path)
