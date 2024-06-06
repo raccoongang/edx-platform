@@ -5,7 +5,7 @@ from openedx.core.djangoapps.waffle_utils import CourseWaffleFlag
 
 WAFFLE_FLAG_NAMESPACE = 'offline_mode'
 
-# .. toggle_name: e
+# .. toggle_name: offline_mode.enable_offline_mode
 # .. toggle_implementation: CourseWaffleFlag
 # .. toggle_default: False
 # .. toggle_description: This feature toggle enables the offline mode course
