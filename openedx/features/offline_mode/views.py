@@ -44,5 +44,5 @@ class SudioCoursePublishedEventHandler(APIView):
         else:
             return Response(
                 data={'error': 'Offline mode is not enabled for this course'},
-                status=status.HTTP_400_BAD_REQUEST
-           )
+                status=status.HTTP_400_BAD_REQUEST,
+            )
