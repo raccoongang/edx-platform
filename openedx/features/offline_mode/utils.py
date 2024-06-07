@@ -11,7 +11,6 @@ from django.core.files.storage import default_storage
 from zipfile import ZipFile
 
 from .assets_management import block_storage_path, remove_old_files, is_modified
-from .constants import OFFLINE_SUPPORTED_XBLOCKS
 from .html_manipulator import HtmlManipulator
 
 User = get_user_model()
