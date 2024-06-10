@@ -19,15 +19,29 @@ class HtmlManipulator:
     Changes links to static files to paths to pre-generated static files for offline use.
     """
 
-    def __init__(self, xblock, html_data):
+    def __init__(self, xblock, html_data, temp_dir):
         self.html_data = html_data
         self.xblock = xblock
+        self.temp_dir = temp_dir
+
+    def process_html(self):
+        """
+        Prepares HTML content for local usage.
+
+        Changes links to static files to paths to pre-generated static files for offline use.
+        """
+        self._replace_static_links()
+        self._replace_mathjax_link()
+
+        soup = BeautifulSoup(self.html_data, 'html.parser')
+        self._replace_iframe(soup)
+        return str(soup)
 
     def _replace_mathjax_link(self):
         """
         Replace MathJax CDN link with local path to MathJax.js file.
         """
-        save_mathjax_to_xblock_assets(self.xblock)
+        save_mathjax_to_xblock_assets(self.temp_dir)
         mathjax_pattern = re.compile(fr'src="{MATHJAX_CDN_URL}[^"]*"')
         self.html_data = mathjax_pattern.sub(f'src="{MATHJAX_STATIC_PATH}"', self.html_data)
 
@@ -45,7 +59,7 @@ class HtmlManipulator:
         """
         link = match.group()
         filename = link.split(settings.STATIC_URL)[-1]
-        save_asset_file(self.xblock, link, filename)
+        save_asset_file(self.temp_dir, self.xblock, link, filename)
         return f'assets/{filename}'
 
     @staticmethod
@@ -60,31 +74,3 @@ class HtmlManipulator:
             tag_a.string = node.get('title', node.get('src'))
             replacement.append(tag_a)
             node.replace_with(replacement)
-
-    @staticmethod
-    def _add_js_bridge(soup):
-        """
-        Add JS bridge script to the HTML content.
-        """
-        script_tag = soup.new_tag('script')
-        with open('openedx/features/offline_mode/static/offline_mode/js/bridge.js', 'r') as file:
-            script_tag.string = file.read()
-        if soup.body:
-            soup.body.append(script_tag)
-        else:
-            soup.append(script_tag)
-        return soup
-
-    def process_html(self):
-        """
-        Prepares HTML content for local use.
-
-        Changes links to static files to paths to pre-generated static files for offline use.
-        """
-        self._replace_static_links()
-        self._replace_mathjax_link()
-
-        soup = BeautifulSoup(self.html_data, 'html.parser')
-        self._replace_iframe(soup)
-        self._add_js_bridge(soup)
-        return str(soup)

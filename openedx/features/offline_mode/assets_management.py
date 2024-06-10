@@ -7,7 +7,6 @@ import os
 import requests
 
 from django.conf import settings
-from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
 from xmodule.assetstore.assetmgr import AssetManager
@@ -37,13 +36,14 @@ def read_static_file(path):
         return file.read()
 
 
-def save_asset_file(xblock, path, filename):
+def save_asset_file(temp_dir, xblock, path, filename):
     """
     Saves an asset file to the default storage.
 
     If the filename contains a '/', it reads the static file directly from the file system.
     Otherwise, it fetches the asset from the AssetManager.
     Args:
+        temp_dir (str): The temporary directory where the assets are stored.
         xblock (XBlock): The XBlock instance
         path (str): The path where the asset is located.
         filename (str): The name of the file to be saved.
@@ -62,9 +62,19 @@ def save_asset_file(xblock, path, filename):
         log.info(f"Asset not found: {filename}")
 
     else:
-        base_path = block_storage_path(xblock)
-        file_path = os.path.join(base_path, 'assets', filename)
-        default_storage.save(file_path, ContentFile(content))
+        assets_path = os.path.join(temp_dir, 'assets')
+        file_path = os.path.join(assets_path, filename)
+        create_subdirectories_for_asset(file_path)
+        with open(file_path, 'wb') as file:
+            file.write(content)
+
+
+def create_subdirectories_for_asset(file_path):
+    out_dir_name = '/'
+    for dir_name in file_path.split('/')[:-1]:
+        out_dir_name = os.path.join(out_dir_name, dir_name)
+        if out_dir_name and not os.path.exists(out_dir_name):
+            os.mkdir(out_dir_name)
 
 
 def remove_old_files(xblock):
@@ -128,7 +138,7 @@ def block_storage_path(xblock=None, usage_key=None):
         str: The constructed base storage path.
     """
     loc = usage_key or getattr(xblock, 'location', None)
-    return f'{str(loc.course_key)}/{loc.block_id}/' if loc else ''
+    return f'{str(loc.course_key)}/' if loc else ''
 
 
 def is_modified(xblock):
@@ -148,15 +158,17 @@ def is_modified(xblock):
     return xblock.published_on > last_modified
 
 
-def save_mathjax_to_xblock_assets(xblock):
+def save_mathjax_to_xblock_assets(temp_dir):
     """
     Saves MathJax to the local static directory.
 
     If MathJax is not already saved, it fetches MathJax from
     the CDN and saves it to the local static directory.
     """
-    file_path = os.path.join(block_storage_path(xblock), MATHJAX_STATIC_PATH)
-    if not default_storage.exists(file_path):
+    file_path = os.path.join(temp_dir, MATHJAX_STATIC_PATH)
+    if not os.path.exists(file_path):
         response = requests.get(MATHJAX_CDN_URL)
-        default_storage.save(file_path, ContentFile(response.content))
+        with open(file_path, 'wb') as file:
+            file.write(response.content)
+
         log.info(f"Successfully saved MathJax to {file_path}")
