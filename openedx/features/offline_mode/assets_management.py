@@ -48,22 +48,20 @@ def save_asset_file(temp_dir, xblock, path, filename):
         path (str): The path where the asset is located.
         filename (str): The name of the file to be saved.
     """
-    if filename.endswith('djangojs.js'):
-        return
-
     try:
-        if '/' in filename:
+        if filename.startswith('assets/'):
+            asset_filename = filename.split('/')[-1]
+            asset_key = StaticContent.get_asset_key_from_path(xblock.location.course_key, asset_filename)
+            content = AssetManager.find(asset_key).data
+            file_path = os.path.join(temp_dir, filename)
+        else:
             static_path = get_static_file_path(filename)
             content = read_static_file(static_path)
-        else:
-            asset_key = StaticContent.get_asset_key_from_path(xblock.location.course_key, path)
-            content = AssetManager.find(asset_key).data
+            file_path = os.path.join(temp_dir, 'assets', filename)
     except (ItemNotFoundError, NotFoundError):
         log.info(f"Asset not found: {filename}")
 
     else:
-        assets_path = os.path.join(temp_dir, 'assets')
-        file_path = os.path.join(assets_path, filename)
         create_subdirectories_for_asset(file_path)
         with open(file_path, 'wb') as file:
             file.write(content)
