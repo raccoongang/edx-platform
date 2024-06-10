@@ -28,11 +28,16 @@ def plugin_settings(settings):  # lint-amnesty, pylint: disable=missing-function
     settings.FCM_APP_NAME = 'fcm-edx-platform'
 
     settings.ACE_CHANNEL_DEFAULT_PUSH = 'push_notification'
-    # Note: To local development with Firebase, you must set FIREBASE_CREDENTIALS.
+    # Note: To local development with Firebase, you must set FIREBASE_CREDENTIALS_PATH
+    # (path to json file with FIREBASE_CREDENTIALS)
+    # or FIREBASE_CREDENTIALS dictionary.
     settings.FCM_APP_NAME = 'fcm-edx-platform'
-    settings.FIREBASE_CREDENTIALS = None
+    used_firebase_credentials = getattr(settings, 'FIREBASE_CREDENTIALS_PATH', None)
+    if not used_firebase_credentials:
+        used_firebase_credentials = getattr(settings, 'FIREBASE_CREDENTIALS', None)
 
-    settings.FIREBASE_APP = setup_firebase_app(settings.FIREBASE_CREDENTIALS, settings.FCM_APP_NAME)
+    if used_firebase_credentials:
+        settings.FIREBASE_APP = setup_firebase_app(settings.FIREBASE_CREDENTIALS, settings.FCM_APP_NAME)
 
     if getattr(settings, 'FIREBASE_APP', None):
         settings.ACE_ENABLED_CHANNELS.append(settings.ACE_CHANNEL_DEFAULT_PUSH)
