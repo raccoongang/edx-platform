@@ -118,6 +118,7 @@ class XBlockRenderer:
                 'on_courseware_page': True,
                 'is_learning_mfe': False,
                 'is_mobile_app': True,
+                'is_offline_content': True,
                 'render_course_wide_assets': True,
                 'LANGUAGE_CODE': 'en',
 
