@@ -30,6 +30,7 @@ class HtmlManipulator:
 
         Changes links to static files to paths to pre-generated static files for offline use.
         """
+        self._replace_asset_links()
         self._replace_static_links()
         self._replace_mathjax_link()
 
@@ -52,6 +53,22 @@ class HtmlManipulator:
         static_links_pattern = os.path.join(settings.STATIC_URL, r'[\w./-]+')
         pattern = re.compile(fr'{static_links_pattern}')
         self.html_data = pattern.sub(self._replace_link, self.html_data)
+
+    def _replace_asset_links(self):
+        """
+        Replace static links with local links.
+        """
+        pattern = re.compile(r'/assets/[\w./@:+-]+')
+        self.html_data = pattern.sub(self._replace_asset_link, self.html_data)
+
+    def _replace_asset_link(self, match):
+        """
+        Returns the local path of the asset file.
+        """
+        link = match.group()
+        filename = link[1:] if link.startswith('/') else link  # Remove the leading '/'
+        save_asset_file(self.temp_dir, self.xblock, link, filename)
+        return filename
 
     def _replace_link(self, match):
         """
