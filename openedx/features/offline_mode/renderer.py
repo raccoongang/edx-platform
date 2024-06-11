@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.sessions.backends.db import SessionStore
 from django.http import HttpRequest
 
-from opaque_keys.edx.keys import CourseKey, UsageKey
+from opaque_keys.edx.keys import UsageKey
 from xmodule.modulestore.django import modulestore
 
 from common.djangoapps.edxmako.shortcuts import render_to_string
