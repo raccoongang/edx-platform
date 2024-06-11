@@ -33,12 +33,9 @@ def plugin_settings(settings):
     )
     settings.FIREBASE_CREDENTIALS = settings.ENV_TOKENS.get('FIREBASE_CREDENTIALS', settings.FIREBASE_CREDENTIALS)
 
-    used_firebase_credentials = settings.FIREBASE_CREDENTIALS_PATH
-    if not used_firebase_credentials:
-        used_firebase_credentials = settings.FIREBASE_CREDENTIALS
-
-    if used_firebase_credentials:
-        settings.FIREBASE_APP = setup_firebase_app(used_firebase_credentials, settings.FCM_APP_NAME)
+    settings.FIREBASE_APP = setup_firebase_app(
+        settings.FIREBASE_CREDENTIALS_PATH or settings.FIREBASE_CREDENTIALS, settings.FCM_APP_NAME
+    )
 
     if settings.FIREBASE_APP:
         settings.ACE_ENABLED_CHANNELS.append(settings.ACE_CHANNEL_DEFAULT_PUSH)
