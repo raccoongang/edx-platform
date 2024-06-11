@@ -36,7 +36,6 @@ def plugin_settings(settings):  # lint-amnesty, pylint: disable=missing-function
     settings.FIREBASE_CREDENTIALS = None
     settings.FIREBASE_APP = None
 
-    settings.FCM_APP_NAME = 'fcm-edx-platform'
     used_firebase_credentials = getattr(settings, 'FIREBASE_CREDENTIALS_PATH', None)
     if not used_firebase_credentials:
         used_firebase_credentials = getattr(settings, 'FIREBASE_CREDENTIALS', None)
