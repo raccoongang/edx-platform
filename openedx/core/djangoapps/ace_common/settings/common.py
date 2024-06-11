@@ -40,7 +40,7 @@ def plugin_settings(settings):  # lint-amnesty, pylint: disable=missing-function
     if not used_firebase_credentials:
         used_firebase_credentials = getattr(settings, 'FIREBASE_CREDENTIALS', None)
 
-    if used_firebase_credentials:
+    settings.FIREBASE_APP = setup_firebase_app(settings.FIREBASE_CREDENTIALS_PATH or settings.FIREBASE_CREDENTIALS, settings.FCM_APP_NAME)
         settings.FIREBASE_APP = setup_firebase_app(used_firebase_credentials, settings.FCM_APP_NAME)
 
     if getattr(settings, 'FIREBASE_APP', None):
