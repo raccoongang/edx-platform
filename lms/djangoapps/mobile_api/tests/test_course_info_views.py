@@ -1,7 +1,7 @@
 """
 Tests for course_info
 """
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 
 import ddt
@@ -450,3 +450,33 @@ class TestBlocksInfoInCourseView(TestBlocksInCourseView, MilestonesTestCaseMixin
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         for block_info in response.data['blocks'].values():
             self.assertNotEqual('assignment_progress', block_info)
+
+    @patch('lms.djangoapps.mobile_api.course_info.views.default_storage')
+    @patch('lms.djangoapps.mobile_api.course_info.views.get_offline_block_content_path')
+    @patch('lms.djangoapps.mobile_api.course_info.views.is_offline_mode_enabled')
+    def test_extend_block_info_with_offline_data(
+        self,
+        is_offline_mode_enabled_mock: MagicMock,
+        get_offline_block_content_path_mock: MagicMock,
+        default_storage_mock: MagicMock,
+    ) -> None:
+        url = reverse('blocks_info_in_course', kwargs={'api_version': 'v4'})
+        offline_content_path_mock = '/offline_content_path_mock/'
+        created_time_mock = 'created_time_mock'
+        size_mock = 'size_mock'
+        get_offline_block_content_path_mock.return_value = offline_content_path_mock
+        default_storage_mock.get_created_time.return_value = created_time_mock
+        default_storage_mock.size.return_value = size_mock
+
+        expected_offline_download_data = {
+            'file_url': offline_content_path_mock,
+            'last_modified': created_time_mock,
+            'file_size': size_mock
+        }
+
+        response = self.verify_response(url=url)
+
+        is_offline_mode_enabled_mock.assert_called_once_with(self.course.course_id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        for block_info in response.data['blocks'].values():
+            self.assertDictEqual(block_info['offline_download'], expected_offline_download_data)
