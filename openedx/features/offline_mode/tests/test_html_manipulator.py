@@ -54,7 +54,7 @@ class HtmlManipulatorTestCase(TestCase):
 
         self.assertEqual(html_manipulator.html_data, html_data_mock)
 
-        html_manipulator._replace_mathjax_link()
+        html_manipulator._replace_mathjax_link()  # lint-amnesty, pylint: disable=protected-access
 
         save_mathjax_to_xblock_assets.assert_called_once_with(html_manipulator.temp_dir)
         self.assertEqual(html_manipulator.html_data, expected_html_data_after_replacing)
@@ -72,7 +72,7 @@ class HtmlManipulatorTestCase(TestCase):
 
         self.assertEqual(html_manipulator.html_data, html_data_mock)
 
-        html_manipulator._replace_static_links()
+        html_manipulator._replace_static_links()  # lint-amnesty, pylint: disable=protected-access
 
         save_asset_file_mock.assert_called_once_with(
             html_manipulator.temp_dir,
@@ -95,7 +95,7 @@ class HtmlManipulatorTestCase(TestCase):
 
         self.assertEqual(html_manipulator.html_data, html_data_mock)
 
-        html_manipulator._replace_asset_links()
+        html_manipulator._replace_asset_links()  # lint-amnesty, pylint: disable=protected-access
 
         save_asset_file_mock.assert_called_once_with(
             html_manipulator.temp_dir,
@@ -113,6 +113,6 @@ class HtmlManipulatorTestCase(TestCase):
         soup = BeautifulSoup(html_data_mock, 'html.parser')
         expected_html_markup = """<p><a href="">${_('YouTube Video')}</a></p>"""
 
-        HtmlManipulator._replace_iframe(soup)
+        HtmlManipulator._replace_iframe(soup)  # lint-amnesty, pylint: disable=protected-access
 
         self.assertEqual(f'{soup.find_all("p")[0]}', expected_html_markup)

@@ -3,7 +3,7 @@ Tests for the testing Offline Mode tacks.
 """
 
 from unittest import TestCase
-from unittest.mock import MagicMock, Mock, call,  patch
+from unittest.mock import MagicMock, Mock, call, patch
 
 from opaque_keys.edx.keys import CourseKey, UsageKey
 from openedx.features.offline_mode.constants import OFFLINE_SUPPORTED_XBLOCKS
