@@ -5,6 +5,7 @@ from __future__ import annotations
 import configparser
 import logging
 import re
+import requests
 from collections import defaultdict
 from contextlib import contextmanager
 from datetime import datetime, timezone
@@ -12,10 +13,12 @@ from urllib.parse import quote_plus
 from uuid import uuid4
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils import translation
 from django.utils.translation import gettext as _
+from edx_rest_api_client.auth import SuppliedJwtAuth
 from eventtracking import tracker
 from help_tokens.core import HelpUrlExpert
 from lti_consumer.models import CourseAllowPIISharingInLTIFlag
@@ -67,6 +70,7 @@ from openedx.core.djangoapps.django_comment_common.utils import seed_permissions
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.site_configuration.models import SiteConfiguration
 from openedx.core.djangoapps.models.course_details import CourseDetails
+from openedx.core.djangoapps.oauth_dispatch.jwt import create_jwt_for_user
 from openedx.core.lib.courses import course_image_url
 from openedx.core.lib.html_to_text import html_to_text
 from openedx.features.content_type_gating.models import ContentTypeGatingConfig
@@ -107,6 +111,7 @@ from xmodule.services import SettingsService, ConfigurationService, TeamsConfigu
 
 IMPORTABLE_FILE_TYPES = ('.tar.gz', '.zip')
 log = logging.getLogger(__name__)
+User = get_user_model()
 
 
 def add_instructor(course_key, requesting_user, new_instructor):
@@ -2317,3 +2322,15 @@ def get_xblock_render_error(request, xblock):
         return str(exc)
 
     return ""
+
+
+def get_cms_api_client():
+    """
+    Returns an API client which can be used to make Exams API requests.
+    """
+    user = User.objects.get(username=settings.EDXAPP_CMS_SERVICE_USER_NAME)
+    jwt = create_jwt_for_user(user)
+    client = requests.Session()
+    client.auth = SuppliedJwtAuth(jwt)
+
+    return client
