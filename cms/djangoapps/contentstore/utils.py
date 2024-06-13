@@ -2326,7 +2326,7 @@ def get_xblock_render_error(request, xblock):
 
 def get_cms_api_client():
     """
-    Returns an API client which can be used to make Exams API requests.
+    Returns an API client which can be used to make requests from the CMS service.
     """
     user = User.objects.get(username=settings.EDXAPP_CMS_SERVICE_USER_NAME)
     jwt = create_jwt_for_user(user)
