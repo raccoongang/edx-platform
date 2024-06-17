@@ -1,3 +1,6 @@
+"""
+Tests for view that handles course published event.
+"""
 from unittest.mock import patch
 
 from django.test import TestCase, RequestFactory
