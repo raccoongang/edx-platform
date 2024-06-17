@@ -8,6 +8,7 @@ from tempfile import mkdtemp
 
 from django.contrib.auth import get_user_model
 from django.core.files.storage import default_storage
+from django.http.response import Http404
 
 from zipfile import ZipFile
 
@@ -36,6 +37,8 @@ def generate_offline_content(xblock, html_data):
     try:
         save_xblock_html(tmp_dir, xblock, html_data)
         create_zip_file(tmp_dir, base_path, f'{xblock.location.block_id}.zip')
+    except Http404:
+        log.error(f'Block {xblock.location.block_id} for course {xblock.location.course_key} not found.')
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
 
