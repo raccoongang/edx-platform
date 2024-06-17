@@ -24,7 +24,7 @@ class OfflineModeUtilsTestCase(TestCase):
     @patch('openedx.features.offline_mode.utils.mkdtemp')
     @patch('openedx.features.offline_mode.utils.remove_old_files')
     @patch('openedx.features.offline_mode.utils.block_storage_path')
-    @patch('openedx.features.offline_mode.utils.is_modified')
+    @patch('openedx.features.offline_mode.utils.is_modified', return_value=True)
     def test_generate_offline_content_for_modified_xblock(
         self,
         is_modified_mock: MagicMock,
