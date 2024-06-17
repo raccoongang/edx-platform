@@ -21,7 +21,7 @@ def generate_offline_content_for_course(course_id):
     course_key = CourseKey.from_string(course_id)
     for offline_supported_block_type in OFFLINE_SUPPORTED_XBLOCKS:
         for xblock in modulestore().get_items(course_key, qualifiers={'category': offline_supported_block_type}):
-            if hasattr(xblock, 'closed') and not xblock.closed():
+            if not hasattr(xblock, 'closed') or not xblock.closed():
                 block_id = str(xblock.location)
                 html_data = XBlockRenderer(block_id).render_xblock_from_lms()
                 generate_offline_content_for_block.apply_async([block_id, html_data])
