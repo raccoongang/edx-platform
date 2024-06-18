@@ -219,42 +219,60 @@ ${HTML(fragment.foot_html())}
 
 % if is_offline_content:
 <script type="text/javascript">
-    (function() {
-        function sendMessageToiOS(message) {
-          window?.webkit?.messageHandlers?.iOSBridge?.postMessage(message);
-        }
+  function sendMessageToIOS(message) {
+    window?.webkit?.messageHandlers?.IOSBridge?.postMessage(message);
+  }
 
-        function sendMessageToAndroid(message) {
-          window?.AndroidBridge?.postMessage(message);
-        }
+  function sendMessageToAndroid(message) {
+    window?.AndroidBridge?.postMessage(message);
+  }
 
-        function receiveMessageFromiOS(message) {
-          console.log("Message received from iOS:", message);
-        }
+  function markProblemCompletedIOS(message) {
+    markProblemCompleted(message);
+  }
 
-        function receiveMessageFromAndroid(message) {
-          console.log("Message received from Android:", message);
-        }
+  function markProblemCompletedAndroid(message) {
+    markProblemCompleted(message);
+  }
 
-        if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.iOSBridge) {
-          window.addEventListener("messageFromiOS", function (event) {
-            receiveMessageFromiOS(event.data);
-          });
+  function markProblemCompleted(message) {
+    const data = JSON.parse(message).data;
+
+    const problem = new Problem($(".xblock-student_view"));
+    problem.submitButton.attr({disabled: "disabled"});
+    problem.gentle_alert("Answer submitted.");
+
+    data.split("&").forEach(function (item) {
+      const [, answer] = item.split('=', 2);
+      problem.el.find('input[id$="' + answer + '"]').each(function () {
+        if (this.type === "checkbox" || this.type === "radio") {
+          this.checked = true;
+        } else {
+          this.value = answer;
         }
-        if (window.AndroidBridge) {
-          window.addEventListener("messageFromAndroid", function (event) {
-            receiveMessageFromAndroid(event.data);
-          });
-        }
-        const originalAjax = $.ajax;
-        $.ajax = function (options) {
-          sendMessageToiOS(options);
-          sendMessageToiOS(JSON.stringify(options));
-          sendMessageToAndroid(options);
-          sendMessageToAndroid(JSON.stringify(options));
-          console.log(options, JSON.stringify(options));
-          return originalAjax.call(this, options);
-        };
-    }());
+      })
+    })
+  }
+
+  if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.IOSBridge) {
+    window.addEventListener("messageFromIOS", function (event) {
+      markProblemCompletedIOS(event.data);
+    });
+  }
+
+  if (window.AndroidBridge) {
+    window.addEventListener("messageFromAndroid", function (event) {
+      markProblemCompletedAndroid(event.data);
+    });
+  }
+
+  const originalAjax = $.ajax;
+  $.ajax = function (options) {
+      if (options.url && options.url.endsWith("problem_check")) {
+        sendMessageToIOS(JSON.stringify(options));
+        sendMessageToAndroid(JSON.stringify(options));
+      }
+    return originalAjax.call(this, options);
+  }
 </script>
 % endif
