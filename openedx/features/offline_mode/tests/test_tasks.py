@@ -6,11 +6,12 @@ from unittest import TestCase
 from unittest.mock import MagicMock, Mock, call, patch
 
 from opaque_keys.edx.keys import CourseKey, UsageKey
-from openedx.features.offline_mode.constants import OFFLINE_SUPPORTED_XBLOCKS
+from openedx.features.offline_mode.constants import MAX_RETRY_ATTEMPTS, OFFLINE_SUPPORTED_XBLOCKS
 from openedx.features.offline_mode.tasks import (
     generate_offline_content_for_block,
     generate_offline_content_for_course,
 )
+from xmodule.modulestore.exceptions import ItemNotFoundError
 
 
 class GenerateOfflineContentTasksTestCase(TestCase):
@@ -20,7 +21,7 @@ class GenerateOfflineContentTasksTestCase(TestCase):
 
     @patch('openedx.features.offline_mode.tasks.generate_offline_content')
     @patch('openedx.features.offline_mode.tasks.modulestore')
-    def test_generate_offline_content_for_block(
+    def test_generate_offline_content_for_block_success(
         self,
         modulestore_mock: MagicMock,
         generate_offline_content_mock: MagicMock,
@@ -35,6 +36,36 @@ class GenerateOfflineContentTasksTestCase(TestCase):
         generate_offline_content_mock.assert_called_once_with(
             modulestore_mock.return_value.get_item.return_value, html_data_mock
         )
+
+    @patch('openedx.features.offline_mode.tasks.generate_offline_content')
+    @patch('openedx.features.offline_mode.tasks.modulestore', side_effect=ItemNotFoundError)
+    def test_generate_offline_content_for_block_with_exception_in_modulestore(
+        self,
+        modulestore_mock: MagicMock,
+        generate_offline_content_mock: MagicMock,
+    ) -> None:
+        block_id_mock = 'block-v1:a+a+a+type@problem+block@fb81e4dbfd4945cb9318d6bc460a956c'
+        html_data_mock = 'html_markup_data_mock'
+
+        generate_offline_content_for_block.delay(block_id_mock, html_data_mock)
+
+        self.assertEqual(modulestore_mock.call_count, MAX_RETRY_ATTEMPTS + 1)
+        generate_offline_content_mock.assert_not_called()
+
+    @patch('openedx.features.offline_mode.tasks.generate_offline_content', side_effect=FileNotFoundError)
+    @patch('openedx.features.offline_mode.tasks.modulestore')
+    def test_generate_offline_content_for_block_with_exception_in_offline_content_generation(
+        self,
+        modulestore_mock: MagicMock,
+        generate_offline_content_mock: MagicMock,
+    ) -> None:
+        block_id_mock = 'block-v1:a+a+a+type@problem+block@fb81e4dbfd4945cb9318d6bc460a956c'
+        html_data_mock = 'html_markup_data_mock'
+
+        generate_offline_content_for_block.delay(block_id_mock, html_data_mock)
+
+        self.assertEqual(modulestore_mock.call_count, MAX_RETRY_ATTEMPTS + 1)
+        self.assertEqual(generate_offline_content_mock.call_count, MAX_RETRY_ATTEMPTS + 1)
 
     @patch('openedx.features.offline_mode.tasks.generate_offline_content_for_block')
     @patch('openedx.features.offline_mode.tasks.XBlockRenderer')

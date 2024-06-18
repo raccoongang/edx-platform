@@ -84,13 +84,13 @@ class HtmlManipulatorTestCase(TestCase):
 
     @patch('openedx.features.offline_mode.html_manipulator.save_asset_file')
     def test_replace_asset_links(self, save_asset_file_mock: MagicMock) -> None:
-        html_data_mock = '<div class="teacher-image"><img src="/assets/images/professor-sandel.jpg"/></div>'
+        html_data_mock = '/assets/courseware/v1/5b628a18f2ee3303081ffe4d6ab64ee4/asset-v1:OpenedX+DemoX+DemoCourse+type@asset+block/Pendleton_Sinking_Ship.jpeg'  # lint-amnesty, pylint: disable=line-too-long
         xblock_mock = Mock()
         temp_dir_mock = 'temp_dir_mock'
         html_manipulator = HtmlManipulator(xblock_mock, html_data_mock, temp_dir_mock)
 
         expected_html_data_after_replacing = (
-            '<div class="teacher-image"><img src="assets/images/professor-sandel.jpg"/></div>'
+            'assets/courseware/v1/5b628a18f2ee3303081ffe4d6ab64ee4/asset-v1:OpenedX+DemoX+DemoCourse+type@asset+block/Pendleton_Sinking_Ship.jpeg'  # lint-amnesty, pylint: disable=line-too-long
         )
 
         self.assertEqual(html_manipulator.html_data, html_data_mock)
@@ -100,8 +100,8 @@ class HtmlManipulatorTestCase(TestCase):
         save_asset_file_mock.assert_called_once_with(
             html_manipulator.temp_dir,
             html_manipulator.xblock,
-            '/assets/images/professor-sandel.jpg',
-            'assets/images/professor-sandel.jpg',
+            html_data_mock,
+            expected_html_data_after_replacing,
         )
         self.assertEqual(html_manipulator.html_data, expected_html_data_after_replacing)
 

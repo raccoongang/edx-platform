@@ -34,12 +34,13 @@ class XBlockRendererTestCase(ModuleStoreTestCase):
             self.html_block = BlockFactory.create(  # lint-amnesty, pylint: disable=attribute-defined-outside-init
                 parent=self.vertical_block,
                 category='html',
-                data="<p>Test HTML Content<p>"
+                display_name='HTML xblock for Offline',
+                data='<p>Test HTML Content<p>'
             )
             self.problem_block = BlockFactory.create(  # lint-amnesty, pylint: disable=attribute-defined-outside-init
                 parent=self.vertical_block,
                 category='problem',
-                display_name='Problem',
+                display_name='Problem xblock for Offline',
                 data=problem_xml
             )
 
@@ -51,6 +52,8 @@ class XBlockRendererTestCase(ModuleStoreTestCase):
 
         self.assertIsNotNone(result)
         self.assertEqual(type(result), str)
+        self.assertIn('HTML xblock for Offline', result)
+        self.assertIn('<p>Test HTML Content<p>', result)
 
     def test_render_xblock_from_lms_problem_block(self):
         self.setup_course()
@@ -60,3 +63,4 @@ class XBlockRendererTestCase(ModuleStoreTestCase):
 
         self.assertIsNotNone(result)
         self.assertEqual(type(result), str)
+        self.assertIn('Problem xblock for Offline', result)

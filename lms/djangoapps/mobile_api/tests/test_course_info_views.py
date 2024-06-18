@@ -480,3 +480,30 @@ class TestBlocksInfoInCourseView(TestBlocksInCourseView, MilestonesTestCaseMixin
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         for block_info in response.data['blocks'].values():
             self.assertDictEqual(block_info['offline_download'], expected_offline_download_data)
+
+    @patch('lms.djangoapps.mobile_api.course_info.views.is_offline_mode_enabled')
+    @ddt.data(
+        ('v0.5', True),
+        ('v0.5', False),
+        ('v1', True),
+        ('v1', False),
+        ('v2', True),
+        ('v2', False),
+        ('v3', True),
+        ('v3', False),
+    )
+    @ddt.unpack
+    def test_not_extend_block_info_with_offline_data_for_version_less_v4_and_any_waffle_flag(
+        self,
+        api_version: str,
+        offline_mode_waffle_flag_mock: MagicMock,
+        is_offline_mode_enabled_mock: MagicMock,
+    ) -> None:
+        url = reverse('blocks_info_in_course', kwargs={'api_version': api_version})
+        is_offline_mode_enabled_mock.return_value = offline_mode_waffle_flag_mock
+
+        response = self.verify_response(url=url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        for block_info in response.data['blocks'].values():
+            self.assertNotIn('offline_download', block_info)
