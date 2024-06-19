@@ -81,7 +81,6 @@ class XBlockRenderer:
                 str(self.usage_key),
                 disable_staff_debug_info=True,
                 course=course,
-                will_recheck_access=False,
             )
 
             enable_completion_on_view_service = False

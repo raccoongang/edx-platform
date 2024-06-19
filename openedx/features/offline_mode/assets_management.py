@@ -59,7 +59,7 @@ def save_asset_file(temp_dir, xblock, path, filename):
             content = read_static_file(static_path)
             file_path = os.path.join(temp_dir, 'assets', filename)
     except (FileNotFoundError, ItemNotFoundError, NotFoundError):
-        log.info(f"Asset not found: {filename}")
+        log.warning(f"Asset not found: {filename}, during offline content generation.")
 
     else:
         create_subdirectories_for_asset(file_path)

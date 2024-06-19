@@ -3,6 +3,7 @@ Tasks for offline mode feature.
 """
 from celery import shared_task
 from edx_django_utils.monitoring import set_code_owner_attribute
+from django.http.response import Http404
 from opaque_keys.edx.keys import CourseKey, UsageKey
 
 from xmodule.modulestore.django import modulestore
@@ -17,6 +18,8 @@ from .utils import generate_offline_content
 def generate_offline_content_for_course(course_id):
     """
     Generates offline content for all supported XBlocks in the course.
+
+    Blocks that are closed to responses won't be processed.
     """
     course_key = CourseKey.from_string(course_id)
     for offline_supported_block_type in OFFLINE_SUPPORTED_XBLOCKS:
@@ -28,7 +31,7 @@ def generate_offline_content_for_course(course_id):
 
 
 @shared_task(
-    autoretry_for=(Exception,),
+    autoretry_for=(Exception, Http404),
     retry_backoff=RETRY_BACKOFF_INITIAL_TIMEOUT,
     retry_kwargs={'max_retries': MAX_RETRY_ATTEMPTS}
 )
