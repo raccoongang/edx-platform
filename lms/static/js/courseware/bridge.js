@@ -17,13 +17,16 @@ function markProblemCompletedAndroid(message) {
 function markProblemCompleted(message) {
   const data = JSON.parse(message).data;
 
-  const problem = new Problem($(".xblock-student_view"));
-  problem.submitButton.attr({disabled: "disabled"});
-  problem.gentle_alert("Answer submitted.");
+  const prob = $(".xblock-student_view");
+  prob.find('.submit-attempt-container .submit').attr({disabled: "disabled"});
+  prob.find('.notification-gentle-alert .notification-message').html("Answer submitted.");
+  prob.find('.notification-gentle-alert').show();
+
 
   data.split("&").forEach(function (item) {
-    const [, answer] = item.split('=', 2);
-    problem.el.find('input[id$="' + answer + '"]').each(function () {
+    const [input, answer] = item.split('=', 2);
+    prob.find('input[id$="' + answer + '"], input[id$="' + input + '"]').each(function () {
+      $(this).attr({disabled: "disabled"})
       if (this.type === "checkbox" || this.type === "radio") {
         this.checked = true;
       } else {
