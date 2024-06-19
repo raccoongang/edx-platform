@@ -79,9 +79,9 @@ def create_subdirectories_for_asset(file_path):
             os.mkdir(out_dir_name)
 
 
-def remove_old_files(xblock):
+def clean_outdated_xblock_files(xblock):
     """
-    Removes the old 'offline_content.zip' files from media storage.
+    Removes the old zip file with Offline Content from media storage.
     Args:
         (XBlock): The XBlock instance
     """

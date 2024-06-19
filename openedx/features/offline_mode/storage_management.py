@@ -13,42 +13,49 @@ from django.http.response import Http404
 from openedx.core.storage import get_storage
 from zipfile import ZipFile
 
-from .assets_management import block_storage_path, remove_old_files, is_modified
+from .assets_management import block_storage_path, clean_outdated_xblock_files, is_modified
 from .html_manipulator import HtmlManipulator
 
 User = get_user_model()
 log = logging.getLogger(__name__)
 
 
-class SaveOfflineContentToStorage:
+class OfflineContentStorageManager:
     """
     Creates zip file with Offline Content in the media storage.
     """
 
-    def __init__(self, storage_class=None, storage_kwargs=None):
-        if storage_kwargs is None:
-            storage_kwargs = {}
-
-        self.storage = get_storage(storage_class, **storage_kwargs)
-
-    def generate_offline_content(self, xblock, html_data):
+    def __init__(self, xblock, html_data, storage_class=None, storage_kwargs=None):
         """
-        Generates archive with XBlock content for offline mode.
+        Creates `SaveOfflineContentToStorage` object.
 
         Args:
             xblock (XBlock): The XBlock instance
             html_data (str): The rendered HTML representation of the XBlock
+            storage_class: Used media storage class.
+            storage_kwargs (dict): Additional storage attributes.
         """
-        if not is_modified(xblock):
+        if storage_kwargs is None:
+            storage_kwargs = {}
+
+        self.xblock = xblock
+        self.html_data = html_data
+        self.storage = get_storage(storage_class, **storage_kwargs)
+
+    def generate_offline_content(self):
+        """
+        Generates archive with XBlock content for offline mode.
+        """
+        if not is_modified(self.xblock):
             return
 
-        base_path = block_storage_path(xblock)
-        remove_old_files(xblock)
+        base_path = block_storage_path(self.xblock)
+        clean_outdated_xblock_files(self.xblock)
         tmp_dir = mkdtemp()
 
         try:
-            self.save_xblock_html(tmp_dir, xblock, html_data)
-            self.create_zip_file(tmp_dir, base_path, f'{xblock.location.block_id}.zip')
+            self.save_xblock_html(tmp_dir)
+            self.create_zip_file(tmp_dir, base_path, f'{self.xblock.location.block_id}.zip')
         except Http404:
             log.error(
                 f'Block {xblock.location.block_id} cannot be fetched from course'
@@ -57,8 +64,7 @@ class SaveOfflineContentToStorage:
         finally:
             shutil.rmtree(tmp_dir, ignore_errors=True)
 
-    @staticmethod
-    def save_xblock_html(tmp_dir, xblock, html_data):
+    def save_xblock_html(self, tmp_dir):
         """
         Saves the XBlock HTML content to a file.
 
@@ -66,10 +72,8 @@ class SaveOfflineContentToStorage:
 
         Args:
             tmp_dir (str): The temporary directory path to save the xblock content
-            xblock (XBlock): The XBlock instance
-            html_data (str): The rendered HTML representation of the XBlock
         """
-        html_manipulator = HtmlManipulator(xblock, html_data, tmp_dir)
+        html_manipulator = HtmlManipulator(self.xblock, self.html_data, tmp_dir)
         updated_html = html_manipulator.process_html()
 
         with open(os.path.join(tmp_dir, 'index.html'), 'w') as file:
@@ -84,14 +88,16 @@ class SaveOfflineContentToStorage:
             base_path (str): The base path directory to save the zip file
             file_name (str): The name of the zip file
         """
-        with ZipFile(temp_dir + '/' + file_name, 'w') as zip_file:
+        file_path = os.path.join(temp_dir, file_name)
+
+        with ZipFile(file_path, 'w') as zip_file:
             zip_file.write(os.path.join(temp_dir, 'index.html'), 'index.html')
             self.add_files_to_zip_recursively(
                 zip_file,
                 current_base_path=os.path.join(temp_dir, 'assets'),
                 current_path_in_zip='assets',
             )
-        with open(temp_dir + '/' + file_name, 'rb') as buffered_zip:
+        with open(file_path, 'rb') as buffered_zip:
             content_file = ContentFile(buffered_zip.read())
             self.storage.save(base_path + file_name, content_file)
 
