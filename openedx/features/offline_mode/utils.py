@@ -7,9 +7,10 @@ import shutil
 from tempfile import mkdtemp
 
 from django.contrib.auth import get_user_model
-from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.http.response import Http404
 
+from openedx.core.storage import get_storage
 from zipfile import ZipFile
 
 from .assets_management import block_storage_path, remove_old_files, is_modified
@@ -19,90 +20,100 @@ User = get_user_model()
 log = logging.getLogger(__name__)
 
 
-def generate_offline_content(xblock, html_data):
+class SaveOfflineContentToStorage:
     """
-    Generates archive with XBlock content for offline mode.
-
-    Args:
-        xblock (XBlock): The XBlock instance
-        html_data (str): The rendered HTML representation of the XBlock
+    Creates zip file with Offline Content in the media storage.
     """
-    if not is_modified(xblock):
-        return
 
-    base_path = block_storage_path(xblock)
-    remove_old_files(xblock)
-    tmp_dir = mkdtemp()
+    def __init__(self, storage_class=None, storage_kwargs=None):
+        if storage_kwargs is None:
+            storage_kwargs = {}
 
-    try:
-        save_xblock_html(tmp_dir, xblock, html_data)
-        create_zip_file(tmp_dir, base_path, f'{xblock.location.block_id}.zip')
-    except Http404:
-        log.error(
-            f'Block {xblock.location.block_id} cannot be fetched from course'
-            f' {xblock.location.course_key} during offline content generation.'
-        )
-    finally:
-        shutil.rmtree(tmp_dir, ignore_errors=True)
+        self.storage = get_storage(storage_class, **storage_kwargs)
 
+    def generate_offline_content(self, xblock, html_data):
+        """
+        Generates archive with XBlock content for offline mode.
 
-def save_xblock_html(tmp_dir, xblock, html_data):
-    """
-    Saves the XBlock HTML content to a file.
+        Args:
+            xblock (XBlock): The XBlock instance
+            html_data (str): The rendered HTML representation of the XBlock
+        """
+        if not is_modified(xblock):
+            return
 
-    Generates the 'index.html' file with the HTML added to use it locally.
+        base_path = block_storage_path(xblock)
+        remove_old_files(xblock)
+        tmp_dir = mkdtemp()
 
-    Args:
-        tmp_dir (str): The temporary directory path to save the xblock content
-        xblock (XBlock): The XBlock instance
-        html_data (str): The rendered HTML representation of the XBlock
-    """
-    html_manipulator = HtmlManipulator(xblock, html_data, tmp_dir)
-    updated_html = html_manipulator.process_html()
+        try:
+            self.save_xblock_html(tmp_dir, xblock, html_data)
+            self.create_zip_file(tmp_dir, base_path, f'{xblock.location.block_id}.zip')
+        except Http404:
+            log.error(
+                f'Block {xblock.location.block_id} cannot be fetched from course'
+                f' {xblock.location.course_key} during offline content generation.'
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
 
-    with open(os.path.join(tmp_dir, 'index.html'), 'w') as file:
-        file.write(updated_html)
+    @staticmethod
+    def save_xblock_html(tmp_dir, xblock, html_data):
+        """
+        Saves the XBlock HTML content to a file.
 
+        Generates the 'index.html' file with the HTML added to use it locally.
 
-def create_zip_file(temp_dir, base_path, file_name):
-    """
-    Creates a zip file with the content of the base_path directory.
+        Args:
+            tmp_dir (str): The temporary directory path to save the xblock content
+            xblock (XBlock): The XBlock instance
+            html_data (str): The rendered HTML representation of the XBlock
+        """
+        html_manipulator = HtmlManipulator(xblock, html_data, tmp_dir)
+        updated_html = html_manipulator.process_html()
 
-    Args:
-        temp_dir (str): The temporary directory path where the content is stored
-        base_path (str): The base path directory to save the zip file
-        file_name (str): The name of the zip file
-    """
-    if not os.path.exists(default_storage.path(base_path)):
-        os.makedirs(default_storage.path(base_path))
+        with open(os.path.join(tmp_dir, 'index.html'), 'w') as file:
+            file.write(updated_html)
 
-    with ZipFile(default_storage.path(base_path + file_name), 'w') as zip_file:
-        zip_file.write(os.path.join(temp_dir, 'index.html'), 'index.html')
-        add_files_to_zip_recursively(
-            zip_file,
-            current_base_path=os.path.join(temp_dir, 'assets'),
-            current_path_in_zip='assets',
-        )
-    log.info(f'Offline content for {file_name} has been generated.')
+    def create_zip_file(self, temp_dir, base_path, file_name):
+        """
+        Creates a zip file with the Offline Content in the media storage.
 
+        Args:
+            temp_dir (str): The temporary directory path where the content is stored
+            base_path (str): The base path directory to save the zip file
+            file_name (str): The name of the zip file
+        """
+        with ZipFile(temp_dir + '/' + file_name, 'w') as zip_file:
+            zip_file.write(os.path.join(temp_dir, 'index.html'), 'index.html')
+            self.add_files_to_zip_recursively(
+                zip_file,
+                current_base_path=os.path.join(temp_dir, 'assets'),
+                current_path_in_zip='assets',
+            )
+        with open(temp_dir + '/' + file_name, 'rb') as buffered_zip:
+            content_file = ContentFile(buffered_zip.read())
+            self.storage.save(base_path + file_name, content_file)
 
-def add_files_to_zip_recursively(zip_file, current_base_path, current_path_in_zip):
-    """
-    Recursively adds files to the zip file.
+        log.info(f'Offline content for {file_name} has been generated.')
 
-    Args:
-        zip_file (ZipFile): The zip file object
-        current_base_path (str): The current base path directory
-        current_path_in_zip (str): The current path in the zip file
-    """
-    try:
-        for resource_path in os.listdir(current_base_path):
-            full_path = os.path.join(current_base_path, resource_path)
-            full_path_in_zip = os.path.join(current_path_in_zip, resource_path)
-            if os.path.isfile(full_path):
-                zip_file.write(full_path, full_path_in_zip)
-            else:
-                add_files_to_zip_recursively(zip_file, full_path, full_path_in_zip)
-    except OSError:
-        log.error(f'Error while reading the directory: {current_base_path}')
-        return
+    def add_files_to_zip_recursively(self, zip_file, current_base_path, current_path_in_zip):
+        """
+        Recursively adds files to the zip file.
+
+        Args:
+            zip_file (ZipFile): The zip file object
+            current_base_path (str): The current base path directory
+            current_path_in_zip (str): The current path in the zip file
+        """
+        try:
+            for resource_path in os.listdir(current_base_path):
+                full_path = os.path.join(current_base_path, resource_path)
+                full_path_in_zip = os.path.join(current_path_in_zip, resource_path)
+                if os.path.isfile(full_path):
+                    zip_file.write(full_path, full_path_in_zip)
+                else:
+                    self.add_files_to_zip_recursively(zip_file, full_path, full_path_in_zip)
+        except OSError:
+            log.error(f'Error while reading the directory: {current_base_path}')
+            return
