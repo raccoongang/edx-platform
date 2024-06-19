@@ -38,7 +38,10 @@ def generate_offline_content(xblock, html_data):
         save_xblock_html(tmp_dir, xblock, html_data)
         create_zip_file(tmp_dir, base_path, f'{xblock.location.block_id}.zip')
     except Http404:
-        log.error(f'Block {xblock.location.block_id} for course {xblock.location.course_key} not found.')
+        log.error(
+            f'Block {xblock.location.block_id} cannot be fetched from course'
+            f' {xblock.location.course_key} during offline content generation.'
+        )
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
 
