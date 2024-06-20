@@ -10,7 +10,7 @@ from xmodule.modulestore.django import modulestore
 
 from .constants import MAX_RETRY_ATTEMPTS, OFFLINE_SUPPORTED_XBLOCKS, RETRY_BACKOFF_INITIAL_TIMEOUT
 from .renderer import XBlockRenderer
-from .utils import generate_offline_content
+from .storage_management import OfflineContentGenerator
 
 
 @shared_task
@@ -42,4 +42,4 @@ def generate_offline_content_for_block(block_id, html_data):
     """
     block_usage_key = UsageKey.from_string(block_id)
     xblock = modulestore().get_item(block_usage_key)
-    generate_offline_content(xblock, html_data)
+    OfflineContentGenerator(xblock, html_data).generate_offline_content()
