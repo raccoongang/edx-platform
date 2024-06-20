@@ -58,8 +58,8 @@ class OfflineContentStorageManager:
             self.create_zip_file(tmp_dir, base_path, f'{self.xblock.location.block_id}.zip')
         except Http404:
             log.error(
-                f'Block {xblock.location.block_id} cannot be fetched from course'
-                f' {xblock.location.course_key} during offline content generation.'
+                f'Block {self.xblock.location.block_id} cannot be fetched from course'
+                f' {self.xblock.location.course_key} during offline content generation.'
             )
         finally:
             shutil.rmtree(tmp_dir, ignore_errors=True)
