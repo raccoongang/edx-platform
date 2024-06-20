@@ -20,7 +20,7 @@ User = get_user_model()
 log = logging.getLogger(__name__)
 
 
-class OfflineContentStorageManager:
+class OfflineContentGenerator:
     """
     Creates zip file with Offline Content in the media storage.
     """
