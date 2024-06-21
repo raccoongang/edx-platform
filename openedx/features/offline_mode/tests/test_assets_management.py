@@ -2,21 +2,24 @@
 Tests for the testing utility functions for managing assets and files for Offline Mode.
 """
 
+import os
+
 from datetime import datetime
 from unittest import TestCase
 from unittest.mock import MagicMock, Mock, call, patch
 
+from botocore.exceptions import ClientError
 from django.conf import settings
 from path import Path
 from pytz import UTC
 
 from openedx.features.offline_mode.assets_management import (
     block_storage_path,
+    clean_outdated_xblock_files,
     create_subdirectories_for_asset,
     get_offline_block_content_path,
     get_static_file_path,
     is_modified,
-    remove_old_files,
     save_asset_file,
     save_mathjax_to_xblock_assets,
 )
@@ -99,14 +102,14 @@ class AssetsManagementTestCase(TestCase):
             read_static_file_mock.return_value
         )
 
-    @patch('openedx.features.offline_mode.assets_management.log.info')
+    @patch('openedx.features.offline_mode.assets_management.log.warning')
     @patch(
         'openedx.features.offline_mode.assets_management.get_static_file_path', side_effect=ItemNotFoundError
     )
     def test_save_asset_file_can_not_find(
         self,
         get_static_file_path_mock: MagicMock,
-        log_info_mock: MagicMock,
+        log_warning_mock: MagicMock,
     ) -> None:
         temp_dir_mock = 'temp_dir_mock'
         xblock_mock = Mock()
@@ -116,7 +119,9 @@ class AssetsManagementTestCase(TestCase):
         save_asset_file(temp_dir_mock, xblock_mock, path_mock, filename_mock)
 
         get_static_file_path_mock.assert_called_once_with(filename_mock)
-        log_info_mock.assert_called_once_with(f'Asset not found: {filename_mock}')
+        log_warning_mock.assert_called_once_with(
+            f'Asset not found: {filename_mock}, during offline content generation.'
+        )
 
     @patch('openedx.features.offline_mode.assets_management.os')
     def test_create_subdirectories_for_asset_subdirectories_does_not_exist(self, os_mock: MagicMock) -> None:
@@ -155,142 +160,73 @@ class AssetsManagementTestCase(TestCase):
         os_mock.mkdir.assert_not_called()
 
     @patch('openedx.features.offline_mode.assets_management.log')
-    @patch('openedx.features.offline_mode.assets_management.shutil.rmtree')
-    @patch('openedx.features.offline_mode.assets_management.default_storage.exists', side_effect=[False, False])
-    @patch('openedx.features.offline_mode.assets_management.os')
+    @patch('openedx.features.offline_mode.assets_management.default_storage')
     @patch('openedx.features.offline_mode.assets_management.block_storage_path')
-    def test_remove_old_files_delete_only_assets_dir(
+    def test_clean_outdated_xblock_files_successful(
         self,
         block_storage_path_mock: MagicMock,
-        os_mock: MagicMock,
-        default_storage_exists_mock: MagicMock,
-        shutil_rmtree_mock: MagicMock,
+        default_storage_mock: MagicMock,
         logger_mock: MagicMock,
     ) -> None:
         xblock_mock = Mock()
+        default_storage_mock.exists.return_value = True
+        expected_offline_zip_path = os.path.join(
+            block_storage_path_mock.return_value, f'{xblock_mock.location.block_id}.zip'
+        )
 
-        expected_os_mock_path_join_call_args = [
-            call(block_storage_path_mock.return_value, 'assets'),
-            call(block_storage_path_mock.return_value, 'index.html'),
-            call(block_storage_path_mock.return_value, f'{xblock_mock.location.block_id}.zip'),
-        ]
-        expected_log_info = [
-            call(f'Successfully deleted the directory: {os_mock.path.join.return_value}')
-        ]
-        expected_default_storage_exists_mock_call_args = [
-            call(os_mock.path.join.return_value), call(os_mock.path.join.return_value)
-        ]
-
-        remove_old_files(xblock_mock)
+        clean_outdated_xblock_files(xblock_mock)
 
         block_storage_path_mock.assert_called_once_with(xblock_mock)
-        self.assertListEqual(os_mock.path.join.call_args_list, expected_os_mock_path_join_call_args)
-        os_mock.path.isdir.assert_called_once_with(os_mock.path.join.return_value)
-        shutil_rmtree_mock.assert_called_once_with(os_mock.path.join.return_value)
-        self.assertListEqual(logger_mock.info.call_args_list, expected_log_info)
-        self.assertListEqual(
-            default_storage_exists_mock.call_args_list, expected_default_storage_exists_mock_call_args
-        )
-        os_mock.remove.assert_not_called()
+        default_storage_mock.exists.assert_called_once_with(expected_offline_zip_path)
+        default_storage_mock.delete.assert_called_once_with(expected_offline_zip_path)
+        logger_mock.info.assert_called_once_with(f'Successfully deleted the file: {expected_offline_zip_path}')
 
     @patch('openedx.features.offline_mode.assets_management.log')
-    @patch('openedx.features.offline_mode.assets_management.shutil.rmtree')
-    @patch('openedx.features.offline_mode.assets_management.default_storage.exists', side_effect=[True, False])
-    @patch('openedx.features.offline_mode.assets_management.os')
+    @patch('openedx.features.offline_mode.assets_management.default_storage')
     @patch('openedx.features.offline_mode.assets_management.block_storage_path')
-    def test_remove_old_files_delete_assets_dir_and_index(
+    def test_clean_outdated_xblock_files_does_not_exist(
         self,
         block_storage_path_mock: MagicMock,
-        os_mock: MagicMock,
-        default_storage_exists_mock: MagicMock,
-        shutil_rmtree_mock: MagicMock,
+        default_storage_mock: MagicMock,
         logger_mock: MagicMock,
     ) -> None:
         xblock_mock = Mock()
+        default_storage_mock.exists.return_value = False
+        expected_offline_zip_path = os.path.join(
+            block_storage_path_mock.return_value, f'{xblock_mock.location.block_id}.zip'
+        )
 
-        expected_os_mock_path_join_call_args = [
-            call(block_storage_path_mock.return_value, 'assets'),
-            call(block_storage_path_mock.return_value, 'index.html'),
-            call(block_storage_path_mock.return_value, f'{xblock_mock.location.block_id}.zip'),
-        ]
-        expected_log_info = [
-            call(f'Successfully deleted the directory: {os_mock.path.join.return_value}'),
-            call(f'Successfully deleted the file: {os_mock.path.join.return_value}'),
-        ]
-        expected_default_storage_exists_mock_call_args = [
-            call(os_mock.path.join.return_value), call(os_mock.path.join.return_value)
-        ]
-        expected_os_mock_remove_call_args = [call(os_mock.path.join.return_value)]
-
-        remove_old_files(xblock_mock)
+        clean_outdated_xblock_files(xblock_mock)
 
         block_storage_path_mock.assert_called_once_with(xblock_mock)
-        self.assertListEqual(os_mock.path.join.call_args_list, expected_os_mock_path_join_call_args)
-        os_mock.path.isdir.assert_called_once_with(os_mock.path.join.return_value)
-        shutil_rmtree_mock.assert_called_once_with(os_mock.path.join.return_value)
-        self.assertListEqual(logger_mock.info.call_args_list, expected_log_info)
-        self.assertListEqual(
-            default_storage_exists_mock.call_args_list, expected_default_storage_exists_mock_call_args
-        )
-        self.assertListEqual(os_mock.remove.call_args_list, expected_os_mock_remove_call_args)
-
-    @patch('openedx.features.offline_mode.assets_management.log')
-    @patch('openedx.features.offline_mode.assets_management.shutil.rmtree')
-    @patch('openedx.features.offline_mode.assets_management.default_storage.exists', side_effect=[True, True])
-    @patch('openedx.features.offline_mode.assets_management.os')
-    @patch('openedx.features.offline_mode.assets_management.block_storage_path')
-    def test_remove_old_files_delete_assets_dir_and_index_and_offline_content_zip_file(
-        self,
-        block_storage_path_mock: MagicMock,
-        os_mock: MagicMock,
-        default_storage_exists_mock: MagicMock,
-        shutil_rmtree_mock: MagicMock,
-        logger_mock: MagicMock,
-    ) -> None:
-        xblock_mock = Mock()
-
-        expected_os_mock_path_join_call_args = [
-            call(block_storage_path_mock.return_value, 'assets'),
-            call(block_storage_path_mock.return_value, 'index.html'),
-            call(block_storage_path_mock.return_value, f'{xblock_mock.location.block_id}.zip')
-        ]
-        expected_log_info = [
-            call(f'Successfully deleted the directory: {os_mock.path.join.return_value}'),
-            call(f'Successfully deleted the file: {os_mock.path.join.return_value}'),
-            call(f'Successfully deleted the file: {os_mock.path.join.return_value}'),
-        ]
-        expected_default_storage_exists_mock_call_args = [
-            call(os_mock.path.join.return_value), call(os_mock.path.join.return_value)
-        ]
-        expected_os_mock_remove_call_args = [
-            call(os_mock.path.join.return_value), call(os_mock.path.join.return_value)
-        ]
-
-        remove_old_files(xblock_mock)
-
-        block_storage_path_mock.assert_called_once_with(xblock_mock)
-        self.assertListEqual(os_mock.path.join.call_args_list, expected_os_mock_path_join_call_args)
-        os_mock.path.isdir.assert_called_once_with(os_mock.path.join.return_value)
-        shutil_rmtree_mock.assert_called_once_with(os_mock.path.join.return_value)
-        self.assertListEqual(logger_mock.info.call_args_list, expected_log_info)
-        self.assertListEqual(
-            default_storage_exists_mock.call_args_list, expected_default_storage_exists_mock_call_args
-        )
-        self.assertListEqual(os_mock.remove.call_args_list, expected_os_mock_remove_call_args)
+        default_storage_mock.exists.assert_called_once_with(expected_offline_zip_path)
+        default_storage_mock.delete.assert_not_called()
+        logger_mock.info.assert_not_called()
 
     @patch('openedx.features.offline_mode.assets_management.log.error')
-    @patch('openedx.features.offline_mode.assets_management.block_storage_path', side_effect=OSError)
-    def test_remove_old_files_os_error(
+    @patch('openedx.features.offline_mode.assets_management.default_storage.exists')
+    @patch('openedx.features.offline_mode.assets_management.block_storage_path')
+    def test_remove_old_files_client_error(
         self,
         block_storage_path_mock: MagicMock,
+        default_storage_exists_mock: MagicMock,
         log_error_mock: MagicMock,
     ) -> None:
         xblock_mock = Mock()
+        default_storage_exists_mock.side_effect = ClientError(
+            operation_name='InvalidKeyPair.Duplicate', error_response={
+                'Error': {'Code': 'Duplicate', 'Message': 'Invalid File Path'}
+            }
+        )
+        expected_error_message = (
+            'An error occurred (Duplicate) when calling the InvalidKeyPair.Duplicate operation: Invalid File Path'
+        )
 
-        remove_old_files(xblock_mock)
-
+        clean_outdated_xblock_files(xblock_mock)
         block_storage_path_mock.assert_called_once_with(xblock_mock)
-        log_error_mock.assert_called_once_with('Error occurred while deleting the files or directory: ')
+        log_error_mock.assert_called_once_with(
+            f'Error occurred while deleting the files or directory: {expected_error_message}'
+        )
 
     @patch('openedx.features.offline_mode.assets_management.default_storage.exists')
     @patch('openedx.features.offline_mode.assets_management.os.path.join', return_value='offline_zip_path_mock')
@@ -345,7 +281,7 @@ class AssetsManagementTestCase(TestCase):
         self.assertEqual(result, '')
 
     @patch(
-        'openedx.features.offline_mode.assets_management.default_storage.get_created_time',
+        'openedx.features.offline_mode.assets_management.default_storage.get_modified_time',
         return_value=datetime(2024, 6, 12, tzinfo=UTC)
     )
     @patch('openedx.features.offline_mode.assets_management.block_storage_path')
@@ -366,7 +302,7 @@ class AssetsManagementTestCase(TestCase):
         self.assertEqual(result, True)
 
     @patch(
-        'openedx.features.offline_mode.assets_management.default_storage.get_created_time',
+        'openedx.features.offline_mode.assets_management.default_storage.get_modified_time',
         return_value=datetime(2024, 6, 12, tzinfo=UTC)
     )
     @patch('openedx.features.offline_mode.assets_management.block_storage_path')
@@ -387,7 +323,7 @@ class AssetsManagementTestCase(TestCase):
         self.assertEqual(result, False)
 
     @patch(
-        'openedx.features.offline_mode.assets_management.default_storage.get_created_time',
+        'openedx.features.offline_mode.assets_management.default_storage.get_modified_time',
         side_effect=OSError
     )
     @patch('openedx.features.offline_mode.assets_management.block_storage_path')
