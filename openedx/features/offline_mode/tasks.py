@@ -30,7 +30,7 @@ def generate_offline_content_for_course(course_id):
 
 
 @shared_task(
-    autoretry_for=(Exception, Http404),
+    autoretry_for=(Http404,),
     retry_backoff=RETRY_BACKOFF_INITIAL_TIMEOUT,
     retry_kwargs={'max_retries': MAX_RETRY_ATTEMPTS}
 )

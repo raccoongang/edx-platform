@@ -13,7 +13,7 @@ from django.http.response import Http404
 from openedx.core.storage import get_storage
 from zipfile import ZipFile
 
-from .assets_management import block_storage_path, clean_outdated_xblock_files, is_modified
+from .assets_management import block_storage_path, clean_outdated_xblock_files
 from .html_manipulator import HtmlManipulator
 from .renderer import XBlockRenderer
 
@@ -48,20 +48,17 @@ class OfflineContentGenerator:
         """
         try:
             return XBlockRenderer(str(self.xblock.location)).render_xblock_from_lms()
-        except Http404:
+        except Http404 as e:
             log.error(
                 f'Block {str(self.xblock.location)} cannot be fetched from course'
                 f' {self.xblock.location.course_key} during offline content generation.'
             )
-            return None
+            raise e
 
     def generate_offline_content(self):
         """
         Generates archive with XBlock content for offline mode.
         """
-        if not self.html_data:
-            return
-
         base_path = block_storage_path(self.xblock)
         clean_outdated_xblock_files(self.xblock)
         tmp_dir = mkdtemp()
