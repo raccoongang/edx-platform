@@ -39,7 +39,7 @@ function markProblemCompleted(message) {
   const submitButton = problemContainer.find(".submit-attempt-container .submit");
   const notificationContainer = problemContainer.find(".notification-gentle-alert");
   submitButton.attr({disabled: "disabled"});
-  notificationContainer.find(".notification-message").html("Answer submitted.");
+  notificationContainer.find(".notification-message").text("Answer submitted.");
   notificationContainer.show();
 
   data.split("&").forEach(function (item) {
