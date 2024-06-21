@@ -13,8 +13,9 @@ from django.http.response import Http404
 from openedx.core.storage import get_storage
 from zipfile import ZipFile
 
-from .assets_management import block_storage_path, clean_outdated_xblock_files, is_modified
+from .assets_management import block_storage_path, clean_outdated_xblock_files
 from .html_manipulator import HtmlManipulator
+from .renderer import XBlockRenderer
 
 User = get_user_model()
 log = logging.getLogger(__name__)
@@ -25,13 +26,12 @@ class OfflineContentGenerator:
     Creates zip file with Offline Content in the media storage.
     """
 
-    def __init__(self, xblock, html_data, storage_class=None, storage_kwargs=None):
+    def __init__(self, xblock, html_data=None, storage_class=None, storage_kwargs=None):
         """
         Creates `SaveOfflineContentToStorage` object.
 
         Args:
             xblock (XBlock): The XBlock instance
-            html_data (str): The rendered HTML representation of the XBlock
             storage_class: Used media storage class.
             storage_kwargs (dict): Additional storage attributes.
         """
@@ -39,16 +39,26 @@ class OfflineContentGenerator:
             storage_kwargs = {}
 
         self.xblock = xblock
-        self.html_data = html_data
+        self.html_data = html_data or self.render_block_html_data()
         self.storage = get_storage(storage_class, **storage_kwargs)
+
+    def render_block_html_data(self):
+        """
+        Renders the XBlock HTML content from the LMS.
+        """
+        try:
+            return XBlockRenderer(str(self.xblock.location)).render_xblock_from_lms()
+        except Http404 as e:
+            log.error(
+                f'Block {str(self.xblock.location)} cannot be fetched from course'
+                f' {self.xblock.location.course_key} during offline content generation.'
+            )
+            raise e
 
     def generate_offline_content(self):
         """
         Generates archive with XBlock content for offline mode.
         """
-        if not is_modified(self.xblock):
-            return
-
         base_path = block_storage_path(self.xblock)
         clean_outdated_xblock_files(self.xblock)
         tmp_dir = mkdtemp()
@@ -56,11 +66,6 @@ class OfflineContentGenerator:
         try:
             self.save_xblock_html(tmp_dir)
             self.create_zip_file(tmp_dir, base_path, f'{self.xblock.location.block_id}.zip')
-        except Http404:
-            log.error(
-                f'Block {self.xblock.location.block_id} cannot be fetched from course'
-                f' {self.xblock.location.course_key} during offline content generation.'
-            )
         finally:
             shutil.rmtree(tmp_dir, ignore_errors=True)
 
