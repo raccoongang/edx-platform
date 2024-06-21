@@ -70,7 +70,7 @@ describe('JS bridge for communication between native mobile apps and the xblock'
 
     it('should intercept the request to problem_check and send data to the native apps', function() {
       const ajaxOptions = {
-        url: 'http://example.com/problem_check',
+        url: 'http://example.com/handler/xmodule_handler/problem_check',
         data: {answer: 'test'}
       };
 
@@ -82,7 +82,7 @@ describe('JS bridge for communication between native mobile apps and the xblock'
 
     it('should call the original $.ajax function', function() {
       const ajaxOptions = {
-        url: 'http://example.com/problem_check',
+        url: 'http://example.com/handler/xmodule_handler/problem_check',
         data: {answer: 'test'}
       };
 

@@ -44,7 +44,7 @@ function markProblemCompleted(message) {
 
   data.split("&").forEach(function (item) {
     const [inputId, answer] = item.split('=', 2);
-    problemContainer.find('input[id$="' + answer + '"], input[id$="' + inputId + '"]').each(function () {
+    problemContainer.find(`input[id$="${answer}"], input[id$="${inputId}"]`).each(function () {
       this.disabled = true;
       if (this.type === "checkbox" || this.type === "radio") {
         this.checked = true;
@@ -56,14 +56,14 @@ function markProblemCompleted(message) {
 }
 
 /**
- * Overrides the default $.ajax function to intercept the requests to the "problem_check" endpoint
- * and send the data to the native mobile apps.
+ * Overrides the default $.ajax function to intercept the requests to the "handler/xmodule_handler/problem_check"
+ * endpoint and send the data to the native mobile apps.
  *
  * @param {Object} options The data object for the ajax request
  */
 const originalAjax = $.ajax;
 $.ajax = function (options) {
-  if (options.url && options.url.endsWith("problem_check")) {
+  if (options.url && options.url.endsWith("handler/xmodule_handler/problem_check")) {
     sendMessageToIOS(JSON.stringify(options));
     sendMessageToAndroid(JSON.stringify(options));
   }
