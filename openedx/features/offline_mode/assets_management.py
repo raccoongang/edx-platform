@@ -161,3 +161,18 @@ def save_mathjax_to_xblock_assets(temp_dir):
             file.write(response.content)
 
         log.info(f"Successfully saved MathJax to {file_path}")
+
+
+def save_external_file(temp_dir, link, filename):
+    """
+    Save external file to the local directory.
+    """
+    file_path = os.path.join(temp_dir, filename)
+    try:
+        response = requests.get(link)
+    except requests.exceptions.RequestException as e:
+        log.error(f"Failed to download {link}: {e}")
+    else:
+        create_subdirectories_for_asset(file_path)
+        with open(file_path, 'wb') as file:
+            file.write(response.content)
