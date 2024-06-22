@@ -92,11 +92,13 @@ class HtmlManipulator:
     def _replace_external_link(self, match):
         """
         Returns the local path of the external file.
+
+        Downloads the external file and saves it to the local directory.
         """
         link = match.group()
         file_extension = match.group(1)
         unique_id = uuid.uuid4()
-        filename = f"assets/eternal/{unique_id}.{file_extension}"
+        filename = f"assets/external/{unique_id}.{file_extension}"
         save_external_file(self.temp_dir, link, filename)
 
         return filename
