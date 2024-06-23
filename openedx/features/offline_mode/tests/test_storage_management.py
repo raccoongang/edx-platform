@@ -18,6 +18,48 @@ class OfflineContentGeneratorTestCase(TestCase):
     """
     Test case for the testing Offline Mode utils.
     """
+    @patch('openedx.features.offline_mode.storage_management.XBlockRenderer')
+    def test_render_block_html_data_successful(self, xblock_renderer_mock: MagicMock) -> None:
+        xblock_mock = Mock()
+        html_data_mock = 'html_markup_data_mock'
+
+        result = OfflineContentGenerator(xblock_mock, html_data_mock).render_block_html_data()
+
+        xblock_renderer_mock.assert_called_once_with(str(xblock_mock.location))
+        xblock_renderer_mock.return_value.render_xblock_from_lms.assert_called_once_with()
+        self.assertEqual(result, xblock_renderer_mock.return_value.render_xblock_from_lms.return_value)
+
+    @patch('openedx.features.offline_mode.storage_management.XBlockRenderer')
+    def test_render_block_html_data_successful_no_html_data(self, xblock_renderer_mock: MagicMock) -> None:
+        xblock_mock = Mock()
+        expected_xblock_renderer_args_list = [call(str(xblock_mock.location)), call(str(xblock_mock.location))]
+
+        result = OfflineContentGenerator(xblock_mock).render_block_html_data()
+
+        self.assertListEqual(xblock_renderer_mock.call_args_list, expected_xblock_renderer_args_list)
+        self.assertListEqual(
+            xblock_renderer_mock.return_value.render_xblock_from_lms.call_args_list, [call(), call()]
+        )
+        self.assertEqual(result, xblock_renderer_mock.return_value.render_xblock_from_lms.return_value)
+
+    @patch('openedx.features.offline_mode.storage_management.log.error')
+    @patch('openedx.features.offline_mode.storage_management.XBlockRenderer', side_effect=Http404)
+    def test_render_block_html_data_http404(
+        self,
+        xblock_renderer_mock: MagicMock,
+        logger_mock: MagicMock,
+    ) -> None:
+        xblock_mock = Mock()
+        html_data_mock = 'html_markup_data_mock'
+
+        with self.assertRaises(Http404):
+            OfflineContentGenerator(xblock_mock, html_data_mock).render_block_html_data()
+
+        xblock_renderer_mock.assert_called_once_with(str(xblock_mock.location))
+        logger_mock.assert_called_once_with(
+            f'Block {str(xblock_mock.location)} cannot be fetched from course'
+            f' {xblock_mock.location.course_key} during offline content generation.'
+        )
 
     @patch('openedx.features.offline_mode.storage_management.shutil.rmtree')
     @patch('openedx.features.offline_mode.storage_management.OfflineContentGenerator.create_zip_file')
@@ -25,10 +67,8 @@ class OfflineContentGeneratorTestCase(TestCase):
     @patch('openedx.features.offline_mode.storage_management.mkdtemp')
     @patch('openedx.features.offline_mode.storage_management.clean_outdated_xblock_files')
     @patch('openedx.features.offline_mode.storage_management.block_storage_path')
-    @patch('openedx.features.offline_mode.storage_management.is_modified', return_value=True)
     def test_generate_offline_content_for_modified_xblock(
         self,
-        is_modified_mock: MagicMock,
         block_storage_path_mock: MagicMock,
         clean_outdated_xblock_files_mock: MagicMock,
         mkdtemp_mock: MagicMock,
@@ -41,7 +81,6 @@ class OfflineContentGeneratorTestCase(TestCase):
 
         OfflineContentGenerator(xblock_mock, html_data_mock).generate_offline_content()
 
-        is_modified_mock.assert_called_once_with(xblock_mock)
         block_storage_path_mock.assert_called_once_with(xblock_mock)
         clean_outdated_xblock_files_mock.assert_called_once_with(xblock_mock)
         mkdtemp_mock.assert_called_once_with()
@@ -50,79 +89,6 @@ class OfflineContentGeneratorTestCase(TestCase):
             mkdtemp_mock.return_value,
             block_storage_path_mock.return_value,
             f'{xblock_mock.location.block_id}.zip'
-        )
-        shutil_rmtree_mock.assert_called_once_with(mkdtemp_mock.return_value, ignore_errors=True)
-
-    @patch('openedx.features.offline_mode.storage_management.shutil.rmtree')
-    @patch('openedx.features.offline_mode.storage_management.OfflineContentGenerator.create_zip_file')
-    @patch('openedx.features.offline_mode.storage_management.OfflineContentGenerator.save_xblock_html')
-    @patch('openedx.features.offline_mode.storage_management.mkdtemp')
-    @patch('openedx.features.offline_mode.storage_management.clean_outdated_xblock_files')
-    @patch('openedx.features.offline_mode.storage_management.block_storage_path')
-    @patch('openedx.features.offline_mode.storage_management.is_modified', return_value=False)
-    def test_generate_offline_content_is_not_modified(
-        self,
-        is_modified_mock: MagicMock,
-        block_storage_path_mock: MagicMock,
-        clean_outdated_xblock_files_mock: MagicMock,
-        mkdtemp_mock: MagicMock,
-        save_xblock_html_mock: MagicMock,
-        create_zip_file_mock: MagicMock,
-        shutil_rmtree_mock: MagicMock,
-    ) -> None:
-        xblock_mock = Mock()
-        html_data_mock = 'html_markup_data_mock'
-
-        OfflineContentGenerator(xblock_mock, html_data_mock).generate_offline_content()
-
-        is_modified_mock.assert_called_once_with(xblock_mock)
-        block_storage_path_mock.assert_not_called()
-        clean_outdated_xblock_files_mock.assert_not_called()
-        mkdtemp_mock.assert_not_called()
-        save_xblock_html_mock.assert_not_called()
-        create_zip_file_mock.assert_not_called()
-        shutil_rmtree_mock.assert_not_called()
-
-    @patch('openedx.features.offline_mode.storage_management.shutil.rmtree')
-    @patch('openedx.features.offline_mode.storage_management.log.error')
-    @patch(
-        'openedx.features.offline_mode.storage_management.OfflineContentGenerator.create_zip_file',
-        side_effect=Http404,
-    )
-    @patch('openedx.features.offline_mode.storage_management.OfflineContentGenerator.save_xblock_html')
-    @patch('openedx.features.offline_mode.storage_management.mkdtemp')
-    @patch('openedx.features.offline_mode.storage_management.clean_outdated_xblock_files')
-    @patch('openedx.features.offline_mode.storage_management.block_storage_path')
-    @patch('openedx.features.offline_mode.storage_management.is_modified', return_value=True)
-    def test_generate_offline_content_is_not_modified_with_http_404_status(
-        self,
-        is_modified_mock: MagicMock,
-        block_storage_path_mock: MagicMock,
-        clean_outdated_xblock_files_mock: MagicMock,
-        mkdtemp_mock: MagicMock,
-        save_xblock_html_mock: MagicMock,
-        create_zip_file_mock: MagicMock,
-        logger_mock: MagicMock,
-        shutil_rmtree_mock: MagicMock,
-    ) -> None:
-        xblock_mock = Mock()
-        html_data_mock = 'html_markup_data_mock'
-
-        OfflineContentGenerator(xblock_mock, html_data_mock).generate_offline_content()
-
-        is_modified_mock.assert_called_once_with(xblock_mock)
-        block_storage_path_mock.assert_called_once_with(xblock_mock)
-        clean_outdated_xblock_files_mock.assert_called_once_with(xblock_mock)
-        mkdtemp_mock.assert_called_once_with()
-        save_xblock_html_mock.assert_called_once_with(mkdtemp_mock.return_value)
-        create_zip_file_mock.assert_called_once_with(
-            mkdtemp_mock.return_value,
-            block_storage_path_mock.return_value,
-            f'{xblock_mock.location.block_id}.zip'
-        )
-        logger_mock.assert_called_once_with(
-            f'Block {xblock_mock.location.block_id} cannot be fetched from course'
-            f' {xblock_mock.location.course_key} during offline content generation.'
         )
         shutil_rmtree_mock.assert_called_once_with(mkdtemp_mock.return_value, ignore_errors=True)
 
