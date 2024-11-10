@@ -76,6 +76,20 @@ function(
             $('.nav-dd .nav-item .wrapper-nav-sub').removeClass('is-shown');
             $('.nav-dd .nav-item .title').removeClass('is-selected');
             $('.custom-dropdown .dropdown-options').hide();
+
+            try {
+                window.parent.postMessage(
+                    {
+                        type: 'toggleDropdownMenu',
+                        message: 'Sends a message when the dropdown menu is closed',
+                        payload: {
+                            subMenuHeight: 0,
+                        }
+                    }, document.referrer
+                );
+            } catch (e) {
+                console.error(e);
+            }
         });
 
         $('.nav-dd .nav-item, .filterable-column .nav-item').click(function(e) {

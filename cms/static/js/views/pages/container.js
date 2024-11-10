@@ -125,12 +125,13 @@ function($, _, Backbone, gettext, BasePage,
                 this.unitOutlineView.render();
 
             }
-
-            window.addEventListener('message', (event) => {
-                if (event.data && event.data.type === 'refreshXBlock') {
-                    this.render();
-                }
-            });
+            if (this.options.isIframeEmbed) {
+                window.addEventListener('message', (event) => {
+                    if (event.data && event.data.type === 'refreshXBlock') {
+                        this.render();
+                    }
+                });
+            }
 
             this.listenTo(Backbone, 'move:onXBlockMoved', this.onXBlockMoved);
         },
@@ -230,6 +231,7 @@ function($, _, Backbone, gettext, BasePage,
         },
 
         initializePasteButton() {
+            var self = this;
             if (this.options.canEdit && !self.options.isIframeEmbed) {
                 // We should have the user's clipboard status.
                 const data = this.options.clipboardData;
@@ -480,6 +482,22 @@ function($, _, Backbone, gettext, BasePage,
             // Code in 'base.js' normally handles toggling these dropdowns but since this one is
             // not present yet during the domReady event, we have to handle displaying it ourselves.
             subMenu.classList.toggle('is-shown');
+
+            try {
+                if (this.options.isIframeEmbed) {
+                    window.parent.postMessage(
+                        {
+                            type: 'toggleDropdownMenu',
+                            message: 'Sends a message when the dropdown menu is toggled',
+                            payload: {
+                                subMenuHeight: subMenu.offsetHeight,
+                            }
+                        }, document.referrer
+                    );
+                }
+            } catch (e) {
+                console.error(e);
+            }
             // if propagation is not stopped, the event will bubble up to the
             // body element, which will close the dropdown.
             event.stopPropagation();
