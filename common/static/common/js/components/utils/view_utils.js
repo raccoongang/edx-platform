@@ -52,7 +52,15 @@
         /**
              * Confirms with the user whether to run an operation or not, and then runs it if desired.
              */
-        confirmThenRunOperation = function(title, message, actionLabel, operation, onCancelCallback) {
+        confirmThenRunOperation = function(title, message, actionLabel, operation, onCancelCallback, isIframeEmbed) {
+            if (isIframeEmbed) {
+                return window.addEventListener('message', (event) => {
+                    if (event.data && event.data.type === 'confirmDeleteXBlock') {
+                        operation();
+                    }
+                });
+            }
+
             return new PromptView.Warning({
                 title: title,
                 message: message,

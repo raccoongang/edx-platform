@@ -654,3 +654,7 @@ select {
 .wrapper-xblock .xblock-header-primary .header-actions .wrapper-nav-sub {
   z-index: 15;
 }
+
+.wrapper-xblock .ui-loading {
+  display: none !important;
+}

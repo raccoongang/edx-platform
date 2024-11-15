@@ -156,10 +156,10 @@ function($, _, Backbone, gettext, BasePage,
                 unitTags = this.$('.unit-tags'),
                 hiddenCss = 'is-hidden';
 
-            loadingElement.removeClass(hiddenCss);
-
-            // Hide both blocks until we know which one to show
-            xblockView.$el.addClass(hiddenCss);
+            if (!self.options.isIframeEmbed) {
+                // Hide both blocks until we know which one to show
+                xblockView.$el.addClass(hiddenCss);
+            }
 
             // Render the xblock
             xblockView.render({
@@ -178,8 +178,11 @@ function($, _, Backbone, gettext, BasePage,
 
                     // Refresh the views now that the xblock is visible
                     self.onXBlockRefresh(xblockView);
-                    unitLocationTree.removeClass(hiddenCss);
-                    unitTags.removeClass(hiddenCss);
+
+                    if (!self.options.isIframeEmbed) {
+                        unitLocationTree.removeClass(hiddenCss);
+                        unitTags.removeClass(hiddenCss);
+                    }
 
                     // Re-enable Backbone events for any updated DOM elements
                     self.delegateEvents();
@@ -283,18 +286,6 @@ function($, _, Backbone, gettext, BasePage,
         /** The user has clicked on the "Paste Component button" */
         pasteComponent(event) {
             event.preventDefault();
-            try {
-                if (this.options.isIframeEmbed) {
-                    window.parent.postMessage(
-                        {
-                            type: 'pasteComponent',
-                            payload: {}
-                        }, document.referrer
-                    );
-                }
-            } catch (e) {
-                console.error(e);
-            }
             // Get the ID of the container (usually a unit/vertical) that we're pasting into:
             const parentElement = this.findXBlockElement(event.target);
             const parentLocator = parentElement.data('locator');
@@ -386,6 +377,7 @@ function($, _, Backbone, gettext, BasePage,
         },
 
         editXBlock: function(event, options) {
+            console.log('editXBlock ================+>');
             event.preventDefault();
             try {
                 if (this.options.isIframeEmbed && event.currentTarget.className === 'access-button') {
@@ -483,6 +475,10 @@ function($, _, Backbone, gettext, BasePage,
             // not present yet during the domReady event, we have to handle displaying it ourselves.
             subMenu.classList.toggle('is-shown');
 
+            if ((subMenu.offsetHeight + event.clientY) > window.innerHeight) {
+                subMenu.style.top =  `${subMenu.offsetHeight}px`;
+            }
+
             try {
                 if (this.options.isIframeEmbed) {
                     window.parent.postMessage(
@@ -490,7 +486,7 @@ function($, _, Backbone, gettext, BasePage,
                             type: 'toggleDropdownMenu',
                             message: 'Sends a message when the dropdown menu is toggled',
                             payload: {
-                                subMenuHeight: subMenu.offsetHeight,
+                                subMenuHeight: offset,
                             }
                         }, document.referrer
                     );
@@ -599,12 +595,10 @@ function($, _, Backbone, gettext, BasePage,
             event.preventDefault();
             try {
                 if (this.options.isIframeEmbed) {
-                    return window.parent.postMessage(
+                    window.parent.postMessage(
                         {
-                            type: 'duplicateXBlock',
-                            payload: {
-                                id: this.findXBlockElement(event.target).data('locator')
-                            }
+                            type: 'startDuplicateXBlock',
+                            payload: {}
                         }, document.referrer
                     );
                 }
@@ -644,12 +638,10 @@ function($, _, Backbone, gettext, BasePage,
             event.preventDefault();
             try {
                 if (this.options.isIframeEmbed) {
-                    return window.parent.postMessage(
+                    window.parent.postMessage(
                         {
-                            type: 'deleteXBlock',
-                            payload: {
-                                id: this.findXBlockElement(event.target).data('locator')
-                            }
+                            type: 'startDeleteXBlock',
+                            payload: {}
                         }, document.referrer
                     );
                 }
@@ -699,6 +691,18 @@ function($, _, Backbone, gettext, BasePage,
             placeholderElement = $placeholderEl.insertAfter(xblockElement);
             XBlockUtils.duplicateXBlock(xblockElement, parentElement)
                 .done(function(data) {
+                    try {
+                        if (self.options.isIframeEmbed) {
+                            window.parent.postMessage(
+                                {
+                                    type: 'finishDuplicateXBlock',
+                                    payload: {}
+                                }, document.referrer
+                            );
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
                     self.onNewXBlock(placeholderElement, scrollOffset, true, data);
                 })
                 .fail(function() {
@@ -712,7 +716,7 @@ function($, _, Backbone, gettext, BasePage,
                 xblockInfo = new XBlockInfo({
                     id: xblockElement.data('locator')
                 });
-            XBlockUtils.deleteXBlock(xblockInfo).done(function() {
+            XBlockUtils.deleteXBlock(xblockInfo, null, self.options.isIframeEmbed).done(function() {
                 self.onDelete(xblockElement);
             });
         },
@@ -784,6 +788,18 @@ function($, _, Backbone, gettext, BasePage,
 
             // Update publish and last modified information from the server.
             this.model.fetch();
+            try {
+                if (this.options.isIframeEmbed) {
+                    window.parent.postMessage(
+                        {
+                            type: 'finishDeleteXBlock',
+                            payload: {}
+                        }, document.referrer
+                    );
+                }
+            } catch (e) {
+                console.error(e);
+            }
         },
 
         /*
@@ -809,16 +825,37 @@ function($, _, Backbone, gettext, BasePage,
                     || (useNewProblemEditor === 'True' && blockType.includes('problem'))
             ){
                 var destinationUrl;
+                var pathToXBlockEditor;
                 if (useVideoGalleryFlow === "True" && blockType.includes("video")) {
-                    destinationUrl = this.$('.xblock-header-primary').attr("authoring_MFE_base_url") + '/course-videos/' + encodeURI(data.locator);
+                    pathToXBlockEditor = `/course-videos/${encodeURI(data.locator)}`;
+                    destinationUrl = `${this.$('.xblock-header-primary').attr("authoring_MFE_base_url")}${pathToXBlockEditor}`;
                 }
                 else {
-                    destinationUrl = this.$('.xblock-header-primary').attr("authoring_MFE_base_url") + '/' + blockType[1] + '/' + encodeURI(data.locator);
+                    pathToXBlockEditor = `/${blockType[1]}/${encodeURI(data.locator)}`;
+                    destinationUrl = `${this.$('.xblock-header-primary').attr("authoring_MFE_base_url")}${pathToXBlockEditor}`;
+                }
+
+                try {
+                    if (this.options.isIframeEmbed) {
+                        return window.parent.postMessage(
+                            {
+                                type: 'newXBlockEditor',
+                                message: 'Sends a message when the new XBlock editor is opened',
+                                payload: {
+                                    url: pathToXBlockEditor,
+                                }
+                            }, document.referrer
+                        );
+                    }
+                } catch (e) {
+                    console.error(e);
                 }
                 window.location.href = destinationUrl;
                 return;
             }
-            ViewUtils.setScrollOffset(xblockElement, scrollOffset);
+            if (!this.options.isIframeEmbed) {
+                ViewUtils.setScrollOffset(xblockElement, scrollOffset);
+            }
             xblockElement.data('locator', data.locator);
             return this.refreshXBlock(xblockElement, true, is_duplicate);
         },

@@ -209,7 +209,7 @@ function($, _, gettext, ViewUtils, ModuleUtils, XBlockInfo, StringUtils) {
          * @param xblockType A string representing the type of the xblock to be deleted.
          * @returns {jQuery promise} A promise representing the deletion of the xblock.
          */
-    deleteXBlock = function(xblockInfo, xblockType) {
+    deleteXBlock = function(xblockInfo, xblockType, isIframeEmbed) {
         var deletion = $.Deferred(),
             url = ModuleUtils.getUpdateUrl(xblockInfo.id),
             operation = function() {
@@ -246,7 +246,9 @@ function($, _, gettext, ViewUtils, ModuleUtils, XBlockInfo, StringUtils) {
                     {xblock_type: xblockType},
                     true
                 ),
-                operation
+                operation,
+                null,
+                isIframeEmbed,
             );
         } else {
             ViewUtils.confirmThenRunOperation(
@@ -261,7 +263,9 @@ function($, _, gettext, ViewUtils, ModuleUtils, XBlockInfo, StringUtils) {
                     {xblock_type: xblockType},
                     true
                 ),
-                operation
+                operation,
+                null,
+                isIframeEmbed,
             );
         }
         return deletion.promise();

@@ -37,7 +37,6 @@ function($, _, XBlockView, ModuleUtils, gettext, StringUtils, NotificationView) 
 
                 stop: function() {
                     var saving, hideSaving, removeFromParent;
-
                     if (_.isUndefined(oldParent)) {
                         // If no actual change occurred,
                         // oldParent will never have been set.
@@ -70,16 +69,6 @@ function($, _, XBlockView, ModuleUtils, gettext, StringUtils, NotificationView) 
                     newParent = undefined;
                 },
                 update: function(event, ui) {
-                    try {
-                        window.parent.postMessage(
-                            {
-                                type: 'refreshPositions',
-                                payload: {}
-                            }, document.referrer
-                        );
-                    } catch (e) {
-                        console.error(e);
-                    }
                     // When dragging from one ol to another, this method
                     // will be called twice (once for each list). ui.sender will
                     // be null if the change is related to the list the element
@@ -138,6 +127,17 @@ function($, _, XBlockView, ModuleUtils, gettext, StringUtils, NotificationView) 
                     }
                     // Update publish and last modified information from the server.
                     xblockInfo.fetch();
+                    try {
+                        window.parent.postMessage(
+                            {
+                                type: 'refreshPositions',
+                                message: 'Refresh the positions of the xblocks in the parent window.',
+                                payload: {}
+                            }, document.referrer
+                        );
+                    } catch (e) {
+                        console.error(e);
+                    }
                 }
             });
         },
