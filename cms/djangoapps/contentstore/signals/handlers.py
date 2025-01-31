@@ -159,13 +159,13 @@ def listen_for_course_publish(sender, course_key, **kwargs):  # pylint: disable=
     # Send to a signal for catalog info changes as well, but only once we know the transaction is committed.
     transaction.on_commit(lambda: emit_catalog_info_changed_signal(course_key))
 
-    if is_offline_mode_enabled(course_key):
-        client = get_cms_api_client()
-        client.post(
-            url=urljoin(settings.LMS_ROOT_URL, LMS_OFFLINE_HANDLER_URL),
-            data={'course_id': str(course_key)},
-        )
-        log.info('Sent course_published event to offline mode handler')
+    # if is_offline_mode_enabled(course_key):
+    #     client = get_cms_api_client()
+    #     client.post(
+    #         url=urljoin(settings.LMS_ROOT_URL, LMS_OFFLINE_HANDLER_URL),
+    #         data={'course_id': str(course_key)},
+    #     )
+    #     log.info('Sent course_published event to offline mode handler')
 
 
 @receiver(SignalHandler.course_deleted)
