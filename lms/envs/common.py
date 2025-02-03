@@ -3671,8 +3671,47 @@ DASHBOARD_COURSE_LIMIT = None
 
 ENTITLEMENTS_EXPIRATION_ROUTING_KEY = Derived(lambda settings: settings.DEFAULT_PRIORITY_QUEUE)
 
-# TODO: We believe these were part of the DEPR'd sysadmin dashboard, and can likely be removed.
-SSL_AUTH_EMAIL_DOMAIN = "MIT.EDU"
-SSL_AUTH_DN_FORMAT_STRING = (
-    "/C=US/ST=Massachusetts/O=Massachusetts Institute of Technology/OU=Client CA v1/CN={0}/emailAddress={1}"
-)
+# .. toggle_name: USE_EXTRACTED_HTML_BLOCK
+# .. toggle_default: False
+# .. toggle_implementation: DjangoSetting
+# .. toggle_description: Enables the use of the extracted HTML XBlock, which has been shifted to the 'openedx/xblocks-contrib' repo.
+# .. toggle_use_cases: temporary
+# .. toggle_warning: Not production-ready until relevant subtask https://github.com/openedx/edx-platform/issues/34827 is done.
+# .. toggle_creation_date: 2024-11-10
+# .. toggle_target_removal_date: 2025-06-01
+USE_EXTRACTED_HTML_BLOCK = False
+
+# .. toggle_name: USE_EXTRACTED_DISCUSSION_BLOCK
+# .. toggle_default: False
+# .. toggle_implementation: DjangoSetting
+# .. toggle_description: Enables the use of the extracted Discussion XBlock, which has been shifted to the 'openedx/xblocks-contrib' repo.
+# .. toggle_use_cases: temporary
+# .. toggle_warning: Not production-ready until relevant subtask https://github.com/openedx/edx-platform/issues/34827 is done.
+# .. toggle_creation_date: 2024-11-10
+# .. toggle_target_removal_date: 2025-06-01
+USE_EXTRACTED_DISCUSSION_BLOCK = False
+
+# .. toggle_name: USE_EXTRACTED_PROBLEM_BLOCK
+# .. toggle_default: False
+# .. toggle_implementation: DjangoSetting
+# .. toggle_description: Enables the use of the extracted Problem XBlock, which has been shifted to the 'openedx/xblocks-contrib' repo.
+# .. toggle_use_cases: temporary
+# .. toggle_warning: Not production-ready until relevant subtask https://github.com/openedx/edx-platform/issues/34827 is done.
+# .. toggle_creation_date: 2024-11-10
+# .. toggle_target_removal_date: 2025-06-01
+USE_EXTRACTED_PROBLEM_BLOCK = False
+
+# .. toggle_name: USE_EXTRACTED_VIDEO_BLOCK
+# .. toggle_default: False
+# .. toggle_implementation: DjangoSetting
+# .. toggle_description: Enables the use of the extracted Video XBlock, which has been shifted to the 'openedx/xblocks-contrib' repo.
+# .. toggle_use_cases: temporary
+# .. toggle_warning: Not production-ready until relevant subtask https://github.com/openedx/edx-platform/issues/34827 is done.
+# .. toggle_creation_date: 2024-11-10
+# .. toggle_target_removal_date: 2025-06-01
+USE_EXTRACTED_VIDEO_BLOCK = False
+
+# .. setting_name: RETIREMENT_SERVICE_WORKER_USERNAME
+# .. setting_default: offline_mode_worker
+# .. setting_description: Set the username for generating offline content. The user is used for rendering blocks.
+OFFLINE_SERVICE_WORKER_USERNAME = "offline_mode_worker"
