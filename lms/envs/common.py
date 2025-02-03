@@ -5559,3 +5559,8 @@ DISABLED_COUNTRIES = []
 
 
 LMS_COMM_DEFAULT_FROM_EMAIL = "no-reply@example.com"
+
+# .. setting_name: RETIREMENT_SERVICE_WORKER_USERNAME
+# .. setting_default: offline_mode_worker
+# .. setting_description: Set the username for generating offline content. The user is used for rendering blocks.
+OFFLINE_SERVICE_WORKER_USERNAME = "offline_mode_worker"
