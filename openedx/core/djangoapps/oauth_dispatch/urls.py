@@ -7,8 +7,7 @@ from django.conf import settings
 from django.urls import path, re_path
 from django.views.decorators.csrf import csrf_exempt
 
-from mobile_api_extensions.views import AuthorizationCodeExchangeView
-from mobile_api_extensions.utils import is_enabled_mobile
+from mobile_api_extensions.auth_urls import append_mobile_urls
 
 from . import views
 
@@ -25,11 +24,4 @@ if settings.FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
              ),
     ]
 
-if is_enabled_mobile():
-    urlpatterns.append(
-        re_path(
-            r'^exchange_authorization_code/?$',
-            csrf_exempt(AuthorizationCodeExchangeView.as_view()),
-            name='exchange_authorization_code',
-        )
-    )
+urlpatterns = append_mobile_urls(urlpatterns)

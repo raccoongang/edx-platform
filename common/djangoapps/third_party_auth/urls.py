@@ -10,12 +10,6 @@ from .views import (
     post_to_custom_auth_form,
     saml_metadata_view
 )
-from mobile_api_extensions.views import (
-    auth_mobile,
-    complete_mobile,
-    redirect_to_mobile_deeplink,
-    redirect_to_mobile,
-)
 
 urlpatterns = [
     path('auth/inactive', inactive_user_view, name="third_party_inactive_redirect"),
@@ -29,12 +23,5 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    re_path(r'^auth/login/(?P<backend>[^/]+)/$', auth_mobile, name='social_login_override'),
-    re_path(r'^auth/complete/(?P<backend>[^/]+)/$',
-        complete_mobile,
-        name='social_complete_override'
-        ),
-    path('auth/', include('social_django.urls', namespace='social')),
-    path('sso_deeplink', redirect_to_mobile_deeplink, name='sso-deeplink'),
-    re_path(r'^auth/login/mobile/(?P<backend_name>[^/]+)/$', redirect_to_mobile, name='redirect-mobile'),
+    path('', include('mobile_api_extensions.auth_urls')),
 ]
