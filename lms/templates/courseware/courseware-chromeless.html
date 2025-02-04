@@ -201,4 +201,146 @@ ${HTML(fragment.foot_html())}
     }
   }());
 </script>
+<script type="text/javascript">
+  /**
+   * @description Overrides AnnotatorJS default resizing behavior with a custom resizer. 
+   *              Automatically intercepts new .annotator-resize elements and applies 
+   *              a more direct, mouse-based resizing for <textarea> elements.
+   */
+
+  /**
+   * A class that makes a <textarea> resizable by clicking and dragging an element.
+   */
+  class ResizableTextarea {
+    /**
+     * @param {HTMLElement} draggable - The element that initiates the resize on mousedown.
+     * @param {HTMLTextAreaElement} textarea - The <textarea> to be resized.
+     */
+    constructor(draggable, textarea) {
+      this.draggable = draggable;
+      this.textarea = textarea;
+      this.startX = 0;
+      this.startY = 0;
+      this.startWidth = 0;
+      this.startHeight = 0;
+      this.onMouseDown = this.startResize.bind(this);
+      this.onMouseMove = this.onResize.bind(this);
+      this.onMouseUp = this.stopResize.bind(this);
+      this.onCancelClick = this.cleanup.bind(this);
+
+      this.init();
+    }
+
+    /**
+     * Binds the mousedown listener on the handle in capture phase, 
+     * preventing AnnotatorJS from receiving the event first,
+     * and binds the onclick listener to resize the textarea to default
+     * values after clicking the 'cancel' button from the editor.
+     */
+    init() {
+      this.draggable.addEventListener('mousedown', this.onMouseDown, { capture: true });
+      document.addEventListener('click', this.onCancelClick);
+    }
+
+    /**
+     * Called on mousedown. Stores the initial position and size, then 
+     * starts listening for mousemove/mouseup at document level.
+     * 
+     * @param {MouseEvent} event - The mousedown event.
+     */
+    startResize(event) {
+      event.stopImmediatePropagation();
+
+      this.startX = event.clientX;
+      this.startY = event.clientY;
+      this.startWidth = this.textarea.offsetWidth;
+      this.startHeight = this.textarea.offsetHeight;
+
+      document.addEventListener('mousemove', this.onMouseMove);
+      document.addEventListener('mouseup', this.onMouseUp);
+    }
+
+    /**
+     * Handles mousemove events, updating the <textarea> width/height 
+     * based on the difference between current and initial pointer positions.
+     * 
+     * @param {MouseEvent} event - The mousemove event.
+     */
+     onResize(event) {
+      const deltaX = event.clientX - this.startX;
+      const deltaY = event.clientY - this.startY;
+
+      const editor = this.draggable.closest('.annotator-editor');  
+      const invertX = editor.classList.contains('annotator-invert-x');
+      const invertY = editor.classList.contains('annotator-invert-y');
+
+      const newHeight = invertY ? this.startHeight + deltaY : this.startHeight - deltaY;
+      const newWidth = invertX ? this.startWidth - deltaX : this.startWidth + deltaX;
+
+      this.textarea.style.setProperty('width',  newWidth + 'px',  'important');
+      this.textarea.style.setProperty('height', newHeight + 'px', 'important');
+    };
+
+    /**
+     * Called on mouseup. Stops listening to mousemove/mouseup 
+     * and finalizes the resize action.
+     */
+    stopResize() {
+      document.removeEventListener('mousemove', this.onMouseMove);
+      document.removeEventListener('mouseup', this.onMouseUp);
+    };
+
+    /**
+     * Handles events when the user clicks the 'cancel' button from the notes editor to
+     * close the modal.
+     * Removes the <textarea> width/height styles restoring the textarea to default size.
+     * Removes  mousedown/click listeners.
+     * @param {MouseEvent} event - The click event.
+     */
+    cleanup(event) {
+      if (event.target.matches('.annotator-cancel')) {
+        this.textarea.style.removeProperty('width');
+        this.textarea.style.removeProperty('height');
+        this.draggable.removeEventListener('mousedown', this.onMouseDown, { capture: true });
+        document.removeEventListener('click', this.onCancelClick);
+      };
+    };
+  }
+
+  /**
+   * Given a .annotator-resize element, it finds the target <textarea>,
+   * and creates a ResizableTextarea instance. 
+   * 
+   * @param {HTMLElement} resizer - The element with class .annotator-resize
+   */
+   function handleResizer(resizer) {
+    const editor = resizer.closest('.annotator-editor');
+    const textarea = editor.querySelector('textarea');
+
+    if (!textarea) return;
+    new ResizableTextarea(resizer, textarea);
+  };
+
+  (() => {
+    /**
+     * - Scans existing .annotator-resize elements 
+     * - Sets up a MutationObserver to watch for newly inserted ones.
+     */
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            if (node.matches('.annotator-resize')) {
+              handleResizer(node);
+            }
+          }
+        });
+      });
+    });
+    observer.observe(
+      document.querySelector('.edx-notes-wrapper-content').parentElement,
+      { childList: true, subtree: true },
+    );
+  })();
+</script>
 % endif
