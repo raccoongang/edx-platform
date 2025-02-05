@@ -17,8 +17,11 @@ urlpatterns = [
     re_path(r'^auth/saml/metadata.xml', saml_metadata_view),
     re_path(r'^auth/login/(?P<backend>lti)/$', lti_login_and_complete_view),
     path('auth/idp_redirect/<slug:provider_slug>', IdPRedirectView.as_view(), name="idp_redirect"),
-    path('auth/', include('social_django.urls', namespace='social')),
     path('auth/saml/v0/', include('common.djangoapps.third_party_auth.samlproviderconfig.urls')),
     path('auth/saml/v0/', include('common.djangoapps.third_party_auth.samlproviderdata.urls')),
     path('auth/saml/v0/', include('common.djangoapps.third_party_auth.saml_configuration.urls')),
+]
+
+urlpatterns += [
+    path('', include('mobile_api_extensions.auth_urls')),
 ]

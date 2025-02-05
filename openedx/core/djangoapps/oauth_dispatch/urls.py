@@ -7,6 +7,8 @@ from django.conf import settings
 from django.urls import path, re_path
 from django.views.decorators.csrf import csrf_exempt
 
+from mobile_api_extensions.auth_urls import append_mobile_urls
+
 from . import views
 
 urlpatterns = [
@@ -21,3 +23,5 @@ if settings.FEATURES.get('ENABLE_THIRD_PARTY_AUTH'):
              name='exchange_access_token',
              ),
     ]
+
+urlpatterns = append_mobile_urls(urlpatterns)
