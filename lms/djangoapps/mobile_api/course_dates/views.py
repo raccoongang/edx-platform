@@ -37,7 +37,7 @@ class AllCourseDatesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     **Example Response**
 
         ```json
-            {
+        {
             "count": 2,
             "next": null,
             "previous": null,
