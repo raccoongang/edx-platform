@@ -46,6 +46,35 @@
   }
 }
 
+%button-primary-outline {
+    @extend %modal-actions-button;
+
+    color: $primary;
+    border-color: $primary;
+    text-shadow: none;
+    font-weight: 400;
+    position: relative;
+
+    &:focus {
+        color: $primary;
+        background: transparent;
+
+        &:before {
+            content: "";
+            position: absolute;
+            inset: -5px;
+            border: 2px solid $primary;
+            border-radius: 10px;
+        }
+    }
+
+    &:hover {
+        color: darken($primary, 10%);
+        background-color: lighten($primary, 80%);
+        border-color: darken($primary, 15%);
+    }
+}
+
 %light-button {
   @extend %modal-actions-button;
 

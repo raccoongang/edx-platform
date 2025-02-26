@@ -938,7 +938,7 @@ function($, _, Backbone, gettext, BasePage,
 
             return $.postJSON(this.getURLRoot() + '/', requestData,
                 _.bind(this.onNewXBlock, this, placeholderElement, scrollOffset, false))
-                .success(function () {
+                .always(function () {
                     if (self.options.isIframeEmbed && self.isSplitTestContentPage) {
                         self.postMessageToParent({
                             type: 'hideProcessingNotification',
@@ -950,7 +950,7 @@ function($, _, Backbone, gettext, BasePage,
                 .fail(function() {
                     // Remove the placeholder if the update failed
                     placeholderElement.remove();
-            });
+                });
         },
 
         duplicateComponent: function(xblockElement) {
