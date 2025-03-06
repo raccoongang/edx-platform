@@ -1,11 +1,10 @@
 import logging
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
-from opaque_keys.edx.django.models import CourseKeyField, UsageKeyField
-from opaque_keys.edx.keys import CourseKey, UsageKey
-from opaque_keys.edx.locator import LibraryLocatorV2
-from openedx.core.djangoapps.content_libraries import api as contentlib_api
+from opaque_keys.edx.django.models import UsageKeyField
+from opaque_keys.edx.keys import CourseKey
 
 from openedx_learning.apps.authoring.components.models import ComponentVersion
 
@@ -13,7 +12,10 @@ from xblock.core import XBlock
 from xmodule.modulestore.django import modulestore
 from model_utils.models import TimeStampedModel
 
-log = logging.getLogger(__name__)
+from .data import CourseToLibraryImportStatus
+from .validators import validate_course_ids
+
+logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
@@ -39,25 +41,15 @@ class CourseToLibraryImport(TimeStampedModel):
     Represents a course import into a content library.
     """
 
-    # TODO: move this to data.py as a choice class
-    PENDING = 'PENDING'
-    READY = 'READY'
-    IMPORTED = 'IMPORTED'
-    ERROR = 'ERROR'
-
-    IMPORT_STATUSES = (
-        (PENDING, 'Pending'),
-        (READY, 'Ready'),
-        (IMPORTED, 'Imported'),
-        (ERROR, 'Error'),
+    status = models.CharField(
+        max_length=100,
+        choices=CourseToLibraryImportStatus.choices,
+        default=CourseToLibraryImportStatus.PENDING
     )
-
-    date = models.DateField(auto_now_add=True)
-    state = models.CharField(max_length=100)  # TODO: delete this field
-    status = models.CharField(max_length=100, choices=IMPORT_STATUSES, default=PENDING)
     course_ids = models.TextField(
         blank=False,
-        help_text="Whitespace-separated list of course keys for which to compute grades."
+        help_text=_("Whitespace-separated list of course keys for which to compute grades."),
+        validators=[validate_course_ids]
     )
     library_key = models.CharField(max_length=100)
     source_type = models.CharField(max_length=30)
@@ -68,16 +60,15 @@ class CourseToLibraryImport(TimeStampedModel):
         return f"{self.course_ids} - {self.library_key}"
 
     class Meta:
-        verbose_name = 'Course to Library Import'
-        verbose_name_plural = 'Course to Library Imports'
-
+        verbose_name = _('Course to Library Import')
+        verbose_name_plural = _('Course to Library Imports')
 
 
 class ComponentVersionImport(TimeStampedModel):
     """
     Represents a component version that has been imported into a content library.
 
-
+    This is a many-to-many relationship between a component version and a course to library import.
     """
 
     component_version = models.OneToOneField(ComponentVersion, on_delete=models.CASCADE)
@@ -86,3 +77,7 @@ class ComponentVersionImport(TimeStampedModel):
 
     def __str__(self):
         return f"{self.component_version} - {self.source_usage_key}"
+
+    class Meta:
+        verbose_name = _('Component Version Import')
+        verbose_name_plural = _('Component Version Imports')
