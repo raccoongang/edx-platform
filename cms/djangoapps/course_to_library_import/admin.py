@@ -4,7 +4,6 @@ This module contains the admin configuration for the CourseToLibraryImport model
 
 from django.contrib import admin
 
-from .forms import CourseToLibraryImportForm
 from .models import CourseToLibraryImport
 
 # Run a task to import courses to the library
@@ -32,7 +31,7 @@ class CourseToLibraryImportAdmin(admin.ModelAdmin):
         'library_key',
     )
 
-    form = CourseToLibraryImportForm
+    raw_id_fields = ('user',)
 
 
 admin.site.register(CourseToLibraryImport, CourseToLibraryImportAdmin)
