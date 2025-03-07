@@ -9,8 +9,6 @@ from django.utils.translation import gettext_lazy as _
 
 from opaque_keys.edx.django.models import UsageKeyField
 
-from openedx_learning.apps.authoring.components.models import ComponentVersion
-
 from model_utils.models import TimeStampedModel
 
 from .data import CourseToLibraryImportStatus
@@ -54,7 +52,10 @@ class ComponentVersionImport(TimeStampedModel):
     This is a many-to-many relationship between a component version and a course to library import.
     """
 
-    component_version = models.OneToOneField(ComponentVersion, on_delete=models.CASCADE)
+    component_version = models.OneToOneField(
+        to='oel_components.ComponentVersion',
+        on_delete=models.CASCADE
+    )
     source_usage_key = UsageKeyField(max_length=255)
     library_import = models.ForeignKey(CourseToLibraryImport, on_delete=models.CASCADE)
 

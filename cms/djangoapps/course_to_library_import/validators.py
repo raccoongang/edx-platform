@@ -18,7 +18,6 @@ def validate_course_ids(value: str):
         ValueError: If the course IDs are not valid course keys or if there are duplicate course keys.
     """
 
-
     course_ids = value.split()
     if len(course_ids) != len(set(course_ids)):
         raise ValueError(_('Duplicate course keys are not allowed'))
