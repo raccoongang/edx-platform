@@ -12,20 +12,10 @@ from xmodule.modulestore.django import modulestore
 
 @shared_task
 @set_code_owner_attribute
-def save_course_to_staged_content_task(course_id, user_id, purpose, version_num):
+def save_course_to_staged_content_task(course_id: str, user_id: int, purpose: str, version_num: int | None) -> None:
     """
-    Save course to staged content.
-
-    Args:
-        course_id (str): Course ID.
-        user_id (int): User ID.
-        purpose (str): Purpose of staging.
-        version_num (int): Version number.
-
-    Returns:
-        None
+    Save course to staged content task.
     """
-
     course_key = CourseKey.from_string(course_id)
     sections = modulestore().get_items(course_key, qualifiers={'category': 'chapter'})
 
