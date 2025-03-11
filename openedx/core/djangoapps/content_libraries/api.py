@@ -1890,7 +1890,8 @@ class EdxApiImportClient(BaseEdxImportClient):
             params={'all_blocks': True, 'depth': 'all'})['blocks']
         export_keys = []
         for block_info in course_blocks.values():
-            export_keys.append(UsageKey.from_string(block_info['id']))
+            if block_info['type'] in self.EXPORTABLE_BLOCK_TYPES:
+                export_keys.append(UsageKey.from_string(block_info['id']))
         return export_keys
 
     def get_block_static_data(self, asset_file):
