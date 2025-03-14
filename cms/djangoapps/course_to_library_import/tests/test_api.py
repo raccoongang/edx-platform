@@ -62,5 +62,5 @@ def test_import_library_from_staged_content(override):
         import_library_from_staged_content(library_key, user.id, usage_ids, course_id, override)
 
     import_library_from_staged_content_task_mock.delay.assert_called_once_with(
-        user.id, usage_ids, library_key, COURSE_TO_LIBRARY_IMPORT_PURPOSE.format(course_id=course_id), override
+        user.id, usage_ids, library_key, COURSE_TO_LIBRARY_IMPORT_PURPOSE, course_id, override
     )

@@ -56,13 +56,13 @@ def save_courses_to_staged_content_task(
 @shared_task
 @set_code_owner_attribute
 def import_library_from_staged_content_task(
-    user_id: int, usage_ids: list[str], library_key: str, purpose: str, override: bool
+    user_id: int, usage_ids: list[str], library_key: str, purpose: str, course_id: str, override: bool
 ) -> None:
     """
     Import staged content to a library task.
     """
     staged_content = content_staging_api.get_ready_staged_content_by_user_and_purpose(
-        user_id, purpose
+        user_id, purpose.format(course_id=course_id)
     )
     validate_usage_ids(usage_ids, staged_content)
     parser = etree.XMLParser(strip_cdata=False)

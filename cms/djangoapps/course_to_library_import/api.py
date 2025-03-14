@@ -17,7 +17,7 @@ def import_library_from_staged_content(
     Import staged content to a library.
     """
     import_library_from_staged_content_task.delay(
-        user_id, usage_ids, library_key, COURSE_TO_LIBRARY_IMPORT_PURPOSE.format(course_id=course_id), override
+        user_id, usage_ids, library_key, COURSE_TO_LIBRARY_IMPORT_PURPOSE, course_id, override
     )
 
 

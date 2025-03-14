@@ -6,13 +6,12 @@ import logging
 import mimetypes
 from datetime import datetime, timezone
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.db.utils import IntegrityError
 from lxml import etree
 
 from opaque_keys.edx.keys import UsageKey
-from opaque_keys.edx.locator import LibraryLocatorV2
+from opaque_keys.edx.locator import LibraryLocatorV2, LibraryUsageLocatorV2
 from openedx_learning.api import authoring as authoring_api
 
 from openedx.core.djangoapps.content_libraries import api
@@ -39,83 +38,82 @@ def create_block_in_library(block_to_import, usage_key, library_key, user_id, st
 
     with transaction.atomic():
         component_type = authoring_api.get_or_create_component_type("xblock.v1", usage_key.block_type)
+        component_version = None
         does_component_exist = authoring_api.get_components(
             content_library.learning_package.id
         ).filter(local_key=usage_key.block_id).exists()
 
         if does_component_exist:
             if not override:
-                log.warning(f"Component {usage_key.block_id} already exists in library {library_key}, skipping.")
+                log.info(f"Component {usage_key.block_id} already exists in library {library_key}, skipping.")
                 return
             else:
-                _handle_component_override(content_library, usage_key)
+                component_version = _handle_component_override(
+                    content_library, usage_key, etree.tostring(block_to_import)
+                )
 
-        # Create component (regardless of override path)
-        _, library_usage_key = api.validate_can_add_block_to_library(
-            library_key,
-            block_to_import.tag,
-            usage_key.block_id,
-        )
-        authoring_api.create_component(
-            content_library.learning_package.id,
-            component_type=component_type,
-            local_key=usage_key.block_id,
-            created=now,
-            created_by=user_id,
-        )
+        if not override:
+            # Create component (regardless of override path)
+            _, library_usage_key = api.validate_can_add_block_to_library(
+                library_key,
+                block_to_import.tag,
+                usage_key.block_id,
+            )
+            authoring_api.create_component(
+                content_library.learning_package.id,
+                component_type=component_type,
+                local_key=usage_key.block_id,
+                created=now,
+                created_by=user_id,
+            )
 
-        component_version = api.set_library_block_olx(library_usage_key, etree.tostring(block_to_import))
+            component_version = api.set_library_block_olx(library_usage_key, etree.tostring(block_to_import))
 
         # Handle component version import records for overrides
-        overrided_component_version = False
+        overrided_component_version_import = False
         if override:
-            overrided_component_version = _update_component_version_import(
+            _update_component_version_import(
                 component_version, usage_key, library_key, user_id
             )
+            overrided_component_version_import = True
 
         _process_staged_content_files(
             component_version, staged_content_files, staged_content_id, usage_key,
-            content_library, now, block_to_import, overrided_component_version, library_key, user_id
+            content_library, now, block_to_import, overrided_component_version_import, library_key, user_id
         )
 
 
-def _handle_component_override(content_library, usage_key):
+def _handle_component_override(content_library, usage_key, new_content):
     """
-    Delete existing component and related entities before creating a new one.
+    Create new ComponentVersion for overridden component.
     """
-    components = content_library.learning_package.component_set.filter(local_key=usage_key.block_id)
+    component_version = None
+    component = content_library.learning_package.component_set.filter(local_key=usage_key.block_id).first()
 
-    try:
-        pe_key = f"xblock.v1:{usage_key.block_type}:{usage_key.block_id}"
-        publishable_entity = authoring_api.get_publishable_entity_by_key(content_library.learning_package.id, pe_key)
-        publishable_entity.delete()
-    except ObjectDoesNotExist:
-        pass
-    components.delete()
+    if component:
+        lib_usage_key = LibraryUsageLocatorV2(  # type: ignore[abstract]
+            lib_key=content_library.library_key,
+            block_type=component.component_type.name,
+            usage_id=component.local_key,
+        )
+        component_version = api.set_library_block_olx(lib_usage_key, new_content)
+
+    return component_version
 
 
 def _update_component_version_import(component_version, usage_key, library_key, user_id):
     """
     Update component version import records for overridden components.
     """
-    if cvi := ComponentVersionImport.objects.filter(
+    return ComponentVersionImport.objects.create(
+        component_version=component_version,
         source_usage_key=usage_key,
-        library_import__library_key=library_key,
-        library_import__user_id=user_id,
-        library_import__status=CourseToLibraryImportStatus.READY,
-    ):
-        cvi.delete()
-        ComponentVersionImport.object.create(
-            component_version=component_version,
-            source_usage_key=usage_key,
-            library_import=CourseToLibraryImport.objects.get(
-                library_key=library_key,
-                user_id=user_id,
-                status=CourseToLibraryImportStatus.READY
-            ),
-        )
-        return True
-    return False
+        library_import=CourseToLibraryImport.objects.get(
+            library_key=library_key,
+            user_id=user_id,
+            status=CourseToLibraryImportStatus.READY
+        ),
+    )
 
 
 def _process_staged_content_files(
@@ -126,7 +124,7 @@ def _process_staged_content_files(
     content_library,
     now,
     block_to_import,
-    overrided_component_version,
+    overrided_component_version_import,
     library_key,
     user_id,
 ):
@@ -177,7 +175,7 @@ def _process_staged_content_files(
         except IntegrityError:
             pass  # Content already exists
 
-        if not overrided_component_version:
+        if not overrided_component_version_import:
             ComponentVersionImport.objects.get_or_create(
                 component_version=component_version,
                 source_usage_key=usage_key,
@@ -206,7 +204,9 @@ def flat_import_children(block_to_import, library_key, user_id, staged_content, 
                 usage_key = block_id_to_usage_key.get(usage_key_str)
 
                 if usage_key and usage_key in staged_keys:
-                    library = ContentLibrary.objects.filter(org__short_name=library_key.org, slug=library_key.slug).first()
+                    library = ContentLibrary.objects.filter(
+                        org__short_name=library_key.org, slug=library_key.slug
+                    ).first()
                     if not library:
                         raise ValueError(f"Library {library_key} does not exist.")
                     create_block_in_library(child, usage_key, library_key, user_id, staged_content.id, override)
