@@ -53,17 +53,18 @@ def _save_xblock_to_staged_content(
 
     expired_ids = []
     with transaction.atomic():
-        # Mark all of the user's existing StagedContent rows as EXPIRED
-        to_expire = _StagedContent.objects.filter(
-            user_id=user_id,
-            purpose=purpose,
-        ).exclude(
-            status=StagedContentStatus.EXPIRED,
-        )
-        for sc in to_expire:
-            expired_ids.append(sc.id)
-            sc.status = StagedContentStatus.EXPIRED
-            sc.save()
+        if purpose == CLIPBOARD_PURPOSE:
+            # Mark all of the user's existing StagedContent rows as EXPIRED
+            to_expire = _StagedContent.objects.filter(
+                user_id=user_id,
+                purpose=purpose,
+            ).exclude(
+                status=StagedContentStatus.EXPIRED,
+            )
+            for sc in to_expire:
+                expired_ids.append(sc.id)
+                sc.status = StagedContentStatus.EXPIRED
+                sc.save()
         # Insert a new StagedContent row for this
         staged_content = _StagedContent.objects.create(
             user_id=user_id,
@@ -303,3 +304,5 @@ def get_staged_content_static_file_data(staged_content_id: int, filename: str) -
     if file_data_obj:
         return file_data_obj.data_file.open().read()
     return None
+
+# from cms.djangoapps.course_to_library_import.api import save_course_to_staged_content; from datetime import datetime; before = datetime.now();save_course_to_staged_content('course-v1:large+course+1', 4);after = datetime.now();after - before
