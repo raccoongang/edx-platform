@@ -2,9 +2,10 @@
 Helper functions for importing course content into a library.
 """
 
+from datetime import datetime, timezone
 import logging
 import mimetypes
-from datetime import datetime, timezone
+import secrets
 
 from django.db import transaction
 from django.db.utils import IntegrityError
@@ -13,13 +14,14 @@ from lxml import etree
 from opaque_keys.edx.keys import UsageKey
 from opaque_keys.edx.locator import LibraryLocatorV2, LibraryUsageLocatorV2
 from openedx_learning.api import authoring as authoring_api
+from openedx_learning.api.authoring_models import ContainerVersion
 
 from openedx.core.djangoapps.content_libraries import api
 from openedx.core.djangoapps.content_libraries.api import ContentLibrary
 from openedx.core.djangoapps.content_staging import api as content_staging_api
 
 from .data import CourseToLibraryImportStatus
-from .models import ComponentVersionImport, CourseToLibraryImport
+from .models import ComponentVersionImport, CourseToLibraryImport, SectionVersionImport
 import os
 
 
@@ -81,6 +83,8 @@ def create_block_in_library(block_to_import, usage_key, library_key, user_id, st
             component_version, staged_content_files, staged_content_id, usage_key,
             content_library, now, block_to_import, overrided_component_version_import, library_key, user_id
         )
+
+        return component_version
 
 
 def _handle_component_override(content_library, usage_key, new_content):
@@ -187,38 +191,191 @@ def _process_staged_content_files(
             )
 
 
-def flat_import_children(block_to_import, library_key, user_id, staged_content, override):
+def _update_container_components(container_version, component_versions, user_id):
+    return authoring_api.create_next_container_version(
+        container_pk=container_version.container.pk,
+        title=container_version.title,
+        publishable_entities_pks=[
+            cv.container.pk if isinstance(cv, ContainerVersion) else cv.component.pk for cv in component_versions
+        ],
+        entity_version_pks=[cv.pk for cv in component_versions],
+        created=datetime.now(tz=timezone.utc),
+        created_by=user_id,
+        container_version_cls=container_version.__class__,
+    )
+
+
+def import_children(block_to_import, library_key, user_id, staged_content, composition_level, override):
     """
     Import children of a block from staged content into a library.
+    Creates appropriate container hierarchy based on composition_level.
     """
     staged_keys = [UsageKey.from_string(key) for key in staged_content.tags.keys()]
     block_id_to_usage_key = {key.block_id: key for key in staged_keys}
 
-    for child in block_to_import.getchildren():
+    result = []
+
+    def _process_xblock(child):
+        usage_key_str = child.get('url_name')
+
+        if usage_key_str:
+            usage_key = block_id_to_usage_key.get(usage_key_str)
+
+            if usage_key and usage_key in staged_keys:
+                library = ContentLibrary.objects.filter(
+                    org__short_name=library_key.org, slug=library_key.slug
+                ).first()
+                if not library:
+                    raise ValueError(f"Library {library_key} does not exist.")
+
+                return create_block_in_library(
+                    child,
+                    usage_key,
+                    library_key,
+                    user_id,
+                    staged_content.id,
+                    override,
+                )
+
+    block_children = block_to_import.getchildren()
+    if len(block_children) == 0 and composition_level == 'xblock':
+        component_version = _process_xblock(block_to_import)
+        if component_version:
+            return [component_version]
+
+    for child in block_children:
         if child.tag in ('chapter', 'sequential', 'vertical'):
-            flat_import_children(child, library_key, user_id, staged_content, override)
+            child_url_name = child.get('url_name')
+            child_display_name = child.get('display_name', '')
+
+            container_version = create_container(
+                child.tag,
+                child_url_name,
+                child_display_name,
+                library_key,
+                user_id,
+            )
+
+            child_component_versions = import_children(
+                child,
+                library_key,
+                user_id,
+                staged_content,
+                composition_level,
+                override,
+            )
+
+            if child_component_versions:
+                _update_container_components(container_version, child_component_versions, user_id)
+
+            result.append(container_version)
         else:
-            usage_key_str = child.get('url_name')
+            component_version = _process_xblock(child)
+            if component_version is not None:
+                result.append(component_version)
 
-            if usage_key_str:
-                usage_key = block_id_to_usage_key.get(usage_key_str)
+    if composition_level == 'xblock':
+        return [comp for comp in result if not isinstance(comp, ContainerVersion)]
+    else:
+        return result
 
-                if usage_key and usage_key in staged_keys:
-                    library = ContentLibrary.objects.filter(
-                        org__short_name=library_key.org, slug=library_key.slug
-                    ).first()
-                    if not library:
-                        raise ValueError(f"Library {library_key} does not exist.")
-                    create_block_in_library(child, usage_key, library_key, user_id, staged_content.id, override)
+
+def create_container(container_type, key, display_name, library_key, user_id):
+    """
+    Create a container of the specified type.
+    """
+    assert isinstance(library_key, LibraryLocatorV2)
+    content_library = ContentLibrary.objects.get_by_key(library_key)
+
+    container_creators = {
+        'chapter': authoring_api.create_unit_and_version,  # TODO: replace with create_module_and_version
+        'sequential': authoring_api.create_unit_and_version,  # TODO: replace with create_section_and_version
+        'vertical': authoring_api.create_unit_and_version,
+    }
+
+    if container_type not in container_creators:
+        raise ValueError(f"Unknown container type: {container_type}")
+
+    if not key:
+        key = secrets.token_hex(16)
+
+    if not display_name:
+        display_name = f"New {container_type}"
+
+    _, container_version = container_creators[container_type](
+        content_library.learning_package.id,
+        key=key,
+        title=display_name,
+        components=[],
+        created=datetime.now(tz=timezone.utc),
+        created_by=user_id,
+    )
+
+    return container_version
+
+
+def import_container(usage_key, block_to_import, library_key, user_id, staged_content, composition_level, override):
+    """
+    Import a blocks hierarchy into a library, creating proper container structure.
+    """
+
+    container_type = block_to_import.tag
+
+    if composition_level in ('chapter', 'sequential', 'vertical'):
+        key = block_to_import.get('url_name')
+        display_name = block_to_import.get('display_name', '')
+
+        top_container_version = create_container(
+            container_type,
+            key,
+            display_name,
+            library_key,
+            user_id,
+        )
+
+        component_versions = import_children(
+            block_to_import,
+            library_key,
+            user_id,
+            staged_content,
+            composition_level,
+            override,
+        )
+
+        if component_versions:
+            _update_container_components(top_container_version, component_versions, user_id)
+
+        with transaction.atomic():
+            SectionVersionImport.objects.create(
+                section_version=top_container_version,
+                source_usage_key=usage_key,
+                library_import=CourseToLibraryImport.objects.get(
+                    library_key=library_key,
+                    user_id=user_id,
+                    status=CourseToLibraryImportStatus.READY
+                ),
+            )
+    else:  # xblock level
+        print(f"Importing xblock {usage_key} into library {library_key}")
+        import_children(
+            block_to_import,
+            library_key,
+            user_id,
+            staged_content,
+            composition_level,
+            override,
+        )
 
 
 def get_block_to_import(node, usage_key):
     """
     Get the block to import from a node.
     """
+
     if node.get('url_name') == usage_key.block_id:
         return node
 
     for child in node.getchildren():
-        if found := get_block_to_import(child, usage_key):
+        found = get_block_to_import(child, usage_key)
+        if found is not None:
             return found
