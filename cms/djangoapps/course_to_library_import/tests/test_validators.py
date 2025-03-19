@@ -75,7 +75,6 @@ class TestValidateCompositionLevel(TestCase):
     """
 
     def test_valid_composition_level(self):
-
         for level in get_args(CompositionLevel):
             # Should not raise an exception for valid levels
             validate_composition_level(level)

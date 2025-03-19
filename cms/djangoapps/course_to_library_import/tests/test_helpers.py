@@ -704,7 +704,7 @@ class TestImportContainer(TestCase):
         self.staged_content = mock.MagicMock()
         self.staged_content.id = "staged-content-id"
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.SectionVersionImport')
+    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContainerVersionImport')
     @mock.patch('cms.djangoapps.course_to_library_import.helpers._update_container_components')
     @mock.patch('cms.djangoapps.course_to_library_import.helpers.create_container')
     @mock.patch('cms.djangoapps.course_to_library_import.helpers.import_children')
@@ -778,7 +778,7 @@ class TestImportContainer(TestCase):
             'xblock', False
         )
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.SectionVersionImport')
+    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContainerVersionImport')
     @mock.patch('cms.djangoapps.course_to_library_import.helpers._update_container_components')
     @mock.patch('cms.djangoapps.course_to_library_import.helpers.create_container')
     @mock.patch('cms.djangoapps.course_to_library_import.helpers.import_children')
