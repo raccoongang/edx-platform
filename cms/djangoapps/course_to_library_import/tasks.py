@@ -62,6 +62,7 @@ def import_library_from_staged_content_task(
     library_key: str,
     purpose: str,
     course_id: str,
+    task_id: str,
     composition_level: CompositionLevel,
     override: bool
 ) -> None:
@@ -92,7 +93,7 @@ def import_library_from_staged_content_task(
                 )
 
         CourseToLibraryImport.objects.filter(
-            user_id=user_id, library_key=library_key
+            uuid=task_id,
         ).update(status=CourseToLibraryImportStatus.IMPORTED)
 
         staged_content.delete()
