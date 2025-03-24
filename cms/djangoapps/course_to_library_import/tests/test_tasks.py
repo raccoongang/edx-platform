@@ -61,7 +61,7 @@ class TestImportLibraryFromStagedContentTask(TestCase):
         self, mock_etree, mock_import_container, mock_get_block_to_import,
         mock_get_ready_staged_content, mock_validate_usage_ids
     ):
-        ctli = CourseToLibraryImportFactory()
+        ctli = CourseToLibraryImportFactory(status=CourseToLibraryImportStatus.READY)
         library_key = ctli.library_key
         user = ctli.user
         usage_ids = ['block-v1:edX+Demo+2023+type@vertical+block@12345']

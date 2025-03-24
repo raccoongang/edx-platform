@@ -1,4 +1,4 @@
-""""
+"""
 API for course to library import.
 """
 
@@ -16,7 +16,7 @@ def import_library_from_staged_content(
     user_id: int,
     usage_ids: list[str],
     course_id: str,
-    task_id: str,
+    import_id: str,
     composition_level: CompositionLevel,
     override: bool
 ) -> None:
@@ -29,7 +29,7 @@ def import_library_from_staged_content(
         library_key,
         COURSE_TO_LIBRARY_IMPORT_PURPOSE,
         course_id,
-        task_id,
+        import_id,
         composition_level,
         override,
     )
@@ -51,5 +51,4 @@ def create_import(
     save_courses_to_staged_content_task.delay(
         course_ids, user_id, import_task.id, COURSE_TO_LIBRARY_IMPORT_PURPOSE
     )
-
     return import_task

@@ -6,7 +6,7 @@ from django.urls import path
 
 from .views import ImportBlocksView
 
-app_name = "v0"
+app_name = 'v0'
 urlpatterns = [
     path('import_blocks/', ImportBlocksView.as_view(), name='import_blocks'),
 ]

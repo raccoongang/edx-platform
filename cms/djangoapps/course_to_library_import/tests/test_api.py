@@ -7,7 +7,7 @@ from unittest.mock import patch
 import pytest
 
 from common.djangoapps.student.tests.factories import UserFactory
-from cms.djangoapps.course_to_library_import.py_api import (
+from cms.djangoapps.course_to_library_import.api import (
     create_import,
     import_library_from_staged_content,
 )
@@ -28,7 +28,7 @@ def test_create_import():
     user = UserFactory()
     library_key = "lib:edX:DemoLib"
     with patch(
-        "cms.djangoapps.course_to_library_import.py_api.save_courses_to_staged_content_task"
+        "cms.djangoapps.course_to_library_import.api.save_courses_to_staged_content_task"
     ) as save_courses_to_staged_content_task_mock:
         create_import(course_ids, user.id, library_key)
 
@@ -57,7 +57,7 @@ def test_import_library_from_staged_content(override):
     course_id = "course-v1:edX+DemoX+Demo_Course"
 
     with patch(
-        "cms.djangoapps.course_to_library_import.py_api.import_library_from_staged_content_task"
+        "cms.djangoapps.course_to_library_import.api.import_library_from_staged_content_task"
     ) as import_library_from_staged_content_task_mock:
         import_library_from_staged_content(library_key, user.id, usage_ids, course_id, ctli.uuid, 'xblock', override)
 
