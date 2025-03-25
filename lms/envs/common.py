@@ -3363,6 +3363,9 @@ INSTALLED_APPS = [
     "openedx_learning.apps.authoring.units",
     "openedx_learning.apps.authoring.subsections",
     "openedx_learning.apps.authoring.sections",
+
+    # Mentoring
+    'openedx.core.djangoapps.mentoring',
 ]
 
 
@@ -5281,6 +5284,7 @@ WIKI_HELP_URL = "https://docs.openedx.org/en/latest/educators/concepts/communica
 CUSTOM_PAGES_HELP_URL = "https://docs.openedx.org/en/latest/educators/how-tos/course_development/manage_custom_page.html"
 COURSE_BULK_EMAIL_HELP_URL = "https://docs.openedx.org/en/latest/educators/references/communication/bulk_email.html"
 ORA_SETTINGS_HELP_URL = "https://docs.openedx.org/en/latest/educators/how-tos/course_development/exercise_tools/Manage_ORA_Assignment.html"
+MENTORING_HELP_URL = "https://docs.openedx.org/en/latest/course_features/mentoring/mentoring.html"
 
 ################# Bulk Course Email Settings #################
 # If set, recipients of bulk course email messages will be filtered based on the last_login date of their User account.

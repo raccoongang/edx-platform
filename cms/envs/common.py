@@ -1835,6 +1835,9 @@ INSTALLED_APPS = [
     "openedx_learning.apps.authoring.units",
     "openedx_learning.apps.authoring.subsections",
     "openedx_learning.apps.authoring.sections",
+
+    # Mentoring
+    'openedx.core.djangoapps.mentoring',
 ]
 
 
@@ -2745,6 +2748,7 @@ WIKI_HELP_URL = "https://docs.openedx.org/en/latest/educators/concepts/communica
 CUSTOM_PAGES_HELP_URL = "https://docs.openedx.org/en/latest/educators/how-tos/course_development/manage_custom_page.html"
 COURSE_LIVE_HELP_URL = "https://docs.openedx.org/en/latest/educators/how-tos/course_development/add_course_live.html"
 ORA_SETTINGS_HELP_URL = "https://docs.openedx.org/en/latest/educators/how-tos/course_development/exercise_tools/Manage_ORA_Assignment.html"
+MENTORING_HELP_URL = "https://docs.openedx.org/en/latest/course_features/mentoring/mentoring.html"
 # pylint: enable=line-too-long
 
 # keys for  big blue button live provider
