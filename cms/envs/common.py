@@ -1879,6 +1879,9 @@ INSTALLED_APPS = [
     "openedx_learning.apps.authoring.components",
     "openedx_learning.apps.authoring.contents",
     "openedx_learning.apps.authoring.publishing",
+
+    # Mentoring
+    'openedx.core.djangoapps.mentoring',
 ]
 
 
@@ -2788,6 +2791,7 @@ WIKI_HELP_URL = "https://edx.readthedocs.io/projects/open-edx-building-and-runni
 CUSTOM_PAGES_HELP_URL = "https://edx.readthedocs.io/projects/open-edx-building-and-running-a-course/en/latest/course_assets/pages.html#adding-custom-pages"
 COURSE_LIVE_HELP_URL = "https://edx.readthedocs.io/projects/edx-partner-course-staff/en/latest/course_assets/course_live.html"
 ORA_SETTINGS_HELP_URL = "https://edx.readthedocs.io/projects/open-edx-building-and-running-a-course/en/latest/course_assets/pages.html#configuring-course-level-open-response-assessment-settings"
+MENTORING_HELP_URL = "https://edx.readthedocs.io/projects/open-edx-building-and-running-a-course/en/latest/course_features/mentoring/mentoring.html"
 # pylint: enable=line-too-long
 
 # keys for  big blue button live provider
