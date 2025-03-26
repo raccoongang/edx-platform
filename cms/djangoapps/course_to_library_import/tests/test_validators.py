@@ -53,7 +53,8 @@ class TestValidateUsageIds(TestCase):
             ['block-v1:edX+DemoX+type@problem+block@12345'],
             ['block-v1:edX+DemoX+type@video+block@67890'],
         ]
-        validate_usage_ids(['block-v1:edX+DemoX+type@problem+block@12345'], staged_content)
+        valid_usage_ids = validate_usage_ids(['block-v1:edX+DemoX+type@problem+block@12345'], staged_content)
+        assert valid_usage_ids == ['block-v1:edX+DemoX+type@problem+block@12345']
 
     def test_invalid_usage_ids(self):
         staged_content = MagicMock()
@@ -61,9 +62,9 @@ class TestValidateUsageIds(TestCase):
             ['block-v1:edX+DemoX+type@problem+block@12345'],
             ['block-v1:edX+DemoX+type@video+block@67890'],
         ]
-        with pytest.raises(ValueError) as exc:
-            validate_usage_ids(['block-v1:edX+DemoX+type@discussion+block@54321'], staged_content)
-            assert str(exc.value) == 'Block block-v1:edX+DemoX+type@discussion+block@54321 is not available for import'
+
+        valid_usage_ids = validate_usage_ids(['block-v1:edX+DemoX+type@discussion+block@54321'], staged_content)
+        assert not valid_usage_ids
 
 
 class TestValidateCompositionLevel(TestCase):

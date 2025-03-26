@@ -66,7 +66,7 @@ class TestImportLibraryFromStagedContentTask(TestCase):
         user = ctli.user
         usage_ids = ['block-v1:edX+Demo+2023+type@vertical+block@12345']
         usage_key = UsageKey.from_string(usage_ids[0])
-        purpose = 'import_from_{course_id}'
+        purpose = 'import_from_{course_id}_{import_id}'
         course_id = 'course-v1:edX+Demo+2023'
         override = True
 
@@ -84,12 +84,14 @@ class TestImportLibraryFromStagedContentTask(TestCase):
 
         library_locator = LibraryLocatorV2.from_string(library_key)
 
+        mock_validate_usage_ids.return_value = usage_ids
+
         import_library_from_staged_content_task(
             user.id, usage_ids, library_key, purpose, course_id, ctli.uuid, 'xblock', override
         )
 
         mock_get_ready_staged_content.assert_called_once_with(
-            user.id, purpose.format(course_id=course_id)
+            user.id, purpose.format(course_id=course_id, import_id=ctli.id)
         )
         mock_validate_usage_ids.assert_called_once_with(usage_ids, mock_staged_content)
         mock_etree.XMLParser.assert_called_once_with(strip_cdata=False)
@@ -105,15 +107,16 @@ class TestImportLibraryFromStagedContentTask(TestCase):
         self.assertEqual(ctli.status, CourseToLibraryImportStatus.IMPORTED)
         mock_staged_content.delete.assert_called_once()
 
+    @patch('cms.djangoapps.course_to_library_import.tasks.log')
     @patch(
         'cms.djangoapps.course_to_library_import.tasks.content_staging_api.get_ready_staged_content_by_user_and_purpose'
     )
     @patch('cms.djangoapps.course_to_library_import.tasks.get_block_to_import')
     @patch('cms.djangoapps.course_to_library_import.tasks.etree')
     def test_import_library_block_not_found(
-        self, mock_etree, mock_get_block_to_import, mock_get_ready_staged_content
+        self, mock_etree, mock_get_block_to_import, mock_get_ready_staged_content, mock_log
     ):
-        ctli = CourseToLibraryImportFactory()
+        ctli = CourseToLibraryImportFactory(status=CourseToLibraryImportStatus.READY)
         library_key = ctli.library_key
         user = ctli.user
         usage_ids = ['block-v1:edX+Demo+2023+type@vertical+block@12345']
@@ -132,14 +135,8 @@ class TestImportLibraryFromStagedContentTask(TestCase):
 
         mock_get_block_to_import.return_value = None
 
-        library_locator = LibraryLocatorV2.from_string(library_key)
-        CourseToLibraryImportFactory(
-            user=user,
-            library_key=library_locator,
-            status=CourseToLibraryImportStatus.READY
+        import_library_from_staged_content_task(
+            user.id, usage_ids, library_key, purpose, course_id, ctli.uuid, 'xblock', override
         )
 
-        with self.assertRaises(ValueError):
-            import_library_from_staged_content_task(
-                user.id, usage_ids, library_key, purpose, course_id, ctli.uuid, 'xblock', override
-            )
+        mock_log.warning.assert_called_once()
