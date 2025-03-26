@@ -82,6 +82,7 @@ setup(
             "teams = lms.djangoapps.teams.plugins:TeamsTab",
             "textbooks = lms.djangoapps.courseware.tabs:TextbookTabs",
             "wiki = lms.djangoapps.course_wiki.tab:WikiTab",
+            "mentoring = openedx.core.djangoapps.mentoring.tabs:MentoringTab",
         ],
         "openedx.course_app": [
             "calculator = lms.djangoapps.courseware.plugins:CalculatorCourseApp",
@@ -95,6 +96,7 @@ setup(
             "teams = lms.djangoapps.teams.plugins:TeamsCourseApp",
             "textbooks = lms.djangoapps.courseware.plugins:TextbooksCourseApp",
             "wiki = lms.djangoapps.course_wiki.plugins.course_app:WikiCourseApp",
+            "mentoring = openedx.core.djangoapps.mentoring.plugins:MentoringCourseApp",
         ],
         "openedx.course_tool": [
             "calendar_sync_toggle = openedx.features.calendar_sync.plugins:CalendarSyncToggleTool",
@@ -155,6 +157,7 @@ setup(
             "password_policy = openedx.core.djangoapps.password_policy.apps:PasswordPolicyConfig",
             "user_authn = openedx.core.djangoapps.user_authn.apps:UserAuthnConfig",
             "program_enrollments = lms.djangoapps.program_enrollments.apps:ProgramEnrollmentsConfig",
+            "mentoring = openedx.core.djangoapps.mentoring.apps:MentoringConfig",
         ],
         "cms.djangoapp": [
             "announcements = openedx.features.announcements.apps:AnnouncementsConfig",
