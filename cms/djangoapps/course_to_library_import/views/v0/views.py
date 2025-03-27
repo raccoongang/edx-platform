@@ -22,6 +22,7 @@ from cms.djangoapps.course_to_library_import.views.v0.serializers import CourseT
 from openedx.core.djangoapps.content_libraries.api import ContentLibrary
 from openedx.core.djangoapps.content_staging import api as content_staging_api
 from openedx.core.lib.api.authentication import BearerAuthenticationAllowInactiveUser
+from cms.djangoapps.course_to_library_import.api import import_course_staged_content_to_library
 from .serializers import ImportBlocksSerializer
 
 
@@ -57,7 +58,7 @@ class ImportBlocksView(APIView):
         data = self.serializer_class(data=request.data)
         data.is_valid(raise_exception=True)
 
-        api.import_library_from_staged_content(
+        import_course_staged_content_to_library(
             library_key=data.validated_data['library_key'],
             user_id=request.user.pk,
             usage_ids=data.validated_data['usage_ids'],

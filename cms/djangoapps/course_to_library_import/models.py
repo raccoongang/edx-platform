@@ -60,6 +60,13 @@ class CourseToLibraryImport(TimeStampedModel):
         """
         return cls.objects.filter(uuid=import_uuid, status=CourseToLibraryImportStatus.READY).first()
 
+    @property
+    def course_id_list(self) -> list[str]:
+        """
+        Return the list of course IDs.
+        """
+        return self.course_ids.split()
+
 
 class ComponentVersionImport(TimeStampedModel):
     """
