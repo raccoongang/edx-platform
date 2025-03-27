@@ -40,7 +40,6 @@ class CourseToLibraryImport(TimeStampedModel):
         on_delete=models.CASCADE,
         related_name='course_to_library_imports'
     )
-    metadata = models.JSONField(default=dict, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -51,7 +50,7 @@ class CourseToLibraryImport(TimeStampedModel):
         verbose_name_plural = _('Course to Library Imports')
 
     @classmethod
-    def get_by_uuid(cls, import_uuid: int) -> Self | None:
+    def get_by_uuid(cls, import_uuid: str) -> Self | None:
         """
         Get an import task by its ID.
         """

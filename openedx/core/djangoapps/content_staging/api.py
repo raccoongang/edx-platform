@@ -252,14 +252,6 @@ def _user_clipboard_model_to_data(clipboard: _UserClipboard) -> UserClipboardDat
     )
 
 
-def get_ready_staged_content_by_user_and_purpose(user_id: int, purpose: str | list[str]) -> QuerySet[_StagedContent]:
-    """
-    Get all staged content for the given user and purpose that are READY to use.
-    """
-    query_dict = {"purpose": purpose} if isinstance(purpose, str) else {"purpose__in": purpose}
-    return _StagedContent.objects.filter(user_id=user_id, status=StagedContentStatus.READY, **query_dict)
-
-
 def get_staged_content_olx(staged_content_id: int) -> str | None:
     """
     Get the OLX (as a string) for the given StagedContent.

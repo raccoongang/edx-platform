@@ -3,15 +3,13 @@ Tests for tasks in course_to_library_import app.
 """
 from organizations.models import Organization
 
-from cms.djangoapps.course_to_library_import.constants import COURSE_TO_LIBRARY_IMPORT_PURPOSE
 from cms.djangoapps.course_to_library_import.data import CourseToLibraryImportStatus
-from cms.djangoapps.course_to_library_import.models import CourseToLibraryImport
 from cms.djangoapps.course_to_library_import.tasks import (
     import_course_staged_content_to_library_task,
     save_courses_to_staged_content_task,
 )
 from openedx.core.djangoapps.content_libraries import api as content_libraries_api
-from openedx.core.djangoapps.content_staging import api as content_staging_api
+from openedx.core.djangoapps.content_libraries.api import ContentLibrary
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, BlockFactory
 
@@ -32,6 +30,7 @@ class ImportCourseToLibraryMixin(ModuleStoreTestCase):
             title='Library Org 1',
             description='This is a library from Org 1',
         )
+        self.content_library = ContentLibrary.objects.get_by_key(self.library.key)
 
         self.course = CourseFactory.create()
         self.chapter = BlockFactory.create(category='chapter', parent=self.course, display_name='Chapter 1')
@@ -49,7 +48,7 @@ class ImportCourseToLibraryMixin(ModuleStoreTestCase):
 
         self.course_to_library_import = CourseToLibraryImportFactory(
             course_ids=f'{self.course.id} {self.course2.id}',
-            library_key=str(self.library.key),
+            content_library=self.content_library,
         )
         self.user = self.course_to_library_import.user
 
@@ -146,7 +145,7 @@ class TestImportLibraryFromStagedContentTask(ImportCourseToLibraryMixin):
         import_course_staged_content_to_library_task(
             self.user.id,
             [str(self.chapter.location)],
-            str(self.course_to_library_import.library_key),
+            str(self.course_to_library_import.content_library.library_key),
             str(self.course_to_library_import.uuid),
             'xblock',
             override=True,
