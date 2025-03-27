@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from opaque_keys.edx.django.models import UsageKeyField
+from opaque_keys.edx.django.models import CourseKeyField, UsageKeyField
 from opaque_keys.edx.keys import LearningContextKey
 from openedx_learning.lib.fields import case_insensitive_char_field, MultiCollationTextField
 
@@ -69,6 +69,20 @@ class StagedContent(models.Model):
     # Tags applied to the original source block(s) will be copied to the new block(s) on paste.
     tags: models.JSONField[dict | None, dict | None] = models.JSONField(
         null=True, help_text=_("Content tags applied to these blocks")
+    )
+    related_import = models.ForeignKey(
+        "course_to_library_import.CourseToLibraryImport",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    source_course_id = CourseKeyField(
+        null=True,
+        blank=True,
+        max_length=255,
+        db_index=True,
+        verbose_name=_('course ID'),
+        help_text=_('ID of the imported course.'),
     )
 
     @property

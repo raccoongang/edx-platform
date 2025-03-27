@@ -1,13 +1,8 @@
 """
 API for course to library import.
 """
-
-from .constants import COURSE_TO_LIBRARY_IMPORT_PURPOSE
-from .models import CourseToLibraryImport
-from .tasks import (
-    import_course_staged_content_to_library_task,
-    save_courses_to_staged_content_task,
-)
+from .models import CourseToLibraryImport as _CourseToLibraryImport
+from .tasks import import_course_staged_content_to_library_task,  save_courses_to_staged_content_task
 from .types import CompositionLevel
 
 
@@ -26,30 +21,21 @@ def import_course_staged_content_to_library(
         user_id,
         usage_ids,
         library_key,
-        COURSE_TO_LIBRARY_IMPORT_PURPOSE,
         import_id,
         composition_level,
         override,
     )
 
 
-def create_import(
-    course_ids: list[str], user_id: int, library_key: str
-) -> CourseToLibraryImport:
+def create_import(course_ids: list[str], user_id: int, library_key: str) -> _CourseToLibraryImport:
     """
     Create a new import task to import a course to a library.
     """
-    course_to_library_import = CourseToLibraryImport(
+    course_to_library_import = _CourseToLibraryImport(
         course_ids=" ".join(course_ids),
         library_key=library_key,
         user_id=user_id,
     )
     course_to_library_import.save()
-
-    save_courses_to_staged_content_task.delay(
-        course_ids,
-        user_id,
-        course_to_library_import.id,
-        COURSE_TO_LIBRARY_IMPORT_PURPOSE,
-    )
+    save_courses_to_staged_content_task.delay(user_id, course_to_library_import.uuid)
     return course_to_library_import

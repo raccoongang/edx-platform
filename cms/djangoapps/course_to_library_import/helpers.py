@@ -370,8 +370,14 @@ def get_block_to_import(node, usage_key):
         if found is not None:
             return found
 
-def delete_old_ready_staged_content_by_user_and_purpose(user_id, purpose):
+def delete_old_ready_staged_content_by_user_and_purpose(course_ids, library_key, user_id):
     """
     Delete old ready staged content by user and purpose.
     """
-    content_staging_api.get_ready_staged_content_by_user_and_purpose(user_id, purpose).delete()
+    course_to_library_imports = CourseToLibraryImport.objects.filter(
+        course_ids=course_ids,
+        library_key=library_key,
+        user_id=user_id,
+    )
+    for course_to_library in course_to_library_imports:
+        course_to_library.stagedcontent_set.all().delete()
