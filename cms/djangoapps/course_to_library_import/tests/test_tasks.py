@@ -2,8 +2,6 @@
 Tests for tasks in course_to_library_import app.
 """
 from organizations.models import Organization
-from opaque_keys.edx.keys import CourseKey, UsageKey
-from opaque_keys.edx.locator import LibraryLocatorV2
 
 from cms.djangoapps.course_to_library_import.data import CourseToLibraryImportStatus
 from cms.djangoapps.course_to_library_import.models import CourseToLibraryImport

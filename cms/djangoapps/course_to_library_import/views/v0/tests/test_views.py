@@ -46,7 +46,9 @@ class ImportBlocksViewTest(TestCase):
         self.assertEqual(response.status_code, 403)
 
         self.client.force_authenticate(user=self.admin_user)
-        with mock.patch('cms.djangoapps.course_to_library_import.views.v0.views.import_course_staged_content_to_library'):
+        with mock.patch(
+            'cms.djangoapps.course_to_library_import.views.v0.views.import_course_staged_content_to_library'
+        ):
             response = self.client.post(self.url, self.valid_data, format='json')
             self.assertEqual(response.status_code, 200)
 
@@ -81,7 +83,6 @@ class ImportBlocksViewTest(TestCase):
             library_key=self.valid_data['library_key'],
             user_id=self.admin_user.pk,
             usage_ids=self.valid_data['usage_ids'],
-            course_id=self.valid_data['course_id'],
             import_id=self.valid_data['import_id'],
             composition_level=self.valid_data['composition_level'],
             override=self.valid_data['override'],
