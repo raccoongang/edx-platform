@@ -224,9 +224,7 @@ class TestCreateBlockInLibrary(TestCase):
 
         mock_content_staging_api.get_staged_content_static_files.return_value = []
 
-        ctli = CourseToLibraryImportFactory(
-            status=CourseToLibraryImportStatus.READY, library_key=self.library_key, user_id=self.user_id
-        )
+        ctli = CourseToLibraryImportFactory(status=CourseToLibraryImportStatus.READY, user_id=self.user_id)
         create_block_in_library(
             self.block_to_import,
             self.usage_key,
@@ -768,7 +766,7 @@ class TestImportContainer(TestCase):
 
         mock_section_version_import.objects.create = mock.MagicMock()
         mock_get_import = mock.MagicMock()
-        mock_course_import.objects.get.return_value = mock_get_import
+        mock_course_import.get_by_uuid.return_value = mock_get_import
 
         import_id = str(uuid4())
 
@@ -787,6 +785,7 @@ class TestImportContainer(TestCase):
         mock_update_container.assert_called_once_with(
             mock_container_version, mock_component_versions, self.user_id
         )
+
         mock_section_version_import.objects.create.assert_called_once_with(
             section_version=mock_container_version,
             source_usage_key=self.usage_key,
@@ -828,11 +827,7 @@ class TestImportContainer(TestCase):
         xml = """<chapter url_name="chapter1" display_name="Test Chapter"></chapter>"""
         block_to_import = etree.fromstring(xml)
 
-        ctli = CourseToLibraryImportFactory(
-            library_key=self.library_key,
-            user_id=self.user_id,
-            status=CourseToLibraryImportStatus.READY,
-        )
+        ctli = CourseToLibraryImportFactory(user_id=self.user_id, status=CourseToLibraryImportStatus.READY)
 
         mock_container_version = mock.MagicMock()
         mock_create_container.return_value = mock_container_version
