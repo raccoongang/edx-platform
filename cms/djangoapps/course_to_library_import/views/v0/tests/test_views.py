@@ -46,7 +46,7 @@ class ImportBlocksViewTest(TestCase):
         self.assertEqual(response.status_code, 403)
 
         self.client.force_authenticate(user=self.admin_user)
-        with mock.patch('cms.djangoapps.course_to_library_import.views.v0.views.import_library_from_staged_content'):
+        with mock.patch('cms.djangoapps.course_to_library_import.views.v0.views.import_course_staged_content_to_library'):
             response = self.client.post(self.url, self.valid_data, format='json')
             self.assertEqual(response.status_code, 200)
 
@@ -64,7 +64,7 @@ class ImportBlocksViewTest(TestCase):
         response = self.client.post(self.url, invalid_data, format='json')
         self.assertEqual(response.status_code, 400)
 
-    @mock.patch('cms.djangoapps.course_to_library_import.views.v0.views.import_library_from_staged_content')
+    @mock.patch('cms.djangoapps.course_to_library_import.views.v0.views.import_course_staged_content_to_library')
     def test_successful_import(self, mock_import):
         """
         Test successful import returns a success response.
