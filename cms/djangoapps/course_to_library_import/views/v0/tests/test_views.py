@@ -97,7 +97,7 @@ class ImportBlocksViewTest(TestCourseToLibraryImportViewsMixin):
         response = self.client.post(self.url, invalid_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    @mock.patch('cms.djangoapps.course_to_library_import.views.v0.views.api.import_library_from_staged_content')
+    @mock.patch('cms.djangoapps.course_to_library_import.views.v0.views.api.import_course_staged_content_to_library')
     def test_successful_import(self, mock_import):
         """
         Test successful import returns a success response.

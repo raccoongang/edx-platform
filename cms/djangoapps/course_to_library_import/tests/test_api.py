@@ -9,7 +9,7 @@ import pytest
 from common.djangoapps.student.tests.factories import UserFactory
 from cms.djangoapps.course_to_library_import.api import (
     create_import,
-    import_library_from_staged_content,
+    import_course_staged_content_to_library,
 )
 from cms.djangoapps.course_to_library_import.constants import COURSE_TO_LIBRARY_IMPORT_PURPOSE
 from cms.djangoapps.course_to_library_import.models import CourseToLibraryImport
@@ -43,9 +43,9 @@ def test_create_import():
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("override", [True, False])
-def test_import_library_from_staged_content(override):
+def test_import_course_staged_content_to_library(override):
     """
-    Test import_library_from_staged_content function with different override values.
+    Test import_course_staged_content_to_library function with different override values.
     """
     ctli = CourseToLibraryImportFactory()
     library_key = ctli.library_key
@@ -54,13 +54,12 @@ def test_import_library_from_staged_content(override):
         "block-v1:edX+DemoX+Demo_Course+type@html+block@123",
         "block-v1:edX+DemoX+Demo_Course+type@html+block@456",
     ]
-    course_id = "course-v1:edX+DemoX+Demo_Course"
 
     with patch(
-        "cms.djangoapps.course_to_library_import.api.import_library_from_staged_content_task"
-    ) as import_library_from_staged_content_task_mock:
-        import_library_from_staged_content(library_key, user.id, usage_ids, course_id, ctli.uuid, 'xblock', override)
+        "cms.djangoapps.course_to_library_import.api.import_course_staged_content_to_library_task"
+    ) as import_course_staged_content_to_library_task_mock:
+        import_course_staged_content_to_library(library_key, user.id, usage_ids, ctli.uuid, 'xblock', override)
 
-    import_library_from_staged_content_task_mock.delay.assert_called_once_with(
-        user.id, usage_ids, library_key, COURSE_TO_LIBRARY_IMPORT_PURPOSE, course_id, ctli.uuid, 'xblock', override
+    import_course_staged_content_to_library_task_mock.delay.assert_called_once_with(
+        user.id, usage_ids, library_key, COURSE_TO_LIBRARY_IMPORT_PURPOSE, ctli.uuid, 'xblock', override
     )
