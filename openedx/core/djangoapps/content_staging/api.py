@@ -10,6 +10,7 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models import QuerySet
 from django.http import HttpRequest
+from oauthlib.uri_validate import query
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import AssetKey, UsageKey
 from xblock.core import XBlock
@@ -252,11 +253,12 @@ def _user_clipboard_model_to_data(clipboard: _UserClipboard) -> UserClipboardDat
     )
 
 
-def get_ready_staged_content_by_user_and_purpose(user_id: int, purpose: str) -> QuerySet[_StagedContent]:
+def get_ready_staged_content_by_user_and_purpose(user_id: int, purpose: str | list[str]) -> QuerySet[_StagedContent]:
     """
     Get all staged content for the given user and purpose that are READY to use.
     """
-    return _StagedContent.objects.filter(user_id=user_id, purpose=purpose, status=StagedContentStatus.READY)
+    query_dict = {"purpose": purpose} if isinstance(purpose, str) else {"purpose__in": purpose}
+    return _StagedContent.objects.filter(user_id=user_id, status=StagedContentStatus.READY, **query_dict)
 
 
 def get_staged_content_olx(staged_content_id: int) -> str | None:

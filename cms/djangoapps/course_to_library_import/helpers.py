@@ -39,7 +39,6 @@ def create_block_in_library(block_to_import, usage_key, library_key, user_id, st
 
     with transaction.atomic():
         component_type = authoring_api.get_or_create_component_type("xblock.v1", usage_key.block_type)
-        component_version = None
         does_component_exist = authoring_api.get_components(
             content_library.learning_package.id
         ).filter(local_key=usage_key.block_id).exists()
@@ -370,3 +369,9 @@ def get_block_to_import(node, usage_key):
         found = get_block_to_import(child, usage_key)
         if found is not None:
             return found
+
+def delete_old_ready_staged_content_by_user_and_purpose(user_id, purpose):
+    """
+    Delete old ready staged content by user and purpose.
+    """
+    content_staging_api.get_ready_staged_content_by_user_and_purpose(user_id, purpose).delete()
