@@ -3,6 +3,7 @@ Tests for tasks in course_to_library_import app.
 """
 from organizations.models import Organization
 
+from cms.djangoapps.course_to_library_import.constants import COURSE_TO_LIBRARY_IMPORT_PURPOSE
 from cms.djangoapps.course_to_library_import.data import CourseToLibraryImportStatus
 from cms.djangoapps.course_to_library_import.models import CourseToLibraryImport
 from cms.djangoapps.course_to_library_import.tasks import (
@@ -50,9 +51,7 @@ class ImportCourseToLibraryMixin(ModuleStoreTestCase):
             course_ids=f'{self.course.id} {self.course2.id}',
             library_key=str(self.library.key),
         )
-        self.user_id = self.course_to_library_import.user.id
-        self.purpose = 'import_from_{course_id}'
-
+        self.user = self.course_to_library_import.user
 
 
 class TestSaveCourseSectionsToStagedContentTask(ImportCourseToLibraryMixin):
@@ -64,54 +63,24 @@ class TestSaveCourseSectionsToStagedContentTask(ImportCourseToLibraryMixin):
         """
         End-to-end test for save_courses_to_staged_content_task.
         """
-        course_ids = self.course_to_library_import.course_ids.split(' ')
-        course_chapters_count = 1
+        course_chapters_to_import = [self.chapter, self.chapter2]
+        save_courses_to_staged_content_task(self.user.id, self.course_to_library_import.uuid)
 
-        save_courses_to_staged_content_task(
-            course_ids,
-            self.user_id,
-            self.course_to_library_import.id,
-            self.purpose,
-        )
-        course_to_library_import = CourseToLibraryImport.objects.get(id=self.course_to_library_import.id)
-
-        for course_id in course_ids:
-            ready_staged_content = content_staging_api.get_ready_staged_content_by_user_and_purpose(
-                self.user_id,
-                self.purpose.format(course_id=course_id)
-            )
-            self.assertEqual(ready_staged_content.count(), course_chapters_count)
-
-        self.assertEqual(course_to_library_import.status, CourseToLibraryImportStatus.READY)
+        self.course_to_library_import.refresh_from_db()
+        self.assertEqual(self.course_to_library_import.stagedcontent_set.count(), len(course_chapters_to_import))
+        self.assertEqual(self.course_to_library_import.status, CourseToLibraryImportStatus.READY)
 
     def test_old_staged_content_deletion_before_save_new(self):
         """ Checking that repeated saving of the same content does not create duplicates. """
         course_ids = self.course_to_library_import.course_id_list
 
-        save_courses_to_staged_content_task(
-            course_ids,
-            self.user_id,
-            self.course_to_library_import.id,
-            self.purpose,
-        )
-        purposes = [self.purpose.format(course_id=course_id) for course_id in course_ids]
-        ready_staged_content = content_staging_api.get_ready_staged_content_by_user_and_purpose(
-            self.user_id,
-            purposes
-        )
-        self.assertEqual(ready_staged_content.count(), len(course_ids))
+        save_courses_to_staged_content_task(self.user.id, self.course_to_library_import.uuid)
 
-        save_courses_to_staged_content_task(
-            course_ids,
-            self.user_id,
-            self.course_to_library_import.id,
-            self.purpose,
-        )
-        ready_staged_content = content_staging_api.get_ready_staged_content_by_user_and_purpose(
-            self.user_id,
-            purposes
-        )
-        self.assertEqual(ready_staged_content.count(), len(course_ids))
+        self.assertEqual(self.course_to_library_import.stagedcontent_set.count(), len(course_ids))
+
+        save_courses_to_staged_content_task(self.user.id, self.course_to_library_import.uuid)
+
+        self.assertEqual(self.course_to_library_import.stagedcontent_set.count(), len(course_ids))
 
 
 class TestImportLibraryFromStagedContentTask(ImportCourseToLibraryMixin):
@@ -126,18 +95,12 @@ class TestImportLibraryFromStagedContentTask(ImportCourseToLibraryMixin):
         """ End-to-end test for import_course_staged_content_to_library_task. """
         self.assertEqual(self.library.learning_package.content_set.count(), 0)
         expected_imported_xblocks = [self.problem, self.problem2, self.video, self.video2]
-        save_courses_to_staged_content_task(
-            [str(self.course.id), str(self.course2.id)],
-            self.user_id,
-            self.course_to_library_import.id,
-            self.purpose,
-        )
+        save_courses_to_staged_content_task(self.user.id, self.course_to_library_import.uuid)
 
         import_course_staged_content_to_library_task(
-            self.user_id,
+            self.user.id,
             [str(self.chapter.location), str(self.chapter2.location)],
             str(self.library.key),
-            self.purpose,
             self.course_to_library_import.uuid,
             'xblock',
             override=True
@@ -154,20 +117,13 @@ class TestImportLibraryFromStagedContentTask(ImportCourseToLibraryMixin):
     def test_import_library_block_not_found(self):
         """ Test that an error is raised if the block is not found. """
         non_existent_usage_ids = ['block-v1:edX+Demo+2023+type@vertical+block@12345']
-        course_id1, course_id2 = self.course_to_library_import.course_id_list
-        save_courses_to_staged_content_task(
-            [course_id1, course_id2],
-            self.user_id,
-            self.course_to_library_import.id,
-            self.purpose,
-        )
+        save_courses_to_staged_content_task(self.user.id, self.course_to_library_import.uuid)
 
         with self.assertRaises(ValueError):
             import_course_staged_content_to_library_task(
-                self.user_id,
+                self.user.id,
                 non_existent_usage_ids,
                 self.library.key,
-                self.purpose,
                 str(self.course_to_library_import.uuid),
                 'xblock',
                 override=True,
@@ -179,32 +135,18 @@ class TestImportLibraryFromStagedContentTask(ImportCourseToLibraryMixin):
         Tests if after importing staged content into the library,
         the staged content is deleted and cannot be imported again.
         """
-        course_id1, course_id2 = self.course_to_library_import.course_id_list
-        save_courses_to_staged_content_task(
-            [course_id1, course_id2],
-            self.user_id,
-            self.course_to_library_import.id,
-            self.purpose,
-        )
+        course_chapters_to_import = [self.chapter, self.chapter2]
         expected_imported_xblocks = [self.problem, self.video]
+        save_courses_to_staged_content_task(self.user.id, self.course_to_library_import.uuid)
 
-        course_1_ready_staged_content = content_staging_api.get_ready_staged_content_by_user_and_purpose(
-            self.user_id, self.purpose.format(course_id=course_id1)
-        )
-        self.assertEqual(course_1_ready_staged_content.count(), 1)
-
-        course_2_ready_staged_content = content_staging_api.get_ready_staged_content_by_user_and_purpose(
-            self.user_id, self.purpose.format(course_id=course_id2)
-        )
-        self.assertEqual(course_2_ready_staged_content.count(), 1)
         self.course_to_library_import.refresh_from_db()
+        self.assertEqual(self.course_to_library_import.stagedcontent_set.count(), len(course_chapters_to_import))
         self.assertEqual(self.course_to_library_import.status, CourseToLibraryImportStatus.READY)
 
         import_course_staged_content_to_library_task(
-            self.user_id,
+            self.user.id,
             [str(self.chapter.location)],
             str(self.course_to_library_import.library_key),
-            'import_from_{course_id}',
             str(self.course_to_library_import.uuid),
             'xblock',
             override=True,
@@ -216,25 +158,4 @@ class TestImportLibraryFromStagedContentTask(ImportCourseToLibraryMixin):
 
         self.course_to_library_import.refresh_from_db()
         self.assertEqual(self.course_to_library_import.status, CourseToLibraryImportStatus.IMPORTED)
-
-        course_1_ready_staged_content = content_staging_api.get_ready_staged_content_by_user_and_purpose(
-            self.user_id,
-            self.purpose.format(course_id=course_id1)
-        )
-        self.assertTrue(not course_1_ready_staged_content.exists())
-
-        course_2_ready_staged_content = content_staging_api.get_ready_staged_content_by_user_and_purpose(
-            self.user_id,
-            self.purpose.format(course_id=course_id2)
-        )
-        self.assertTrue(not course_2_ready_staged_content.exists())
-
-        import_course_staged_content_to_library_task(
-            self.user_id,
-            [str(self.chapter2.location)],
-            str(self.course_to_library_import.library_key),
-            'import_from_{course_id}',
-            str(self.course_to_library_import.uuid),
-            'xblock',
-            False,
-        )
+        self.assertTrue(not self.course_to_library_import.stagedcontent_set.exists())

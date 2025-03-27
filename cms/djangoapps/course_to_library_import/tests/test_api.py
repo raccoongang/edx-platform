@@ -21,10 +21,7 @@ def test_create_import():
     """
     Test create_import function.
     """
-    course_ids = [
-        "course-v1:edX+DemoX+Demo_Course",
-        "course-v1:edX+DemoX+Demo_Course_2",
-    ]
+    course_ids = ["course-v1:edX+DemoX+Demo_Course", "course-v1:edX+DemoX+Demo_Course_2"]
     user = UserFactory()
     library_key = "lib:edX:DemoLib"
     with patch(
@@ -36,9 +33,7 @@ def test_create_import():
     assert import_task.course_ids == " ".join(course_ids)
     assert import_task.library_key == library_key
     assert import_task.user_id == user.id
-    save_courses_to_staged_content_task_mock.delay.assert_called_once_with(
-        course_ids, user.id, import_task.id, COURSE_TO_LIBRARY_IMPORT_PURPOSE
-    )
+    save_courses_to_staged_content_task_mock.delay.assert_called_once_with(user.id, import_task.uuid)
 
 
 @pytest.mark.django_db
@@ -49,7 +44,6 @@ def test_import_course_staged_content_to_library(override):
     """
     ctli = CourseToLibraryImportFactory()
     library_key = ctli.library_key
-    user = ctli.user
     usage_ids = [
         "block-v1:edX+DemoX+Demo_Course+type@html+block@123",
         "block-v1:edX+DemoX+Demo_Course+type@html+block@456",
@@ -58,8 +52,8 @@ def test_import_course_staged_content_to_library(override):
     with patch(
         "cms.djangoapps.course_to_library_import.api.import_course_staged_content_to_library_task"
     ) as import_course_staged_content_to_library_task_mock:
-        import_course_staged_content_to_library(library_key, user.id, usage_ids, ctli.uuid, 'xblock', override)
+        import_course_staged_content_to_library(library_key, ctli.user.id, usage_ids, ctli.uuid, 'xblock', override)
 
     import_course_staged_content_to_library_task_mock.delay.assert_called_once_with(
-        user.id, usage_ids, library_key, COURSE_TO_LIBRARY_IMPORT_PURPOSE, ctli.uuid, 'xblock', override
+        ctli.user.id, usage_ids, library_key, ctli.uuid, 'xblock', override
     )
