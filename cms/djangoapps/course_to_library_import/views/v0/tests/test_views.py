@@ -114,7 +114,6 @@ class ImportBlocksViewTest(TestCourseToLibraryImportViewsMixin):
             library_key=self.valid_data['library_key'],
             user_id=self.admin_user.pk,
             usage_ids=self.valid_data['usage_ids'],
-            course_id=self.valid_data['course_id'],
             import_id=str(self.valid_data['import_id']),
             composition_level=self.valid_data['composition_level'],
             override=self.valid_data['override'],

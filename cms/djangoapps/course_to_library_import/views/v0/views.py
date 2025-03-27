@@ -62,7 +62,6 @@ class ImportBlocksView(APIView):
             library_key=data.validated_data['library_key'],
             user_id=request.user.pk,
             usage_ids=data.validated_data['usage_ids'],
-            course_id=data.validated_data['course_id'],
             import_id=data.validated_data['import_id'],
             composition_level=data.validated_data['composition_level'],
             override=data.validated_data['override'],

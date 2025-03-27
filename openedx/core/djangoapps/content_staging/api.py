@@ -10,7 +10,6 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models import QuerySet
 from django.http import HttpRequest
-from oauthlib.uri_validate import query
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import AssetKey, UsageKey
 from xblock.core import XBlock
