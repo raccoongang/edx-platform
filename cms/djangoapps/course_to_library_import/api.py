@@ -1,6 +1,9 @@
 """
 API for course to library import.
 """
+from opaque_keys.edx.locator import LibraryLocatorV2
+
+from openedx.core.djangoapps.content_libraries.api import ContentLibrary
 from .models import CourseToLibraryImport as _CourseToLibraryImport
 from .tasks import import_course_staged_content_to_library_task,  save_courses_to_staged_content_task
 from .types import CompositionLevel
@@ -27,13 +30,14 @@ def import_course_staged_content_to_library(
     )
 
 
-def create_import(course_ids: list[str], user_id: int, library_key: str) -> _CourseToLibraryImport:
+def create_import(course_ids: list[str], user_id: int, library_id: str) -> _CourseToLibraryImport:
     """
     Create a new import task to import a course to a library.
     """
+    content_library = ContentLibrary.objects.get_by_key(LibraryLocatorV2.from_string(library_id))
     course_to_library_import = _CourseToLibraryImport(
         course_ids=" ".join(course_ids),
-        library_key=library_key,
+        content_library=content_library,
         user_id=user_id,
     )
     course_to_library_import.save()

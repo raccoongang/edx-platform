@@ -16,17 +16,17 @@ class CourseToLibraryImportAdmin(admin.ModelAdmin):
     """
 
     list_display = (
-        'id',
+        'uuid',
         'status',
         'course_ids',
-        'library_key',
+        'library__id',
     )
     list_filter = (
         'status',
     )
     search_fields = (
         'course_ids',
-        'library_key',
+        'library__id',
     )
 
     raw_id_fields = ('user',)

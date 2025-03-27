@@ -36,7 +36,7 @@ def save_courses_to_staged_content_task(user_id: int, import_uuid: str, version_
 
     delete_old_ready_staged_content_by_user_and_purpose(
         course_to_library_import.course_ids,
-        course_to_library_import.library_key,
+        course_to_library_import.content_library,
         course_to_library_import.user.id,
     )
 

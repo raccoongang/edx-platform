@@ -178,7 +178,7 @@ def _process_staged_content_files(
                 component_version=component_version,
                 source_usage_key=usage_key,
                 library_import=CourseToLibraryImport.objects.get(
-                    library_key=library_key,
+                    content_library=content_library,
                     user_id=user_id,
                     status=CourseToLibraryImportStatus.READY
                 ),
@@ -339,11 +339,7 @@ def import_container(
             ContainerVersionImport.objects.create(
                 section_version=top_container_version,
                 source_usage_key=usage_key,
-                library_import=CourseToLibraryImport.objects.get(
-                    library_key=library_key,
-                    user_id=user_id,
-                    status=CourseToLibraryImportStatus.READY
-                ),
+                library_import=CourseToLibraryImport.get_by_uuid(import_id),
             )
     else:  # xblock level
         import_children(
@@ -370,13 +366,13 @@ def get_block_to_import(node, usage_key):
         if found is not None:
             return found
 
-def delete_old_ready_staged_content_by_user_and_purpose(course_ids, library_key, user_id):
+def delete_old_ready_staged_content_by_user_and_purpose(course_ids, content_library, user_id):
     """
     Delete old ready staged content by user and purpose.
     """
     course_to_library_imports = CourseToLibraryImport.objects.filter(
         course_ids=course_ids,
-        library_key=library_key,
+        content_library=content_library,
         user_id=user_id,
     )
     for course_to_library in course_to_library_imports:
