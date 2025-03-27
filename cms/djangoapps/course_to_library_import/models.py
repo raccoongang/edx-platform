@@ -35,12 +35,16 @@ class CourseToLibraryImport(TimeStampedModel):
         help_text=_('Whitespace-separated list of course keys for which to compute grades.'),
         validators=[validate_course_ids]
     )
-    library_key = models.CharField(max_length=100)
+    content_library = models.ForeignKey(
+        to='content_libraries.ContentLibrary',
+        on_delete=models.CASCADE,
+        related_name='course_to_library_imports'
+    )
     metadata = models.JSONField(default=dict, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.course_ids} - {self.library_key}'
+        return f'{self.course_ids} - {self.content_library.id}'
 
     class Meta:
         verbose_name = _('Course to Library Import')
