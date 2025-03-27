@@ -214,6 +214,9 @@ urlpatterns = [
     path('404', handler404, name='render_404'),
     path('429', handler429, name='render_429'),
     path('500', handler500, name='render_500'),
+
+    # Mentoring
+    path('api/mentoring/', include('openedx.core.djangoapps.mentoring.urls')),
 ]
 
 if settings.FEATURES.get('ENABLE_MOBILE_REST_API'):
