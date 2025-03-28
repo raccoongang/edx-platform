@@ -73,6 +73,7 @@ def import_library_from_staged_content_task(
     Import staged content to a library task.
     """
     validate_composition_level(composition_level)
+    ctli = CourseToLibraryImport.get_ready_by_uuid(import_id)
     staged_content = content_staging_api.get_ready_staged_content_by_user_and_purpose(
         user_id, purpose.format(course_id=course_id)
     )
@@ -102,8 +103,8 @@ def import_library_from_staged_content_task(
                     override,
                 )
 
-        ctli = CourseToLibraryImport.get_ready_by_uuid(import_id)
-        ctli.status = CourseToLibraryImportStatus.IMPORTED
-        ctli.save()
-
         staged_content.delete()
+
+        if ctli.course_ids.split()[-1] == course_id:
+            ctli.status = CourseToLibraryImportStatus.IMPORTED
+            ctli.save()

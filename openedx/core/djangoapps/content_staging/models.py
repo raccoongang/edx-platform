@@ -99,6 +99,27 @@ class StagedContentFile(models.Model):
     source_key_str = models.CharField(max_length=255, blank=True)
     md5_hash = models.CharField(max_length=32, blank=True)
 
+    def save(self, *args, **kwargs):
+        """
+        Set filename to data_file.url last part if it != filename.
+        This is to ensure that the will be no collision between files
+        with the same name but different content.
+        """
+        super().save(*args, **kwargs)
+        
+        if self.data_file and hasattr(self.data_file, 'url'):
+            uniq_name = self.data_file.url.split("/")[-1]
+            if self.filename != uniq_name:
+                old_name = self.filename
+                self.filename = uniq_name
+                update_kwargs = {k: v for k, v in kwargs.items() if k != 'force_insert'}
+                super().save(update_fields=['filename'], **update_kwargs)
+
+                # change filename in staged content as well
+                if self.for_content and hasattr(self.for_content, 'olx'):
+                    self.for_content.olx = self.for_content.olx.replace(old_name, uniq_name)
+                    self.for_content.save(update_fields=['olx'])
+
 
 class UserClipboard(models.Model):
     """
