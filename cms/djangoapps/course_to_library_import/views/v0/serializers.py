@@ -53,11 +53,10 @@ class CourseToLibraryImportSerializer(serializers.ModelSerializer):
         Creates a new CourseToLibraryImport instance and related data such as StagedContent.
         """
         user = getattr(self.context.get('request'), 'user', None)
-        library_id = self.context.get('library_id')
         course_to_library_import = api.create_import(
             validated_data['course_ids'],
             getattr(user, 'pk', None),
-            library_id
+            self.context.get('content_library_id'),
         )
         return course_to_library_import
 

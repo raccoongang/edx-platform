@@ -74,7 +74,7 @@ class CreateCourseToLibraryImportView(CreateAPIView):
     **Use Case**
         Allows to create course to library import.
     **Example Request**
-        POST /api/course_to_library_import/v0/create_import/<content-library-id>/
+        POST /api/course_to_library_import/v0/create_import/<content_library_id>/
         **POST Parameters**
             * course_ids (list) - A list of course IDs whose content will be saved
             in Staged Content for further import.
@@ -91,6 +91,7 @@ class CreateCourseToLibraryImportView(CreateAPIView):
     """
 
     serializer_class = CourseToLibraryImportSerializer
+
     permission_classes = (IsAdminUser,)
     authentication_classes = (
         JwtAuthentication,
@@ -100,15 +101,17 @@ class CreateCourseToLibraryImportView(CreateAPIView):
 
     def get_serializer_context(self) -> dict:
         """
-        Extra context provided to the serializer class with current provider. We need the provider to
-        remove idp_slug from the remote_id if there is any
+        Add library_id to the serializer context.
         """
         context = super().get_serializer_context()
-        context['library_id'] = self.kwargs['lib_key_str']
+        context['content_library_id'] = self.kwargs['content_library_id']
         return context
 
     def post(self, request, *args, **kwargs):
-        library_key = LibraryLocatorV2.from_string(self.kwargs['lib_key_str'])
+        """
+        Create course to library import.
+        """
+        library_key = LibraryLocatorV2.from_string(self.kwargs['content_library_id'])
         try:
             ContentLibrary.objects.get_by_key(library_key)
         except ContentLibrary.DoesNotExist:
@@ -124,7 +127,8 @@ class GetCourseStructureToLibraryImportView(RetrieveAPIView):
     **Example Request**
         GET /api/course_to_library_import/v0/get_import/{course-to-library-uuid}/
     **GET Response Values**
-        The query returns a list of hierarchical structures of courses that are related to the import in the format:
+        The query returns a list of hierarchical structures of
+        courses that are related to the import in the format:
           [
             course_id1: [
               {
@@ -190,6 +194,7 @@ class GetCourseStructureToLibraryImportView(RetrieveAPIView):
     queryset = CourseToLibraryImport.objects.all()
     lookup_field = 'uuid'
     lookup_url_kwarg = 'course_to_lib_uuid'
+
     permission_classes = (IsAdminUser,)
     authentication_classes = (
         JwtAuthentication,
@@ -198,6 +203,9 @@ class GetCourseStructureToLibraryImportView(RetrieveAPIView):
     )
 
     def get(self, request, *args, **kwargs) -> Response:
+        """
+        Get the course structure saved when creating the import.
+        """
         ctl = get_object_or_404(CourseToLibraryImport, uuid=self.kwargs['course_to_lib_uuid'])
         courses = {}
         for course_id in ctl.course_ids.split():
@@ -207,7 +215,11 @@ class GetCourseStructureToLibraryImportView(RetrieveAPIView):
 
     def get_structure_for_course_from_stage_content(self, course_id: str) -> list[dict]:
         """
-        Build course structure
+        Build course structure of the course from staged content.
+
+        This method retrieves the staged content for the given course ID and constructs
+        a hierarchical structure representing the course's content. The structure is built
+        by parsing the OLX  fragments and mapping them to their respective usage keys.
         """
         parser = etree.XMLParser(strip_cdata=False)
         staged_content = content_staging_api.get_ready_staged_content_by_user_and_purpose(
@@ -231,7 +243,12 @@ class GetCourseStructureToLibraryImportView(RetrieveAPIView):
         block_id_usage_key_map: dict[str, UsageKey]
     ) -> dict[str, list[dict[str, dict[str, str]]]] | None:
         """
-        Recursive build a hierarchical structure of the course part.
+        Creates a hierarchical structure of course parts recursively.
+
+        This method takes an OLX fragment and a mapping of block IDs to usage keys,
+        and constructs a nested dictionary representing the hierarchical structure
+        of the course. It processes each OLX element, mapping it to its usage key,
+        and recursively processes its children if they exist.
         """
         usage_key = block_id_usage_key_map.get(olx_fragment.get('url_name'))
         if usage_key:
