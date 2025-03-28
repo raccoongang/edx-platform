@@ -39,7 +39,6 @@ def create_block_in_library(block_to_import, usage_key, library_key, user_id, st
 
     with transaction.atomic():
         component_type = authoring_api.get_or_create_component_type("xblock.v1", usage_key.block_type)
-        component_version = None
         does_component_exist = authoring_api.get_components(
             content_library.learning_package.id
         ).filter(local_key=usage_key.block_id).exists()
@@ -179,7 +178,7 @@ def _process_staged_content_files(
                 component_version=component_version,
                 source_usage_key=usage_key,
                 library_import=CourseToLibraryImport.objects.get(
-                    library_key=library_key,
+                    content_library=content_library,
                     user_id=user_id,
                     status=CourseToLibraryImportStatus.READY
                 ),
@@ -340,11 +339,7 @@ def import_container(
             ContainerVersionImport.objects.create(
                 section_version=top_container_version,
                 source_usage_key=usage_key,
-                library_import=CourseToLibraryImport.objects.get(
-                    library_key=library_key,
-                    user_id=user_id,
-                    status=CourseToLibraryImportStatus.READY
-                ),
+                library_import=CourseToLibraryImport.get_by_uuid(import_id),
             )
     else:  # xblock level
         import_children(
@@ -370,3 +365,18 @@ def get_block_to_import(node, usage_key):
         found = get_block_to_import(child, usage_key)
         if found is not None:
             return found
+
+def delete_old_ready_staged_content_by_user_and_purpose(course_ids, content_library, user_id):
+    """
+    Delete old ready staged content by user and purpose.
+    """
+    course_to_library_imports = CourseToLibraryImport.objects.filter(
+        course_ids=course_ids,
+        content_library=content_library,
+        user_id=user_id,
+    )
+    for course_to_library in course_to_library_imports:
+        course_to_library.stagedcontent_set.all().delete()
+        if course_to_library.status not in (CourseToLibraryImportStatus.IMPORTED, CourseToLibraryImportStatus.ERROR):
+            course_to_library.status = CourseToLibraryImportStatus.CANCELED
+            course_to_library.save()

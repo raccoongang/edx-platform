@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from cms.djangoapps.course_to_library_import.api import import_library_from_staged_content
+from cms.djangoapps.course_to_library_import.api import import_course_staged_content_to_library
 from .serializers import ImportBlocksSerializer
 
 
@@ -42,11 +42,10 @@ class ImportBlocksView(APIView):
         data = self.serializer_class(data=request.data)
         data.is_valid(raise_exception=True)
 
-        import_library_from_staged_content(
+        import_course_staged_content_to_library(
             library_key=data.validated_data['library_key'],
             user_id=request.user.pk,
             usage_ids=data.validated_data['usage_ids'],
-            course_id=data.validated_data['course_id'],
             import_id=data.validated_data['import_id'],
             composition_level=data.validated_data['composition_level'],
             override=data.validated_data['override'],

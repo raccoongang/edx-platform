@@ -35,23 +35,26 @@ class CourseToLibraryImport(TimeStampedModel):
         help_text=_('Whitespace-separated list of course keys for which to compute grades.'),
         validators=[validate_course_ids]
     )
-    library_key = models.CharField(max_length=100)
-    metadata = models.JSONField(default=dict, blank=True, null=True)
+    content_library = models.ForeignKey(
+        to='content_libraries.ContentLibrary',
+        on_delete=models.CASCADE,
+        related_name='course_to_library_imports'
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.course_ids} - {self.library_key}'
+        return f'{self.course_ids} - {self.content_library.id}'
 
     class Meta:
         verbose_name = _('Course to Library Import')
         verbose_name_plural = _('Course to Library Imports')
 
     @classmethod
-    def get_by_id(cls, import_id: int) -> Self | None:
+    def get_by_uuid(cls, import_uuid: str) -> Self | None:
         """
         Get an import task by its ID.
         """
-        return cls.objects.filter(id=import_id).first()
+        return cls.objects.filter(uuid=import_uuid).first()
 
     @classmethod
     def get_ready_by_uuid(cls, import_uuid: str) -> Self | None:
@@ -59,6 +62,13 @@ class CourseToLibraryImport(TimeStampedModel):
         Get an import task by its UUID.
         """
         return cls.objects.filter(uuid=import_uuid, status=CourseToLibraryImportStatus.READY).first()
+
+    @property
+    def course_id_list(self) -> list[str]:
+        """
+        Return the list of course IDs.
+        """
+        return self.course_ids.split()
 
 
 class ComponentVersionImport(TimeStampedModel):
