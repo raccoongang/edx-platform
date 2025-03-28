@@ -3,6 +3,7 @@ Validators for the course_to_library_import app.
 """
 
 from collections import ChainMap
+import logging
 from typing import get_args
 
 from django.utils.translation import gettext_lazy as _
@@ -10,6 +11,9 @@ from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 
 from .types import CompositionLevel
+
+
+log = logging.getLogger(__name__)
 
 
 def validate_course_ids(value: str):
@@ -35,10 +39,20 @@ def validate_course_ids(value: str):
 
 
 def validate_usage_ids(usage_ids, staged_content):
+    """
+    Validate that the usage IDs are valid and available in the staged content.
+
+    Returns:
+        list: A list of valid usage IDs.
+    """
+    valid_usage_ids = []
     available_block_keys = ChainMap(*staged_content.values_list('tags', flat=True))
     for usage_key in usage_ids:
         if usage_key not in available_block_keys:
-            raise ValueError(f'Block {usage_key} is not available for import')
+            log.warning('Block %s is not available for import', usage_key)
+        else:
+            valid_usage_ids.append(usage_key)
+    return valid_usage_ids
 
 
 def validate_composition_level(composition_level):

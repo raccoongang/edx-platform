@@ -2,6 +2,8 @@
 Tasks for course to library import.
 """
 
+import logging
+
 from celery import shared_task
 from django.db import transaction
 from edx_django_utils.monitoring import set_code_owner_attribute
@@ -17,6 +19,9 @@ from .helpers import get_block_to_import, import_container
 from .models import CourseToLibraryImport
 from .types import CompositionLevel
 from .validators import validate_composition_level, validate_usage_ids
+
+
+log = logging.getLogger(__name__)
 
 
 @shared_task
@@ -49,7 +54,7 @@ def save_courses_to_staged_content_task(
                 content_staging_api.stage_xblock_temporarily(
                     item,
                     user_id,
-                    purpose=purpose.format(course_id=course_id),
+                    purpose=purpose.format(course_id=course_id, import_id=import_task_id),
                     version_num=version_num,
                 )
 
@@ -73,15 +78,19 @@ def import_library_from_staged_content_task(
     Import staged content to a library task.
     """
     validate_composition_level(composition_level)
+    ctli = CourseToLibraryImport.get_ready_by_uuid(import_id)
     staged_content = content_staging_api.get_ready_staged_content_by_user_and_purpose(
-        user_id, purpose.format(course_id=course_id)
+        user_id, purpose.format(course_id=course_id, import_id=ctli.id)
     )
-    validate_usage_ids(usage_ids, staged_content)
+    valid_usage_ids = validate_usage_ids(usage_ids, staged_content)
+    if len(valid_usage_ids) == 0:
+        log.warning('No valid usage IDs found for import.')
+        return
     parser = etree.XMLParser(strip_cdata=False)
     library_key = LibraryLocatorV2.from_string(library_key)
 
     with transaction.atomic():
-        for usage_key in usage_ids:
+        for usage_key in valid_usage_ids:
             if staged_content_item := staged_content.filter(
                 tags__icontains=usage_key,
             ).first():
@@ -102,7 +111,6 @@ def import_library_from_staged_content_task(
                     override,
                 )
 
-        ctli = CourseToLibraryImport.get_ready_by_uuid(import_id)
         ctli.status = CourseToLibraryImportStatus.IMPORTED
         ctli.save()
 

@@ -13,6 +13,7 @@ from cms.djangoapps.course_to_library_import.api import (
 )
 from cms.djangoapps.course_to_library_import.constants import COURSE_TO_LIBRARY_IMPORT_PURPOSE
 from cms.djangoapps.course_to_library_import.models import CourseToLibraryImport
+from openedx.core.djangoapps.content_staging import api as content_staging_api
 from .factories import CourseToLibraryImportFactory
 
 
@@ -27,18 +28,19 @@ def test_create_import():
     ]
     user = UserFactory()
     library_key = "lib:edX:DemoLib"
-    with patch(
-        "cms.djangoapps.course_to_library_import.api.save_courses_to_staged_content_task"
-    ) as save_courses_to_staged_content_task_mock:
-        create_import(course_ids, user.id, library_key)
+
+    create_import(course_ids, user.id, library_key)
 
     import_task = CourseToLibraryImport.objects.get()
     assert import_task.course_ids == " ".join(course_ids)
     assert import_task.library_key == library_key
     assert import_task.user_id == user.id
-    save_courses_to_staged_content_task_mock.delay.assert_called_once_with(
-        course_ids, user.id, import_task.id, COURSE_TO_LIBRARY_IMPORT_PURPOSE
-    )
+
+    for course_id in course_ids:
+        staged_content = content_staging_api.get_ready_staged_content_by_user_and_purpose(
+            user.id, COURSE_TO_LIBRARY_IMPORT_PURPOSE.format(course_id=course_id, import_id=import_task.id)
+        )
+        assert staged_content is not None
 
 
 @pytest.mark.django_db

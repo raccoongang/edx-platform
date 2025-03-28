@@ -6,7 +6,6 @@ from .constants import COURSE_TO_LIBRARY_IMPORT_PURPOSE
 from .models import CourseToLibraryImport
 from .tasks import (
     import_library_from_staged_content_task,
-    save_courses_to_staged_content_task,
 )
 from .types import CompositionLevel
 
@@ -47,8 +46,4 @@ def create_import(
         user_id=user_id,
     )
     import_task.save()
-
-    save_courses_to_staged_content_task.delay(
-        course_ids, user_id, import_task.id, COURSE_TO_LIBRARY_IMPORT_PURPOSE
-    )
     return import_task

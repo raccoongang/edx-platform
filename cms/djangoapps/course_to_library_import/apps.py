@@ -11,3 +11,9 @@ class CourseToLibraryImportConfig(AppConfig):
     """
 
     name = 'cms.djangoapps.course_to_library_import'
+
+    def ready(self):
+        """
+        Connect handlers to signals.
+        """
+        from . import signals  # pylint: disable=unused-import
