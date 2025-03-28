@@ -377,3 +377,6 @@ def delete_old_ready_staged_content_by_user_and_purpose(course_ids, content_libr
     )
     for course_to_library in course_to_library_imports:
         course_to_library.stagedcontent_set.all().delete()
+        if course_to_library.status not in (CourseToLibraryImportStatus.IMPORTED, CourseToLibraryImportStatus.ERROR):
+            course_to_library.status = CourseToLibraryImportStatus.CANCELED
+            course_to_library.save()
