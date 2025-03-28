@@ -18,5 +18,7 @@ class CourseToLibraryImportStatus(TextChoices):
     READY = 'ready', _('Ready')
     # IMPORTED: The content has been imported into the library.
     IMPORTED = 'imported', _('Imported')
+    # CANCELED: The import was canceled before it was imported.
+    CANCELED = 'canceled', _('Canceled')
     # ERROR: The content could not be imported.
     ERROR = 'error', _('Error')
