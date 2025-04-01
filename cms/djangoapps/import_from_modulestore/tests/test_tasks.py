@@ -1,10 +1,10 @@
 """
-Tests for tasks in course_to_library_import app.
+Tests for tasks in import_from_modulestore app.
 """
 from organizations.models import Organization
 
-from cms.djangoapps.course_to_library_import.data import CourseToLibraryImportStatus
-from cms.djangoapps.course_to_library_import.tasks import (
+from cms.djangoapps.import_from_modulestore.data import ImportStatus
+from cms.djangoapps.import_from_modulestore.tasks import (
     import_course_staged_content_to_library_task,
     save_courses_to_staged_content_task,
 )
@@ -46,11 +46,11 @@ class ImportCourseToLibraryMixin(ModuleStoreTestCase):
         self.video2 = BlockFactory.create(category='video', parent=self.vertical2, display_name='Video 2')
         self.problem2 = BlockFactory.create(category='problem', parent=self.vertical2, display_name='Problem 2')
 
-        self.course_to_library_import = CourseToLibraryImportFactory(
+        self.import_from_modulestore = CourseToLibraryImportFactory(
             course_ids=f'{self.course.id} {self.course2.id}',
             content_library=self.content_library,
         )
-        self.user = self.course_to_library_import.user
+        self.user = self.import_from_modulestore.user
 
 
 class TestSaveCourseSectionsToStagedContentTask(ImportCourseToLibraryMixin):
@@ -63,23 +63,23 @@ class TestSaveCourseSectionsToStagedContentTask(ImportCourseToLibraryMixin):
         End-to-end test for save_courses_to_staged_content_task.
         """
         course_chapters_to_import = [self.chapter, self.chapter2]
-        save_courses_to_staged_content_task(self.user.id, self.course_to_library_import.uuid)
+        save_courses_to_staged_content_task(self.user.id, self.import_from_modulestore.uuid)
 
-        self.course_to_library_import.refresh_from_db()
-        self.assertEqual(self.course_to_library_import.stagedcontent_set.count(), len(course_chapters_to_import))
-        self.assertEqual(self.course_to_library_import.status, CourseToLibraryImportStatus.READY)
+        self.import_from_modulestore.refresh_from_db()
+        self.assertEqual(self.import_from_modulestore.stagedcontent_set.count(), len(course_chapters_to_import))
+        self.assertEqual(self.import_from_modulestore.status, ImportStatus.READY)
 
     def test_old_staged_content_deletion_before_save_new(self):
         """ Checking that repeated saving of the same content does not create duplicates. """
-        course_ids = self.course_to_library_import.course_id_list
+        course_ids = self.import_from_modulestore.course_id_list
 
-        save_courses_to_staged_content_task(self.user.id, self.course_to_library_import.uuid)
+        save_courses_to_staged_content_task(self.user.id, self.import_from_modulestore.uuid)
 
-        self.assertEqual(self.course_to_library_import.stagedcontent_set.count(), len(course_ids))
+        self.assertEqual(self.import_from_modulestore.stagedcontent_set.count(), len(course_ids))
 
-        save_courses_to_staged_content_task(self.user.id, self.course_to_library_import.uuid)
+        save_courses_to_staged_content_task(self.user.id, self.import_from_modulestore.uuid)
 
-        self.assertEqual(self.course_to_library_import.stagedcontent_set.count(), len(course_ids))
+        self.assertEqual(self.import_from_modulestore.stagedcontent_set.count(), len(course_ids))
 
 
 class TestImportLibraryFromStagedContentTask(ImportCourseToLibraryMixin):
@@ -94,19 +94,19 @@ class TestImportLibraryFromStagedContentTask(ImportCourseToLibraryMixin):
         """ End-to-end test for import_course_staged_content_to_library_task. """
         self.assertEqual(self.library.learning_package.content_set.count(), 0)
         expected_imported_xblocks = [self.problem, self.problem2, self.video, self.video2]
-        save_courses_to_staged_content_task(self.user.id, self.course_to_library_import.uuid)
+        save_courses_to_staged_content_task(self.user.id, self.import_from_modulestore.uuid)
 
         import_course_staged_content_to_library_task(
             self.user.id,
             [str(self.chapter.location), str(self.chapter2.location)],
             str(self.library.key),
-            self.course_to_library_import.uuid,
+            self.import_from_modulestore.uuid,
             'xblock',
             override=True
         )
 
-        self.course_to_library_import.refresh_from_db()
-        self.assertEqual(self.course_to_library_import.status, CourseToLibraryImportStatus.IMPORTED)
+        self.import_from_modulestore.refresh_from_db()
+        self.assertEqual(self.import_from_modulestore.status, ImportStatus.IMPORTED)
 
         for xblock in expected_imported_xblocks:
             self._is_imported(self.library, xblock)
@@ -116,14 +116,14 @@ class TestImportLibraryFromStagedContentTask(ImportCourseToLibraryMixin):
     def test_import_library_block_not_found(self):
         """ Test that an error is raised if the block is not found. """
         non_existent_usage_ids = ['block-v1:edX+Demo+2023+type@vertical+block@12345']
-        save_courses_to_staged_content_task(self.user.id, self.course_to_library_import.uuid)
+        save_courses_to_staged_content_task(self.user.id, self.import_from_modulestore.uuid)
 
         with self.assertRaises(ValueError):
             import_course_staged_content_to_library_task(
                 self.user.id,
                 non_existent_usage_ids,
                 self.library.key,
-                str(self.course_to_library_import.uuid),
+                str(self.import_from_modulestore.uuid),
                 'xblock',
                 override=True,
             )
@@ -136,17 +136,17 @@ class TestImportLibraryFromStagedContentTask(ImportCourseToLibraryMixin):
         """
         course_chapters_to_import = [self.chapter, self.chapter2]
         expected_imported_xblocks = [self.problem, self.video]
-        save_courses_to_staged_content_task(self.user.id, self.course_to_library_import.uuid)
+        save_courses_to_staged_content_task(self.user.id, self.import_from_modulestore.uuid)
 
-        self.course_to_library_import.refresh_from_db()
-        self.assertEqual(self.course_to_library_import.stagedcontent_set.count(), len(course_chapters_to_import))
-        self.assertEqual(self.course_to_library_import.status, CourseToLibraryImportStatus.READY)
+        self.import_from_modulestore.refresh_from_db()
+        self.assertEqual(self.import_from_modulestore.stagedcontent_set.count(), len(course_chapters_to_import))
+        self.assertEqual(self.import_from_modulestore.status, ImportStatus.READY)
 
         import_course_staged_content_to_library_task(
             self.user.id,
             [str(self.chapter.location)],
-            str(self.course_to_library_import.content_library.library_key),
-            str(self.course_to_library_import.uuid),
+            str(self.import_from_modulestore.content_library.library_key),
+            str(self.import_from_modulestore.uuid),
             'xblock',
             override=True,
         )
@@ -155,6 +155,6 @@ class TestImportLibraryFromStagedContentTask(ImportCourseToLibraryMixin):
             self._is_imported(self.library, xblock)
         self.assertEqual(self.library.learning_package.content_set.count(), len(expected_imported_xblocks))
 
-        self.course_to_library_import.refresh_from_db()
-        self.assertEqual(self.course_to_library_import.status, CourseToLibraryImportStatus.IMPORTED)
-        self.assertTrue(not self.course_to_library_import.stagedcontent_set.exists())
+        self.import_from_modulestore.refresh_from_db()
+        self.assertEqual(self.import_from_modulestore.status, ImportStatus.IMPORTED)
+        self.assertTrue(not self.import_from_modulestore.stagedcontent_set.exists())

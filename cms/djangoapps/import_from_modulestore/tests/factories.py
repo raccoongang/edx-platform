@@ -9,7 +9,7 @@ from factory.django import DjangoModelFactory
 
 from common.djangoapps.student.tests.factories import UserFactory
 
-from cms.djangoapps.course_to_library_import.models import CourseToLibraryImport
+from cms.djangoapps.import_from_modulestore.models import CourseToLibraryImport
 from openedx.core.djangoapps.content_libraries.tests.factories import ContentLibraryFactory
 
 

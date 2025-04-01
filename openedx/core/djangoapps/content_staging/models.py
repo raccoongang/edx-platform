@@ -70,20 +70,6 @@ class StagedContent(models.Model):
     tags: models.JSONField[dict | None, dict | None] = models.JSONField(
         null=True, help_text=_("Content tags applied to these blocks")
     )
-    related_import = models.ForeignKey(
-        "course_to_library_import.CourseToLibraryImport",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-    )
-    source_course_id = CourseKeyField(
-        null=True,
-        blank=True,
-        max_length=255,
-        db_index=True,
-        verbose_name=_('course ID'),
-        help_text=_('ID of the imported course.'),
-    )
 
     @property
     def olx_filename(self) -> str:

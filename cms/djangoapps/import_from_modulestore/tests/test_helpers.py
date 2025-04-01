@@ -1,5 +1,5 @@
 """
-Tests for the course_to_library_import helper functions.
+Tests for the import_from_modulestore helper functions.
 """
 
 from datetime import datetime, timezone
@@ -13,8 +13,8 @@ from opaque_keys.edx.keys import UsageKey
 from opaque_keys.edx.locator import LibraryLocatorV2, LibraryUsageLocatorV2
 from openedx_learning.api.authoring_models import ContainerVersion
 
-from cms.djangoapps.course_to_library_import.data import CourseToLibraryImportStatus
-from cms.djangoapps.course_to_library_import.helpers import (
+from cms.djangoapps.import_from_modulestore.data import ImportStatus
+from cms.djangoapps.import_from_modulestore.helpers import (
     _handle_component_override,
     _process_staged_content_files,
     _update_container_components,
@@ -48,8 +48,8 @@ class TestFlatImportChildren(TestCase):
 
         self.import_id = str(uuid4())
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.create_block_in_library')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.create_block_in_library')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
     def test_flat_import_children_basic(self, mock_content_library, mock_create_block):
         xml = """
         <vertical url_name="vertical1">
@@ -78,8 +78,8 @@ class TestFlatImportChildren(TestCase):
             mock.ANY, usage_key_html, self.library_key, self.user_id, self.staged_content.id, self.import_id, False
         )
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.create_block_in_library')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.create_block_in_library')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
     def test_flat_import_children_with_override(self, mock_content_library, mock_create_block):
         xml = """
         <vertical url_name="vertical1">
@@ -100,7 +100,7 @@ class TestFlatImportChildren(TestCase):
             mock.ANY, usage_key_problem, self.library_key, self.user_id, self.staged_content.id, self.import_id, True
         )
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
     def test_flat_import_children_library_not_found(self, mock_content_library):
         xml = """
         <vertical url_name="vertical1">
@@ -116,8 +116,8 @@ class TestFlatImportChildren(TestCase):
                 block_to_import, self.library_key, self.user_id, self.staged_content, 'xblock', self.import_id, False
             )
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.create_block_in_library')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.create_block_in_library')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
     def test_flat_import_children_ignores_unmatched_url_names(self, mock_content_library, mock_create_block):
         xml = """
         <vertical url_name="vertical1">
@@ -159,10 +159,10 @@ class TestCreateBlockInLibrary(TestCase):
         self.mock_learning_package = mock.MagicMock()
         self.mock_library.learning_package = self.mock_learning_package
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.content_staging_api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.authoring_api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.content_staging_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.authoring_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
     def test_create_block_in_library_new_component(
         self, mock_content_library, mock_api, mock_authoring_api, mock_content_staging_api
     ):
@@ -197,12 +197,12 @@ class TestCreateBlockInLibrary(TestCase):
             mock_library_usage_key, etree.tostring(self.block_to_import)
         )
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.content_staging_api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.authoring_api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers._handle_component_override')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ComponentVersionImport')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.content_staging_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.authoring_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers._handle_component_override')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ComponentVersionImport')
     def test_create_block_in_library_existing_component_with_override(
         self,
         mock_component_version_import,
@@ -224,7 +224,7 @@ class TestCreateBlockInLibrary(TestCase):
 
         mock_content_staging_api.get_staged_content_static_files.return_value = []
 
-        ctli = CourseToLibraryImportFactory(status=CourseToLibraryImportStatus.READY, user_id=self.user_id)
+        ctli = CourseToLibraryImportFactory(status=ImportStatus.READY, user_id=self.user_id)
         create_block_in_library(
             self.block_to_import,
             self.usage_key,
@@ -244,10 +244,10 @@ class TestCreateBlockInLibrary(TestCase):
         mock_api.validate_can_add_block_to_library.assert_not_called()
         mock_authoring_api.create_component.assert_not_called()
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.content_staging_api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.authoring_api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.content_staging_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.authoring_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
     def test_create_block_in_library_existing_component_without_override(
         self,
         mock_content_library,
@@ -278,12 +278,12 @@ class TestCreateBlockInLibrary(TestCase):
         mock_authoring_api.create_component.assert_not_called()
         mock_api.set_library_block_olx.assert_not_called()
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.content_staging_api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers._update_component_version_import')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers._process_staged_content_files')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.authoring_api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers._handle_component_override')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.content_staging_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers._update_component_version_import')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers._process_staged_content_files')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.authoring_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers._handle_component_override')
     def test_create_block_in_library_with_files_and_override(
         self, mock_handle_override, mock_content_library,
         mock_authoring_api, mock_process_files,
@@ -341,10 +341,10 @@ class TestProcessStagedContentFiles(TestCase):
         self.mock_library.learning_package = self.mock_learning_package
         self.now = datetime.now(tz=timezone.utc)
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.CourseToLibraryImport.objects.get')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ComponentVersionImport.objects.get_or_create')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.content_staging_api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.authoring_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.CourseToLibraryImport.objects.get')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ComponentVersionImport.objects.get_or_create')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.content_staging_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.authoring_api')
     def test_process_staged_content_files_with_reference_in_block(
         self, mock_authoring_api, mock_content_staging_api, mock_get_or_create, mock_get_import
     ):
@@ -385,9 +385,9 @@ class TestProcessStagedContentFiles(TestCase):
         )
         mock_get_or_create.assert_called_once()
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.CourseToLibraryImport.objects.get')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.content_staging_api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.authoring_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.CourseToLibraryImport.objects.get')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.content_staging_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.authoring_api')
     def test_process_staged_content_files_missing_file_data(
         self, mock_authoring_api, mock_content_staging_api, mock_get_import
     ):
@@ -413,10 +413,10 @@ class TestProcessStagedContentFiles(TestCase):
         mock_authoring_api.get_or_create_file_content.assert_not_called()
         mock_authoring_api.create_component_version_content.assert_not_called()
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.CourseToLibraryImport.objects.get')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ComponentVersionImport.objects.get_or_create')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.content_staging_api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.authoring_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.CourseToLibraryImport.objects.get')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ComponentVersionImport.objects.get_or_create')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.content_staging_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.authoring_api')
     def test_process_staged_content_files_integrity_error(
         self, mock_authoring_api, mock_content_staging_api, mock_get_or_create, mock_get_import
     ):
@@ -450,7 +450,7 @@ class TestProcessStagedContentFiles(TestCase):
         mock_authoring_api.create_component_version_content.assert_called_once()
         mock_get_or_create.assert_called_once()
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.authoring_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.authoring_api')
     def test_process_staged_content_files_no_files(self, mock_authoring_api):
         mock_component_version = mock.MagicMock()
 
@@ -463,7 +463,7 @@ class TestProcessStagedContentFiles(TestCase):
         mock_authoring_api.get_or_create_file_content.assert_not_called()
         mock_authoring_api.create_component_version_content.assert_not_called()
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.authoring_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.authoring_api')
     def test_process_staged_content_files_file_not_referenced(self, mock_authoring_api):
         mock_component_version = mock.MagicMock()
         mock_file_data = mock.MagicMock()
@@ -477,9 +477,9 @@ class TestProcessStagedContentFiles(TestCase):
         mock_authoring_api.get_or_create_file_content.assert_not_called()
         mock_authoring_api.create_component_version_content.assert_not_called()
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ComponentVersionImport.objects.get_or_create')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.authoring_api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.content_staging_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ComponentVersionImport.objects.get_or_create')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.authoring_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.content_staging_api')
     def test_process_staged_content_files_with_override(
         self, mock_content_staging_api, mock_authoring_api, mock_get_or_create
     ):
@@ -524,7 +524,7 @@ class TestHandleComponentOverride(TestCase):
         self.mock_learning_package = mock.MagicMock()
         self.mock_library.learning_package = self.mock_learning_package
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.api')
     def test_handle_component_override_existing_component(self, mock_api):
         mock_component = mock.MagicMock()
         mock_component.component_type.name = self.block_type
@@ -547,7 +547,7 @@ class TestHandleComponentOverride(TestCase):
         mock_api.set_library_block_olx.assert_called_once_with(expected_lib_usage_key, self.xml_content)
         self.assertEqual(result, mock_component_version)
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.api')
     def test_handle_component_override_nonexistent_component(self, mock_api):
         self.mock_learning_package.component_set.filter.return_value.first.return_value = None
 
@@ -557,7 +557,7 @@ class TestHandleComponentOverride(TestCase):
         mock_api.set_library_block_olx.assert_not_called()
         self.assertIsNone(result)
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.api')
     def test_handle_component_override_api_error(self, mock_api):
         mock_component = mock.MagicMock()
         mock_component.component_type.name = self.block_type
@@ -585,7 +585,7 @@ class TestUpdateContainerComponents(TestCase):
         self.mock_container_version.container.pk = "container_pk"
         self.mock_container_version.title = "Container Title"
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.authoring_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.authoring_api')
     def test_update_container_components_with_mixed_components(self, mock_authoring_api):
         mock_component_version = mock.MagicMock()
         mock_component_version.component.pk = "component_pk"
@@ -606,7 +606,7 @@ class TestUpdateContainerComponents(TestCase):
             container_version_cls=self.mock_container_version.__class__,
         )
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.authoring_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.authoring_api')
     def test_update_container_components_empty_list(self, mock_authoring_api):
         _update_container_components(self.mock_container_version, [], self.user_id)
 
@@ -631,8 +631,8 @@ class TestCreateContainer(TestCase):
         self.library_key = LibraryLocatorV2(org="TestOrg", slug="test-lib")
         self.user_id = UserFactory().id
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.authoring_api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.authoring_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
     def test_create_container_chapter(self, mock_content_library, mock_authoring_api):
         mock_library = mock.MagicMock()
         mock_content_library.objects.get_by_key.return_value = mock_library
@@ -654,8 +654,8 @@ class TestCreateContainer(TestCase):
         )
         self.assertEqual(result, mock_container_version)
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.authoring_api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.authoring_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
     def test_create_container_sequential(self, mock_content_library, mock_authoring_api):
         mock_library = mock.MagicMock()
         mock_content_library.objects.get_by_key.return_value = mock_library
@@ -676,9 +676,9 @@ class TestCreateContainer(TestCase):
         )
         self.assertEqual(result, mock_container_version)
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.authoring_api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.secrets')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.authoring_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.secrets')
     def test_create_container_no_key(self, mock_secrets, mock_content_library, mock_authoring_api):
         mock_library = mock.MagicMock()
         mock_content_library.objects.get_by_key.return_value = mock_library
@@ -702,8 +702,8 @@ class TestCreateContainer(TestCase):
         )
         self.assertEqual(result, mock_container_version)
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.authoring_api')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.authoring_api')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
     def test_create_container_no_display_name(self, mock_content_library, mock_authoring_api):
         mock_library = mock.MagicMock()
         mock_content_library.objects.get_by_key.return_value = mock_library
@@ -738,11 +738,11 @@ class TestImportContainer(TestCase):
         self.staged_content = mock.MagicMock()
         self.staged_content.id = "staged-content-id"
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContainerVersionImport')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers._update_container_components')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.create_container')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.import_children')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.CourseToLibraryImport')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContainerVersionImport')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers._update_container_components')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.create_container')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.import_children')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.CourseToLibraryImport')
     def test_import_container_with_container_composition(
         self, mock_course_import, mock_import_children, mock_create_container,
         mock_update_container, mock_section_version_import
@@ -792,7 +792,7 @@ class TestImportContainer(TestCase):
             library_import=mock_get_import
         )
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.import_children')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.import_children')
     def test_import_container_xblock_level(self, mock_import_children):
         xml = """
         <chapter url_name="chapter1" display_name="Test Chapter">
@@ -817,17 +817,17 @@ class TestImportContainer(TestCase):
             'xblock', import_id, False
         )
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContainerVersionImport')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers._update_container_components')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.create_container')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.import_children')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContainerVersionImport')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers._update_container_components')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.create_container')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.import_children')
     def test_import_container_no_children(
         self, mock_import_children, mock_create_container, mock_update_container, mock_section_version_import
     ):
         xml = """<chapter url_name="chapter1" display_name="Test Chapter"></chapter>"""
         block_to_import = etree.fromstring(xml)
 
-        ctli = CourseToLibraryImportFactory(user_id=self.user_id, status=CourseToLibraryImportStatus.READY)
+        ctli = CourseToLibraryImportFactory(user_id=self.user_id, status=ImportStatus.READY)
 
         mock_container_version = mock.MagicMock()
         mock_create_container.return_value = mock_container_version
@@ -866,8 +866,8 @@ class TestImportChildren(TestCase):
             "block-v1:TestOrg+TestCourse+Run1+type@problem+block@problem1"
         )
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.create_block_in_library')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.create_block_in_library')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
     def test_import_children_xblock_level(self, mock_content_library, mock_create_block):
         xml = """
         <vertical url_name="vertical1">
@@ -892,10 +892,10 @@ class TestImportChildren(TestCase):
         self.assertEqual(result[0], mock_component_version)
         self.assertEqual(result[1], mock_component_version)
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers._update_container_components')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.create_container')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.create_block_in_library')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers._update_container_components')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.create_container')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.create_block_in_library')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
     def test_import_children_with_containers(
         self, mock_content_library, mock_create_block, mock_create_container, mock_update_container
     ):
@@ -928,8 +928,8 @@ class TestImportChildren(TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0], mock_container_version)
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.create_block_in_library')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.create_block_in_library')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
     def test_import_children_empty_block_xblock_level(self, mock_content_library, mock_create_block):
         xml = '<problem url_name="problem1"/>'
         block_to_import = etree.fromstring(xml)
@@ -948,8 +948,8 @@ class TestImportChildren(TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0], mock_component_version)
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.create_block_in_library')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.create_block_in_library')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
     def test_import_children_with_override(self, mock_content_library, mock_create_block):
         xml = '<problem url_name="problem1"/>'
         block_to_import = etree.fromstring(xml)
@@ -973,7 +973,7 @@ class TestImportChildren(TestCase):
             True,
         )
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
     def test_import_children_library_not_found(self, mock_content_library):
         xml = '<problem url_name="problem1"/>'
         block_to_import = etree.fromstring(xml)
@@ -1000,10 +1000,10 @@ class TestImportChildren(TestCase):
 
         self.assertEqual(result, [])
 
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers._update_container_components')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.create_container')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.create_block_in_library')
-    @mock.patch('cms.djangoapps.course_to_library_import.helpers.ContentLibrary')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers._update_container_components')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.create_container')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.create_block_in_library')
+    @mock.patch('cms.djangoapps.import_from_modulestore.helpers.ContentLibrary')
     def test_import_children_filter_by_composition_level(
         self, mock_content_library, mock_create_block, mock_create_container, mock_update_container
     ):

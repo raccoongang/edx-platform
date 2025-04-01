@@ -7,7 +7,7 @@ from unittest.mock import patch
 from django.test import TestCase
 from rest_framework.exceptions import ValidationError
 
-from cms.djangoapps.course_to_library_import.views.v0.serializers import ImportBlocksSerializer
+from cms.djangoapps.import_from_modulestore.views.v0.serializers import ImportBlocksSerializer
 
 
 class TestImportBlocksSerializer(TestCase):
@@ -28,7 +28,7 @@ class TestImportBlocksSerializer(TestCase):
             'override': False,
         }
 
-    @patch('cms.djangoapps.course_to_library_import.models.CourseToLibraryImport.get_ready_by_uuid')
+    @patch('cms.djangoapps.import_from_modulestore.models.CourseToLibraryImport.get_ready_by_uuid')
     def test_validate_with_valid_import_id(self, mock_get_ready_by_uuid):
         """
         Test that validation passes when a valid import_id is provided.
@@ -40,7 +40,7 @@ class TestImportBlocksSerializer(TestCase):
 
         mock_get_ready_by_uuid.assert_called_once_with(self.valid_data['import_id'])
 
-    @patch('cms.djangoapps.course_to_library_import.models.CourseToLibraryImport.get_ready_by_uuid')
+    @patch('cms.djangoapps.import_from_modulestore.models.CourseToLibraryImport.get_ready_by_uuid')
     def test_validate_with_invalid_import_id(self, mock_get_ready_by_uuid):
         """
         Test that validation fails when an invalid import_id is provided.
