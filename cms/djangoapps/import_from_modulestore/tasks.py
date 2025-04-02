@@ -59,6 +59,7 @@ def save_courses_to_staged_content_task(import_uuid: str) -> None:
 def import_course_staged_content_to_library_task(
     usage_ids: list[str],
     import_uuid: str,
+    user_id: int,
     composition_level: str,
     override: bool
 ) -> None:
@@ -67,7 +68,7 @@ def import_course_staged_content_to_library_task(
     """
     validate_composition_level(composition_level)
     import_event = Import.get_ready_by_uuid(import_uuid)
-    if not import_event:
+    if not import_event or import_event.user_id != user_id:
         log.info('Ready import from modulestore not found')
         return
 

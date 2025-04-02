@@ -5,7 +5,7 @@ Serializers for the Course to Library Import API.
 from rest_framework import serializers
 
 from cms.djangoapps.import_from_modulestore import api
-from cms.djangoapps.import_from_modulestore.models import CourseToLibraryImport
+from cms.djangoapps.import_from_modulestore.models import Import
 from cms.djangoapps.import_from_modulestore.validators import validate_composition_level
 
 
@@ -20,20 +20,15 @@ class ImportBlocksSerializer(serializers.Serializer):
         required=True,
     )
     course_id = serializers.CharField(required=True)
-    import_id = serializers.CharField(required=True)
+    import_uuid = serializers.CharField(required=True)
     composition_level = serializers.CharField(
         required=True,
         validators=[validate_composition_level],
     )
     override = serializers.BooleanField(default=False, required=False)
 
-    def validate(self, data):
-        if not CourseToLibraryImport.get_ready_by_uuid(data['import_id']):
-            raise serializers.ValidationError({'import_id': 'Invalid import ID.'})
-        return data
 
-
-class CourseToLibraryImportSerializer(serializers.ModelSerializer):
+class CourseToLibraryImportSerializer(serializers.Serializer):
     """
     Serializer for CourseToLibraryImport model.
     """
@@ -44,21 +39,7 @@ class CourseToLibraryImportSerializer(serializers.ModelSerializer):
     uuid = serializers.CharField(allow_blank=True, required=False)
 
     class Meta:
-        model = CourseToLibraryImport
         fields = ('course_ids', 'status', 'library_key', 'uuid')
-
-    def create(self, validated_data):
-        """
-        Run the import creation logic.
-        Creates a new CourseToLibraryImport instance and related data such as StagedContent.
-        """
-        user = getattr(self.context.get('request'), 'user', None)
-        course_to_library_import = api.create_import(
-            validated_data['course_ids'],
-            getattr(user, 'pk', None),
-            self.context.get('content_library_id'),
-        )
-        return course_to_library_import
 
     def to_representation(self, instance):
         """

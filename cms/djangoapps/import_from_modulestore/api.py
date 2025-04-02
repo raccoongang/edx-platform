@@ -11,6 +11,7 @@ from .tasks import import_course_staged_content_to_library_task, save_courses_to
 def import_course_staged_content_to_library(
     usage_ids: list[str],
     import_uuid: str,
+    user_id: int,
     composition_level: str,
     override: bool
 ) -> None:
@@ -20,6 +21,7 @@ def import_course_staged_content_to_library(
     import_course_staged_content_to_library_task.delay(
         usage_ids,
         import_uuid,
+        user_id,
         composition_level,
         override,
     )

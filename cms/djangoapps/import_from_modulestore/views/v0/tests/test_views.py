@@ -10,10 +10,10 @@ from rest_framework.test import APIClient
 from rest_framework import status
 
 from common.djangoapps.student.tests.factories import UserFactory
-from cms.djangoapps.course_to_library_import import api
-from cms.djangoapps.course_to_library_import.constants import COURSE_TO_LIBRARY_IMPORT_PURPOSE
-from cms.djangoapps.course_to_library_import.data import CourseToLibraryImportStatus
-from cms.djangoapps.course_to_library_import.models import CourseToLibraryImport
+from cms.djangoapps.import_from_modulestore import api
+from cms.djangoapps.import_from_modulestore.constants import COURSE_TO_LIBRARY_IMPORT_PURPOSE
+from cms.djangoapps.import_from_modulestore.data import CourseToLibraryImportStatus
+from cms.djangoapps.import_from_modulestore.models import CourseToLibraryImport
 from openedx.core.djangoapps.content_libraries import api as content_libraries_api
 from openedx.core.djangoapps.content_staging import api as content_staging_api
 from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
@@ -60,7 +60,7 @@ class ImportBlocksViewTest(TestCourseToLibraryImportViewsMixin):
 
     def setUp(self):
         super().setUp()
-        self.url = reverse('course_to_library_import:v0:import_blocks')
+        self.url = reverse('import_from_modulestore:v0:import_blocks')
 
         self.valid_data = {
             'library_key': 'lib:org:lib1',
@@ -97,7 +97,7 @@ class ImportBlocksViewTest(TestCourseToLibraryImportViewsMixin):
         response = self.client.post(self.url, invalid_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    @mock.patch('cms.djangoapps.course_to_library_import.views.v0.views.api.import_course_staged_content_to_library')
+    @mock.patch('cms.djangoapps.import_from_modulestore.views.v0.views.api.import_course_staged_content_to_library')
     def test_successful_import(self, mock_import):
         """
         Test successful import returns a success response.
@@ -128,7 +128,7 @@ class TestCreateCourseToLibraryImportView(TestCourseToLibraryImportViewsMixin):
     def setUp(self):
         super().setUp()
 
-        self.url = reverse('course_to_library_import:v0:create_import', args=[self.library_id])
+        self.url = reverse('import_from_modulestore:v0:create_import', args=[self.library_id])
         self.valid_data = {
             'course_ids': ['course-v1:org+course+run', 'course-v1:org2+course2+run2'],
         }
@@ -182,7 +182,7 @@ class TestCreateCourseToLibraryImportView(TestCourseToLibraryImportViewsMixin):
         self.client.force_authenticate(user=self.admin_user)
 
         response = self.client.post(
-            reverse('course_to_library_import:v0:create_import', args=['lib:org:lib2']),
+            reverse('import_from_modulestore:v0:create_import', args=['lib:org:lib2']),
             self.valid_data,
             format='json'
         )
@@ -196,7 +196,7 @@ class GetCourseStructureToLibraryImportView(TestCourseToLibraryImportViewsMixin)
 
     def setUp(self):
         super().setUp()
-        self.url = reverse('course_to_library_import:v0:get_import', args=[str(self.ctli.uuid)])
+        self.url = reverse('import_from_modulestore:v0:get_import', args=[str(self.ctli.uuid)])
 
     def test_get_course_structure(self):
         """
@@ -230,7 +230,7 @@ class GetCourseStructureToLibraryImportView(TestCourseToLibraryImportViewsMixin)
         self.client.force_authenticate(user=self.admin_user)
 
         response = self.client.get(reverse(
-            'course_to_library_import:v0:get_import',
+            'import_from_modulestore:v0:get_import',
             kwargs={'course_to_lib_uuid': '593e93d7-ed64-4147-bb5c-4cfcb1cf80b1'})
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
