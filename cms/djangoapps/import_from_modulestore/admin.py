@@ -88,7 +88,6 @@ class ImportAdmin(admin.ModelAdmin):
     readonly_fields = ('status',)
     actions = ['import_course_to_library_action']
 
-
     def save_model(self, request, obj, form, change):
         """
         Launches the creation of Staged Content after creating a new import instance.
