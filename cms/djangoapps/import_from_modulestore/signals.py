@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 
 from .models import Import
-from .tasks import save_courses_to_staged_content_task
+from .tasks import save_legacy_content_to_staged_content_task
 
 
 @receiver(post_save, sender=Import)

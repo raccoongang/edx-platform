@@ -13,7 +13,7 @@ from opaque_keys import InvalidKeyError
 from . import api
 from .data import ImportStatus
 from .models import Import, PublishableEntityImport, PublishableEntityMapping
-from .tasks import save_courses_to_staged_content_task
+from .tasks import save_legacy_content_to_staged_content_task
 
 COMPOSITION_LEVEL_CHOICES = (
     ('xblock', _('XBlock')),
@@ -96,7 +96,7 @@ class ImportAdmin(admin.ModelAdmin):
         is_created = not getattr(obj, 'id', None)
         super().save_model(request, obj, form, change)
         if is_created:
-            save_courses_to_staged_content_task.delay(obj.uuid)
+            save_legacy_content_to_staged_content_task.delay(obj.uuid)
 
     def import_course_to_library_action(self, request, queryset):
         """
