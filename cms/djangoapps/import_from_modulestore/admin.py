@@ -1,5 +1,5 @@
 """
-This module contains the admin configuration for the CourseToLibraryImport model.
+This module contains the admin configuration for the Import model.
 """
 from django.contrib import admin
 

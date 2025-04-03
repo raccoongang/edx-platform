@@ -43,14 +43,14 @@ class Import(TimeStampedModel):
 
     def ready(self) -> None:
         """
-
+        Set import status to ready.
         """
         self.status = ImportStatus.READY
         self.save()
 
     def imported(self) -> None:
         """
-
+        Set import status to imported and clean related staged content.
         """
         self.status = ImportStatus.IMPORTED
         self.save()
@@ -66,7 +66,7 @@ class Import(TimeStampedModel):
 
     def error(self) -> None:
         """
-
+        Set import status to error and clean related staged
         """
         self.status = ImportStatus.ERROR
         self.save()

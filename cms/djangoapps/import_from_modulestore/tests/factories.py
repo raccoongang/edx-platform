@@ -1,27 +1,33 @@
 """
-Factories for CourseToLibraryImport model.
+Factories for Import model.
 """
 
 import uuid
 
 import factory
 from factory.django import DjangoModelFactory
+from factory.fuzzy import FuzzyText
+from opaque_keys.edx.keys import CourseKey
+from openedx_learning.api.authoring_models import LearningPackage
 
 from common.djangoapps.student.tests.factories import UserFactory
+from cms.djangoapps.import_from_modulestore.models import Import
+from openedx.core.djangoapps.content_libraries.tests.factories import LearningPackageFactory
 
-from cms.djangoapps.import_from_modulestore.models import CourseToLibraryImport
-from openedx.core.djangoapps.content_libraries.tests.factories import ContentLibraryFactory
 
-
-class CourseToLibraryImportFactory(DjangoModelFactory):
+class ImportFactory(DjangoModelFactory):
     """
-    Factory for CourseToLibraryImport model.
+    Factory for Import model.
     """
 
     class Meta:
-        model = CourseToLibraryImport
+        model = Import
 
-    course_ids = ' '.join([f'course-v1:edX+DemoX+Demo_Course{i}' for i in range(1, 3)])
+
+    @factory.lazy_attribute
+    def source_key(self):
+        return CourseKey.from_string(f'course-v1:edX+DemoX+{self.uuid}')
+
+    target = factory.SubFactory(LearningPackageFactory)
     uuid = factory.LazyFunction(lambda: str(uuid.uuid4()))
-    content_library = factory.SubFactory(ContentLibraryFactory)
     user = factory.SubFactory(UserFactory)

@@ -31,6 +31,7 @@ def save_courses_to_staged_content_task(import_uuid: str) -> None:
     if not import_event:
         return
 
+    import_event.clean_related_staged_content()
     try:
         with transaction.atomic():
             items_to_import = get_items_to_import(import_event)

@@ -14,12 +14,10 @@ class ImportBlocksSerializer(serializers.Serializer):
     Serializer for the import blocks API.
     """
 
-    library_key = serializers.CharField(required=True)
     usage_ids = serializers.ListField(
         child=serializers.CharField(),
         required=True,
     )
-    course_id = serializers.CharField(required=True)
     import_uuid = serializers.CharField(required=True)
     composition_level = serializers.CharField(
         required=True,
@@ -30,21 +28,10 @@ class ImportBlocksSerializer(serializers.Serializer):
 
 class CourseToLibraryImportSerializer(serializers.Serializer):
     """
-    Serializer for CourseToLibraryImport model.
+    Serializer for the course to library import creation API.
     """
 
     course_ids = serializers.ListField()
     status = serializers.CharField(allow_blank=True, required=False)
     library_key = serializers.CharField(allow_blank=True, required=False)
     uuid = serializers.CharField(allow_blank=True, required=False)
-
-    class Meta:
-        fields = ('course_ids', 'status', 'library_key', 'uuid')
-
-    def to_representation(self, instance):
-        """
-        Converts a string with course IDs into a list of strings with course IDs.
-        """
-        representation = super().to_representation(instance)
-        representation['course_ids'] = ''.join(representation['course_ids']).split()
-        return representation

@@ -17,14 +17,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from cms.djangoapps.import_from_modulestore import api
-from cms.djangoapps.import_from_modulestore.constants import IMPORT_FROM_MODULESTORE_PURPOSE
 from cms.djangoapps.import_from_modulestore.models import Import
 from cms.djangoapps.import_from_modulestore.permissions import IsImportAuthor
 from cms.djangoapps.import_from_modulestore.views.v0.serializers import CourseToLibraryImportSerializer
 from openedx.core.djangoapps.content_libraries.api import ContentLibrary
-from openedx.core.djangoapps.content_staging import api as content_staging_api
 from openedx.core.lib.api.authentication import BearerAuthenticationAllowInactiveUser
 from .serializers import ImportBlocksSerializer
+
 
 class ImportBlocksView(APIView):
     """
@@ -48,8 +47,6 @@ class ImportBlocksView(APIView):
 
         Request:
         {
-            "library_key": "lib:org:code:run",
-            "course_id": "course-v1:org+course+run",
             "usage_ids": ["block-v1:org+course+run+type@problem+block@12345"],
             "import_uuid": "78df3b2c-4e5a-4d6b-8c7e-1f2a3b4c5d6e",
             "composition_level": "xblock",
@@ -129,12 +126,12 @@ class CreateCourseToLibraryImportView(CreateAPIView):
         for course_id in serializer.validated_data['course_ids']:
             import_event = api.create_import(course_id, request.user.pk, content_library.learning_package.id)
             result.append({
-                'uuid': import_event.uuid,
+                'uuid': str(import_event.uuid),
                 'course_id': str(import_event.source_key),
-                'status': import_event.status,
+                'status': import_event.get_status_display(),
                 'library_key': str(import_event.target.contentlibrary.library_key)
             })
-        return Response({'status': 'success', 'result': result})
+        return Response({'result': result}, status=status.HTTP_201_CREATED)
 
 
 class GetCourseStructureToLibraryImportView(RetrieveAPIView):
