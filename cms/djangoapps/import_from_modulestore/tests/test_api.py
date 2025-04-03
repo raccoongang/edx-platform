@@ -10,7 +10,7 @@ from opaque_keys.edx.keys import CourseKey
 from common.djangoapps.student.tests.factories import UserFactory
 from cms.djangoapps.import_from_modulestore.api import create_import, import_course_staged_content_to_library
 from cms.djangoapps.import_from_modulestore.models import Import
-from openedx.core.djangoapps.content_libraries.tests.factories import ContentLibraryFactory
+from openedx.core.djangoapps.content_libraries.tests import factories
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from .factories import ImportFactory
 
@@ -24,7 +24,7 @@ class TestCourseToLibraryImportAPI(ModuleStoreTestCase):
     def setUp(self):
         super().setUp()
 
-        self.library = ContentLibraryFactory()
+        self.library = factories.ContentLibraryFactory()
 
     def test_create_import(self):
         """

@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from opaque_keys.edx.django.models import CourseKeyField, UsageKeyField
+from opaque_keys.edx.django.models import UsageKeyField
 from opaque_keys.edx.keys import LearningContextKey
 from openedx_learning.lib.fields import case_insensitive_char_field, MultiCollationTextField
 

@@ -10,7 +10,6 @@ from openedx_learning.api.authoring_models import LearningPackage
 from openedx.core.djangoapps.content_libraries.api import ContentLibrary
 
 
-
 class LearningPackageFactory(DjangoModelFactory):
     """
     Factory for LearningPackage model.

@@ -8,7 +8,6 @@ import logging
 
 from django.core.files.base import ContentFile
 from django.db import transaction
-from django.db.models import QuerySet
 from django.http import HttpRequest
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import AssetKey, UsageKey

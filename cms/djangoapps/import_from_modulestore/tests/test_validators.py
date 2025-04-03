@@ -3,7 +3,6 @@ Tests for import_from_modulestore validators
 """
 
 from typing import get_args
-from unittest.mock import MagicMock
 
 from django.test import TestCase
 import pytest

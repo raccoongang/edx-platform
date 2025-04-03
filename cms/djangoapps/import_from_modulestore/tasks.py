@@ -6,12 +6,8 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.db import transaction
 from edx_django_utils.monitoring import set_code_owner_attribute
-from lxml import etree
-from opaque_keys.edx.keys import CourseKey, UsageKey
-from opaque_keys.edx.locator import LibraryLocatorV2
 
 from openedx.core.djangoapps.content_staging import api as content_staging_api
-from openedx.core.djangoapps.content_staging.data import StagedContentStatus
 
 from .constants import IMPORT_FROM_MODULESTORE_PURPOSE
 from .helpers import get_items_to_import, ImportClient
@@ -50,9 +46,9 @@ def save_courses_to_staged_content_task(import_uuid: str) -> None:
                 import_event.ready()
             else:
                 import_event.error()
-    except Exception as e:
-        log.error('Err') # Fixme
+    except Exception as exc:  # pylint: disable=broad-except
         import_event.error()
+        raise exc
 
 
 @shared_task

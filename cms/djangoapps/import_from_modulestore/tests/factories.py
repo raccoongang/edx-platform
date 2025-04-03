@@ -6,13 +6,11 @@ import uuid
 
 import factory
 from factory.django import DjangoModelFactory
-from factory.fuzzy import FuzzyText
 from opaque_keys.edx.keys import CourseKey
-from openedx_learning.api.authoring_models import LearningPackage
 
 from common.djangoapps.student.tests.factories import UserFactory
 from cms.djangoapps.import_from_modulestore.models import Import
-from openedx.core.djangoapps.content_libraries.tests.factories import LearningPackageFactory
+from openedx.core.djangoapps.content_libraries.tests import factories
 
 
 class ImportFactory(DjangoModelFactory):
@@ -23,11 +21,10 @@ class ImportFactory(DjangoModelFactory):
     class Meta:
         model = Import
 
-
     @factory.lazy_attribute
     def source_key(self):
         return CourseKey.from_string(f'course-v1:edX+DemoX+{self.uuid}')
 
-    target = factory.SubFactory(LearningPackageFactory)
+    target = factory.SubFactory(factories.LearningPackageFactory)
     uuid = factory.LazyFunction(lambda: str(uuid.uuid4()))
     user = factory.SubFactory(UserFactory)

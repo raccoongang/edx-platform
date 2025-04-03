@@ -4,8 +4,6 @@ Serializers for the Course to Library Import API.
 
 from rest_framework import serializers
 
-from cms.djangoapps.import_from_modulestore import api
-from cms.djangoapps.import_from_modulestore.models import Import
 from cms.djangoapps.import_from_modulestore.validators import validate_composition_level
 
 

@@ -113,7 +113,6 @@ class TestImportLibraryFromStagedContentTask(ImportCourseToLibraryMixin):
             self._is_imported(self.library, xblock)
         self.assertEqual(self.library.learning_package.content_set.count(), len(expected_imported_xblocks))
 
-
     @patch('cms.djangoapps.import_from_modulestore.tasks.ImportClient')
     def test_import_library_block_not_found(self, mock_import_client):
         """ Test that if a block is not found in the staged content, it is not imported. """

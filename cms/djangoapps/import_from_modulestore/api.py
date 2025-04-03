@@ -1,9 +1,6 @@
 """
 API for course to library import.
 """
-from opaque_keys.edx.locator import LibraryLocatorV2
-
-from openedx.core.djangoapps.content_libraries.api import ContentLibrary
 from .models import Import as _Import
 from .tasks import import_course_staged_content_to_library_task, save_courses_to_staged_content_task
 

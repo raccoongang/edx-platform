@@ -106,7 +106,6 @@ class TestImportClient(ModuleStoreTestCase):
 
         self.assertEqual(self.library.learning_package.publishable_entities.count(), 1)
 
-
     def test_create_container_with_xblock(self):
         block_usage_id_to_import = str(self.problem.location)
         staged_content = self.import_event.get_staged_content_by_block_usage_id(block_usage_id_to_import)
@@ -139,12 +138,12 @@ class TestImportClient(ModuleStoreTestCase):
             override=False
         )
         block_to_import = etree.fromstring(staged_content.olx, parser=self.parser)
+        # pylint: disable=protected-access
         result = import_client._process_import(block_usage_id_to_import, block_to_import)
 
         self.assertEqual(self.library.learning_package.content_set.count(), len(expected_imported_xblocks))
         self.assertEqual(len(result), len(expected_imported_xblocks))
         self.assertEqual(self.import_event.publishableentityimport_set.count(), len(expected_imported_xblocks))
-
 
     @ddt.data('problem', 'video')
     def test_process_import_with_simple_blocks(self, block_type_to_import):
@@ -161,9 +160,9 @@ class TestImportClient(ModuleStoreTestCase):
         )
 
         block_to_import = etree.fromstring(block_to_import.data, parser=self.parser)
+        # pylint: disable=protected-access
         result = import_client._process_import(block_usage_id_to_import, block_to_import)
 
         self.assertEqual(self.library.learning_package.content_set.count(), len(expected_imported_xblocks))
         self.assertEqual(len(result), len(expected_imported_xblocks))
         self.assertEqual(self.import_event.publishableentityimport_set.count(), len(expected_imported_xblocks))
-

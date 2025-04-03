@@ -12,17 +12,16 @@ from django.db.utils import IntegrityError
 from lxml import etree
 
 from opaque_keys.edx.keys import UsageKey
-from opaque_keys.edx.locator import CourseLocator, LibraryLocatorV2, LibraryUsageLocatorV2
+from opaque_keys.edx.locator import CourseLocator, LibraryUsageLocatorV2
 from openedx_learning.api import authoring as authoring_api
 from openedx_learning.api.authoring_models import ContainerVersion
 
 from openedx.core.djangoapps.content_libraries import api
-from openedx.core.djangoapps.content_libraries.api import ContentLibrary
 from openedx.core.djangoapps.content_staging import api as content_staging_api
 from xmodule.modulestore.django import modulestore
 
 from .data import CompositionLevel
-from .models import Import, PublishableEntityMapping, PublishableEntityImport
+from .models import PublishableEntityMapping, PublishableEntityImport
 
 
 log = logging.getLogger(__name__)
@@ -322,6 +321,7 @@ def _create_publishable_entity_import(import_event, usage_key, component_version
         resulting_draft=component_version.publishable_entity_version,
     )
 
+
 def _get_or_create_publishable_entity_mapping(usage_key, component) -> tuple[PublishableEntityMapping, bool]:
     """
     Creates a mapping between the source usage key and the target publishable entity.
@@ -338,6 +338,7 @@ def get_usage_id_from_staged_content(staged_content, block_id):
     Get the usage ID from a staged content by block ID.
     """
     return next((block_usage_id for block_usage_id in staged_content.tags if block_usage_id.endswith(block_id)), None)
+
 
 def get_block_to_import(node, usage_key):
     """
