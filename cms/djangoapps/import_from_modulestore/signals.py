@@ -24,12 +24,3 @@ def cancel_incomplete_imports(sender, instance, created, **kwargs):
         ).exclude(uuid=instance.uuid)
         for incomplete_import in incomplete_user_imports_with_same_target:
             incomplete_import.cancel()
-
-
-@receiver(post_save, sender=Import)
-def save_courses_to_staged_content(sender, instance, created, **kwargs):
-    """
-    Save courses to staged content when a CourseToLibraryImport is created.
-    """
-    if created:
-        save_courses_to_staged_content_task.delay(instance.uuid)
