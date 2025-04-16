@@ -2966,7 +2966,12 @@ class TestComponentTemplates(CourseTestCase):
         self.assertGreater(len(self.get_templates_of_type("library")), 0)
         self.assertGreater(len(self.get_templates_of_type("html")), 0)
         self.assertGreater(len(self.get_templates_of_type("problem")), 0)
-        self.assertEqual(len(self.get_templates_of_type("advanced")), len(settings.DEFAULT_ADVANCED_MODULES))
+
+        # Check for default advanced modules
+        advanced_templates = self.get_templates_of_type("advanced")
+        self.assertEqual(len(advanced_templates), len(settings.DEFAULT_ADVANCED_MODULES))
+        advanced_module_titles = [t['display_name'] for t in advanced_templates]
+        self.assertEqual(advanced_module_titles, self.default_advanced_modules_titles)
 
         # Now fully disable video through XBlockConfiguration
         XBlockConfiguration.objects.create(name="video", enabled=False)
