@@ -2,6 +2,7 @@
 Helper functions for importing course content into a library.
 """
 from datetime import datetime, timezone
+from functools import partial
 import logging
 import mimetypes
 import os
@@ -38,15 +39,15 @@ class ImportClient:
     """
 
     CONTAINER_CREATORS_MAP = {
-        'chapter': authoring_api.create_unit_and_version,  # TODO: replace with create_module_and_version
-        'sequential': authoring_api.create_unit_and_version,  # TODO: replace with create_section_and_version
-        'vertical': authoring_api.create_unit_and_version,
+        'chapter': partial(authoring_api.create_section_and_version, subsections=[]),
+        'sequential': partial(authoring_api.create_subsection_and_version, units=[]),
+        'vertical': partial(authoring_api.create_unit_and_version, components=[]),
     }
 
     CONTAINER_OVERRIDERS_MAP = {
-        'chapter': authoring_api.create_next_unit_version,  # TODO: replace with create_next_module_version
-        'sequential': authoring_api.create_next_unit_version,  # TODO: replace with create_next_section_version
-        'vertical': authoring_api.create_next_unit_version,
+        'chapter': partial(authoring_api.create_next_section_version, subsections=[]),
+        'sequential': partial(authoring_api.create_next_subsection_version, units=[]),
+        'vertical': partial(authoring_api.create_next_unit_version, components=[]),
     }
 
     def __init__(
@@ -80,7 +81,7 @@ class ImportClient:
         if block_to_import is None:
             return []
 
-        return self._process_import(self.block_usage_key_to_import, block_to_import)
+        return self._import_complicated_child(block_to_import, self.block_usage_key_to_import)
 
     def _process_import(self, usage_key_string, block_to_import) -> list[PublishableVersionWithMapping]:
         """
@@ -157,7 +158,7 @@ class ImportClient:
             child_component_version.publishable_version for child_component_version
             in child_component_versions_with_mapping
         ]
-        self._update_container_components(container_version_with_mapping.publishable_version, child_component_versions)
+        self._update_container_children(container_version_with_mapping.publishable_version, child_component_versions)
         return [container_version_with_mapping] + child_component_versions_with_mapping
 
     def _should_create_container(self, container_type: str) -> bool:
@@ -196,22 +197,22 @@ class ImportClient:
         except PublishableEntity.DoesNotExist:
             container_version = None
 
+        common_container_kwargs = {
+            'title': display_name or f"New {container_type}",
+            'created': datetime.now(tz=timezone.utc),
+            'created_by': self.import_event.user_id,
+        }
+
         if container_version and self.override:
             container_version = container_override_func(
                 container_version.container,
-                title=display_name or f"New {container_type}",
-                components=[],
-                created=datetime.now(tz=timezone.utc),
-                created_by=self.import_event.user_id,
+                **common_container_kwargs,
             )
         elif not container_version:
             _, container_version = container_creator_func(
                 self.learning_package.id,
                 key=key or secrets.token_hex(16),
-                title=display_name or f"New {container_type}",
-                components=[],
-                created=datetime.now(tz=timezone.utc),
-                created_by=self.import_event.user_id,
+                **common_container_kwargs,
             )
 
         publishable_entity_mapping, _ = get_or_create_publishable_entity_mapping(
@@ -221,16 +222,16 @@ class ImportClient:
 
         return PublishableVersionWithMapping(container_version, publishable_entity_mapping)
 
-    def _update_container_components(self, container_version, component_versions):
+    def _update_container_children(self, container_version, child_versions):
         """
-        Update components of a container.
+        Update children of a container.
         """
         entity_rows = [
             authoring_api.ContainerEntityRow(
                 entity_pk=cv.container.pk if isinstance(cv, ContainerVersion) else cv.component.pk,
                 version_pk=cv.pk,
             )
-            for cv in component_versions
+            for cv in child_versions
         ]
         return authoring_api.create_next_container_version(
             container_pk=container_version.container.pk,

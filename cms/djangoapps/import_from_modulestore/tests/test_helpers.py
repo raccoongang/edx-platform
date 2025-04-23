@@ -330,7 +330,7 @@ class TestImportClient(ModuleStoreTestCase):
             staged_content.id, 'test.png'
         )
 
-    def test_update_container_components(self):
+    def test_update_container_children(self):
         container_to_import = self.vertical
         block_usage_key_to_import = str(container_to_import.location)
         staged_content = self.import_event.get_staged_content_by_source_usage_key(self.chapter.location)
@@ -351,7 +351,7 @@ class TestImportClient(ModuleStoreTestCase):
             mock_component_versions = [mock_component_version1, mock_component_version2]
 
             # pylint: disable=protected-access
-            import_client._update_container_components(mock_container_version, mock_component_versions)
+            import_client._update_container_children(mock_container_version, mock_component_versions)
 
             mock_authoring_api.create_next_container_version.assert_called_once()
             call_args = mock_authoring_api.create_next_container_version.call_args[1]
