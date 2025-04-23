@@ -62,11 +62,11 @@ class ImportActionForm(forms.Form):
                 UsageKey.from_string(key.strip())
                 for key in cleaned_data['block_keys_to_import'].split(',') if key.strip()
             ]
-        except InvalidKeyError:
+        except InvalidKeyError as exc:
             raise forms.ValidationError(
                 _('Invalid block keys format.'),
                 code='invalid',
-            )
+            ) from exc
 
         return cleaned_data
 
