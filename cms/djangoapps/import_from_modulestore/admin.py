@@ -20,8 +20,8 @@ from .tasks import save_legacy_content_to_staged_content_task
 COMPOSITION_LEVEL_CHOICES = (
     ('xblock', _('XBlock')),
     ('vertical', _('Unit')),
-    ('sequential', _('Section')),
-    ('chapter', _('Chapter')),
+    ('sequential', _('Subection')),
+    ('chapter', _('Section')),
 )
 
 
@@ -94,7 +94,6 @@ class ImportAdmin(admin.ModelAdmin):
     raw_id_fields = ('user',)
     readonly_fields = ('status',)
     actions = ['import_course_to_library_action']
-
 
     def save_model(self, request, obj, form, change):
         """
