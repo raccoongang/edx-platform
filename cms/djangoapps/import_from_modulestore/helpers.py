@@ -149,14 +149,17 @@ class ImportClient:
 
         container_version_with_mapping = self.get_or_create_container(
             child.tag,
-            child.get('url_name'),
+            f"{child.tag}.{child.get('url_name')}",
             child.get('display_name', child.tag),
             child_usage_key_string,
         )
         child_component_versions_with_mapping = self._process_import(child_usage_key_string, child)
         child_component_versions = [
-            child_component_version.publishable_version for child_component_version
-            in child_component_versions_with_mapping
+            child_component_version.publishable_version
+            for child_component_version in child_component_versions_with_mapping
+            if self._can_be_container_child(
+                child, child_component_version.mapping.target_entity
+            )
         ]
         self._update_container_children(container_version_with_mapping.publishable_version, child_component_versions)
         return [container_version_with_mapping] + child_component_versions_with_mapping
@@ -172,6 +175,20 @@ class ImportClient:
             container_type in composition_hierarchy and
             self.composition_level in composition_hierarchy and
             composition_hierarchy.index(container_type) >= composition_hierarchy.index(self.composition_level)
+        )
+
+    def _can_be_container_child(self, child, publishable_entity):
+        """
+        Determine if the child is a child of the container.
+
+        Child type should be lower by 1 level than the container type.
+        """
+        entity_type = publishable_entity.key.split('.')[0]
+        composition_hierarchy = CompositionLevel.values()
+        if child.tag not in composition_hierarchy or entity_type not in composition_hierarchy:
+            return False
+        return (
+            composition_hierarchy.index(child.tag) == composition_hierarchy.index(entity_type) - 1
         )
 
     def get_or_create_container(
@@ -211,7 +228,7 @@ class ImportClient:
         elif not container_version:
             _, container_version = container_creator_func(
                 self.learning_package.id,
-                key=key or secrets.token_hex(16),
+                key=key or f"{container_type}.{secrets.token_hex(16)}",
                 **common_container_kwargs,
             )
 
