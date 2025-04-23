@@ -42,9 +42,9 @@ class CompositionLevel(Enum):
     @classmethod
     def values(cls):
         """
-        Returns all levels of composition levels.
+        Returns all simple string values of the CompositionLevel enum.
         """
-        return [composition_level.value for composition_level in cls]
+        return [composition_level.value for composition_level in cls if isinstance(composition_level.value, str)]
 
 
 PublishableVersionWithMapping = namedtuple('PublishableVersionWithMapping', ['publishable_version', 'mapping'])
