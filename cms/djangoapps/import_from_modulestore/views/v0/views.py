@@ -86,15 +86,18 @@ class ImportBlocksView(APIView):
         except ContentLibrary.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        api.import_course_staged_content_to_library(
-            usage_ids=serializer.validated_data['usage_ids'],
-            import_uuid=serializer.validated_data['import_uuid'],
-            target_learning_package_id=content_library.learning_package_id,
-            user_id=request.user.pk,
-            composition_level=serializer.validated_data['composition_level'],
-            override=serializer.validated_data['override'],
-        )
-        return Response({'status': 'success'})
+        try:
+            api.import_course_staged_content_to_library(
+                usage_ids=serializer.validated_data['usage_ids'],
+                import_uuid=serializer.validated_data['import_uuid'],
+                target_learning_package_id=content_library.learning_package_id,
+                user_id=request.user.pk,
+                composition_level=serializer.validated_data['composition_level'],
+                override=serializer.validated_data['override'],
+            )
+            return Response({'status': 'success'})
+        except ValueError as exc:
+            return Response({'status': 'error', 'message': str(exc)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CreateCourseToLibraryImportView(CreateAPIView):

@@ -132,21 +132,28 @@ class ImportAdmin(admin.ModelAdmin):
                 )
                 return
 
-            for obj in queryset:
-                import_course_staged_content_to_library(
-                    form.cleaned_data['block_keys_to_import'].split(','),
-                    str(obj.uuid),
-                    form.cleaned_data['library'].learning_package_id,
-                    request.user.pk,
-                    composition_level=form.cleaned_data['composition_level'],
-                    override=form.cleaned_data['override'],
-                )
+            try:
+                for obj in queryset:
+                    import_course_staged_content_to_library(
+                        form.cleaned_data['block_keys_to_import'].split(','),
+                        str(obj.uuid),
+                        form.cleaned_data['library'].learning_package_id,
+                        request.user.pk,
+                        composition_level=form.cleaned_data['composition_level'],
+                        override=form.cleaned_data['override'],
+                    )
 
-            self.message_user(
-                request,
-                _('Importing courses to library.'),
-                level=messages.SUCCESS,
-            )
+                self.message_user(
+                    request,
+                    _('Importing courses to library.'),
+                    level=messages.SUCCESS,
+                )
+            except ValueError as exc:
+                self.message_user(
+                    request,
+                    _('Error importing courses to library: {}').format(exc),
+                    level=messages.ERROR,
+                )
 
             return HttpResponseRedirect(request.get_full_path())
 
