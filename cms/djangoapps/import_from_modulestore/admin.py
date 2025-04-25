@@ -20,7 +20,7 @@ from .tasks import save_legacy_content_to_staged_content_task
 COMPOSITION_LEVEL_CHOICES = (
     ('xblock', _('XBlock')),
     ('vertical', _('Unit')),
-    ('sequential', _('Subection')),
+    ('sequential', _('Subsection')),
     ('chapter', _('Section')),
 )
 
