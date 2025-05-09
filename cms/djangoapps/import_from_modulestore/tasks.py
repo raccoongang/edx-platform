@@ -83,6 +83,7 @@ def import_course_staged_content_to_library_task(
         log.info('Target learning package not found')
         return
 
+    import_event.set_status(ImportStatus.IMPORTING)
     imported_publishable_versions = []
     with authoring_api.bulk_draft_changes_for(learning_package_id=learning_package_id) as change_log:
         try:
