@@ -14,25 +14,20 @@ from opaque_keys.edx.django.models import (
     UsageKeyField,
 )
 from openedx_learning.api.authoring_models import LearningPackage, PublishableEntity
+from user_tasks.models import UserTaskStatus
 
 from .data import ImportStatus
 
 User = get_user_model()
 
 
-class Import(TimeStampedModel):
+class Import(models.Model):
     """
     Represents the action of a user importing a modulestore-based course or legacy
     library into a learning-core based learning package (today, that is always a content library).
     """
 
-    uuid = models.UUIDField(default=uuid_tools.uuid4, editable=False, unique=True)
-    status = models.CharField(
-        max_length=100,
-        choices=ImportStatus.choices,
-        default=ImportStatus.NOT_STARTED,
-        db_index=True
-    )
+    status = models.ForeignKey(UserTaskStatus, on_delete=models.SET_NULL, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     # Note: For now, this will always be a course key. In the future, it may be a legacy library key.
@@ -50,9 +45,8 @@ class Import(TimeStampedModel):
         """
         Set import status.
         """
-        self.status = status
-        self.save()
-        if status in [ImportStatus.IMPORTED, ImportStatus.CANCELED]:
+        self.status.set_state(status)
+        if status in [UserTaskStatus.CANCELED, UserTaskStatus.SUCCEEDED]:
             self.clean_related_staged_content()
 
     def clean_related_staged_content(self) -> None:

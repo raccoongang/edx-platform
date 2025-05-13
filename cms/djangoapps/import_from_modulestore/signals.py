@@ -3,8 +3,8 @@ Signals for Import.
 """
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from user_tasks.models import UserTaskStatus
 
-from .data import ImportStatus
 from .models import Import
 
 
@@ -21,6 +21,6 @@ def cancel_incomplete_imports(sender, instance, created, **kwargs):
             target_change=instance.target_change,
             source_key=instance.source_key,
             staged_content_for_import__isnull=False
-        ).exclude(uuid=instance.uuid)
+        ).exclude(status__uuid=instance.status.uuid)
         for incomplete_import in incomplete_user_imports_with_same_target:
-            incomplete_import.set_status(ImportStatus.CANCELED)
+            incomplete_import.set_status(UserTaskStatus.CANCELED)

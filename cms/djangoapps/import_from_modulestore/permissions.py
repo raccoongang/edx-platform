@@ -13,5 +13,7 @@ class IsImportAuthor(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        import_event = get_object_or_404(Import, uuid=request.data.get('import_uuid'))
-        return import_event.user_id == request.user.pk
+        if request.method in ['GET', 'HEAD', 'OPTIONS']:
+            import_event = get_object_or_404(Import, status__uuid=view.kwargs.get('uuid'))
+            return import_event.user_id == request.user.pk
+        return True

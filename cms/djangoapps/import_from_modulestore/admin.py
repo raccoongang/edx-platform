@@ -2,19 +2,17 @@
 This module contains the admin configuration for the Import model.
 """
 from django import forms
-from django.contrib import admin, messages
-from django.http import HttpResponseRedirect
-from django.template.response import TemplateResponse
+from django.contrib import admin
+from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 
 from opaque_keys.edx.keys import UsageKey
 from opaque_keys import InvalidKeyError
 from openedx.core.djangoapps.content_libraries.api import ContentLibrary
 
-from .api import import_course_staged_content_to_library
-from .data import ImportStatus
+from .forms import ImportCreateForm
 from .models import Import, PublishableEntityImport, PublishableEntityMapping
-from .tasks import save_legacy_content_to_staged_content_task
+from .tasks import import_course_to_library_task
 
 
 COMPOSITION_LEVEL_CHOICES = (
@@ -78,22 +76,46 @@ class ImportAdmin(admin.ModelAdmin):
 
     list_display = (
         'uuid',
-        'created',
-        'status',
+        'state',
         'source_key',
         'target_change',
+        'created',
     )
     list_filter = (
-        'status',
+        'status__state',
     )
     search_fields = (
         'source_key',
         'target_change',
     )
 
-    raw_id_fields = ('user',)
     readonly_fields = ('status',)
-    actions = ['import_course_to_library_action']
+
+    def uuid(self, obj):
+        """
+        Returns the UUID of the import.
+        """
+        return getattr(obj.status, 'uuid', None) if obj.status else None
+    uuid.short_description = _('UUID')
+
+    def state(self, obj):
+        """
+        Returns the state of the import.
+        """
+        return getattr(obj.status, 'state', None) if obj.status else None
+    state.short_description = _('State')
+
+    def created(self, obj):
+        """
+        Returns the creation date of the import.
+        """
+        return getattr(obj.status, 'created', None) if obj.status else None
+    created.short_description = _('Created')
+
+    def get_form(self, request, obj=None, **kwargs):
+        if not obj:
+            return ImportCreateForm
+        return super().get_form(request, obj, **kwargs)
 
     def save_model(self, request, obj, form, change):
         """
@@ -102,64 +124,15 @@ class ImportAdmin(admin.ModelAdmin):
         is_created = not getattr(obj, 'id', None)
         super().save_model(request, obj, form, change)
         if is_created:
-            save_legacy_content_to_staged_content_task.delay_on_commit(obj.uuid)
-
-    def import_course_to_library_action(self, request, queryset):
-        """
-        Import selected courses to the library.
-        """
-        form = ImportActionForm(request.POST or None)
-
-        context = self.admin_site.each_context(request)
-        context.update({
-            'opts': self.opts,
-            'form': form,
-            'queryset': queryset,
-            'action_name': 'import_course_to_library_action',
-            'title': _('Import Selected Courses to Library'),
-            'original': _('Import Courses to Library'),
-        })
-
-        if not form.is_valid():
-            return TemplateResponse(request, 'admin/custom_course_import_form.html', context)
-
-        if request.POST and 'apply' in request.POST:
-            if not queryset.count() == queryset.filter(status=ImportStatus.STAGED).count():
-                self.message_user(
-                    request,
-                    _('Only imports with status "Ready" can be imported to the library.'),
-                    level=messages.ERROR,
+            transaction.on_commit(lambda: import_course_to_library_task.delay(
+                    obj.pk,
+                    form.cleaned_data['usage_keys_string'].split(','),
+                    form.cleaned_data['library'].learning_package_id,
+                    obj.user.pk,
+                    composition_level=form.cleaned_data['composition_level'],
+                    override=form.cleaned_data['override'],
                 )
-                return
-
-            try:
-                for obj in queryset:
-                    import_course_staged_content_to_library(
-                        form.cleaned_data['block_keys_to_import'].split(','),
-                        str(obj.uuid),
-                        form.cleaned_data['library'].learning_package_id,
-                        request.user.pk,
-                        composition_level=form.cleaned_data['composition_level'],
-                        override=form.cleaned_data['override'],
-                    )
-
-                self.message_user(
-                    request,
-                    _('Importing courses to library.'),
-                    level=messages.SUCCESS,
-                )
-            except ValueError as exc:
-                self.message_user(
-                    request,
-                    _('Error importing courses to library: {}').format(exc),
-                    level=messages.ERROR,
-                )
-
-            return HttpResponseRedirect(request.get_full_path())
-
-        return TemplateResponse(request, 'admin/custom_course_import_form.html', context)
-
-    import_course_to_library_action.short_description = _('Import selected courses to library')
+            )
 
 
 admin.site.register(Import, ImportAdmin)

@@ -1,167 +1,76 @@
 """
-Tests for tasks in import_from_modulestore app.
+Tests for the tasks module in import_from_modulestore.
 """
-from organizations.models import Organization
+from unittest.mock import patch, MagicMock
+from django.test import TestCase
 from openedx_learning.api.authoring_models import LearningPackage
-from unittest.mock import patch
-
-from cms.djangoapps.import_from_modulestore.data import ImportStatus
-from cms.djangoapps.import_from_modulestore.tasks import (
-    import_course_staged_content_to_library_task,
-    save_legacy_content_to_staged_content_task,
-)
-from openedx.core.djangoapps.content_libraries import api as content_libraries_api
-from openedx.core.djangoapps.content_libraries.api import ContentLibrary
-from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
-from xmodule.modulestore.tests.factories import CourseFactory, BlockFactory
-
-from .factories import ImportFactory
+from user_tasks.models import UserTaskStatus
+from common.djangoapps.student.tests.factories import UserFactory
+from ..constants import IMPORT_FROM_MODULESTORE_PURPOSE
+from ..data import ImportStatus
+from ..models import Import
+from ..tasks import ImportCourseTask, import_course_to_library_task
 
 
-class ImportCourseToLibraryMixin(ModuleStoreTestCase):
+class TestImportCourseTask(TestCase):
     """
-    Mixin for setting up data for tests.
+    Tests for the ImportCourseTask class.
     """
 
+    def test_calculate_total_steps(self):
+        """
+        Test that calculate_total_steps returns 2 (for staging and importing).
+        """
+        result = ImportCourseTask.calculate_total_steps({})
+        self.assertEqual(result, 2)
+
+    def test_generate_name(self):
+        """
+        Test that generate_name correctly formats the task name.
+        """
+        arguments = {
+            'learning_package_id': 123,
+            'import_pk': 456,
+        }
+        expected_name = 'Import course to library (library_id=123, import_id=456)'
+        result = ImportCourseTask.generate_name(arguments)
+        self.assertEqual(result, expected_name)
+
+
+class TestImportCourseToLibraryTask(TestCase):
+    """
+    Tests for the import_course_to_library_task function.
+    """
     def setUp(self):
-        super().setUp()
-
-        self.library = content_libraries_api.create_library(
-            org=Organization.objects.create(name='Organization 1', short_name='org1'),
-            slug='lib_1',
-            title='Library Org 1',
-            description='This is a library from Org 1',
+        """Set up common test data."""
+        self.user = UserFactory(is_staff=True, is_superuser=True)
+        self.import_obj = Import.objects.create(
+            source_key='course-v1:edX+DemoX+Demo_Course',
+            user=self.user,
         )
-        self.content_library = ContentLibrary.objects.get_by_key(self.library.key)
+        self.usage_keys_string = ['block-v1:edX+DemoX+Demo_Course+type@vertical+block@vertical_test']
+        self.learning_package_id = 456
+        self.composition_level = 'component'
+        self.override = False
 
-        self.course = CourseFactory.create()
-        self.chapter = BlockFactory.create(category='chapter', parent=self.course, display_name='Chapter 1')
-        self.sequential = BlockFactory.create(category='sequential', parent=self.chapter, display_name='Sequential 1')
-        self.vertical = BlockFactory.create(category='vertical', parent=self.sequential, display_name='Vertical 1')
-        self.video = BlockFactory.create(category='video', parent=self.vertical, display_name='Video 1')
-        self.problem = BlockFactory.create(category='problem', parent=self.vertical, display_name='Problem 1')
+    @patch('cms.djangoapps.import_from_modulestore.tasks.Import.objects.get')
+    def test_import_not_found(self, mock_import_get):
+        """Test behavior when Import doesn't exist."""
+        mock_import_get.side_effect = Import.DoesNotExist
 
-        # self.course2 = CourseFactory.create()
-        # self.chapter2 = BlockFactory.create(category='chapter', parent=self.course, display_name='Chapter 2')
-        self.chapter2 = BlockFactory.create(category='chapter', parent=self.course, display_name='Chapter 2')
-        self.sequential2 = BlockFactory.create(category='sequential', parent=self.chapter2, display_name='Sequential 2')
-        self.vertical2 = BlockFactory.create(category='vertical', parent=self.sequential2, display_name='Vertical 2')
-        self.video2 = BlockFactory.create(category='video', parent=self.vertical2, display_name='Video 2')
-        self.problem2 = BlockFactory.create(category='problem', parent=self.vertical2, display_name='Problem 2')
-
-        self.import_event = ImportFactory(source_key=self.course.id)
-        self.user = self.import_event.user
-
-
-class TestSaveCourseSectionsToStagedContentTask(ImportCourseToLibraryMixin):
-    """
-    Test cases for save_course_sections_to_staged_content_task.
-    """
-
-    def test_save_legacy_content_to_staged_content_task(self):
-        """
-        End-to-end test for save_legacy_content_to_staged_content_task.
-        """
-        course_chapters_to_import = [self.chapter, self.chapter2]
-        save_legacy_content_to_staged_content_task(self.import_event.uuid)
-
-        self.import_event.refresh_from_db()
-        self.assertEqual(self.import_event.staged_content_for_import.count(), len(course_chapters_to_import))
-        self.assertEqual(self.import_event.status, ImportStatus.STAGED)
-
-    def test_old_staged_content_deletion_before_save_new(self):
-        """ Checking that repeated saving of the same content does not create duplicates. """
-        course_chapters_to_import = [self.chapter, self.chapter2]
-
-        save_legacy_content_to_staged_content_task(self.import_event.uuid)
-
-        self.assertEqual(self.import_event.staged_content_for_import.count(), len(course_chapters_to_import))
-
-        save_legacy_content_to_staged_content_task(self.import_event.uuid)
-
-        self.assertEqual(self.import_event.staged_content_for_import.count(), len(course_chapters_to_import))
-
-
-class TestImportLibraryFromStagedContentTask(ImportCourseToLibraryMixin):
-    """
-    Test cases for import_course_staged_content_to_library_task.
-    """
-
-    def _is_imported(self, library, xblock):
-        library_learning_package = LearningPackage.objects.get(id=library.learning_package_id)
-        self.assertTrue(library_learning_package.content_set.filter(text__icontains=xblock.display_name).exists())
-
-    def test_import_course_staged_content_to_library_task(self):
-        """ End-to-end test for import_course_staged_content_to_library_task. """
-        library_learning_package = LearningPackage.objects.get(id=self.library.learning_package_id)
-        self.assertEqual(library_learning_package.content_set.count(), 0)
-        expected_imported_xblocks = [self.problem, self.problem2, self.video, self.video2]
-        save_legacy_content_to_staged_content_task(self.import_event.uuid)
-
-        import_course_staged_content_to_library_task(
-            [str(self.chapter.location), str(self.chapter2.location)],
-            self.import_event.uuid,
-            self.content_library.learning_package.id,
-            self.user.id,
-            'xblock',
-            override=True
+        import_course_to_library_task.delay(
+            self.import_obj.pk, self.usage_keys_string, self.learning_package_id,
+            self.user.pk, self.composition_level, self.override
         )
 
-        self.import_event.refresh_from_db()
-        self.assertEqual(self.import_event.status, ImportStatus.IMPORTED)
+        mock_import_get.assert_called_once_with(pk=self.import_obj.pk, user_id=self.user.pk)
 
-        for xblock in expected_imported_xblocks:
-            self._is_imported(self.library, xblock)
-
-        library_learning_package.refresh_from_db()
-        self.assertEqual(library_learning_package.content_set.count(), len(expected_imported_xblocks))
-        self.assertEqual(self.import_event.publishableentityimport_set.count(), len(expected_imported_xblocks))
-
-    @patch('cms.djangoapps.import_from_modulestore.tasks.ImportClient')
-    def test_import_library_block_not_found(self, mock_import_client):
-        """ Test that if a block is not found in the staged content, it is not imported. """
-        non_existent_usage_ids = ['block-v1:edX+Demo+2023+type@vertical+block@12345']
-        save_legacy_content_to_staged_content_task(self.import_event.uuid)
-
-        import_course_staged_content_to_library_task(
-            non_existent_usage_ids,
-            str(self.import_event.uuid),
-            self.content_library.learning_package.id,
-            self.user.id,
-            'xblock',
-            override=True,
-        )
-        mock_import_client.assert_not_called()
-
-    def test_cannot_import_staged_content_twice(self):
-        """
-        Tests if after importing staged content into the library,
-        the staged content is deleted and cannot be imported again.
-        """
-        chapters_to_import = [self.chapter, self.chapter2]
-        expected_imported_xblocks = [self.problem, self.video]
-        save_legacy_content_to_staged_content_task(self.import_event.uuid)
-
-        self.import_event.refresh_from_db()
-        self.assertEqual(self.import_event.staged_content_for_import.count(), len(chapters_to_import))
-        self.assertEqual(self.import_event.status, ImportStatus.STAGED)
-
-        import_course_staged_content_to_library_task(
-            [str(self.chapter.location)],
-            str(self.import_event.uuid),
-            self.content_library.learning_package.id,
-            self.user.id,
-            'xblock',
-            override=True,
+    def test_user_task_status_created(self):
+        """Test that UserTaskStatus is created."""
+        import_course_to_library_task.delay(
+            self.import_obj.pk, self.usage_keys_string, self.learning_package_id,
+            self.user.pk, self.composition_level, self.override
         )
 
-        for xblock in expected_imported_xblocks:
-            self._is_imported(self.library, xblock)
-
-        library_learning_package = LearningPackage.objects.get(id=self.library.learning_package_id)
-        self.assertEqual(library_learning_package.content_set.count(), len(expected_imported_xblocks))
-
-        self.import_event.refresh_from_db()
-        self.assertEqual(self.import_event.status, ImportStatus.IMPORTED)
-        self.assertTrue(not self.import_event.staged_content_for_import.exists())
-        self.assertEqual(self.import_event.publishableentityimport_set.count(), len(expected_imported_xblocks))
+        self.import_obj.refresh_from_db()
+        self.assertIsInstance(self.import_obj.status, UserTaskStatus)

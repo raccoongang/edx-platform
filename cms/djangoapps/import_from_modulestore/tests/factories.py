@@ -2,7 +2,6 @@
 Factories for Import model.
 """
 
-import uuid
 
 import factory
 from factory.django import DjangoModelFactory
@@ -24,5 +23,4 @@ class ImportFactory(DjangoModelFactory):
     def source_key(self):
         return CourseKey.from_string(f'course-v1:edX+DemoX+{self.uuid}')
 
-    uuid = factory.LazyFunction(lambda: str(uuid.uuid4()))
     user = factory.SubFactory(UserFactory)

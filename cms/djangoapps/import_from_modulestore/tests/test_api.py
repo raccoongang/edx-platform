@@ -1,102 +1,109 @@
 """
-Test cases for import_from_modulestore.api module.
+Tests for import_from_modulestore API.
 """
-from unittest.mock import patch
-
-import pytest
-from opaque_keys.edx.keys import CourseKey
-
-from common.djangoapps.student.tests.factories import UserFactory
-from cms.djangoapps.import_from_modulestore.api import create_import, import_course_staged_content_to_library
-from cms.djangoapps.import_from_modulestore.data import ImportStatus
-from cms.djangoapps.import_from_modulestore.models import Import
-from openedx.core.djangoapps.content_libraries.tests import factories
-from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
-from .factories import ImportFactory
+from unittest.mock import patch, MagicMock
+from django.test import TestCase
+from ..api import import_course_to_library
 
 
-@pytest.mark.django_db
-class TestCourseToLibraryImportAPI(ModuleStoreTestCase):
+class TestImportCourseToLibrary(TestCase):
     """
-    Test cases for Import API.
+    Tests for import_course_to_library API.
     """
 
     def setUp(self):
-        super().setUp()
-
-        self.library = factories.ContentLibraryFactory()
-
-    def test_create_import(self):
         """
-        Test create_import function.
+        Set up common test data.
         """
-        course_id = "course-v1:edX+DemoX+Demo_Course"
-        user = UserFactory()
-        create_import(course_id, user.id)
+        self.source_key = "source:key"
+        self.target_change_id = 1
+        self.user_id = 2
+        self.usage_ids = ["usage:id1", "usage:id2"]
+        self.learning_package_id = 3
+        self.composition_level = "unit"
+        self.override = False
 
-        import_event = Import.objects.get()
-        assert import_event.source_key == CourseKey.from_string(course_id)
-        assert import_event.user_id == user.id
-        assert import_event.status == ImportStatus.NOT_STARTED
+    @patch('cms.djangoapps.import_from_modulestore.api.validate_composition_level')
+    @patch('cms.djangoapps.import_from_modulestore.api.validate_usage_keys_to_import')
+    @patch('cms.djangoapps.import_from_modulestore.api._Import.objects.create')
+    @patch('cms.djangoapps.import_from_modulestore.api.import_course_to_library_task.delay')
+    def test_import_course_to_library(
+        self,
+        mock_task_delay,
+        mock_create,
+        mock_validate_usage_keys,
+        mock_validate_composition_level
+    ):
+        """
+        Test that import_course_to_library calls the right functions with the right parameters.
+        """
+        mock_import = MagicMock()
+        mock_import.pk = 4
+        mock_create.return_value = mock_import
 
-    def test_import_course_staged_content_to_library(self):
-        """
-        Test import_course_staged_content_to_library function with different override values.
-        """
-        import_event = ImportFactory(
-            source_key=CourseKey.from_string("course-v1:edX+DemoX+Demo_Course"),
+        result = import_course_to_library(
+            self.source_key,
+            self.target_change_id,
+            self.user_id,
+            self.usage_ids,
+            self.learning_package_id,
+            self.composition_level,
+            self.override
         )
-        usage_ids = [
-            "block-v1:edX+DemoX+Demo_Course+type@chapter+block@123",
-            "block-v1:edX+DemoX+Demo_Course+type@chapter+block@456",
-        ]
-        override = False
 
-        with patch(
-            "cms.djangoapps.import_from_modulestore.api.import_course_staged_content_to_library_task"
-        ) as import_course_staged_content_to_library_task_mock:
-            import_course_staged_content_to_library(
-                usage_ids,
-                import_event.uuid,
-                self.library.learning_package.id,
-                import_event.user.id,
-                "xblock",
-                override
+        mock_validate_composition_level.assert_called_once_with(self.composition_level)
+        mock_validate_usage_keys.assert_called_once_with(self.usage_ids)
+
+        mock_create.assert_called_once_with(
+            source_key=self.source_key,
+            target_change_id=self.target_change_id,
+            user_id=self.user_id
+        )
+
+        mock_task_delay.assert_called_once_with(
+            import_pk=str(mock_import.pk),
+            usage_keys_string=self.usage_ids,
+            learning_package_id=self.learning_package_id,
+            user_id=self.user_id,
+            composition_level=self.composition_level,
+            override=self.override
+        )
+
+        self.assertEqual(result, mock_import)
+
+    @patch('cms.djangoapps.import_from_modulestore.api.validate_composition_level')
+    @patch('cms.djangoapps.import_from_modulestore.api.validate_usage_keys_to_import')
+    def test_import_course_to_library_validation_error(
+        self,
+        mock_validate_usage_keys,
+        mock_validate_composition_level
+    ):
+        """
+        Test that validation errors are raised when invalid parameters are provided.
+        """
+        mock_validate_composition_level.side_effect = ValueError("Invalid composition level")
+
+        with self.assertRaises(ValueError):
+            import_course_to_library(
+                self.source_key,
+                self.target_change_id,
+                self.user_id,
+                self.usage_ids,
+                self.learning_package_id,
+                self.composition_level,
+                self.override
             )
 
-        import_course_staged_content_to_library_task_mock.apply_async.assert_called_once_with(
-            kwargs={
-                "usage_keys_string": usage_ids,
-                "import_uuid": import_event.uuid,
-                "learning_package_id": self.library.learning_package.id,
-                "user_id": import_event.user.id,
-                "composition_level": "xblock",
-                "override": override,
-            },
-        )
+        mock_validate_composition_level.side_effect = None
+        mock_validate_usage_keys.side_effect = ValueError("Invalid usage keys")
 
-    def test_import_course_staged_content_to_library_invalid_usage_key(self):
-        """
-        Test import_course_staged_content_to_library function with not chapter usage keys.
-        """
-        import_event = ImportFactory(
-            source_key=CourseKey.from_string("course-v1:edX+DemoX+Demo_Course"),
-        )
-        usage_ids = [
-            "block-v1:edX+DemoX+Demo_Course+type@problem+block@123",
-            "block-v1:edX+DemoX+Demo_Course+type@vertical+block@456",
-        ]
-
-        with patch(
-            "cms.djangoapps.import_from_modulestore.api.import_course_staged_content_to_library_task"
-        ) as import_course_staged_content_to_library_task_mock:
-            with self.assertRaises(ValueError):
-                import_course_staged_content_to_library(
-                    usage_ids,
-                    import_event.uuid,
-                    self.library.learning_package.id,
-                    import_event.user.id,
-                    "xblock",
-                    False
-                )
-        import_course_staged_content_to_library_task_mock.apply_async.assert_not_called()
+        with self.assertRaises(ValueError):
+            import_course_to_library(
+                self.source_key,
+                self.target_change_id,
+                self.user_id,
+                self.usage_ids,
+                self.learning_package_id,
+                self.composition_level,
+                self.override
+            )

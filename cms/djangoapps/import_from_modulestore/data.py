@@ -8,22 +8,32 @@ from django.db.models import TextChoices
 from django.utils.translation import gettext_lazy as _
 
 
-class ImportStatus(TextChoices):
+class ChoiceMixin(Enum):
+    """
+    Mixin to provide a method for getting the (value, name) tuple of the enum.
+    """
+
+    @classmethod
+    def choices(cls):
+        """
+        Returns a list of tuples containing the value and name of each enum member.
+        """
+        return [(member.value, member.name) for member in cls if isinstance(member.value, str)]
+
+
+class ImportStatus(Enum):
     """
     The status of this modulestore-to-learning-core import.
     """
 
-    NOT_STARTED = 'not_started', _('Waiting to stage content')
-    STAGING = 'staging', _('Staging content for import')
+    STAGING = _('Staging content for import')
     STAGING_FAILED = _('Failed to stage content')
-    STAGED = 'staged', _('Content is staged and ready for import')
-    IMPORTING = 'importing', _('Importing staged content')
-    IMPORTING_FAILED = 'importing_failed', _('Failed to import staged content')
-    IMPORTED = 'imported', _('Successfully imported content')
-    CANCELED = 'canceled', _('Canceled')
+    STAGED = _('Content is staged and ready for import')
+    IMPORTING = _('Importing staged content')
+    IMPORTING_FAILED = _('Failed to import staged content')
 
 
-class CompositionLevel(Enum):
+class CompositionLevel(ChoiceMixin):
     """
     Enumeration of composition levels for course content.
     Defines the different levels of composition for course content,
