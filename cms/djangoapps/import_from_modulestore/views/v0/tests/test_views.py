@@ -3,7 +3,7 @@ Tests for Import views (v0).
 """
 import uuid
 from unittest import mock
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from edx_rest_framework_extensions.auth.session.authentication import SessionAuthenticationAllowInactiveUser
 from opaque_keys.edx.locator import LibraryLocatorV2
@@ -22,6 +22,9 @@ from cms.djangoapps.import_from_modulestore.views.v0.serializers import (
     CreateImportTaskSerializer,
     ImportTaskStatusSerializer,
 )
+
+
+User = get_user_model()
 
 
 class TestImportView(APITestCase):
@@ -108,14 +111,14 @@ class TestImportView(APITestCase):
         mock_draft_queryset = mock.MagicMock()
         mock_draft_queryset.last.return_value = self.draft_change
         mock_draft_filter.return_value = mock_draft_queryset
-        
+
         mock_lib_from_string.return_value = self.library_key
         mock_content_lib_get.return_value = self.content_library
         mock_import.return_value = self.import_instance
 
         request = self.factory.post('/api/import_from_modulestore/v0/import/', data=self.valid_post_data, format='json')
         request.user = self.user
-        
+
         view = ImportView()
         view.request = request
         view.format_kwarg = None
@@ -123,17 +126,21 @@ class TestImportView(APITestCase):
         request = view.initialize_request(request)
         view.request = request
 
-        with mock.patch('cms.djangoapps.import_from_modulestore.views.v0.serializers.CreateImportTaskSerializer.is_valid') as mock_is_valid:
+        with mock.patch(
+            'cms.djangoapps.import_from_modulestore.views.v0.serializers.CreateImportTaskSerializer.is_valid'
+        ) as mock_is_valid:
             mock_is_valid.return_value = True
-            with mock.patch('cms.djangoapps.import_from_modulestore.views.v0.serializers.CreateImportTaskSerializer.validated_data', 
-                           new_callable=mock.PropertyMock) as mock_validated_data:
+            with mock.patch(
+                'cms.djangoapps.import_from_modulestore.views.v0.serializers.CreateImportTaskSerializer.validated_data',
+                new_callable=mock.PropertyMock
+            ) as mock_validated_data:
                 mock_validated_data.return_value = self.valid_post_data
                 response = view.post(request)
 
         mock_draft_filter.assert_called_once_with(learning_package__key=self.valid_post_data['target'])
         mock_lib_from_string.assert_called_once_with(self.valid_post_data['target'])
         mock_content_lib_get.assert_called_once_with(
-            org__short_name=self.library_key.org, 
+            org__short_name=self.library_key.org,
             slug=self.library_key.slug
         )
         mock_import.assert_called_once_with(
@@ -160,7 +167,9 @@ class TestImportView(APITestCase):
         view.request = request
         view.format_kwarg = None
 
-        with mock.patch('cms.djangoapps.import_from_modulestore.views.v0.serializers.ImportTaskStatusSerializer.__call__') as mock_serializer:
+        with mock.patch(
+            'cms.djangoapps.import_from_modulestore.views.v0.serializers.ImportTaskStatusSerializer.__call__'
+        ) as mock_serializer:
             mock_serializer.return_value.data = {'status': 'success'}
             response = view.get(request, uuid=self.import_uuid)
 
@@ -180,7 +189,9 @@ class TestImportView(APITestCase):
         request = view.initialize_request(request)
         view.request = request
 
-        with mock.patch('cms.djangoapps.import_from_modulestore.views.v0.serializers.CreateImportTaskSerializer.is_valid') as mock_is_valid:
+        with mock.patch(
+            'cms.djangoapps.import_from_modulestore.views.v0.serializers.CreateImportTaskSerializer.is_valid'
+        ) as mock_is_valid:
             mock_is_valid.side_effect = ValidationError("Invalid data")
             with self.assertRaises(ValidationError):
                 view.post(request)

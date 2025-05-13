@@ -112,10 +112,10 @@ class ImportAdmin(admin.ModelAdmin):
         return getattr(obj.status, 'created', None) if obj.status else None
     created.short_description = _('Created')
 
-    def get_form(self, request, obj=None, **kwargs):
+    def get_form(self, request, obj=None, change=None, **kwargs):
         if not obj:
             return ImportCreateForm
-        return super().get_form(request, obj, **kwargs)
+        return super().get_form(request, obj, change, **kwargs)
 
     def save_model(self, request, obj, form, change):
         """
@@ -125,14 +125,13 @@ class ImportAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
         if is_created:
             transaction.on_commit(lambda: import_course_to_library_task.delay(
-                    obj.pk,
-                    form.cleaned_data['usage_keys_string'].split(','),
-                    form.cleaned_data['library'].learning_package_id,
-                    obj.user.pk,
-                    composition_level=form.cleaned_data['composition_level'],
-                    override=form.cleaned_data['override'],
-                )
-            )
+                obj.pk,
+                form.cleaned_data['usage_keys_string'].split(','),
+                form.cleaned_data['library'].learning_package_id,
+                obj.user.pk,
+                composition_level=form.cleaned_data['composition_level'],
+                override=form.cleaned_data['override'],
+            ))
 
 
 admin.site.register(Import, ImportAdmin)

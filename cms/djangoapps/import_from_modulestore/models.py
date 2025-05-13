@@ -2,7 +2,6 @@
 Models for the course to library import app.
 """
 from typing import Optional
-import uuid as uuid_tools
 
 from django.contrib.auth import get_user_model
 from django.db import models

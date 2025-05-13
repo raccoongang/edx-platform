@@ -16,8 +16,8 @@ from cms.djangoapps.import_from_modulestore.api import import_course_to_library
 from cms.djangoapps.import_from_modulestore.models import Import
 from cms.djangoapps.import_from_modulestore.permissions import IsImportAuthor
 from cms.djangoapps.import_from_modulestore.views.v0.serializers import (
-  CreateImportTaskSerializer,
-  ImportTaskStatusSerializer,
+    CreateImportTaskSerializer,
+    ImportTaskStatusSerializer,
 )
 from openedx.core.djangoapps.content_libraries.api import ContentLibrary
 from openedx.core.lib.api.authentication import BearerAuthenticationAllowInactiveUser
@@ -36,8 +36,8 @@ class ImportView(APIView):
     )
     serializer_class = ImportTaskStatusSerializer
     method_serializers = {
-      'GET': ImportTaskStatusSerializer,
-      'POST': CreateImportTaskSerializer,
+        'GET': ImportTaskStatusSerializer,
+        'POST': CreateImportTaskSerializer,
     }
 
     def get_serializer_class(self):
@@ -58,17 +58,17 @@ class ImportView(APIView):
         target_change = DraftChangeLog.objects.filter(learning_package__key=validated_data['target']).last()
         library_key = LibraryLocatorV2.from_string(validated_data['target'])
         learning_package_id = ContentLibrary.objects.get(
-          org__short_name=library_key.org, slug=library_key.slug
+            org__short_name=library_key.org, slug=library_key.slug
         ).learning_package_id
 
         import_course_to_library(
-          source_key=validated_data['source_key'],
-          target_change_id=target_change.id,
-          user_id=request.user.pk,
-          usage_ids=validated_data['usage_keys_string'],
-          learning_package_id=learning_package_id,
-          composition_level=validated_data['composition_level'],
-          override=validated_data['override'],
+            source_key=validated_data['source_key'],
+            target_change_id=target_change.id,
+            user_id=request.user.pk,
+            usage_ids=validated_data['usage_keys_string'],
+            learning_package_id=learning_package_id,
+            composition_level=validated_data['composition_level'],
+            override=validated_data['override'],
         )
         return Response("Import created successfully", status=status.HTTP_200_OK)
 

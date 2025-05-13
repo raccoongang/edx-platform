@@ -1,3 +1,6 @@
+"""
+This module contains forms for the Import model and related functionality.
+"""
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
@@ -10,6 +13,7 @@ from .models import Import as _Import
 
 User = get_user_model()
 admin.autodiscover()
+
 
 class ImportCreateForm(forms.ModelForm):
     """

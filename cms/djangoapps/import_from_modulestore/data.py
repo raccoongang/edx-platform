@@ -4,7 +4,6 @@ This module contains the data models for the import_from_modulestore app.
 from collections import namedtuple
 from enum import Enum
 
-from django.db.models import TextChoices
 from django.utils.translation import gettext_lazy as _
 
 

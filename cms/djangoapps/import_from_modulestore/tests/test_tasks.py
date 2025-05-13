@@ -1,13 +1,10 @@
 """
 Tests for the tasks module in import_from_modulestore.
 """
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from django.test import TestCase
-from openedx_learning.api.authoring_models import LearningPackage
 from user_tasks.models import UserTaskStatus
 from common.djangoapps.student.tests.factories import UserFactory
-from ..constants import IMPORT_FROM_MODULESTORE_PURPOSE
-from ..data import ImportStatus
 from ..models import Import
 from ..tasks import ImportCourseTask, import_course_to_library_task
 
