@@ -24,6 +24,8 @@ from common.djangoapps.util.json_request import JsonResponse
 from openedx.core.djangoapps.lang_pref.api import released_languages
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 
+from .waffle import catalog_mfe_enabled
+
 log = logging.getLogger(__name__)
 
 
@@ -87,6 +89,9 @@ def courses(request):
     to that. Otherwise, if subdomain branding is on, this is the university
     profile page. Otherwise, it's the edX courseware.views.views.courses page
     """
+    if catalog_mfe_enabled():
+        return redirect(settings.CATALOG_MICROFRONTEND_URL)
+
     enable_mktg_site = configuration_helpers.get_value(
         'ENABLE_MKTG_SITE',
         settings.FEATURES.get('ENABLE_MKTG_SITE', False)
