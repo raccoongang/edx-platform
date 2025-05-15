@@ -7,7 +7,7 @@ from edx_toggles.toggles import WaffleFlag
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 
 # Namespace for Waffle flags related to branding
-WAFFLE_FLAG_NAMESPACE = "legacy_brandind"
+WAFFLE_FLAG_NAMESPACE = "new_catalog_mfe"
 
 
 def catalog_mfe_enabled():
@@ -19,18 +19,18 @@ def catalog_mfe_enabled():
     )
 
 
-# .. toggle_name: legacy_branding.catalog
+# .. toggle_name: new_catalog_mfe.use_new_catalog_page
 # .. toggle_implementation: WaffleFlag
 # .. toggle_default: False
 # .. toggle_description: Fall back to the old LMS catalog page.
 # .. toggle_creation_date: 2025-05-15
 # .. toggle_target_removal_date: None
 # .. toggle_use_cases: open_edx
-LEGACY_CATALOG = WaffleFlag(f'{WAFFLE_FLAG_NAMESPACE}.catalog', __name__)
+NEW_CATALOG_PAGE = WaffleFlag(f'{WAFFLE_FLAG_NAMESPACE}.use_new_catalog_page', __name__)
 
 
 def use_new_catalog_page():
     """
     Returns a boolean if new catalog page should be used.
     """
-    return not LEGACY_CATALOG.is_enabled()
+    return NEW_CATALOG_PAGE.is_enabled()

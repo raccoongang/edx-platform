@@ -16,15 +16,15 @@ class TestBrandingToggles(TestCase):
     """
 
     @ddt.data(True, False)
-    @patch("lms.djangoapps.branding.toggles.LEGACY_CATALOG")
+    @patch("lms.djangoapps.branding.toggles.NEW_CATALOG_PAGE")
     def test_use_new_catalog_page_enabled(
-        self, is_waffle_enabled, mock_enable_legacy_catalog
+        self, is_waffle_enabled, mock_enable_new_catalog_page
     ):
         # Given legacy catalog feature is / not enabled
-        mock_enable_legacy_catalog.is_enabled.return_value = is_waffle_enabled
+        mock_enable_new_catalog_page.is_enabled.return_value = is_waffle_enabled
 
         # When I check if the feature is enabled
         should_use_new_catalog_page = use_new_catalog_page()
 
         # Then I respects waffle setting.
-        self.assertEqual(should_use_new_catalog_page, not is_waffle_enabled)
+        self.assertEqual(should_use_new_catalog_page, is_waffle_enabled)
