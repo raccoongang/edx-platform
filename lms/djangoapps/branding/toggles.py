@@ -27,6 +27,14 @@ def catalog_mfe_enabled():
 # .. toggle_target_removal_date: None
 # .. toggle_use_cases: open_edx
 ENABLE_NEW_CATALOG_PAGE = WaffleFlag(f'{WAFFLE_FLAG_NAMESPACE}.use_new_catalog_page', __name__)
+# .. toggle_name: new_catalog_mfe.use_new_index_page
+# .. toggle_implementation: WaffleFlag
+# .. toggle_default: False
+# .. toggle_description: Set to True to enable the new index page.
+# .. toggle_creation_date: 2025-05-15
+# .. toggle_target_removal_date: None
+# .. toggle_use_cases: open_edx
+ENABLE_NEW_INDEX_PAGE = WaffleFlag(f'{WAFFLE_FLAG_NAMESPACE}.use_new_index_page', __name__)
 
 
 def use_new_catalog_page():
@@ -34,3 +42,10 @@ def use_new_catalog_page():
     Returns a boolean if new catalog page should be used.
     """
     return ENABLE_NEW_CATALOG_PAGE.is_enabled()
+
+
+def use_new_index_page():
+    """
+    Returns a boolean if new index page should be used.
+    """
+    return ENABLE_NEW_INDEX_PAGE.is_enabled()
