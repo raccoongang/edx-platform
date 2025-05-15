@@ -7,6 +7,7 @@ import ddt
 from django.test import TestCase
 
 from lms.djangoapps.branding.toggles import use_new_catalog_page
+from lms.djangoapps.branding.toggles import use_new_course_about_page
 
 
 @ddt.ddt
@@ -28,3 +29,15 @@ class TestBrandingToggles(TestCase):
 
         # Then I respects waffle setting.
         self.assertEqual(should_use_new_catalog_page, is_waffle_enabled)
+    @patch("lms.djangoapps.branding.toggles.ENABLE_NEW_COURSE_ABOUT_PAGE")
+    def test_use_new_course_about_page_enabled(
+        self, is_waffle_enabled, mock_enable_new_course_about_page
+    ):
+        # Given legacy course about feature is / not enabled
+        mock_enable_new_course_about_page.is_enabled.return_value = is_waffle_enabled
+
+        # When I check if the feature is enabled
+        should_use_new_course_about_page = use_new_course_about_page()
+
+        # Then I respects waffle setting.
+        self.assertEqual(should_use_new_course_about_page, is_waffle_enabled)
