@@ -22,15 +22,15 @@ def catalog_mfe_enabled():
 # .. toggle_name: new_catalog_mfe.use_new_catalog_page
 # .. toggle_implementation: WaffleFlag
 # .. toggle_default: False
-# .. toggle_description: Fall back to the old LMS catalog page.
+# .. toggle_description: Set to True to enable the new catalog page.
 # .. toggle_creation_date: 2025-05-15
 # .. toggle_target_removal_date: None
 # .. toggle_use_cases: open_edx
-NEW_CATALOG_PAGE = WaffleFlag(f'{WAFFLE_FLAG_NAMESPACE}.use_new_catalog_page', __name__)
+ENABLE_NEW_CATALOG_PAGE = WaffleFlag(f'{WAFFLE_FLAG_NAMESPACE}.use_new_catalog_page', __name__)
 
 
 def use_new_catalog_page():
     """
     Returns a boolean if new catalog page should be used.
     """
-    return NEW_CATALOG_PAGE.is_enabled()
+    return ENABLE_NEW_CATALOG_PAGE.is_enabled()

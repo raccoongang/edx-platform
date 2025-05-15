@@ -16,7 +16,7 @@ class TestBrandingToggles(TestCase):
     """
 
     @ddt.data(True, False)
-    @patch("lms.djangoapps.branding.toggles.NEW_CATALOG_PAGE")
+    @patch("lms.djangoapps.branding.toggles.ENABLE_NEW_CATALOG_PAGE")
     def test_use_new_catalog_page_enabled(
         self, is_waffle_enabled, mock_enable_new_catalog_page
     ):
