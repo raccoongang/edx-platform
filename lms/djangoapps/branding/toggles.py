@@ -25,6 +25,7 @@ def catalog_mfe_enabled():
 # .. toggle_description: Fall back to the old LMS catalog page.
 # .. toggle_creation_date: 2025-05-15
 # .. toggle_target_removal_date: None
+# .. toggle_use_cases: open_edx
 LEGACY_CATALOG = WaffleFlag(f'{WAFFLE_FLAG_NAMESPACE}.catalog', __name__)
 
 
