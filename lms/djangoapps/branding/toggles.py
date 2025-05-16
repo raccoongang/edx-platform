@@ -46,6 +46,6 @@ def use_new_catalog_page():
 
 def use_new_course_about_page():
     """
-    Returns a boolean if new course about page should be used.
+    Returns a boolean if new course about page mfe is enabled.
     """
     return ENABLE_NEW_COURSE_ABOUT_PAGE.is_enabled()
