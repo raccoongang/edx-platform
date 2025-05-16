@@ -46,6 +46,6 @@ def use_new_catalog_page():
 
 def use_new_index_page():
     """
-    Returns a boolean if new index page should be used.
+    Returns a boolean if new index page mfe is enabled.
     """
     return ENABLE_NEW_INDEX_PAGE.is_enabled()
