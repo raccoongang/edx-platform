@@ -16,6 +16,7 @@ from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 import lms.djangoapps.branding.api as branding_api
+import lms.djangoapps.branding.toggles as branding_toggles
 import lms.djangoapps.courseware.views.views as courseware_views
 from common.djangoapps.edxmako.shortcuts import marketing_link, render_to_response
 from common.djangoapps.student import views as student_views
@@ -312,3 +313,32 @@ def footer(request):
 
     else:
         return HttpResponse(status=406)
+
+
+def waffle_flags(request):
+    """
+    Return a JSON response with the status of various waffle flags
+    related to the new catalog MFE.
+
+    Example response:
+    {
+        "home_page": {
+            "new_catalog_mfe.use_new_index_page": true
+        },
+        "course_catalog_page": {
+            "new_catalog_mfe.use_new_catalog_page": false,
+            "new_catalog_mfe.use_new_course_about_page": true
+        }
+    }
+    """
+    data = {
+        "home_page": {
+            "new_catalog_mfe.use_new_index_page": branding_toggles.use_new_index_page(),
+        },
+        "course_catalog_page": {
+            "new_catalog_mfe.use_new_catalog_page": branding_toggles.use_new_catalog_page(),
+            "new_catalog_mfe.use_new_course_about_page": branding_toggles.use_new_course_about_page(),
+        }
+    }
+
+    return JsonResponse(data, status=200, content_type="application/json; charset=utf-8")  # lint-amnesty, pylint: disable=redundant-content-type-for-json-response
