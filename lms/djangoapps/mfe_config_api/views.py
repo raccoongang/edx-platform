@@ -81,27 +81,20 @@ def _update_config_for_catalog(mfe_config):
 
     This is done for backward compatibility with the old configuration system.
     """
-
-    enable_course_sorting_by_start_date = configuration_helpers.get_value(
-        'ENABLE_COURSE_SORTING_BY_START_DATE',
-        settings.FEATURES['ENABLE_COURSE_SORTING_BY_START_DATE'],
-    )
-    homepage_overlay_html = configuration_helpers.get_value('homepage_overlay_html')
-    show_partners = configuration_helpers.get_value('show_partners', True)
-    show_homepage_promo_video = configuration_helpers.get_value('show_homepage_promo_video', False)
-    homepage_course_max = configuration_helpers.get_value(
-        'HOMEPAGE_COURSE_MAX', settings.HOMEPAGE_COURSE_MAX
-    )
-    homepage_promo_video_youtube_id = configuration_helpers.get_value(
-        'homepage_promo_video_youtube_id', '<your-youtube-id>'
-    )
     catalog_conf = {
-        "enable_course_sorting_by_start_date": enable_course_sorting_by_start_date,
-        "homepage_overlay_html": homepage_overlay_html,
-        "show_partners": show_partners,
-        "show_homepage_promo_video": show_homepage_promo_video,
-        "homepage_course_max": homepage_course_max,
-        "homepage_promo_video_youtube_id": homepage_promo_video_youtube_id,
+        'enable_course_sorting_by_start_date': configuration_helpers.get_value(
+            'ENABLE_COURSE_SORTING_BY_START_DATE',
+            settings.FEATURES['ENABLE_COURSE_SORTING_BY_START_DATE'],
+        ),
+        'homepage_overlay_html': configuration_helpers.get_value('homepage_overlay_html'),
+        'show_partners': configuration_helpers.get_value('show_partners', True),
+        'show_homepage_promo_video': configuration_helpers.get_value('show_homepage_promo_video', False),
+        'homepage_course_max': configuration_helpers.get_value(
+            'HOMEPAGE_COURSE_MAX', settings.HOMEPAGE_COURSE_MAX
+        ),
+        'homepage_promo_video_youtube_id': configuration_helpers.get_value(
+            'homepage_promo_video_youtube_id', '<your-youtube-id>'
+        ),
     }
     for key, value in catalog_conf.items():
         mfe_config[key] = mfe_config.get(key, value)  # add value from site configuration if not set
