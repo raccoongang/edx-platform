@@ -162,3 +162,146 @@ class MFEConfigTestCase(APITestCase):
         response = self.client.get(self.mfe_config_api_url)
         configuration_helpers_mock.get_value.assert_not_called()
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+@ddt.ddt
+class MFEConfigCatalogTestCase(APITestCase):
+    """
+    Test the catalog MFE specific configuration handling.
+    """
+    def setUp(self):
+        self.mfe_config_api_url = reverse("mfe_config_api:config")
+        return super().setUp()
+
+    @patch("lms.djangoapps.mfe_config_api.views.configuration_helpers")
+    def test_get_catalog_mfe_config(self, configuration_helpers_mock):
+        """Test the get catalog mfe config with specific catalog configuration values.
+
+        Expected result:
+        - The configuration_helpers get_value is called for each catalog-specific configuration.
+        - The catalog-specific values are included in the response.
+        """
+        mfe_config = {"BASE_URL": "https://catalog.example.com"}
+        config_overrides = {"catalog": {"SOME_SETTING": "catalog_value"}}
+
+        def side_effect(key, default=None):
+            if key == "MFE_CONFIG":
+                return mfe_config
+            if key == "MFE_CONFIG_OVERRIDES":
+                return config_overrides
+            if key == "ENABLE_COURSE_SORTING_BY_START_DATE":
+                return True
+            if key == "homepage_overlay_html":
+                return "<h1>Welcome</h1>"
+            if key == "show_partners":
+                return False
+            if key == "show_homepage_promo_video":
+                return True
+            if key == "HOMEPAGE_COURSE_MAX":
+                return 8
+            if key == "homepage_promo_video_youtube_id":
+                return "test-youtube-id"
+            return default
+        configuration_helpers_mock.get_value.side_effect = side_effect
+
+        response = self.client.get(f"{self.mfe_config_api_url}?mfe=catalog")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()["BASE_URL"], "https://catalog.example.com")
+        self.assertEqual(response.json()["SOME_SETTING"], "catalog_value")
+        self.assertEqual(response.json()["enable_course_sorting_by_start_date"], True)
+        self.assertEqual(response.json()["homepage_overlay_html"], "<h1>Welcome</h1>")
+        self.assertEqual(response.json()["show_partners"], False)
+        self.assertEqual(response.json()["show_homepage_promo_video"], True)
+        self.assertEqual(response.json()["homepage_course_max"], 8)
+        self.assertEqual(response.json()["homepage_promo_video_youtube_id"], "test-youtube-id")
+
+    @patch("lms.djangoapps.mfe_config_api.views.configuration_helpers")
+    def test_catalog_config_precedence(self, configuration_helpers_mock):
+        """Test the precedence of configuration values for catalog MFE.
+
+        Expected result:
+        - Values should be taken in this order (highest to lowest precedence):
+            1. MFE_CONFIG_OVERRIDES from site conf
+            2. MFE_CONFIG_OVERRIDES from settings
+            3. MFE_CONFIG from site conf
+            4. MFE_CONFIG from settings
+            5. Plain site configuration
+            6. Plain settings
+        """
+        mfe_config = {
+            "homepage_course_max": 10,
+            "enable_course_sorting_by_start_date": False,
+            "preserved_setting": "preserved"
+        }
+        config_overrides = {
+            "catalog": {
+                "homepage_course_max": 15,
+                "show_partners": True
+            }
+        }
+
+        def side_effect(key, default=None):
+            if key == "MFE_CONFIG":
+                return mfe_config
+            if key == "MFE_CONFIG_OVERRIDES":
+                return config_overrides
+            if key == "HOMEPAGE_COURSE_MAX":
+                return 5  # Plain site configuration
+            if key == "homepage_promo_video_youtube_id":
+                return "site-conf-youtube-id"
+            return default
+        configuration_helpers_mock.get_value.side_effect = side_effect
+
+        with override_settings(
+            HOMEPAGE_COURSE_MAX=3,  # Plain settings (lowest precedence)
+            FEATURES={'ENABLE_COURSE_SORTING_BY_START_DATE': True}  # Settings FEATURES
+        ):
+            response = self.client.get(f"{self.mfe_config_api_url}?mfe=catalog")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # MFE_CONFIG_OVERRIDES from site conf (highest precedence)
+        self.assertEqual(response.json()["homepage_course_max"], 15)
+        self.assertEqual(response.json()["show_partners"], True)
+
+        # MFE_CONFIG from site conf takes precedence over plain site configuration and settings
+        self.assertEqual(response.json()["enable_course_sorting_by_start_date"], False)
+
+        # Plain site configuration takes precedence over plain settings
+        self.assertEqual(response.json()["homepage_promo_video_youtube_id"], "site-conf-youtube-id")
+
+        # Value in original MFE_CONFIG not overridden by catalog config should be preserved
+        self.assertEqual(response.json()["preserved_setting"], "preserved")
+
+    @patch("lms.djangoapps.mfe_config_api.views.configuration_helpers")
+    def test_catalog_config_does_not_override_mfe_config(self, configuration_helpers_mock):
+        """Test that catalog-specific config doesn't override existing mfe_config values.
+
+        Expected result:
+        - If a key exists in both mfe_config and catalog-specific config, the mfe_config value is preserved.
+        """
+        mfe_config = {
+            "homepage_overlay_html": "<h1>Existing overlay</h1>",
+            "show_partners": True
+        }
+        config_overrides = {"catalog": {}}
+
+        def side_effect(key, default=None):
+            if key == "MFE_CONFIG":
+                return mfe_config
+            if key == "MFE_CONFIG_OVERRIDES":
+                return config_overrides
+            if key == "homepage_overlay_html":
+                return "<h1>New overlay</h1>"
+            if key == "show_partners":
+                return False
+            return default
+        configuration_helpers_mock.get_value.side_effect = side_effect
+
+        response = self.client.get(f"{self.mfe_config_api_url}?mfe=catalog")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Values from mfe_config should be preserved
+        self.assertEqual(response.json()["homepage_overlay_html"], "<h1>Existing overlay</h1>")
+        self.assertEqual(response.json()["show_partners"], True)
