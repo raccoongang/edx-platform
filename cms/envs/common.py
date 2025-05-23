@@ -2892,3 +2892,9 @@ LIBRARY_ENABLED_BLOCKS = [
     'survey',
     'word_cloud',
 ]
+
+# .. setting_name: DEFAULT_ORG_LOGO_URL
+# .. setting_default: organization_logos/_placeholder.png  # FIXME: change to correct placeholder
+# .. setting_description: The default logo URL for organizations that do not have a logo set.
+# .. setting_warning: This URL is used as a placeholder for organizations that do not have a logo set.
+DEFAULT_ORG_LOGO_URL = 'organization_logos/_placeholder.png'  # FIXME: change to correct placeholder
