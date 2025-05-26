@@ -18,7 +18,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import lms.djangoapps.branding.api as branding_api
-import lms.djangoapps.branding.toggles as branding_toggles
+from lms.djangoapps.branding.serializers import WaffleFlagsSerializer
 import lms.djangoapps.courseware.views.views as courseware_views
 from common.djangoapps.edxmako.shortcuts import marketing_link, render_to_response
 from common.djangoapps.student import views as student_views
@@ -317,33 +317,30 @@ def footer(request):
         return HttpResponse(status=406)
 
 
-def waffle_flags(request):
+class WaffleFlagsView(APIView):
     """
-    Return a JSON response with the status of various waffle flags
-    related to the new catalog MFE.
+    API view to return waffle flags related to the new catalog MFE.
+    """
+    def get(self, request):
+        """
+        Handle GET requests to return waffle flags.
 
-    Example response:
-    {
-        "home_page": {
-            "new_catalog_mfe.use_new_index_page": true
-        },
-        "course_catalog_page": {
+        **Response Values**
+            A JSON response containing the status of various waffle flags
+            for the specified course.
+
+        **Example Response**
+
+        ```json
+        {
+            "new_catalog_mfe.use_new_index_page": true,
             "new_catalog_mfe.use_new_catalog_page": false,
             "new_catalog_mfe.use_new_course_about_page": true
         }
-    }
-    """
-    data = {
-        "home_page": {
-            "new_catalog_mfe.use_new_index_page": branding_toggles.use_new_index_page(),
-        },
-        "course_catalog_page": {
-            "new_catalog_mfe.use_new_catalog_page": branding_toggles.use_new_catalog_page(),
-            "new_catalog_mfe.use_new_course_about_page": branding_toggles.use_new_course_about_page(),
-        }
-    }
-
-    return JsonResponse(data, status=200, content_type="application/json; charset=utf-8")  # lint-amnesty, pylint: disable=redundant-content-type-for-json-response
+        """
+        serializer = WaffleFlagsSerializer(data={})
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data)
 
 
 class IndexPageConfigView(APIView):
