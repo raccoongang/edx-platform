@@ -65,6 +65,7 @@ __all__ = [
     "orphan_handler",
     "xblock_handler",
     "xblock_view_handler",
+    "xblock_info_handler",
     "xblock_outline_handler",
     "xblock_container_handler",
 ]
@@ -398,6 +399,27 @@ def xblock_container_handler(request, usage_key_string):
         return JsonResponse(response)
     else:
         raise Http404
+
+
+@require_http_methods("GET")
+@login_required
+def xblock_info_handler(request, usage_key_string, view_name):
+    """
+    Returns information about the configurable fields of an XBlock.
+    """
+    usage_key = usage_key_with_run(usage_key_string)
+    if not has_studio_read_access(request.user, usage_key.course_key):
+        raise PermissionDenied()
+
+    if view_name == "configurable_fields_info":
+        xblock = modulestore().get_item(usage_key)
+        if xblock is None:
+            raise Http404
+        if not hasattr(xblock, "get_configurable_fields_info"):
+            return HttpResponse(status=406)
+        return JsonResponse(xblock.get_configurable_fields_info())
+    else:
+        return HttpResponse(status=406)
 
 
 @login_required
