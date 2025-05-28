@@ -14,6 +14,8 @@ from django.utils import translation
 from django.utils.translation.trans_real import get_supported_language_variant
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 import lms.djangoapps.branding.api as branding_api
 import lms.djangoapps.branding.toggles as branding_toggles
@@ -342,3 +344,37 @@ def waffle_flags(request):
     }
 
     return JsonResponse(data, status=200, content_type="application/json; charset=utf-8")  # lint-amnesty, pylint: disable=redundant-content-type-for-json-response
+
+
+class IndexPageConfigView(APIView):
+    """
+    API view to return the configuration for the index page.
+    """
+
+    def get(self, request):
+        """
+        Returns the configuration for the index page.
+        """
+        enable_course_sorting_by_start_date = configuration_helpers.get_value(
+            'ENABLE_COURSE_SORTING_BY_START_DATE',
+            settings.FEATURES['ENABLE_COURSE_SORTING_BY_START_DATE'],
+        )
+        homepage_overlay_html = configuration_helpers.get_value('homepage_overlay_html')
+        show_partners = configuration_helpers.get_value('show_partners', True)
+        show_homepage_promo_video = configuration_helpers.get_value('show_homepage_promo_video', False)
+        homepage_course_max = configuration_helpers.get_value(
+            'HOMEPAGE_COURSE_MAX', settings.HOMEPAGE_COURSE_MAX
+        )
+        homepage_promo_video_youtube_id = configuration_helpers.get_value(
+            'homepage_promo_video_youtube_id', 'your-youtube-id'
+        )
+
+        data = {
+            "enable_course_sorting_by_start_date": enable_course_sorting_by_start_date,
+            "homepage_overlay_html": homepage_overlay_html,
+            "show_partners": show_partners,
+            "show_homepage_promo_video": show_homepage_promo_video,
+            "homepage_course_max": homepage_course_max,
+            "homepage_promo_video_youtube_id": homepage_promo_video_youtube_id,
+        }
+        return Response(data)
