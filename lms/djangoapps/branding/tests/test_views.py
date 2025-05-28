@@ -8,12 +8,11 @@ import ddt
 import six
 from django.conf import settings
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
-from django.test import override_settings, TestCase
+from django.test import TestCase
 from django.urls import reverse
 
 from common.djangoapps.student.tests.factories import UserFactory
 from lms.djangoapps.branding.models import BrandingApiConfig
-
 from openedx.core.djangoapps.dark_lang.models import DarkLangConfig
 from openedx.core.djangoapps.lang_pref.api import released_languages
 from openedx.core.djangoapps.site_configuration.tests.mixins import SiteMixin
@@ -250,7 +249,6 @@ class TestFooter(CacheIsolationTestCase):
             assert f'<option value="{language.code}">' in content
 
 
-@ddt.ddt
 class TestIndex(SiteMixin, TestCase):
     """ Test the index view """
 
@@ -289,75 +287,106 @@ class TestIndex(SiteMixin, TestCase):
         response = self.client.get(reverse("dashboard"))
         assert self.site_configuration_other.site_values['MKTG_URLS']['ROOT'] in response.content.decode('utf-8')
 
-    @ddt.data(
-        (True, True),
-        (True, False),
-        (False, False),
-        (False, False),
-    )
-    @ddt.unpack
-    def test_index_redirects_to_mfe(self, catalog_mfe_enabled, expected_redirect):
-        """Test that index view redirects to MFE when both flags are enabled."""
-        old_features = settings.FEATURES.copy()
-        old_features.update({
-            "ENABLE_CATALOG_MICROFRONTEND": catalog_mfe_enabled,
-            "COURSES_ARE_BROWSABLE": True,
-        })
-        new_settings = {
-            "FEATURES": old_features,
-            "CATALOG_MICROFRONTEND_URL": "http://example.com/catalog",
-        }
-        with override_settings(**new_settings):
-            response = self.client.get(reverse("root"))
-
-            if expected_redirect:
-                expected_url = f'{settings.CATALOG_MICROFRONTEND_URL}/'
-                self.assertRedirects(
-                    response,
-                    expected_url,
-                    status_code=301,
-                    fetch_redirect_response=False
-                )
-            else:
-                assert response.status_code in [200, 301, 302]
-
 
 @ddt.ddt
-class TestCourses(SiteMixin, TestCase):
-    """Test the courses view"""
+class TestIndexPageConfig(SiteMixin, TestCase):
+    """Test the index_page_config view"""
 
     def setUp(self):
         super().setUp()
-        self.courses_url = reverse("courses")
+        self.url = reverse("index_page_config")
+
+    def test_index_page_config_default_response(self):
+        """Test index_page_config returns expected default values"""
+        response = self.client.get(self.url)
+        assert response.status_code == 200
+        assert response['Content-Type'] == 'application/json'
+
+        config = json.loads(response.content.decode('utf-8'))
+        assert 'enable_course_sorting_by_start_date' in config
+        assert 'homepage_overlay_html' in config
+        assert 'show_partners' in config
+        assert 'show_homepage_promo_video' in config
+        assert 'homepage_course_max' in config
+        assert 'homepage_promo_video_youtube_id' in config
+
+        # Test default values
+        assert config['show_partners'] is True
+        assert config['show_homepage_promo_video'] is False
+        assert config['homepage_promo_video_youtube_id'] == 'your-youtube-id'
+        assert config['enable_course_sorting_by_start_date'] == settings.FEATURES.get(
+            'ENABLE_COURSE_SORTING_BY_START_DATE'
+        )
+        assert config['homepage_course_max'] == settings.HOMEPAGE_COURSE_MAX
 
     @ddt.data(
-        (True, True),
-        (True, False),
-        (False, False),
-        (False, False),
+        ('ENABLE_COURSE_SORTING_BY_START_DATE', True),
+        ('ENABLE_COURSE_SORTING_BY_START_DATE', False),
+        ('homepage_overlay_html', '<p>Test overlay</p>'),
+        ('show_partners', False),
+        ('show_homepage_promo_video', True),
+        ('HOMEPAGE_COURSE_MAX', 5),
+        ('homepage_promo_video_youtube_id', 'test-youtube-id')
     )
     @ddt.unpack
-    def test_courses_redirect_to_mfe(self, catalog_mfe_enabled, expected_redirect):
-        """Test that courses view redirects to MFE when both flags are enabled"""
-        old_features = settings.FEATURES.copy()
-        old_features.update({
-            "ENABLE_CATALOG_MICROFRONTEND": catalog_mfe_enabled,
-            "COURSES_ARE_BROWSABLE": True,
-        })
-        new_settings = {
-            "FEATURES": old_features,
-            "CATALOG_MICROFRONTEND_URL": "http://example.com/catalog",
-        }
-        with override_settings(**new_settings):
-            response = self.client.get(self.courses_url)
+    def test_index_page_config_with_site_configuration(self, key, value):
+        """Test index_page_config returns values from site configuration"""
+        # Configure site with the test value
+        self.use_site(self.site)
+        site_dict = {key: value}
+        self.site_configuration.site_values.update(site_dict)
+        self.site_configuration.save()
 
-            if expected_redirect:
-                expected_url = f'{settings.CATALOG_MICROFRONTEND_URL}/courses'
-                self.assertRedirects(
-                    response,
-                    expected_url,
-                    status_code=301,
-                    fetch_redirect_response=False
-                )
-            else:
-                assert response.status_code in [200, 301, 302]
+        response = self.client.get(self.url)
+        assert response.status_code == 200
+
+        config = json.loads(response.content.decode('utf-8'))
+
+        # Convert keys to the response format if needed
+        response_key = key
+        if key == 'ENABLE_COURSE_SORTING_BY_START_DATE':
+            response_key = 'enable_course_sorting_by_start_date'
+        elif key == 'HOMEPAGE_COURSE_MAX':
+            response_key = 'homepage_course_max'
+
+        assert config[response_key] == value
+
+    def test_config_falls_back_to_settings(self):
+        """Test that the configuration falls back to settings when not in site configuration"""
+        self.use_site(self.site)
+        self.site_configuration.site_values.clear()
+        self.site_configuration.save()
+
+        with mock.patch.dict(settings.FEATURES, {'ENABLE_COURSE_SORTING_BY_START_DATE': False}):
+            with mock.patch.object(settings, 'HOMEPAGE_COURSE_MAX', 10):
+                response = self.client.get(self.url)
+                config = json.loads(response.content.decode('utf-8'))
+                assert config['enable_course_sorting_by_start_date'] is False
+                assert config['homepage_course_max'] == 10
+
+    @mock.patch('openedx.core.djangoapps.site_configuration.helpers.get_value')
+    def test_all_values_from_config_helpers(self, mock_get_value):
+        """Test that all values come from configuration helpers if available"""
+        # Setup mock to return different values for different keys
+        def side_effect(key, default=None):
+            config_values = {
+                'ENABLE_COURSE_SORTING_BY_START_DATE': True,
+                'homepage_overlay_html': '<h1>Custom Overlay</h1>',
+                'show_partners': False,
+                'show_homepage_promo_video': True,
+                'HOMEPAGE_COURSE_MAX': 7,
+                'homepage_promo_video_youtube_id': 'custom-youtube-id'
+            }
+            return config_values.get(key, default)
+
+        mock_get_value.side_effect = side_effect
+
+        response = self.client.get(self.url)
+        config = json.loads(response.content.decode('utf-8'))
+
+        assert config['enable_course_sorting_by_start_date'] is True
+        assert config['homepage_overlay_html'] == '<h1>Custom Overlay</h1>'
+        assert config['show_partners'] is False
+        assert config['show_homepage_promo_video'] is True
+        assert config['homepage_course_max'] == 7
+        assert config['homepage_promo_video_youtube_id'] == 'custom-youtube-id'
