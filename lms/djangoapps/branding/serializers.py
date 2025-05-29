@@ -15,6 +15,12 @@ class WaffleFlagsSerializer(serializers.Serializer):
     use_new_catalog_page = serializers.SerializerMethodField()
     use_new_course_about_page = serializers.SerializerMethodField()
 
+    def get_course_key(self):
+        """
+        Retrieve the course_key from the context.
+        """
+        return self.context.get("course_key")
+
     def get_use_new_index_page(self, obj):
         """
         Returns whether the new index page is enabled.

@@ -14,6 +14,7 @@ from django.utils import translation
 from django.utils.translation.trans_real import get_supported_language_variant
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
+from opaque_keys.edx.keys import CourseKey
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -321,24 +322,22 @@ class WaffleFlagsView(APIView):
     """
     API view to return waffle flags related to the new catalog MFE.
     """
-    def get(self, request):
+    def get(self, request, course_id=None):
         """
         Handle GET requests to return waffle flags.
 
-        **Response Values**
-            A JSON response containing the status of various waffle flags
-            for the specified course.
-
-        **Example Response**
-
-        ```json
-        {
-            "new_catalog_mfe.use_new_index_page": true,
-            "new_catalog_mfe.use_new_catalog_page": false,
-            "new_catalog_mfe.use_new_course_about_page": true
-        }
+        Args:
+            request (HttpRequest): The HTTP request object.
+            course_id (str, optional): The ID of the course for which to retrieve the waffle flag settings.
+                                       If not provided, defaults to None.
+        Returns:
+            Response: A JSON response containing the status of various waffle flags for the specified course.
+        **Example Request**
+            GET .../v1/waffle-flags
+            GET .../v1/waffle-flags/course-v1:test+test+test
         """
-        serializer = WaffleFlagsSerializer(data={})
+        course_key = CourseKey.from_string(course_id) if course_id else None
+        serializer = WaffleFlagsSerializer(context={"course_key": course_key}, data={})
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
