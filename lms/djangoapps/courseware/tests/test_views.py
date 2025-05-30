@@ -21,7 +21,6 @@ from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.http.request import QueryDict
 from django.test import RequestFactory, TestCase
 from django.test.client import Client
-from django.test.utils import override_settings
 from django.urls import reverse, reverse_lazy
 from edx_django_utils.cache.utils import RequestCache
 from edx_toggles.toggles.testutils import override_waffle_flag, override_waffle_switch
