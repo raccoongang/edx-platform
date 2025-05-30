@@ -313,12 +313,12 @@ class TestWaffleFlags(TestCase):
             response = self.client.get(self.url)
 
             assert response.status_code == 200
-            assert response['Content-Type'] == 'application/json; charset=utf-8'
+            assert response['Content-Type'] == 'application/json'
 
             data = json.loads(response.content.decode('utf-8'))
-            assert data['home_page']['new_catalog_mfe.use_new_index_page'] == new_index_page_value
-            assert data['course_catalog_page']['new_catalog_mfe.use_new_catalog_page'] is False
-            assert data['course_catalog_page']['new_catalog_mfe.use_new_course_about_page'] is True
+            assert data['use_new_index_page'] == new_index_page_value
+            assert data['use_new_catalog_page'] is False
+            assert data['use_new_course_about_page'] is True
 
     @ddt.data(True, False)
     @override_waffle_flag(ENABLE_NEW_CATALOG_PAGE, True)
@@ -331,12 +331,12 @@ class TestWaffleFlags(TestCase):
             response = self.client.get(self.url)
 
             assert response.status_code == 200
-            assert response['Content-Type'] == 'application/json; charset=utf-8'
+            assert response['Content-Type'] == 'application/json'
 
             data = json.loads(response.content.decode('utf-8'))
-            assert data['home_page']['new_catalog_mfe.use_new_index_page'] == new_index_page_value
-            assert data['course_catalog_page']['new_catalog_mfe.use_new_catalog_page'] is True
-            assert data['course_catalog_page']['new_catalog_mfe.use_new_course_about_page'] is False
+            assert data['use_new_index_page'] == new_index_page_value
+            assert data['use_new_catalog_page'] is True
+            assert data['use_new_course_about_page'] is False
 
     @ddt.data(
         (True, True, True),
@@ -357,9 +357,9 @@ class TestWaffleFlags(TestCase):
                     assert response.status_code == 200
                     data = json.loads(response.content.decode('utf-8'))
 
-                    assert data['home_page']['new_catalog_mfe.use_new_index_page'] == new_index
-                    assert data['course_catalog_page']['new_catalog_mfe.use_new_catalog_page'] == new_catalog
-                    assert data['course_catalog_page']['new_catalog_mfe.use_new_course_about_page'] == new_course_about
+                    assert data['use_new_index_page'] == new_index
+                    assert data['use_new_catalog_page'] == new_catalog
+                    assert data['use_new_course_about_page'] == new_course_about
 
     def test_response_structure(self):
         """Test that the response contains the expected structure."""
@@ -368,11 +368,9 @@ class TestWaffleFlags(TestCase):
         assert response.status_code == 200
         data = json.loads(response.content.decode('utf-8'))
 
-        assert 'home_page' in data
-        assert 'course_catalog_page' in data
-        assert 'new_catalog_mfe.use_new_index_page' in data['home_page']
-        assert 'new_catalog_mfe.use_new_catalog_page' in data['course_catalog_page']
-        assert 'new_catalog_mfe.use_new_course_about_page' in data['course_catalog_page']
+        assert 'use_new_index_page' in data
+        assert 'use_new_catalog_page' in data
+        assert 'use_new_course_about_page' in data
 
 
 @ddt.ddt
