@@ -692,6 +692,8 @@ TOKEN_SIGNING = {
     """,  # noqa: E501
 }
 
+CATALOG_MICROFRONTEND_URL = "http://catalog-mfe"
+
 
 ### Override default production settings for testing purposes
 

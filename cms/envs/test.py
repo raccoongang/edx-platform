@@ -336,6 +336,8 @@ OPENEDX_LEARNING = {
     "MEDIA": {"BACKEND": "django.core.files.storage.InMemoryStorage", "OPTIONS": {"location": MEDIA_ROOT + "_private"}}
 }
 
+CATALOG_MICROFRONTEND_URL = "http://catalog-mfe"
+
 #### Override default production settings for testing purposes
 
 AWS_QUERYSTRING_AUTH = False
