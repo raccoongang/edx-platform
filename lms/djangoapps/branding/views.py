@@ -14,11 +14,12 @@ from django.utils import translation
 from django.utils.translation.trans_real import get_supported_language_variant
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
+from opaque_keys.edx.keys import CourseKey
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import lms.djangoapps.branding.api as branding_api
-import lms.djangoapps.branding.toggles as branding_toggles
+from lms.djangoapps.branding.serializers import WaffleFlagsSerializer
 import lms.djangoapps.courseware.views.views as courseware_views
 from common.djangoapps.edxmako.shortcuts import marketing_link, render_to_response
 from common.djangoapps.student import views as student_views
@@ -317,33 +318,45 @@ def footer(request):
         return HttpResponse(status=406)
 
 
-def waffle_flags(request):
+class WaffleFlagsView(APIView):
     """
-    Return a JSON response with the status of various waffle flags
-    related to the new catalog MFE.
-
-    Example response:
-    {
-        "home_page": {
-            "new_catalog_mfe.use_new_index_page": true
-        },
-        "course_catalog_page": {
-            "new_catalog_mfe.use_new_catalog_page": false,
-            "new_catalog_mfe.use_new_course_about_page": true
-        }
-    }
+    API view to return waffle flags related to the new catalog MFE.
     """
-    data = {
-        "home_page": {
-            "new_catalog_mfe.use_new_index_page": branding_toggles.use_new_index_page(),
-        },
-        "course_catalog_page": {
-            "new_catalog_mfe.use_new_catalog_page": branding_toggles.use_new_catalog_page(),
-            "new_catalog_mfe.use_new_course_about_page": branding_toggles.use_new_course_about_page(),
-        }
-    }
+    def get(self, request, course_id=None):
+        """
+        Handle GET requests to return waffle flags.
 
-    return JsonResponse(data, status=200, content_type="application/json; charset=utf-8")  # lint-amnesty, pylint: disable=redundant-content-type-for-json-response
+        Args:
+            request (HttpRequest): The HTTP request object.
+            course_id (str, optional): The ID of the course for which to retrieve the waffle flag settings.
+                                       If not provided, defaults to None.
+
+        Returns:
+            Response: A JSON response containing the status of various waffle flags for the specified course.
+
+        **Example Request**
+
+            GET .../v1/waffle-flags
+            GET .../v1/waffle-flags/course-v1:test+test+test
+
+        **Response Values**
+
+            A JSON response containing the status of various waffle flags for the specified course.
+
+        **Example Response**
+
+        ```json
+        {
+            "use_new_index_page": true,
+            "use_new_catalog_page": true,
+            "use_new_course_about_page": false
+        }
+        ```
+        """
+        course_key = CourseKey.from_string(course_id) if course_id else None
+        serializer = WaffleFlagsSerializer(context={"course_key": course_key}, data={})
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data)
 
 
 class IndexPageConfigView(APIView):
