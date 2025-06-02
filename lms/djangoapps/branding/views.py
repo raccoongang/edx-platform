@@ -389,5 +389,6 @@ class IndexPageConfigView(APIView):
             "show_homepage_promo_video": show_homepage_promo_video,
             "homepage_course_max": homepage_course_max,
             "homepage_promo_video_youtube_id": homepage_promo_video_youtube_id,
+            "enable_course_discovery": settings.FEATURES['ENABLE_COURSE_DISCOVERY'],
         }
         return Response(data)
