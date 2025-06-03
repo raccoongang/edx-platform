@@ -8,7 +8,7 @@ import ddt
 import six
 from django.conf import settings
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
-from django.test import TestCase
+from django.test import override_settings, TestCase
 from django.urls import reverse
 from edx_toggles.toggles.testutils import override_waffle_flag
 
@@ -16,6 +16,7 @@ from common.djangoapps.student.tests.factories import UserFactory
 from lms.djangoapps.branding.models import BrandingApiConfig
 from lms.djangoapps.branding.toggles import (
     ENABLE_NEW_CATALOG_PAGE,
+    ENABLE_NEW_INDEX_PAGE,
     ENABLE_NEW_COURSE_ABOUT_PAGE,
 )
 from openedx.core.djangoapps.dark_lang.models import DarkLangConfig
@@ -254,6 +255,7 @@ class TestFooter(CacheIsolationTestCase):
             assert f'<option value="{language.code}">' in content
 
 
+@ddt.ddt
 class TestIndex(SiteMixin, TestCase):
     """ Test the index view """
 
@@ -291,6 +293,39 @@ class TestIndex(SiteMixin, TestCase):
         self.client.login(username=self.user.username, password="password")
         response = self.client.get(reverse("dashboard"))
         assert self.site_configuration_other.site_values['MKTG_URLS']['ROOT'] in response.content.decode('utf-8')
+
+    @ddt.data(
+        (True, True, True),
+        (True, False, False),
+        (False, True, False),
+        (False, False, False),
+    )
+    @ddt.unpack
+    def test_index_redirects_to_mfe(self, catalog_mfe_enabled, use_new_index_page, expected_redirect):
+        """Test that index view redirects to MFE when both flags are enabled."""
+        old_features = settings.FEATURES.copy()
+        old_features.update({
+            "ENABLE_CATALOG_MICROFRONTEND": catalog_mfe_enabled,
+            "COURSES_ARE_BROWSABLE": True,
+        })
+        new_settings = {
+            "FEATURES": old_features,
+            "CATALOG_MICROFRONTEND_URL": "http://example.com/catalog",
+        }
+        with override_settings(**new_settings):
+            with override_waffle_flag(ENABLE_NEW_INDEX_PAGE, active=use_new_index_page):
+                response = self.client.get(reverse("root"))
+
+                if expected_redirect:
+                    expected_url = f'{settings.CATALOG_MICROFRONTEND_URL}/'
+                    self.assertRedirects(
+                        response,
+                        expected_url,
+                        status_code=301,
+                        fetch_redirect_response=False
+                    )
+                else:
+                    assert response.status_code in [200, 301, 302]
 
 
 @ddt.ddt
@@ -475,3 +510,45 @@ class TestIndexPageConfig(SiteMixin, TestCase):
         assert config['show_homepage_promo_video'] is True
         assert config['homepage_course_max'] == 7
         assert config['homepage_promo_video_youtube_id'] == 'custom-youtube-id'
+
+
+@ddt.ddt
+class TestCourses(SiteMixin, TestCase):
+    """Test the courses view"""
+
+    def setUp(self):
+        super().setUp()
+        self.courses_url = reverse("courses")
+
+    @ddt.data(
+        (True, True, True),
+        (True, False, False),
+        (False, True, False),
+        (False, False, False),
+    )
+    @ddt.unpack
+    def test_courses_redirect_to_mfe(self, catalog_mfe_enabled, use_new_catalog_page, expected_redirect):
+        """Test that courses view redirects to MFE when both flags are enabled"""
+        old_features = settings.FEATURES.copy()
+        old_features.update({
+            "ENABLE_CATALOG_MICROFRONTEND": catalog_mfe_enabled,
+            "COURSES_ARE_BROWSABLE": True,
+        })
+        new_settings = {
+            "FEATURES": old_features,
+            "CATALOG_MICROFRONTEND_URL": "http://example.com/catalog",
+        }
+        with override_settings(**new_settings):
+            with override_waffle_flag(ENABLE_NEW_CATALOG_PAGE, active=use_new_catalog_page):
+                response = self.client.get(self.courses_url)
+
+                if expected_redirect:
+                    expected_url = f'{settings.CATALOG_MICROFRONTEND_URL}/courses'
+                    self.assertRedirects(
+                        response,
+                        expected_url,
+                        status_code=301,
+                        fetch_redirect_response=False
+                    )
+                else:
+                    assert response.status_code in [200, 301, 302]

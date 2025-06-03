@@ -48,6 +48,9 @@ def index(request):
                 settings.FEATURES.get('ALWAYS_REDIRECT_HOMEPAGE_TO_DASHBOARD_FOR_AUTHENTICATED_USER', True)):
             return redirect('dashboard')
 
+    if branding_toggles.catalog_mfe_enabled() and branding_toggles.use_new_index_page():
+        return redirect(f'{settings.CATALOG_MICROFRONTEND_URL}/', permanent=True)
+
     enable_mktg_site = configuration_helpers.get_value(
         'ENABLE_MKTG_SITE',
         settings.FEATURES.get('ENABLE_MKTG_SITE', False)
@@ -91,6 +94,9 @@ def courses(request):
     to that. Otherwise, if subdomain branding is on, this is the university
     profile page. Otherwise, it's the edX courseware.views.views.courses page
     """
+    if branding_toggles.catalog_mfe_enabled() and branding_toggles.use_new_catalog_page():
+        return redirect(f'{settings.CATALOG_MICROFRONTEND_URL}/courses', permanent=True)
+
     enable_mktg_site = configuration_helpers.get_value(
         'ENABLE_MKTG_SITE',
         settings.FEATURES.get('ENABLE_MKTG_SITE', False)
