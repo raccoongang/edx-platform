@@ -45,21 +45,21 @@ ENABLE_NEW_COURSE_ABOUT_PAGE = CourseWaffleFlag(f'{WAFFLE_FLAG_NAMESPACE}.use_ne
 ENABLE_NEW_INDEX_PAGE = CourseWaffleFlag(f'{WAFFLE_FLAG_NAMESPACE}.use_new_index_page', __name__)
 
 
-def use_new_catalog_page(course_key):
+def use_new_catalog_page(course_key=None):
     """
     Returns a boolean if new catalog page should be used.
     """
     return ENABLE_NEW_CATALOG_PAGE.is_enabled(course_key)
 
 
-def use_new_course_about_page(course_key):
+def use_new_course_about_page(course_key=None):
     """
     Returns a boolean if new course about page mfe is enabled.
     """
     return ENABLE_NEW_COURSE_ABOUT_PAGE.is_enabled(course_key)
 
 
-def use_new_index_page(course_key):
+def use_new_index_page(course_key=None):
     """
     Returns a boolean if new index page mfe is enabled.
     """
