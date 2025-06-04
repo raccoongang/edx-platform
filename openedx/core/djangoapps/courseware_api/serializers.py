@@ -73,6 +73,14 @@ class CourseProgramSerializer(serializers.Serializer):  # lint-amnesty, pylint: 
         }
 
 
+class PrerequisiteCourseSerializer(serializers.Serializer):
+    """
+    Serializer for prerequisite course data with key and display name.
+    """
+    key = serializers.CharField()
+    display = serializers.CharField()
+
+
 class CourseInfoSerializer(serializers.Serializer):  # pylint: disable=abstract-method
     """
     Serializer for Course objects providing minimal data about the course.
@@ -90,6 +98,7 @@ class CourseInfoSerializer(serializers.Serializer):  # pylint: disable=abstract-
     entrance_exam_data = serializers.DictField()
     id = serializers.CharField()  # pylint: disable=invalid-name
     license = serializers.CharField()
+    display_number_with_default = serializers.CharField()
     language = serializers.CharField(allow_null=True)
     media = _CourseApiMediaCollectionSerializer(source='*')
     name = serializers.CharField(source='display_name_with_default_escaped')
@@ -134,7 +143,7 @@ class CourseInfoSerializer(serializers.Serializer):  # pylint: disable=abstract-
     advertised_start = serializers.CharField()
     course_price = serializers.CharField()
     pre_requisite_courses = serializers.ListField(
-        child=serializers.CharField(),
+        child=PrerequisiteCourseSerializer(),
         allow_empty=True,
         default=list,
     )

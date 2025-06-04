@@ -540,6 +540,13 @@ class CoursewareInformation(RetrieveAPIView):
             * masquerading_expired_course: (bool) Whether this course is expired for the masqueraded user
             * upgrade_deadline: (str) Last chance to upgrade, in ISO 8601 notation (or None if can't upgrade anymore)
             * upgrade_url: (str) Upgrade linke (or None if can't upgrade anymore)
+        * content_type_gating_enabled: Whether the content type gating is enabled for the course
+        * show_calculator: Whether the calculator should be shown in the course details page
+        * can_access_proctored_exams: Whether the user is eligible to access proctored exams
+        * notes: An object containing note settings for the course
+            * enabled: Boolean indicating whether edxnotes feature is enabled for the course
+            * visible: Boolean indicating whether notes are visible in the course
+        * marketing_url: The marketing URL for the course
         * celebrations: An object detailing which celebrations to render
             * first_section: (bool) If the first section celebration should render
                 Note: Also uses information from frontend so this value is not final
@@ -568,11 +575,18 @@ class CoursewareInformation(RetrieveAPIView):
             * entrance_exam_passed: (bool) Indicates if the entrance exam has been passed
         * id: A unique identifier of the course; a serialized representation
             of the opaque key identifying the course.
+        * license: The license for the course
+        * display_number_with_default: The display number of the course
         * language: The language code for the course
-        * media: An object that contains named media items.  Included here:
-            * course_image: An image to show for the course.  Represented
-              as an object with the following fields:
-                * uri: The location of the image
+        * media: An object that contains named media items. Included here:
+            * course_image: An object containing the course image URI:
+                * uri: The location of the course image
+            * course_video: An object containing the course video URI:
+                * uri: The location of the course video (can be null)
+            * image: An object containing different sizes of the course image:
+                * raw: URL for the original size image
+                * small: URL for the small size image
+                * large: URL for the large size image
         * name: Name of the course
         * offer: An object detailing upgrade discount information
             * code: (str) Checkout code
@@ -608,9 +622,32 @@ class CoursewareInformation(RetrieveAPIView):
         * certificate_data: data regarding the effective user's certificate for the given course
         * verify_identity_url: URL for a learner to verify their identity. Only returned for learners enrolled in a
             verified mode. Will update to reverify URL if necessary.
+        * verification_status: The verification status of the user for the course
         * linkedin_add_to_profile_url: URL to add the effective user's certificate to a LinkedIn Profile.
+        * is_integrity_signature_enabled: Whether the integrity signature is enabled for the course
         * user_needs_integrity_signature: Whether the user needs to sign the integrity agreement for the course
         * learning_assistant_enabled: Whether the Xpert Learning Assistant is enabled for the requesting user
+        * show_courseware_link: Whether the courseware link should be shown in the course details page
+        * is_course_full: Whether the course is full
+        * can_enroll: Whether the user can enroll in the course
+        * invitation_only: Whether the course is invitation only
+        * is_shib_course: Whether the course is a Shibboleth course
+        * allow_anonymous: Whether the course allows anonymous access
+        * ecommerce_checkout: Whether the course has an ecommerce checkout
+        * single_paid_mode: The single paid mode for the course, if it exists.
+        * ecommerce_checkout_link: The link to the ecommerce checkout page for the course
+        * course_image_urls: A list of course image URLs with different sizes:
+            * raw: Original size image URL
+            * small: Small size image URL
+            * large: Large size image URL
+        * start_date_is_still_default: Whether the start date is still the default value
+        * advertised_start: The advertised start date of the course
+        * course_price: The price of the course
+        * pre_requisite_courses: A list of prerequisite courses that must be completed before starting this course.
+            * key: The course ID of the prerequisite course
+            * display: The display name of the prerequisite course
+        * sidebar_html_enabled: Whether the sidebar HTML is enabled for the course
+        * course_about_section_html: The HTML content for the course about section
 
     **Parameters:**
 
