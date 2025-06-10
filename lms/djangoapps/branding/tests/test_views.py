@@ -321,7 +321,7 @@ class TestIndex(SiteMixin, TestCase):
                     self.assertRedirects(
                         response,
                         expected_url,
-                        status_code=301,
+                        status_code=302,
                         fetch_redirect_response=False
                     )
                 else:
@@ -547,7 +547,7 @@ class TestCourses(SiteMixin, TestCase):
                     self.assertRedirects(
                         response,
                         expected_url,
-                        status_code=301,
+                        status_code=302,
                         fetch_redirect_response=False
                     )
                 else:

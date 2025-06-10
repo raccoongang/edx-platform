@@ -50,7 +50,7 @@ def index(request):
             return redirect('dashboard')
 
     if catalog_mfe_enabled() and use_new_index_page():
-        return redirect(f'{settings.CATALOG_MICROFRONTEND_URL}/', permanent=True)
+        return redirect(f'{settings.CATALOG_MICROFRONTEND_URL}/')
 
     enable_mktg_site = configuration_helpers.get_value(
         'ENABLE_MKTG_SITE',
@@ -96,7 +96,7 @@ def courses(request):
     profile page. Otherwise, it's the edX courseware.views.views.courses page
     """
     if catalog_mfe_enabled() and use_new_catalog_page():
-        return redirect(f'{settings.CATALOG_MICROFRONTEND_URL}/courses', permanent=True)
+        return redirect(f'{settings.CATALOG_MICROFRONTEND_URL}/courses')
 
     enable_mktg_site = configuration_helpers.get_value(
         'ENABLE_MKTG_SITE',
