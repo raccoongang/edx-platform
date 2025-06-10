@@ -3909,6 +3909,6 @@ class CourseAboutViewTests(ModuleStoreTestCase):
                 response = self.client.get(reverse('about_course', args=[str(self.course.id)]))
                 if expected_redirect:
                     assert response.status_code == 301
-                    assert response.url == "http://example.com/catalog/course/{}/about".format(self.course.id)
+                    assert response.url == "http://example.com/catalog/courses/{}/about".format(self.course.id)
                 else:
                     assert response.status_code == 200
