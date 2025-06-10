@@ -805,7 +805,7 @@ def course_about(request, course_id):  # pylint: disable=too-many-statements
 
     # If the course about page is being rendered in the MFE, redirect to the MFE.
     if branding_toggles.catalog_mfe_enabled() and branding_toggles.use_new_course_about_page():
-        return redirect(get_catalog_mfe_course_about_url(course_key), permanent=True)
+        return redirect(get_catalog_mfe_course_about_url(course_key))
 
     with modulestore().bulk_operations(course_key):
         permission = get_permission_for_course_about()
