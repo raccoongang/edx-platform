@@ -3908,7 +3908,7 @@ class CourseAboutViewTests(ModuleStoreTestCase):
             with override_waffle_flag(ENABLE_NEW_COURSE_ABOUT_PAGE, active=use_new_course_about_page):
                 response = self.client.get(reverse('about_course', args=[str(self.course.id)]))
                 if expected_redirect:
-                    assert response.status_code == 301
+                    assert response.status_code == 302
                     assert response.url == "http://example.com/catalog/course/{}/about".format(self.course.id)
                 else:
                     assert response.status_code == 200
