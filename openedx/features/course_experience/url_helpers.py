@@ -236,7 +236,7 @@ def get_catalog_mfe_course_about_url(
     `course_key` can be either an OpaqueKey or a string.
     `params` is an optional QueryDict object (e.g. request.GET)
     """
-    mfe_link = f'{settings.CATALOG_MICROFRONTEND_URL}/course/{course_key}/about'
+    mfe_link = f'{settings.CATALOG_MICROFRONTEND_URL}/courses/{course_key}/about'
 
     if params:
         mfe_link += f'?{params.urlencode()}'
