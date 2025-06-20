@@ -1043,7 +1043,8 @@ class CourseGradingTest(CourseTestCase):
             "min_count": 1,
             "drop_count": 2,
             "short_label": None,
-            "weight": 15,
+            "weight": 15.0,
+            "color": None,
         }
 
         response = self.client.ajax_post(
@@ -1897,6 +1898,7 @@ class CourseGraderUpdatesTest(CourseTestCase):
             "drop_count": 10,
             "short_label": "yo momma",
             "weight": 17.3,
+            "color": None,
         }
         resp = self.client.ajax_post(self.url + '/0', grader)
         self.assertEqual(resp.status_code, 200)
@@ -1916,6 +1918,7 @@ class CourseGraderUpdatesTest(CourseTestCase):
             "drop_count": 10,
             "short_label": "yo momma",
             "weight": 17.3,
+            "color": None,
         }
         resp = self.client.ajax_post(f'{self.url}/{len(self.starting_graders) + 1}', grader)
         self.assertEqual(resp.status_code, 200)
