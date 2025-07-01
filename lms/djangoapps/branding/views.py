@@ -25,6 +25,7 @@ from common.djangoapps.util.cache import cache_if_anonymous
 from common.djangoapps.util.json_request import JsonResponse
 from openedx.core.djangoapps.lang_pref.api import released_languages
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.features.course_experience.waffle import ENABLE_COURSE_ABOUT_SIDEBAR_HTML
 
 log = logging.getLogger(__name__)
 
@@ -316,14 +317,14 @@ def footer(request):
         return HttpResponse(status=406)
 
 
-class IndexPageConfigView(APIView):
+class FrontendConfigView(APIView):
     """
-    API view to return the configuration for the index page.
+    API view to return configuration for LMS pages.
     """
 
     def get(self, request):
         """
-        Returns the configuration for the index page.
+        Returns the configuration for LMS pages.
         """
         enable_course_sorting_by_start_date = configuration_helpers.get_value(
             'ENABLE_COURSE_SORTING_BY_START_DATE',
@@ -338,6 +339,14 @@ class IndexPageConfigView(APIView):
         homepage_promo_video_youtube_id = configuration_helpers.get_value(
             'homepage_promo_video_youtube_id', 'your-youtube-id'
         )
+        sidebar_html_enabled = ENABLE_COURSE_ABOUT_SIDEBAR_HTML.is_enabled()
+        course_about_show_social_links = configuration_helpers.get_value(
+            'course_about_show_social_links', True
+        )
+        course_about_twitter_account = configuration_helpers.get_value(
+            'course_about_twitter_account', settings.PLATFORM_TWITTER_ACCOUNT
+        )
+        is_cosmetic_price_enabled = settings.FEATURES.get('ENABLE_COSMETIC_DISPLAY_PRICE')
 
         data = {
             "enable_course_sorting_by_start_date": enable_course_sorting_by_start_date,
@@ -346,5 +355,9 @@ class IndexPageConfigView(APIView):
             "show_homepage_promo_video": show_homepage_promo_video,
             "homepage_course_max": homepage_course_max,
             "homepage_promo_video_youtube_id": homepage_promo_video_youtube_id,
+            "sidebar_html_enabled": sidebar_html_enabled,
+            "course_about_show_social_links": course_about_show_social_links,
+            "course_about_twitter_account": course_about_twitter_account,
+            "is_cosmetic_price_enabled": is_cosmetic_price_enabled,
         }
         return Response(data)
