@@ -298,26 +298,26 @@ class TestLMSFrontendParams(SiteMixin, TestCase):
         super().setUp()
         self.url = reverse("frontend_params")
 
-    def test_config_includes_all_expected_keys(self):
-        """Ensure the config response includes all required keys."""
+    def test_params_include_all_expected_keys(self):
+        """Ensure the params response includes all required keys."""
 
         response = self.client.get(self.url)
         assert response.status_code == 200
         assert response['Content-Type'] == 'application/json'
 
-        config = json.loads(response.content.decode('utf-8'))
+        params = json.loads(response.content.decode('utf-8'))
 
-        assert 'enable_course_sorting_by_start_date' in config
-        assert 'homepage_overlay_html' in config
-        assert 'show_partners' in config
-        assert 'show_homepage_promo_video' in config
-        assert 'homepage_course_max' in config
-        assert 'homepage_promo_video_youtube_id' in config
-        assert 'sidebar_html_enabled' in config
-        assert 'course_about_show_social_links' in config
-        assert 'course_about_twitter_account' in config
-        assert 'is_cosmetic_price_enabled' in config
-        assert 'courses_are_browsable' in config
+        assert 'enable_course_sorting_by_start_date' in params
+        assert 'homepage_overlay_html' in params
+        assert 'show_partners' in params
+        assert 'show_homepage_promo_video' in params
+        assert 'homepage_course_max' in params
+        assert 'homepage_promo_video_youtube_id' in params
+        assert 'sidebar_html_enabled' in params
+        assert 'course_about_show_social_links' in params
+        assert 'course_about_twitter_account' in params
+        assert 'is_cosmetic_price_enabled' in params
+        assert 'courses_are_browsable' in params
 
     @ddt.data(
         ('ENABLE_COURSE_SORTING_BY_START_DATE', False),
@@ -330,8 +330,8 @@ class TestLMSFrontendParams(SiteMixin, TestCase):
         ('course_about_twitter_account', '@TestTwitterAccount'),
     )
     @ddt.unpack
-    def test_config_uses_site_configuration_values(self, key, value):
-        """Ensure config values are taken from site configuration when available."""
+    def test_params_use_site_configuration_values(self, key, value):
+        """Ensure params are correctly retrieved from site configuration."""
 
         # Configure site with the test value
         self.use_site(self.site)
@@ -339,28 +339,28 @@ class TestLMSFrontendParams(SiteMixin, TestCase):
         self.site_configuration.save()
 
         response = self.client.get(self.url)
-        config = json.loads(response.content.decode('utf-8'))
+        params = json.loads(response.content.decode('utf-8'))
 
         response_key = key.lower()
-        assert config[response_key] == value
+        assert params[response_key] == value
 
-    def test_config_uses_defaults_if_no_site_configuration(self):
+    def test_params_use_defaults_if_no_site_configuration(self):
         """Ensure default values are returned when site configuration is missing."""
 
         response = self.client.get(self.url)
-        config = json.loads(response.content.decode('utf-8'))
+        params = json.loads(response.content.decode('utf-8'))
 
-        assert config['show_partners'] is True
-        assert config['show_homepage_promo_video'] is False
-        assert config['homepage_promo_video_youtube_id'] == 'your-youtube-id'
-        assert config['enable_course_sorting_by_start_date'] == settings.FEATURES.get(
+        assert params['show_partners'] is True
+        assert params['show_homepage_promo_video'] is False
+        assert params['homepage_promo_video_youtube_id'] == 'your-youtube-id'
+        assert params['enable_course_sorting_by_start_date'] == settings.FEATURES.get(
             'ENABLE_COURSE_SORTING_BY_START_DATE'
         )
-        assert config['homepage_course_max'] == settings.HOMEPAGE_COURSE_MAX
-        assert config['course_about_show_social_links'] is True
-        assert config['course_about_twitter_account'] == settings.PLATFORM_TWITTER_ACCOUNT
+        assert params['homepage_course_max'] == settings.HOMEPAGE_COURSE_MAX
+        assert params['course_about_show_social_links'] is True
+        assert params['course_about_twitter_account'] == settings.PLATFORM_TWITTER_ACCOUNT
 
-    def test_config_uses_settings_if_no_site_configuration(self):
+    def test_params_use_settings_if_no_site_configuration(self):
         """Ensure Django settings are used as fallback when no site configuration is provided."""
 
         self.use_site(self.site)
@@ -376,24 +376,24 @@ class TestLMSFrontendParams(SiteMixin, TestCase):
         with override_settings(**expected_settings):
             response = self.client.get(self.url)
 
-        config = json.loads(response.content.decode('utf-8'))
+        params = json.loads(response.content.decode('utf-8'))
 
-        assert config['homepage_course_max'] == 10
-        assert config['course_about_twitter_account'] == '@TestTwitterAccount'
-        assert config['enable_course_sorting_by_start_date'] is False
+        assert params['homepage_course_max'] == 10
+        assert params['course_about_twitter_account'] == '@TestTwitterAccount'
+        assert params['enable_course_sorting_by_start_date'] is False
 
-    def test_config_uses_waffle_switches(self):
-        """Ensure config reflects the current state of waffle switches."""
+    def test_params_use_waffle_switches(self):
+        """Ensure params are correctly retrieved from waffle switches."""
 
         with override_waffle_switch(ENABLE_COURSE_ABOUT_SIDEBAR_HTML, active=True):
             response = self.client.get(self.url)
 
-        config = json.loads(response.content.decode('utf-8'))
+        params = json.loads(response.content.decode('utf-8'))
 
-        assert config['sidebar_html_enabled'] is True
+        assert params['sidebar_html_enabled'] is True
 
-    def test_config_uses_settings_features(self):
-        """Ensure config includes values from Django settings."""
+    def test_params_use_settings_features(self):
+        """Ensure params are correctly retrieved from Django settings."""
 
         extra_feature_flags = {
             'ENABLE_COSMETIC_DISPLAY_PRICE': True,
@@ -403,7 +403,7 @@ class TestLMSFrontendParams(SiteMixin, TestCase):
         with override_settings(FEATURES=settings.FEATURES | extra_feature_flags):
             response = self.client.get(self.url)
 
-        config = json.loads(response.content.decode('utf-8'))
+        params = json.loads(response.content.decode('utf-8'))
 
-        assert config['is_cosmetic_price_enabled'] is True
-        assert config['courses_are_browsable'] is False
+        assert params['is_cosmetic_price_enabled'] is True
+        assert params['courses_are_browsable'] is False
