@@ -347,7 +347,7 @@ class FrontendConfigView(APIView):
             'course_about_twitter_account', settings.PLATFORM_TWITTER_ACCOUNT
         )
         is_cosmetic_price_enabled = settings.FEATURES.get('ENABLE_COSMETIC_DISPLAY_PRICE')
-        are_courses_browsable = settings.FEATURES.get('COURSES_ARE_BROWSABLE')
+        courses_are_browsable = settings.FEATURES.get('COURSES_ARE_BROWSABLE')
 
         data = {
             "enable_course_sorting_by_start_date": enable_course_sorting_by_start_date,
@@ -360,6 +360,6 @@ class FrontendConfigView(APIView):
             "course_about_show_social_links": course_about_show_social_links,
             "course_about_twitter_account": course_about_twitter_account,
             "is_cosmetic_price_enabled": is_cosmetic_price_enabled,
-            "are_courses_browsable": are_courses_browsable,
+            "courses_are_browsable": courses_are_browsable,
         }
         return Response(data)
