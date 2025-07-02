@@ -317,6 +317,7 @@ class TestFrontendConfig(SiteMixin, TestCase):
         assert 'course_about_show_social_links' in config
         assert 'course_about_twitter_account' in config
         assert 'is_cosmetic_price_enabled' in config
+        assert 'are_courses_browsable' in config
 
     @ddt.data(
         ('ENABLE_COURSE_SORTING_BY_START_DATE', False),
@@ -392,11 +393,17 @@ class TestFrontendConfig(SiteMixin, TestCase):
         assert config['sidebar_html_enabled'] is True
 
     def test_config_uses_settings_features(self):
-        """Ensure config includes feature flags defined in Django settings."""
+        """Ensure config includes values form Django settings."""
 
-        with override_settings(FEATURES=settings.FEATURES | {'ENABLE_COSMETIC_DISPLAY_PRICE': True}):
+        extra_feature_flags = {
+            'ENABLE_COSMETIC_DISPLAY_PRICE': True,
+            'COURSES_ARE_BROWSABLE': False
+        }
+
+        with override_settings(FEATURES=settings.FEATURES | extra_feature_flags):
             response = self.client.get(self.url)
 
         config = json.loads(response.content.decode('utf-8'))
 
         assert config['is_cosmetic_price_enabled'] is True
+        assert config['are_courses_browsable'] is False
