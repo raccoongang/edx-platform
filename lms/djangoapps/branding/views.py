@@ -317,15 +317,39 @@ def footer(request):
         return HttpResponse(status=406)
 
 
-class FrontendConfigView(APIView):
+class LMSFrontendParamsView(APIView):
     """
-    API view to return configuration for LMS pages.
+    **Use Case**
+
+        * Get configuration parameters to be consumed by the frontend components of various LMS pages.
+
+    **Example GET Request**
+
+        GET /api/branding/v1/frontend-params
+
+    **Example GET Response**
+
+        {
+            "enable_course_sorting_by_start_date": true,
+            "homepage_overlay_html": "<div>Custom HTML Overlay</div>",
+            "show_partners": true,
+            "show_homepage_promo_video": false,
+            "homepage_course_max": 12,
+            "homepage_promo_video_youtube_id": "your-youtube-id",
+            "sidebar_html_enabled": true,
+            "course_about_show_social_links": true,
+            "course_about_twitter_account": "@YourTwitterAccount",
+            "is_cosmetic_price_enabled": true,
+            "courses_are_browsable": true
+        }
     """
 
     def get(self, request):
         """
-        Returns the configuration for LMS pages.
+        Returns parameters retrieved from the site configuration (with fallback defaults provided),
+        from Django settings (including feature flags), or from Waffle Switches.
         """
+
         enable_course_sorting_by_start_date = configuration_helpers.get_value(
             'ENABLE_COURSE_SORTING_BY_START_DATE',
             settings.FEATURES['ENABLE_COURSE_SORTING_BY_START_DATE'],

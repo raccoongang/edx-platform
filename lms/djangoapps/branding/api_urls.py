@@ -5,9 +5,9 @@ Branding API endpoint urls.
 
 from django.urls import path
 
-from lms.djangoapps.branding.views import footer, FrontendConfigView
+from lms.djangoapps.branding.views import footer, LMSFrontendParamsView
 
 urlpatterns = [
     path('footer', footer, name="branding_footer"),
-    path('frontend-config', FrontendConfigView.as_view(), name="frontend_config"),
+    path('frontend-params', LMSFrontendParamsView.as_view(), name="frontend_params"),
 ]

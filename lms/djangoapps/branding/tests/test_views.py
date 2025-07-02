@@ -291,12 +291,12 @@ class TestIndex(SiteMixin, TestCase):
 
 
 @ddt.ddt
-class TestFrontendConfig(SiteMixin, TestCase):
-    """Test the view that returns a frontend configuration for LMS pages."""
+class TestLMSFrontendParams(SiteMixin, TestCase):
+    """Test the view that returns parameters for the LMS frontend."""
 
     def setUp(self):
         super().setUp()
-        self.url = reverse("frontend_config")
+        self.url = reverse("frontend_params")
 
     def test_config_includes_all_expected_keys(self):
         """Ensure the config response includes all required keys."""
