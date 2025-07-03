@@ -10,21 +10,15 @@ from django.conf import settings
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
 from django.test import override_settings, TestCase
 from django.urls import reverse
-from edx_toggles.toggles.testutils import override_waffle_flag, override_waffle_switch
 
 from common.djangoapps.student.tests.factories import UserFactory
 from lms.djangoapps.branding.models import BrandingApiConfig
-from lms.djangoapps.branding.toggles import (
-    ENABLE_NEW_CATALOG_PAGE,
-    ENABLE_NEW_INDEX_PAGE,
-    ENABLE_NEW_COURSE_ABOUT_PAGE,
-)
+
 from openedx.core.djangoapps.dark_lang.models import DarkLangConfig
 from openedx.core.djangoapps.lang_pref.api import released_languages
 from openedx.core.djangoapps.site_configuration.tests.mixins import SiteMixin
 from openedx.core.djangoapps.theming.tests.test_util import with_comprehensive_theme_context
 from openedx.core.djangolib.testing.utils import CacheIsolationTestCase
-from openedx.features.course_experience.waffle import ENABLE_COURSE_ABOUT_SIDEBAR_HTML
 
 
 @ddt.ddt
@@ -296,13 +290,13 @@ class TestIndex(SiteMixin, TestCase):
         assert self.site_configuration_other.site_values['MKTG_URLS']['ROOT'] in response.content.decode('utf-8')
 
     @ddt.data(
-        (True, True, True),
-        (True, False, False),
-        (False, True, False),
-        (False, False, False),
+        (True, True),
+        (True, False),
+        (False, False),
+        (False, False),
     )
     @ddt.unpack
-    def test_index_redirects_to_mfe(self, catalog_mfe_enabled, use_new_index_page, expected_redirect):
+    def test_index_redirects_to_mfe(self, catalog_mfe_enabled, expected_redirect):
         """Test that index view redirects to MFE when both flags are enabled."""
         old_features = settings.FEATURES.copy()
         old_features.update({
@@ -314,220 +308,18 @@ class TestIndex(SiteMixin, TestCase):
             "CATALOG_MICROFRONTEND_URL": "http://example.com/catalog",
         }
         with override_settings(**new_settings):
-            with override_waffle_flag(ENABLE_NEW_INDEX_PAGE, active=use_new_index_page):
-                response = self.client.get(reverse("root"))
+            response = self.client.get(reverse("root"))
 
-                if expected_redirect:
-                    expected_url = f'{settings.CATALOG_MICROFRONTEND_URL}/'
-                    self.assertRedirects(
-                        response,
-                        expected_url,
-                        status_code=302,
-                        fetch_redirect_response=False
-                    )
-                else:
-                    assert response.status_code in [200, 301, 302]
-
-
-@ddt.ddt
-class TestWaffleFlags(TestCase):
-    """Tests for the waffle_flags view."""
-
-    def setUp(self):
-        super().setUp()
-        self.url = reverse("branding_waffle_flags")
-        self.user = UserFactory.create()
-        self.user.set_password("password")
-        self.user.save()
-
-    @ddt.data(True, False)
-    @override_waffle_flag(ENABLE_NEW_CATALOG_PAGE, False)
-    @override_waffle_flag(ENABLE_NEW_COURSE_ABOUT_PAGE, True)
-    def test_anonymous_access(self, new_index_page_value):
-        """Test that anonymous users can access the waffle flags endpoint."""
-        with mock.patch('lms.djangoapps.branding.toggles.use_new_index_page', return_value=new_index_page_value):
-            response = self.client.get(self.url)
-
-            assert response.status_code == 200
-            assert response['Content-Type'] == 'application/json'
-
-            data = json.loads(response.content.decode('utf-8'))
-            assert data['use_new_index_page'] == new_index_page_value
-            assert data['use_new_catalog_page'] is False
-            assert data['use_new_course_about_page'] is True
-
-    @ddt.data(True, False)
-    @override_waffle_flag(ENABLE_NEW_CATALOG_PAGE, True)
-    @override_waffle_flag(ENABLE_NEW_COURSE_ABOUT_PAGE, False)
-    def test_authenticated_access(self, new_index_page_value):
-        """Test that authenticated users can access the waffle flags endpoint."""
-        self.client.login(username=self.user.username, password="password")
-
-        with mock.patch('lms.djangoapps.branding.toggles.use_new_index_page', return_value=new_index_page_value):
-            response = self.client.get(self.url)
-
-            assert response.status_code == 200
-            assert response['Content-Type'] == 'application/json'
-
-            data = json.loads(response.content.decode('utf-8'))
-            assert data['use_new_index_page'] == new_index_page_value
-            assert data['use_new_catalog_page'] is True
-            assert data['use_new_course_about_page'] is False
-
-    @ddt.data(
-        (True, True, True),
-        (True, False, True),
-        (False, True, False),
-        (False, False, False)
-    )
-    @ddt.unpack
-    def test_various_flag_combinations(self, new_index, new_catalog, new_course_about):
-        """Test the endpoint with different combinations of flag values."""
-        with mock.patch('lms.djangoapps.branding.toggles.use_new_index_page', return_value=new_index):
-            with mock.patch('lms.djangoapps.branding.toggles.use_new_catalog_page', return_value=new_catalog):
-                with mock.patch(
-                    'lms.djangoapps.branding.toggles.use_new_course_about_page', return_value=new_course_about
-                ):
-                    response = self.client.get(self.url)
-
-                    assert response.status_code == 200
-                    data = json.loads(response.content.decode('utf-8'))
-
-                    assert data['use_new_index_page'] == new_index
-                    assert data['use_new_catalog_page'] == new_catalog
-                    assert data['use_new_course_about_page'] == new_course_about
-
-    def test_response_structure(self):
-        """Test that the response contains the expected structure."""
-        response = self.client.get(self.url)
-
-        assert response.status_code == 200
-        data = json.loads(response.content.decode('utf-8'))
-
-        assert 'use_new_index_page' in data
-        assert 'use_new_catalog_page' in data
-        assert 'use_new_course_about_page' in data
-
-
-@ddt.ddt
-class TestLMSFrontendParams(SiteMixin, TestCase):
-    """Test the view that returns parameters for the LMS frontend."""
-
-    def setUp(self):
-        super().setUp()
-        self.url = reverse("frontend_params")
-
-    def test_params_include_all_expected_keys(self):
-        """Ensure the params response includes all required keys."""
-
-        response = self.client.get(self.url)
-        assert response.status_code == 200
-        assert response['Content-Type'] == 'application/json'
-
-        params = json.loads(response.content.decode('utf-8'))
-
-        assert 'enable_course_sorting_by_start_date' in params
-        assert 'homepage_overlay_html' in params
-        assert 'show_partners' in params
-        assert 'show_homepage_promo_video' in params
-        assert 'homepage_course_max' in params
-        assert 'homepage_promo_video_youtube_id' in params
-        assert 'sidebar_html_enabled' in params
-        assert 'course_about_show_social_links' in params
-        assert 'course_about_twitter_account' in params
-        assert 'is_cosmetic_price_enabled' in params
-        assert 'courses_are_browsable' in params
-
-    @ddt.data(
-        ('ENABLE_COURSE_SORTING_BY_START_DATE', False),
-        ('homepage_overlay_html', '<p>Test overlay</p>'),
-        ('show_partners', False),
-        ('show_homepage_promo_video', True),
-        ('HOMEPAGE_COURSE_MAX', 5),
-        ('homepage_promo_video_youtube_id', 'test-youtube-id'),
-        ('course_about_show_social_links', False),
-        ('course_about_twitter_account', '@TestTwitterAccount'),
-    )
-    @ddt.unpack
-    def test_params_use_site_configuration_values(self, key, value):
-        """Ensure params are correctly retrieved from site configuration."""
-
-        # Configure site with the test value
-        self.use_site(self.site)
-        self.site_configuration.site_values[key] = value
-        self.site_configuration.save()
-
-        response = self.client.get(self.url)
-        params = json.loads(response.content.decode('utf-8'))
-
-        response_key = key.lower()
-        assert params[response_key] == value
-
-    def test_params_use_defaults_if_no_site_configuration(self):
-        """Ensure default values are returned when site configuration is missing."""
-
-        response = self.client.get(self.url)
-        params = json.loads(response.content.decode('utf-8'))
-
-        assert params['show_partners'] is True
-        assert params['show_homepage_promo_video'] is False
-        assert params['homepage_promo_video_youtube_id'] == 'your-youtube-id'
-        assert params['enable_course_sorting_by_start_date'] == settings.FEATURES.get(
-            'ENABLE_COURSE_SORTING_BY_START_DATE'
-        )
-        assert params['homepage_course_max'] == settings.HOMEPAGE_COURSE_MAX
-        assert params['course_about_show_social_links'] is True
-        assert params['course_about_twitter_account'] == settings.PLATFORM_TWITTER_ACCOUNT
-
-    def test_params_use_settings_if_no_site_configuration(self):
-        """Ensure Django settings are used as fallback when no site configuration is provided."""
-
-        self.use_site(self.site)
-        self.site_configuration.site_values.clear()
-        self.site_configuration.save()
-
-        expected_settings = {
-            'HOMEPAGE_COURSE_MAX': 10,
-            'PLATFORM_TWITTER_ACCOUNT': '@TestTwitterAccount',
-            'FEATURES': settings.FEATURES | {'ENABLE_COURSE_SORTING_BY_START_DATE': False},
-        }
-
-        with override_settings(**expected_settings):
-            response = self.client.get(self.url)
-
-        params = json.loads(response.content.decode('utf-8'))
-
-        assert params['homepage_course_max'] == 10
-        assert params['course_about_twitter_account'] == '@TestTwitterAccount'
-        assert params['enable_course_sorting_by_start_date'] is False
-
-    def test_params_use_waffle_switches(self):
-        """Ensure params are correctly retrieved from waffle switches."""
-
-        with override_waffle_switch(ENABLE_COURSE_ABOUT_SIDEBAR_HTML, active=True):
-            response = self.client.get(self.url)
-
-        params = json.loads(response.content.decode('utf-8'))
-
-        assert params['sidebar_html_enabled'] is True
-
-    def test_params_use_settings_features(self):
-        """Ensure params are correctly retrieved from Django settings."""
-
-        extra_feature_flags = {
-            'ENABLE_COSMETIC_DISPLAY_PRICE': True,
-            'COURSES_ARE_BROWSABLE': False,
-            'ENABLE_COURSE_DISCOVERY': False,
-        }
-
-        with override_settings(FEATURES=settings.FEATURES | extra_feature_flags):
-            response = self.client.get(self.url)
-
-        params = json.loads(response.content.decode('utf-8'))
-
-        assert params['is_cosmetic_price_enabled'] is True
-        assert params['courses_are_browsable'] is False
-        assert params['enable_course_discovery'] is False
+            if expected_redirect:
+                expected_url = f'{settings.CATALOG_MICROFRONTEND_URL}/'
+                self.assertRedirects(
+                    response,
+                    expected_url,
+                    status_code=301,
+                    fetch_redirect_response=False
+                )
+            else:
+                assert response.status_code in [200, 301, 302]
 
 
 @ddt.ddt
@@ -539,13 +331,13 @@ class TestCourses(SiteMixin, TestCase):
         self.courses_url = reverse("courses")
 
     @ddt.data(
-        (True, True, True),
-        (True, False, False),
-        (False, True, False),
-        (False, False, False),
+        (True, True),
+        (True, False),
+        (False, False),
+        (False, False),
     )
     @ddt.unpack
-    def test_courses_redirect_to_mfe(self, catalog_mfe_enabled, use_new_catalog_page, expected_redirect):
+    def test_courses_redirect_to_mfe(self, catalog_mfe_enabled, expected_redirect):
         """Test that courses view redirects to MFE when both flags are enabled"""
         old_features = settings.FEATURES.copy()
         old_features.update({
@@ -557,16 +349,15 @@ class TestCourses(SiteMixin, TestCase):
             "CATALOG_MICROFRONTEND_URL": "http://example.com/catalog",
         }
         with override_settings(**new_settings):
-            with override_waffle_flag(ENABLE_NEW_CATALOG_PAGE, active=use_new_catalog_page):
-                response = self.client.get(self.courses_url)
+            response = self.client.get(self.courses_url)
 
-                if expected_redirect:
-                    expected_url = f'{settings.CATALOG_MICROFRONTEND_URL}/courses'
-                    self.assertRedirects(
-                        response,
-                        expected_url,
-                        status_code=302,
-                        fetch_redirect_response=False
-                    )
-                else:
-                    assert response.status_code in [200, 301, 302]
+            if expected_redirect:
+                expected_url = f'{settings.CATALOG_MICROFRONTEND_URL}/courses'
+                self.assertRedirects(
+                    response,
+                    expected_url,
+                    status_code=301,
+                    fetch_redirect_response=False
+                )
+            else:
+                assert response.status_code in [200, 301, 302]

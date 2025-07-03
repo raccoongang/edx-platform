@@ -14,13 +14,9 @@ from django.utils import translation
 from django.utils.translation.trans_real import get_supported_language_variant
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
-from opaque_keys.edx.keys import CourseKey
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
 import lms.djangoapps.branding.api as branding_api
-from lms.djangoapps.branding.serializers import WaffleFlagsSerializer
-from lms.djangoapps.branding.toggles import catalog_mfe_enabled, use_new_index_page, use_new_catalog_page
+from lms.djangoapps.branding.toggles import use_catalog_mfe
 import lms.djangoapps.courseware.views.views as courseware_views
 from common.djangoapps.edxmako.shortcuts import marketing_link, render_to_response
 from common.djangoapps.student import views as student_views
@@ -28,7 +24,6 @@ from common.djangoapps.util.cache import cache_if_anonymous
 from common.djangoapps.util.json_request import JsonResponse
 from openedx.core.djangoapps.lang_pref.api import released_languages
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
-from openedx.features.course_experience.waffle import ENABLE_COURSE_ABOUT_SIDEBAR_HTML
 
 log = logging.getLogger(__name__)
 
@@ -50,8 +45,8 @@ def index(request):
                 settings.FEATURES.get('ALWAYS_REDIRECT_HOMEPAGE_TO_DASHBOARD_FOR_AUTHENTICATED_USER', True)):
             return redirect('dashboard')
 
-    if catalog_mfe_enabled() and use_new_index_page():
-        return redirect(f'{settings.CATALOG_MICROFRONTEND_URL}/')
+    if use_catalog_mfe():
+        return redirect(f'{settings.CATALOG_MICROFRONTEND_URL}/', permanent=True)
 
     enable_mktg_site = configuration_helpers.get_value(
         'ENABLE_MKTG_SITE',
@@ -96,8 +91,8 @@ def courses(request):
     to that. Otherwise, if subdomain branding is on, this is the university
     profile page. Otherwise, it's the edX courseware.views.views.courses page
     """
-    if catalog_mfe_enabled() and use_new_catalog_page():
-        return redirect(f'{settings.CATALOG_MICROFRONTEND_URL}/courses')
+    if use_catalog_mfe():
+        return redirect(f'{settings.CATALOG_MICROFRONTEND_URL}/courses', permanent=True)
 
     enable_mktg_site = configuration_helpers.get_value(
         'ENABLE_MKTG_SITE',
@@ -324,118 +319,3 @@ def footer(request):
 
     else:
         return HttpResponse(status=406)
-
-
-class WaffleFlagsView(APIView):
-    """
-    API view to return waffle flags related to the new catalog MFE.
-    """
-    def get(self, request, course_id=None):
-        """
-        Handle GET requests to return waffle flags.
-
-        Args:
-            request (HttpRequest): The HTTP request object.
-            course_id (str, optional): The ID of the course for which to retrieve the waffle flag settings.
-                                       If not provided, defaults to None.
-
-        Returns:
-            Response: A JSON response containing the status of various waffle flags for the specified course.
-
-        **Example Request**
-
-            GET .../v1/waffle-flags
-            GET .../v1/waffle-flags/course-v1:test+test+test
-
-        **Response Values**
-
-            A JSON response containing the status of various waffle flags for the specified course.
-
-        **Example Response**
-
-        ```json
-        {
-            "use_new_index_page": true,
-            "use_new_catalog_page": true,
-            "use_new_course_about_page": false
-        }
-        ```
-        """
-        course_key = CourseKey.from_string(course_id) if course_id else None
-        serializer = WaffleFlagsSerializer(context={"course_key": course_key}, data={})
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.data)
-
-
-class LMSFrontendParamsView(APIView):
-    """
-    **Use Case**
-
-        * Get configuration parameters to be consumed by the frontend components of various LMS pages.
-
-    **Example GET Request**
-
-        GET /api/branding/v1/frontend-params
-
-    **Example GET Response**
-
-        {
-            "enable_course_sorting_by_start_date": true,
-            "homepage_overlay_html": "<div>Custom HTML Overlay</div>",
-            "show_partners": true,
-            "show_homepage_promo_video": false,
-            "homepage_course_max": 12,
-            "homepage_promo_video_youtube_id": "your-youtube-id",
-            "sidebar_html_enabled": true,
-            "course_about_show_social_links": true,
-            "course_about_twitter_account": "@YourTwitterAccount",
-            "is_cosmetic_price_enabled": true,
-            "courses_are_browsable": true
-        }
-    """
-
-    def get(self, request):
-        """
-        Returns parameters retrieved from the site configuration (with fallback defaults provided),
-        from Django settings (including feature flags), or from Waffle Switches.
-        """
-
-        enable_course_sorting_by_start_date = configuration_helpers.get_value(
-            'ENABLE_COURSE_SORTING_BY_START_DATE',
-            settings.FEATURES['ENABLE_COURSE_SORTING_BY_START_DATE'],
-        )
-        homepage_overlay_html = configuration_helpers.get_value('homepage_overlay_html')
-        show_partners = configuration_helpers.get_value('show_partners', True)
-        show_homepage_promo_video = configuration_helpers.get_value('show_homepage_promo_video', False)
-        homepage_course_max = configuration_helpers.get_value(
-            'HOMEPAGE_COURSE_MAX', settings.HOMEPAGE_COURSE_MAX
-        )
-        homepage_promo_video_youtube_id = configuration_helpers.get_value(
-            'homepage_promo_video_youtube_id', 'your-youtube-id'
-        )
-        sidebar_html_enabled = ENABLE_COURSE_ABOUT_SIDEBAR_HTML.is_enabled()
-        course_about_show_social_links = configuration_helpers.get_value(
-            'course_about_show_social_links', True
-        )
-        course_about_twitter_account = configuration_helpers.get_value(
-            'course_about_twitter_account', settings.PLATFORM_TWITTER_ACCOUNT
-        )
-        is_cosmetic_price_enabled = settings.FEATURES.get('ENABLE_COSMETIC_DISPLAY_PRICE')
-        courses_are_browsable = settings.FEATURES.get('COURSES_ARE_BROWSABLE')
-        enable_course_discovery = settings.FEATURES['ENABLE_COURSE_DISCOVERY']
-
-        data = {
-            "enable_course_sorting_by_start_date": enable_course_sorting_by_start_date,
-            "homepage_overlay_html": homepage_overlay_html,
-            "show_partners": show_partners,
-            "show_homepage_promo_video": show_homepage_promo_video,
-            "homepage_course_max": homepage_course_max,
-            "homepage_promo_video_youtube_id": homepage_promo_video_youtube_id,
-            "sidebar_html_enabled": sidebar_html_enabled,
-            "course_about_show_social_links": course_about_show_social_links,
-            "course_about_twitter_account": course_about_twitter_account,
-            "is_cosmetic_price_enabled": is_cosmetic_price_enabled,
-            "courses_are_browsable": courses_are_browsable,
-            "enable_course_discovery": enable_course_discovery,
-        }
-        return Response(data)
