@@ -73,6 +73,14 @@ class CourseProgramSerializer(serializers.Serializer):  # lint-amnesty, pylint: 
         }
 
 
+class PrerequisiteCourseSerializer(serializers.Serializer):
+    """
+    Serializer for prerequisite course data with key and display name.
+    """
+    key = serializers.CharField()
+    display = serializers.CharField()
+
+
 class CourseInfoSerializer(serializers.Serializer):  # pylint: disable=abstract-method
     """
     Serializer for Course objects providing minimal data about the course.
@@ -133,15 +141,31 @@ class CourseInfoSerializer(serializers.Serializer):  # pylint: disable=abstract-
     advertised_start = serializers.CharField()
     course_price = serializers.CharField()
     pre_requisite_courses = serializers.ListField(
+        child=PrerequisiteCourseSerializer(),
+        allow_empty=True,
+        default=list,
+    )
+    about_sidebar_html = serializers.CharField(
+        allow_blank=True,
+        allow_null=True,
+        default=None,
+    )
+    display_number_with_default = serializers.CharField()
+    display_org_with_default = serializers.CharField()
+    overview = serializers.CharField(
+        allow_blank=True,
+        allow_null=True,
+        default=None,
+    )
+    ocw_links = serializers.ListField(
         child=serializers.CharField(),
         allow_empty=True,
         default=list,
     )
-    sidebar_html_enabled = serializers.BooleanField()
-    course_about_section_html = serializers.CharField(
-        allow_blank=True,
-        allow_null=True,
-        default=None,
+    prerequisites = serializers.ListField(
+        child=serializers.CharField(),
+        allow_empty=True,
+        default=list,
     )
 
     def __init__(self, *args, **kwargs):
