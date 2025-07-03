@@ -19,8 +19,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import lms.djangoapps.branding.api as branding_api
-from lms.djangoapps.branding.serializers import WaffleFlagsSerializer
-from lms.djangoapps.branding.toggles import catalog_mfe_enabled, use_new_index_page, use_new_catalog_page
+from lms.djangoapps.branding.toggles import use_catalog_mfe
 import lms.djangoapps.courseware.views.views as courseware_views
 from common.djangoapps.edxmako.shortcuts import marketing_link, render_to_response
 from common.djangoapps.student import views as student_views
@@ -96,7 +95,7 @@ def courses(request):
     to that. Otherwise, if subdomain branding is on, this is the university
     profile page. Otherwise, it's the edX courseware.views.views.courses page
     """
-    if catalog_mfe_enabled() and use_new_catalog_page():
+    if use_catalog_mfe():
         return redirect(f'{settings.CATALOG_MICROFRONTEND_URL}/courses')
 
     enable_mktg_site = configuration_helpers.get_value(
