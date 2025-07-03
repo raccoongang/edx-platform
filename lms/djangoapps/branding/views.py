@@ -323,33 +323,33 @@ def footer(request):
     else:
         return HttpResponse(status=406)
 
-
 class LMSFrontendParamsView(APIView):
     """
-    **Use Case**
+        **Use Case**
 
-        * Get configuration parameters to be consumed by the frontend components of various LMS pages.
+            * Get configuration parameters to be consumed by the frontend components of various LMS pages.
 
-    **Example GET Request**
+        **Example GET Request**
 
-        GET /api/branding/v1/frontend-params
+            GET /api/branding/v1/frontend-params
 
-    **Example GET Response**
+        **Example GET Response**
 
-        {
-            "enable_course_sorting_by_start_date": true,
-            "homepage_overlay_html": "<div>Custom HTML Overlay</div>",
-            "show_partners": true,
-            "show_homepage_promo_video": false,
-            "homepage_course_max": 12,
-            "homepage_promo_video_youtube_id": "your-youtube-id",
-            "sidebar_html_enabled": true,
-            "course_about_show_social_links": true,
-            "course_about_twitter_account": "@YourTwitterAccount",
-            "is_cosmetic_price_enabled": true,
-            "courses_are_browsable": true
-        }
-    """
+            {
+                "enable_course_sorting_by_start_date": true,
+                "homepage_overlay_html": "<div>Custom HTML Overlay</div>",
+                "show_partners": true,
+                "show_homepage_promo_video": false,
+                "homepage_course_max": 12,
+                "homepage_promo_video_youtube_id": "your-youtube-id",
+                "sidebar_html_enabled": true,
+                "course_about_show_social_links": true,
+                "course_about_twitter_account": "@YourTwitterAccount",
+                "is_cosmetic_price_enabled": true,
+                "courses_are_browsable": true,
+                "enable_course_discovery": true
+            }
+        """
 
     def get(self, request):
         """
@@ -379,6 +379,7 @@ class LMSFrontendParamsView(APIView):
         )
         is_cosmetic_price_enabled = settings.FEATURES.get('ENABLE_COSMETIC_DISPLAY_PRICE')
         courses_are_browsable = settings.FEATURES.get('COURSES_ARE_BROWSABLE')
+        enable_course_discovery = settings.FEATURES['ENABLE_COURSE_DISCOVERY']
 
         data = {
             "enable_course_sorting_by_start_date": enable_course_sorting_by_start_date,
@@ -392,5 +393,6 @@ class LMSFrontendParamsView(APIView):
             "course_about_twitter_account": course_about_twitter_account,
             "is_cosmetic_price_enabled": is_cosmetic_price_enabled,
             "courses_are_browsable": courses_are_browsable,
+            "enable_course_discovery": enable_course_discovery,
         }
         return Response(data)
