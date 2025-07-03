@@ -154,12 +154,12 @@ class TestCourseSharingLinks(ModuleStoreTestCase):
     )
     @ddt.unpack
     def test_sharing_link_with_new_course_about_page(
-        self, catalog_mfe_enabled, use_new_course_about_page, expected_course_sharing_link
+        self, catalog_mfe_enabled, use_catalog_mfe, expected_course_sharing_link
     ):
         """
         Verify the method gives correct course sharing url when new course about page is used.
         """
-        with override_waffle_flag(ENABLE_NEW_COURSE_ABOUT_PAGE, active=use_new_course_about_page):
+        with override_waffle_flag(ENABLE_NEW_COURSE_ABOUT_PAGE, active=use_catalog_mfe):
             features = settings.FEATURES.copy()
             features['ENABLE_CATALOG_MICROFRONTEND'] = catalog_mfe_enabled
             with override_settings(FEATURES=features):
