@@ -516,7 +516,8 @@ class TestLMSFrontendParams(SiteMixin, TestCase):
 
         extra_feature_flags = {
             'ENABLE_COSMETIC_DISPLAY_PRICE': True,
-            'COURSES_ARE_BROWSABLE': False
+            'COURSES_ARE_BROWSABLE': False,
+            'ENABLE_COURSE_DISCOVERY': False,
         }
 
         with override_settings(FEATURES=settings.FEATURES | extra_feature_flags):
@@ -526,6 +527,7 @@ class TestLMSFrontendParams(SiteMixin, TestCase):
 
         assert params['is_cosmetic_price_enabled'] is True
         assert params['courses_are_browsable'] is False
+        assert params['enable_course_discovery'] is False
 
 
 @ddt.ddt

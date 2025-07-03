@@ -422,6 +422,7 @@ class LMSFrontendParamsView(APIView):
         )
         is_cosmetic_price_enabled = settings.FEATURES.get('ENABLE_COSMETIC_DISPLAY_PRICE')
         courses_are_browsable = settings.FEATURES.get('COURSES_ARE_BROWSABLE')
+        enable_course_discovery = settings.FEATURES['ENABLE_COURSE_DISCOVERY']
 
         data = {
             "enable_course_sorting_by_start_date": enable_course_sorting_by_start_date,
@@ -435,6 +436,6 @@ class LMSFrontendParamsView(APIView):
             "course_about_twitter_account": course_about_twitter_account,
             "is_cosmetic_price_enabled": is_cosmetic_price_enabled,
             "courses_are_browsable": courses_are_browsable,
-            "enable_course_discovery": settings.FEATURES['ENABLE_COURSE_DISCOVERY'],
+            "enable_course_discovery": enable_course_discovery,
         }
         return Response(data)
