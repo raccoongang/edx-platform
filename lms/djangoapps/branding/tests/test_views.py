@@ -545,11 +545,11 @@ class TestCourses(SiteMixin, TestCase):
         (False, False, False),
     )
     @ddt.unpack
-    def test_courses_redirect_to_mfe(self, catalog_mfe_enabled, use_new_catalog_page, expected_redirect):
+    def test_courses_redirect_to_mfe(self, use_catalog_mfe, use_new_catalog_page, expected_redirect):
         """Test that courses view redirects to MFE when both flags are enabled"""
         old_features = settings.FEATURES.copy()
         old_features.update({
-            "ENABLE_CATALOG_MICROFRONTEND": catalog_mfe_enabled,
+            "ENABLE_CATALOG_MICROFRONTEND": use_catalog_mfe,
             "COURSES_ARE_BROWSABLE": True,
         })
         new_settings = {
