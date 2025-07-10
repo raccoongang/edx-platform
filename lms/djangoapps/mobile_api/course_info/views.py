@@ -467,3 +467,109 @@ class CourseEnrollmentDetailsView(APIView):
 
         course_detail = CourseDetailSerializer(data).data
         return Response(data=course_detail, status=status.HTTP_200_OK)
+
+
+@mobile_view()
+class UserCourseProgress(APIView):
+    """
+
+    """
+
+    def get(self, request, *args, **kwargs):
+        """
+
+        """
+        # TODO: `requested user` should be added for the STAFF request
+        # TODO: now works only for the `request.user`
+
+        course_key_string = request.query_params.get('course_id', None)
+
+        try:
+            course_key = CourseKey.from_string(course_key_string)
+        except InvalidKeyError:
+            error = {'error': f"'{str(course_key_string)}' is not a valid course key."}
+            return Response(data=error, status=status.HTTP_400_BAD_REQUEST)
+
+        course_overview = CourseOverview.get_from_id(course_key)
+        course_info_context = {
+            'user': request.user,  # need to add also `requested user` getting for staff
+        }
+
+        data = CourseInfoOverviewSerializer(course_overview, context=course_info_context).data
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+@mobile_view()
+class UserAssignmentsProgress(APIView):
+    """
+
+    """
+
+
+    def get(self, request, *args, **kwargs):
+        """
+
+        """
+        # TODO: `requested user` should be added for the STAFF request
+        # TODO: now works only for the `request.user`
+
+        course_key_string = request.query_params.get('course_id', None)
+
+        try:
+            course_key = CourseKey.from_string(course_key_string)
+        except InvalidKeyError:
+            error = {'error': f"'{str(course_key_string)}' is not a valid course key."}
+            return Response(data=error, status=status.HTTP_400_BAD_REQUEST)
+
+        data = self.get_user_assignment_progress(
+            request.user,
+            course_key
+        )
+
+        return Response(data=data, status=status.HTTP_200_OK)
+
+    def get_user_assignment_progress(
+        self,
+        requested_user: User,
+        course_id: CourseKey,
+    ) -> list:
+        """
+
+        """
+        subsection_grades, section_breakdown = (
+            get_assignments_grades(requested_user, course_id, BLOCK_STRUCTURE_CACHE_TIMEOUT)
+        )
+        grades_with_locations = {str(grade.location): grade for grade in subsection_grades}
+        id_to_label = self._id_to_label(section_breakdown)
+
+        assignments_info = []
+
+        for block_id, grade in grades_with_locations.items():
+            graded_total = grade.graded_total if grade.graded else None
+            points_earned = graded_total.earned if graded_total else 0
+            points_possible = graded_total.possible if graded_total else 0
+            assignment_type = grade.format
+            label = id_to_label.get(block_id)
+
+            assignments_info.append(
+                {
+                    'assignment_id': block_id,
+                    'assignment_type': assignment_type,
+                    'num_points_earned': points_earned,
+                    'num_points_possible': points_possible,
+                    'label': label,
+                }
+            )
+
+        return assignments_info
+
+    @staticmethod
+    def _id_to_label(section_breakdown: List[Dict]) -> Dict[str, str]:
+        """
+        Get `sequential_id` to assignment `label` mapping.
+        """
+        return {
+            section['sequential_id']: section['label']
+            for section in section_breakdown
+            if 'sequential_id' in section and section['sequential_id'] is not None
+        }

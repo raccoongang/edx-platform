@@ -11,7 +11,9 @@ from .views import (
     CourseEnrollmentDetailsView,
     CourseGoalsRecordUserActivity,
     CourseHandoutsList,
-    CourseUpdatesList
+    CourseUpdatesList,
+    UserAssignmentsProgress,
+    UserCourseProgress,
 )
 
 urlpatterns = [
@@ -32,4 +34,7 @@ urlpatterns = [
     ),
     path('record_user_activity', CourseGoalsRecordUserActivity.as_view(), name='record_user_activity'),
     path('blocks/', BlocksInfoInCourseView.as_view(), name="blocks_info_in_course"),
+
+    path('user_course_progress/', UserCourseProgress.as_view(), name='user_course_progress'),
+    path('user_assignments_progress/', UserAssignmentsProgress.as_view(), name='user_assignments_progress'),
 ]
