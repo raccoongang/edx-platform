@@ -261,6 +261,7 @@ class ProgressTabView(RetrieveAPIView):
             'user_has_passing_grade': user_has_passing_grade,
             'verification_data': verification_data,
             'disable_progress_graph': disable_progress_graph,
+            'assignment_colors': [],
         }
         context = self.get_serializer_context()
         context['staff_access'] = is_staff

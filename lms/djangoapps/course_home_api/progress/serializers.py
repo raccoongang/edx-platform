@@ -105,7 +105,6 @@ class GradingPolicySerializer(ReadOnlySerializer):
             'short_label': assignment_policy.get('short_label', ''),
             'type': assignment_policy['type'],
             'weight': assignment_policy['weight'],
-            'color': assignment_policy.get('color', None),
         } for assignment_policy in grading_policy['GRADER']]
 
 
@@ -128,6 +127,29 @@ class VerificationDataSerializer(ReadOnlySerializer):
     status_date = serializers.DateTimeField()
 
 
+class AssignmentsColorsMockedSerializer(ReadOnlySerializer):
+    """
+    Return temporary mock with colors data.
+    """
+    TEMPORARY_ASSIGNMENTS_COLOR_MOCK = [
+        "#FF5733",  # Vivid Orange
+        "#33C1FF",  # Bright Sky Blue
+        "#75FF33",  # Lime Green
+        "#FF33EC",  # Hot Pink
+        "#FFD133",  # Golden Yellow
+        "#8E44AD",  # Purple
+        "#33FFBD",  # Mint Green
+        "#FF3333",  # Red
+        "#3380FF",  # Royal Blue
+        "#1ABC9C",  # Teal
+    ]
+
+    assignment_colors = serializers.SerializerMethodField()
+
+    def get_assignment_colors(self, obj):
+        return self.TEMPORARY_ASSIGNMENTS_COLOR_MOCK
+
+
 class ProgressTabSerializer(VerifiedModeSerializer):
     """
     Serializer for progress tab
@@ -147,3 +169,4 @@ class ProgressTabSerializer(VerifiedModeSerializer):
     user_has_passing_grade = serializers.BooleanField()
     verification_data = VerificationDataSerializer()
     disable_progress_graph = serializers.BooleanField()
+    assignment_colors = AssignmentsColorsMockedSerializer()
