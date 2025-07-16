@@ -95,8 +95,23 @@ class GradingPolicySerializer(ReadOnlySerializer):
     """
     Serializer for grading policy
     """
+
+    TEMPORARY_ASSIGNMENTS_COLOR_MOCK = [
+        "#FF5733",  # Vivid Orange
+        "#33C1FF",  # Bright Sky Blue
+        "#75FF33",  # Lime Green
+        "#FF33EC",  # Hot Pink
+        "#FFD133",  # Golden Yellow
+        "#8E44AD",  # Purple
+        "#33FFBD",  # Mint Green
+        "#FF3333",  # Red
+        "#3380FF",  # Royal Blue
+        "#1ABC9C",  # Teal
+    ]
+
     assignment_policies = serializers.SerializerMethodField()
     grade_range = serializers.DictField(source='GRADE_CUTOFFS')
+    assignment_colors = serializers.SerializerMethodField()
 
     def get_assignment_policies(self, grading_policy):
         return [{
@@ -106,6 +121,9 @@ class GradingPolicySerializer(ReadOnlySerializer):
             'type': assignment_policy['type'],
             'weight': assignment_policy['weight'],
         } for assignment_policy in grading_policy['GRADER']]
+
+    def get_assignment_colors(self, obj):
+        return self.TEMPORARY_ASSIGNMENTS_COLOR_MOCK
 
 
 class CertificateDataSerializer(ReadOnlySerializer):
@@ -127,29 +145,6 @@ class VerificationDataSerializer(ReadOnlySerializer):
     status_date = serializers.DateTimeField()
 
 
-class AssignmentsColorsMockedSerializer(ReadOnlySerializer):
-    """
-    Return temporary mock with colors data.
-    """
-    TEMPORARY_ASSIGNMENTS_COLOR_MOCK = [
-        "#FF5733",  # Vivid Orange
-        "#33C1FF",  # Bright Sky Blue
-        "#75FF33",  # Lime Green
-        "#FF33EC",  # Hot Pink
-        "#FFD133",  # Golden Yellow
-        "#8E44AD",  # Purple
-        "#33FFBD",  # Mint Green
-        "#FF3333",  # Red
-        "#3380FF",  # Royal Blue
-        "#1ABC9C",  # Teal
-    ]
-
-    assignment_colors = serializers.SerializerMethodField()
-
-    def get_assignment_colors(self, obj):
-        return self.TEMPORARY_ASSIGNMENTS_COLOR_MOCK
-
-
 class ProgressTabSerializer(VerifiedModeSerializer):
     """
     Serializer for progress tab
@@ -169,4 +164,3 @@ class ProgressTabSerializer(VerifiedModeSerializer):
     user_has_passing_grade = serializers.BooleanField()
     verification_data = VerificationDataSerializer()
     disable_progress_graph = serializers.BooleanField()
-    assignment_colors = AssignmentsColorsMockedSerializer()
