@@ -8,12 +8,13 @@ import ddt
 import six
 from django.conf import settings
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
-from django.test import TestCase, override_settings
+from django.test import override_settings, TestCase
 from django.urls import reverse
 from edx_toggles.toggles.testutils import override_waffle_switch
 
 from common.djangoapps.student.tests.factories import UserFactory
 from lms.djangoapps.branding.models import BrandingApiConfig
+
 from openedx.core.djangoapps.dark_lang.models import DarkLangConfig
 from openedx.core.djangoapps.lang_pref.api import released_languages
 from openedx.core.djangoapps.site_configuration.tests.mixins import SiteMixin
@@ -251,6 +252,7 @@ class TestFooter(CacheIsolationTestCase):
             assert f'<option value="{language.code}">' in content
 
 
+@ddt.ddt
 class TestIndex(SiteMixin, TestCase):
     """ Test the index view """
 
@@ -289,6 +291,79 @@ class TestIndex(SiteMixin, TestCase):
         response = self.client.get(reverse("dashboard"))
         assert self.site_configuration_other.site_values['MKTG_URLS']['ROOT'] in response.content.decode('utf-8')
 
+    @ddt.data(
+        (True, True),
+        (True, False),
+        (False, False),
+        (False, False),
+    )
+    @ddt.unpack
+    def test_index_redirects_to_mfe(self, catalog_mfe_enabled, expected_redirect):
+        """Test that index view redirects to MFE when both flags are enabled."""
+        old_features = settings.FEATURES.copy()
+        old_features.update({
+            "ENABLE_CATALOG_MICROFRONTEND": catalog_mfe_enabled,
+            "COURSES_ARE_BROWSABLE": True,
+        })
+        new_settings = {
+            "FEATURES": old_features,
+            "CATALOG_MICROFRONTEND_URL": "http://example.com/catalog",
+        }
+        with override_settings(**new_settings):
+            response = self.client.get(reverse("root"))
+
+            if expected_redirect:
+                expected_url = f'{settings.CATALOG_MICROFRONTEND_URL}/'
+                self.assertRedirects(
+                    response,
+                    expected_url,
+                    status_code=301,
+                    fetch_redirect_response=False
+                )
+            else:
+                assert response.status_code in [200, 301, 302]
+
+
+@ddt.ddt
+class TestCourses(SiteMixin, TestCase):
+    """Test the courses view"""
+
+    def setUp(self):
+        super().setUp()
+        self.courses_url = reverse("courses")
+
+    @ddt.data(
+        (True, True),
+        (True, False),
+        (False, False),
+        (False, False),
+    )
+    @ddt.unpack
+    def test_courses_redirect_to_mfe(self, catalog_mfe_enabled, expected_redirect):
+        """Test that courses view redirects to MFE when both flags are enabled"""
+        old_features = settings.FEATURES.copy()
+        old_features.update({
+            "ENABLE_CATALOG_MICROFRONTEND": catalog_mfe_enabled,
+            "COURSES_ARE_BROWSABLE": True,
+        })
+        new_settings = {
+            "FEATURES": old_features,
+            "CATALOG_MICROFRONTEND_URL": "http://example.com/catalog",
+        }
+        with override_settings(**new_settings):
+            response = self.client.get(self.courses_url)
+
+            if expected_redirect:
+                expected_url = f'{settings.CATALOG_MICROFRONTEND_URL}/courses'
+                self.assertRedirects(
+                    response,
+                    expected_url,
+                    status_code=301,
+                    fetch_redirect_response=False
+                )
+            else:
+                assert response.status_code in [200, 301, 302]
+
 
 @ddt.ddt
 class TestLMSFrontendParams(SiteMixin, TestCase):
@@ -318,6 +393,7 @@ class TestLMSFrontendParams(SiteMixin, TestCase):
         assert 'course_about_twitter_account' in params
         assert 'is_cosmetic_price_enabled' in params
         assert 'courses_are_browsable' in params
+        assert 'enable_course_discovery' in params
 
     @ddt.data(
         ('ENABLE_COURSE_SORTING_BY_START_DATE', False),
@@ -397,7 +473,8 @@ class TestLMSFrontendParams(SiteMixin, TestCase):
 
         extra_feature_flags = {
             'ENABLE_COSMETIC_DISPLAY_PRICE': True,
-            'COURSES_ARE_BROWSABLE': False
+            'COURSES_ARE_BROWSABLE': False,
+            'ENABLE_COURSE_DISCOVERY': False,
         }
 
         with override_settings(FEATURES=settings.FEATURES | extra_feature_flags):
@@ -407,3 +484,4 @@ class TestLMSFrontendParams(SiteMixin, TestCase):
 
         assert params['is_cosmetic_price_enabled'] is True
         assert params['courses_are_browsable'] is False
+        assert params['enable_course_discovery'] is False
