@@ -323,6 +323,7 @@ def footer(request):
     else:
         return HttpResponse(status=406)
 
+
 class LMSFrontendParamsView(APIView):
     """
         **Use Case**
