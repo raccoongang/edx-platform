@@ -294,5 +294,5 @@ class ProgressTabView(RetrieveAPIView):
 
         for section in serialized_data["section_scores"]:
             for subsection in section["subsections"]:
-                subsection_key= subsection["block_key"]
+                subsection_key = subsection["block_key"]
                 subsection["completion"] = blocks.get(subsection_key).get("completion")
