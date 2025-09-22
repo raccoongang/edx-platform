@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import dateutil
 import ddt
+from completion.models import BlockCompletion
 from django.urls import reverse
 from django.utils.timezone import now
 from edx_toggles.toggles.testutils import override_waffle_flag
@@ -314,3 +315,56 @@ class ProgressTabTestViews(BaseCourseHomeTests):
         assert response.status_code == 200
         assert response.data['course_grade']['percent'] == expected_percent
         assert response.data['course_grade']['is_passing'] == (expected_percent >= 0.5)
+
+    def test_completion_field_present_in_subsections(self):
+        """
+        Verify that the ProgressTab API response now includes a `completion`
+        field in each subsection of `section_scores`.
+        """
+        # Set up a graded problem so that a subsection exists
+        self.add_subsection_with_problem()
+        CourseEnrollment.enroll(self.user, self.course.id)
+
+        response = self.client.get(self.url)
+        assert response.status_code == 200
+
+        # Check every subsection has a completion field (populated or None)
+        sections = response.data['section_scores']
+        for section in sections:
+            for subsection in section['subsections']:
+                assert 'completion' in subsection
+
+    def test_completion_value_changes_after_mark_complete(self):
+        """
+        Verify that a subsection's completion value reflects completion status
+        after a problem is marked complete.
+        """
+        with self.store.bulk_operations(self.course.id):
+            test_problem = self.add_subsection_with_problem()
+
+        problem_completion = BlockCompletion.objects.create(
+            user=self.user,
+            context_key=test_problem.context_key,
+            block_type='problem',
+            block_key=test_problem.location,
+            completion=0.0,
+        )
+
+        CourseEnrollment.enroll(self.user, self.course.id)
+
+        # Initially, completion values should be 0.0 or None
+        response = self.client.get(self.url)
+        sections = response.data['section_scores']
+        initial_values = [sub['completion'] for sec in sections for sub in sec['subsections']]
+        assert any(val in (None, 0.0) for val in initial_values)
+
+        # Mark the problem as complete
+        problem_completion.completion = 1.0
+        problem_completion.save()
+
+        response = self.client.get(self.url)
+        sections = response.data['section_scores']
+        updated_values = [sub.get('completion') for sec in sections for sub in sec['subsections']]
+
+        # After completion, at least one subsection's completion should now be > 0
+        assert any(val and val > 0 for val in updated_values)
