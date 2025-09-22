@@ -119,6 +119,8 @@ class ProgressTabView(RetrieveAPIView):
                 show_grades: (bool) a bool for whether to show grades based on the access the user has
                 url: (str or None) the absolute path url to the Subsection or None if the Subsection is no longer
                      accessible to the learner due to a hide_after_due course team setting
+                completion (int or None): a boolean-like value to mark an assignment either as completed (1)
+                                                                                        or not completed (0)
         studio_url: (str) a str of the link to the grading in studio for the course
         user_has_passing_grade: (bool) boolean on if the user has a passing grade in the course
         username: (str) username of the student whose progress information is being displayed.
