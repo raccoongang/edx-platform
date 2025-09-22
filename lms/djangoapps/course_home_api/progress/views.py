@@ -282,6 +282,9 @@ class ProgressTabView(RetrieveAPIView):
 
     @staticmethod
     def _add_completion(course_blocks, ctx, serialized_data) -> None:
+        """
+        Sets 'completion' field for each element under 'section_scores' -> 'subsections'
+        """
         completion_context = {
             "block_structure": ctx["course_blocks"],
             "requested_fields": ["children", "completion"]
