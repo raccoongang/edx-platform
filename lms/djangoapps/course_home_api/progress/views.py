@@ -7,11 +7,13 @@ from django.http.response import Http404
 from edx_django_utils import monitoring as monitoring_utils
 from edx_rest_framework_extensions.auth.jwt.authentication import JwtAuthentication
 from edx_rest_framework_extensions.auth.session.authentication import SessionAuthenticationAllowInactiveUser
+from lms.djangoapps.course_api.blocks.serializers import BlockDictSerializer
 from opaque_keys.edx.keys import CourseKey
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from lms.djangoapps.course_api.blocks.views import recurse_mark_complete
 from xmodule.modulestore.django import modulestore
 from common.djangoapps.student.models import CourseEnrollment
 from lms.djangoapps.course_home_api.progress.serializers import ProgressTabSerializer
@@ -218,7 +220,8 @@ class ProgressTabView(RetrieveAPIView):
             usage_key,
             transformers=transformers,
             collected_block_structure=collected_block_structure,
-            include_has_scheduled_content=True
+            include_has_scheduled_content=True,
+            include_completion=True,
         )
         has_scheduled_content = course_blocks.get_xblock_field(usage_key, 'has_scheduled_content')
 
@@ -271,4 +274,20 @@ class ProgressTabView(RetrieveAPIView):
         context['enrollment'] = enrollment
         serializer = self.get_serializer_class()(data, context=context)
 
+        self._add_completion(course_blocks, context, serializer.data)
+
         return Response(serializer.data)
+
+    @staticmethod
+    def _add_completion(course_blocks, ctx, serialized_data) -> None:
+        completion_context = {
+            "block_structure": ctx["course_blocks"],
+            "requested_fields": ["children", "completion"]
+        }
+        root, blocks = BlockDictSerializer(course_blocks, context=ctx | completion_context, many=False).data.values()
+        recurse_mark_complete(root, blocks)
+
+        for section in serialized_data["section_scores"]:
+            for subsection in section["subsections"]:
+                subsection_key= subsection["block_key"]
+                subsection["completion"] = blocks.get(subsection_key).get("completion")
