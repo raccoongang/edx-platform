@@ -218,11 +218,7 @@ class DateSummary:
         """
         Returns whether the date is relative or not.
         """
-        return (
-            self.course.self_paced
-            and RELATIVE_DATES_FLAG.is_enabled(self.course_id)
-            and bool(self.course.relative_weeks_due)
-        )
+        return False
 
     @property
     def location(self):
@@ -411,6 +407,13 @@ class CourseAssignmentDate(DateSummary):
     def location(self, location):
         self._location = str(location)
 
+    @property
+    def is_relative(self):
+        return (
+            self.course.self_paced
+            and RELATIVE_DATES_FLAG.is_enabled(self.course_id)
+            and bool(self.course.relative_weeks_due)
+        )
 
 class CourseExpiredDate(DateSummary):
     """
