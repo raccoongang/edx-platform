@@ -25,6 +25,7 @@ from web_fragments.fragment import Fragment
 from xblock.core import XBlock
 from xblock.fields import Boolean, Dict, Float, Integer, Scope, String, XMLString, List
 from xblock.scorable import ScorableXBlockMixin, Score
+from xblock.utils.studio_editable import StudioConfigurableXBlockMixin
 from xblocks_contrib.problem import ProblemBlock as _ExtractedProblemBlock
 
 from common.djangoapps.xblock_django.constants import (
@@ -134,6 +135,7 @@ class Randomization(String):
 @XBlock.needs('replace_urls')
 @XBlock.wants('call_to_action')
 class _BuiltInProblemBlock(
+    StudioConfigurableXBlockMixin,
     ScorableXBlockMixin,
     RawMixin,
     XmlMixin,
