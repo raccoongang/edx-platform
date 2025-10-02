@@ -1,0 +1,13 @@
+<%page expression_filter="h"/>
+<%! from django.utils.translation import gettext as _ %>
+<%namespace name='static' file='static_content.html'/>
+<%!
+from django.utils.translation import gettext as _
+from openedx.core.djangolib.markup import HTML, Text
+%>
+
+<div class="course-wrapper chromeless">
+    <section class="course-content" id="course-content" style="display: block; width: auto; margin: 0">
+        <main id="main" aria-label="Content">${HTML(fragment.body_html())}</main>
+    </section>
+</div>

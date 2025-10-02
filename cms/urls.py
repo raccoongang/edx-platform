@@ -368,3 +368,10 @@ urlpatterns += [
     re_path('^authoring-api/ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     re_path('^authoring-api/schema/', SpectacularAPIView.as_view(), name='schema'),
 ]
+
+urlpatterns += [
+    path(
+        "offline_mode/",
+        include("cms.djangoapps.offline_mode.urls", namespace="offline_mode"),
+    ),
+]

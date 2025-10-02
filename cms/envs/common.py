@@ -1005,6 +1005,7 @@ INSTALLED_APPS = [
     'openedx.core.djangoapps.course_groups',  # not used in cms (yet), but tests run
     'cms.djangoapps.xblock_config.apps.XBlockConfig',
     'cms.djangoapps.export_course_metadata.apps.ExportCourseMetadataConfig',
+    'cms.djangoapps.offline_mode.apps.OfflineModeConfig',
 
     # New (Learning-Core-based) XBlock runtime
     'openedx.core.djangoapps.xblock.apps.StudioXBlockAppConfig',
@@ -1812,3 +1813,5 @@ DEFAULT_ORG_LOGO_URL = Derived(lambda settings: settings.STATIC_URL + 'images/lo
 
 # Misc
 AUTHORING_API_URL = ''
+
+OFFLINE_SERVICE_WORKER_USERNAME = "edx"
