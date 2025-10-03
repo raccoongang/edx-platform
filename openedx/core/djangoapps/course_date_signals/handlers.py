@@ -16,6 +16,7 @@ from openedx_events.learning.signals import (
 from xblock.fields import Scope
 
 from cms.djangoapps.contentstore.config.waffle import CUSTOM_RELATIVE_DATES
+from common.djangoapps.student.models import CourseEnrollment
 from openedx.core.lib.graph_traversals import get_children, leaf_filter, traverse_pre_order
 from xmodule.modulestore import ModuleStoreEnum  # lint-amnesty, pylint: disable=wrong-import-order
 from xmodule.modulestore.django import SignalHandler, modulestore  # lint-amnesty, pylint: disable=wrong-import-order
@@ -170,9 +171,21 @@ def extract_dates_from_course(course):
 
 
 @receiver(SignalHandler.course_published)
+def update_assignment_dates(sender, course_key, **kwargs):  # pylint: disable=unused-argument
+    """
+    Receive the course_published signal and update assignment dates for the course.
+    """
+    # import here, because signal is registered at startup, but items in tasks are not available yet
+    from .tasks import update_assignment_dates_for_course
+
+    course_key_str = str(course_key)
+    transaction.on_commit(lambda: update_assignment_dates_for_course.delay(course_key_str))
+
+
+@receiver(SignalHandler.course_published)
 def extract_dates(sender, course_key, **kwargs):  # pylint: disable=unused-argument
     """
-    Extract dates from blocks when publishing a course.
+    Extract and set dates for blocks when publishing a course.
     """
     store = modulestore()
     with store.branch_setting(ModuleStoreEnum.Branch.published_only, course_key):
@@ -185,21 +198,10 @@ def extract_dates(sender, course_key, **kwargs):  # pylint: disable=unused-argum
     date_items = extract_dates_from_course(course)
 
     try:
-        set_dates_for_course(course_key, date_items)
+        for enrolled_user in CourseEnrollment.objects.users_enrolled_in(course_key):
+            set_dates_for_course(course_key, date_items, user=enrolled_user)
     except Exception:  # pylint: disable=broad-except
         log.exception('Unable to set dates for %s on course publish', course_key)
-
-
-@receiver(SignalHandler.course_published)
-def update_assignment_dates(sender, course_key, **kwargs):  # pylint: disable=unused-argument
-    """
-    Receive the course_published signal and update assignment dates for the course.
-    """
-    # import here, because signal is registered at startup, but items in tasks are not available yet
-    from .tasks import update_assignment_dates_for_course
-
-    course_key_str = str(course_key)
-    transaction.on_commit(lambda: update_assignment_dates_for_course.delay(course_key_str))
 
 
 @receiver(COURSE_ENROLLMENT_CREATED)
