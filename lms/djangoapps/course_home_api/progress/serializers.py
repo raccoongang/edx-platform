@@ -97,16 +97,14 @@ class GradingPolicySerializer(ReadOnlySerializer):
     """
 
     TEMPORARY_ASSIGNMENTS_COLOR_MOCK = [
-        "#FF5733",  # Vivid Orange
-        "#33C1FF",  # Bright Sky Blue
-        "#75FF33",  # Lime Green
-        "#FF33EC",  # Hot Pink
-        "#FFD133",  # Golden Yellow
-        "#8E44AD",  # Purple
-        "#33FFBD",  # Mint Green
-        "#FF3333",  # Red
-        "#3380FF",  # Royal Blue
-        "#1ABC9C",  # Teal
+        "#D24242",  # Crimson Red
+        "#7B9645",  # Olive Green
+        "#5A5AD8",  # Periwinkle Blue
+        "#B0842C",  # Amber Gold
+        "#2E90C2",  # Ocean Blue
+        "#D13F88",  # Magenta Pink
+        "#36A17D",  # Jade Green
+        "#AE5AD8",  # Lavender Purple
     ]
 
     assignment_policies = serializers.SerializerMethodField()
