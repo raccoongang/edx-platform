@@ -1520,6 +1520,12 @@ COMMENTS_SERVICE_KEY = 'password'
 EXAMS_SERVICE_URL = 'http://localhost:18740/api/v1'
 EXAMS_SERVICE_USERNAME = 'edx_exams_worker'
 
+FINANCIAL_REPORTS = {
+    'STORAGE_TYPE': 'localfs',
+    'BUCKET': None,
+    'ROOT_PATH': 'sandbox',
+}
+
 ############# CORS headers for cross-domain requests #################
 
 # Set CORS_ALLOW_HEADERS regardless of whether we've enabled ENABLE_CORS_HEADERS
