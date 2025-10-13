@@ -5,10 +5,12 @@ API views for course dates.
 from django.contrib.auth.models import User  # lint-amnesty, pylint: disable=imported-auth-user
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from edx_when.api import _are_relative_dates_enabled
 from edx_when.models import UserDate
 from rest_framework import views
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+from xmodule.modulestore.django import modulestore
 
 from ..decorators import mobile_view
 from .serializers import AllCourseDatesSerializer
@@ -63,13 +65,25 @@ class AllCourseDatesAPIView(views.APIView):
 
     def get(self, request, *args, **kwargs) -> Response:
         user = get_object_or_404(User, username=kwargs.get("username"))
-
         user_dates = UserDate.objects.filter(user=user).select_related("content_date", "content_date__policy")
         now = timezone.now()
-        user_dates_sorted = sorted(
-            [user_date for user_date in user_dates if user_date.actual_date > now],
-            key=lambda user_date: user_date.actual_date
-        )
+
+        user_dates_filtered = []
+        for user_date in user_dates:
+            is_date_in_future = user_date.actual_date > now
+
+            is_date_relative = user_date.rel_date is not None or user_date.content_date.policy.rel_date is not None
+            course_id = user_date.content_date.course_id
+            course = modulestore().get_course(course_id)
+            is_course_relative = all(
+                [course.self_paced, _are_relative_dates_enabled(course_id), bool(course.relative_weeks_due)]
+            )
+
+            if is_date_in_future or (is_date_relative and is_course_relative):
+                user_dates_filtered.append(user_date)
+
+        user_dates_sorted = sorted(user_dates_filtered, key=lambda ud: ud.actual_date)
+
         paginator = self.pagination_class()
         paginated_data = paginator.paginate_queryset(user_dates_sorted, request)
         serializer = AllCourseDatesSerializer(paginated_data, many=True)
