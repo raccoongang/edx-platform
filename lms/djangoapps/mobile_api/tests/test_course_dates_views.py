@@ -48,9 +48,9 @@ class TestAllCourseDatesAPIView(
         UserDate.objects.all().delete()
         super().tearDown()
 
-    def test_only_future_dates_are_returned(self):
+    def test_future_dates_are_included(self):
         """
-        Ensure GET only returns user dates strictly after now().
+        Ensure GET returns user dates strictly after now().
         We create 3 UserDates: 1 in the past, 1 in the present, 1 in the future.
         We expect to get back 1 UserDate - the one from the future.
         """
@@ -101,4 +101,57 @@ class TestAllCourseDatesAPIView(
         self.login_and_enroll(self.course_1.id)
         response = self.api_response(username=self.user.username)
 
+        self.assertListEqual(response.data["results"], [])
+
+    def test_relative_dates_are_included_even_if_past(self):
+        """
+        Relative dates should be included even when their actual_date is in the past.
+        """
+        now = timezone.now()
+        # Set up a relative DatePolicy
+        date_policy = DatePolicy.objects.create(rel_date=timedelta(days=-2))
+        content_date = ContentDate.objects.create(
+            course_id=self.course_1.id,
+            location=self.sequential_1.location,
+            active=True,
+            block_type="sequential",
+            field="due",
+            policy=date_policy,
+        )
+        UserDate.objects.create(user=self.user, content_date=content_date)
+
+        self.login_and_enroll(self.course_1.id)
+        response = self.api_response(username=self.user.username)
+
+        results = response.data["results"]
+        self.assertEqual(len(results), 1, "Relative date should be included even if past.")
+
+    def test_course_settings_disable_relative_dates(self):
+        """
+        Dates should be skipped if course settings do not enable relative dates.
+        """
+        now = timezone.now()
+        course = CourseFactory.create(modulestore=self.store, start=timezone.now() - timedelta(weeks=5))
+
+        # Patch course settings to disable relative behavior
+        course = self.store.get_course(course.id)
+        course.self_paced = False
+        course.relative_weeks_due = None
+        self.store.update_item(course, self.user.id)
+
+        chapter = self.make_block("chapter", course)
+        sequential = self.make_block("sequential", chapter)
+        date_policy = DatePolicy.objects.create(rel_date=timedelta(weeks=-3))
+        content_date = ContentDate.objects.create(
+            course_id=course.id,
+            location=sequential.location,
+            active=True,
+            block_type="sequential",
+            field="due",
+            policy=date_policy,
+        )
+        UserDate.objects.create(user=self.user, content_date=content_date)
+
+        self.login_and_enroll(course.id)
+        response = self.api_response(username=self.user.username)
         self.assertListEqual(response.data["results"], [])
