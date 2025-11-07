@@ -639,12 +639,13 @@ def get_course_assignments(course_key, user, include_access=False, include_witho
     assignments = []
     for section_key in block_data.get_children(course_usage_key):  # lint-amnesty, pylint: disable=too-many-nested-blocks
         for subsection_key in block_data.get_children(section_key):
-            subsection = store.get_item(subsection_key)
-
+            relative_weeks_due = None
             due = block_data.get_xblock_field(subsection_key, 'due')
             graded = block_data.get_xblock_field(subsection_key, 'graded', False)
 
-            relative_weeks_due = getattr(subsection, 'relative_weeks_due', None)
+            if RELATIVE_DATES_FLAG.is_enabled(course_key):
+                subsection = store.get_item(subsection_key)
+                relative_weeks_due = getattr(subsection, 'relative_weeks_due', None)
 
             if (due or relative_weeks_due or include_without_due) and graded:
                 first_component_block_id = get_first_component_of_block(subsection_key, block_data)

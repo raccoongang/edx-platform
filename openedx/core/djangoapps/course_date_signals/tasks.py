@@ -22,6 +22,7 @@ User = get_user_model()
 LOGGER = get_task_logger(__name__)
 USER_BATCH_SIZE = 500
 
+
 @shared_task
 @set_code_owner_attribute
 def update_assignment_dates_for_course(course_key_str):
@@ -35,7 +36,7 @@ def update_assignment_dates_for_course(course_key_str):
         if not staff_user:
             LOGGER.error("No staff user found to update assignment dates for course %s", course_key_str)
             return
-        assignments = get_course_assignments(course_key, staff_user, include_without_due=True)
+        assignments = get_course_assignments(course_key, staff_user)
         update_or_create_assignments_due_dates(course_key, assignments)
         LOGGER.info("Successfully updated assignment dates for course %s", course_key_str)
     except Exception:  # pylint: disable=broad-except
@@ -59,8 +60,7 @@ def user_dates_on_enroll_task(user_id: int, course_key: str) -> None | NoReturn:
         assignments = get_course_assignments(
             course_key_obj,
             User.objects.get(pk=user_id),
-            include_access=True,
-            include_without_due=True,
+            include_access=True
         )
         course_overview = CourseOverview.get_from_id(course_key_obj)
         course_data = {
