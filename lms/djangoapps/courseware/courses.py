@@ -75,7 +75,7 @@ log = logging.getLogger(__name__)
 # Used by get_course_assignments below. You shouldn't need to use this type directly.
 _Assignment = namedtuple(
     'Assignment', ['block_key', 'title', 'url', 'date', 'contains_gated_content', 'complete', 'past_due',
-                   'assignment_type', 'extra_info', 'first_component_block_id']
+                   'assignment_type', 'extra_info', 'first_component_block_id', 'relative_weeks_due']
 )
 
 
@@ -639,10 +639,15 @@ def get_course_assignments(course_key, user, include_access=False, include_witho
     assignments = []
     for section_key in block_data.get_children(course_usage_key):  # lint-amnesty, pylint: disable=too-many-nested-blocks
         for subsection_key in block_data.get_children(section_key):
+            relative_weeks_due = None
             due = block_data.get_xblock_field(subsection_key, 'due')
             graded = block_data.get_xblock_field(subsection_key, 'graded', False)
 
-            if (due or include_without_due) and graded:
+            if RELATIVE_DATES_FLAG.is_enabled(course_key):
+                subsection = store.get_item(subsection_key)
+                relative_weeks_due = getattr(subsection, 'relative_weeks_due', None)
+
+            if (due or relative_weeks_due or include_without_due) and graded:
                 first_component_block_id = get_first_component_of_block(subsection_key, block_data)
                 contains_gated_content = include_access and block_data.get_xblock_field(
                     subsection_key, 'contains_gated_content', False)
@@ -669,7 +674,8 @@ def get_course_assignments(course_key, user, include_access=False, include_witho
                     due = None
                 assignments.append(_Assignment(
                     subsection_key, title, url, due, contains_gated_content,
-                    complete, past_due, assignment_type, None, first_component_block_id
+                    complete, past_due, assignment_type, None, first_component_block_id,
+                    relative_weeks_due
                 ))
             assignments.extend(get_ora_blocks_as_assignments(block_data, subsection_key))
     return assignments

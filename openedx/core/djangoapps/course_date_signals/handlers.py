@@ -199,7 +199,7 @@ def extract_dates(sender, course_key, **kwargs):  # pylint: disable=unused-argum
 
     try:
         for enrolled_user in CourseEnrollment.objects.users_enrolled_in(course_key):
-            set_dates_for_course(course_key, date_items, user=enrolled_user)
+            set_dates_for_course(course_key, date_items, user=enrolled_user)  # pylint: disable=unexpected-keyword-arg
     except Exception:  # pylint: disable=broad-except
         log.exception('Unable to set dates for %s on course publish', course_key)
 
