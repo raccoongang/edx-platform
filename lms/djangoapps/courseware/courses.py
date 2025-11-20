@@ -809,6 +809,7 @@ def _ora_assessment_to_assignment(
         assignment_type,
         extra_info,
         first_component_block_id,
+        None
     )
 
 
