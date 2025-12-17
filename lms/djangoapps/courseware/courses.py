@@ -809,7 +809,9 @@ def _ora_assessment_to_assignment(
         assignment_type,
         extra_info,
         first_component_block_id,
-        None
+        # NOTE: ORA blocks don't have relative_weeks_due property.
+        #       relative_weeks_due is a subsection-level property used for relative dates.
+        relative_weeks_due=None
     )
 
 
