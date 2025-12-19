@@ -221,6 +221,13 @@ class Command(BaseCommand):
         updated = 0
         skipped = 0
 
+        try:
+            course_overview = CourseOverview.get_from_id(course_key)
+            course_name = course_overview.display_name
+        except CourseOverview.DoesNotExist:
+            log.warning(f"CourseOverview not found for {course_key}")
+            course_name = None
+
         for assignment in assignments:
             self.stdout.write(
                 f"Processing assignment: {assignment.block_key}/{assignment.assignment_type} (due: {assignment.date})"
@@ -238,7 +245,7 @@ class Command(BaseCommand):
                 continue
 
             try:
-                update_or_create_assignments_due_dates(course_key, [assignment])
+                update_or_create_assignments_due_dates(course_key, [assignment], course_name=course_name)
 
                 if existing:
                     updated += 1

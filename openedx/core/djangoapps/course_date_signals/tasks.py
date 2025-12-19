@@ -37,7 +37,8 @@ def update_assignment_dates_for_course(course_key_str):
             LOGGER.error("No staff user found to update assignment dates for course %s", course_key_str)
             return
         assignments = get_course_assignments(course_key, staff_user)
-        update_or_create_assignments_due_dates(course_key, assignments)
+        course_overview = CourseOverview.get_from_id(course_key)
+        update_or_create_assignments_due_dates(course_key, assignments, course_name=course_overview.display_name)
         LOGGER.info("Successfully updated assignment dates for course %s", course_key_str)
     except Exception:  # pylint: disable=broad-except
         LOGGER.exception("Could not update assignment dates for course %s", course_key_str)
