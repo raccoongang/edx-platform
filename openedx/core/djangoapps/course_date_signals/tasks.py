@@ -7,13 +7,14 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.contrib.auth import get_user_model
 from edx_django_utils.monitoring import set_code_owner_attribute
-from edx_when.api import update_or_create_assignments_due_dates, UserDateHandler
+from edx_when.api import UserDateHandler, update_or_create_assignments_due_dates
+from edx_when.types import CourseRef
 
 from opaque_keys.edx.keys import CourseKey
-from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 from common.djangoapps.student.models import CourseEnrollment
 from lms.djangoapps.courseware.courses import get_course_assignments
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 
 User = get_user_model()
@@ -38,7 +39,8 @@ def update_assignment_dates_for_course(course_key_str):
             return
         assignments = get_course_assignments(course_key, staff_user)
         course_overview = CourseOverview.get_from_id(course_key)
-        update_or_create_assignments_due_dates(course_key, assignments, course_name=course_overview.display_name)
+        course = CourseRef(course_key=course_key, course_display_name=course_overview.display_name)
+        update_or_create_assignments_due_dates(course, assignments)
         LOGGER.info("Successfully updated assignment dates for course %s", course_key_str)
     except Exception:  # pylint: disable=broad-except
         LOGGER.exception("Could not update assignment dates for course %s", course_key_str)

@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from edx_when.api import update_or_create_assignments_due_dates, models as when_models
+from edx_when.types import CourseRef
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from xmodule.modulestore.django import modulestore
@@ -179,7 +180,8 @@ class Command(BaseCommand):
 
         staff_user = User.objects.filter(is_staff=True).first()
         if not staff_user:
-            return
+            log.warning("No staff user found; cannot resolve course assignments for %s", course_key)
+            return 0, 0, 0, 0
         assignments = get_course_assignments(course_key, staff_user)
 
         if not assignments:
@@ -199,13 +201,22 @@ class Command(BaseCommand):
                 self.stdout.write(f"    ... and {len(assignments) - 5} more")
             return processed, 0, 0, 0
 
+        try:
+            course_overview = CourseOverview.get_from_id(course_key)
+            course_display_name = course_overview.display_name
+        except CourseOverview.DoesNotExist:
+            log.warning("CourseOverview not found for %s; falling back to course number", course_key)
+            course_display_name = course_key.course
+
+        course = CourseRef(course_key=course_key, course_display_name=course_display_name)
+
         # Process assignments in batches
         for i in range(0, len(assignments), self.batch_size):
             batch = assignments[i: i + self.batch_size]
 
             with transaction.atomic():
                 batch_created, batch_updated, batch_skipped = (
-                    self._process_assignment_batch(course_key, batch)
+                    self._process_assignment_batch(course, batch)
                 )
                 created += batch_created
                 updated += batch_updated
@@ -213,7 +224,7 @@ class Command(BaseCommand):
 
         return processed, created, updated, skipped
 
-    def _process_assignment_batch(self, course_key: CourseKey, assignments) -> tuple[int, int, int]:
+    def _process_assignment_batch(self, course: CourseRef, assignments) -> tuple[int, int, int]:
         """
         Process a batch of assignments and return (created, updated, skipped) counts.
         """
@@ -221,49 +232,42 @@ class Command(BaseCommand):
         updated = 0
         skipped = 0
 
-        try:
-            course_overview = CourseOverview.get_from_id(course_key)
-            course_name = course_overview.display_name
-        except CourseOverview.DoesNotExist:
-            log.warning(f"CourseOverview not found for {course_key}")
-            course_name = None
-
         for assignment in assignments:
             self.stdout.write(
                 f"Processing assignment: {assignment.block_key}/{assignment.assignment_type} (due: {assignment.date})"
             )
             existing = when_models.ContentDate.objects.filter(
-                course_id=course_key, location=assignment.block_key, field="due"
+                course_id=course.course_key, location=assignment.block_key, field="due"
             ).first()
 
             if existing and not self.force_update:
                 skipped += 1
                 log.info(
                     f"Skipping existing ContentDate for {assignment.title} "
-                    f"in course {course_key}"
+                    f"in course {course.course_key}"
                 )
                 continue
 
             try:
-                update_or_create_assignments_due_dates(course_key, [assignment], course_name=course_name)
+                update_or_create_assignments_due_dates(course, [assignment])
 
                 if existing:
                     updated += 1
                     log.info(
                         f"Updated ContentDate for {assignment.title} "
-                        f"in course {course_key}"
+                        f"in course {course.course_key}"
                     )
                 else:
                     created += 1
                     log.info(
                         f"Created ContentDate for {assignment.title} "
-                        f"in course {course_key}"
+                        f"in course {course.course_key}"
                     )
 
             except Exception as e:  # pylint: disable=broad-exception-caught
                 log.error(
                     f"Failed to process assignment {assignment.title} "
-                    f"in course {course_key}: {str(e)}"
+                    f"in course {course.course_key}: {str(e)}"
                 )
                 continue
 
