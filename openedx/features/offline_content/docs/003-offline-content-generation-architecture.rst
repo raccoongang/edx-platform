@@ -266,7 +266,9 @@ they replay only as a problem submission.
 body, the version of the archive the call was made from, a sequence number and an id. The body is JSON; a block
 whose handlers take form fields offers JSON handlers when it becomes interactive. The application assigns the id
 and the sequence number when it stores the call, because a page starts again on every load, and takes the archive
-version from the archive it opened. No URL and no header of the learner's is sent to the device.
+version from the archive it opened. Nothing reads the archive version in this scope; it lets an answer made
+against older content be recognised once problems are answered offline. No URL and no header of the learner's is
+sent to the device.
 
 *Replay.* When the device is back online the application sends its records to a batch
 replay endpoint, authenticating as the learner. The endpoint runs them in order through the handler dispatch of

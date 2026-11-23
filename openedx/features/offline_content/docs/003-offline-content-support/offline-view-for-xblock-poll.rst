@@ -78,9 +78,9 @@ iframe runtime in ``openedx.core.djangoapps.xblock``, and the new archive runtim
 .. code-block:: js
 
     runtime.loadState(element)
-    // -> Promise<{state: {...} | null,              // null: no copy of the state (unknown, not empty)
-    //             pending: [{handler, data}, ...],  // calls stored and not yet replayed
-    //             results: [{handler, data, status, response}, ...]}>  // what the last replay answered
+    // -> Promise<{state: {...} | null,                      // null: no copy of the state (unknown, not empty)
+    //             pending: [{handler, suffix, data}, ...],  // calls stored and not yet replayed
+    //             results: [{handler, suffix, data, status, response}, ...]}>  // what the last replay answered
 
     runtime.callHandler(element, handlerName, data, suffix)  // data is sent as JSON; suffix is optional
     // -> Promise<{status: "ok", response: {...}}

@@ -91,7 +91,7 @@ Python (``xblock_problem/block.py``)
      multiple choice, option, numerical, string, formula) are the starting list;
    * an input type needs the server to display or to respond to typing (MATLAB, JS input, chemical equation,
      code graded through xqueue). Formula input is a judgement call: it works without its live preview, and its
-     previewer script is a platform file that the packager collects.
+     previewer script, addressed by a platform static URL, is collected by the packager.
 
 4. **Omit the handler URL.** ``problem_ajax.html`` writes it into ``data-url``. In ``offline_view`` the
    attribute is absent.
