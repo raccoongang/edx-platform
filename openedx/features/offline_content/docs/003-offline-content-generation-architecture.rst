@@ -106,10 +106,10 @@ Studio's preview runtime minus everything that comes from a request: no user, no
 no asides. During the render, reading a field of a scope that the LMS serves from learner data (``user_state``,
 ``user_state_summary``, ``preferences``, ``user_info``) raises, and ``handler_url`` raises, so a view that
 depends on the learner or on a handler URL fails when it is generated and not silently. Both rules are answers
-of the generating runtime: a block reaches its fields and its handler URLs only through the XBlock library, which
-asks the runtime behind the block, so the library and the other runtimes do not change, and a view rendered by
-the LMS meets no such rule. There is no ``student_view`` fallback: a block without ``offline_view`` is recorded
-as unsupported and never announced in the API.
+of the generating runtime: the XBlock library reads a block's fields from the ``field-data`` service of the
+runtime behind the block, and a block asks that runtime for a handler URL, so the library and the other runtimes
+do not change, and a view rendered by the LMS meets no such rule. There is no ``student_view`` fallback: a block
+without ``offline_view`` is recorded as unsupported and never announced in the API.
 
 The block instance decides **invariance**. It declines by raising ``xblock.exceptions.ViewDeclined``, an
 exception of the XBlock library, which blocks import without depending on ``openedx-platform``, when its content
