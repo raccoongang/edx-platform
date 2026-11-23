@@ -68,10 +68,10 @@ Python (``xblock_problem/block.py``)
 1. **Add a user-less problem constructor.** Today the ``lcp`` property reads the user service and writes
    ``seed`` and ``score`` into user state while rendering. Add a separate method that builds a
    ``LoncapaProblem`` with ``state={}``, ``seed=1``, no anonymous id, no xqueue and no handler URL.
-   ``max_score`` builds one with the same arguments but cannot be the model: it uses ``minimal_init`` and no
-   template renderer, so its problem can count points and cannot be rendered. The method starts from
-   ``new_lcp``: it keeps the sandbox, the cache, the template renderer and i18n, and drops the user service
-   lookups, the queue and the handler URL.
+   ``max_score`` already builds one with these arguments, but only to count points: it uses ``minimal_init``
+   and no template renderer, sandbox or cache. The method takes the rest from ``new_lcp``: it keeps the
+   sandbox, the cache, the template renderer and i18n, and drops the user service lookups, the queue and the
+   handler URL.
 2. **Parameterise the render.** ``get_html`` and ``get_problem_html`` read ``self.lcp`` and user fields
    directly and through eleven helpers (the progress, the three button checks, ``closed``, ``is_submitted``,
    ``is_correct`` and the like). Change them to take a small state object as an argument: it passes through
