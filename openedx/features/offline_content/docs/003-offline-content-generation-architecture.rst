@@ -124,7 +124,10 @@ inherited from its containers), or sits in a timed or proctored subsection, is `
 4. Packaging from the fragment, not from the page
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The archive is assembled from the ``Fragment`` (body and resources) and a DOM pass over the body.
+The archive is assembled from the ``Fragment`` (body and resources) and a DOM pass over the body. Both are the
+packager's work on what the view returned: a block neither collects files nor rewrites references for an
+archive. The same fragment therefore serves the online views that are built on ``offline_view`` (decision 8),
+where the LMS resolves the same references.
 
 *Platform files.* The page scripts (jQuery, the XBlock JavaScript core and runtime, the archive runtime) and
 MathJax are read through the staticfiles finders, never from paths on disk; if one is missing, the row fails.
@@ -137,9 +140,9 @@ problem input type.
 resource given as text is packaged as it is; a URL resource is collected when it is a platform static URL or a
 ``runtime.local_resource_url`` resource, which is read from the block's package. ``url()`` references inside
 collected CSS are rewritten like ``src`` and ``href`` attributes. Markup that a block carries in an attribute for
-its script to insert (the problem's ``data-content``) is parsed and goes through the same pass, so the assets and
-links inside it are collected and rewritten; a script that such markup asks the page to load (the formula
-input's previewer) is collected like a resource.
+its script to insert (the problem's ``data-content``) is parsed by the packager and goes through the same pass,
+so the assets and links inside it are collected and rewritten; a script that such markup asks the page to load
+(the formula input's previewer) is collected like a resource.
 
 *Course assets.* Assets referenced as ``/static/``, ``/asset-v1:`` or ``/c4x/`` are read from the contentstore
 only when they belong to the course being generated, under per-file and per-archive size caps; what is skipped
