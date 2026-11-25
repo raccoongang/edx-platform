@@ -56,8 +56,8 @@ Backend
   depends on user state fails at generation time and not silently.
 * **No handler URLs in the fragment.** ``handler_url`` should also raise during an ``offline_view`` render. The
   JavaScript refers to handlers by name, and the runtime resolves them.
-* **Declining.** A block that cannot render without a user for its current settings raises a dedicated
-  exception, and the generator records the block as unsupported with the reason.
+* **Declining.** A block that cannot render without a user for its current settings raises
+  ``xblock.exceptions.ViewDeclined``, and the generator records the block as unsupported with the reason.
 * **Resources.** The packager resolves ``runtime.local_resource_url(...)`` resources from the block's package,
   as the LMS resource view does. Blocks should not need a different resource list for ``offline_view`` than for
   their other views.
@@ -65,27 +65,31 @@ Backend
   Runtimes may call it on the block's behalf, for example when the application downloads state for a whole
   course.
 * **Replay.** Queued calls from a device are replayed through the normal handler dispatch, as the learner, in
-  order. The device stores ``{usage key, handler name, body, sequence, id}``, not URLs.
+  order. The device stores a record of each call (usage key, handler name and suffix, JSON body, archive
+  version, sequence, id), not URLs, and keeps the result of each replay for the block (ADR-003, decision 7).
 
 Frontend
 ~~~~~~~~
 
 Two additions to the JavaScript runtime object, implemented by the LMS runtime, the Studio preview runtime, the
-iframe runtime in ``openedx.core.djangoapps.xblock``, and the new archive runtime:
+iframe runtime in ``openedx.core.djangoapps.xblock``, and the new archive runtime; a third,
+``runtime.handlerMode(element)``, is defined in `Read-only offline_view for problem`_ and the survey needs it too:
 
 .. code-block:: js
 
     runtime.loadState(element)
-    // -> Promise<{state: {...} | null, pending: [{handler, data}, ...]}>
+    // -> Promise<{state: {...} | null,                      // null: no copy of the state (unknown, not empty)
+    //             pending: [{handler, suffix, data}, ...],  // calls stored and not yet replayed
+    //             results: [{handler, suffix, data, status, response}, ...]}>  // what the last replay answered
 
-    runtime.callHandler(element, handlerName, data)
+    runtime.callHandler(element, handlerName, data, suffix)  // data is sent as JSON; suffix is optional
     // -> Promise<{status: "ok", response: {...}}
     //          | {status: "pending"}        // queued, no server answer yet
     //          | {status: "unavailable"}>   // e.g. anonymous
 
-Online runtimes implement these as plain HTTP calls and always return an empty ``pending`` list. The archive
-runtime answers ``loadState`` from the downloaded copy, and turns ``callHandler`` into a bridge message for the
-application to store.
+Online runtimes implement these as plain HTTP calls and always return empty ``pending`` and ``results`` lists.
+The archive runtime answers ``loadState`` from the downloaded copy, and turns ``callHandler`` into a bridge
+message for the application to store.
 
 ``handlerUrl`` stays for existing blocks. Blocks that want to run on older platforms can fall back to
 ``$.ajax(runtime.handlerUrl(...))`` when ``callHandler`` is missing.
@@ -127,16 +131,21 @@ JavaScript (``poll/public/js/poll.js``)
      and say that results will be available online.
    * ``unavailable``: prompt to sign in.
 
-5. ``get_results`` and the CSV export need the server. On ``pending`` or ``unavailable`` they show a short
-   message.
+5. ``get_results`` and the CSV export need the server. The script asks ``runtime.handlerMode(element)`` first
+   and, when handlers are not live, shows a short message and makes no call. Otherwise a voter with public
+   results stores one ``get_results`` record on every offline open, and each replay publishes a
+   ``view_results`` event.
+6. Show what a replay did not accept. A vote replayed after the limit was reached, or after the questions
+   changed, is refused by the handler with ``success: false`` in a successful response. On load, the script
+   reads ``results`` from ``loadState`` and tells the learner which answer was not accepted.
 
-The poll block shares ``PollUtil`` with the survey, so the same change covers it with a second template edit.
+The poll block shares ``PollUtil`` and the script with the survey, but it has its own view, its own state
+handler and its own initialisation in the script. It gets the same four Python steps and the same script
+changes. The applications must also know its block type: Android has none for it today.
 
 What this leaves open
 ---------------------
 
-* Whether a rejected replay (limit reached, questions changed since download) is reported by the application or
-  by the block on next load.
 * How much of this applies to the problem block, whose JavaScript ignores the runtime and whose server
   re-renders HTML on every interaction. `Read-only offline_view for problem`_ covers its first step.
 
