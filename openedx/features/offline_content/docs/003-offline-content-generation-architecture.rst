@@ -41,8 +41,9 @@ Decision
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The feature is one Django application, ``openedx.features.offline_content``, installed in both the LMS and the
-CMS with one ``AppConfig``. The CMS generates: its ``course_published`` and ``course_deleted`` receivers are
-connected in both services, like the platform's other receivers of these signals, which only the CMS sends; its
+CMS with one ``AppConfig``. The CMS generates. Its ``course_published`` and ``course_deleted`` receivers are
+connected in both services, like the platform's other receivers of these signals, and act only in the CMS: the
+LMS also sends ``course_published``, for CCX courses, and those have no offline content in this scope. Its
 tasks, renderer, collector, packager, storage writes and management command run on the CMS workers. The LMS
 serves: it reads the manifest through one read-only module. One application keeps one migration history and
 one settings namespace. The generation path depends on the LMS courseware only for the field-data binding that
